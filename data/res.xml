@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<resources>
+	<set path = "images" />
+	<atlas>
+		<image file="anim.png" cols = "8" />
+		<image file="button.png"/>		
+		<image file="lf_body.png"/>		
+		<image file="lf_boost.png"/>		
+		<image file="lf_small_leg.png"/>		
+		<image file="lf_big_leg.png"/>		
+		<image file="lf_foot.png"/>		
+		<image file="lf_right_steer.png"/>		
+		<image file="lf_left_steer.png"/>		
+		<image file="ground.png"/>		
+	</atlas>
+	
+	<set path = "fonts" />
+	<font file="main.fnt" />	
+</resources>
