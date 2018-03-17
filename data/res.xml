@@ -12,6 +12,7 @@
 		<image file="lf_right_steer.png"/>		
 		<image file="lf_left_steer.png"/>		
 		<image file="ground.png"/>		
+		<image file="flame_particle.png"/>		
 	</atlas>
 	
 	<set path = "fonts" />

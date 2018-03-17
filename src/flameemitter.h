@@ -10,7 +10,15 @@ DECLARE_SMART(FlameEmitter, spFlameEmitter);
 class FlameEmitter : public oxygine::Actor
 {
 private:
+   oxygine::Resources* m_gameResources;
+
+   bool m_emit;
+
 	b2Body * m_emitterBody;
+
+   // The focus origo of the emitter and the center of the emitter line.
+   // Expressed in local coordinates of the body (i.e. related to its focus point)
+   b2Vec2 m_emitterOrigin;
 	
 	// The angle in relation to the emitter body defines direction for particle to flow
 	float m_emittAngle;		
@@ -21,15 +29,24 @@ private:
 	// Number of particle per second
 	float m_intensity;
 
-	float m_lifetime; // [sec}
+	int m_lifetime; // [ms}
 
-	float m_speed;	// [m/s]
+   float m_impulseMagnitude;
+
 
 	float m_noiseConeAngle;	// Defines a cone angle of noise added to direction
 
 
 public:
-	FlameEmitter(oxygine::Resources& gameResources);
+	FlameEmitter(
+      oxygine::Resources& gameResources, 
+      b2Body* body, 
+      b2Vec2 emitterOrigin, 
+      float angle, 
+      float emitterWidth,
+      float intensity,
+      float lifetime,
+      float impulseMagnitude);
 	void startEmitter(void);
 	void stopEmitter(void);
 

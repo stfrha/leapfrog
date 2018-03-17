@@ -2,6 +2,8 @@
 #include "oxygine-framework.h"
 #include "Box2DDebugDraw.h"
 #include "Box2D/Box2D.h"
+#include "flameemitter.h"
+
 
 namespace oxygine
 {
@@ -129,6 +131,16 @@ private:
 
 	bool	m_mainBoosterFire;
 	int		m_steeringBoosterFire;
+
+   bool  m_boostFireLastUpdate;
+   bool  m_rightSteerFireLastUpdate;
+   bool  m_leftSteerFireLastUpdate;
+
+   spFlameEmitter m_boosterFlame;
+   spFlameEmitter m_leftSteerFlame;
+   spFlameEmitter m_rightSteerFlame;
+
+   Resources* m_gameResources;
 
 public:
 	LeapFrog(Resources& gameResources, b2World* world, Actor* actor, const Vector2& pos, float scale);

@@ -1,149 +1,60 @@
-#include "LandingActor.h"
-
-#include "static.h"
+#include "flameparticle.h"
 
 using namespace oxygine;
 
-LandingActor::LandingActor(Resources& gameResources) :
-	m_world(NULL),
-	m_zoomScale(0.40f),
-	m_stageToViewPortScale(m_zoomScale * Scales::c_stageToViewPortScale),
-	m_physToStageScale(1.0f)
+FlameParticle::FlameParticle(
+   Resources& gameResources,
+   b2World* world,
+   const b2Vec2& pos,
+   int lifetime,
+   b2Vec2 impulseForce,
+   float radius)
 {
-	Point size = Point(1000.0, 500.0);
-	setSize(size);
+   setResAnim(gameResources.getResAnim("flame_particle"));
+   setSize(radius, radius);
+//   setPosition(pos);
+   setAnchor(Vector2(0.5f, 0.5f));
 
-	m_world = new b2World(b2Vec2(0, 1.62));
-	// m_world = new b2World(b2Vec2(0, 10));
-	//		m_world = new b2World(b2Vec2(0, 0));
+   spTween tranpTween = addTween(Actor::TweenAlpha(0), lifetime);
+   spTween scaleTween = addTween(Actor::TweenScale(0.25, 0.25), lifetime);
 
-	// I should probably load resources that are uniuqe to the landing mode here
+   scaleTween->setDoneCallback(CLOSURE(this, &FlameParticle::atParticleDeath));
 
-	// Position of frog in in the middle of the stage (500,250) meters in stage coordinates
-	spLeapFrog leapFrog = new LeapFrog(gameResources, m_world, (Actor*)this, getSize() / 2, 1);
+   b2BodyDef bodyDef;
+   bodyDef.type = b2_dynamicBody;
+   bodyDef.position = pos;
 
-	//Vector2 frogPos = getStage()->getSize() / 2 - leapFrog->getSize() / 2;
-	//leapFrog->setPosition(frogPos);
+   b2Body* body = world->CreateBody(&bodyDef);
 
-	addChild(leapFrog);
-	m_leapfrog = leapFrog;
+   setUserData(body);
 
-	spStatic ground = new Static(gameResources, m_world, RectF(465, 270, 25, 1));
-	addChild(ground);
+   b2CircleShape shape;
+   shape.m_radius = radius / 5.0f;
 
-	spStatic platform = new Static(gameResources, m_world, RectF(520, 230, 25, 1));
-	addChild(platform);
+   b2FixtureDef fixtureDef;
+   fixtureDef.shape = &shape;
+   fixtureDef.density = 0.5f;
+   fixtureDef.friction = 0.3f;
+   fixtureDef.restitution = 0.5f;
+   fixtureDef.filter.groupIndex = -1;
 
-	spStatic pillar = new Static(gameResources, m_world, RectF(500, 305, 3, 100));
-	addChild(pillar);
+   body->CreateFixture(&fixtureDef);
+   body->SetUserData(this);
 
-	setScale(m_stageToViewPortScale);
-
-
-	//m_debugDraw = new Box2DDraw;
-	//m_debugDraw->SetFlags(b2Draw::e_shapeBit | b2Draw::e_jointBit | b2Draw::e_pairBit | b2Draw::e_centerOfMassBit);
-	//m_debugDraw->attachTo(this);
-	//m_debugDraw->setWorld(Scales::c_physToStageScale, m_world);
-	//m_debugDraw->setPriority(1);
+   body->ApplyLinearImpulse(impulseForce, b2Vec2(0.5, 0.5), true);
 }
 
-
-void LandingActor::doUpdate(const UpdateState& us)
+void FlameParticle::doUpdate(const oxygine::UpdateState& us)
 {
-	//in real project you should make steps with fixed dt, check box2d documentation
-	m_world->Step(us.dt / 1000.0f, 6, 2);
+}
 
-	const Uint8* data = SDL_GetKeyboardState(0);
-	
-	if (data[SDL_SCANCODE_KP_PLUS])
-	{
-		m_zoomScale *= 1.1;
-	}
-	else if (data[SDL_SCANCODE_KP_MINUS])
-	{
-		m_zoomScale *= 0.9;
-	}
+void FlameParticle::atParticleDeath(oxygine::Event* event)
+{
+   // Now I'm suppose to comit suicide. How to deregister me from actor and world?
+   b2Body* myBody = (b2Body*)getUserData();
 
-	m_stageToViewPortScale = m_zoomScale * Scales::c_stageToViewPortScale;
+   myBody->GetWorld()->DestroyBody(myBody);
 
-	if (data[SDL_SCANCODE_W])
-	{
-		m_leapfrog->fireMainBooster(true);
-	}
-	else
-	{
-		m_leapfrog->fireMainBooster(false);
-	}
-
-	if (data[SDL_SCANCODE_A])
-	{
-		m_leapfrog->fireSteeringBooster(-1);
-	}
-	else if (data[SDL_SCANCODE_D])
-	{
-		m_leapfrog->fireSteeringBooster(1);
-	}
-	else
-	{
-		m_leapfrog->fireSteeringBooster(0);
-	}
-
-
-	if (data[SDL_SCANCODE_0])
-	{
-		m_leapfrog->goToMode(LFM_RESET);
-	}
-	else if (data[SDL_SCANCODE_1])
-	{
-		m_leapfrog->goToMode(LFM_LANDING);
-	}
-	else if (data[SDL_SCANCODE_2])
-	{
-		m_leapfrog->goToMode(LFM_DEEP_SPACE);
-	}
-	else if (data[SDL_SCANCODE_3])
-	{
-		m_leapfrog->goToMode(LFM_REENTRY);
-	}
-
-	//update each body position on display
-	b2Body* body = m_world->GetBodyList();
-	while (body)
-	{
-		Actor* actor = (Actor*)body->GetUserData();
-		b2Body* next = body->GetNext();
-		if (actor)
-		{
-			const b2Vec2& pos = body->GetPosition();
-			actor->setPosition(PhysDispConvert::convert(pos, Scales::c_physToStageScale));
-			actor->setRotation(body->GetAngle());
-
-			////remove fallen bodies
-			//if (actor->getY() > getHeight() + 50)
-			//{
-			//	body->SetUserData(0);
-			//	m_world->DestroyBody(body);
-
-			//	actor->detach();
-			//}
-		}
-
-		body = next;
-	}
-
-	setScale(m_stageToViewPortScale);
-
-	// Find stagePos in viewPortCoord that makes frog at center
-	Point vpSize = core::getDisplaySize();
-
-	// Frog position in stage coordinates
-	Vector2 frogPos = m_leapfrog->getPosition();
-
-	Vector2 stagePos = Vector2(vpSize.x / 2, vpSize.y / 2) - frogPos * m_stageToViewPortScale;
-
-	setPosition(stagePos);
-
-
-
+   this->detach();
 
 }

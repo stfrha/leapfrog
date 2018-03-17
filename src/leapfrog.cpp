@@ -364,7 +364,11 @@ LeapFrog::LeapFrog(Resources& gameResources, b2World* world, Actor* actor, const
 		-92 * MATH_PI / 180, -156.5 * MATH_PI / 180, 
 		-35 * MATH_PI / 180, 92 * MATH_PI / 180, 
 		156.5 * MATH_PI / 180, 35 * MATH_PI / 180),
-	c_resetMode(9, 0, 0, 0, 0, 0)
+	c_resetMode(9, 0, 0, 0, 0, 0),
+   m_boostFireLastUpdate(false),
+   m_rightSteerFireLastUpdate(false),
+   m_leftSteerFireLastUpdate(false),
+   m_gameResources(&gameResources)
 {
 	setPosition(pos);
 	setAnchor(Vector2(0.5f, 0.5f));
@@ -543,8 +547,59 @@ LeapFrog::LeapFrog(Resources& gameResources, b2World* world, Actor* actor, const
 	leftSteerJointDef.localAnchorB.Set(-0.6, 0.0);
 	leftSteerJointDef.collideConnected = false;
 	m_leftSteerJoint = (b2WeldJoint*)world->CreateJoint(&leftSteerJointDef);
-	
 
+   // Add main engine particle system
+   m_boosterFlame = new FlameEmitter(
+      gameResources, 
+      lfBoost->m_body, 
+      b2Vec2(0.0f, 3.0f), 
+      90.0f * MATH_PI / 180.0f, 
+      4.0f, 
+      0,                               // Intensity
+      250,                             // Lifetime [ms]
+      70);                             // Impulse magnitude
+
+   m_boosterFlame->attachTo(this);
+	
+   // Add main engine particle system
+   m_boosterFlame = new FlameEmitter(
+      gameResources,
+      lfBoost->m_body,
+      b2Vec2(0.0f, 3.0f),
+      90.0f * MATH_PI / 180.0f,
+      4.0f,
+      0,                               // Intensity
+      250,                             // Lifetime [ms]
+      70);                             // Impulse magnitude
+
+   m_boosterFlame->attachTo(this);
+
+   
+   // Add right steering engine particle system
+   m_rightSteerFlame = new FlameEmitter(
+      gameResources,
+      lfRightSteer->m_body,
+      b2Vec2(-1.0f, 0.0f),
+      MATH_PI,
+      1.0f,                            // Width
+      0,                               // Intensity
+      125,                             // Lifetime [ms]
+      35);                             // Impulse magnitude
+
+   m_rightSteerFlame->attachTo(this);
+
+   // Add left steering engine particle system
+   m_leftSteerFlame = new FlameEmitter(
+      gameResources,
+      lfLeftSteer->m_body,
+      b2Vec2(1.0f, 0.0f),             // Origin
+      0,                               // Angle 
+      1.0f,                            // Width
+      0,                               // Intensity
+      125,                             // Lifetime [ms]
+      35);                             // Impulse magnitude
+
+   m_leftSteerFlame->attachTo(this);
 }
 
 LeapFrog::~LeapFrog()
@@ -656,17 +711,31 @@ void LeapFrog::fireMainBooster(bool fire)
 {
 	if (fire)
 	{
+      if (m_boostFireLastUpdate == false)
+      {
+         // Turn emitter on here
+         m_boosterFlame->startEmitter();
+      }
+
 		m_boostMagnuitude += c_boostInc;
 
 		if (m_boostMagnuitude > c_boostMaxMagnitude)
 		{
 			m_boostMagnuitude = c_boostMaxMagnitude;
 		}
+      m_boostFireLastUpdate = true;
 	}
 	else
 	{
-		m_boostMagnuitude = 0;
-	}
+      if (m_boostFireLastUpdate == true)
+      {
+         // Turn emitter off here
+         m_boosterFlame->stopEmitter();
+      }
+
+      m_boostMagnuitude = 0;
+      m_boostFireLastUpdate = false;
+   }
 
 }
 
@@ -674,15 +743,36 @@ void LeapFrog::fireSteeringBooster(int dir)
 {
 	if (dir == -1)
 	{
-		m_steerMagnitude = -c_steerImpulse;
+      m_leftSteerFlame->stopEmitter();
+
+      if (m_rightSteerFireLastUpdate == false)
+      {
+         m_rightSteerFlame->startEmitter();
+      }
+
+      m_steerMagnitude = -c_steerImpulse;
+      
+      m_rightSteerFireLastUpdate = true;
 	}
 	else if (dir == 1)
 	{
-		m_steerMagnitude = c_steerImpulse;
-	}
+      m_rightSteerFlame->stopEmitter();
+      
+      if (m_leftSteerFireLastUpdate == false)
+      {
+         m_leftSteerFlame->startEmitter();
+      }
+
+      m_steerMagnitude = c_steerImpulse;
+
+      m_leftSteerFireLastUpdate = true;
+   }
 	else if (dir == 0)
 	{
 		float angleVel = m_mainBody->GetAngularVelocity();
+
+      m_rightSteerFlame->stopEmitter();
+      m_leftSteerFlame->stopEmitter();
 
 		if (angleVel > 0)
 		{
@@ -692,6 +782,9 @@ void LeapFrog::fireSteeringBooster(int dir)
 		{
 			m_steerMagnitude = c_eveningMagnitude;
 		}
-	}
+
+      m_rightSteerFireLastUpdate = false;
+      m_leftSteerFireLastUpdate = false;
+   }
 
 }
