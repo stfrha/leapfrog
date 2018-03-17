@@ -543,8 +543,8 @@ LeapFrog::LeapFrog(Resources& gameResources, b2World* world, Actor* actor, const
 	b2WeldJointDef	leftSteerJointDef;
 	leftSteerJointDef.bodyA = lfLeftSmallLeg->m_body;
 	leftSteerJointDef.bodyB = lfLeftSteer->m_body;
-	leftSteerJointDef.localAnchorA.Set(0.7, 1.4);
-	leftSteerJointDef.localAnchorB.Set(-0.6, 0.0);
+	leftSteerJointDef.localAnchorA.Set(0.7f, 1.4f);
+	leftSteerJointDef.localAnchorB.Set(-0.6f, 0.0f);
 	leftSteerJointDef.collideConnected = false;
 	m_leftSteerJoint = (b2WeldJoint*)world->CreateJoint(&leftSteerJointDef);
 
@@ -570,7 +570,7 @@ LeapFrog::LeapFrog(Resources& gameResources, b2World* world, Actor* actor, const
       4.0f,
       0,                               // Intensity
       250,                             // Lifetime [ms]
-      70);                             // Impulse magnitude
+      70.0f);                             // Impulse magnitude
 
    m_boosterFlame->attachTo(this);
 
@@ -584,7 +584,7 @@ LeapFrog::LeapFrog(Resources& gameResources, b2World* world, Actor* actor, const
       1.0f,                            // Width
       0,                               // Intensity
       125,                             // Lifetime [ms]
-      35);                             // Impulse magnitude
+      35.0f);                             // Impulse magnitude
 
    m_rightSteerFlame->attachTo(this);
 
@@ -597,7 +597,7 @@ LeapFrog::LeapFrog(Resources& gameResources, b2World* world, Actor* actor, const
       1.0f,                            // Width
       0,                               // Intensity
       125,                             // Lifetime [ms]
-      35);                             // Impulse magnitude
+      35.0f);                             // Impulse magnitude
 
    m_leftSteerFlame->attachTo(this);
 }
@@ -665,7 +665,7 @@ void LeapFrog::setJointMotor(b2RevoluteJoint* joint, float goal, float speedMagn
 
 	if (angle > goal)
 	{
-		if (angle - goal > 0.5 * MATH_PI / 180)
+		if (angle - goal > 0.5f * MATH_PI / 180.0f)
 		{
 			joint->SetMotorSpeed(-speedMagnitude);
 		}
@@ -676,7 +676,7 @@ void LeapFrog::setJointMotor(b2RevoluteJoint* joint, float goal, float speedMagn
 	}
 	else if (angle < goal)
 	{
-		if (goal - angle > 0.5 * MATH_PI / 180)
+		if (goal - angle > 0.5f * MATH_PI / 180.0f)
 		{
 			joint->SetMotorSpeed(-speedMagnitude);
 		}
