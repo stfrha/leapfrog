@@ -348,23 +348,10 @@ LeapFrog::LeapFrog(Resources& gameResources, b2World* world, Actor* actor, const
 	m_physDispScale(10.0f),
 	m_boostMagnuitude(0.0f),
 	m_steerMagnitude(0.0f),
-	c_boostInc(900.0f),
-	c_boostMaxMagnitude(3000.0f),
-	c_steerImpulse(20000.0f),
-	c_eveningMagnitude(10000.0f),
-		c_deepSpaceMode(
-		-187.5 * MATH_PI / 180, -3.5 * MATH_PI / 180, 
-		-117.5 * MATH_PI / 180, 187 * MATH_PI / 180, 
-		3.5 * MATH_PI / 180, 117.5 * MATH_PI / 180),
-	c_landingMode(
-		-65 * MATH_PI / 180, 65 * MATH_PI / 180, 
-		0 * MATH_PI / 180, 65 * MATH_PI / 180, 
-		-65 * MATH_PI / 180, 0 * MATH_PI / 180),
-	c_reentryMode(
-		-92 * MATH_PI / 180, -156.5 * MATH_PI / 180, 
-		-35 * MATH_PI / 180, 92 * MATH_PI / 180, 
-		156.5 * MATH_PI / 180, 35 * MATH_PI / 180),
-	c_resetMode(9, 0, 0, 0, 0, 0),
+	m_boostInc(900.0f),
+	m_boostMaxMagnitude(3000.0f),
+	m_steerImpulse(20000.0f),
+	m_eveningMagnitude(10000.0f),
    m_boostFireLastUpdate(false),
    m_rightSteerFireLastUpdate(false),
    m_leftSteerFireLastUpdate(false),
@@ -530,7 +517,7 @@ LeapFrog::LeapFrog(Resources& gameResources, b2World* world, Actor* actor, const
 	leftFootLegJointDef.motorSpeed = 0;
 	m_leftFootLegJoint = (b2RevoluteJoint*)world->CreateJoint(&leftFootLegJointDef);
 
-	// RIght small leg and steer booster joint
+	// Right small leg and steer booster joint
 	b2WeldJointDef	rightSteerJointDef;
 	rightSteerJointDef.bodyA = lfRightSmallLeg->m_body;
 	rightSteerJointDef.bodyB = lfRightSteer->m_body;
@@ -557,24 +544,11 @@ LeapFrog::LeapFrog(Resources& gameResources, b2World* world, Actor* actor, const
       4.0f, 
       0,                               // Intensity
       250,                             // Lifetime [ms]
-      70);                             // Impulse magnitude
+      70.0f,                           // Impulse magnitude
+      10.0f);                          // Radius
 
    m_boosterFlame->attachTo(this);
-	
-   // Add main engine particle system
-   m_boosterFlame = new FlameEmitter(
-      gameResources,
-      lfBoost->m_body,
-      b2Vec2(0.0f, 3.0f),
-      90.0f * MATH_PI / 180.0f,
-      4.0f,
-      0,                               // Intensity
-      250,                             // Lifetime [ms]
-      70.0f);                             // Impulse magnitude
-
-   m_boosterFlame->attachTo(this);
-
-   
+	  
    // Add right steering engine particle system
    m_rightSteerFlame = new FlameEmitter(
       gameResources,
@@ -584,7 +558,9 @@ LeapFrog::LeapFrog(Resources& gameResources, b2World* world, Actor* actor, const
       1.0f,                            // Width
       0,                               // Intensity
       125,                             // Lifetime [ms]
-      35.0f);                             // Impulse magnitude
+      35.0f,                           // Impulse magnitude
+      5.0f);                           // Radius
+
 
    m_rightSteerFlame->attachTo(this);
 
@@ -597,49 +573,16 @@ LeapFrog::LeapFrog(Resources& gameResources, b2World* world, Actor* actor, const
       1.0f,                            // Width
       0,                               // Intensity
       125,                             // Lifetime [ms]
-      35.0f);                             // Impulse magnitude
+      35.0f,                           // Impulse magnitude
+      5.0f);                           // Radius
 
    m_leftSteerFlame->attachTo(this);
+
+   goToMode(LFM_LANDING);
 }
 
 LeapFrog::~LeapFrog()
 {
-	//b2Joint* joint = m_world->GetJointList();
-	//while (joint)
-	//{
-	//	b2Joint* nextJ = joint->GetNext();
-	//	m_world->DestroyJoint(joint);
-
-	//	joint = nextJ;
-	//}
-
-	//m_boostJoint = 0;
-	//m_rightSteerJoint = 0;
-	//m_leftSteerJoint = 0;
-	//m_rightBigLegJoint = 0;
-	//m_leftBigLegJoint = 0;
-	//m_rightSmallLegJoint = 0;
-	//m_leftSmallLegJoint = 0;
-	//m_rightFootLegJoint = 0;
-	//m_leftFootLegJoint = 0;
-
-
-	// b2Body* body = m_world->GetBodyList();
-	//while (body)
-	//{
-	//	Actor* actor = (Actor*)body->GetUserData();
-	//	b2Body* nextB = body->GetNext();
-	//	if (actor)
-	//	{
-	//		body->SetUserData(0);
-	//		m_world->DestroyBody(body);
-
-	//		actor->detach();
-	//	}
-
-	//	body = nextB;
-	//}
-	delete m_world;
 }
 
 
@@ -672,6 +615,11 @@ void LeapFrog::setJointMotor(b2RevoluteJoint* joint, float goal, float speedMagn
 		else
 		{
 			joint->SetMotorSpeed(0);
+         
+         // Here the goal is reached. Lets call a function
+         // that can do some things at this time, for instance
+         // lock leg joints
+         modeReached();
 		}
 	}
 	else if (angle < goal)
@@ -680,32 +628,140 @@ void LeapFrog::setJointMotor(b2RevoluteJoint* joint, float goal, float speedMagn
 		{
 			joint->SetMotorSpeed(-speedMagnitude);
 		}
-		joint->SetMotorSpeed(speedMagnitude);
-	}
+      else
+      {
+
+         // Here the goal is reached. Lets call a function
+         // that can do some things at this time, for instance
+         // lock leg joints
+         modeReached();
+      }
+      joint->SetMotorSpeed(speedMagnitude);
+   }
 }
 
 void LeapFrog::goToMode(LeapFrogModeEnum mode)
 {
-	switch (mode)
-	{
-	case LFM_LANDING:
-		m_modeAngleGoals = c_landingMode;
-		break;
-	case LFM_DEEP_SPACE:
-		m_modeAngleGoals = c_deepSpaceMode;
-		break;
-	case LFM_ORBIT:
-		m_modeAngleGoals = c_reentryMode;
-		break;
-	case LFM_REENTRY:
-		m_modeAngleGoals = c_reentryMode;
-		break;
-	case LFM_RESET:
-		m_modeAngleGoals = c_resetMode;
-		break;
-	}
+   m_mode = mode;
 
+   // Unlock all legs and enable motors
+   m_rightBigLegJoint->EnableMotor(true);
+   m_rightBigLegJoint->EnableLimit(false);
+
+   m_leftBigLegJoint->EnableMotor(true);
+   m_leftBigLegJoint->EnableLimit(false);
+
+   m_rightSmallLegJoint->EnableMotor(true);
+   m_rightSmallLegJoint->EnableLimit(false);
+
+   m_leftSmallLegJoint->EnableMotor(true);
+   m_leftSmallLegJoint->EnableLimit(false);
+
+   m_rightFootLegJoint->EnableMotor(true);
+   m_rightFootLegJoint->EnableLimit(false);
+
+   m_leftFootLegJoint->EnableMotor(true);
+   m_leftFootLegJoint->EnableLimit(false);
+
+   switch (mode)
+   {
+   case LFM_LANDING:
+      m_boostInc = 900.0f;
+      m_boostMaxMagnitude = 3000.0f;
+      m_steerImpulse = 20000.0f;
+      m_eveningMagnitude = 10000.0f;
+
+      m_modeAngleGoals = ModeAngles(
+         -65 * MATH_PI / 180, 65 * MATH_PI / 180,
+         0 * MATH_PI / 180, 65 * MATH_PI / 180,
+         -65 * MATH_PI / 180, 0 * MATH_PI / 180);
+
+      break;
+
+   case LFM_DEEP_SPACE:
+      m_boostInc = 10000.0f;
+      m_boostMaxMagnitude = 30000.0f;
+      m_steerImpulse = 60000.0f;
+      m_eveningMagnitude = 60000.0f;
+
+      m_modeAngleGoals = ModeAngles(
+         -187.5 * MATH_PI / 180, -3.5 * MATH_PI / 180,
+         -117.5 * MATH_PI / 180, 187 * MATH_PI / 180,
+         3.5 * MATH_PI / 180, 117.5 * MATH_PI / 180);
+
+      break;
+   case LFM_ORBIT:
+      m_boostInc = 900.0f;
+      m_boostMaxMagnitude = 3000.0f;
+      m_steerImpulse = 20000.0f;
+      m_eveningMagnitude = 10000.0f;
+
+      m_modeAngleGoals = ModeAngles(
+         -65 * MATH_PI / 180, 65 * MATH_PI / 180,
+         0 * MATH_PI / 180, 65 * MATH_PI / 180,
+         -65 * MATH_PI / 180, 0 * MATH_PI / 180);
+
+      break;
+
+   case LFM_REENTRY:
+      m_boostInc = 900.0f;
+      m_boostMaxMagnitude = 3000.0f;
+      m_steerImpulse = 20000.0f;
+      m_eveningMagnitude = 10000.0f;
+
+      m_modeAngleGoals = ModeAngles(
+         -92 * MATH_PI / 180, -156.5 * MATH_PI / 180,
+         -35 * MATH_PI / 180, 92 * MATH_PI / 180,
+         156.5 * MATH_PI / 180, 35 * MATH_PI / 180);
+
+      break;
+
+   case LFM_RESET:
+      m_boostInc = 900.0f;
+      m_boostMaxMagnitude = 3000.0f;
+      m_steerImpulse = 20000.0f;
+      m_eveningMagnitude = 10000.0f;
+
+      m_modeAngleGoals = ModeAngles(9.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f);
+
+      break;
+   }
 }
+
+void LeapFrog::modeReached(void)
+{
+   if (m_mode == LFM_DEEP_SPACE)
+   {
+      // For deep space we lock all legs so that 
+      // the central movement of fast spinning
+      // causes them to fling out
+      m_rightBigLegJoint->EnableMotor(false);
+      m_rightBigLegJoint->SetLimits(m_modeAngleGoals.m_rightBigJointAngle, m_modeAngleGoals.m_rightBigJointAngle);
+      m_rightBigLegJoint->EnableLimit(true);
+      
+      m_leftBigLegJoint->EnableMotor(false);
+      m_leftBigLegJoint->SetLimits(m_modeAngleGoals.m_leftBigJointAngle, m_modeAngleGoals.m_leftBigJointAngle);
+      m_leftBigLegJoint->EnableLimit(true);
+
+      m_rightSmallLegJoint->EnableMotor(false);
+      m_rightSmallLegJoint->SetLimits(m_modeAngleGoals.m_rightSmallJointAngle, m_modeAngleGoals.m_rightSmallJointAngle);
+      m_rightSmallLegJoint->EnableLimit(true);
+
+      m_leftSmallLegJoint->EnableMotor(false);
+      m_leftSmallLegJoint->SetLimits(m_modeAngleGoals.m_leftSmallJointAngle, m_modeAngleGoals.m_leftSmallJointAngle);
+      m_leftSmallLegJoint->EnableLimit(true);
+
+      m_rightFootLegJoint->EnableMotor(false);
+      m_rightFootLegJoint->SetLimits(m_modeAngleGoals.m_rightFootJointAngle, m_modeAngleGoals.m_rightFootJointAngle);
+      m_rightFootLegJoint->EnableLimit(true);
+
+      m_leftFootLegJoint->EnableMotor(false);
+      m_leftFootLegJoint->SetLimits(m_modeAngleGoals.m_leftFootJointAngle, m_modeAngleGoals.m_leftFootJointAngle);
+      m_leftFootLegJoint->EnableLimit(true);
+
+   }
+}
+
 
 void LeapFrog::fireMainBooster(bool fire)
 {
@@ -717,11 +773,17 @@ void LeapFrog::fireMainBooster(bool fire)
          m_boosterFlame->startEmitter();
       }
 
-		m_boostMagnuitude += c_boostInc;
+      if (m_mode == LFM_DEEP_SPACE)
+      {
+         m_mainBody->SetLinearDamping(0.0f);
+      }
 
-		if (m_boostMagnuitude > c_boostMaxMagnitude)
+
+		m_boostMagnuitude += m_boostInc;
+
+		if (m_boostMagnuitude > m_boostMaxMagnitude)
 		{
-			m_boostMagnuitude = c_boostMaxMagnitude;
+			m_boostMagnuitude = m_boostMaxMagnitude;
 		}
       m_boostFireLastUpdate = true;
 	}
@@ -731,6 +793,11 @@ void LeapFrog::fireMainBooster(bool fire)
       {
          // Turn emitter off here
          m_boosterFlame->stopEmitter();
+      }
+
+      if (m_mode == LFM_DEEP_SPACE)
+      { 
+         m_mainBody->SetLinearDamping(2.0f);
       }
 
       m_boostMagnuitude = 0;
@@ -750,7 +817,7 @@ void LeapFrog::fireSteeringBooster(int dir)
          m_rightSteerFlame->startEmitter();
       }
 
-      m_steerMagnitude = -c_steerImpulse;
+      m_steerMagnitude = -m_steerImpulse;
       
       m_rightSteerFireLastUpdate = true;
 	}
@@ -763,7 +830,7 @@ void LeapFrog::fireSteeringBooster(int dir)
          m_leftSteerFlame->startEmitter();
       }
 
-      m_steerMagnitude = c_steerImpulse;
+      m_steerMagnitude = m_steerImpulse;
 
       m_leftSteerFireLastUpdate = true;
    }
@@ -776,11 +843,11 @@ void LeapFrog::fireSteeringBooster(int dir)
 
 		if (angleVel > 0)
 		{
-			m_steerMagnitude = -c_eveningMagnitude;
+			m_steerMagnitude = -m_eveningMagnitude;
 		}
 		else if (angleVel < 0)
 		{
-			m_steerMagnitude = c_eveningMagnitude;
+			m_steerMagnitude = m_eveningMagnitude;
 		}
 
       m_rightSteerFireLastUpdate = false;

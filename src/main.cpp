@@ -12,6 +12,29 @@
 
 using namespace oxygine;
 
+MainActor* mainActor;
+
+
+void onEvent(Event* ev)
+{
+   SDL_Event *event = (SDL_Event*)ev->userData;
+
+   if (event->type != SDL_KEYDOWN)
+      return;
+
+
+   switch (event->key.keysym.scancode)
+   {
+   case SDL_SCANCODE_F1:
+      mainActor->changeToMode(STE_LANDING);
+      break;
+   case SDL_SCANCODE_F2:
+      mainActor->changeToMode(STE_FREE_SPACE);
+      break;
+   }
+}
+
+
 void example_preinit() {}
 
 //called from main.cpp
@@ -19,12 +42,14 @@ void example_init()
 {
    //lets create our client code simple actor
    //spMainActor was defined above as smart intrusive pointer (read more: http://www.boost.org/doc/libs/1_60_0/libs/smart_ptr/intrusive_ptr.html)
-   spMainActor actor = new MainActor;
+   mainActor = new MainActor;
 
    //and add it to Stage as child
-   getStage()->addChild(actor);
-}
+   getStage()->addChild(mainActor);
 
+   core::getDispatcher()->addEventListener(oxygine::core::EVENT_SYSTEM, onEvent);
+
+}
 
 //called each frame from main.cpp
 void example_update()

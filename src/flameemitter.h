@@ -33,8 +33,9 @@ private:
 
    float m_impulseMagnitude;
 
-
 	float m_noiseConeAngle;	// Defines a cone angle of noise added to direction
+
+   float m_radius;
 
 
 public:
@@ -46,7 +47,8 @@ public:
       float emitterWidth,
       float intensity,
       float lifetime,
-      float impulseMagnitude);
+      float impulseMagnitude,
+      float radius);
 	void startEmitter(void);
 	void stopEmitter(void);
 

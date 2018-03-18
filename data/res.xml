@@ -14,7 +14,9 @@
 		<image file="ground.png"/>		
 		<image file="flame_particle.png"/>		
 	</atlas>
-	
+	<atlas clamp2edge="false"> 
+		<image file="crater_rock.png" trim="false" extend="false"/>
+	</atlas>	
 	<set path = "fonts" />
 	<font file="main.fnt" />	
 </resources>

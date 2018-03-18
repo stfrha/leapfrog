@@ -87,11 +87,11 @@ public:
 
 enum LeapFrogModeEnum
 {
-	LFM_RESET,
-	LFM_DEEP_SPACE,
-	LFM_LANDING,
-	LFM_ORBIT,
-	LFM_REENTRY
+   LFM_RESET,
+   LFM_DEEP_SPACE,
+   LFM_LANDING,
+   LFM_ORBIT,
+   LFM_REENTRY
 };
 
 DECLARE_SMART(LeapFrog, spLeapFrog);
@@ -99,25 +99,15 @@ DECLARE_SMART(LeapFrog, spLeapFrog);
 class LeapFrog : public Sprite
 {
 private:
-	const float c_boostInc;
-	const float c_boostMaxMagnitude;
-	const float c_steerImpulse;
-	const float c_eveningMagnitude;
-
-	const ModeAngles c_resetMode;
-	const ModeAngles c_deepSpaceMode;
-	const ModeAngles c_landingMode;
-	const ModeAngles c_reentryMode;
-
 	b2World * m_world;
 	b2Body* m_mainBody;
+
+   LeapFrogModeEnum  m_mode;
 
 	float	m_boostMagnuitude;
 	float	m_steerMagnitude;
 	float	m_physDispScale;
 	spBox2DDraw m_debugDraw;
-
-	ModeAngles m_modeAngleGoals;
 
 	b2WeldJoint* m_boostJoint;
 	b2WeldJoint* m_rightSteerJoint;
@@ -130,7 +120,7 @@ private:
 	b2RevoluteJoint* m_leftFootLegJoint;
 
 	bool	m_mainBoosterFire;
-	int		m_steeringBoosterFire;
+	int	m_steeringBoosterFire;
 
    bool  m_boostFireLastUpdate;
    bool  m_rightSteerFireLastUpdate;
@@ -142,10 +132,18 @@ private:
 
    Resources* m_gameResources;
 
+   // Data below is depending on the mode
+   float m_boostInc;
+   float m_boostMaxMagnitude;
+   float m_steerImpulse;
+   float m_eveningMagnitude;
+   ModeAngles m_modeAngleGoals;
+
 public:
 	LeapFrog(Resources& gameResources, b2World* world, Actor* actor, const Vector2& pos, float scale);
 	~LeapFrog();
 	void goToMode(LeapFrogModeEnum mode);
+   void modeReached(void);
 	void fireMainBooster(bool fire);
 	void fireSteeringBooster(int dir); // -1 is counter clockwise, 1 is clockwise
 

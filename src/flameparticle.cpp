@@ -29,11 +29,11 @@ FlameParticle::FlameParticle(
    setUserData(body);
 
    b2CircleShape shape;
-   shape.m_radius = radius / 5.0f;
+   shape.m_radius = 0.5f;
 
    b2FixtureDef fixtureDef;
    fixtureDef.shape = &shape;
-   fixtureDef.density = 0.5f;
+   fixtureDef.density = 3.0f;
    fixtureDef.friction = 0.3f;
    fixtureDef.restitution = 0.5f;
    fixtureDef.filter.groupIndex = -1;

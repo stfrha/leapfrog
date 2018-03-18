@@ -162,15 +162,18 @@
     <ClCompile Include="..\..\Box2D\Box2D\Box2D\Dynamics\Joints\b2WeldJoint.cpp" />
     <ClCompile Include="..\..\Box2D\Box2D\Box2D\Dynamics\Joints\b2WheelJoint.cpp" />
     <ClCompile Include="..\..\Box2D\Box2D\Box2D\Rope\b2Rope.cpp" />
+    <ClCompile Include="..\src\asteroid.cpp" />
     <ClCompile Include="..\src\Box2DDebugDraw.cpp" />
     <ClCompile Include="..\src\flameemitter.cpp" />
     <ClCompile Include="..\src\flameparticle.cpp" />
+    <ClCompile Include="..\src\freespaceactor.cpp" />
     <ClCompile Include="..\src\mainactor.cpp" />
     <ClCompile Include="..\src\landingactor.cpp" />
     <ClCompile Include="..\src\leapfrog.cpp" />
     <ClCompile Include="..\src\main.cpp" />
     <ClCompile Include="..\src\physdispconvert.cpp" />
     <ClCompile Include="..\src\scales.cpp" />
+    <ClCompile Include="..\src\sceneactor.cpp" />
     <ClCompile Include="..\src\static.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -221,13 +224,16 @@
     <ClInclude Include="..\..\Box2D\Box2D\Box2D\Dynamics\Joints\b2WeldJoint.h" />
     <ClInclude Include="..\..\Box2D\Box2D\Box2D\Dynamics\Joints\b2WheelJoint.h" />
     <ClInclude Include="..\..\Box2D\Box2D\Box2D\Rope\b2Rope.h" />
+    <ClInclude Include="..\src\asteroid.h" />
     <ClInclude Include="..\src\flameemitter.h" />
     <ClInclude Include="..\src\flameparticle.h" />
+    <ClInclude Include="..\src\freespaceactor.h" />
     <ClInclude Include="..\src\mainactor.h" />
     <ClInclude Include="..\src\landingactor.h" />
     <ClInclude Include="..\src\leapfrog.h" />
     <ClInclude Include="..\src\physdispconvert.h" />
     <ClInclude Include="..\src\scales.h" />
+    <ClInclude Include="..\src\sceneactor.h" />
     <ClInclude Include="..\src\static.h" />
   </ItemGroup>
   <ItemGroup>

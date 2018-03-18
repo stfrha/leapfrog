@@ -26,7 +26,12 @@ MainActor::MainActor() :
 	spLandingActor landingActor = new LandingActor(m_gameResources);
 	window->addChild(landingActor);
 
-	addEventListener(oxygine::core::EVENT_SYSTEM, CLOSURE(this, &MainActor::onSystemEvent));
+   m_debugDraw = new Box2DDraw;
+   m_debugDraw->SetFlags(b2Draw::e_shapeBit | b2Draw::e_jointBit | b2Draw::e_pairBit | b2Draw::e_centerOfMassBit);
+   m_debugDraw->attachTo(landingActor);
+   m_debugDraw->setWorld(Scales::c_physToStageScale, landingActor->GetWorld());
+   m_debugDraw->setPriority(1);
+
 
 }
 
@@ -34,6 +39,62 @@ MainActor::~MainActor()
 {
 	//free previously loaded resources
 	m_gameResources.free();
+}
+
+void MainActor::changeToMode(SceneTypeEnum scene)
+{
+   // Clean up current scene
+   spActor actor = getFirstChild();
+
+   while (actor)
+   {
+      spActor next = actor->getNextSibling();
+      if (actor != NULL)
+      {
+   	   actor->detach();
+      }
+      actor = next;
+   }
+
+   // Start selected scene
+   if (scene == STE_LANDING)
+   { 
+      spClipRectActor window = new ClipRectActor();
+
+      window->setSize(getStage()->getSize() - Vector2(100, 100));
+      window->setPosition(50.0f, 50.0f);
+      addChild(window);
+
+      spLandingActor landingActor = new LandingActor(m_gameResources);
+      window->addChild(landingActor);
+
+      m_debugDraw = new Box2DDraw;
+      m_debugDraw->SetFlags(b2Draw::e_shapeBit | b2Draw::e_jointBit | b2Draw::e_pairBit | b2Draw::e_centerOfMassBit);
+      m_debugDraw->attachTo(landingActor);
+      m_debugDraw->setWorld(Scales::c_physToStageScale, landingActor->GetWorld());
+      m_debugDraw->setPriority(1);
+
+
+   }
+   else if (scene == STE_FREE_SPACE)
+   {
+      spClipRectActor window = new ClipRectActor();
+
+      window->setSize(getStage()->getSize() - Vector2(100, 100));
+      window->setPosition(50.0f, 50.0f);
+      addChild(window);
+
+      spFreeSpaceActor freeSpaceActor = new FreeSpaceActor(m_gameResources);
+      window->addChild(freeSpaceActor);
+
+      //m_debugDraw = new Box2DDraw;
+      //m_debugDraw->SetFlags(b2Draw::e_shapeBit | b2Draw::e_jointBit | b2Draw::e_pairBit | b2Draw::e_centerOfMassBit);
+      //m_debugDraw->attachTo(freeSpaceActor);
+      //m_debugDraw->setWorld(Scales::c_physToStageScale, freeSpaceActor->GetWorld());
+      //m_debugDraw->setPriority(1);
+
+   }
+
 }
 
 void MainActor::doUpdate(const UpdateState& us)
