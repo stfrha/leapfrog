@@ -167,6 +167,7 @@
     <ClCompile Include="..\src\flameemitter.cpp" />
     <ClCompile Include="..\src\flameparticle.cpp" />
     <ClCompile Include="..\src\freespaceactor.cpp" />
+    <ClCompile Include="..\src\leapfrogparts.cpp" />
     <ClCompile Include="..\src\mainactor.cpp" />
     <ClCompile Include="..\src\landingactor.cpp" />
     <ClCompile Include="..\src\leapfrog.cpp" />
@@ -174,6 +175,7 @@
     <ClCompile Include="..\src\physdispconvert.cpp" />
     <ClCompile Include="..\src\scales.cpp" />
     <ClCompile Include="..\src\sceneactor.cpp" />
+    <ClCompile Include="..\src\softboundary.cpp" />
     <ClCompile Include="..\src\static.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -228,12 +230,14 @@
     <ClInclude Include="..\src\flameemitter.h" />
     <ClInclude Include="..\src\flameparticle.h" />
     <ClInclude Include="..\src\freespaceactor.h" />
+    <ClInclude Include="..\src\leapfrogparts.h" />
     <ClInclude Include="..\src\mainactor.h" />
     <ClInclude Include="..\src\landingactor.h" />
     <ClInclude Include="..\src\leapfrog.h" />
     <ClInclude Include="..\src\physdispconvert.h" />
     <ClInclude Include="..\src\scales.h" />
     <ClInclude Include="..\src\sceneactor.h" />
+    <ClInclude Include="..\src\softboundary.h" />
     <ClInclude Include="..\src\static.h" />
   </ItemGroup>
   <ItemGroup>

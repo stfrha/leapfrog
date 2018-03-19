@@ -7,7 +7,8 @@ using namespace oxygine;
 LandingActor::LandingActor(Resources& gameResources) :
 	SceneActor(gameResources)
 {
-   m_world->SetGravity(b2Vec2(0, 1.62));
+//   m_world->SetGravity(b2Vec2(0, 1.62));
+   m_world->SetGravity(b2Vec2(0, 3.0f));
 
    m_leapfrog->goToMode(LFM_LANDING);
 

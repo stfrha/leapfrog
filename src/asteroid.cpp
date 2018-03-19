@@ -79,7 +79,20 @@ Asteroid::Asteroid(
 
    body->ResetMassData();
 
-//   body->ApplyLinearImpulse(impulseForce, b2Vec2(0.5, 0.5), true);
+   // Randomise value between 0 and 2pi
+   float angle = static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / 2.0f * MATH_PI));
+
+   // Randomise value between 1000 and 2000
+   float magnitude = static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / 1000.0f)) + 1000.0f;
+
+   b2Vec2 impulseForce = b2Vec2(magnitude * cos(angle), magnitude * sin(angle));
+
+   body->ApplyLinearImpulseToCenter(impulseForce, true);
+
+   // Randomise value between 1000 and 2000
+   float angImpulse = static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / 1000.0f)) + 1000.0f;
+
+   body->ApplyAngularImpulse(angImpulse, true);
 }
 
 vertexPCT2 Asteroid::initVertex(const Vector2& pos, unsigned int color)
@@ -98,7 +111,14 @@ vertexPCT2 Asteroid::initVertex(const Vector2& pos, unsigned int color)
 
 float Asteroid::generateVertex(Vector2& v, int i, int num)
 {
-   float theta = 2.0f * MATH_PI / num * i;
+   float thetaNom = 2.0f * MATH_PI / num * i;
+
+
+   // Randomise value between -2pi / num / 2 and 2pi / num / 2 
+   float thetaBound = /*2.0f * */ MATH_PI / (float)num /* / 2.0f */;
+   float thetaNoise = static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / thetaBound)) - thetaBound;
+
+   float theta = thetaNom + thetaNoise;
 
    v = Vector2(m_radius * m_bitmapScale * cos(theta), 
       m_radius * m_bitmapScale * sin(theta));

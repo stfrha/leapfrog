@@ -17,22 +17,22 @@ MainActor::MainActor() :
 
 	setSize(getStage()->getSize());
 
-	spClipRectActor window = new ClipRectActor();
+	//spClipRectActor window = new ClipRectActor();
 
-	window->setSize(getStage()->getSize() - Vector2(100, 100));
-	window->setPosition(50.0f, 50.0f);
-	addChild(window);
+	//window->setSize(getStage()->getSize() - Vector2(100, 100));
+	//window->setPosition(50.0f, 50.0f);
+	//addChild(window);
 
-	spLandingActor landingActor = new LandingActor(m_gameResources);
-	window->addChild(landingActor);
+	//spLandingActor landingActor = new LandingActor(m_gameResources);
+	//window->addChild(landingActor);
 
-   m_debugDraw = new Box2DDraw;
-   m_debugDraw->SetFlags(b2Draw::e_shapeBit | b2Draw::e_jointBit | b2Draw::e_pairBit | b2Draw::e_centerOfMassBit);
-   m_debugDraw->attachTo(landingActor);
-   m_debugDraw->setWorld(Scales::c_physToStageScale, landingActor->GetWorld());
-   m_debugDraw->setPriority(1);
+ //  m_debugDraw = new Box2DDraw;
+ //  m_debugDraw->SetFlags(b2Draw::e_shapeBit | b2Draw::e_jointBit | b2Draw::e_pairBit | b2Draw::e_centerOfMassBit);
+ //  m_debugDraw->attachTo(landingActor);
+ //  m_debugDraw->setWorld(Scales::c_physToStageScale, landingActor->GetWorld());
+ //  m_debugDraw->setPriority(1);
 
-
+   changeToMode(STE_LANDING);
 }
 
 MainActor::~MainActor()
@@ -68,11 +68,11 @@ void MainActor::changeToMode(SceneTypeEnum scene)
       spLandingActor landingActor = new LandingActor(m_gameResources);
       window->addChild(landingActor);
 
-      m_debugDraw = new Box2DDraw;
-      m_debugDraw->SetFlags(b2Draw::e_shapeBit | b2Draw::e_jointBit | b2Draw::e_pairBit | b2Draw::e_centerOfMassBit);
-      m_debugDraw->attachTo(landingActor);
-      m_debugDraw->setWorld(Scales::c_physToStageScale, landingActor->GetWorld());
-      m_debugDraw->setPriority(1);
+      //m_debugDraw = new Box2DDraw;
+      //m_debugDraw->SetFlags(b2Draw::e_shapeBit | b2Draw::e_jointBit | b2Draw::e_pairBit | b2Draw::e_centerOfMassBit);
+      //m_debugDraw->attachTo(landingActor);
+      //m_debugDraw->setWorld(Scales::c_physToStageScale, landingActor->GetWorld());
+      //m_debugDraw->setPriority(1);
 
 
    }

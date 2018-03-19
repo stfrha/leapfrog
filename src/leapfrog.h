@@ -5,72 +5,6 @@
 #include "flameemitter.h"
 
 
-namespace oxygine
-{
-
-DECLARE_SMART(LfBody, spLfBody);
-
-class LfBody : public Sprite
-{
-public:
-	LfBody(Resources& gameResources, b2World* world, const Vector2& pos, float scalem, int16 groupIndex);
-	b2Body * m_body;
-};
-
-DECLARE_SMART(LfBooster, spLfBooster);
-
-class LfBooster : public Sprite
-{
-public:
-	LfBooster(Resources& gameResources, b2World* world, const Vector2& pos, float scale, int16 groupIndex);
-	b2Body * m_body;
-};
-
-DECLARE_SMART(LfBigLeg, spLfBigLeg);
-
-class LfBigLeg : public Sprite
-{
-public:
-	LfBigLeg(Resources& gameResources, b2World* world, const Vector2& pos, float scale, int16 groupIndex);
-	b2Body * m_body;
-};
-
-DECLARE_SMART(LfSmallLeg, spLfSmallLeg);
-
-class LfSmallLeg : public Sprite
-{
-public:
-	LfSmallLeg(Resources& gameResources, b2World* world, const Vector2& pos, float scale, int16 groupIndex);
-	b2Body * m_body;
-};
-
-DECLARE_SMART(LfFoot, spLfFoot);
-
-class LfFoot : public Sprite
-{
-public:
-	LfFoot(Resources& gameResources, b2World* world, const Vector2& pos, float scale, int16 groupIndex);
-	b2Body * m_body;
-};
-
-DECLARE_SMART(LfRightSteer, spLfRightSteer);
-
-class LfRightSteer : public Sprite
-{
-public:
-	LfRightSteer(Resources& gameResources, b2World* world, const Vector2& pos, float scale, int16 groupIndex);
-	b2Body * m_body;
-};
-
-DECLARE_SMART(LfLeftSteer, spLfLeftSteer);
-
-class LfLeftSteer : public Sprite
-{
-public:
-	LfLeftSteer(Resources& gameResources, b2World* world, const Vector2& pos, float scale, int16 groupIndex);
-	b2Body * m_body;
-};
-
 class ModeAngles
 {
 public:
@@ -96,7 +30,7 @@ enum LeapFrogModeEnum
 
 DECLARE_SMART(LeapFrog, spLeapFrog);
 
-class LeapFrog : public Sprite
+class LeapFrog : public oxygine::Sprite
 {
 private:
 	b2World * m_world;
@@ -130,7 +64,7 @@ private:
    spFlameEmitter m_leftSteerFlame;
    spFlameEmitter m_rightSteerFlame;
 
-   Resources* m_gameResources;
+   oxygine::Resources* m_gameResources;
 
    // Data below is depending on the mode
    float m_boostInc;
@@ -140,7 +74,12 @@ private:
    ModeAngles m_modeAngleGoals;
 
 public:
-	LeapFrog(Resources& gameResources, b2World* world, Actor* actor, const Vector2& pos, float scale);
+	LeapFrog(
+      oxygine::Resources& gameResources, 
+      b2World* world, 
+      oxygine::Actor* actor, 
+      const oxygine::Vector2& pos, 
+      float scale);
 	~LeapFrog();
 	void goToMode(LeapFrogModeEnum mode);
    void modeReached(void);
@@ -154,4 +93,3 @@ protected:
    void doUpdate(const UpdateState &us);
 };
 
-} // namespace oxygine

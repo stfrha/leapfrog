@@ -62,8 +62,6 @@ void FlameEmitter::doUpdate(const oxygine::UpdateState& us)
 
       // Attach to parent's parent which is the view actor
       flameParticle->attachTo(getParent()->getParent());
-      printf("Emitted flame\n");
-
    }
 
 }

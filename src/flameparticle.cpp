@@ -12,7 +12,7 @@ FlameParticle::FlameParticle(
 {
    setResAnim(gameResources.getResAnim("flame_particle"));
    setSize(radius, radius);
-//   setPosition(pos);
+   setPosition(PhysDispConvert::convert(pos, 1.0f));
    setAnchor(Vector2(0.5f, 0.5f));
 
    spTween tranpTween = addTween(Actor::TweenAlpha(0), lifetime);
