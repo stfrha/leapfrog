@@ -3,6 +3,8 @@
 #include "Box2D/Box2D.h"
 #include "sceneactor.h"
 #include "softboundary.h"
+#include "freespacecontactlistener.h"
+#include "asteroid.h"
 
 
 DECLARE_SMART(FreeSpaceActor, spFreeSpaceActor);
@@ -16,13 +18,23 @@ private:
    spSoftBoundary m_topBoundary;
 
    std::vector<b2Body*>   m_boundedBodies;
+   std::vector<AsteroidSpawnInstruction>  m_asteroidSpawnList;
+
+   FreeSpaceContactListener   m_contactListener;
+   Resources* m_gameResources;
 
 public:
 	FreeSpaceActor(oxygine::Resources& gameResources);
 
+   void addBoundingBody(oxygine::Actor* body);
+   void removeBoundingBody(oxygine::Actor* body);
    void testForBoundaryRepel(void);
+   void addAsteroidSpawnInstruction(AsteroidSpawnInstruction& inst);
+
 
 protected:
    void doUpdate(const oxygine::UpdateState &us);
+   void spawnAsteroids(void);
+   void generateBackground(Resources& gameResources);
 
 };

@@ -1,9 +1,13 @@
+#pragma once
 
 #include "oxygine-framework.h"
 #include "Box2DDebugDraw.h"
 #include "Box2D/Box2D.h"
 #include "flameemitter.h"
+#include "gun.h"
+#include "collisionentity.h"
 
+class SceneActor;
 
 class ModeAngles
 {
@@ -30,7 +34,7 @@ enum LeapFrogModeEnum
 
 DECLARE_SMART(LeapFrog, spLeapFrog);
 
-class LeapFrog : public oxygine::Sprite
+class LeapFrog : public oxygine::Sprite, CollisionEntity
 {
 private:
 	b2World * m_world;
@@ -64,6 +68,8 @@ private:
    spFlameEmitter m_leftSteerFlame;
    spFlameEmitter m_rightSteerFlame;
 
+   spGun m_gun;
+
    oxygine::Resources* m_gameResources;
 
    // Data below is depending on the mode
@@ -73,18 +79,30 @@ private:
    float m_eveningMagnitude;
    ModeAngles m_modeAngleGoals;
 
+   SceneActor* m_sceneActor;
+
+
 public:
 	LeapFrog(
       oxygine::Resources& gameResources, 
+      SceneActor* sceneActor,
       b2World* world, 
       oxygine::Actor* actor, 
       const oxygine::Vector2& pos, 
-      float scale);
+      float scale);   // Indicates if the actor pointer implements the bounded bodies
 	~LeapFrog();
+
+   virtual CollisionEntityTypeEnum getEntityType(void);
+
+   void hitByAsteroid(b2Contact* contact);
+
 	void goToMode(LeapFrogModeEnum mode);
    void modeReached(void);
 	void fireMainBooster(bool fire);
 	void fireSteeringBooster(int dir); // -1 is counter clockwise, 1 is clockwise
+   void fireGun(bool fire);
+   void setBoundedWallsActor(FreeSpaceActor* actor);
+
 
 private:
 	void setJointMotor(b2RevoluteJoint* joint, float goal, float speedMagnitude);

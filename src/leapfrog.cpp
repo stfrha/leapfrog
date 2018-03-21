@@ -29,19 +29,26 @@ ModeAngles::ModeAngles(float rgtBigLeg, float rgtSmallLeg, float rgtFoot,
 	{  }
 
 
-LeapFrog::LeapFrog(Resources& gameResources, b2World* world, Actor* actor, const Vector2& pos, float scale) :
-	m_world(world),
-	m_physDispScale(10.0f),
-	m_boostMagnuitude(0.0f),
-	m_steerMagnitude(0.0f),
-	m_boostInc(900.0f),
-	m_boostMaxMagnitude(3000.0f),
-	m_steerImpulse(20000.0f),
-	m_eveningMagnitude(10000.0f),
+LeapFrog::LeapFrog(
+   Resources& gameResources, 
+   SceneActor* sceneActor,
+   b2World* world,
+   Actor* actor, 
+   const Vector2& pos, 
+   float scale) :
+   m_world(world),
+   m_physDispScale(10.0f),
+   m_boostMagnuitude(0.0f),
+   m_steerMagnitude(0.0f),
+   m_boostInc(900.0f),
+   m_boostMaxMagnitude(3000.0f),
+   m_steerImpulse(20000.0f),
+   m_eveningMagnitude(10000.0f),
    m_boostFireLastUpdate(false),
    m_rightSteerFireLastUpdate(false),
    m_leftSteerFireLastUpdate(false),
-   m_gameResources(&gameResources)
+   m_gameResources(&gameResources),
+   m_sceneActor(sceneActor)
 {
 	setPosition(pos);
 	setAnchor(Vector2(0.5f, 0.5f));
@@ -88,6 +95,8 @@ LeapFrog::LeapFrog(Resources& gameResources, b2World* world, Actor* actor, const
 
 	m_mainBody->CreateFixture(&fixtureDef);
 	m_mainBody->SetUserData(this);
+
+   m_mainBody->GetFixtureList()->SetUserData((CollisionEntity*)this);
 
 	m_mainBody->ResetMassData();
 	
@@ -264,11 +273,34 @@ LeapFrog::LeapFrog(Resources& gameResources, b2World* world, Actor* actor, const
 
    m_leftSteerFlame->attachTo(this);
 
+   m_gun = new Gun(
+      gameResources,
+      m_sceneActor,
+      m_mainBody,
+      b2Vec2(0.0f, -4.0f),             // Origin
+      3.0f * MATH_PI / 2.0f,           // Angle 
+      4,                               // Intensity [bullets per second]
+      250.0f,                         // Lifetime [ms]
+      1000.0f,                         // Bullet speed
+      false);                          // Bouncy
+
+   m_gun->attachTo(this);
+
    goToMode(LFM_LANDING);
 }
 
 LeapFrog::~LeapFrog()
 {
+}
+
+CollisionEntityTypeEnum LeapFrog::getEntityType(void)
+{
+   return CET_LEAPFROG;
+}
+
+void LeapFrog::hitByAsteroid(b2Contact* contact)
+{
+   // Damage to LeapFrog!
 }
 
 
@@ -540,4 +572,21 @@ void LeapFrog::fireSteeringBooster(int dir)
       m_leftSteerFireLastUpdate = false;
    }
 
+}
+
+void LeapFrog::fireGun(bool fire)
+{
+   if (fire)
+   {
+      m_gun->startGun();
+   }
+   else
+   {
+      m_gun->stopGun();
+   }
+}
+
+void LeapFrog::setBoundedWallsActor(FreeSpaceActor* actor)
+{
+   m_gun->setBoundedWallsActor(actor);
 }

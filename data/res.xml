@@ -20,6 +20,9 @@
 	<atlas clamp2edge="false"> 
 		<image file="deep_space_boundary.png" trim="false" extend="false"/>
 	</atlas>	
+	<atlas clamp2edge="false"> 
+		<image file="starfield.png" trim="false" extend="false"/>
+	</atlas>	
 
 
 

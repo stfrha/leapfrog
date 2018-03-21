@@ -14,14 +14,6 @@ SceneActor::SceneActor(Resources& gameResources) :
 	setSize(size);
 
 	m_world = new b2World(b2Vec2(0.0f, 0.0f));
-	// m_world = new b2World(b2Vec2(0, 10));
-	//		m_world = new b2World(b2Vec2(0, 0));
-
-	// Position of frog in in the middle of the stage (500,250) meters in stage coordinates
-	spLeapFrog leapFrog = new LeapFrog(gameResources, m_world, (Actor*)this, getSize() / 2.0f, 1.0f);
-
-	addChild(leapFrog);
-	m_leapfrog = leapFrog;
 
 	setScale(m_stageToViewPortScale);
 }
@@ -36,11 +28,18 @@ b2World* SceneActor::GetWorld(void)
    return m_world;
 }
 
+void SceneActor::addMeToDeathList(ActorToDie* actor)
+{
+   m_deathList.push_back(actor);
+}
 
 void SceneActor::doUpdate(const UpdateState& us)
 {
 	//in real project you should make steps with fixed dt, check box2d documentation
 	m_world->Step(us.dt / 1000.0f, 6, 2);
+
+   // Kill all actors registrated for death
+   sweepKillList();
 
 	const Uint8* data = SDL_GetKeyboardState(0);
 	
@@ -76,6 +75,15 @@ void SceneActor::doUpdate(const UpdateState& us)
 	{
 		m_leapfrog->fireSteeringBooster(0);
 	}
+
+   if (data[SDL_SCANCODE_KP_ENTER])
+   {
+      m_leapfrog->fireGun(true);
+   }
+   else
+   {
+      m_leapfrog->fireGun(false);
+   }
 
 
 	if (data[SDL_SCANCODE_0])
@@ -131,4 +139,23 @@ void SceneActor::doUpdate(const UpdateState& us)
 	Vector2 stagePos = Vector2(vpSize.x / 2, vpSize.y / 2) - frogPos * m_stageToViewPortScale;
 
 	setPosition(stagePos);
+}
+
+void SceneActor::sweepKillList(void)
+{
+   for (auto it = m_deathList.begin(); it != m_deathList.end(); ++it)
+   {
+      ActorToDie* a = *it;
+      a->killActor();
+   }
+
+   m_deathList.clear();
+}
+
+void SceneActor::createLeapFrog(Resources& gameResources)
+{
+   spLeapFrog leapFrog = new LeapFrog(gameResources, this, m_world, (Actor*)this, getSize() / 2.0f, 1.0f);
+
+   addChild(leapFrog);
+   m_leapfrog = leapFrog;
 }

@@ -1,18 +1,29 @@
+
 #include "asteroid.h"
+
+#include "sceneactor.h"
+#include "freespaceactor.h"
+
 
 using namespace oxygine;
 
 Asteroid::Asteroid(
    Resources& gameResources,
+   SceneActor* sceneActor,
    b2World* world,
    const b2Vec2& pos,
-   AsteroidStateEnum state) :
+   AsteroidStateEnum state,
+   FreeSpaceActor* actor) :
    m_state(state),
    m_radius(generateRadius()),
    m_num(generateNum()),
    m_bitmapPxSize(512),
    m_asteroideMaxRadius(10.0f),
-   m_bitmapScale(m_bitmapPxSize / 2 / m_asteroideMaxRadius)
+   m_bitmapScale(m_bitmapPxSize / 2 / m_asteroideMaxRadius),
+   m_damage(0),
+   m_sceneActor(sceneActor),
+   m_gameResource(&gameResources),
+   m_freeSpaceActor(actor)
 {
    m_poly = new Polygon;
 
@@ -27,7 +38,11 @@ Asteroid::Asteroid(
 
    m_poly->setResAnim(gameResources.getResAnim("crater_rock"));
 
-   createPolygon();
+   Vector2*  v2vertices = new Vector2[m_num];
+
+   generateVertices(v2vertices);
+
+   createPolygon(v2vertices, m_num);
 
    m_poly->setScale(1/m_bitmapScale);
 
@@ -45,29 +60,23 @@ Asteroid::Asteroid(
 
    setUserData(body);
 
-   b2Vec2* vertices = new b2Vec2[m_num + 1];
+   b2Vec2* b2vertices = new b2Vec2[m_num + 1];
 
    // Polygon of a body shape is physical coordinates, i.e. in meters
    Vector2 tv;
 
    for (int i = 0; i < m_num ; i++)
    {
-      generateVertex(tv, m_num - i - 1, m_num);
-      vertices[i] = PhysDispConvert::convert(tv, m_bitmapScale);
-
-      //vertices[i].Set(-0.6, 0.5);
-      //vertices[3].Set(-0.6, -0.5);
-      //vertices[2].Set(0.6, -0.5);
-      //vertices[1].Set(0.6, 0.5);
-      //vertices[0].Set(-0.6, 0.5);
+      tv = v2vertices[m_num - i - 1];
+      b2vertices[i] = PhysDispConvert::convert(tv, m_bitmapScale);
    }
 
-   generateVertex(tv, m_num - 1, m_num);
-   vertices[m_num] = PhysDispConvert::convert(tv, m_bitmapScale);
+   tv = v2vertices[m_num - 1];
+   b2vertices[m_num] = PhysDispConvert::convert(tv, m_bitmapScale);
 
    b2PolygonShape polyShape;
 
-   polyShape.Set(vertices, m_num+1);
+   polyShape.Set(b2vertices, m_num+1);
 
    b2FixtureDef fixtureDef;
    fixtureDef.shape = &polyShape;
@@ -76,6 +85,8 @@ Asteroid::Asteroid(
    
    body->CreateFixture(&fixtureDef);
    body->SetUserData(this);
+
+   body->GetFixtureList()->SetUserData((CollisionEntity*)this);
 
    body->ResetMassData();
 
@@ -95,6 +106,81 @@ Asteroid::Asteroid(
    body->ApplyAngularImpulse(angImpulse, true);
 }
 
+CollisionEntityTypeEnum Asteroid::getEntityType(void)
+{
+   return CET_ASTEROID;
+}
+
+void Asteroid::killActor(void)
+{
+   atDeathOfAsteroid();
+}
+
+void Asteroid::hitByBullet(b2Contact* contact)
+{
+   // Take damage
+   m_damage += 1;
+
+   if (m_state == ASE_SMALL && m_damage >= 1)
+   {
+      m_sceneActor->addMeToDeathList((ActorToDie*)this);
+   }
+
+   if (m_state == ASE_MIDDLE && m_damage >= 2)
+   {
+      b2Body* b = (b2Body*) getUserData();
+
+      // Spawn three small 
+      m_freeSpaceActor->addAsteroidSpawnInstruction(AsteroidSpawnInstruction(3, ASE_SMALL, b->GetPosition()));
+
+      m_sceneActor->addMeToDeathList((ActorToDie*)this);
+   }
+
+   if (m_state == ASE_LARGE && m_damage >= 4)
+   {
+      b2Body* b = (b2Body*)getUserData();
+
+      // Spawn three middle 
+      m_freeSpaceActor->addAsteroidSpawnInstruction(AsteroidSpawnInstruction(3, ASE_MIDDLE, b->GetPosition()));
+
+      m_sceneActor->addMeToDeathList((ActorToDie*)this);
+   }
+
+
+}
+
+void Asteroid::hitByLepfrog(b2Contact* contact)
+{
+   // Take damage like two bullets
+}
+
+float Asteroid::generateVertex(Vector2& v, int i, int num)
+{
+   float thetaNom = 2.0f * MATH_PI / num * i;
+
+   // Randomise value between -2pi / num / 2 and 2pi / num / 2 
+   float thetaBound = /*2.0f * */ MATH_PI / (float)num /* / 2.0f */;
+   float thetaNoise = static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / thetaBound)) - thetaBound;
+
+   float theta = thetaNom + thetaNoise;
+
+   v = Vector2(m_radius * m_bitmapScale * cos(theta),
+      m_radius * m_bitmapScale * sin(theta));
+
+   //   float rad = getStage()->getHeight() * 0.4f * (1 + scalar::sin(theta * 10) / 10);
+
+   return theta;
+}
+
+
+void Asteroid::generateVertices(Vector2* vertices)
+{
+   for (int i = 0; i < m_num; i++)
+   {
+      generateVertex(vertices[i], i, m_num);
+   }
+}
+
 vertexPCT2 Asteroid::initVertex(const Vector2& pos, unsigned int color)
 {
    vertexPCT2 v;
@@ -108,38 +194,13 @@ vertexPCT2 Asteroid::initVertex(const Vector2& pos, unsigned int color)
    return v;
 }
 
-
-float Asteroid::generateVertex(Vector2& v, int i, int num)
+vertexPCT2 Asteroid::getVertex(Vector2* v2vertices, int i)
 {
-   float thetaNom = 2.0f * MATH_PI / num * i;
-
-
-   // Randomise value between -2pi / num / 2 and 2pi / num / 2 
-   float thetaBound = /*2.0f * */ MATH_PI / (float)num /* / 2.0f */;
-   float thetaNoise = static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / thetaBound)) - thetaBound;
-
-   float theta = thetaNom + thetaNoise;
-
-   v = Vector2(m_radius * m_bitmapScale * cos(theta), 
-      m_radius * m_bitmapScale * sin(theta));
-   
-   //   float rad = getStage()->getHeight() * 0.4f * (1 + scalar::sin(theta * 10) / 10);
-
-   return theta;
-}
-
-
-vertexPCT2 Asteroid::getVertex(int i, int num)
-{
-   Vector2 p;
-   
-   float theta = generateVertex(p, i, num);
-
    Color c = Color::White;
-   return initVertex(p, c.rgba());
+   return initVertex(v2vertices[i], c.rgba());
 }
 
-vertexPCT2* Asteroid::createVertices(int num)
+vertexPCT2* Asteroid::createVertices(Vector2* v2vertices, int num)
 {
    int verticesCount = num * 4;
 
@@ -148,29 +209,37 @@ vertexPCT2* Asteroid::createVertices(int num)
    vertexPCT2* p = vertices;
    for (int n = 0; n < num; ++n)
    {
+      int m = n + 1;
+
+      // Handle wrap to first vertex
+      if (m == num)
+      {
+         m = 0;
+      }
+
       //add centered vertex
       *p = initVertex(Vector2(0, 0), Color::White);
       ++p;
 
-      *p = getVertex(n, num);
+      *p = getVertex(v2vertices, n);
       ++p;
 
-      *p = getVertex(n + 1, num);
+      *p = getVertex(v2vertices, m);
       ++p;
 
       //Oxygine uses "triangles strip" rendering mode
       //dublicate last vertex (degenerate triangles)
-      *p = getVertex(n + 1, num);
+      *p = getVertex(v2vertices, m);
       ++p;
    }
 
    return vertices;
 }
 
-void Asteroid::createPolygon(void)
+void Asteroid::createPolygon(Vector2* v2vertices, int num)
 {
-   vertexPCT2* vertices = createVertices(m_num);
-   m_poly->setVertices(vertices, sizeof(vertexPCT2) * m_num * 4, vertexPCT2::FORMAT, true);
+   vertexPCT2* vertices = createVertices(v2vertices, num);
+   m_poly->setVertices(vertices, sizeof(vertexPCT2) * num * 4, vertexPCT2::FORMAT, true);
 }
 
 float Asteroid::generateRadius(void)
@@ -193,11 +262,11 @@ int Asteroid::generateNum(void)
    switch (m_state)
    {
    case ASE_SMALL:
-      return  5;
+      return  4;
    case ASE_MIDDLE:
-      return 6;
+      return 5;
    case ASE_LARGE:
-      return 7;
+      return 5;
    }
 
    return 4;
@@ -222,6 +291,14 @@ void Asteroid::doUpdate(const oxygine::UpdateState& us)
 {
 }
 
+void Asteroid::atDeathOfAsteroid(void)
+{
+   b2Body* myBody = (b2Body*)getUserData();
+   
+   myBody->GetWorld()->DestroyBody(myBody);
+   
+   this->detach();
+}
 //void Asteroid::atParticleDeath(oxygine::Event* event)
 //{
 //   // Now I'm suppose to comit suicide. How to deregister me from actor and world?
@@ -232,3 +309,4 @@ void Asteroid::doUpdate(const oxygine::UpdateState& us)
 //   this->detach();
 //
 //}
+

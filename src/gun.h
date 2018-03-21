@@ -5,14 +5,18 @@
 #include "scales.h"
 #include "physdispconvert.h"
 
-DECLARE_SMART(FlameEmitter, spFlameEmitter);
+class FreeSpaceActor;
+class SceneActor;
 
-class FlameEmitter : public oxygine::Actor
+DECLARE_SMART(Gun, spGun);
+
+class Gun : public oxygine::Actor
 {
 private:
+   FreeSpaceActor * m_freeSpaceActor;
    oxygine::Resources* m_gameResources;
 
-   bool m_emit;
+   bool m_fire;
 
 	b2Body * m_emitterBody;
 
@@ -23,34 +27,34 @@ private:
 	// The angle in relation to the emitter body defines direction for particle to flow
 	float m_emittAngle;		
 
-	// Particles are generate from a line with this width perpendicular to the emittAngle
-	float m_emitterWidth;
-
-	// Number of particle per second
-	float m_intensity;
+	// Time between bullets
+	float m_interval;
 
 	int m_lifetime; // [ms}
 
-   float m_impulseMagnitude;
+   float m_bulletSpeed;
 
-	float m_noiseConeAngle;	// Defines a cone angle of noise added to direction
+   int m_timeSinceLast;
 
-   float m_radius;
-
+   SceneActor* m_sceneActor;
 
 public:
-	FlameEmitter(
+	Gun(
       oxygine::Resources& gameResources, 
-      b2Body* body, 
+      SceneActor* sceneActor,
+      b2Body* body,
       b2Vec2 emitterOrigin, 
       float angle, 
-      float emitterWidth,
-      float intensity,
+      float fireRate,
       float lifetime,
-      float impulseMagnitude,
-      float radius);
-	void startEmitter(void);
-	void stopEmitter(void);
+      float bulletSpeed,
+      bool bouncy
+   );
+
+   void setBoundedWallsActor(FreeSpaceActor* actor);
+
+	void startGun(void);
+	void stopGun(void);
 
 
 protected:

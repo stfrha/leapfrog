@@ -10,6 +10,8 @@ LandingActor::LandingActor(Resources& gameResources) :
 //   m_world->SetGravity(b2Vec2(0, 1.62));
    m_world->SetGravity(b2Vec2(0, 3.0f));
 
+   createLeapFrog(gameResources);
+
    m_leapfrog->goToMode(LFM_LANDING);
 
    // I should probably load resources that are uniuqe to the landing mode here
@@ -23,5 +25,3 @@ LandingActor::LandingActor(Resources& gameResources) :
 	spStatic pillar = new Static(gameResources, m_world, RectF(500, 305, 3, 100));
 	addChild(pillar);
 }
-
-
