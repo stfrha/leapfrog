@@ -9,8 +9,7 @@
 
 using namespace oxygine;
 
-MainActor::MainActor() :
-	m_landingActor(NULL)
+MainActor::MainActor()
 {
 	//load xml file with resources definition
 	m_gameResources.loadXML("res.xml");
@@ -94,7 +93,23 @@ void MainActor::changeToMode(SceneTypeEnum scene)
       //m_debugDraw->setPriority(1);
 
    }
+   else if (scene == STE_ORBIT)
+   {
+      spClipRectActor window = new ClipRectActor();
 
+      window->setSize(getStage()->getSize() - Vector2(100, 100));
+      window->setPosition(50.0f, 50.0f);
+      addChild(window);
+
+      spPlanetActor planetActor = new PlanetActor(m_gameResources);
+      window->addChild(planetActor);
+
+      //m_debugDraw = new Box2DDraw;
+      //m_debugDraw->SetFlags(b2Draw::e_shapeBit | b2Draw::e_jointBit | b2Draw::e_pairBit | b2Draw::e_centerOfMassBit);
+      //m_debugDraw->attachTo(freeSpaceActor);
+      //m_debugDraw->setWorld(Scales::c_physToStageScale, freeSpaceActor->GetWorld());
+      //m_debugDraw->setPriority(1);
+   }
 }
 
 void MainActor::doUpdate(const UpdateState& us)

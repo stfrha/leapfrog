@@ -6,6 +6,7 @@
 #include "flameemitter.h"
 #include "gun.h"
 #include "collisionentity.h"
+#include "shield.h"
 
 class SceneActor;
 
@@ -32,6 +33,16 @@ enum LeapFrogModeEnum
    LFM_REENTRY
 };
 
+enum EnvironmentEnum
+{
+   ENV_DEEP_SPACE,
+   ENV_GROUND,
+   ENV_ORBIT,
+   ENV_REENTRY,
+   ENV_LAUNCH
+};
+
+
 DECLARE_SMART(LeapFrog, spLeapFrog);
 
 class LeapFrog : public oxygine::Sprite, CollisionEntity
@@ -41,10 +52,25 @@ private:
 	b2Body* m_mainBody;
 
    LeapFrogModeEnum  m_mode;
+   EnvironmentEnum m_environment;
 
-	float	m_boostMagnuitude;
-	float	m_steerMagnitude;
-	float	m_physDispScale;
+   float	m_boostMagnuitude;
+   float	m_steerMagnitude;       // The magnitude of the angular force (without sign)
+
+   // Parameters that can be changed
+   // depending on the environment
+   float m_maxVelocity;
+   float m_boostInc;
+   float m_boostMaxMagnitude;
+   float m_maxAngularVelocity;
+   float m_steerMaxMagnitude;
+   float m_eveningMagnitude;
+
+   // Parameters that can be changed 
+   // depending on mode
+   ModeAngles m_modeAngleGoals;
+      
+   float	m_physDispScale;
 	spBox2DDraw m_debugDraw;
 
 	b2WeldJoint* m_boostJoint;
@@ -56,6 +82,7 @@ private:
 	b2RevoluteJoint* m_leftSmallLegJoint;
 	b2RevoluteJoint* m_rightFootLegJoint;
 	b2RevoluteJoint* m_leftFootLegJoint;
+   b2RevoluteJoint* m_shieldJoint;
 
 	bool	m_mainBoosterFire;
 	int	m_steeringBoosterFire;
@@ -72,31 +99,30 @@ private:
 
    oxygine::Resources* m_gameResources;
 
-   // Data below is depending on the mode
-   float m_boostInc;
-   float m_boostMaxMagnitude;
-   float m_steerImpulse;
-   float m_eveningMagnitude;
-   ModeAngles m_modeAngleGoals;
-
    SceneActor* m_sceneActor;
 
 
 public:
+
+   spShield m_shield;
+
+
 	LeapFrog(
       oxygine::Resources& gameResources, 
       SceneActor* sceneActor,
       b2World* world, 
       oxygine::Actor* actor, 
-      const oxygine::Vector2& pos, 
-      float scale);   // Indicates if the actor pointer implements the bounded bodies
+      const oxygine::Vector2& pos);   // Indicates if the actor pointer implements the bounded bodies
 	~LeapFrog();
 
    virtual CollisionEntityTypeEnum getEntityType(void);
 
+
+
    void hitByAsteroid(b2Contact* contact);
 
 	void goToMode(LeapFrogModeEnum mode);
+   void goToEnvironment(EnvironmentEnum env);
    void modeReached(void);
 	void fireMainBooster(bool fire);
 	void fireSteeringBooster(int dir); // -1 is counter clockwise, 1 is clockwise

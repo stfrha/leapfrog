@@ -14,9 +14,11 @@ DECLARE_SMART(Bullet, spBullet);
 class Bullet : public oxygine::ColorRectSprite, CollisionEntity, ActorToDie
 {
 private:
-   float m_bulletSpeed;
    int m_deathTime;
    SceneActor* m_sceneActor;
+
+   int m_debugTimeAtCreation;
+   int m_debugHistoryOfTime[10];
 
 public:
    Bullet(
@@ -26,6 +28,7 @@ public:
       const b2Vec2& pos,
       const float angle,
       float bulletSpeed,
+      b2Vec2& craftSpeed,
       int m_lifetime,
       bool bouncy);
 

@@ -21,7 +21,6 @@ private:
    std::vector<AsteroidSpawnInstruction>  m_asteroidSpawnList;
 
    FreeSpaceContactListener   m_contactListener;
-   Resources* m_gameResources;
 
 public:
 	FreeSpaceActor(oxygine::Resources& gameResources);

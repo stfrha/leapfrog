@@ -31,6 +31,9 @@ void onEvent(Event* ev)
    case SDL_SCANCODE_F2:
       mainActor->changeToMode(STE_FREE_SPACE);
       break;
+   case SDL_SCANCODE_F3:
+      mainActor->changeToMode(STE_ORBIT);
+      break;
    }
 }
 

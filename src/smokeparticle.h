@@ -5,14 +5,14 @@
 #include "scales.h"
 #include "physdispconvert.h"
 
-DECLARE_SMART(BlastParticle, spBlastParticle);
+DECLARE_SMART(SmokeParticle, spSmokeParticle);
 
-class BlastParticle : public oxygine::Sprite
+class SmokeParticle : public oxygine::Sprite
 {
 private:
 
 public:
-	BlastParticle(
+	SmokeParticle(
       oxygine::Resources* gameResources,
       const oxygine::Vector2& pos, 
       int m_lifetime, 

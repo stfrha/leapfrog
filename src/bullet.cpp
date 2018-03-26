@@ -11,9 +11,9 @@ Bullet::Bullet(
    const b2Vec2& pos,
    const float angle,
    float bulletSpeed,
+   b2Vec2& craftSpeed,
    int m_lifetime,
    bool bouncy) : 
-   m_bulletSpeed(bulletSpeed),
    m_sceneActor(sceneActor)
 {
    setSize(0.75f, 0.75f);
@@ -48,11 +48,17 @@ Bullet::Bullet(
 
    body->GetFixtureList()->SetUserData((CollisionEntity*)this);
    
-   b2Vec2 vel = b2Vec2(m_bulletSpeed * cos(angle), m_bulletSpeed * sin(angle));
+   b2Vec2 vel = b2Vec2(bulletSpeed * cos(angle), bulletSpeed * sin(angle));
+
+   vel += craftSpeed;
 
    body->SetLinearVelocity(vel);
 
-   m_deathTime = getTimeMS() + m_lifetime;
+   m_debugTimeAtCreation = getTimeMS();
+
+   m_debugHistoryOfTime[0] = m_debugTimeAtCreation;
+
+   m_deathTime = m_debugTimeAtCreation + m_lifetime;
 }
 
 CollisionEntityTypeEnum Bullet::getEntityType(void)
@@ -76,7 +82,7 @@ void Bullet::doUpdate(const oxygine::UpdateState& us)
 {
    if (us.time >= m_deathTime)
    {
-      atBulletDeath();
+      m_sceneActor->addMeToDeathList((ActorToDie*)this);
    }
 }
 

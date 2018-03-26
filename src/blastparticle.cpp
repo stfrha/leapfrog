@@ -1,60 +1,43 @@
-#include "flameparticle.h"
+#include "blastparticle.h"
 
 using namespace oxygine;
 
-FlameParticle::FlameParticle(
-   Resources& gameResources,
-   b2World* world,
-   const b2Vec2& pos,
+BlastParticle::BlastParticle(
+   oxygine::Resources* gameResources,
+   const Vector2& pos,
    int lifetime,
-   b2Vec2 impulseForce,
-   float radius)
+   float distance,
+   float particleSize)
 {
-   setResAnim(gameResources.getResAnim("flame_particle"));
-   setSize(radius, radius);
-   setPosition(PhysDispConvert::convert(pos, 1.0f));
+   setResAnim(gameResources->getResAnim("white_circle"));
+   setSize(particleSize, particleSize);
+   setPosition(pos);
    setAnchor(Vector2(0.5f, 0.5f));
 
-   spTween tranpTween = addTween(Actor::TweenAlpha(0), lifetime);
-   spTween scaleTween = addTween(Actor::TweenScale(0.25, 0.25), lifetime);
+   // Randomise value between 0 and 255
+   float color = static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / 255.0f));
 
-   scaleTween->setDoneCallback(CLOSURE(this, &FlameParticle::atParticleDeath));
+   setColor((unsigned int)color, (unsigned int)color, (unsigned int)color, 255);
 
-   b2BodyDef bodyDef;
-   bodyDef.type = b2_dynamicBody;
-   bodyDef.position = pos;
 
-   b2Body* body = world->CreateBody(&bodyDef);
+   // Generate goal position, lets sparkle 20 meters in random direction
 
-   setUserData(body);
+   // Randomise value between 0 and 2pi
+   float angle = static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / 2.0f / MATH_PI));
 
-   b2CircleShape shape;
-   shape.m_radius = 0.5f;
+   Vector2 v = Vector2(distance * cos(angle), distance * sin(angle));
+   
+   spTween posTween = addTween(Actor::TweenPosition(pos + v), lifetime);
+   spTween scaleTween = addTween(Actor::TweenScale(0.0f), lifetime);
 
-   b2FixtureDef fixtureDef;
-   fixtureDef.shape = &shape;
-   fixtureDef.density = 3.0f;
-   fixtureDef.friction = 0.3f;
-   fixtureDef.restitution = 0.5f;
-   fixtureDef.filter.groupIndex = -1;
-
-   body->CreateFixture(&fixtureDef);
-   body->SetUserData(this);
-
-   body->ApplyLinearImpulse(impulseForce, b2Vec2(0.5, 0.5), true);
+   posTween->setDoneCallback(CLOSURE(this, &BlastParticle::atParticleDeath));
 }
 
-void FlameParticle::doUpdate(const oxygine::UpdateState& us)
+void BlastParticle::doUpdate(const oxygine::UpdateState& us)
 {
 }
 
-void FlameParticle::atParticleDeath(oxygine::Event* event)
+void BlastParticle::atParticleDeath(oxygine::Event* event)
 {
-   // Now I'm suppose to comit suicide. How to deregister me from actor and world?
-   b2Body* myBody = (b2Body*)getUserData();
-
-   myBody->GetWorld()->DestroyBody(myBody);
-
    this->detach();
-
 }

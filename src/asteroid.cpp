@@ -93,17 +93,37 @@ Asteroid::Asteroid(
    // Randomise value between 0 and 2pi
    float angle = static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / 2.0f * MATH_PI));
 
-   // Randomise value between 1000 and 2000
-   float magnitude = static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / 1000.0f)) + 1000.0f;
+   float maxImp = 1000.0f;
+   float maxAng = 1000.0f;
+
+   switch (m_state)
+   {
+   case ASE_SMALL:
+      maxImp = 2000.0f;
+      maxAng = 1000.0f;
+      break;
+   case ASE_MIDDLE:
+      maxImp = 5000.0f;
+      maxAng = 3000.0f;
+      break;
+   case ASE_LARGE:
+      maxImp = 10000.0f;
+      maxAng = 20000.0f;
+      break;
+   }
+
+   // Randomise value between 0 and maxImp
+   float magnitude = static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / maxImp));
 
    b2Vec2 impulseForce = b2Vec2(magnitude * cos(angle), magnitude * sin(angle));
 
    body->ApplyLinearImpulseToCenter(impulseForce, true);
 
-   // Randomise value between 1000 and 2000
-   float angImpulse = static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / 1000.0f)) + 1000.0f;
+   // Randomise value between 0 and maxAng
+   float angImpulse = static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / maxAng));
 
-   body->ApplyAngularImpulse(angImpulse, true);
+
+   body->ApplyAngularImpulse(angImpulse * 10.0f, true);
 }
 
 CollisionEntityTypeEnum Asteroid::getEntityType(void)
@@ -116,14 +136,17 @@ void Asteroid::killActor(void)
    atDeathOfAsteroid();
 }
 
-void Asteroid::hitByBullet(b2Contact* contact)
+bool Asteroid::hitByBullet(b2Contact* contact)
 {
+   bool shattered = false;
+
    // Take damage
    m_damage += 1;
 
    if (m_state == ASE_SMALL && m_damage >= 1)
    {
       m_sceneActor->addMeToDeathList((ActorToDie*)this);
+      shattered = true;
    }
 
    if (m_state == ASE_MIDDLE && m_damage >= 2)
@@ -134,6 +157,7 @@ void Asteroid::hitByBullet(b2Contact* contact)
       m_freeSpaceActor->addAsteroidSpawnInstruction(AsteroidSpawnInstruction(3, ASE_SMALL, b->GetPosition()));
 
       m_sceneActor->addMeToDeathList((ActorToDie*)this);
+      shattered = true;
    }
 
    if (m_state == ASE_LARGE && m_damage >= 4)
@@ -144,9 +168,11 @@ void Asteroid::hitByBullet(b2Contact* contact)
       m_freeSpaceActor->addAsteroidSpawnInstruction(AsteroidSpawnInstruction(3, ASE_MIDDLE, b->GetPosition()));
 
       m_sceneActor->addMeToDeathList((ActorToDie*)this);
+
+      shattered = true;
    }
 
-
+   return shattered;
 }
 
 void Asteroid::hitByLepfrog(b2Contact* contact)

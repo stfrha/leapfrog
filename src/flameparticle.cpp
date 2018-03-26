@@ -1,4 +1,5 @@
 #include "flameparticle.h"
+#include "smokeparticle.h"
 
 using namespace oxygine;
 
@@ -8,7 +9,8 @@ FlameParticle::FlameParticle(
    const b2Vec2& pos,
    int lifetime,
    b2Vec2 impulseForce,
-   float radius)
+   float radius) :
+   m_gameResources(&gameResources)
 {
    setResAnim(gameResources.getResAnim("flame_particle"));
    setSize(radius, radius);
@@ -41,7 +43,14 @@ FlameParticle::FlameParticle(
    body->CreateFixture(&fixtureDef);
    body->SetUserData(this);
 
+   body->GetFixtureList()->SetUserData((CollisionEntity*)this);
+
    body->ApplyLinearImpulse(impulseForce, b2Vec2(0.5, 0.5), true);
+}
+
+CollisionEntityTypeEnum FlameParticle::getEntityType(void)
+{
+   return CET_FLAME_PARTICLE;
 }
 
 void FlameParticle::doUpdate(const oxygine::UpdateState& us)
@@ -50,11 +59,18 @@ void FlameParticle::doUpdate(const oxygine::UpdateState& us)
 
 void FlameParticle::atParticleDeath(oxygine::Event* event)
 {
+   // Create a smoke particle
+   //spSmokeParticle smoke = new SmokeParticle(m_gameResources, getPosition(), 1000.0f, 0.0f, 10.0f);
+   //smoke->attachTo(getParent());
+
+
    // Now I'm suppose to comit suicide. How to deregister me from actor and world?
    b2Body* myBody = (b2Body*)getUserData();
 
    myBody->GetWorld()->DestroyBody(myBody);
 
    this->detach();
+
+
 
 }

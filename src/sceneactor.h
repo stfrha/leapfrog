@@ -6,17 +6,27 @@
 #include "physdispconvert.h"
 #include "actortodie.h"
 
+enum PanorateModeEnum
+{
+   PME_TOP,
+   PME_CENTER,
+   PME_BOTTOM,
+   PME_TOP_LEFT
+};
+
 DECLARE_SMART(SceneActor, spSceneActor);
 
 class SceneActor : public oxygine::Actor
 {
 protected:
+   oxygine::Resources * m_gameResources;
    float	m_zoomScale;
    float	m_stageToViewPortScale;
    float	m_physToStageScale;
    b2World * m_world;
    spLeapFrog  m_leapfrog;
    std::vector<ActorToDie*> m_deathList;
+   PanorateModeEnum m_panorateMode;
 
 
 public:
@@ -24,6 +34,10 @@ public:
    ~SceneActor();
 
    b2World* GetWorld(void);
+   Resources* getResources(void);
+
+   void setPanorateMode(PanorateModeEnum mode);
+
    void addMeToDeathList(ActorToDie* actor);
    void addBlast();
 

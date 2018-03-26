@@ -5,21 +5,19 @@
 #include "scales.h"
 #include "physdispconvert.h"
 
-DECLARE_SMART(BlastParticle, spBlastParticle);
+DECLARE_SMART(Shield, spShield);
 
-class BlastParticle : public oxygine::Sprite
+class Shield : public oxygine::Sprite
 {
 private:
 
 public:
-	BlastParticle(
+	Shield(
       oxygine::Resources* gameResources,
       const oxygine::Vector2& pos, 
-      int m_lifetime, 
-      float distance, 
-      float particleSize);
+      float angle);
 
 protected:
 	void doUpdate(const oxygine::UpdateState& us);
-   void atParticleDeath(oxygine::Event* event);
+   void atShieldComplete(oxygine::Event* event);
 };

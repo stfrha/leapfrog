@@ -6,9 +6,12 @@
 using namespace oxygine;
 
 FreeSpaceActor::FreeSpaceActor(Resources& gameResources) :
-	SceneActor(gameResources),
-   m_gameResources(&gameResources)
+	SceneActor(gameResources)
 {
+   setPanorateMode(PME_CENTER);
+
+   m_contactListener.setSceneActor((SceneActor*)this);
+
    // I should probably load resources that are uniuqe to the free space mode here
 
    m_world->SetGravity(b2Vec2(0.0f, 0.0f));
@@ -23,11 +26,14 @@ FreeSpaceActor::FreeSpaceActor(Resources& gameResources) :
    m_leapfrog->setBoundedWallsActor(this);
 
    m_leapfrog->goToMode(LFM_DEEP_SPACE);
+   m_leapfrog->goToEnvironment(ENV_DEEP_SPACE);
+
    addBoundingBody((Actor*) m_leapfrog.get());
 
    addAsteroidSpawnInstruction(AsteroidSpawnInstruction(1, ASE_SMALL, b2Vec2(550.0f, 250.0f)));
    addAsteroidSpawnInstruction(AsteroidSpawnInstruction(1, ASE_MIDDLE, b2Vec2(450.0f, 250.0f)));
    addAsteroidSpawnInstruction(AsteroidSpawnInstruction(1, ASE_LARGE, b2Vec2(500.0f, 230.0f)));
+   addAsteroidSpawnInstruction(AsteroidSpawnInstruction(15, ASE_LARGE, b2Vec2(100.0f, 100.0f)));
 
    //spAsteroid asteroid1 = new Asteroid(gameResources, (SceneActor*)this, m_world, b2Vec2(550.0f, 250.0f), ASE_SMALL, this);
    //addChild(asteroid1);
@@ -111,13 +117,13 @@ void FreeSpaceActor::spawnAsteroids(void)
 
 void FreeSpaceActor::generateBackground(Resources& gameResources)
 {
-   for (int x = 0; x < 4; x++)
+   for (int x = 0; x < 5; x++)
    {
-      for (int y = 0; y < 2; y++)
+      for (int y = 0; y < 3; y++)
       {
          spSprite background = new Sprite();
          background->setResAnim(gameResources.getResAnim("starfield"));
-         background->setPosition(-12.0f + 256.0f * x, -12.0f + 256.0f * y);
+         background->setPosition(-150.0f + 256.0f * x, -150.0f + 256.0f * y);
          background->setSize(512.0f, 512.0f);
          background->setScale(0.5f);
          background->attachTo(this);

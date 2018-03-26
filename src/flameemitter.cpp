@@ -38,6 +38,18 @@ void FlameEmitter::stopEmitter(void)
    m_emit = false;
 }
 
+void FlameEmitter::setParameters(float intensity,
+   float lifetime,
+   float impulseMagnitude,
+   float radius)
+{
+   m_intensity = intensity;
+   m_lifetime = lifetime;
+   m_impulseMagnitude = impulseMagnitude;
+   m_radius = radius;
+}
+
+
 
 void FlameEmitter::doUpdate(const oxygine::UpdateState& us)
 {

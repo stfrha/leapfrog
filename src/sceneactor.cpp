@@ -5,10 +5,12 @@
 using namespace oxygine;
 
 SceneActor::SceneActor(Resources& gameResources) :
+   m_gameResources(&gameResources),
 	m_world(NULL),
 	m_zoomScale(0.40f),
 	m_stageToViewPortScale(m_zoomScale * Scales::c_stageToViewPortScale),
-	m_physToStageScale(1.0f)
+	m_physToStageScale(1.0f),
+   m_panorateMode(PME_CENTER)
 {
 	Point size = Point(1000.0f, 500.0f);
 	setSize(size);
@@ -28,9 +30,27 @@ b2World* SceneActor::GetWorld(void)
    return m_world;
 }
 
+Resources* SceneActor::getResources(void)
+{
+   return m_gameResources;
+}
+
+void SceneActor::setPanorateMode(PanorateModeEnum mode)
+{
+   m_panorateMode = mode;
+}
+
 void SceneActor::addMeToDeathList(ActorToDie* actor)
 {
-   m_deathList.push_back(actor);
+
+   if (std::find(m_deathList.begin(), m_deathList.end(), actor) != m_deathList.end())
+   {
+      // Attempted to add same object twice
+   }
+   else
+   {
+      m_deathList.push_back(actor);
+   }
 }
 
 void SceneActor::doUpdate(const UpdateState& us)
@@ -113,7 +133,17 @@ void SceneActor::doUpdate(const UpdateState& us)
 		{
 			const b2Vec2& pos = body->GetPosition();
 			actor->setPosition(PhysDispConvert::convert(pos, Scales::c_physToStageScale));
-			actor->setRotation(body->GetAngle());
+
+         // The sheild direction should not be set here, it
+         // will change angle at collisions
+         if (actor != (Actor*)(m_leapfrog->m_shield.get()))
+         {
+            actor->setRotation(body->GetAngle());
+         }
+         else
+         {
+            actor->setRotation(((Shield*)actor)->getAngle());
+         }
 
 			////remove fallen bodies
 			//if (actor->getY() > getHeight() + 50)
@@ -136,7 +166,28 @@ void SceneActor::doUpdate(const UpdateState& us)
 	// Frog position in stage coordinates
 	Vector2 frogPos = m_leapfrog->getPosition();
 
-	Vector2 stagePos = Vector2(vpSize.x / 2, vpSize.y / 2) - frogPos * m_stageToViewPortScale;
+   Vector2 wantedVpPos = Vector2(0.0f, 0.0f);
+   
+   if (m_panorateMode == PME_CENTER)
+   {
+      wantedVpPos = Vector2(vpSize.x / 2, vpSize.y / 2);
+   }
+   else if (m_panorateMode == PME_TOP)
+   { 
+      wantedVpPos = Vector2(vpSize.x / 2, vpSize.y * 0.1f);
+   }
+   else if (m_panorateMode == PME_BOTTOM)
+   {
+      wantedVpPos = Vector2(vpSize.x / 2, vpSize.y * 0.9f);
+   }
+   else if (m_panorateMode == PME_TOP_LEFT)
+   {
+      wantedVpPos = Vector2(vpSize.x * 0.1f, vpSize.y * 0.1f);
+   }
+
+
+   
+	Vector2 stagePos = wantedVpPos - frogPos * m_stageToViewPortScale;
 
 	setPosition(stagePos);
 }
@@ -154,8 +205,11 @@ void SceneActor::sweepKillList(void)
 
 void SceneActor::createLeapFrog(Resources& gameResources)
 {
-   spLeapFrog leapFrog = new LeapFrog(gameResources, this, m_world, (Actor*)this, getSize() / 2.0f, 1.0f);
+   spLeapFrog leapFrog = new LeapFrog(gameResources, this, m_world, (Actor*)this, getSize() / 2.0f);
 
    addChild(leapFrog);
    m_leapfrog = leapFrog;
+
+   // Here we should attach the shield to get it above the leapfrog
+   addChild(m_leapfrog->m_shield);
 }

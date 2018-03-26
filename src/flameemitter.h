@@ -51,7 +51,10 @@ public:
       float radius);
 	void startEmitter(void);
 	void stopEmitter(void);
-
+   void setParameters(float intensity,
+      float lifetime,
+      float impulseMagnitude,
+      float radius);
 
 protected:
 	void doUpdate(const oxygine::UpdateState& us);

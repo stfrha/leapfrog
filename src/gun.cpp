@@ -68,6 +68,8 @@ void Gun::doUpdate(const oxygine::UpdateState& us)
          float bodyAngle = m_emitterBody->GetAngle();
          float emitAngle = bodyAngle + m_emittAngle;
 
+         b2Vec2 craftSpeed = m_emitterBody->GetLinearVelocity();
+
          spBullet bullet = new Bullet(
             *m_gameResources,
             m_sceneActor,
@@ -75,6 +77,7 @@ void Gun::doUpdate(const oxygine::UpdateState& us)
             emitPos,
             emitAngle,
             m_bulletSpeed,
+            craftSpeed,
             m_lifetime,
             false);
 

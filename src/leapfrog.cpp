@@ -6,6 +6,7 @@
 
 #include "leapfrog.h"
 #include "leapfrogparts.h"
+#include "shield.h"
 
 using namespace oxygine;
 
@@ -34,15 +35,14 @@ LeapFrog::LeapFrog(
    SceneActor* sceneActor,
    b2World* world,
    Actor* actor, 
-   const Vector2& pos, 
-   float scale) :
+   const Vector2& pos) :
    m_world(world),
    m_physDispScale(10.0f),
    m_boostMagnuitude(0.0f),
    m_steerMagnitude(0.0f),
    m_boostInc(900.0f),
    m_boostMaxMagnitude(3000.0f),
-   m_steerImpulse(20000.0f),
+   m_steerMaxMagnitude(10000.0f),
    m_eveningMagnitude(10000.0f),
    m_boostFireLastUpdate(false),
    m_rightSteerFireLastUpdate(false),
@@ -89,7 +89,7 @@ LeapFrog::LeapFrog(
 
 	b2FixtureDef fixtureDef;
 	fixtureDef.shape = &polyShape;
-	fixtureDef.density = 5.0f;
+	fixtureDef.density = 3.0f;
 	fixtureDef.friction = 1.3f;
 	fixtureDef.filter.groupIndex = -1;
 
@@ -130,6 +130,9 @@ LeapFrog::LeapFrog(
 
 	spLfLeftSteer lfLeftSteer = new LfLeftSteer(gameResources, world, pos + Vector2(-3.9, 17.5), 1, -1);
 	actor->addChild(lfLeftSteer);
+
+   m_shield = new Shield(gameResources, world, pos);
+   // Shield will be attached as a post-production part (createLeapFrog() in sceneactor.cpp)
 
 	// Main Body and booster joint
 	b2WeldJointDef	boostJointDef;
@@ -230,13 +233,25 @@ LeapFrog::LeapFrog(
 	leftSteerJointDef.collideConnected = false;
 	m_leftSteerJoint = (b2WeldJoint*)world->CreateJoint(&leftSteerJointDef);
 
+   // Shield only exists in deep space but for simplicity it is always
+   // there. In deep space it gets its normal size but is other 
+   // environments it is turned very small
+   b2RevoluteJointDef shieldJointDef;
+   shieldJointDef.bodyA = m_mainBody;
+   shieldJointDef.bodyB = m_shield->m_body;
+   shieldJointDef.localAnchorA.Set(0.0f, 1.0f);
+   shieldJointDef.localAnchorB.Set(0.0f, 0.0f);
+   shieldJointDef.collideConnected = false;
+   shieldJointDef.enableMotor = false;
+   m_shieldJoint = (b2RevoluteJoint*)m_world->CreateJoint(&shieldJointDef);
+
    // Add main engine particle system
    m_boosterFlame = new FlameEmitter(
       gameResources, 
       lfBoost->m_body, 
       b2Vec2(0.0f, 3.0f), 
       90.0f * MATH_PI / 180.0f, 
-      4.0f, 
+      4.0f,                            // Emitter width
       0,                               // Intensity
       250,                             // Lifetime [ms]
       70.0f,                           // Impulse magnitude
@@ -280,7 +295,7 @@ LeapFrog::LeapFrog(
       b2Vec2(0.0f, -4.0f),             // Origin
       3.0f * MATH_PI / 2.0f,           // Angle 
       4,                               // Intensity [bullets per second]
-      250.0f,                         // Lifetime [ms]
+      250.0f,                          // Lifetime [ms]
       1000.0f,                         // Bullet speed
       false);                          // Bouncy
 
@@ -308,8 +323,12 @@ void LeapFrog::doUpdate(const UpdateState &us)
 {
    float angle = m_mainBody->GetAngle();
    b2Vec2 boostForce = b2Vec2(m_boostMagnuitude * sin(angle), -m_boostMagnuitude * cos(angle));
-   
-   m_mainBody->ApplyTorque(m_steerMagnitude, true);
+
+   if (m_environment != ENV_DEEP_SPACE)
+   {
+      m_mainBody->ApplyTorque(m_steerMagnitude, true);
+   }
+
    m_mainBody->ApplyForceToCenter(boostForce, true);
 
    setJointMotor(m_rightBigLegJoint, m_modeAngleGoals.m_rightBigJointAngle, 15 * MATH_PI / 180);
@@ -384,10 +403,6 @@ void LeapFrog::goToMode(LeapFrogModeEnum mode)
    switch (mode)
    {
    case LFM_LANDING:
-      m_boostInc = 900.0f;
-      m_boostMaxMagnitude = 3000.0f;
-      m_steerImpulse = 20000.0f;
-      m_eveningMagnitude = 10000.0f;
 
       m_modeAngleGoals = ModeAngles(
          -65 * MATH_PI / 180, 65 * MATH_PI / 180,
@@ -397,10 +412,6 @@ void LeapFrog::goToMode(LeapFrogModeEnum mode)
       break;
 
    case LFM_DEEP_SPACE:
-      m_boostInc = 10000.0f;
-      m_boostMaxMagnitude = 30000.0f;
-      m_steerImpulse = 60000.0f;
-      m_eveningMagnitude = 60000.0f;
 
       m_modeAngleGoals = ModeAngles(
          -187.5 * MATH_PI / 180, -3.5 * MATH_PI / 180,
@@ -409,10 +420,6 @@ void LeapFrog::goToMode(LeapFrogModeEnum mode)
 
       break;
    case LFM_ORBIT:
-      m_boostInc = 900.0f;
-      m_boostMaxMagnitude = 3000.0f;
-      m_steerImpulse = 20000.0f;
-      m_eveningMagnitude = 10000.0f;
 
       m_modeAngleGoals = ModeAngles(
          -65 * MATH_PI / 180, 65 * MATH_PI / 180,
@@ -422,10 +429,6 @@ void LeapFrog::goToMode(LeapFrogModeEnum mode)
       break;
 
    case LFM_REENTRY:
-      m_boostInc = 900.0f;
-      m_boostMaxMagnitude = 3000.0f;
-      m_steerImpulse = 20000.0f;
-      m_eveningMagnitude = 10000.0f;
 
       m_modeAngleGoals = ModeAngles(
          -92 * MATH_PI / 180, -156.5 * MATH_PI / 180,
@@ -435,15 +438,72 @@ void LeapFrog::goToMode(LeapFrogModeEnum mode)
       break;
 
    case LFM_RESET:
-      m_boostInc = 900.0f;
-      m_boostMaxMagnitude = 3000.0f;
-      m_steerImpulse = 20000.0f;
-      m_eveningMagnitude = 10000.0f;
 
       m_modeAngleGoals = ModeAngles(9.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f);
 
       break;
    }
+}
+
+void LeapFrog::goToEnvironment(EnvironmentEnum env)
+{
+   m_environment = env;
+
+   switch (env)
+   {
+   case ENV_DEEP_SPACE:
+      m_boostInc = 10000.0f;
+      m_boostMaxMagnitude = 30000.0f;
+      m_steerMaxMagnitude = 30000.0f;;
+      m_eveningMagnitude = 60000.0f;
+      m_maxVelocity = 200.0f;    // [m/s]
+      m_maxAngularVelocity = MATH_PI; // [rad/s]
+      m_boosterFlame->setParameters(0, 500, 90.0f, 10.0f);
+      m_shield->m_body->SetActive(true);
+
+      break;
+
+   case ENV_GROUND:
+      m_boostInc = 900.0f;
+      m_boostMaxMagnitude = 3000.0f;
+      m_steerMaxMagnitude = 40000.0f;;
+      m_eveningMagnitude = 10000.0f;
+      m_maxVelocity = 400.0f;    // [m/s]
+      m_boosterFlame->setParameters(0, 250, 70.0f, 10.0f);
+      m_shield->m_body->SetActive(false);
+      break;
+
+   case ENV_ORBIT:
+      m_boostInc = 900.0f;
+      m_boostMaxMagnitude = 3000.0f;
+      m_steerMaxMagnitude = 30000.0f;;
+      m_eveningMagnitude = 10000.0f;
+      m_maxVelocity = 400.0f;    // [m/s]
+      m_boosterFlame->setParameters(0, 250, 70.0f, 10.0f);
+      m_shield->m_body->SetActive(false);
+      break;
+
+   case ENV_REENTRY:
+      m_boostInc = 900.0f;
+      m_boostMaxMagnitude = 3000.0f;
+      m_steerMaxMagnitude = 30000.0f;;
+      m_eveningMagnitude = 10000.0f;
+      m_maxVelocity = 400.0f;    // [m/s]
+      m_boosterFlame->setParameters(0, 250, 70.0f, 10.0f);
+      m_shield->m_body->SetActive(false);
+      break;
+
+   case ENV_LAUNCH:
+      m_boostInc = 900.0f;
+      m_boostMaxMagnitude = 3000.0f;
+      m_steerMaxMagnitude = 30000.0f;;
+      m_eveningMagnitude = 10000.0f;
+      m_maxVelocity = 400.0f;    // [m/s]
+      m_boosterFlame->setParameters(0, 250, 70.0f, 10.0f);
+      m_shield->m_body->SetActive(false);
+      break;
+   }
+
 }
 
 void LeapFrog::modeReached(void)
@@ -483,94 +543,237 @@ void LeapFrog::modeReached(void)
 
 void LeapFrog::fireMainBooster(bool fire)
 {
-	if (fire)
-	{
+   // Handle booster flame particles
+
+   if (fire)
+   {
       if (m_boostFireLastUpdate == false)
       {
          // Turn emitter on here
          m_boosterFlame->startEmitter();
       }
-
-      if (m_mode == LFM_DEEP_SPACE)
-      {
-         m_mainBody->SetLinearDamping(0.0f);
-      }
-
-
-		m_boostMagnuitude += m_boostInc;
-
-		if (m_boostMagnuitude > m_boostMaxMagnitude)
-		{
-			m_boostMagnuitude = m_boostMaxMagnitude;
-		}
-      m_boostFireLastUpdate = true;
-	}
-	else
-	{
+   }
+   else
+   {
       if (m_boostFireLastUpdate == true)
       {
          // Turn emitter off here
          m_boosterFlame->stopEmitter();
       }
-
-      if (m_mode == LFM_DEEP_SPACE)
-      { 
-         m_mainBody->SetLinearDamping(2.0f);
-      }
-
-      m_boostMagnuitude = 0;
-      m_boostFireLastUpdate = false;
    }
 
+
+   // Handle forces of Leapfrog
+   // This is done differently for Deep-space and ground environment
+   // In Deep space we accellerate to a maximum speed and decellerate
+   // fast when booster is turned off.
+   // Steering is fast and near instantaneous and stop turning directly
+
+   // In ground mode we apply force independently of the velocity
+   // and rotation is slowly decellerating
+
+   if (m_environment == ENV_DEEP_SPACE)
+   {
+      float vel = m_mainBody->GetLinearVelocity().Length();
+
+      // We start damping when booster is released
+      // and remove damping when it is fired
+      if (fire)
+      {
+         if (m_boostFireLastUpdate == false)
+         {
+            // Turn damping off
+            m_mainBody->SetLinearDamping(0.0f);
+         }
+      }
+      else
+      {
+         if (m_boostFireLastUpdate == true)
+         {
+            // Turn damping on
+            m_mainBody->SetLinearDamping(2.0f);
+         }
+      }
+
+      if (fire)
+      {
+         // Increment force with m_boostInc until more than
+         // m_boostMaxMagnitude and remain this max magnitude
+         // force until speed is more than 90 of max speed, 
+         // drop force then. Then, when no boost fire, 
+         // break with a negative force linear with speed
+         // making it regulate itself to stand-still
+         if (vel < m_maxVelocity * 0.95f)
+         {
+            m_boostMagnuitude += m_boostInc;
+
+            if (m_boostMagnuitude > m_boostMaxMagnitude)
+            {
+               m_boostMagnuitude = m_boostMaxMagnitude;
+            }
+         }
+      }
+      else
+      {
+         m_boostMagnuitude = 0;
+         //m_boostMagnuitude = vel * -m_boostInc;
+      }
+
+   }
+   else if (m_environment == ENV_GROUND)
+   {
+      if (fire)
+      {
+         m_boostMagnuitude += m_boostInc;
+         if (m_boostMagnuitude > m_boostMaxMagnitude)
+         {
+            m_boostMagnuitude = m_boostMaxMagnitude;
+         }
+      }
+      else
+      {
+         m_boostMagnuitude = 0;
+      }
+   }
+
+   if (fire)
+   {
+      m_boostFireLastUpdate = true;
+   }
+   else
+   {
+      m_boostFireLastUpdate = false;
+   }
 }
 
 void LeapFrog::fireSteeringBooster(int dir)
 {
-	if (dir == -1)
-	{
+   // Handle booster flame particles
+
+   if (dir == -1)
+   {
       m_leftSteerFlame->stopEmitter();
 
       if (m_rightSteerFireLastUpdate == false)
       {
          m_rightSteerFlame->startEmitter();
       }
-
-      m_steerMagnitude = -m_steerImpulse;
-      
-      m_rightSteerFireLastUpdate = true;
-	}
-	else if (dir == 1)
-	{
+   }
+   else if (dir == 1)
+   {
       m_rightSteerFlame->stopEmitter();
-      
+
       if (m_leftSteerFireLastUpdate == false)
       {
          m_leftSteerFlame->startEmitter();
       }
-
-      m_steerMagnitude = m_steerImpulse;
-
-      m_leftSteerFireLastUpdate = true;
    }
-	else if (dir == 0)
-	{
-		float angleVel = m_mainBody->GetAngularVelocity();
-
+   else if (dir == 0)
+   {
       m_rightSteerFlame->stopEmitter();
       m_leftSteerFlame->stopEmitter();
-
-		if (angleVel > 0)
-		{
-			m_steerMagnitude = -m_eveningMagnitude;
-		}
-		else if (angleVel < 0)
-		{
-			m_steerMagnitude = m_eveningMagnitude;
-		}
-
-      m_rightSteerFireLastUpdate = false;
-      m_leftSteerFireLastUpdate = false;
    }
+
+   if (m_environment == ENV_DEEP_SPACE)
+   {
+      // In deep space we accellerate fast to a maximum
+      // angular speed and hold that speed until steering
+      // is released. We the immediately stop turning
+      if (dir == -1)
+      {
+         m_mainBody->SetAngularVelocity(-m_maxAngularVelocity);
+         //if (vel > m_maxAngularVelocity * 0.95f)
+         //{
+         //   m_steerMagnitude += m_steerInc;
+
+         //   if (m_steerMagnitude > m_steerMaxMagnitude)
+         //   {
+         //      m_steerMagnitude = m_steerMaxMagnitude;
+         //   }
+         //}
+
+         //m_steerForce = -m_steerMagnitude;
+      }
+      else if (dir == 1)
+      {
+         m_mainBody->SetAngularVelocity(m_maxAngularVelocity);
+      }
+      else
+      {
+         m_mainBody->SetAngularVelocity(0.0f);
+      }
+   }
+   else if (m_environment == ENV_GROUND)
+   {
+      if (dir == -1)
+      {
+         m_steerMagnitude = -m_steerMaxMagnitude;
+      }
+      else if (dir == 1)
+      {
+         m_steerMagnitude = m_steerMaxMagnitude;
+      }
+      else if (dir == 0)
+      {
+         float angleVel = m_mainBody->GetAngularVelocity();
+
+         if (angleVel > 0)
+         {
+            m_steerMagnitude = -m_eveningMagnitude;
+         }
+         else if (angleVel < 0)
+         {
+            m_steerMagnitude = m_eveningMagnitude;
+         }
+      }
+   }
+
+
+   //if (dir == -1)
+   //{
+   //   m_leftSteerFlame->stopEmitter();
+
+   //   if (m_rightSteerFireLastUpdate == false)
+   //   {
+   //      m_rightSteerFlame->startEmitter();
+   //   }
+
+   //   m_steerMagnitude = -m_steerImpulse;
+
+   //   m_rightSteerFireLastUpdate = true;
+   //}
+   //else if (dir == 1)
+   //{
+   //   m_rightSteerFlame->stopEmitter();
+
+   //   if (m_leftSteerFireLastUpdate == false)
+   //   {
+   //      m_leftSteerFlame->startEmitter();
+   //   }
+
+   //   m_steerMagnitude = m_steerImpulse;
+
+   //   m_leftSteerFireLastUpdate = true;
+   //}
+   //else if (dir == 0)
+   //{
+   //   float angleVel = m_mainBody->GetAngularVelocity();
+
+   //   m_rightSteerFlame->stopEmitter();
+   //   m_leftSteerFlame->stopEmitter();
+
+   //   if (angleVel > 0)
+   //   {
+   //      m_steerMagnitude = -m_eveningMagnitude;
+   //   }
+   //   else if (angleVel < 0)
+   //   {
+   //      m_steerMagnitude = m_eveningMagnitude;
+   //   }
+
+   //   m_rightSteerFireLastUpdate = false;
+   //   m_leftSteerFireLastUpdate = false;
+   //}
 
 }
 

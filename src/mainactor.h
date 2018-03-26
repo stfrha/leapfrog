@@ -3,11 +3,13 @@
 #include "oxygine-framework.h"
 #include "landingactor.h"
 #include "freespaceactor.h"
+#include "planetactor.h"
 
 enum SceneTypeEnum
 {
    STE_LANDING,
-   STE_FREE_SPACE
+   STE_FREE_SPACE,
+   STE_ORBIT
 };
 
 //DECLARE_SMART is helper, it does forward declaration and declares intrusive_ptr typedef for your class
@@ -16,8 +18,9 @@ DECLARE_SMART(MainActor, spMainActor)
 class MainActor : public oxygine::Actor
 {
 private:
-	spLandingActor m_landingActor;
-   spFreeSpaceActor m_freeSpaceActor;
+	//spLandingActor m_landingActor;
+ //  spFreeSpaceActor m_freeSpaceActor;
+ //  spPlanetActor m_planetActor;
 
 	//it is our resources
 	//in real project you would have more than one Resources declarations.
