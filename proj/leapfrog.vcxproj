@@ -163,6 +163,8 @@
     <ClCompile Include="..\..\Box2D\Box2D\Box2D\Dynamics\Joints\b2WheelJoint.cpp" />
     <ClCompile Include="..\..\Box2D\Box2D\Box2D\Rope\b2Rope.cpp" />
     <ClCompile Include="..\src\asteroid.cpp" />
+    <ClCompile Include="..\src\blastemitter.cpp" />
+    <ClCompile Include="..\src\blastparticle.cpp" />
     <ClCompile Include="..\src\Box2DDebugDraw.cpp" />
     <ClCompile Include="..\src\bullet.cpp" />
     <ClCompile Include="..\src\flameemitter.cpp" />
@@ -175,9 +177,14 @@
     <ClCompile Include="..\src\landingactor.cpp" />
     <ClCompile Include="..\src\leapfrog.cpp" />
     <ClCompile Include="..\src\main.cpp" />
+    <ClCompile Include="..\src\marker.cpp" />
     <ClCompile Include="..\src\physdispconvert.cpp" />
+    <ClCompile Include="..\src\planetactor.cpp" />
+    <ClCompile Include="..\src\reentrysceneactor.cpp" />
     <ClCompile Include="..\src\scales.cpp" />
     <ClCompile Include="..\src\sceneactor.cpp" />
+    <ClCompile Include="..\src\shield.cpp" />
+    <ClCompile Include="..\src\smokeparticle.cpp" />
     <ClCompile Include="..\src\softboundary.cpp" />
     <ClCompile Include="..\src\static.cpp" />
   </ItemGroup>
@@ -231,6 +238,8 @@
     <ClInclude Include="..\..\Box2D\Box2D\Box2D\Rope\b2Rope.h" />
     <ClInclude Include="..\src\actortodie.h" />
     <ClInclude Include="..\src\asteroid.h" />
+    <ClInclude Include="..\src\blastemitter.h" />
+    <ClInclude Include="..\src\blastparticle.h" />
     <ClInclude Include="..\src\bullet.h" />
     <ClInclude Include="..\src\collisionentity.h" />
     <ClInclude Include="..\src\flameemitter.h" />
@@ -242,14 +251,16 @@
     <ClInclude Include="..\src\mainactor.h" />
     <ClInclude Include="..\src\landingactor.h" />
     <ClInclude Include="..\src\leapfrog.h" />
+    <ClInclude Include="..\src\marker.h" />
     <ClInclude Include="..\src\physdispconvert.h" />
+    <ClInclude Include="..\src\planetactor.h" />
+    <ClInclude Include="..\src\reentrysceneactor.h" />
     <ClInclude Include="..\src\scales.h" />
     <ClInclude Include="..\src\sceneactor.h" />
+    <ClInclude Include="..\src\shield.h" />
+    <ClInclude Include="..\src\smokeparticle.h" />
     <ClInclude Include="..\src\softboundary.h" />
     <ClInclude Include="..\src\static.h" />
-  </ItemGroup>
-  <ItemGroup>
-    <Image Include="..\data\images\leapfrog_body.png" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

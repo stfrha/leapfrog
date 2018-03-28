@@ -13,7 +13,19 @@
 		<image file="lf_left_steer.png"/>		
 		<image file="ground.png"/>		
 		<image file="flame_particle.png"/>		
+		<image file="white_circle.png"/>	
+		<image file="shield_exciter.png" cols = "11" />
+		<image file="planet_mask.png"/>	
+		<image file="trajectory.png"/>	
+		<image file="predicted_site.png"/>	
+		<image file="lf_position.png"/>	
 	</atlas>
+	<atlas clamp2edge="false"> 
+		<image file="markers.png" trim="false" extend="false"/>
+	</atlas>	
+	<atlas clamp2edge="false"> 
+		<image file="planet_rock.png" trim="false" extend="false"/>
+	</atlas>	
 	<atlas clamp2edge="false"> 
 		<image file="crater_rock.png" trim="false" extend="false"/>
 	</atlas>	

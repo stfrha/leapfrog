@@ -184,12 +184,13 @@ void SceneActor::doUpdate(const UpdateState& us)
    {
       wantedVpPos = Vector2(vpSize.x * 0.1f, vpSize.y * 0.1f);
    }
-
-
    
-	Vector2 stagePos = wantedVpPos - frogPos * m_stageToViewPortScale;
+   if (m_panorateMode != PME_FIX)
+   {
+      Vector2 stagePos = wantedVpPos - frogPos * m_stageToViewPortScale;
 
-	setPosition(stagePos);
+      setPosition(stagePos);
+   }
 }
 
 void SceneActor::sweepKillList(void)

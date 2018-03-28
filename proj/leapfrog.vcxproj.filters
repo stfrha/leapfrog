@@ -40,6 +40,9 @@
     <Filter Include="Source Files\Box2d\Dynamics\Joints">
       <UniqueIdentifier>{0006bd68-da32-4d0a-b1eb-b386657cf082}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Particles">
+      <UniqueIdentifier>{89f9327f-4ec7-44e2-92db-d98913c5e7f2}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\src\main.cpp">
@@ -204,12 +207,6 @@
     <ClCompile Include="..\src\mainactor.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\flameparticle.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\flameemitter.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\src\sceneactor.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -233,6 +230,33 @@
     </ClCompile>
     <ClCompile Include="..\src\freespacecontactlistener.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\shield.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\marker.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\planetactor.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\reentrysceneactor.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\blastemitter.cpp">
+      <Filter>Particles</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\blastparticle.cpp">
+      <Filter>Particles</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\flameemitter.cpp">
+      <Filter>Particles</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\flameparticle.cpp">
+      <Filter>Particles</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\smokeparticle.cpp">
+      <Filter>Particles</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -395,12 +419,6 @@
     <ClInclude Include="..\src\mainactor.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\flameparticle.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\flameemitter.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\src\sceneactor.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -431,10 +449,32 @@
     <ClInclude Include="..\src\actortodie.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-  </ItemGroup>
-  <ItemGroup>
-    <Image Include="..\data\images\leapfrog_body.png">
-      <Filter>images</Filter>
-    </Image>
+    <ClInclude Include="..\src\shield.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\marker.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\planetactor.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\reentrysceneactor.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\blastparticle.h">
+      <Filter>Particles</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\blastemitter.h">
+      <Filter>Particles</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\flameemitter.h">
+      <Filter>Particles</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\flameparticle.h">
+      <Filter>Particles</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\smokeparticle.h">
+      <Filter>Particles</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

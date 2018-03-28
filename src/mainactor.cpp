@@ -101,8 +101,8 @@ void MainActor::changeToMode(SceneTypeEnum scene)
       window->setPosition(50.0f, 50.0f);
       addChild(window);
 
-      spPlanetActor planetActor = new PlanetActor(m_gameResources);
-      window->addChild(planetActor);
+      spReentrySceneActor reentryActor = new ReentrySceneActor(m_gameResources);
+      window->addChild(reentryActor);
 
       //m_debugDraw = new Box2DDraw;
       //m_debugDraw->SetFlags(b2Draw::e_shapeBit | b2Draw::e_jointBit | b2Draw::e_pairBit | b2Draw::e_centerOfMassBit);

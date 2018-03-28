@@ -11,7 +11,8 @@ enum PanorateModeEnum
    PME_TOP,
    PME_CENTER,
    PME_BOTTOM,
-   PME_TOP_LEFT
+   PME_TOP_LEFT,
+   PME_FIX
 };
 
 DECLARE_SMART(SceneActor, spSceneActor);
