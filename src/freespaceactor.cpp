@@ -25,7 +25,7 @@ FreeSpaceActor::FreeSpaceActor(Resources& gameResources) :
 
    m_leapfrog->setBoundedWallsActor(this);
 
-   m_leapfrog->goToMode(LFM_DEEP_SPACE);
+   m_leapfrog->initLeapfrog(LFM_DEEP_SPACE, MATH_PI / 2.0f);
    m_leapfrog->goToEnvironment(ENV_DEEP_SPACE);
 
    addBoundingBody((Actor*) m_leapfrog.get());

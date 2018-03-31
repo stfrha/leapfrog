@@ -17,6 +17,9 @@ enum PlanetActorStateEnum
    // Trajectory is displayed
    PAS_ORBIT_ESTABLISHED,        
 
+   // Leapfrog is burning its booster to break
+   PAS_BURN,
+
    // Leapfrog has done break burn and starts to move toward planet
    PAS_REENTRY,
 
@@ -32,11 +35,14 @@ private:
    const static float c_trajectoryAngles[];
    const static oxygine::Vector2 c_trajectoryPositions[];
 
-   oxygine::Resources* m_gameResources;
    PlanetActorStateEnum m_state;
-   spActor m_planet;
    oxygine::Vector2 m_orbitStartPos;
+
+
+   oxygine::Resources* m_gameResources;
+   spActor m_planet;
    oxygine::spSprite m_positionIndicator;
+   oxygine::spProgressBar m_burnIndicator;
 
 
 
@@ -44,4 +50,12 @@ public:
    PlanetActor(oxygine::Resources& gameResources);
    void orbitEstablished(void);
    void startReentry(void);
+   void startBurn(void);
+   void stopBurn(void);
+   float getBurnAmount(void);
+   float getReentryLeapfrogAngle(float time);
+
+protected:
+   void doUpdate(const UpdateState& us);
+
 };

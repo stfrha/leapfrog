@@ -5,7 +5,6 @@
 #include "SDL_keyboard.h"
 
 #include "leapfrog.h"
-#include "leapfrogparts.h"
 #include "shield.h"
 
 using namespace oxygine;
@@ -31,11 +30,12 @@ ModeAngles::ModeAngles(float rgtBigLeg, float rgtSmallLeg, float rgtFoot,
 
 
 LeapFrog::LeapFrog(
-   Resources& gameResources, 
+   Resources& gameResources,
    SceneActor* sceneActor,
    b2World* world,
-   Actor* actor, 
-   const Vector2& pos) :
+   Actor* actor,
+   const Vector2& pos /*,
+   float assemblyAngle*/) :
    m_world(world),
    m_physDispScale(10.0f),
    m_boostMagnuitude(0.0f),
@@ -48,12 +48,11 @@ LeapFrog::LeapFrog(
    m_rightSteerFireLastUpdate(false),
    m_leftSteerFireLastUpdate(false),
    m_gameResources(&gameResources),
-   m_sceneActor(sceneActor)
+   m_sceneActor(sceneActor),
+   m_state(LFS_NORMAL),
+   m_wantedAngle(0.0f),
+   m_initiating(false)
 {
-	setPosition(pos);
-	setAnchor(Vector2(0.5f, 0.5f));
-	setTouchChildrenEnabled(false);
-
 	// The leapfrog main body is the main sprite of the leapfrog
 
 	setResAnim(gameResources.getResAnim("lf_body"));
@@ -75,13 +74,13 @@ LeapFrog::LeapFrog(
 	b2Vec2 vertices[7];
 
 	// Polygon of a body shape is physical coordinates, i.e. in meters
-	vertices[6].Set(-4.5, 4.8);
-	vertices[5].Set(-2.5, -3.7);
-	vertices[4].Set(-1.5, -4.8);
-	vertices[3].Set(1.5, -4.8);
-	vertices[2].Set(2.5, -3.7);
-	vertices[1].Set(4.5, 4.8);
-	vertices[0].Set(-4.5, 4.8);
+	vertices[6].Set(-4.5f, 4.8f);
+	vertices[5].Set(-2.5f, -3.7f);
+	vertices[4].Set(-1.5f, -4.8f);
+	vertices[3].Set(1.5f, -4.8f);
+	vertices[2].Set(2.5f, -3.7f);
+	vertices[1].Set(4.5f, 4.8f);
+	vertices[0].Set(-4.5f, 4.8f);
 
 	b2PolygonShape polyShape;
 
@@ -104,32 +103,32 @@ LeapFrog::LeapFrog(
 	//actor->addChild(lfBody);
 	//m_leapFrogBody = lfBody;
 
-	spLfBooster lfBoost = new LfBooster(gameResources, world, pos + Vector2(0, 4.8), 1, -1);
-	actor->addChild(lfBoost);
+	m_lfBoost = new LfBooster(gameResources, world, pos + Vector2(0.0f, 4.8f), 1, -1);
+	actor->addChild(m_lfBoost);
 
-	spLfBigLeg lfRightBigLeg = new LfBigLeg(gameResources, world, pos + Vector2(3, 4.9), 1, -1);
-	actor->addChild(lfRightBigLeg);
+	m_lfRightBigLeg = new LfBigLeg(gameResources, world, pos + Vector2(3.0f, 4.9f), 1, -1);
+	actor->addChild(m_lfRightBigLeg);
 
-	spLfBigLeg lfLeftBigLeg = new LfBigLeg(gameResources, world, pos + Vector2(-3.2, 4.9), 1, -1);
-	actor->addChild(lfLeftBigLeg);
+	m_lfLeftBigLeg = new LfBigLeg(gameResources, world, pos + Vector2(-3.2f, 4.9f), 1, -1);
+	actor->addChild(m_lfLeftBigLeg);
 
-	spLfSmallLeg lfRightSmallLeg = new LfSmallLeg(gameResources, world, pos + Vector2(3.2, 12.2), 1, -1);
-	actor->addChild(lfRightSmallLeg);
+	m_lfRightSmallLeg = new LfSmallLeg(gameResources, world, pos + Vector2(3.2f, 12.2f), 1, -1);
+	actor->addChild(m_lfRightSmallLeg);
 
-	spLfSmallLeg lfLeftSmallLeg = new LfSmallLeg(gameResources, world, pos + Vector2(-3.2, 12.2), 1, -1);
-	actor->addChild(lfLeftSmallLeg);
+	m_lfLeftSmallLeg = new LfSmallLeg(gameResources, world, pos + Vector2(-3.2f, 12.2f), 1, -1);
+	actor->addChild(m_lfLeftSmallLeg);
 
-	spLfFoot lfRightFoot = new LfFoot(gameResources, world, pos + Vector2(3.2, 17.5), 1, -1);
-	actor->addChild(lfRightFoot);
+	m_lfRightFoot = new LfFoot(gameResources, world, pos + Vector2(3.2f, 17.5f), 1, -1);
+	actor->addChild(m_lfRightFoot);
 
-	spLfFoot lfLeftFoot = new LfFoot(gameResources, world, pos + Vector2(-3.2, 17.5), 1, -1);
-	actor->addChild(lfLeftFoot);
+	m_lfLeftFoot = new LfFoot(gameResources, world, pos + Vector2(-3.2f, 17.5f), 1, -1);
+	actor->addChild(m_lfLeftFoot);
 
-	spLfRightSteer lfRightSteer = new LfRightSteer(gameResources, world, pos + Vector2(3.9, 17.5), 1, -1);
-	actor->addChild(lfRightSteer);
+	m_lfRightSteer = new LfRightSteer(gameResources, world, pos + Vector2(3.9f, 17.5f), 1, -1);
+	actor->addChild(m_lfRightSteer);
 
-	spLfLeftSteer lfLeftSteer = new LfLeftSteer(gameResources, world, pos + Vector2(-3.9, 17.5), 1, -1);
-	actor->addChild(lfLeftSteer);
+	m_lfLeftSteer = new LfLeftSteer(gameResources, world, pos + Vector2(-3.9f, 17.5f), 1, -1);
+	actor->addChild(m_lfLeftSteer);
 
    m_shield = new Shield(gameResources, world, pos);
    // Shield will be attached as a post-production part (createLeapFrog() in sceneactor.cpp)
@@ -137,97 +136,116 @@ LeapFrog::LeapFrog(
 	// Main Body and booster joint
 	b2WeldJointDef	boostJointDef;
 	boostJointDef.bodyA = m_mainBody;
-	boostJointDef.bodyB = lfBoost->m_body;
-	boostJointDef.localAnchorA.Set(0.0, 4.8);
-	boostJointDef.localAnchorB.Set(0.0, -0.8);
+	boostJointDef.bodyB = m_lfBoost->m_body;
+	boostJointDef.localAnchorA.Set(0.0f, 4.8f);
+	boostJointDef.localAnchorB.Set(0.0f, -0.8f);
 	boostJointDef.collideConnected = false;
 	m_boostJoint = (b2WeldJoint*)world->CreateJoint(&boostJointDef);
+
 
 	// Main Body and right big leg joint
 	b2RevoluteJointDef	rightLegJointDef;
 	rightLegJointDef.bodyA = m_mainBody;
-	rightLegJointDef.bodyB = lfRightBigLeg->m_body;
-	rightLegJointDef.localAnchorA.Set(3.3, 5.8);
-	rightLegJointDef.localAnchorB.Set(0.0, -2.75);
+	rightLegJointDef.bodyB = m_lfRightBigLeg->m_body;
+	rightLegJointDef.localAnchorA.Set(3.3f, 5.8f);
+	rightLegJointDef.localAnchorB.Set(0.0f, -2.75f);
 	rightLegJointDef.collideConnected = false;
 	rightLegJointDef.enableMotor = true;
-	rightLegJointDef.maxMotorTorque = 20000;
+	rightLegJointDef.maxMotorTorque = c_normalJointMotorTorque;
 	rightLegJointDef.motorSpeed = 0;
 	m_rightBigLegJoint = (b2RevoluteJoint*)world->CreateJoint(&rightLegJointDef);
+   JointUserData* jd1 = new JointUserData(false);
+   m_rightBigLegJoint->SetUserData(jd1);
+
 
 	// Main Body and left big leg joint
 	b2RevoluteJointDef	leftLegJointDef;
 	leftLegJointDef.bodyA = m_mainBody;
-	leftLegJointDef.bodyB = lfLeftBigLeg->m_body;
-	leftLegJointDef.localAnchorA.Set(-3.3, 5.8);
-	leftLegJointDef.localAnchorB.Set(0.0, -2.75);
+	leftLegJointDef.bodyB = m_lfLeftBigLeg->m_body;
+	leftLegJointDef.localAnchorA.Set(-3.3f, 5.8f);
+	leftLegJointDef.localAnchorB.Set(0.0f, -2.75f);
 	leftLegJointDef.collideConnected = false;
 	leftLegJointDef.enableMotor = true;
-	leftLegJointDef.maxMotorTorque = 20000;
+	leftLegJointDef.maxMotorTorque = c_normalJointMotorTorque;
 	leftLegJointDef.motorSpeed = 0;
 	m_leftBigLegJoint = (b2RevoluteJoint*)world->CreateJoint(&leftLegJointDef);
+   JointUserData* jd2 = new JointUserData(false);
+   m_leftBigLegJoint->SetUserData(jd2);
+
 
 	// Right Big leg and right small leg joint
 	b2RevoluteJointDef	rightSmallLegJointDef;
-	rightSmallLegJointDef.bodyA = lfRightBigLeg->m_body;
-	rightSmallLegJointDef.bodyB = lfRightSmallLeg->m_body;
-	rightSmallLegJointDef.localAnchorA.Set(0.0, 2.95);
-	rightSmallLegJointDef.localAnchorB.Set(0.0, -1.95);
+	rightSmallLegJointDef.bodyA = m_lfRightBigLeg->m_body;
+	rightSmallLegJointDef.bodyB = m_lfRightSmallLeg->m_body;
+	rightSmallLegJointDef.localAnchorA.Set(0.0f, 2.95f);
+	rightSmallLegJointDef.localAnchorB.Set(0.0f, -1.95f);
 	rightSmallLegJointDef.collideConnected = false;
 	rightSmallLegJointDef.enableMotor = true;
-	rightSmallLegJointDef.maxMotorTorque = 20000;
+	rightSmallLegJointDef.maxMotorTorque = c_normalJointMotorTorque;
 	rightSmallLegJointDef.motorSpeed = 0;
 	m_rightSmallLegJoint = (b2RevoluteJoint*)world->CreateJoint(&rightSmallLegJointDef);
+   JointUserData* jd3 = new JointUserData(false);
+   m_rightSmallLegJoint->SetUserData(jd3);
+
 
 	// Left Big leg and left small leg joint
 	b2RevoluteJointDef	leftSmallLegJointDef;
-	leftSmallLegJointDef.bodyA = lfLeftBigLeg->m_body;
-	leftSmallLegJointDef.bodyB = lfLeftSmallLeg->m_body;
-	leftSmallLegJointDef.localAnchorA.Set(0.0, 2.95);
-	leftSmallLegJointDef.localAnchorB.Set(0.0, -1.95);
+	leftSmallLegJointDef.bodyA = m_lfLeftBigLeg->m_body;
+	leftSmallLegJointDef.bodyB = m_lfLeftSmallLeg->m_body;
+	leftSmallLegJointDef.localAnchorA.Set(0.0f, 2.95f);
+	leftSmallLegJointDef.localAnchorB.Set(0.0f, -1.95f);
 	leftSmallLegJointDef.collideConnected = false;
 	leftSmallLegJointDef.enableMotor = true;
-	leftSmallLegJointDef.maxMotorTorque = 20000;
+	leftSmallLegJointDef.maxMotorTorque = c_normalJointMotorTorque;
 	leftSmallLegJointDef.motorSpeed = 0;
 	m_leftSmallLegJoint = (b2RevoluteJoint*)world->CreateJoint(&leftSmallLegJointDef);
+   JointUserData* jd4 = new JointUserData(false);
+   m_leftSmallLegJoint->SetUserData(jd4);
+
 
 	// Right Small leg and right foot joint
 	b2RevoluteJointDef	rightFootLegJointDef;
-	rightFootLegJointDef.bodyA = lfRightSmallLeg->m_body;
-	rightFootLegJointDef.bodyB = lfRightFoot->m_body;
-	rightFootLegJointDef.localAnchorA.Set(0.0, 2.05);
-	rightFootLegJointDef.localAnchorB.Set(0.0, -0.9);
+	rightFootLegJointDef.bodyA = m_lfRightSmallLeg->m_body;
+	rightFootLegJointDef.bodyB = m_lfRightFoot->m_body;
+	rightFootLegJointDef.localAnchorA.Set(0.0f, 2.05f);
+	rightFootLegJointDef.localAnchorB.Set(0.0f, -0.9f);
 	rightFootLegJointDef.collideConnected = false;
 	rightFootLegJointDef.enableMotor = true;
-	rightFootLegJointDef.maxMotorTorque = 20000;
+	rightFootLegJointDef.maxMotorTorque = c_normalJointMotorTorque;
 	rightFootLegJointDef.motorSpeed = 0;
 	m_rightFootLegJoint = (b2RevoluteJoint*)world->CreateJoint(&rightFootLegJointDef);
+   JointUserData* jd5 = new JointUserData(false);
+   m_rightFootLegJoint->SetUserData(jd5);
+
 
 	// Left Small leg and left foot joint
 	b2RevoluteJointDef	leftFootLegJointDef;
-	leftFootLegJointDef.bodyA = lfLeftSmallLeg->m_body;
-	leftFootLegJointDef.bodyB = lfLeftFoot->m_body;
-	leftFootLegJointDef.localAnchorA.Set(0.0, 2.05);
-	leftFootLegJointDef.localAnchorB.Set(0.0, -0.9);
+	leftFootLegJointDef.bodyA = m_lfLeftSmallLeg->m_body;
+	leftFootLegJointDef.bodyB = m_lfLeftFoot->m_body;
+	leftFootLegJointDef.localAnchorA.Set(0.0f, 2.05f);
+	leftFootLegJointDef.localAnchorB.Set(0.0f, -0.9f);
 	leftFootLegJointDef.collideConnected = false;
 	leftFootLegJointDef.enableMotor = true;
-	leftFootLegJointDef.maxMotorTorque = 20000;
+	leftFootLegJointDef.maxMotorTorque = c_normalJointMotorTorque;
 	leftFootLegJointDef.motorSpeed = 0;
 	m_leftFootLegJoint = (b2RevoluteJoint*)world->CreateJoint(&leftFootLegJointDef);
+   JointUserData* jd6 = new JointUserData(false);
+   m_leftFootLegJoint->SetUserData(jd6);
+
 
 	// Right small leg and steer booster joint
 	b2WeldJointDef	rightSteerJointDef;
-	rightSteerJointDef.bodyA = lfRightSmallLeg->m_body;
-	rightSteerJointDef.bodyB = lfRightSteer->m_body;
-	rightSteerJointDef.localAnchorA.Set(-0.7, 1.4);
-	rightSteerJointDef.localAnchorB.Set(0.6, 0.0);
+	rightSteerJointDef.bodyA = m_lfRightSmallLeg->m_body;
+	rightSteerJointDef.bodyB = m_lfRightSteer->m_body;
+	rightSteerJointDef.localAnchorA.Set(-0.7f, 1.4f);
+	rightSteerJointDef.localAnchorB.Set(0.6f, 0.0f);
 	rightSteerJointDef.collideConnected = false;
 	m_rightSteerJoint = (b2WeldJoint*)world->CreateJoint(&rightSteerJointDef);
 
 	// Left small leg and steer booster joint
 	b2WeldJointDef	leftSteerJointDef;
-	leftSteerJointDef.bodyA = lfLeftSmallLeg->m_body;
-	leftSteerJointDef.bodyB = lfLeftSteer->m_body;
+	leftSteerJointDef.bodyA = m_lfLeftSmallLeg->m_body;
+	leftSteerJointDef.bodyB = m_lfLeftSteer->m_body;
 	leftSteerJointDef.localAnchorA.Set(0.7f, 1.4f);
 	leftSteerJointDef.localAnchorB.Set(-0.6f, 0.0f);
 	leftSteerJointDef.collideConnected = false;
@@ -248,7 +266,7 @@ LeapFrog::LeapFrog(
    // Add main engine particle system
    m_boosterFlame = new FlameEmitter(
       gameResources, 
-      lfBoost->m_body, 
+      m_lfBoost->m_body,
       b2Vec2(0.0f, 3.0f), 
       90.0f * MATH_PI / 180.0f, 
       4.0f,                            // Emitter width
@@ -262,7 +280,7 @@ LeapFrog::LeapFrog(
    // Add right steering engine particle system
    m_rightSteerFlame = new FlameEmitter(
       gameResources,
-      lfRightSteer->m_body,
+      m_lfRightSteer->m_body,
       b2Vec2(-1.0f, 0.0f),
       MATH_PI,
       1.0f,                            // Width
@@ -277,7 +295,7 @@ LeapFrog::LeapFrog(
    // Add left steering engine particle system
    m_leftSteerFlame = new FlameEmitter(
       gameResources,
-      lfLeftSteer->m_body,
+      m_lfLeftSteer->m_body,
       b2Vec2(1.0f, 0.0f),             // Origin
       0,                               // Angle 
       1.0f,                            // Width
@@ -301,11 +319,23 @@ LeapFrog::LeapFrog(
 
    m_gun->attachTo(this);
 
-   goToMode(LFM_LANDING);
+//   setAlpha(0);
 }
 
 LeapFrog::~LeapFrog()
 {
+   //delete ((JointUserData*)m_rightBigLegJoint->GetUserData());
+
+   //delete ((JointUserData*)m_leftBigLegJoint->GetUserData());
+
+   //delete ((JointUserData*)m_rightSmallLegJoint->GetUserData());
+
+   //delete ((JointUserData*)m_leftSmallLegJoint->GetUserData());
+
+   //delete ((JointUserData*)m_rightFootLegJoint->GetUserData());
+
+   //delete ((JointUserData*)m_leftFootLegJoint->GetUserData());
+
 }
 
 CollisionEntityTypeEnum LeapFrog::getEntityType(void)
@@ -321,22 +351,143 @@ void LeapFrog::hitByAsteroid(b2Contact* contact)
 
 void LeapFrog::doUpdate(const UpdateState &us)
 {
-   float angle = m_mainBody->GetAngle();
-   b2Vec2 boostForce = b2Vec2(m_boostMagnuitude * sin(angle), -m_boostMagnuitude * cos(angle));
+   float angle = 0.0f;
+   b2Vec2 boostForce = b2Vec2(0.0f, 0.0f);
+   float magAngVel = 0.0f;
 
-   if (m_environment != ENV_DEEP_SPACE)
+
+   switch (m_state)
    {
-      m_mainBody->ApplyTorque(m_steerMagnitude, true);
+   case LFS_NORMAL:
+   case LFS_MODE_IN_TRANSIT:
+      angle = m_mainBody->GetAngle();
+      boostForce = b2Vec2(m_boostMagnuitude * sin(angle), -m_boostMagnuitude * cos(angle));
+
+      if (m_environment != ENV_DEEP_SPACE)
+      {
+         m_mainBody->ApplyTorque(m_steerMagnitude, true);
+      }
+
+      m_mainBody->ApplyForceToCenter(boostForce, true);
+
+      setJointMotor(m_rightBigLegJoint, m_modeAngleGoals.m_rightBigJointAngle, c_normalJointMotorSpeed);
+      setJointMotor(m_rightSmallLegJoint, m_modeAngleGoals.m_rightSmallJointAngle, c_normalJointMotorSpeed);
+      setJointMotor(m_rightFootLegJoint, m_modeAngleGoals.m_rightFootJointAngle, c_normalJointMotorSpeed);
+      setJointMotor(m_leftBigLegJoint, m_modeAngleGoals.m_leftBigJointAngle, c_normalJointMotorSpeed);
+      setJointMotor(m_leftSmallLegJoint, m_modeAngleGoals.m_leftSmallJointAngle, c_normalJointMotorSpeed);
+      setJointMotor(m_leftFootLegJoint, m_modeAngleGoals.m_leftFootJointAngle, c_normalJointMotorSpeed);
+      break;
+
+   case LFS_INITIATING_MODE:
+      setJointMotor(m_rightBigLegJoint, m_modeAngleGoals.m_rightBigJointAngle, c_instnatJointMotorSpeed);
+      setJointMotor(m_rightSmallLegJoint, m_modeAngleGoals.m_rightSmallJointAngle, c_instnatJointMotorSpeed);
+      setJointMotor(m_rightFootLegJoint, m_modeAngleGoals.m_rightFootJointAngle, c_instnatJointMotorSpeed);
+      setJointMotor(m_leftBigLegJoint, m_modeAngleGoals.m_leftBigJointAngle, c_instnatJointMotorSpeed);
+      setJointMotor(m_leftSmallLegJoint, m_modeAngleGoals.m_leftSmallJointAngle, c_instnatJointMotorSpeed);
+      setJointMotor(m_leftFootLegJoint, m_modeAngleGoals.m_leftFootJointAngle, c_instnatJointMotorSpeed);
+      break;
+
+   case LFS_INSTANTLY_ROTATING:
+      angle = m_mainBody->GetAngle();
+
+      while (angle > 2.0f * MATH_PI)
+      {
+         angle -= 2.0f * MATH_PI;
+      }
+
+      while (angle < -2.0f * MATH_PI)
+      {
+         angle += 2.0f * MATH_PI;
+      }
+
+      // Calculate magnitude of angular velocity as a function of how
+      // close to the goal angle we are but not more than m_maxAngularVelocity
+      magAngVel =  4.0f * fabs(m_wantedAngle - angle); // get there in one second
+
+      // check if we have reached the gaol
+      if (magAngVel < 1.0f * MATH_PI / 180.0f)
+      {
+         instantAngleReached();
+      }
+      else
+      {
+         if (magAngVel > 2.0f * MATH_PI)
+         {
+            magAngVel = 2.0f * MATH_PI;
+         }
+
+         if (angle < m_wantedAngle)
+         {
+            m_mainBody->SetAngularVelocity(magAngVel);
+         }
+         else if (angle > m_wantedAngle)
+         {
+            m_mainBody->SetAngularVelocity(-magAngVel);
+         }
+      }
+
+      break;
+
+   case LFS_GET_TO_EQUILIBRIUM:
+
+      if (fabs(m_mainBody->GetAngularVelocity()) < 0.1f)
+      {
+         equilibriumReached();
+      }
+      else
+      {
+         m_mainBody->SetAngularVelocity(0.0f);
+      }
+      break;
+
+   case LFS_HOLD_ANGLE:
+      angle = m_mainBody->GetAngle();
+
+      while (angle > 2.0f * MATH_PI)
+      {
+         angle -= 2.0f * MATH_PI;
+      }
+
+      while (angle < -2.0f * MATH_PI)
+      {
+         angle += 2.0f * MATH_PI;
+      }
+
+      // Calculate magnitude of angular velocity as a function of how
+      // close to the goal angle we are but not more than m_maxAngularVelocity
+      magAngVel = fabs(m_wantedAngle - angle); // get there in one second
+
+      // check if we have reached the gaol
+      if (magAngVel < 1.0f * MATH_PI / 180.0f)
+      {
+         holdAngleReached();
+      }
+      else
+      {
+         if (magAngVel > 2.0f * MATH_PI)
+         {
+            magAngVel = 2.0f * MATH_PI;
+         }
+
+         if (angle < m_wantedAngle)
+         {
+            m_mainBody->SetAngularVelocity(magAngVel);
+         }
+         else if (angle > m_wantedAngle)
+         {
+            m_mainBody->SetAngularVelocity(-magAngVel);
+         }
+      }
+
+      setJointMotor(m_rightBigLegJoint, m_modeAngleGoals.m_rightBigJointAngle, c_normalJointMotorSpeed);
+      setJointMotor(m_rightSmallLegJoint, m_modeAngleGoals.m_rightSmallJointAngle, c_normalJointMotorSpeed);
+      setJointMotor(m_rightFootLegJoint, m_modeAngleGoals.m_rightFootJointAngle, c_normalJointMotorSpeed);
+      setJointMotor(m_leftBigLegJoint, m_modeAngleGoals.m_leftBigJointAngle, c_normalJointMotorSpeed);
+      setJointMotor(m_leftSmallLegJoint, m_modeAngleGoals.m_leftSmallJointAngle, c_normalJointMotorSpeed);
+      setJointMotor(m_leftFootLegJoint, m_modeAngleGoals.m_leftFootJointAngle, c_normalJointMotorSpeed);
+
+      break;
    }
-
-   m_mainBody->ApplyForceToCenter(boostForce, true);
-
-   setJointMotor(m_rightBigLegJoint, m_modeAngleGoals.m_rightBigJointAngle, 15 * MATH_PI / 180);
-   setJointMotor(m_rightSmallLegJoint, m_modeAngleGoals.m_rightSmallJointAngle, 15 * MATH_PI / 180);
-   setJointMotor(m_rightFootLegJoint, m_modeAngleGoals.m_rightFootJointAngle, 15 * MATH_PI / 180);
-   setJointMotor(m_leftBigLegJoint, m_modeAngleGoals.m_leftBigJointAngle, 15 * MATH_PI / 180);
-   setJointMotor(m_leftSmallLegJoint, m_modeAngleGoals.m_leftSmallJointAngle, 15 * MATH_PI / 180);
-   setJointMotor(m_leftFootLegJoint, m_modeAngleGoals.m_leftFootJointAngle, 15 * MATH_PI / 180);
 };
 
 void LeapFrog::setJointMotor(b2RevoluteJoint* joint, float goal, float speedMagnitude)
@@ -345,7 +496,7 @@ void LeapFrog::setJointMotor(b2RevoluteJoint* joint, float goal, float speedMagn
 
 	if (angle > goal)
 	{
-		if (angle - goal > 0.5f * MATH_PI / 180.0f)
+		if (angle - goal > 2.0f * MATH_PI / 180.0f)
 		{
 			joint->SetMotorSpeed(-speedMagnitude);
 		}
@@ -356,12 +507,19 @@ void LeapFrog::setJointMotor(b2RevoluteJoint* joint, float goal, float speedMagn
          // Here the goal is reached. Lets call a function
          // that can do some things at this time, for instance
          // lock leg joints
-         modeReached();
+         if ((m_state == LFS_MODE_IN_TRANSIT) || (m_state == LFS_INITIATING_MODE))
+         {
+            ((JointUserData*)joint->GetUserData())->setModeReached(true);
+            if (modeIsReached())
+            { 
+               modeReached();
+            }
+         }
 		}
 	}
 	else if (angle < goal)
 	{
-		if (goal - angle > 0.5f * MATH_PI / 180.0f)
+		if (goal - angle > 2.0f * MATH_PI / 180.0f)
 		{
 			joint->SetMotorSpeed(-speedMagnitude);
 		}
@@ -371,16 +529,49 @@ void LeapFrog::setJointMotor(b2RevoluteJoint* joint, float goal, float speedMagn
          // Here the goal is reached. Lets call a function
          // that can do some things at this time, for instance
          // lock leg joints
-         modeReached();
+         if ((m_state == LFS_MODE_IN_TRANSIT) || (m_state == LFS_INITIATING_MODE))
+         {
+            ((JointUserData*)joint->GetUserData())->setModeReached(true);
+            if (modeIsReached())
+            {
+               modeReached();
+            }
+         }
       }
       joint->SetMotorSpeed(speedMagnitude);
    }
 }
 
-void LeapFrog::goToMode(LeapFrogModeEnum mode)
+void LeapFrog::lockJoints(void)
 {
-   m_mode = mode;
+   // Lock all legs and disable motors
+   m_rightBigLegJoint->EnableMotor(false);
+   m_rightBigLegJoint->SetLimits(m_modeAngleGoals.m_rightBigJointAngle, m_modeAngleGoals.m_rightBigJointAngle);
+   m_rightBigLegJoint->EnableLimit(true);
 
+   m_leftBigLegJoint->EnableMotor(false);
+   m_leftBigLegJoint->SetLimits(m_modeAngleGoals.m_leftBigJointAngle, m_modeAngleGoals.m_leftBigJointAngle);
+   m_leftBigLegJoint->EnableLimit(true);
+
+   m_rightSmallLegJoint->EnableMotor(false);
+   m_rightSmallLegJoint->SetLimits(m_modeAngleGoals.m_rightSmallJointAngle, m_modeAngleGoals.m_rightSmallJointAngle);
+   m_rightSmallLegJoint->EnableLimit(true);
+
+   m_leftSmallLegJoint->EnableMotor(false);
+   m_leftSmallLegJoint->SetLimits(m_modeAngleGoals.m_leftSmallJointAngle, m_modeAngleGoals.m_leftSmallJointAngle);
+   m_leftSmallLegJoint->EnableLimit(true);
+
+   m_rightFootLegJoint->EnableMotor(false);
+   m_rightFootLegJoint->SetLimits(m_modeAngleGoals.m_rightFootJointAngle, m_modeAngleGoals.m_rightFootJointAngle);
+   m_rightFootLegJoint->EnableLimit(true);
+
+   m_leftFootLegJoint->EnableMotor(false);
+   m_leftFootLegJoint->SetLimits(m_modeAngleGoals.m_leftFootJointAngle, m_modeAngleGoals.m_leftFootJointAngle);
+   m_leftFootLegJoint->EnableLimit(true);
+}
+
+void LeapFrog::unlockJoints(void)
+{
    // Unlock all legs and enable motors
    m_rightBigLegJoint->EnableMotor(true);
    m_rightBigLegJoint->EnableLimit(false);
@@ -400,47 +591,267 @@ void LeapFrog::goToMode(LeapFrogModeEnum mode)
    m_leftFootLegJoint->EnableMotor(true);
    m_leftFootLegJoint->EnableLimit(false);
 
+}
+
+void LeapFrog::weldJoints(void)
+{
+   // Main Body and right big leg joint
+   b2WeldJointDef	rightLegJointDef;
+   rightLegJointDef.bodyA = m_mainBody;
+   rightLegJointDef.bodyB = m_lfRightBigLeg->m_body;
+   rightLegJointDef.localAnchorA.Set(3.3, 5.8);
+   rightLegJointDef.localAnchorB.Set(0.0, -2.75);
+   rightLegJointDef.collideConnected = false;
+   m_rightBigLegWeldJoint = (b2WeldJoint*)m_world->CreateJoint(&rightLegJointDef);
+
+   // Main Body and left big leg joint
+   b2WeldJointDef	leftLegJointDef;
+   leftLegJointDef.bodyA = m_mainBody;
+   leftLegJointDef.bodyB = m_lfLeftBigLeg->m_body;
+   leftLegJointDef.localAnchorA.Set(-3.3, 5.8);
+   leftLegJointDef.localAnchorB.Set(0.0, -2.75);
+   leftLegJointDef.collideConnected = false;
+   m_leftBigLegWeldJoint = (b2WeldJoint*)m_world->CreateJoint(&leftLegJointDef);
+
+   // Right Big leg and right small leg joint
+   b2WeldJointDef	rightSmallLegJointDef;
+   rightSmallLegJointDef.bodyA = m_lfRightBigLeg->m_body;
+   rightSmallLegJointDef.bodyB = m_lfRightSmallLeg->m_body;
+   rightSmallLegJointDef.localAnchorA.Set(0.0, 2.95);
+   rightSmallLegJointDef.localAnchorB.Set(0.0, -1.95);
+   rightSmallLegJointDef.collideConnected = false;
+   m_rightSmallLegWeldJoint = (b2WeldJoint*)m_world->CreateJoint(&rightSmallLegJointDef);
+
+   // Left Big leg and left small leg joint
+   b2WeldJointDef	leftSmallLegJointDef;
+   leftSmallLegJointDef.bodyA = m_lfLeftBigLeg->m_body;
+   leftSmallLegJointDef.bodyB = m_lfLeftSmallLeg->m_body;
+   leftSmallLegJointDef.localAnchorA.Set(0.0, 2.95);
+   leftSmallLegJointDef.localAnchorB.Set(0.0, -1.95);
+   leftSmallLegJointDef.collideConnected = false;
+   m_leftSmallLegWeldJoint = (b2WeldJoint*)m_world->CreateJoint(&leftSmallLegJointDef);
+
+   // Right Small leg and right foot joint
+   b2WeldJointDef	rightFootLegJointDef;
+   rightFootLegJointDef.bodyA = m_lfRightSmallLeg->m_body;
+   rightFootLegJointDef.bodyB = m_lfRightFoot->m_body;
+   rightFootLegJointDef.localAnchorA.Set(0.0, 2.05);
+   rightFootLegJointDef.localAnchorB.Set(0.0, -0.9);
+   rightFootLegJointDef.collideConnected = false;
+   m_rightFootLegWeldJoint = (b2WeldJoint*)m_world->CreateJoint(&rightFootLegJointDef);
+
+   // Left Small leg and left foot joint
+   b2WeldJointDef	leftFootLegJointDef;
+   leftFootLegJointDef.bodyA = m_lfLeftSmallLeg->m_body;
+   leftFootLegJointDef.bodyB = m_lfLeftFoot->m_body;
+   leftFootLegJointDef.localAnchorA.Set(0.0, 2.05);
+   leftFootLegJointDef.localAnchorB.Set(0.0, -0.9);
+   leftFootLegJointDef.collideConnected = false;
+   m_leftFootLegWeldJoint = (b2WeldJoint*)m_world->CreateJoint(&leftFootLegJointDef);
+
+}
+
+
+void LeapFrog::unweldJoints(void)
+{
+   if (m_rightBigLegWeldJoint)
+   {
+      m_world->DestroyJoint(m_rightBigLegWeldJoint);
+   }
+   m_world->DestroyJoint(m_leftBigLegWeldJoint);
+   m_world->DestroyJoint(m_rightSmallLegWeldJoint);
+   m_world->DestroyJoint(m_leftSmallLegWeldJoint);
+   m_world->DestroyJoint(m_rightFootLegWeldJoint);
+   m_world->DestroyJoint(m_leftFootLegWeldJoint);
+}
+
+void LeapFrog::setStrongJoints(void)
+{
+   m_rightBigLegJoint->SetMaxMotorTorque(c_instantJointMotorTorque);
+   m_leftBigLegJoint->SetMaxMotorTorque(c_instantJointMotorTorque);
+   m_rightSmallLegJoint->SetMaxMotorTorque(c_instantJointMotorTorque);
+   m_leftSmallLegJoint->SetMaxMotorTorque(c_instantJointMotorTorque);
+   m_rightFootLegJoint->SetMaxMotorTorque(c_instantJointMotorTorque);
+   m_leftFootLegJoint->SetMaxMotorTorque(c_instantJointMotorTorque);
+}
+
+void LeapFrog::setWeakJoints(void)
+{
+   m_rightBigLegJoint->SetMaxMotorTorque(c_normalJointMotorTorque);
+   m_leftBigLegJoint->SetMaxMotorTorque(c_normalJointMotorTorque);
+   m_rightSmallLegJoint->SetMaxMotorTorque(c_normalJointMotorTorque);
+   m_leftSmallLegJoint->SetMaxMotorTorque(c_normalJointMotorTorque);
+   m_rightFootLegJoint->SetMaxMotorTorque(c_normalJointMotorTorque);
+   m_leftFootLegJoint->SetMaxMotorTorque(c_normalJointMotorTorque);
+}
+
+bool LeapFrog::modeIsReached(void)
+{
+   if (!((JointUserData*)m_rightBigLegJoint->GetUserData())->getModeReached())
+   {
+      return false;
+   }
+
+   if (!((JointUserData*)m_leftBigLegJoint->GetUserData())->getModeReached())
+   {
+      return false;
+   }
+
+   if (!((JointUserData*)m_rightSmallLegJoint->GetUserData())->getModeReached())
+   {
+      return false;
+   }
+
+   if (!((JointUserData*)m_leftSmallLegJoint->GetUserData())->getModeReached())
+   {
+      return false;
+   }
+
+   if (!((JointUserData*)m_rightFootLegJoint->GetUserData())->getModeReached())
+   {
+      return false;
+   }
+
+   if (!((JointUserData*)m_leftFootLegJoint->GetUserData())->getModeReached())
+   {
+      return false;
+   }
+
+   return true;
+}
+
+void LeapFrog::resetModeReached(void)
+{
+   ((JointUserData*)m_rightBigLegJoint->GetUserData())->setModeReached(false);
+
+   ((JointUserData*)m_leftBigLegJoint->GetUserData())->setModeReached(false);
+
+   ((JointUserData*)m_rightSmallLegJoint->GetUserData())->setModeReached(false);
+
+   ((JointUserData*)m_leftSmallLegJoint->GetUserData())->setModeReached(false);
+
+   ((JointUserData*)m_rightFootLegJoint->GetUserData())->setModeReached(false);
+
+   ((JointUserData*)m_leftFootLegJoint->GetUserData())->setModeReached(false);
+
+}
+
+void LeapFrog::stopAllJointMotors(void)
+{
+   m_rightBigLegJoint->SetMotorSpeed(0.0f);
+   m_leftBigLegJoint->SetMotorSpeed(0.0f);
+   m_rightSmallLegJoint->SetMotorSpeed(0.0f);
+   m_leftSmallLegJoint->SetMotorSpeed(0.0f);
+   m_rightFootLegJoint->SetMotorSpeed(0.0f);
+   m_leftFootLegJoint->SetMotorSpeed(0.0f);
+}
+
+void LeapFrog::setInstantAngle(float angle)
+{
+   m_wantedAngle = angle;
+
+   stopAllJointMotors();
+   lockJoints();
+   m_state = LFS_INSTANTLY_ROTATING;
+}
+
+void LeapFrog::setHoldAngle(float angle)
+{
+   m_wantedAngle = angle;
+   m_state = LFS_HOLD_ANGLE;
+}
+
+void LeapFrog::releaseHoldAngle(void)
+{
+   m_state = LFS_NORMAL;
+}
+
+
+void LeapFrog::initLeapfrog(LeapFrogModeEnum mode, float angle)
+{
+   m_initiating = true;
+   m_mode = mode;
+
+   setInstantAngle(angle);
+
+   m_initiating = true;
+}
+
+void LeapFrog::initMode(LeapFrogModeEnum mode)
+{
+   m_mode = mode;
+
+   unlockJoints();
+
    switch (mode)
    {
    case LFM_LANDING:
-
-      m_modeAngleGoals = ModeAngles(
-         -65 * MATH_PI / 180, 65 * MATH_PI / 180,
-         0 * MATH_PI / 180, 65 * MATH_PI / 180,
-         -65 * MATH_PI / 180, 0 * MATH_PI / 180);
-
+      m_modeAngleGoals = c_landingModeAngles;
       break;
 
    case LFM_DEEP_SPACE:
-
-      m_modeAngleGoals = ModeAngles(
-         -187.5 * MATH_PI / 180, -3.5 * MATH_PI / 180,
-         -117.5 * MATH_PI / 180, 187 * MATH_PI / 180,
-         3.5 * MATH_PI / 180, 117.5 * MATH_PI / 180);
-
+      m_modeAngleGoals = c_deepSpaceModeAngles;
       break;
+
    case LFM_ORBIT:
-
-      m_modeAngleGoals = ModeAngles(
-         -65 * MATH_PI / 180, 65 * MATH_PI / 180,
-         0 * MATH_PI / 180, 65 * MATH_PI / 180,
-         -65 * MATH_PI / 180, 0 * MATH_PI / 180);
-
+      m_modeAngleGoals = c_orbitModeAngles;
       break;
 
    case LFM_REENTRY:
-
-      m_modeAngleGoals = ModeAngles(
-         -92 * MATH_PI / 180, -156.5 * MATH_PI / 180,
-         -35 * MATH_PI / 180, 92 * MATH_PI / 180,
-         156.5 * MATH_PI / 180, 35 * MATH_PI / 180);
-
+      m_modeAngleGoals = c_reentryModeAngles;
       break;
 
    case LFM_RESET:
+      m_modeAngleGoals = c_resetModeAngles;
+      break;
+   }
 
-      m_modeAngleGoals = ModeAngles(9.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f);
+   setStrongJoints();
+   m_state = LFS_INITIATING_MODE;
 
+   //// Now set all joints angles directly
+   //m_rightBigLegJoint->SetLimits(m_modeAngleGoals.m_rightBigJointAngle, m_modeAngleGoals.m_rightBigJointAngle);
+   //m_rightSmallLegJoint->SetLimits(m_modeAngleGoals.m_rightSmallJointAngle, m_modeAngleGoals.m_rightSmallJointAngle);
+   //m_rightFootLegJoint->SetLimits(m_modeAngleGoals.m_rightFootJointAngle, m_modeAngleGoals.m_rightFootJointAngle);
+   //m_leftBigLegJoint->SetLimits(m_modeAngleGoals.m_leftBigJointAngle, m_modeAngleGoals.m_leftBigJointAngle);
+   //m_leftSmallLegJoint->SetLimits(m_modeAngleGoals.m_leftSmallJointAngle, m_modeAngleGoals.m_leftSmallJointAngle);
+   //m_leftFootLegJoint->SetLimits(m_modeAngleGoals.m_leftFootJointAngle, m_modeAngleGoals.m_leftFootJointAngle);
+   //m_rightBigLegJoint->EnableLimit(true);
+   //m_leftBigLegJoint->EnableLimit(true);
+   //m_rightSmallLegJoint->EnableLimit(true);
+   //m_leftSmallLegJoint->EnableLimit(true);
+   //m_rightFootLegJoint->EnableLimit(true);
+   //m_leftFootLegJoint->EnableLimit(true);
+
+}
+
+void LeapFrog::goToMode(LeapFrogModeEnum mode)
+{
+   m_state = LFS_MODE_IN_TRANSIT;
+   m_mode = mode;
+
+   unlockJoints();
+
+   switch (mode)
+   {
+   case LFM_LANDING:
+      m_modeAngleGoals = c_landingModeAngles;
+      break;
+
+   case LFM_DEEP_SPACE:
+      m_modeAngleGoals = c_deepSpaceModeAngles;
+      break;
+
+   case LFM_ORBIT:
+      m_modeAngleGoals = c_orbitModeAngles;
+      break;
+
+   case LFM_REENTRY:
+      m_modeAngleGoals = c_reentryModeAngles;
+      break;
+
+   case LFM_RESET:
+      m_modeAngleGoals = c_resetModeAngles;
       break;
    }
 }
@@ -469,6 +880,7 @@ void LeapFrog::goToEnvironment(EnvironmentEnum env)
       m_steerMaxMagnitude = 40000.0f;;
       m_eveningMagnitude = 10000.0f;
       m_maxVelocity = 400.0f;    // [m/s]
+      m_maxAngularVelocity = MATH_PI; // [rad/s]
       m_boosterFlame->setParameters(0, 250, 70.0f, 10.0f);
       m_shield->m_body->SetActive(false);
       break;
@@ -479,6 +891,7 @@ void LeapFrog::goToEnvironment(EnvironmentEnum env)
       m_steerMaxMagnitude = 30000.0f;;
       m_eveningMagnitude = 10000.0f;
       m_maxVelocity = 400.0f;    // [m/s]
+      m_maxAngularVelocity = MATH_PI; // [rad/s]
       m_boosterFlame->setParameters(0, 250, 70.0f, 10.0f);
       m_shield->m_body->SetActive(false);
       break;
@@ -489,6 +902,7 @@ void LeapFrog::goToEnvironment(EnvironmentEnum env)
       m_steerMaxMagnitude = 30000.0f;;
       m_eveningMagnitude = 10000.0f;
       m_maxVelocity = 400.0f;    // [m/s]
+      m_maxAngularVelocity = MATH_PI; // [rad/s]
       m_boosterFlame->setParameters(0, 250, 70.0f, 10.0f);
       m_shield->m_body->SetActive(false);
       break;
@@ -499,6 +913,7 @@ void LeapFrog::goToEnvironment(EnvironmentEnum env)
       m_steerMaxMagnitude = 30000.0f;;
       m_eveningMagnitude = 10000.0f;
       m_maxVelocity = 400.0f;    // [m/s]
+      m_maxAngularVelocity = MATH_PI; // [rad/s]
       m_boosterFlame->setParameters(0, 250, 70.0f, 10.0f);
       m_shield->m_body->SetActive(false);
       break;
@@ -508,41 +923,90 @@ void LeapFrog::goToEnvironment(EnvironmentEnum env)
 
 void LeapFrog::modeReached(void)
 {
+   resetModeReached();
+
+   if (m_state == LFS_MODE_IN_TRANSIT)
+   {
+      // Don't know anything special here...
+   }
+
+   if (m_state == LFS_INITIATING_MODE)
+   {
+      stopAllJointMotors();
+      setWeakJoints();
+   }
+
    if (m_mode == LFM_DEEP_SPACE)
    {
       // For deep space we lock all legs so that 
       // the central movement of fast spinning
       // not causes them to fling out
-      m_rightBigLegJoint->EnableMotor(false);
-      m_rightBigLegJoint->SetLimits(m_modeAngleGoals.m_rightBigJointAngle, m_modeAngleGoals.m_rightBigJointAngle);
-      m_rightBigLegJoint->EnableLimit(true);
-      
-      m_leftBigLegJoint->EnableMotor(false);
-      m_leftBigLegJoint->SetLimits(m_modeAngleGoals.m_leftBigJointAngle, m_modeAngleGoals.m_leftBigJointAngle);
-      m_leftBigLegJoint->EnableLimit(true);
-
-      m_rightSmallLegJoint->EnableMotor(false);
-      m_rightSmallLegJoint->SetLimits(m_modeAngleGoals.m_rightSmallJointAngle, m_modeAngleGoals.m_rightSmallJointAngle);
-      m_rightSmallLegJoint->EnableLimit(true);
-
-      m_leftSmallLegJoint->EnableMotor(false);
-      m_leftSmallLegJoint->SetLimits(m_modeAngleGoals.m_leftSmallJointAngle, m_modeAngleGoals.m_leftSmallJointAngle);
-      m_leftSmallLegJoint->EnableLimit(true);
-
-      m_rightFootLegJoint->EnableMotor(false);
-      m_rightFootLegJoint->SetLimits(m_modeAngleGoals.m_rightFootJointAngle, m_modeAngleGoals.m_rightFootJointAngle);
-      m_rightFootLegJoint->EnableLimit(true);
-
-      m_leftFootLegJoint->EnableMotor(false);
-      m_leftFootLegJoint->SetLimits(m_modeAngleGoals.m_leftFootJointAngle, m_modeAngleGoals.m_leftFootJointAngle);
-      m_leftFootLegJoint->EnableLimit(true);
+      lockJoints();
 
    }
+   else
+   {
+      unlockJoints();
+   }
+
+   if (m_initiating)
+   {
+//      setAlpha(255);
+      
+
+      m_initiating = false;
+   }
+
+   m_state = LFS_NORMAL;
+}
+
+void LeapFrog::instantAngleReached(void)
+{
+   m_mainBody->SetAngularVelocity(0.0f);
+   m_steerMagnitude = 0.0f;
+ 
+   m_state = LFS_GET_TO_EQUILIBRIUM;
+ 
+   //if (m_initiating)
+   //{
+   //   initMode(m_mode);
+   //}
+   //else
+   //{ 
+   //   m_state = LFS_GET_TO_EQUILIBRIUM;
+   //}
+}
+
+void LeapFrog::equilibriumReached(void)
+{
+   m_state = LFS_NORMAL;
+
+   if (m_initiating)
+   {
+      initMode(m_mode);
+   }
+   else
+   {
+      if (m_mode != LFM_DEEP_SPACE)
+      {
+         unlockJoints();
+      }
+   }
+
+}
+
+void LeapFrog::holdAngleReached(void)
+{
+   //Don't know what to do here
+   int a = 10;
+
 }
 
 
 void LeapFrog::fireMainBooster(bool fire)
 {
+
+
    // Handle booster flame particles
 
    if (fire)
@@ -652,26 +1116,29 @@ void LeapFrog::fireSteeringBooster(int dir)
 
    if (dir == -1)
    {
-      m_leftSteerFlame->stopEmitter();
 
       if (m_rightSteerFireLastUpdate == false)
       {
+         m_leftSteerFlame->stopEmitter();
          m_rightSteerFlame->startEmitter();
       }
    }
    else if (dir == 1)
    {
-      m_rightSteerFlame->stopEmitter();
 
       if (m_leftSteerFireLastUpdate == false)
       {
+         m_rightSteerFlame->stopEmitter();
          m_leftSteerFlame->startEmitter();
       }
    }
    else if (dir == 0)
    {
-      m_rightSteerFlame->stopEmitter();
-      m_leftSteerFlame->stopEmitter();
+      if ((m_leftSteerFireLastUpdate == true) || (m_rightSteerFireLastUpdate == true))
+      { 
+         m_rightSteerFlame->stopEmitter();
+         m_leftSteerFlame->stopEmitter();
+      }
    }
 
    if (m_environment == ENV_DEEP_SPACE)
@@ -717,17 +1184,30 @@ void LeapFrog::fireSteeringBooster(int dir)
       {
          float angleVel = m_mainBody->GetAngularVelocity();
 
-         if (angleVel > 0)
+         if (angleVel > 0.5 * MATH_PI / 180.0f)
          {
             m_steerMagnitude = -m_eveningMagnitude;
          }
-         else if (angleVel < 0)
+         else if (angleVel < -0.5 * MATH_PI / 180.0f)
          {
             m_steerMagnitude = m_eveningMagnitude;
          }
       }
    }
 
+   if (dir == -1)
+   {
+      m_rightSteerFireLastUpdate = true;
+   }
+   else if (dir == 1)
+   {
+      m_leftSteerFireLastUpdate = true;
+   }
+   else if (dir == 0)
+   {
+      m_rightSteerFireLastUpdate = false;
+      m_leftSteerFireLastUpdate = false;
+   }
 
    //if (dir == -1)
    //{
@@ -793,3 +1273,42 @@ void LeapFrog::setBoundedWallsActor(FreeSpaceActor* actor)
 {
    m_gun->setBoundedWallsActor(actor);
 }
+
+
+const ModeAngles LeapFrog::c_resetModeAngles =
+   ModeAngles(9.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f);
+
+const ModeAngles LeapFrog::c_landingModeAngles =
+   ModeAngles(
+      -65 * MATH_PI / 180, 65 * MATH_PI / 180,
+      0 * MATH_PI / 180, 65 * MATH_PI / 180,
+      -65 * MATH_PI / 180, 0 * MATH_PI / 180);
+
+const ModeAngles LeapFrog::c_deepSpaceModeAngles =
+   ModeAngles(
+      -187.5 * MATH_PI / 180, -3.5 * MATH_PI / 180,
+      -117.5 * MATH_PI / 180, 187 * MATH_PI / 180,
+      3.5 * MATH_PI / 180, 117.5 * MATH_PI / 180);
+
+const ModeAngles LeapFrog::c_orbitModeAngles =
+   ModeAngles(
+      -65 * MATH_PI / 180, 65 * MATH_PI / 180,
+      0 * MATH_PI / 180, 65 * MATH_PI / 180,
+      -65 * MATH_PI / 180, 0 * MATH_PI / 180);
+
+const ModeAngles LeapFrog::c_reentryModeAngles =
+   ModeAngles(
+      -92 * MATH_PI / 180, -156.5 * MATH_PI / 180,
+      -35 * MATH_PI / 180, 92 * MATH_PI / 180,
+      156.5 * MATH_PI / 180, 35 * MATH_PI / 180);
+
+
+const float LeapFrog::c_normalJointMotorTorque = 20000.0f;
+const float LeapFrog::c_normalJointMotorSpeed = 30 * MATH_PI / 180;
+const float LeapFrog::c_instantJointMotorTorque = 2000000.0f;
+const float LeapFrog::c_instnatJointMotorSpeed = 150 * MATH_PI / 180;;
+
+
+
+
+

@@ -258,6 +258,9 @@
     <ClCompile Include="..\src\smokeparticle.cpp">
       <Filter>Particles</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\reentrycompositeactor.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Box2D\Box2D\Box2D\Collision\Shapes\b2ChainShape.h">
@@ -475,6 +478,9 @@
     </ClInclude>
     <ClInclude Include="..\src\smokeparticle.h">
       <Filter>Particles</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\reentrycompositeactor.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -63,7 +63,7 @@ LfBooster::LfBooster(Resources& gameResources, b2World* world, const Vector2& po
 	// Size and position is in stage coordinates
 
 	setSize(4, 1.6);
-	setPosition(pos);
+//	setPosition(pos);
 	setAnchor(Vector2(0.5f, 0.5f));
 	setTouchChildrenEnabled(false);
 
@@ -115,7 +115,7 @@ LfBigLeg::LfBigLeg(Resources& gameResources, b2World* world, const Vector2& pos,
 
 	// Size and position is in stage coordinates
 	setSize(1.8, 7.3);
-	setPosition(pos);
+//	setPosition(pos);
 	setAnchor(Vector2(0.5f, 0.5f));
 	setTouchChildrenEnabled(false);
 
@@ -165,7 +165,7 @@ LfSmallLeg::LfSmallLeg(Resources& gameResources, b2World* world, const Vector2& 
 
 	// Size and position is in stage coordinates
 	setSize(1.4, 5.3);
-	setPosition(pos);
+//	setPosition(pos);
 	setAnchor(Vector2(0.5f, 0.5f));
 	setTouchChildrenEnabled(false);
 
@@ -218,7 +218,7 @@ LfFoot::LfFoot(Resources& gameResources, b2World* world, const Vector2& pos, flo
 	setSize(4, 0.6);
 
 //	setSize(0.4, 0.06);
-	setPosition(pos);
+//	setPosition(pos);
 	setAnchor(Vector2(0.5f, 0.5f));
 	setTouchChildrenEnabled(false);
 
@@ -270,7 +270,7 @@ LfRightSteer::LfRightSteer(Resources& gameResources, b2World* world, const Vecto
 	// Size and position is in stage coordinates
 
 	setSize(1.2, 1.0);
-	setPosition(pos);
+//	setPosition(pos);
 	setAnchor(Vector2(0.5f, 0.5f));
 	setTouchChildrenEnabled(false);
 
@@ -322,7 +322,7 @@ LfLeftSteer::LfLeftSteer(Resources& gameResources, b2World* world, const Vector2
 	// Size and position is in stage coordinates
 
 	setSize(1.2, 1.0);
-	setPosition(pos);
+//	setPosition(pos);
 	setAnchor(Vector2(0.5f, 0.5f));
 	setTouchChildrenEnabled(false);
 

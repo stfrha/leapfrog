@@ -18,7 +18,7 @@ LandingActor::LandingActor(Resources& gameResources) :
 
    createLeapFrog(gameResources);
 
-   m_leapfrog->goToMode(LFM_LANDING);
+   m_leapfrog->initLeapfrog(LFM_LANDING, 0.0f);
    m_leapfrog->goToEnvironment(ENV_GROUND);
 
    // I should probably load resources that are uniuqe to the landing mode here

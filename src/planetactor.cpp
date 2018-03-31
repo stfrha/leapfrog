@@ -39,7 +39,7 @@ PlanetActor::PlanetActor(Resources& gameResources) :
 
    maskedSprite->setMask(mask, true);
 
-   spTween rotTween = m_planet->addTween(Actor::TweenRotation(2.0f * MATH_PI), 90000);
+   spTween rotTween = m_planet->addTween(Actor::TweenRotation(2.0f * MATH_PI), 90000, -1);
 
 }
 
@@ -51,7 +51,8 @@ void PlanetActor::orbitEstablished(void)
    crs->setSize(100.0f, 30.0f);
    crs->setAnchor(0.5f, 0.5f);
 
-   float alpha = -100.0 / 180.0f * MATH_PI;
+   float planetAngle = m_planet->getRotation();
+   float alpha = -100.0 / 180.0f * MATH_PI - planetAngle;
    crs->setPosition(Vector2(3500.0f * cos(alpha), 3500.0f * sin(alpha)));
    crs->setRotation(alpha + MATH_PI / 2.0f);
    crs->attachTo(m_planet);
@@ -76,6 +77,52 @@ void PlanetActor::orbitEstablished(void)
    m_positionIndicator->setAnchor(0.5f, 0.5f);
    m_positionIndicator->setPosition(c_trajectoryPositions[0] + m_orbitStartPos);
    m_positionIndicator->attachTo(this);
+
+   spColorRectSprite burnFrame = new ColorRectSprite();
+   burnFrame->setAnchor(0.5f, 0.5f);
+   burnFrame->setSize(100.0f, 500.0f);
+   burnFrame->setColor(Color::Fuchsia);
+   burnFrame->setPosition(2800.0f, 900.0f);
+   burnFrame->attachTo(this);
+
+   spColorRectSprite burnHaze = new ColorRectSprite();
+   burnHaze->setAnchor(0.5f, 0.5f);
+   burnHaze->setSize(96.0f, 496.0f);
+   burnHaze->setColor(Color::Purple);
+   burnHaze->setPosition(2800.0f, 900.0f);
+   burnHaze->attachTo(this);
+
+   spColorRectSprite safeZoom = new ColorRectSprite();
+   safeZoom->setAnchor(0.5f, 0.5f);
+   safeZoom->setSize(96.0f, 100.0f);
+   safeZoom->setColor(Color::Fuchsia);
+   safeZoom->setPosition(2800.0f, 800.0f);
+   safeZoom->setAlpha(96);
+   safeZoom->attachTo(this);
+
+   m_burnIndicator = new ProgressBar();
+   m_burnIndicator->setAnchor(0.5f, 0.5f);
+   m_burnIndicator->setSize(100.0f, 500.0f);
+   m_burnIndicator->setColor(Color::Fuchsia);
+   m_burnIndicator->setDirection(ProgressBar::dir_90);
+   m_burnIndicator->setPosition(2800.0f, 900.0f);
+   m_burnIndicator->attachTo(this);
+   m_burnIndicator->setProgress(0.0f);
+
+   spSprite level = new Sprite();
+   level->setResAnim(m_gameResources->getResAnim("reentry_burn_level"));
+   level->setAnchor(0.5f, 0.5f);
+   level->setSize(150.0f, 34.0f);
+   level->setPosition(2800.0f, 800.0f);
+   level->attachTo(this);
+}
+
+void PlanetActor::doUpdate(const UpdateState& us)
+{
+   if (m_state == PAS_BURN)
+   {
+      m_burnIndicator->setProgress(m_burnIndicator->getProgress() + 0.01f);
+   }
 }
 
 
@@ -87,6 +134,31 @@ void PlanetActor::startReentry(void)
       frogTweenQueue->add(Actor::TweenPosition(c_trajectoryPositions[i] + m_orbitStartPos), 220);
    }
    m_positionIndicator->addTween(frogTweenQueue);
+}
+
+void PlanetActor::startBurn(void)
+{
+   m_state = PAS_BURN;
+}
+
+void PlanetActor::stopBurn(void)
+{
+   m_state = PAS_REENTRY;
+}
+
+float PlanetActor::getBurnAmount(void)
+{
+   return m_burnIndicator->getProgress();
+}
+
+float PlanetActor::getReentryLeapfrogAngle(float time)
+{
+   float index = time / 220.0f;
+   int i = (int)index;
+   if (i < 0) i = 0;
+   if (i > 44) i = 44;
+   return c_trajectoryAngles[i];
+
 }
 
 

@@ -180,6 +180,7 @@
     <ClCompile Include="..\src\marker.cpp" />
     <ClCompile Include="..\src\physdispconvert.cpp" />
     <ClCompile Include="..\src\planetactor.cpp" />
+    <ClCompile Include="..\src\reentrycompositeactor.cpp" />
     <ClCompile Include="..\src\reentrysceneactor.cpp" />
     <ClCompile Include="..\src\scales.cpp" />
     <ClCompile Include="..\src\sceneactor.cpp" />
@@ -254,6 +255,7 @@
     <ClInclude Include="..\src\marker.h" />
     <ClInclude Include="..\src\physdispconvert.h" />
     <ClInclude Include="..\src\planetactor.h" />
+    <ClInclude Include="..\src\reentrycompositeactor.h" />
     <ClInclude Include="..\src\reentrysceneactor.h" />
     <ClInclude Include="..\src\scales.h" />
     <ClInclude Include="..\src\sceneactor.h" />

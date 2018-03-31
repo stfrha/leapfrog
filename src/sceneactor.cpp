@@ -123,6 +123,28 @@ void SceneActor::doUpdate(const UpdateState& us)
 		m_leapfrog->goToMode(LFM_REENTRY);
 	}
 
+   if (data[SDL_SCANCODE_KP_0])
+   {
+      m_leapfrog->initMode(LFM_RESET);
+   }
+   else if (data[SDL_SCANCODE_KP_1])
+   {
+      m_leapfrog->initMode(LFM_LANDING);
+   }
+   else if (data[SDL_SCANCODE_KP_2])
+   {
+      m_leapfrog->initMode(LFM_DEEP_SPACE);
+   }
+   else if (data[SDL_SCANCODE_KP_3])
+   {
+      m_leapfrog->initMode(LFM_REENTRY);
+   }
+
+   else if (data[SDL_SCANCODE_KP_5])
+   {
+      m_leapfrog->setInstantAngle(0.0f);
+   }
+
 	//update each body position on display
 	b2Body* body = m_world->GetBodyList();
 	while (body)

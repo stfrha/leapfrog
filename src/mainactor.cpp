@@ -101,7 +101,7 @@ void MainActor::changeToMode(SceneTypeEnum scene)
       window->setPosition(50.0f, 50.0f);
       addChild(window);
 
-      spReentrySceneActor reentryActor = new ReentrySceneActor(m_gameResources);
+      spReentryCompositeActor reentryActor = new ReentryCompositeActor(m_gameResources);
       window->addChild(reentryActor);
 
       //m_debugDraw = new Box2DDraw;

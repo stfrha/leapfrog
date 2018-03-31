@@ -75,14 +75,20 @@ void Bullet::killActor(void)
 
 void Bullet::hitAsteroid(b2Contact* contact)
 {
-   m_sceneActor->addMeToDeathList((ActorToDie*)this);
+   if (m_sceneActor)
+   {
+      m_sceneActor->addMeToDeathList((ActorToDie*)this);
+   }
 }
 
 void Bullet::doUpdate(const oxygine::UpdateState& us)
 {
    if (us.time >= m_deathTime)
    {
-      m_sceneActor->addMeToDeathList((ActorToDie*)this);
+      if (m_sceneActor)
+      {
+         m_sceneActor->addMeToDeathList((ActorToDie*)this);
+      }
    }
 }
 

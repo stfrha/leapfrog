@@ -19,6 +19,7 @@
 		<image file="trajectory.png"/>	
 		<image file="predicted_site.png"/>	
 		<image file="lf_position.png"/>	
+		<image file="reentry_burn_level.png"/>	
 	</atlas>
 	<atlas clamp2edge="false"> 
 		<image file="markers.png" trim="false" extend="false"/>
