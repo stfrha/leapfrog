@@ -1,7 +1,6 @@
 #pragma once
 
 #include "oxygine-framework.h"
-#include "Polygon.h"
 #include "Box2D/Box2D.h"
 #include "scales.h"
 #include "physdispconvert.h"

@@ -66,15 +66,12 @@ bool CompoundObject::readDefinitionXmlFile(Resources& gameResources, Actor* pare
    return true;
 }
 
-// Remove below when new oxygine is pulled
-#include "Polygon.h"
-
 void CompoundObject::defineStaticPolygon(Resources& gameResources, Actor* parent, b2World* world, const Vector2& pos, xml_node& staticNode)
 {
    vector<Vector2> vertices;
    vector<VectorT3<int> > triangles;
 
-   spPolygon staticObject = new Polygon();
+   spPolygon staticObject = new oxygine::Polygon();
    staticObject->setName(staticNode.attribute("name").as_string());
    staticObject->setResAnim(gameResources.getResAnim(staticNode.attribute("texture").as_string()));
    Vector2 bmSize = Vector2(staticObject->getResAnim()->getWidth(), staticObject->getResAnim()->getHeight());
@@ -209,7 +206,7 @@ void CompoundObject::definePolygonObject(oxygine::Resources& gameResources, Acto
    vector<Vector2> vertices;
    vector<VectorT3<int> > triangles;
 
-   spPolygon polygonObject = new Polygon();
+   spPolygon polygonObject = new oxygine::Polygon();
    polygonObject->setName(polygonObjectNode.attribute("name").as_string());
    polygonObject->setResAnim(gameResources.getResAnim(polygonObjectNode.attribute("texture").as_string()));
 

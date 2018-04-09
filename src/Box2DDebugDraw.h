@@ -1,5 +1,5 @@
 #pragma once
-#include "Actor.h"
+#include "oxygine-framework.h"
 #include "Box2D/Box2D.h"
 
 using namespace oxygine;
@@ -36,8 +36,6 @@ public:
     /// Draw a transform. Choose your own length scale.
     /// @param xf a transform.
     void DrawTransform(const b2Transform& xf);
-
-	void DrawPoint(const b2Vec2 & p, float32 size, const b2Color & color);
 
 protected:
     b2World* _world;

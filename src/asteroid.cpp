@@ -25,7 +25,7 @@ Asteroid::Asteroid(
    m_gameResource(&gameResources),
    m_freeSpaceActor(actor)
 {
-   m_poly = new Polygon;
+   m_poly = new oxygine::Polygon;
 
    //ResAnim "tiled" has only single frame and uses own separate atlas texture
    //it should have options trim=extend=false
