@@ -62,7 +62,7 @@ LfBooster::LfBooster(Resources& gameResources, b2World* world, const Vector2& po
 
 	// Size and position is in stage coordinates
 
-	setSize(4, 1.6);
+	setSize(4.0f, 1.6f);
 //	setPosition(pos);
 	setAnchor(Vector2(0.5f, 0.5f));
 	setTouchChildrenEnabled(false);
@@ -78,13 +78,13 @@ LfBooster::LfBooster(Resources& gameResources, b2World* world, const Vector2& po
 	b2Vec2 vertices[7];
 
 	// Polygon of a body shape is physical coordinates, i.e. in meters
-	vertices[6].Set(-2, 0.8);
-	vertices[5].Set(-2, 0.2);
-	vertices[4].Set(-1, -0.8);
-	vertices[3].Set(1, -0.8);
-	vertices[2].Set(2, 0.2);
-	vertices[1].Set(2, 0.8);
-	vertices[0].Set(-2, 0.8);
+	vertices[6].Set(-2.0f, 0.8f);
+	vertices[5].Set(-2.0f, 0.2f);
+	vertices[4].Set(-1.0f, -0.8f);
+	vertices[3].Set(1.0f, -0.8f);
+	vertices[2].Set(2.0f, 0.2f);
+	vertices[1].Set(2.0f, 0.8f);
+	vertices[0].Set(-2.0f, 0.8f);
 
 	b2PolygonShape polyShape;
 
@@ -114,12 +114,12 @@ LfBigLeg::LfBigLeg(Resources& gameResources, b2World* world, const Vector2& pos,
 	setResAnim(gameResources.getResAnim("lf_big_leg"));
 
 	// Size and position is in stage coordinates
-	setSize(1.8, 7.3);
+	setSize(1.8f, 7.3f);
 //	setPosition(pos);
 	setAnchor(Vector2(0.5f, 0.5f));
 	setTouchChildrenEnabled(false);
 
-	b2BodyDef bodyDef;
+   b2BodyDef bodyDef;
 	bodyDef.type = b2_dynamicBody;
 	bodyDef.position = PhysDispConvert::convert(pos / Scales::c_physToStageScale, 1.0);
 
@@ -130,11 +130,11 @@ LfBigLeg::LfBigLeg(Resources& gameResources, b2World* world, const Vector2& pos,
 	b2Vec2 vertices[5];
 
 	// Polygon of a body shape is physical coordinates, i.e. in meters
-	vertices[4].Set(-0.7, 3.65);
-	vertices[3].Set(-0.9, -3.65);
-	vertices[2].Set(0.9, -3.65);
-	vertices[1].Set(0.7, 3.65);
-	vertices[0].Set(-0.7, 3.65);
+	vertices[4].Set(-0.7f, 3.65f);
+	vertices[3].Set(-0.9f, -3.65f);
+	vertices[2].Set(0.9f, -3.65f);
+	vertices[1].Set(0.7f, 3.65f);
+	vertices[0].Set(-0.7f, 3.65f);
 
 	b2PolygonShape polyShape;
 
@@ -164,14 +164,14 @@ LfSmallLeg::LfSmallLeg(Resources& gameResources, b2World* world, const Vector2& 
 	setResAnim(gameResources.getResAnim("lf_small_leg"));
 
 	// Size and position is in stage coordinates
-	setSize(1.4, 5.3);
+	setSize(1.4f, 5.3f);
 //	setPosition(pos);
 	setAnchor(Vector2(0.5f, 0.5f));
 	setTouchChildrenEnabled(false);
 
 	b2BodyDef bodyDef;
 	bodyDef.type = b2_dynamicBody;
-	bodyDef.position = PhysDispConvert::convert(pos / Scales::c_physToStageScale, 1.0);
+	bodyDef.position = PhysDispConvert::convert(pos / Scales::c_physToStageScale, 1.0f);
 
 	m_body = world->CreateBody(&bodyDef);
 
@@ -180,11 +180,11 @@ LfSmallLeg::LfSmallLeg(Resources& gameResources, b2World* world, const Vector2& 
 	b2Vec2 vertices[5];
 
 	// Polygon of a body shape is physical coordinates, i.e. in meters
-	vertices[4].Set(-0.7, 2.65);
-	vertices[3].Set(-0.6, -2.65);
-	vertices[2].Set(0.6, -2.65);
-	vertices[1].Set(0.7, 2.65);
-	vertices[0].Set(-0.7, 2.65);
+	vertices[4].Set(-0.7f, 2.65f);
+	vertices[3].Set(-0.6f, -2.65f);
+	vertices[2].Set(0.6f, -2.65f);
+	vertices[1].Set(0.7f, 2.65f);
+	vertices[0].Set(-0.7f, 2.65f);
 
 	b2PolygonShape polyShape;
 
@@ -215,7 +215,7 @@ LfFoot::LfFoot(Resources& gameResources, b2World* world, const Vector2& pos, flo
 
 	// Size and position is in stage coordinates
 
-	setSize(4, 0.6);
+	setSize(4.0f, 0.6f);
 
 //	setSize(0.4, 0.06);
 //	setPosition(pos);
@@ -224,7 +224,7 @@ LfFoot::LfFoot(Resources& gameResources, b2World* world, const Vector2& pos, flo
 
 	b2BodyDef bodyDef;
 	bodyDef.type = b2_dynamicBody;
-	bodyDef.position = PhysDispConvert::convert(pos / Scales::c_physToStageScale, 1.0);
+	bodyDef.position = PhysDispConvert::convert(pos / Scales::c_physToStageScale, 1.0f);
 
 	m_body = world->CreateBody(&bodyDef);
 
@@ -233,11 +233,11 @@ LfFoot::LfFoot(Resources& gameResources, b2World* world, const Vector2& pos, flo
 	b2Vec2 vertices[5];
 
 	// Polygon of a body shape is physical coordinates, i.e. in meters
-	vertices[4].Set(-1.4, 0.3);
-	vertices[3].Set(-2, -0.3);
-	vertices[2].Set(2, -0.3);
-	vertices[1].Set(1.4, 0.3);
-	vertices[0].Set(-1.4, 0.3);
+	vertices[4].Set(-1.4f, 0.3f);
+	vertices[3].Set(-2.0f, -0.3f);
+	vertices[2].Set(2.0f, -0.3f);
+	vertices[1].Set(1.4f, 0.3f);
+	vertices[0].Set(-1.4f, 0.3f);
 
 	b2PolygonShape polyShape;
 
@@ -269,7 +269,7 @@ LfRightSteer::LfRightSteer(Resources& gameResources, b2World* world, const Vecto
 
 	// Size and position is in stage coordinates
 
-	setSize(1.2, 1.0);
+	setSize(1.2f, 1.0f);
 //	setPosition(pos);
 	setAnchor(Vector2(0.5f, 0.5f));
 	setTouchChildrenEnabled(false);
@@ -285,11 +285,11 @@ LfRightSteer::LfRightSteer(Resources& gameResources, b2World* world, const Vecto
 	b2Vec2 vertices[5];
 
 	// Polygon of a body shape is physical coordinates, i.e. in meters
-	vertices[4].Set(-0.6, 0.5);
-	vertices[3].Set(-0.6, -0.5);
-	vertices[2].Set(0.6, -0.5);
-	vertices[1].Set(0.6, 0.5);
-	vertices[0].Set(-0.6, 0.5);
+	vertices[4].Set(-0.6f, 0.5f);
+	vertices[3].Set(-0.6f, -0.5f);
+	vertices[2].Set(0.6f, -0.5f);
+	vertices[1].Set(0.6f, 0.5f);
+	vertices[0].Set(-0.6f, 0.5f);
 
 	b2PolygonShape polyShape;
 
@@ -321,14 +321,14 @@ LfLeftSteer::LfLeftSteer(Resources& gameResources, b2World* world, const Vector2
 
 	// Size and position is in stage coordinates
 
-	setSize(1.2, 1.0);
+	setSize(1.2f, 1.0f);
 //	setPosition(pos);
 	setAnchor(Vector2(0.5f, 0.5f));
 	setTouchChildrenEnabled(false);
 
 	b2BodyDef bodyDef;
 	bodyDef.type = b2_dynamicBody;
-	bodyDef.position = PhysDispConvert::convert(pos / Scales::c_physToStageScale, 1.0);
+	bodyDef.position = PhysDispConvert::convert(pos / Scales::c_physToStageScale, 1.0f);
 
 	m_body = world->CreateBody(&bodyDef);
 
@@ -337,11 +337,11 @@ LfLeftSteer::LfLeftSteer(Resources& gameResources, b2World* world, const Vector2
 	b2Vec2 vertices[5];
 
 	// Polygon of a body shape is physical coordinates, i.e. in meters
-	vertices[4].Set(-0.6, 0.5);
-	vertices[3].Set(-0.6, -0.5);
-	vertices[2].Set(0.6, -0.5);
-	vertices[1].Set(0.6, 0.5);
-	vertices[0].Set(-0.6, 0.5);
+	vertices[4].Set(-0.6f, 0.5f);
+	vertices[3].Set(-0.6f, -0.5f);
+	vertices[2].Set(0.6f, -0.5f);
+	vertices[1].Set(0.6f, 0.5f);
+	vertices[0].Set(-0.6f, 0.5f);
 
 	b2PolygonShape polyShape;
 

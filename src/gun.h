@@ -46,7 +46,7 @@ public:
       b2Vec2 emitterOrigin, 
       float angle, 
       float fireRate,
-      float lifetime,
+      int lifetime,
       float bulletSpeed,
       bool bouncy
    );

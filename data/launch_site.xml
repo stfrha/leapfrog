@@ -1,0 +1,176 @@
+<?xml version="1.0"?>
+<compoundObject>
+	<staticPolygon 
+		name="grotto"
+		texture="crater_rock"
+		posX="-300"
+		posY="-250"
+		width="9"
+		height="106.7">
+		<vertices>
+			<vertex id="1" x="-28" y="148" />
+			<vertex id="2" x="55" y="169" />
+			<vertex id="3" x="60" y="474" />
+			<vertex id="4" x="536" y="476" />
+			<vertex id="5" x="642" y="344" />
+			<vertex id="6" x="724" y="423" />
+			<vertex id="7" x="920" y="301" />
+			<vertex id="8" x="916" y="118" />
+			<vertex id="9" x="658" y="115" />
+			<vertex id="10" x="669" y="202" />
+			<vertex id="11" x="804" y="207" />
+			<vertex id="12" x="802" y="284" />
+			<vertex id="13" x="591" y="264" />
+			<vertex id="14" x="595" y="24" />
+			<vertex id="15" x="1029" y="21" />
+			<vertex id="16" x="1023" y="588" />
+			<vertex id="17" x="-33" y="562" />
+		</vertices>
+		<triangles>
+			<triangle id="1" v1="1" v2="2" v3="17" />
+			<triangle id="2" v1="2" v2="3" v3="17" />
+			<triangle id="3" v1="3" v2="4" v3="16" />
+			<triangle id="4" v1="4" v2="5" v3="6" />
+			<triangle id="5" v1="4" v2="6" v3="16" />
+			<triangle id="6" v1="6" v2="7" v3="16" />
+			<triangle id="7" v1="7" v2="8" v3="15" />
+			<triangle id="8" v1="8" v2="14" v3="15" />
+			<triangle id="9" v1="8" v2="9" v3="14" />
+			<triangle id="10" v1="9" v2="13" v3="14" />
+			<triangle id="11" v1="9" v2="10" v3="13" />
+			<triangle id="12" v1="10" v2="11" v3="12" />
+			<triangle id="13" v1="7" v2="15" v3="16" />
+			<triangle id="14" v1="3" v2="16" v3="17" />
+			<triangle id="15" v1="10" v2="12" v3="13" />
+		</triangles>
+	</staticPolygon>
+	<staticPolygon
+		name="foundation"
+		texture="crater_rock"
+		posX="0"
+		posY="0"		
+		width="9"
+		height="106.7">
+		<vertices>
+			<vertex id="1" x="0" y="0" />
+			<vertex id="2" x="0" y="-42" />
+			<vertex id="3" x="20" y="-42" />
+			<vertex id="4" x="34" y="-15" />
+			<vertex id="5" x="51.4" y="-15" />
+			<vertex id="6" x="59.6" y="-21" />
+			<vertex id="7" x="64.5" y="-22.5" />
+			<vertex id="8" x="69.5" y="-21" />
+			<vertex id="9" x="78.5" y="-15" />
+			<vertex id="10" x="95.2" y="-15" />
+			<vertex id="11" x="109.3" y="-42" />
+			<vertex id="12" x="129.2" y="-42" />
+			<vertex id="13" x="129.2" y="0" />
+			<vertex id="14" x="64.5" y="0" />
+		</vertices>
+		<triangles>
+			<triangle id="1" v1="1" v2="3" v3="2" />
+			<triangle id="2" v1="1" v2="3" v3="4" />
+			<triangle id="3" v1="1" v2="4" v3="14" />
+			<triangle id="4" v1="4" v2="5" v3="14" />
+			<triangle id="5" v1="5" v2="6" v3="14" />
+			<triangle id="6" v1="6" v2="7" v3="14" />
+			<triangle id="7" v1="7" v2="8" v3="14" />
+			<triangle id="8" v1="8" v2="9" v3="14" />
+			<triangle id="9" v1="9" v2="10" v3="14" />
+			<triangle id="10" v1="14" v2="10" v3="13" />
+			<triangle id="11" v1="10" v2="13" v3="11" />
+			<triangle id="12" v1="11" v2="12" v3="13" />
+		</triangles>
+	</staticPolygon>
+	<staticBox
+		name="leftTower"
+		texture="ls_tower"
+		width="9"
+		height="106.7"
+		anchorX="0.5"
+		anchorY="0.5"
+		posX="36.3"
+		posY="-68.35" />
+	<staticBox
+		name="rightTower"
+		texture="ls_tower"
+		width="9"
+		height="106.7"
+		anchorX="0.5"
+		anchorY="0.5"
+		posX="94.08"
+		posY="-68.35" />
+	<dynamicPolygon
+		name="leftRestLeftFootGlider"
+		texture="ls_left_foot_glider"
+		width="3.4"
+		height="2.2"
+		posX="53.2"
+		posY="-90.2">
+		<vertices>
+			<vertex id="1" x="-1.7" y="1.1" />
+			<vertex id="2" x="1.7" y="1.1" />
+			<vertex id="3" x="0.487" y="-1.1" />
+			<vertex id="4" x="-1.7" y="-1.1" />
+		</vertices>
+		<triangles>
+			<triangle id="1" v1="1" v2="3" v3="2" />
+			<triangle id="2" v1="1" v2="4" v3="3" />
+		</triangles>
+	</dynamicPolygon>
+	<dynamicPolygon
+		name="leftRestRightFootGlider"
+		texture="ls_right_foot_glider"
+		width="3.4"
+		height="2.2"
+		posX="59.98"
+		posY="-90.2">
+		<vertices>
+			<vertex id="1" x="-1.7" y="1.1" />
+			<vertex id="2" x="1.7" y="1.1" />
+			<vertex id="3" x="1.7" y="-1.1" />
+			<vertex id="4" x="-0.487" y="-1.1" />
+		</vertices>
+		<triangles>
+			<triangle id="1" v1="1" v2="3" v3="2" />
+			<triangle id="2" v1="1" v2="4" v3="3" />
+		</triangles>
+	</dynamicPolygon>
+	<staticBox 
+		name="leftRest"
+		texture="ls_left_leg_rest"
+		width="19.275"
+		height="3.24"
+		anchorX="0.5"
+		anchorY="0.5"
+		posX="52.04"
+		posY="-90.2" />
+	<staticBox 
+		name="rightRest"
+		texture="ls_right_leg_rest"
+		width="19.275"
+		height="3.24"
+		anchorX="0.5"
+		anchorY="0.5"
+		posX="77.88"
+		posY="-90.2" />
+	<staticBox 
+		name="leftRestTrolley"
+		texture="ls_left_trolley"
+		width="4.85"
+		height="7.45"
+		anchorX="0.5"
+		anchorY="0.5"
+		posX="43.23"
+		posY="-90.2" />
+	<staticBox 
+		name="rightRestTrolley"
+		texture="ls_right_trolley"
+		width="4.85"
+		height="7.45"
+		anchorX="0.5"
+		anchorY="0.5"
+		posX="87.16"
+		posY="-90.2" />
+</compoundObject>
+

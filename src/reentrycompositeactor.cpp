@@ -95,23 +95,102 @@ void ReentryCompositeActor::doUpdate(const UpdateState& us)
          {
             m_planetActor->stopBurn();
             m_leapFrog->fireMainBooster(false);
+            m_leapFrog->fireReentryFlames(true);
             m_burnedLastUpdate = false;
 
             // Here the burn is complete
             float burnAmount = m_planetActor->getBurnAmount();
 
-            if ((burnAmount > 0.6f) && (burnAmount < 0.8f))
-            {
-               m_planetActor->startReentry();
-               m_reentryStartTime = us.time;
-               m_state = RES_REENTRY;
-            }
+            m_planetActor->startReentry((0.7f - burnAmount) / 0.1f, 150.0f);
+            m_reentryStartTime = us.time;
+            m_state = RES_REENTRY;
          }
       }
    }
    else if (m_state == RES_REENTRY)
    {
-      m_leapFrog->setHoldAngle(m_planetActor->getReentryLeapfrogAngle(us.time - m_reentryStartTime) - MATH_PI / 2.0f);
+      int time = us.time - m_reentryStartTime;
+      float burnAmount = m_planetActor->getBurnAmount();
+      
+      if (burnAmount > 0.8)
+      {
+         // Too much break burn, falls too fast, burns on reentry
+         if (time < 5000)
+         {
+            m_leapFrog->setHoldAngle(m_planetActor->getReentryLeapfrogAngle((float)(us.time - m_reentryStartTime)) - MATH_PI / 2.0f);
+
+            if (time > 3333)
+            {
+               // increse burn
+               unsigned int heat = (time - 3333.0f) * 255 / 1666;
+
+               if (heat > 255)
+               {
+                  heat = 255;
+               }
+
+               m_leapFrog->reentrySetHeat((unsigned char)heat);
+            }
+         }
+         else
+         {
+            // Dissassemble the leapfrog to pieces whith flames
+            m_leapFrog->setInstantAngle(20.0 * MATH_PI);
+
+            if (time > 9000)
+            {
+               // Dissasmble leapfrog
+               m_leapFrog->breakJoints();
+            }
+
+         }
+      }
+      else if (burnAmount < 0.6)
+      {
+         // Too little break burn, going too fast, bounce off of atmosphere
+         if (time < 5000)
+         {
+            m_leapFrog->setHoldAngle(m_planetActor->getReentryLeapfrogAngle((float)(us.time - m_reentryStartTime)) - MATH_PI / 2.0f);
+
+            if (time > 3333)
+            {
+               // increse burn
+               m_leapFrog->reentrySetHeat((time - 3333.0f) * 255 / 3333);
+            }
+         }
+         else
+         {
+            // Remove heat and tumble the leapfrog
+            m_leapFrog->setInstantAngle(20.0 * MATH_PI);
+            m_leapFrog->reentrySetHeat(0);
+         }
+
+      }
+      else
+      { 
+         m_leapFrog->setHoldAngle(m_planetActor->getReentryLeapfrogAngle((float)(us.time - m_reentryStartTime)) - MATH_PI / 2.0f);
+
+         // TODO: Model the reentry flames intensity as a heat-value from 0 (no flames) to 255 (max flame)
+         // which now should be a function of the time since reentry began
+         if (time > 9000)
+         {
+            // decrese burn
+            unsigned char heat = (10000 - time) * 255 / 1000;
+            m_leapFrog->reentrySetHeat(heat);
+         }
+         else if (time > 3333)
+         {
+            // increse burn
+            unsigned int heat = (time - 3333.0f) * 255 / 3333;
+
+            if (heat > 255)
+            {
+               heat = 255;
+            }
+
+            m_leapFrog->reentrySetHeat((unsigned char)heat);
+         }
+      }
    }
 
 

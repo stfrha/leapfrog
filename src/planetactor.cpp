@@ -52,7 +52,7 @@ void PlanetActor::orbitEstablished(void)
    crs->setAnchor(0.5f, 0.5f);
 
    float planetAngle = m_planet->getRotation();
-   float alpha = -100.0 / 180.0f * MATH_PI - planetAngle;
+   float alpha = -100.0f / 180.0f * MATH_PI - planetAngle;
    crs->setPosition(Vector2(3500.0f * cos(alpha), 3500.0f * sin(alpha)));
    crs->setRotation(alpha + MATH_PI / 2.0f);
    crs->attachTo(m_planet);
@@ -126,12 +126,41 @@ void PlanetActor::doUpdate(const UpdateState& us)
 }
 
 
-void PlanetActor::startReentry(void)
+void PlanetActor::startReentry(float relativeBurnDeviation, float deviationDistance)
+// The relativeBurnDeviation is the relative error from the 
+// ideal brun rate. If this is 0, the trajectory is perfect
+// If it is -1 the burn was just on the edge of bouncing
+// off of the atmosphere. It it is 1 the burn was just on 
+// the edge to make the leapfrog bounce back into space
+// This value is used to check what trajectory to use, 
+// the ideal with a deviation of the bouncy one and also
+// to apply a small deviation to the x-value of the ideal
+// tracjectory points. The small deviation to use in each point
+// should sum up to the supplied deviationDistance.
 {
+   // TODO: Check if the relativeBurnDeviation is above 1
+   // in which case a bouncy trajectory should be used.
+
    spTweenQueue frogTweenQueue = new TweenQueue;
-   for (int i = 1; i < 44; i++)
+   if (relativeBurnDeviation > 1.0f)
    {
-      frogTweenQueue->add(Actor::TweenPosition(c_trajectoryPositions[i] + m_orbitStartPos), 220);
+      // Create bouncy trajectory
+      for (int i = 1; i < 44; i++)
+      {
+         Vector2 idelaPos = c_bouncyTrajectoryPositions[i] + m_orbitStartPos;
+         Vector2 burnDeviation = Vector2(i * relativeBurnDeviation * deviationDistance / 44.0f, 0.0f);
+         frogTweenQueue->add(Actor::TweenPosition(idelaPos + burnDeviation), 220);
+      }
+   }
+   else
+   {
+      // Create planetary trajectory
+      for (int i = 1; i < 44; i++)
+      {
+         Vector2 idelaPos = c_trajectoryPositions[i] + m_orbitStartPos;
+         Vector2 burnDeviation = Vector2(i * relativeBurnDeviation * deviationDistance / 44.0f, 0.0f);
+         frogTweenQueue->add(Actor::TweenPosition(idelaPos + burnDeviation), 220);
+      }
    }
    m_positionIndicator->addTween(frogTweenQueue);
 }
@@ -258,11 +287,16 @@ const float PlanetActor::c_trajectoryAngles[] =
    1.402040594f,
    1.532198675f,
    1.550798993f,
-   -1.522234345f,
-   -1.402040594f,
-   -1.314482639f,
-   -1.235633278f,
+   1.619358309f,
+   1.73955206f,
+   1.827110015f,
+   1.905959376f,
+   1.905959376f,
+   1.905959376f,
+   1.905959376f
 };
+
+
 
 
 const Vector2 PlanetActor::c_trajectoryPositions[] =
@@ -314,3 +348,54 @@ const Vector2 PlanetActor::c_trajectoryPositions[] =
 };
 
 
+const Vector2 PlanetActor::c_bouncyTrajectoryPositions[] =
+{
+   { 0.0f, 0.0f },
+{50.0f, 0.555709962f },
+{99.98764517f, 2.224146567f },
+{149.938128f, 5.008418174f },
+{199.8263639f, 8.913183688f },
+{249.6268141f, 13.94468182f },
+{299.3133014f, 20.11076644f },
+{348.8588159f, 27.4209483f },
+{398.2353089f, 35.88644312f },
+{447.4134701f, 45.52022622f },
+{496.3624862f, 56.33709354f },
+{545.0497754f, 68.35372894f },
+{593.4406943f, 81.58877709f },
+{641.4982122f, 96.06292163f },
+{689.1825459f, 111.7989671f },
+{736.4507499f, 128.8219233f },
+{783.2562542f, 147.1590899f },
+{829.5483409f, 166.840138f },
+{875.2715515f, 187.8971846f },
+{920.3650146f, 210.364855f },
+{965.4584776f, 210.364855f },
+{1010.551941f, 187.8971846f },
+{1055.645404f, 166.840138f },
+{1100.738867f, 147.1590899f },
+{1145.83233f, 128.8219233f },
+{1190.925793f, 111.7989671f },
+{1236.019256f, 96.06292163f },
+{1281.112719f, 81.58877709f },
+{1326.206182f, 68.35372894f },
+{1371.299645f, 56.33709354f },
+{1416.393108f, 45.52022622f },
+{1461.486571f, 35.88644312f },
+{1506.580034f, 27.4209483f },
+{1551.673497f, 20.11076644f },
+{1596.76696f, 13.94468182f },
+{1641.860424f, 8.913183688f },
+{1686.953887f, 5.008418174f },
+{1732.04735f, 2.224146567f },
+{1777.140813f, 0.555709962f },
+{1822.234276f, 0.0f },
+{ 1822.234276f, 0.0f },
+{ 1822.234276f, 0.0f },
+{ 1822.234276f, 0.0f },
+{ 1822.234276f, 0.0f },
+{ 1822.234276f, 0.0f },
+{ 1822.234276f, 0.0f },
+{ 1822.234276f, 0.0f },
+{ 1822.234276f, 0.0f },
+};

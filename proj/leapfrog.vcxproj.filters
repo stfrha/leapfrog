@@ -261,6 +261,18 @@
     <ClCompile Include="..\src\reentrycompositeactor.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\reentryflameparticle.cpp">
+      <Filter>Particles</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\reentryflameemitter.cpp">
+      <Filter>Particles</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\compoundobject.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\polygonvertices.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Box2D\Box2D\Box2D\Collision\Shapes\b2ChainShape.h">
@@ -480,6 +492,18 @@
       <Filter>Particles</Filter>
     </ClInclude>
     <ClInclude Include="..\src\reentrycompositeactor.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\reentryflameparticle.h">
+      <Filter>Particles</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\reentryflameemitter.h">
+      <Filter>Particles</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\compoundobject.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\polygonvertices.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

@@ -167,6 +167,7 @@
     <ClCompile Include="..\src\blastparticle.cpp" />
     <ClCompile Include="..\src\Box2DDebugDraw.cpp" />
     <ClCompile Include="..\src\bullet.cpp" />
+    <ClCompile Include="..\src\compoundobject.cpp" />
     <ClCompile Include="..\src\flameemitter.cpp" />
     <ClCompile Include="..\src\flameparticle.cpp" />
     <ClCompile Include="..\src\freespaceactor.cpp" />
@@ -180,7 +181,10 @@
     <ClCompile Include="..\src\marker.cpp" />
     <ClCompile Include="..\src\physdispconvert.cpp" />
     <ClCompile Include="..\src\planetactor.cpp" />
+    <ClCompile Include="..\src\polygonvertices.cpp" />
     <ClCompile Include="..\src\reentrycompositeactor.cpp" />
+    <ClCompile Include="..\src\reentryflameemitter.cpp" />
+    <ClCompile Include="..\src\reentryflameparticle.cpp" />
     <ClCompile Include="..\src\reentrysceneactor.cpp" />
     <ClCompile Include="..\src\scales.cpp" />
     <ClCompile Include="..\src\sceneactor.cpp" />
@@ -243,6 +247,7 @@
     <ClInclude Include="..\src\blastparticle.h" />
     <ClInclude Include="..\src\bullet.h" />
     <ClInclude Include="..\src\collisionentity.h" />
+    <ClInclude Include="..\src\compoundobject.h" />
     <ClInclude Include="..\src\flameemitter.h" />
     <ClInclude Include="..\src\flameparticle.h" />
     <ClInclude Include="..\src\freespaceactor.h" />
@@ -255,7 +260,10 @@
     <ClInclude Include="..\src\marker.h" />
     <ClInclude Include="..\src\physdispconvert.h" />
     <ClInclude Include="..\src\planetactor.h" />
+    <ClInclude Include="..\src\polygonvertices.h" />
     <ClInclude Include="..\src\reentrycompositeactor.h" />
+    <ClInclude Include="..\src\reentryflameemitter.h" />
+    <ClInclude Include="..\src\reentryflameparticle.h" />
     <ClInclude Include="..\src\reentrysceneactor.h" />
     <ClInclude Include="..\src\scales.h" />
     <ClInclude Include="..\src\sceneactor.h" />

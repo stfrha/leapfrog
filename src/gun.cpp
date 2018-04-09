@@ -13,7 +13,7 @@ Gun::Gun(
    b2Vec2 emitterOrigin,
    float angle,
    float fireRate,
-   float lifetime,
+   int lifetime,
    float bulletSpeed,
    bool bouncy) :
    m_fire(false),
@@ -21,7 +21,7 @@ Gun::Gun(
    m_emitterBody(body),
    m_emitterOrigin(emitterOrigin),
    m_emittAngle(angle),
-   m_interval(1.0f / fireRate * 1000.0),
+   m_interval(1.0f / fireRate * 1000.0f),
    m_lifetime(lifetime),
    m_bulletSpeed(bulletSpeed),
    m_gameResources(&gameResources),
@@ -43,7 +43,7 @@ void Gun::startGun(void)
       // we reset m_timeSinceLast
       // Setting this to above m_interval will cause an immediate shot
       // when fire is pressed
-      m_timeSinceLast = m_interval + 1;
+      m_timeSinceLast = (int)m_interval + 1;
    }
 
    m_fire = true;

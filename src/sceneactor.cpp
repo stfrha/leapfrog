@@ -12,7 +12,7 @@ SceneActor::SceneActor(Resources& gameResources) :
 	m_physToStageScale(1.0f),
    m_panorateMode(PME_CENTER)
 {
-	Point size = Point(1000.0f, 500.0f);
+	Point size = Point(1000, 500);
 	setSize(size);
 
 	m_world = new b2World(b2Vec2(0.0f, 0.0f));
@@ -65,11 +65,11 @@ void SceneActor::doUpdate(const UpdateState& us)
 	
 	if (data[SDL_SCANCODE_KP_PLUS])
 	{
-		m_zoomScale *= 1.1;
+		m_zoomScale *= 1.1f;
 	}
 	else if (data[SDL_SCANCODE_KP_MINUS])
 	{
-		m_zoomScale *= 0.9;
+		m_zoomScale *= 0.9f;
 	}
 
 	m_stageToViewPortScale = m_zoomScale * Scales::c_stageToViewPortScale;
@@ -145,6 +145,16 @@ void SceneActor::doUpdate(const UpdateState& us)
       m_leapfrog->setInstantAngle(0.0f);
    }
 
+   if (data[SDL_SCANCODE_KP_9])
+   {
+      m_leapfrog->fireReentryFlames(true);
+   }
+   else if (data[SDL_SCANCODE_1])
+   {
+      m_leapfrog->fireReentryFlames(false);
+   }
+
+
 	//update each body position on display
 	b2Body* body = m_world->GetBodyList();
 	while (body)
@@ -192,15 +202,15 @@ void SceneActor::doUpdate(const UpdateState& us)
    
    if (m_panorateMode == PME_CENTER)
    {
-      wantedVpPos = Vector2(vpSize.x / 2, vpSize.y / 2);
+      wantedVpPos = Vector2(vpSize.x / 2.0f, vpSize.y / 2.0f);
    }
    else if (m_panorateMode == PME_TOP)
    { 
-      wantedVpPos = Vector2(vpSize.x / 2, vpSize.y * 0.1f);
+      wantedVpPos = Vector2(vpSize.x / 2.0f, vpSize.y * 0.1f);
    }
    else if (m_panorateMode == PME_BOTTOM)
    {
-      wantedVpPos = Vector2(vpSize.x / 2, vpSize.y * 0.9f);
+      wantedVpPos = Vector2(vpSize.x / 2.0f, vpSize.y * 0.9f);
    }
    else if (m_panorateMode == PME_TOP_LEFT)
    {

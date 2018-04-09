@@ -4,6 +4,7 @@
 #include "Box2DDebugDraw.h"
 #include "Box2D/Box2D.h"
 #include "flameemitter.h"
+#include "reentryflameemitter.h"
 #include "gun.h"
 #include "collisionentity.h"
 #include "shield.h"
@@ -135,6 +136,7 @@ private:
    spLfFoot m_lfLeftFoot;
    spLfRightSteer m_lfRightSteer;
    spLfLeftSteer m_lfLeftSteer;
+
    b2WeldJoint* m_boostJoint;
    b2WeldJoint* m_rightSteerJoint;
    b2WeldJoint* m_leftSteerJoint;
@@ -160,6 +162,9 @@ private:
    spFlameEmitter m_boosterFlame;
    spFlameEmitter m_leftSteerFlame;
    spFlameEmitter m_rightSteerFlame;
+   spReentryFlameEmitter m_reentryFlameEmitterBooster;
+   spReentryFlameEmitter m_reentryFlameEmitterRightLeg;
+   spReentryFlameEmitter m_reentryFlameEmitterLeftLeg;
 
    spGun m_gun;
 
@@ -199,10 +204,13 @@ public:
    void fireMainBooster(bool fire);
 	void fireSteeringBooster(int dir); // -1 is counter clockwise, 1 is clockwise
    void fireGun(bool fire);
+   void fireReentryFlames(bool fire);
+   void reentrySetHeat(unsigned char heatAmount);   // 0 = off, 1 = coldest, 255 = hottest, most intense
    void setBoundedWallsActor(FreeSpaceActor* actor);
    void setInstantAngle(float angle);
    void setHoldAngle(float angle);
    void releaseHoldAngle(void);
+   void breakJoints(void);
 
 
 private:

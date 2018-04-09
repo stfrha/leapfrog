@@ -34,6 +34,7 @@ private:
    const static float c_relativeTrajectoryAngles[];
    const static float c_trajectoryAngles[];
    const static oxygine::Vector2 c_trajectoryPositions[];
+   const static oxygine::Vector2 c_bouncyTrajectoryPositions[];
 
    PlanetActorStateEnum m_state;
    oxygine::Vector2 m_orbitStartPos;
@@ -49,7 +50,7 @@ private:
 public:
    PlanetActor(oxygine::Resources& gameResources);
    void orbitEstablished(void);
-   void startReentry(void);
+   void startReentry(float relativeBurnDeviation, float deviationDistance);
    void startBurn(void);
    void stopBurn(void);
    float getBurnAmount(void);
