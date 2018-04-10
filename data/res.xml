@@ -30,12 +30,14 @@
 		<image file="ls_left_tank_holder.png"/>	
 		<image file="ls_left_trolley.png"/>	
 		<image file="ls_left_wire.png"/>	
-		<image file="ls_booster_tank.png"/>	
 		<image file="ls_pull_spring.png"/>	
 		<image file="ls_support_booster.png"/>	
 		<image file="ls_tower.png"/>	
 		<image file="ls_foundation.png"/>	
 	</atlas>
+	<atlas clamp2edge="false"> 
+		<image file="ls_booster_tank.png" trim="false" extend="false"/>
+	</atlas>	
 	<atlas clamp2edge="false"> 
 		<image file="ls_left_foot_glider.png" trim="false" extend="false"/>
 	</atlas>	
@@ -44,6 +46,9 @@
 	</atlas>	
 	<atlas clamp2edge="false"> 
 		<image file="rock.png" trim="false" extend="false"/>
+	</atlas>	
+	<atlas clamp2edge="false"> 
+		<image file="grotto.png" trim="false" extend="false"/>
 	</atlas>	
 	<atlas clamp2edge="false"> 
 		<image file="markers.png" trim="false" extend="false"/>
@@ -60,6 +65,9 @@
 	<atlas clamp2edge="false"> 
 		<image file="starfield.png" trim="false" extend="false"/>
 	</atlas>	
+	<atlas clamp2edge="false"> 
+		<image file="concrete.png" trim="false" extend="false"/>
+	</atlas>		
 	<set path = "fonts" />
 	<font file="main.fnt" />	
 </resources>

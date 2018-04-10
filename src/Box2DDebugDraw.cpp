@@ -96,6 +96,12 @@ void Box2DDraw::DrawSegment(const b2Vec2& p1, const b2Vec2& p2, const b2Color& c
     drawPrimitives(false, true, 2, color);
 }
 
+/// Draw a line segment.
+void Box2DDraw::DrawPoint(const b2Vec2& p, float32 size, const b2Color& color)
+{
+}
+
+
 /// Draw a transform. Choose your own length scale.
 /// @param xf a transform.
 void Box2DDraw::DrawTransform(const b2Transform& xf)

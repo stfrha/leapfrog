@@ -1,0 +1,51 @@
+<?xml version="1.0"?>
+<compoundObject>
+	<staticPolygon 
+		name="grotto"
+		texture="grotto"
+		posX="-300"
+		posY="-250"
+		width="512"
+		height="512"
+		zLevel="192"
+		collisionCategory="2048"
+		collisionMask="65535" >
+		<vertices>
+			<vertex id="1" x="-28" y="148" />
+			<vertex id="2" x="55" y="169" />
+			<vertex id="3" x="60" y="474" />
+			<vertex id="4" x="536" y="476" />
+			<vertex id="5" x="642" y="344" />
+			<vertex id="6" x="724" y="423" />
+			<vertex id="7" x="920" y="301" />
+			<vertex id="8" x="916" y="118" />
+			<vertex id="9" x="658" y="115" />
+			<vertex id="10" x="669" y="202" />
+			<vertex id="11" x="804" y="207" />
+			<vertex id="12" x="802" y="284" />
+			<vertex id="13" x="591" y="264" />
+			<vertex id="14" x="595" y="24" />
+			<vertex id="15" x="1029" y="21" />
+			<vertex id="16" x="1023" y="588" />
+			<vertex id="17" x="-33" y="562" />
+		</vertices>
+		<triangles>
+			<triangle id="1" v1="1" v2="2" v3="17" />
+			<triangle id="2" v1="2" v2="3" v3="17" />
+			<triangle id="3" v1="3" v2="4" v3="16" />
+			<triangle id="4" v1="4" v2="5" v3="6" />
+			<triangle id="5" v1="4" v2="6" v3="16" />
+			<triangle id="6" v1="6" v2="7" v3="16" />
+			<triangle id="7" v1="7" v2="8" v3="15" />
+			<triangle id="8" v1="8" v2="14" v3="15" />
+			<triangle id="9" v1="8" v2="9" v3="14" />
+			<triangle id="10" v1="9" v2="13" v3="14" />
+			<triangle id="11" v1="9" v2="10" v3="13" />
+			<triangle id="12" v1="10" v2="11" v3="12" />
+			<triangle id="13" v1="7" v2="15" v3="16" />
+			<triangle id="14" v1="3" v2="16" v3="17" />
+			<triangle id="15" v1="10" v2="12" v3="13" />
+		</triangles>
+	</staticPolygon>
+</compoundObject>
+

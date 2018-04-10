@@ -14,6 +14,7 @@ SmokeParticle::SmokeParticle(
    setPosition(pos);
    setAnchor(Vector2(0.5f, 0.5f));
    setAlpha(64);
+   setPriority(106);
 
    setColor(Color::DarkGray);
 

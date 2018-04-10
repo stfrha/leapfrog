@@ -40,6 +40,7 @@ ReentryCompositeActor::ReentryCompositeActor(Resources& gameResources) :
    test->setResAnim(gameResources.getResAnim("starfield"));
    test->setSize(600.0f, 300.0f);
    test->setPosition(-300.0f, 0.0f);
+   test->setPriority(26);
    test->attachTo(clip);
 
    m_lfStage = new Actor();

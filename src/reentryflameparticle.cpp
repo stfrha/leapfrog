@@ -14,6 +14,8 @@ ReentryFlameParticle::ReentryFlameParticle(
    setAnchor(Vector2(0.5f, 1.0f));
    setScale(0.1f);
    setAlpha(128);
+   setPriority(138);
+
 
    //// Randomise value between 0 and 255
    //float color = static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / 255.0f));

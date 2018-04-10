@@ -1,56 +1,15 @@
 <?xml version="1.0"?>
 <compoundObject>
-	<staticPolygon 
-		name="grotto"
-		texture="crater_rock"
-		posX="-300"
-		posY="-250"
-		width="9"
-		height="106.7">
-		<vertices>
-			<vertex id="1" x="-28" y="148" />
-			<vertex id="2" x="55" y="169" />
-			<vertex id="3" x="60" y="474" />
-			<vertex id="4" x="536" y="476" />
-			<vertex id="5" x="642" y="344" />
-			<vertex id="6" x="724" y="423" />
-			<vertex id="7" x="920" y="301" />
-			<vertex id="8" x="916" y="118" />
-			<vertex id="9" x="658" y="115" />
-			<vertex id="10" x="669" y="202" />
-			<vertex id="11" x="804" y="207" />
-			<vertex id="12" x="802" y="284" />
-			<vertex id="13" x="591" y="264" />
-			<vertex id="14" x="595" y="24" />
-			<vertex id="15" x="1029" y="21" />
-			<vertex id="16" x="1023" y="588" />
-			<vertex id="17" x="-33" y="562" />
-		</vertices>
-		<triangles>
-			<triangle id="1" v1="1" v2="2" v3="17" />
-			<triangle id="2" v1="2" v2="3" v3="17" />
-			<triangle id="3" v1="3" v2="4" v3="16" />
-			<triangle id="4" v1="4" v2="5" v3="6" />
-			<triangle id="5" v1="4" v2="6" v3="16" />
-			<triangle id="6" v1="6" v2="7" v3="16" />
-			<triangle id="7" v1="7" v2="8" v3="15" />
-			<triangle id="8" v1="8" v2="14" v3="15" />
-			<triangle id="9" v1="8" v2="9" v3="14" />
-			<triangle id="10" v1="9" v2="13" v3="14" />
-			<triangle id="11" v1="9" v2="10" v3="13" />
-			<triangle id="12" v1="10" v2="11" v3="12" />
-			<triangle id="13" v1="7" v2="15" v3="16" />
-			<triangle id="14" v1="3" v2="16" v3="17" />
-			<triangle id="15" v1="10" v2="12" v3="13" />
-		</triangles>
-	</staticPolygon>
 	<staticPolygon
 		name="foundation"
-		texture="crater_rock"
+		texture="concrete"
 		posX="0"
 		posY="0"		
-		width="9"
-		height="106.7">
+		width="150"
+		height="105"
+		zLevel="167"
+		collisionCategory="2048"
+		collisionMask="65535" >
 		<vertices>
 			<vertex id="1" x="0" y="0" />
 			<vertex id="2" x="0" y="-42" />
@@ -90,7 +49,10 @@
 		anchorX="0.5"
 		anchorY="0.5"
 		posX="36.3"
-		posY="-68.35" />
+		posY="-68.35"
+		zLevel="166"
+		collisionCategory="32"
+		collisionMask="61439"  />
 	<staticBox
 		name="rightTower"
 		texture="ls_tower"
@@ -99,14 +61,20 @@
 		anchorX="0.5"
 		anchorY="0.5"
 		posX="94.08"
-		posY="-68.35" />
+		posY="-68.35" 
+		zLevel="166"
+		collisionCategory="32"
+		collisionMask="61439"  />
 	<dynamicPolygon
 		name="leftRestLeftFootGlider"
 		texture="ls_left_foot_glider"
 		width="3.4"
 		height="2.2"
 		posX="53.2"
-		posY="-90.2">
+		posY="-90.2"
+		zLevel="166"
+		collisionCategory="32"
+		collisionMask="61439"  >
 		<vertices>
 			<vertex id="1" x="-1.7" y="1.1" />
 			<vertex id="2" x="1.7" y="1.1" />
@@ -124,7 +92,10 @@
 		width="3.4"
 		height="2.2"
 		posX="59.98"
-		posY="-90.2">
+		posY="-90.2"
+		zLevel="166"
+		collisionCategory="32"
+		collisionMask="61439"  >
 		<vertices>
 			<vertex id="1" x="-1.7" y="1.1" />
 			<vertex id="2" x="1.7" y="1.1" />
@@ -136,7 +107,49 @@
 			<triangle id="2" v1="1" v2="4" v3="3" />
 		</triangles>
 	</dynamicPolygon>
-	<staticBox 
+	<dynamicPolygon
+		name="rightRestLeftFootGlider"
+		texture="ls_left_foot_glider"
+		width="3.4"
+		height="2.2"
+		posX="69.94"
+		posY="-90.2"
+		zLevel="166"
+		collisionCategory="32"
+		collisionMask="61439"  >
+		<vertices>
+			<vertex id="1" x="-1.7" y="1.1" />
+			<vertex id="2" x="1.7" y="1.1" />
+			<vertex id="3" x="0.487" y="-1.1" />
+			<vertex id="4" x="-1.7" y="-1.1" />
+		</vertices>
+		<triangles>
+			<triangle id="1" v1="1" v2="3" v3="2" />
+			<triangle id="2" v1="1" v2="4" v3="3" />
+		</triangles>
+	</dynamicPolygon>
+	<dynamicPolygon
+		name="rightRestRightFootGlider"
+		texture="ls_right_foot_glider"
+		width="3.4"
+		height="2.2"
+		posX="77.34"
+		posY="-90.2"
+		zLevel="166"
+		collisionCategory="32"
+		collisionMask="61439"  >
+		<vertices>
+			<vertex id="1" x="-1.7" y="1.1" />
+			<vertex id="2" x="1.7" y="1.1" />
+			<vertex id="3" x="1.7" y="-1.1" />
+			<vertex id="4" x="-0.487" y="-1.1" />
+		</vertices>
+		<triangles>
+			<triangle id="1" v1="1" v2="3" v3="2" />
+			<triangle id="2" v1="1" v2="4" v3="3" />
+		</triangles>
+	</dynamicPolygon>
+	<dynamicBox 
 		name="leftRest"
 		texture="ls_left_leg_rest"
 		width="19.275"
@@ -144,8 +157,11 @@
 		anchorX="0.5"
 		anchorY="0.5"
 		posX="52.04"
-		posY="-90.2" />
-	<staticBox 
+		posY="-90.2"
+		zLevel="166"
+		collisionCategory="32"
+		collisionMask="61439"   />
+	<dynamicBox 
 		name="rightRest"
 		texture="ls_right_leg_rest"
 		width="19.275"
@@ -153,8 +169,11 @@
 		anchorX="0.5"
 		anchorY="0.5"
 		posX="77.88"
-		posY="-90.2" />
-	<staticBox 
+		posY="-90.2"
+		zLevel="166"
+		collisionCategory="32"
+		collisionMask="61439"   />
+	<dynamicBox 
 		name="leftRestTrolley"
 		texture="ls_left_trolley"
 		width="4.85"
@@ -162,8 +181,11 @@
 		anchorX="0.5"
 		anchorY="0.5"
 		posX="43.23"
-		posY="-90.2" />
-	<staticBox 
+		posY="-90.2"
+		zLevel="166"
+		collisionCategory="32"
+		collisionMask="61439"   />
+	<dynamicBox 
 		name="rightRestTrolley"
 		texture="ls_right_trolley"
 		width="4.85"
@@ -171,6 +193,279 @@
 		anchorX="0.5"
 		anchorY="0.5"
 		posX="87.16"
-		posY="-90.2" />
+		posY="-90.2" 
+		zLevel="166"
+		collisionCategory="32"
+		collisionMask="61439"  />
+	<dynamicPolygon 
+		name="mainTank"
+		texture="ls_booster_tank"
+		width="13.2"
+		height="53"
+		posX="65.39"
+		posY="-59.68"
+		zLevel="120"
+		collisionCategory="4096"
+		collisionMask="65503"  >
+		<vertices>
+			<vertex id="1" x="-6.6" y="26.5" />
+			<vertex id="2" x="-6.6" y="-13.7" />
+			<vertex id="3" x="-1.8" y="-26.5" />
+			<vertex id="4" x="1.8" y="-26.5" />
+			<vertex id="5" x="6.6" y="-13.7" />
+			<vertex id="6" x="6.6" y="26.5" />
+		</vertices>
+		<triangles>
+			<triangle id="1" v1="1" v2="4" v3="2" />
+			<triangle id="2" v1="2" v2="4" v3="3" />
+			<triangle id="1" v1="1" v2="4" v3="5" />
+			<triangle id="1" v1="1" v2="5" v3="6" />
+		</triangles>
+	</dynamicPolygon>		
+	<dynamicBox 
+		name="leftSupportBooster"
+		texture="ls_support_booster"
+		width="5.8"
+		height="34.46"
+		anchorX="0.5"
+		anchorY="0.5"
+		posX="55.89"
+		posY="-54.98" 
+		zLevel="120"
+		collisionCategory="4096"
+		collisionMask="65503" />
+	<dynamicBox 
+		name="rightSupportBooster"
+		texture="ls_support_booster"
+		width="5.8"
+		height="34.46"
+		anchorX="0.5"
+		anchorY="0.5"
+		posX="74.89"
+		posY="-54.98"
+		zLevel="120"
+		collisionCategory="4096"
+		collisionMask="65503"  />
+	<dynamicBox 
+		name="leftHolderTrolley"
+		texture="ls_left_trolley"
+		width="4.85"
+		height="7.45"
+		anchorX="0.5"
+		anchorY="0.5"
+		posX="43.23"
+		posY="-45.59"  
+		zLevel="166"
+		collisionCategory="32"
+		collisionMask="61439"/>
+	<dynamicBox 
+		name="leftHolder"
+		texture="ls_left_tank_holder"
+		width="26.564"
+		height="5.739"
+		anchorX="0.5"
+		anchorY="0.5"
+		posX="57"
+		posY="-45.59" 
+		zLevel="166"
+		collisionCategory="32"
+		collisionMask="61439" />
+	<dynamicBox 
+		name="rightHolderTrolley"
+		texture="ls_right_trolley"
+		width="4.85"
+		height="7.45"
+		anchorX="0.5"
+		anchorY="0.5"
+		posX="87.16"
+		posY="-63.97" 
+		zLevel="166"
+		collisionCategory="32"
+		collisionMask="61439" />
+	<dynamicBox 
+		name="rightHolder"
+		texture="ls_right_tank_holder"
+		width="26.564"
+		height="5.739"
+		anchorX="0.5"
+		anchorY="0.5"
+		posX="74"
+		posY="-63.97" 
+		zLevel="166"
+		collisionCategory="32"
+		collisionMask="61439" />
+	<staticBox 
+		name="leftWire"
+		texture="ls_left_wire"
+		width="28.5"
+		height="72.94"
+		anchorX="0.5"
+		anchorY="0.5"
+		posX="17.5"
+		posY="-78" 
+		zLevel="166"
+		collisionCategory="64"
+		collisionMask="0" />
+	<staticBox 
+		name="rightWire"
+		texture="ls_right_wire"
+		width="28.5"
+		height="72.94"
+		anchorX="0.5"
+		anchorY="0.5"
+		posX="112.8"
+		posY="-78" 
+		zLevel="166"
+		collisionCategory="64"
+		collisionMask="0"  />
+	<dynamicBox 
+		name="spring"
+		texture="ls_pull_spring"
+		width="3.7"
+		height="12.2"
+		anchorX="0.5"
+		anchorY="0.5"
+		posX="65.39"
+		posY="-92.28" 
+		zLevel="166"
+		collisionCategory="32"
+		collisionMask="61439"  />
+	<weldJoint
+		name="leftRestLeftGliderJoint"
+		objectAName="leftRest"
+		objectBName="leftRestLeftFootGlider"
+		objectAAnchorX="-1.162"
+		objectAAnchorY="-1.62"
+		objectBAnchorX="-1.7"
+		objectBAnchorY="1.1" />
+	<weldJoint
+		name="leftRestRightGliderJoint"
+		objectAName="leftRest"
+		objectBName="leftRestRightFootGlider"
+		objectAAnchorX="9.638"
+		objectAAnchorY="-1.62"
+		objectBAnchorX="1.7"
+		objectBAnchorY="1.1" />
+	<weldJoint
+		name="rightRestLeftGliderJoint"
+		objectAName="rightRest"
+		objectBName="rightRestLeftFootGlider"
+		objectAAnchorX="-9.638"
+		objectAAnchorY="-1.62"
+		objectBAnchorX="-1.7"
+		objectBAnchorY="1.1" />
+	<weldJoint
+		name="rightRestRightGliderJoint"
+		objectAName="rightRest"
+		objectBName="rightRestRightFootGlider"
+		objectAAnchorX="1.162"
+		objectAAnchorY="-1.62"
+		objectBAnchorX="1.7"
+		objectBAnchorY="1.1" />
+	<revoluteJoint
+		name="leftRestJoint"
+		objectAName="leftRest"
+		objectBName="leftRestTrolley"
+		objectAAnchorX="-9.638"
+		objectAAnchorY="0"
+		objectBAnchorX="0.275"
+		objectBAnchorY="0" />
+	<weldJoint
+		name="leftRestTrolleyJoint"
+		objectAName="leftTower"
+		objectBName="leftRestTrolley"
+		objectAAnchorX="4.5"
+		objectAAnchorY="-22.04"
+		objectBAnchorX="-2,425"
+		objectBAnchorY="0" />
+	<revoluteJoint
+		name="rightRestJoint"
+		objectAName="rightRest"
+		objectBName="rightRestTrolley"
+		objectAAnchorX="9.638"
+		objectAAnchorY="0"
+		objectBAnchorX="-0.275"
+		objectBAnchorY="0" />
+	<weldJoint
+		name="rightRestTrolleyJoint"
+		objectAName="rightTower"
+		objectBName="rightRestTrolley"
+		objectAAnchorX="-4.5"
+		objectAAnchorY="-22.04"
+		objectBAnchorX="2,425"
+		objectBAnchorY="0" />
+	<weldJoint
+		name="leftHolderTrolleyJoint"
+		objectAName="leftTower"
+		objectBName="leftHolderTrolley"
+		objectAAnchorX="4.5"
+		objectAAnchorY="22.04"
+		objectBAnchorX="-2,425"
+		objectBAnchorY="0" />
+	<weldJoint
+		name="rightHolderTrolleyJoint"
+		objectAName="rightTower"
+		objectBName="rightHolderTrolley"
+		objectAAnchorX="-4.5"
+		objectAAnchorY="4.45"
+		objectBAnchorX="2,425"
+		objectBAnchorY="0" />
+	<revoluteJoint
+		name="leftHolderJoint"
+		objectAName="leftHolder"
+		objectBName="leftHolderTrolley"
+		objectAAnchorX="-13.28"
+		objectAAnchorY="0"
+		objectBAnchorX="0.275"
+		objectBAnchorY="0" />
+	<revoluteJoint
+		name="rightHolderJoint"
+		objectAName="rightHolder"
+		objectBName="rightHolderTrolley"
+		objectAAnchorX="13.28"
+		objectAAnchorY="0"
+		objectBAnchorX="-0.275"
+		objectBAnchorY="0" />
+	<weldJoint
+		name="leftHolderTankJoint"
+		objectAName="mainTank"
+		objectBName="leftHolder"
+		objectAAnchorX="0"
+		objectAAnchorY="14.094"
+		objectBAnchorX="8.354"
+		objectBAnchorY="0" />
+	<weldJoint
+		name="rightHolderTankJoint"
+		objectAName="mainTank"
+		objectBName="rightHolder"
+		objectAAnchorX="0"
+		objectAAnchorY="-4.267"
+		objectBAnchorX="-8.8"
+		objectBAnchorY="0" />
+	<weldJoint
+		name="leftSupportBoosterJoint"
+		objectAName="mainTank"
+		objectBName="leftSupportBooster"
+		objectAAnchorX="-6.6"
+		objectAAnchorY="0"
+		objectBAnchorX="2.9"
+		objectBAnchorY="-4.8 " />
+	<weldJoint
+		name="rightSupportBoosterJoint"
+		objectAName="mainTank"
+		objectBName="rightSupportBooster"
+		objectAAnchorX="6.6"
+		objectAAnchorY="0"
+		objectBAnchorX="-2.9"
+		objectBAnchorY="-4.8 " />
+	<weldJoint
+		name="pullSpringJoint"
+		objectAName="mainTank"
+		objectBName="spring"
+		objectAAnchorX="0"
+		objectAAnchorY="-26.5"
+		objectBAnchorX="0"
+		objectBAnchorY="6.1" />
+		
 </compoundObject>
 

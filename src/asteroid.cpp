@@ -82,7 +82,9 @@ Asteroid::Asteroid(
    fixtureDef.shape = &polyShape;
    fixtureDef.density = 5.0f;
    fixtureDef.friction = 1.3f;
-   
+   fixtureDef.filter.categoryBits = 8;
+   fixtureDef.filter.maskBits = 64703;
+
    body->CreateFixture(&fixtureDef);
    body->SetUserData(this);
 

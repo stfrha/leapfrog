@@ -13,6 +13,7 @@ Shield::Shield(Resources& gameResources, b2World* world, const Vector2& pos)
    setScale(16.0f / 512.0f);
    setAlpha(0);
    setAnchor(Vector2(0.5f, 1.0f));
+   setPriority(147);
 
 
    b2BodyDef bodyDef;
@@ -31,7 +32,8 @@ Shield::Shield(Resources& gameResources, b2World* world, const Vector2& pos)
    fixtureDef.density = 0.1f;
    fixtureDef.friction = 0.0f;
    fixtureDef.restitution = 0.3f;
-   fixtureDef.filter.groupIndex = -1;
+   fixtureDef.filter.categoryBits = 16384;
+   fixtureDef.filter.maskBits = 33819;
 
    m_body->CreateFixture(&fixtureDef);
    m_body->SetUserData(this);

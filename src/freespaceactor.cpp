@@ -127,6 +127,7 @@ void FreeSpaceActor::generateBackground(Resources& gameResources)
          background->setSize(512.0f, 512.0f);
          background->setScale(0.5f);
          background->attachTo(this);
+         setPriority(26);
       }
    }
 

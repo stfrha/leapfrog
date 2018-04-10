@@ -2,60 +2,6 @@
 
 using namespace oxygine;
 
-//LfBody::LfBody(Resources& gameResources, b2World* world, const Vector2& pos, float scale, int16 groupIndex)
-//{
-//	setResAnim(gameResources.getResAnim("lf_body"));
-//
-//	// Size and position is in stage coordinates
-//	setSize(9.0, 9.6);
-//	setPosition(pos);
-//	setAnchor(Vector2(0.5f, 0.5f));
-//	setTouchChildrenEnabled(false);
-//
-//	b2BodyDef bodyDef;
-//	bodyDef.type = b2_dynamicBody;
-//	bodyDef.position = PhysDispConvert::convert(pos / Scales::c_physToStageScale, 1.0);
-//
-//	m_body = world->CreateBody(&bodyDef);
-//
-//	setUserData(m_body);
-//
-//	b2Vec2 vertices[7];
-//
-//	// Polygon of a body shape is physical coordinates, i.e. in meters
-//	vertices[6].Set(-4.5, 4.8);
-//	vertices[5].Set(-2.5, -3.7);
-//	vertices[4].Set(-1.5, -4.8);
-//	vertices[3].Set(1.5, -4.8);
-//	vertices[2].Set(2.5, -3.7);
-//	vertices[1].Set(4.5, 4.8);
-//	vertices[0].Set(-4.5, 4.8);
-//
-//	b2PolygonShape polyShape;
-//
-//	polyShape.Set(vertices, 7);
-//
-//	b2FixtureDef fixtureDef;
-//	fixtureDef.shape = &polyShape;
-//	fixtureDef.density = 5.0f;
-//	fixtureDef.friction = 1.3f;
-//	fixtureDef.filter.groupIndex = groupIndex;
-//
-//	m_body->CreateFixture(&fixtureDef);
-//	m_body->SetUserData(this);
-//
-//   m_body->GetFixtureList()->SetUserData((CollisionEntity*)this);
-//
-//   m_body->ResetMassData();
-//
-//}
-//
-//CollisionEntityTypeEnum LfBody::getEntityType(void)
-//{
-//   return CET_ASTEROID;
-//}
-
-
 LfBooster::LfBooster(Resources& gameResources, b2World* world, const Vector2& pos, float scale, int16 groupIndex)
 {
 	setResAnim(gameResources.getResAnim("lf_boost"));
@@ -66,6 +12,7 @@ LfBooster::LfBooster(Resources& gameResources, b2World* world, const Vector2& po
 //	setPosition(pos);
 	setAnchor(Vector2(0.5f, 0.5f));
 	setTouchChildrenEnabled(false);
+   setPriority(128);
 
 	b2BodyDef bodyDef;
 	bodyDef.type = b2_dynamicBody;
@@ -94,7 +41,8 @@ LfBooster::LfBooster(Resources& gameResources, b2World* world, const Vector2& po
 	fixtureDef.shape = &polyShape;
 	fixtureDef.density = 5.0f;
 	fixtureDef.friction = 1.3f;
-	fixtureDef.filter.groupIndex = groupIndex;
+   fixtureDef.filter.categoryBits = 4;
+   fixtureDef.filter.maskBits = 40123;
 
 	m_body->CreateFixture(&fixtureDef);
 	m_body->SetUserData(this);
@@ -118,6 +66,7 @@ LfBigLeg::LfBigLeg(Resources& gameResources, b2World* world, const Vector2& pos,
 //	setPosition(pos);
 	setAnchor(Vector2(0.5f, 0.5f));
 	setTouchChildrenEnabled(false);
+   setPriority(128);
 
    b2BodyDef bodyDef;
 	bodyDef.type = b2_dynamicBody;
@@ -144,7 +93,8 @@ LfBigLeg::LfBigLeg(Resources& gameResources, b2World* world, const Vector2& pos,
 	fixtureDef.shape = &polyShape;
 	fixtureDef.density = 5.0f;
 	fixtureDef.friction = 1.3f;
-	fixtureDef.filter.groupIndex = groupIndex;
+   fixtureDef.filter.categoryBits = 4;
+   fixtureDef.filter.maskBits = 40123;
 
 	m_body->CreateFixture(&fixtureDef);
 	m_body->SetUserData(this);
@@ -168,6 +118,7 @@ LfSmallLeg::LfSmallLeg(Resources& gameResources, b2World* world, const Vector2& 
 //	setPosition(pos);
 	setAnchor(Vector2(0.5f, 0.5f));
 	setTouchChildrenEnabled(false);
+   setPriority(128);
 
 	b2BodyDef bodyDef;
 	bodyDef.type = b2_dynamicBody;
@@ -194,7 +145,8 @@ LfSmallLeg::LfSmallLeg(Resources& gameResources, b2World* world, const Vector2& 
 	fixtureDef.shape = &polyShape;
 	fixtureDef.density = 5.0f;
 	fixtureDef.friction = 1.3f;
-	fixtureDef.filter.groupIndex = groupIndex;
+   fixtureDef.filter.categoryBits = 4;
+   fixtureDef.filter.maskBits = 40123;
 
 	m_body->CreateFixture(&fixtureDef);
 	m_body->SetUserData(this);
@@ -221,6 +173,7 @@ LfFoot::LfFoot(Resources& gameResources, b2World* world, const Vector2& pos, flo
 //	setPosition(pos);
 	setAnchor(Vector2(0.5f, 0.5f));
 	setTouchChildrenEnabled(false);
+   setPriority(128);
 
 	b2BodyDef bodyDef;
 	bodyDef.type = b2_dynamicBody;
@@ -247,7 +200,8 @@ LfFoot::LfFoot(Resources& gameResources, b2World* world, const Vector2& pos, flo
 	fixtureDef.shape = &polyShape;
 	fixtureDef.density = 5.0f;
 	fixtureDef.friction = 1.3f;
-	fixtureDef.filter.groupIndex = groupIndex;
+   fixtureDef.filter.categoryBits = 4;
+   fixtureDef.filter.maskBits = 40123;
 
 
 	m_body->CreateFixture(&fixtureDef);
@@ -273,6 +227,7 @@ LfRightSteer::LfRightSteer(Resources& gameResources, b2World* world, const Vecto
 //	setPosition(pos);
 	setAnchor(Vector2(0.5f, 0.5f));
 	setTouchChildrenEnabled(false);
+   setPriority(128);
 
 	b2BodyDef bodyDef;
 	bodyDef.type = b2_dynamicBody;
@@ -299,7 +254,8 @@ LfRightSteer::LfRightSteer(Resources& gameResources, b2World* world, const Vecto
 	fixtureDef.shape = &polyShape;
 	fixtureDef.density = 5.0f;
 	fixtureDef.friction = 1.3f;
-	fixtureDef.filter.groupIndex = groupIndex;
+   fixtureDef.filter.categoryBits = 4;
+   fixtureDef.filter.maskBits = 40123;
 
 
 	m_body->CreateFixture(&fixtureDef);
@@ -325,6 +281,7 @@ LfLeftSteer::LfLeftSteer(Resources& gameResources, b2World* world, const Vector2
 //	setPosition(pos);
 	setAnchor(Vector2(0.5f, 0.5f));
 	setTouchChildrenEnabled(false);
+   setPriority(128);
 
 	b2BodyDef bodyDef;
 	bodyDef.type = b2_dynamicBody;
@@ -351,7 +308,8 @@ LfLeftSteer::LfLeftSteer(Resources& gameResources, b2World* world, const Vector2
 	fixtureDef.shape = &polyShape;
 	fixtureDef.density = 5.0f;
 	fixtureDef.friction = 1.3f;
-	fixtureDef.filter.groupIndex = groupIndex;
+   fixtureDef.filter.categoryBits = 4;
+   fixtureDef.filter.maskBits = 40123;
 
 
 	m_body->CreateFixture(&fixtureDef);

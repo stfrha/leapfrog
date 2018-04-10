@@ -11,7 +11,10 @@ enum CollisionEntityTypeEnum
    CET_LF_BOOSTER,
    CET_LF_FOOT,
    CET_LF_STEER_BOOSTER,
-   CET_LF_SHIELD
+   CET_LF_SHIELD,
+   CBT_LAUNCH_SITE_STATIC,
+   CBT_LAUNCH_SITE_LOOSE
+
 };
 
 class CollisionEntity

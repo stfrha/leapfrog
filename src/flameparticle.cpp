@@ -16,6 +16,7 @@ FlameParticle::FlameParticle(
    setSize(radius, radius);
    setPosition(PhysDispConvert::convert(pos, 1.0f));
    setAnchor(Vector2(0.5f, 0.5f));
+   setPriority(106);
 
    spTween tranpTween = addTween(Actor::TweenAlpha(0), lifetime);
    spTween scaleTween = addTween(Actor::TweenScale(0.25, 0.25), lifetime);
@@ -38,7 +39,8 @@ FlameParticle::FlameParticle(
    fixtureDef.density = 3.0f;
    fixtureDef.friction = 0.3f;
    fixtureDef.restitution = 0.5f;
-   fixtureDef.filter.groupIndex = -1;
+   fixtureDef.filter.categoryBits = 8192;
+   fixtureDef.filter.maskBits = 56459;
 
    body->CreateFixture(&fixtureDef);
    body->SetUserData(this);

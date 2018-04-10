@@ -41,7 +41,9 @@ Bullet::Bullet(
    fixtureDef.density = 150.0f;
    fixtureDef.friction = 0.3f;
    fixtureDef.restitution = 0.5f;
-   fixtureDef.filter.groupIndex = -1;
+   fixtureDef.filter.categoryBits = 4;
+   fixtureDef.filter.maskBits = 65215;
+
 
    body->CreateFixture(&fixtureDef);
    body->SetUserData(this);

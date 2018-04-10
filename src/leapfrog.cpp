@@ -62,6 +62,7 @@ LeapFrog::LeapFrog(
 	setPosition(pos);
 	setAnchor(Vector2(0.5f, 0.5f));
 	setTouchChildrenEnabled(false);
+   setPriority(128);
 
 	b2BodyDef bodyDef;
 	bodyDef.type = b2_dynamicBody;
@@ -90,7 +91,9 @@ LeapFrog::LeapFrog(
 	fixtureDef.shape = &polyShape;
 	fixtureDef.density = 3.0f;
 	fixtureDef.friction = 1.3f;
-	fixtureDef.filter.groupIndex = -1;
+   fixtureDef.userData = (CollisionEntity*)this;
+   fixtureDef.filter.categoryBits = 4;
+   fixtureDef.filter.maskBits = 40123;
 
 	m_mainBody->CreateFixture(&fixtureDef);
 	m_mainBody->SetUserData(this);

@@ -23,6 +23,7 @@ SoftBoundary::SoftBoundary(
 	setSize(rc.getSize());
 	setPosition(rc.getLeftTop());
 	setAnchor(Vector2(0.5f, 0.5f));
+   setPriority(216);
 
    // Rotate sprite acc to position
    switch (m_repelDir)
@@ -40,51 +41,6 @@ SoftBoundary::SoftBoundary(
       setRotation(MATH_PI / 2.0f);
       break;
    }
-
-
-	//b2BodyDef groundBodyDef;
- //  groundBodyDef.type = b2_kinematicBody;
-	//groundBodyDef.position = PhysDispConvert::convert(getPosition(), 1.0);
-
-   //// Rotate body acc to position
-   //switch (m_repelDir)
-   //{
-   //case RDE_UP:
-   //   groundBodyDef.angle = 0.0f;
-   //   break;
-   //case RDE_DOWN:
-   //   groundBodyDef.angle = MATH_PI;
-   //   break;
-   //case RDE_LEFT:
-   //   groundBodyDef.angle = -MATH_PI / 2.0f;
-   //   break;
-   //case RDE_RIGHT:
-   //   groundBodyDef.angle = MATH_PI / 2.0f;
-   //   break;
-   //}
-
-
-	//b2Body* boundaryBody = world->CreateBody(&groundBodyDef);
-
- //  setUserData(boundaryBody);
-
-	//b2PolygonShape boundaryBox;
-	//b2Vec2 sz = PhysDispConvert::convert(getSize() / Scales::c_physToStageScale / 2, 1);
-	//boundaryBox.SetAsBox(sz.x, sz.y);
-	//boundaryBody->CreateFixture(&boundaryBox, 0.0f);
- //  
- //  // The soft boundary only one fixture, so it is ok to use it
- //  b2Fixture* f = boundaryBody->GetFixtureList();
-
- //  b2Filter filter = f->GetFilterData();
-
- //  filter.groupIndex = -3;
-
- //  f->SetFilterData(filter);
-
- //  boundaryBody->SetUserData(this);
-
-
 }
 
 float SoftBoundary::determineThreshold(const RectF& rc)

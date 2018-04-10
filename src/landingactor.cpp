@@ -3,6 +3,7 @@
 #include "static.h"
 //#include "staticpolygon.h"
 #include "marker.h"
+#include "launchsite.h"
 #include "compoundobject.h"
 
 using namespace oxygine;
@@ -11,7 +12,7 @@ using namespace std;
 LandingActor::LandingActor(Resources& gameResources) :
 	SceneActor(gameResources)
 {
-   setPanorateMode(PME_CENTER);
+   setPanorateMode(PME_TOP);
 
 //   m_world->SetGravity(b2Vec2(0, 1.62));
    m_world->SetGravity(b2Vec2(0, 3.0f));
@@ -50,5 +51,6 @@ LandingActor::LandingActor(Resources& gameResources) :
    //addChild(grotto);
 
 
-   spCompoundObject landingSite = new CompoundObject(gameResources, (Actor*)this, m_world, Vector2(435.52f, 375.0f), string("launch_site.xml"));
+   spLaunchSite launchSite = new LaunchSite(gameResources, (Actor*)this, m_world, Vector2(435.52f, 375.0f), string("launch_site.xml"));
+   spCompoundObject landingSite = new CompoundObject(gameResources, (Actor*)this, m_world, Vector2(435.52f, 375.0f), string("landing_scene.xml"));
 }
