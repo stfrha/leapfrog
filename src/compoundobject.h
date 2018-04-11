@@ -5,7 +5,32 @@
 #include "compoundinterface.h"
 #include "staticpolygon.h"
 
-DECLARE_SMART(CompoundObject, spCompoundObject);
+class PropertyEventTrigger
+{
+private:
+	int	m_triggerType;	// outside range trigger, inside range trigger
+	float m_upperLimit;
+	float m_lowerLimit;
+
+public:
+	PropertyEventTrigger();
+	PropertyEventTrigger(int m_triggerType, float m_upperLimit, float m_lowerLimit);
+};
+
+class ObjectProperty
+{
+private:
+	float m_value;
+	std::vector<PropertyEventTrigger> m_eventTriggers;
+
+public:
+	ObjectProperty();
+	ObjectProperty(float value);
+
+	void setProperty(float value);
+	float getProperty(void);
+	void registerPropertyEventTrigger(int triggerType, float lower, float upper);
+};
 
 class NamedJoint
 {
@@ -24,6 +49,8 @@ public:
    b2Joint* m_joint;
    std::string m_name;
 };
+
+DECLARE_SMART(CompoundObject, spCompoundObject);
 
 class CompoundObject : public oxygine::Actor, public CompoundInterface
 {
