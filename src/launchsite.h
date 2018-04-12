@@ -5,11 +5,16 @@
 #include "collisionentity.h"
 #include "compoundobject.h"
 
-
 DECLARE_SMART(LaunchSite, spLaunchSite);
 
 class LaunchSite : public CompoundObject, public CollisionEntity
 {
+public:
+	enum propertyId
+	{
+		state = 0,
+		lfLanded = 1
+	};
 
 public:
 	LaunchSite(

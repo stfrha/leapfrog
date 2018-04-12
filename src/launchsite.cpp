@@ -13,6 +13,15 @@ LaunchSite::LaunchSite(
    string& defXmlFileName) :
    CompoundObject(gameResources, parent, world, pos, defXmlFileName)
 {
+	b2Joint* leftHolderJoint = getJoint("leftHolderTankJoint");
+	b2Joint* rightHolderJoint = getJoint("rightHolderTankJoint");
+	b2RevoluteJoint* leftHolderTrolleyJoint = (b2RevoluteJoint*) getJoint("leftHolderJoint");
+	b2RevoluteJoint* rightHolderTrolleyJoint = (b2RevoluteJoint*) getJoint("rightHolderJoint");
+
+	world->DestroyJoint(leftHolderJoint);
+	world->DestroyJoint(rightHolderJoint);
+	leftHolderTrolleyJoint->EnableLimit(false);
+	rightHolderTrolleyJoint->EnableLimit(false);
 }
 
 CollisionEntityTypeEnum LaunchSite::getEntityType(void)

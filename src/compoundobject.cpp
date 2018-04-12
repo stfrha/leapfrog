@@ -1,3 +1,5 @@
+#include <algorithm>
+
 #include "polygonvertices.h"
 
 #include "compoundobject.h"
@@ -5,6 +7,147 @@
 using namespace oxygine;
 using namespace std;
 using namespace pugi;
+
+PropertyEventTrigger::PropertyEventTrigger() :
+	m_triggerType(ignore),
+	m_upperLimit(0.0f),
+	m_lowerLimit(0.0f)
+{
+}
+
+PropertyEventTrigger::PropertyEventTrigger(TriggerType triggerType, float upperLimit, float lowerLimit) :
+	m_triggerType(triggerType),
+	m_upperLimit(upperLimit),
+	m_lowerLimit(e_atLowerLimit)
+{
+}
+
+bool PropertyEventTrigger::evaluateTrigger(float value)
+{
+	if (m_triggerType == insideRange)
+	{
+		return ((value >= m_lowerLimit) && (value <= m_upperLimit));
+	}
+	else if (m_triggerType == outsideRange)
+	{
+		return ((value < m_lowerLimit) || (value > m_upperLimit));
+	}
+
+	return false;
+}
+
+
+ObjectProperty::ObjectProperty() :
+	m_value(0.0f),
+	m_id(0)
+{
+}
+
+ObjectProperty::ObjectProperty(int id, float value) :
+	m_value(value),
+	m_id(id)
+{
+}
+
+ObjectProperty::~ObjectProperty()
+{
+	m_eventTriggers.clear();
+	m_dualEventTriggers.clear();
+}
+
+void ObjectProperty::setProperty(float value)
+{
+	m_value = value;
+
+	for (auto it = m_eventTriggers.begin(); it != m_eventTriggers.end(); ++it)
+	{
+		if (it->evaluateTrigger(value))
+		{
+			// Execute trigger
+		}		
+	}
+
+	for (auto it = m_dualEventTriggers.begin(); it != m_dualEventTriggers.end(); ++it)
+	{
+		(*it)->updateProperty(m_id);
+	}
+}
+
+float ObjectProperty::getProperty(void)
+{
+	return m_value;
+}
+
+void ObjectProperty::registerPropertyEventTrigger(
+	PropertyEventTrigger::TriggerType triggerType, 
+	float lower, 
+	float upper)
+{
+	m_eventTriggers.push_back(PropertyEventTrigger(triggerType, upper, lower));
+}
+
+void ObjectProperty::registerDualPropEventTrigger(DualPropEventTrigger* trigger)
+{
+	m_dualEventTriggers.push_back(trigger);
+}
+
+void ObjectProperty::unregisterDualPropEventTrigger(DualPropEventTrigger* trigger)
+{
+	m_dualEventTriggers.erase(
+		remove(
+			m_dualEventTriggers.begin(), 
+			m_dualEventTriggers.end(), trigger), 
+		m_dualEventTriggers.end());
+}
+
+DualPropEventTrigger::DualPropEventTrigger() :
+	m_prop1Id(0),
+	m_prop2Id(0),
+	m_prop1Trigger(PropertyEventTrigger::ignore, 0.0f, 0.0f),
+	m_prop2Trigger(PropertyEventTrigger::ignore, 0.0f, 0.0f)
+{
+}
+
+DualPropEventTrigger::DualPropEventTrigger(int prop1Id, int prop2Id, PropertyEventTrigger& prop1Trigger, PropertyEventTrigger& prop2Trigger) :
+	m_prop1Id(prop1Id),
+	m_prop2Id(prop2Id),
+	m_prop1Trigger(prop1Trigger),
+	m_prop2Trigger(prop2Trigger)
+{
+
+}
+
+void DualPropEventTrigger::updateProperty(int propId)
+{
+	if (propId == m_prop1Id)
+	{
+		if (m_prop1Trigger.evaluateTrigger(propId))
+		{
+			// use pointer to CompoundObject to read value of the 
+			// prop2Id into p2Val
+			float p2Val /* = compoundObject->getValue(m_prop2Id)*/;
+			if (m_prop2Trigger.evaluateTrigger(p2Val))
+			{
+				// Execute Trigger
+			}
+		}
+	}
+	else if (propId == m_prop2Id)
+	{
+		if (m_prop2Trigger.evaluateTrigger(propId))
+		{
+			// use pointer to CompoundObject to read value of the 
+			// prop1Id into p1Val
+			float p1Val /* = compoundObject->getValue(m_prop1Id)*/;
+			if (m_prop1Trigger.evaluateTrigger(p1Val))
+			{
+				// Execute Trigger
+			}
+		}
+	}
+}
+
+
 
 
 CompoundObject::CompoundObject(oxygine::Resources& gameResources, Actor* parent, b2World* world, const oxygine::Vector2& pos, std::string& defXmlFileName)

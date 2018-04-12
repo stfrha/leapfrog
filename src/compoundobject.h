@@ -7,30 +7,62 @@
 
 class PropertyEventTrigger
 {
+public:
+	enum TriggerType
+	{
+		ignore,
+		insideRange,
+		outsideRange
+	};
+
 private:
-	int	m_triggerType;	// outside range trigger, inside range trigger
+	TriggerType	m_triggerType;	// outside range trigger, inside range trigger
 	float m_upperLimit;
 	float m_lowerLimit;
 
 public:
 	PropertyEventTrigger();
-	PropertyEventTrigger(int m_triggerType, float m_upperLimit, float m_lowerLimit);
+	PropertyEventTrigger(TriggerType triggerType, float upperLimit, float lowerLimit);
+
+	bool evaluateTrigger(float value);
+};
+
+class DualPropEventTrigger
+{
+private:
+	int m_prop1Id;
+	int m_prop2Id;
+	PropertyEventTrigger m_prop1Trigger;
+	PropertyEventTrigger m_prop2Trigger;
+
+public:
+	DualPropEventTrigger();
+	DualPropEventTrigger(int prop1Id, int prop2Id, PropertyEventTrigger& prop1Trigger, PropertyEventTrigger& prop2Trigger);
+
+	void updateProperty(int propId);
 };
 
 class ObjectProperty
 {
 private:
+	int m_id;
 	float m_value;
 	std::vector<PropertyEventTrigger> m_eventTriggers;
+	std::vector<DualPropEventTrigger*> m_dualEventTriggers;
 
 public:
 	ObjectProperty();
-	ObjectProperty(float value);
+	ObjectProperty(int id, float value);
+	~ObjectProperty();
 
 	void setProperty(float value);
 	float getProperty(void);
-	void registerPropertyEventTrigger(int triggerType, float lower, float upper);
+	void registerPropertyEventTrigger(PropertyEventTrigger::TriggerType triggerType, float lower, float upper);
+	void registerDualPropEventTrigger(DualPropEventTrigger* trigger);
+	void unregisterDualPropEventTrigger(DualPropEventTrigger* trigger);
 };
+
+
 
 class NamedJoint
 {
