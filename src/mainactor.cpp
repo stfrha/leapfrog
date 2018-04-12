@@ -16,22 +16,7 @@ MainActor::MainActor()
 
 	setSize(getStage()->getSize());
 
-	//spClipRectActor window = new ClipRectActor();
-
-	//window->setSize(getStage()->getSize() - Vector2(100, 100));
-	//window->setPosition(50.0f, 50.0f);
-	//addChild(window);
-
-	//spLandingActor landingActor = new LandingActor(m_gameResources);
-	//window->addChild(landingActor);
-
- //  m_debugDraw = new Box2DDraw;
- //  m_debugDraw->SetFlags(b2Draw::e_shapeBit | b2Draw::e_jointBit | b2Draw::e_pairBit | b2Draw::e_centerOfMassBit);
- //  m_debugDraw->attachTo(landingActor);
- //  m_debugDraw->setWorld(Scales::c_physToStageScale, landingActor->GetWorld());
- //  m_debugDraw->setPriority(1);
-
-   changeToMode(STE_LANDING);
+   startScene(STE_LANDING);
 }
 
 MainActor::~MainActor()
@@ -40,7 +25,7 @@ MainActor::~MainActor()
 	m_gameResources.free();
 }
 
-void MainActor::changeToMode(SceneTypeEnum scene)
+void MainActor::startScene(SceneTypeEnum scene)
 {
    // Clean up current scene
    spActor actor = getFirstChild();
@@ -66,6 +51,8 @@ void MainActor::changeToMode(SceneTypeEnum scene)
 
       spLandingActor landingActor = new LandingActor(m_gameResources);
       window->addChild(landingActor);
+
+      m_sceneObject = static_cast<CompoundObject*>(landingActor.get());
 
       //m_debugDraw = new Box2DDraw;
       //m_debugDraw->SetFlags(b2Draw::e_shapeBit | b2Draw::e_jointBit | b2Draw::e_pairBit | b2Draw::e_centerOfMassBit);
@@ -112,42 +99,61 @@ void MainActor::changeToMode(SceneTypeEnum scene)
    }
 }
 
-void MainActor::doUpdate(const UpdateState& us)
+float MainActor::getProperty(std::string object, int propId)
+{
+   CompoundObject* co = m_sceneObject->getObject(object);
+   if (co)
+   {
+      return co->getProperty(propId);
+   }
+   return -FLT_MAX;
+}
+
+void MainActor::setProperty(std::string object, int propId, float value)
+{
+   CompoundObject* co = m_sceneObject->getObject(object);
+   if (co)
+   {
+      co->setProperty(propId, value);
+   }
+}
+
+void MainActor::registerPropertyTrigger(
+   std::string object,
+   int propId,
+   int eventId,
+   PropertyEventTrigger::TriggerType type,
+   float lowerLimit,
+   float upperLimit)
+{
+   CompoundObject* co = m_sceneObject->getObject(object);
+   if (co)
+   {
+      co->registerPropertyEventTrigger(eventId, propId, type, lowerLimit, upperLimit);
+   }
+}
+
+void MainActor::registerDualPropTrigger(
+   std::string object,
+   int propId,
+   DualPropEventTrigger* trigger)
+{
+   CompoundObject* co = m_sceneObject->getObject(object);
+   if (co)
+   {
+      co->registerDualPropEventTrigger(propId, trigger);
+   }
+}
+
+void MainActor::unregisterDualPropTrigger(
+   std::string object,
+   int eventId)
 {
 
 }
 
-void MainActor::onSystemEvent(Event* ev)
+void MainActor::sendEvent(int eventId)
 {
-	// The following never worked, now it will work even 
-	// less since there is a clipped window between this and the main actor
 
-	//SDL_Event *event = (SDL_Event*)ev->userData;
 
-	//if (event->type != SDL_KEYDOWN)
-	//	return;
-
-	//if (event->key.keysym.sym == SDL_SCANCODE_F1)
-	//{
-	//	// Restart MainActor and start LandingActor
-	//	spLandingActor landingActor = new LandingActor(gameResources);
-	//	addChild(landingActor);
-	//}
-
-	//if (event->key.keysym.sym == SDL_SCANCODE_F2)
-	//{
-	//	// Restart MainActor and start LandingActor
-	//	spActor actor = getFirstChild();
-
-	//	while (actor)
-	//	{
-	//		spActor next = actor->getNextSibling();
-	//		if (actor != NULL)
-	//		{
-	//			actor->detach();
-	//		}
-	//		actor = next;
-	//	}
-	//}
 }
-

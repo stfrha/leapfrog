@@ -1,6 +1,7 @@
 #pragma once
 #include "oxygine-framework.h"
 #include "Box2D/Box2D.h"
+#include "compoundobject.h"
 #include "leapfrog.h"
 #include "scales.h"
 #include "physdispconvert.h"
@@ -17,8 +18,9 @@ enum PanorateModeEnum
 
 DECLARE_SMART(SceneActor, spSceneActor);
 
-class SceneActor : public oxygine::Actor
+class SceneActor : public CompoundObject
 {
+
 protected:
    oxygine::Resources * m_gameResources;
    float	m_zoomScale;

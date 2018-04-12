@@ -7,6 +7,20 @@
 
 DECLARE_SMART(LaunchSite, spLaunchSite);
 
+/*
+Available events:
+- leapfrog landed on leg rest 
+- isPrepared
+- launchSequenceComplete
+- hasLaunched
+
+Available states:
+- initial, boosters and tank attached
+- prepare, leg rests rotate down, leapfrog is attached to spring which is draged into main tank, (leapfrog goes to deep space mode)
+- launch sequence - Stoppable countdown, smoke and small engine fire, 
+- launch execute - Unstoppable countdown, booster fire, is released and all goes up
+*/
+
 class LaunchSite : public CompoundObject, public CollisionEntity
 {
 public:

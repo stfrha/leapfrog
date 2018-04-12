@@ -9,14 +9,16 @@ using namespace std;
 using namespace pugi;
 
 PropertyEventTrigger::PropertyEventTrigger() :
+   m_eventId(0),
 	m_triggerType(ignore),
 	m_upperLimit(0.0f),
 	m_lowerLimit(0.0f)
 {
 }
 
-PropertyEventTrigger::PropertyEventTrigger(TriggerType triggerType, float upperLimit, float lowerLimit) :
-	m_triggerType(triggerType),
+PropertyEventTrigger::PropertyEventTrigger(int eventId, TriggerType triggerType, float upperLimit, float lowerLimit) :
+   m_eventId(0),
+   m_triggerType(triggerType),
 	m_upperLimit(upperLimit),
 	m_lowerLimit(e_atLowerLimit)
 {
@@ -63,7 +65,7 @@ void ObjectProperty::setProperty(float value)
 	{
 		if (it->evaluateTrigger(value))
 		{
-			// Execute trigger
+         // Trigger m_eventId
 		}		
 	}
 
@@ -79,14 +81,15 @@ float ObjectProperty::getProperty(void)
 }
 
 void ObjectProperty::registerPropertyEventTrigger(
+   int eventId,
 	PropertyEventTrigger::TriggerType triggerType, 
 	float lower, 
 	float upper)
 {
-	m_eventTriggers.push_back(PropertyEventTrigger(triggerType, upper, lower));
+	m_eventTriggers.push_back(PropertyEventTrigger(eventId, triggerType, upper, lower));
 }
 
-void ObjectProperty::registerDualPropEventTrigger(DualPropEventTrigger* trigger)
+void ObjectProperty::registerDualPropEventTrigger( DualPropEventTrigger* trigger)
 {
 	m_dualEventTriggers.push_back(trigger);
 }
@@ -101,14 +104,21 @@ void ObjectProperty::unregisterDualPropEventTrigger(DualPropEventTrigger* trigge
 }
 
 DualPropEventTrigger::DualPropEventTrigger() :
+   m_eventId(0),
 	m_prop1Id(0),
 	m_prop2Id(0),
-	m_prop1Trigger(PropertyEventTrigger::ignore, 0.0f, 0.0f),
-	m_prop2Trigger(PropertyEventTrigger::ignore, 0.0f, 0.0f)
+	m_prop1Trigger(0, PropertyEventTrigger::ignore, 0.0f, 0.0f),
+	m_prop2Trigger(0, PropertyEventTrigger::ignore, 0.0f, 0.0f)
 {
 }
 
-DualPropEventTrigger::DualPropEventTrigger(int prop1Id, int prop2Id, PropertyEventTrigger& prop1Trigger, PropertyEventTrigger& prop2Trigger) :
+DualPropEventTrigger::DualPropEventTrigger(
+   int eventId,
+   int prop1Id, 
+   int prop2Id, 
+   PropertyEventTrigger& prop1Trigger, 
+   PropertyEventTrigger& prop2Trigger) :
+   m_eventId(eventId),
 	m_prop1Id(prop1Id),
 	m_prop2Id(prop2Id),
 	m_prop1Trigger(prop1Trigger),
@@ -128,7 +138,7 @@ void DualPropEventTrigger::updateProperty(int propId)
 			float p2Val /* = compoundObject->getValue(m_prop2Id)*/;
 			if (m_prop2Trigger.evaluateTrigger(p2Val))
 			{
-				// Execute Trigger
+				// Trigger m_eventId
 			}
 		}
 	}
@@ -141,7 +151,7 @@ void DualPropEventTrigger::updateProperty(int propId)
 			float p1Val /* = compoundObject->getValue(m_prop1Id)*/;
 			if (m_prop1Trigger.evaluateTrigger(p1Val))
 			{
-				// Execute Trigger
+            // Trigger m_eventId
 			}
 		}
 	}
@@ -574,5 +584,67 @@ b2Joint* CompoundObject::getJointImpl(const std::string& name)
 
    return NULL;
 }
+
+ObjectProperty* CompoundObject::getProp(int propId)
+{
+   if ((propId > 0) && (propId < m_properties.size()))
+   {
+      return &(m_properties[propId]);
+   }
+
+   return NULL;
+}
+
+void CompoundObject::setProperty(int propId, float value)
+{
+   ObjectProperty* p = getProp(propId);
+   if (p)
+   {
+      p->setProperty(value);
+   }
+}
+
+float CompoundObject::getProperty(int propId)
+{
+   ObjectProperty* p = getProp(propId);
+   if (p)
+   {
+      return p->getProperty();
+   }
+}
+
+void CompoundObject::registerPropertyEventTrigger(
+   int propId, 
+   int eventId,
+   PropertyEventTrigger::TriggerType 
+   triggerType, 
+   float lower, 
+   float upper)
+{
+   ObjectProperty* p = getProp(propId);
+   if (p)
+   {
+      return p->registerPropertyEventTrigger(eventId, triggerType, lower, upper);
+   }
+}
+
+void CompoundObject::registerDualPropEventTrigger(int propId, DualPropEventTrigger* trigger)
+{
+   ObjectProperty* p = getProp(propId);
+   if (p)
+   {
+      return p->registerDualPropEventTrigger(trigger);
+   }
+}
+
+void CompoundObject::unregisterDualPropEventTrigger(int propId, DualPropEventTrigger* trigger)
+{
+   ObjectProperty* p = getProp(propId);
+   if (p)
+   {
+      return p->unregisterDualPropEventTrigger(trigger);
+   }
+}
+
 
 

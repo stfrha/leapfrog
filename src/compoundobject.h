@@ -16,13 +16,14 @@ public:
 	};
 
 private:
-	TriggerType	m_triggerType;	// outside range trigger, inside range trigger
+   int m_eventId;
+   TriggerType	m_triggerType;	// outside range trigger, inside range trigger
 	float m_upperLimit;
 	float m_lowerLimit;
 
 public:
 	PropertyEventTrigger();
-	PropertyEventTrigger(TriggerType triggerType, float upperLimit, float lowerLimit);
+	PropertyEventTrigger(int eventId, TriggerType triggerType, float upperLimit, float lowerLimit);
 
 	bool evaluateTrigger(float value);
 };
@@ -30,14 +31,15 @@ public:
 class DualPropEventTrigger
 {
 private:
-	int m_prop1Id;
+   int m_eventId;
+   int m_prop1Id;
 	int m_prop2Id;
 	PropertyEventTrigger m_prop1Trigger;
 	PropertyEventTrigger m_prop2Trigger;
 
 public:
 	DualPropEventTrigger();
-	DualPropEventTrigger(int prop1Id, int prop2Id, PropertyEventTrigger& prop1Trigger, PropertyEventTrigger& prop2Trigger);
+	DualPropEventTrigger(int eventId, int prop1Id, int prop2Id, PropertyEventTrigger& prop1Trigger, PropertyEventTrigger& prop2Trigger);
 
 	void updateProperty(int propId);
 };
@@ -57,7 +59,11 @@ public:
 
 	void setProperty(float value);
 	float getProperty(void);
-	void registerPropertyEventTrigger(PropertyEventTrigger::TriggerType triggerType, float lower, float upper);
+	void registerPropertyEventTrigger(
+      int eventId, 
+      PropertyEventTrigger::TriggerType triggerType, 
+      float lower, 
+      float upper);
 	void registerDualPropEventTrigger(DualPropEventTrigger* trigger);
 	void unregisterDualPropEventTrigger(DualPropEventTrigger* trigger);
 };
@@ -96,6 +102,8 @@ private:
 
    std::vector<CompoundObject*> m_children;
 
+   std::vector<ObjectProperty> m_properties;
+
    bool readDefinitionXmlFile(oxygine::Resources& gameResources, oxygine::Actor* parent, b2World* world, const oxygine::Vector2& pos, std::string& fileName);
    void defineStaticBox(oxygine::Resources& gameResources, oxygine::Actor* parent, b2World* world, const oxygine::Vector2& pos, pugi::xml_node& staticNode);
    void defineStaticPolygon(oxygine::Resources& gameResources, oxygine::Actor* parent, b2World* world, const oxygine::Vector2& pos, pugi::xml_node& staticNode);
@@ -104,6 +112,8 @@ private:
    
    void defineWeldJoint(b2World* world, pugi::xml_node& weldJointNode);
    void defineRevoluteJoint(b2World* world, pugi::xml_node& revoluteJointNode);
+
+   ObjectProperty* getProp(int propId);
 
 public:
    CompoundObject(
@@ -115,8 +125,16 @@ public:
 
    ~CompoundObject();
 
+   // Should these three be protected since they are called by the base class?
    virtual CompoundObject* getObjectImpl(const std::string& name);
    virtual b2Body* getBodyImpl(const std::string& name);
    virtual b2Joint* getJointImpl(const std::string& name);
+
+   void setProperty(int propId, float value);
+   float getProperty(int propId);
+   void registerPropertyEventTrigger(int eventId, int propId, PropertyEventTrigger::TriggerType triggerType, float lower, float upper);
+   void registerDualPropEventTrigger(int propId, DualPropEventTrigger* trigger);
+   void unregisterDualPropEventTrigger(int propId, DualPropEventTrigger* trigger);
+
 };
 

@@ -4,6 +4,7 @@
 #include "landingactor.h"
 #include "freespaceactor.h"
 #include "reentrycompositeactor.h"
+#include "compoundobject.h"
 
 enum SceneTypeEnum
 {
@@ -18,10 +19,6 @@ DECLARE_SMART(MainActor, spMainActor)
 class MainActor : public oxygine::Actor
 {
 private:
-	//spLandingActor m_landingActor;
- //  spFreeSpaceActor m_freeSpaceActor;
- //  spPlanetActor m_planetActor;
-
 	//it is our resources
 	//in real project you would have more than one Resources declarations.
 	//It is important on mobile devices with limited memory and you would load/unload them
@@ -29,16 +26,40 @@ private:
 
    spBox2DDraw m_debugDraw;
 
+   CompoundObject* m_sceneObject;
 
 public:
 
 	MainActor();
 	~MainActor();
 
-   void changeToMode(SceneTypeEnum scene);
+   // Below is the interface to the game manager (LUA script enginge)
+   // "std::string object" are on the form "objectA.objectAsB.objectBsC" in the hierarcical 
+   // CompoundObject structure
 
-	void onSystemEvent(Event* ev);
+   // TODO: Enum to be replaced by file name of scene xml
+   /*
+      startScene reads xml file which builds the tree of CompoundObjects.
+   */
+   void startScene(SceneTypeEnum scene);
 
-	void doUpdate(const UpdateState& us);
+   float getProperty(std::string object, int propId);
+   void setProperty(std::string object, int propId, float value);
+   void registerPropertyTrigger(
+      std::string object,
+      int propId,
+      int eventId,
+      PropertyEventTrigger::TriggerType type,
+      float lowerLimit,
+      float upperLimit);
+   void registerDualPropTrigger(
+      std::string object,
+      int propId,
+      DualPropEventTrigger* trigger);
+   void unregisterDualPropTrigger(
+      std::string object,
+      int eventId);
+   void sendEvent(int eventId);
+
 };
 
