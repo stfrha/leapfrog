@@ -47,5 +47,11 @@
 			<triangle id="15" v1="10" v2="12" v3="13" />
 		</triangles>
 	</staticPolygon>
+	<ChildCompoundObjectRef 
+		type="launch_site"
+		file="launch_site.xml" 
+		posX="435.52"
+		posY="375.0"
+	/>
 </compoundObject>
 

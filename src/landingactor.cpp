@@ -51,6 +51,6 @@ LandingActor::LandingActor(Resources& gameResources) :
    //addChild(grotto);
 
 
-   spLaunchSite launchSite = new LaunchSite(gameResources, (Actor*)this, m_world, Vector2(435.52f, 375.0f), string("launch_site.xml"));
-   spCompoundObject landingSite = new CompoundObject(gameResources, (Actor*)this, m_world, Vector2(435.52f, 375.0f), string("landing_scene.xml"));
+//   spLaunchSite launchSite = new LaunchSite(gameResources, (Actor*)this, m_world, Vector2(435.52f, 375.0f), string("launch_site.xml"));
+   spCompoundObject landingScene = new CompoundObject(gameResources, (Actor*)this, m_world, Vector2(435.52f, 375.0f), string("landing_scene.xml"));
 }

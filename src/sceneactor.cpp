@@ -5,6 +5,7 @@
 using namespace oxygine;
 
 SceneActor::SceneActor(Resources& gameResources) :
+   CompoundObject(gameResources, )
    m_gameResources(&gameResources),
 	m_world(NULL),
 	m_zoomScale(0.40f),

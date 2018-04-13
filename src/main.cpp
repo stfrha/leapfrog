@@ -21,18 +21,18 @@ void onEvent(Event* ev)
       return;
 
 
-   switch (event->key.keysym.scancode)
-   {
-   case SDL_SCANCODE_F1:
-      mainActor->changeToMode(STE_LANDING);
-      break;
-   case SDL_SCANCODE_F2:
-      mainActor->changeToMode(STE_FREE_SPACE);
-      break;
-   case SDL_SCANCODE_F3:
-      mainActor->changeToMode(STE_ORBIT);
-      break;
-   }
+   //switch (event->key.keysym.scancode)
+   //{
+   //case SDL_SCANCODE_F1:
+   //   mainActor->changeToMode(STE_LANDING);
+   //   break;
+   //case SDL_SCANCODE_F2:
+   //   mainActor->changeToMode(STE_FREE_SPACE);
+   //   break;
+   //case SDL_SCANCODE_F3:
+   //   mainActor->changeToMode(STE_ORBIT);
+   //   break;
+   //}
 }
 
 

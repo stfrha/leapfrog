@@ -1,5 +1,11 @@
 #include <algorithm>
 
+// All objects that are derived from CompoundObject
+// and thus can be instansiated as children to one
+// CompoundObject
+#include "launchsite.h"
+
+
 #include "polygonvertices.h"
 
 #include "compoundobject.h"
@@ -212,6 +218,13 @@ bool CompoundObject::readDefinitionXmlFile(Resources& gameResources, Actor* pare
    {
       // define a polygon object
       definePolygonObject(gameResources, parent, world, pos, *it);
+   }
+
+   for (auto it = root.children("ChildCompoundObjectRef").begin();
+      it != root.children("ChildCompoundObjectRef").end();
+      ++it)
+   {
+      defineChildObject(gameResources, parent, world, pos, *it);
    }
 
    for (auto it = root.children("weldJoint").begin();
@@ -456,6 +469,31 @@ void CompoundObject::definePolygonObject(oxygine::Resources& gameResources, Acto
    body->SetUserData(object.get());
 
    m_polygonSprites.push_back(object);
+}
+
+void CompoundObject::defineChildObject(
+   Resources& gameResources, 
+   Actor* parent, 
+   b2World* world, 
+   const Vector2& pos, 
+   xml_node& objectNode)
+{
+   // Decode the type string to create the correct type of object
+   // but only store the pointer to the CompoundObject
+   // Perhaps with some special cases
+   string type = objectNode.attribute("type").as_string();
+
+   if (type == "launchSite")
+   {
+      LaunchSite* ls = new LaunchSite(
+         gameResources,
+         parent, world,
+         pos,
+         string(objectNode.attribute("file").as_string()));
+
+      m_children.push_back(static_cast<CompoundObject*>(ls));
+   }
+
 }
 
 void CompoundObject::defineWeldJoint(b2World* world, pugi::xml_node& jointNode)
