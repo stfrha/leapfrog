@@ -90,7 +90,7 @@ public:
 
 DECLARE_SMART(CompoundObject, spCompoundObject);
 
-class CompoundObject : public oxygine::Actor, public CompoundInterface
+class CompoundObject : public oxygine::Sprite, public CompoundInterface
 {
 private:
    std::vector<oxygine::spSprite> m_boxedSprites;
@@ -106,9 +106,11 @@ private:
 
    bool readDefinitionXmlFile(oxygine::Resources& gameResources, oxygine::Actor* parent, b2World* world, const oxygine::Vector2& pos, std::string& fileName);
    void defineStaticBox(oxygine::Resources& gameResources, oxygine::Actor* parent, b2World* world, const oxygine::Vector2& pos, pugi::xml_node& objectNode);
+   //void defineStaticCircle(oxygine::Resources& gameResources, oxygine::Actor* parent, b2World* world, const oxygine::Vector2& pos, pugi::xml_node& objectNode);
    void defineStaticPolygon(oxygine::Resources& gameResources, oxygine::Actor* parent, b2World* world, const oxygine::Vector2& pos, pugi::xml_node& objectNode);
    void defineBoxedObject(oxygine::Resources& gameResources, oxygine::Actor* parent, b2World* world, const oxygine::Vector2& pos, pugi::xml_node& objectNode);
    void definePolygonObject(oxygine::Resources& gameResources, oxygine::Actor* parent, b2World* world, const oxygine::Vector2& pos, pugi::xml_node& objectNode);
+   //void defineCircleObject(oxygine::Resources& gameResources, oxygine::Actor* parent, b2World* world, const oxygine::Vector2& pos, pugi::xml_node& objectNode);
    void defineChildObject(oxygine::Resources& gameResources, oxygine::Actor* parent, b2World* world, const oxygine::Vector2& pos, pugi::xml_node& objectNode);
 
    void defineWeldJoint(b2World* world, pugi::xml_node& weldJointNode);
@@ -117,14 +119,16 @@ private:
    ObjectProperty* getProp(int propId);
 
 public:
-   CompoundObject(
-      oxygine::Resources& gameResources,
-      oxygine::Actor* parent,
-      b2World* world, 
-      const oxygine::Vector2& pos, 
-      std::string& defXmlFileName);
+	CompoundObject();
 
    ~CompoundObject();
+
+   void initCompoundObject(
+	   oxygine::Resources& gameResources,
+	   oxygine::Actor* parent,
+	   b2World* world,
+	   const oxygine::Vector2& pos,
+	   std::string& defXmlFileName);
 
    // Should these three be protected since they are called by the base class?
    virtual CompoundObject* getObjectImpl(const std::string& name);

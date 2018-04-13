@@ -3,6 +3,7 @@
 #include "oxygine-framework.h"
 #include "Box2DDebugDraw.h"
 #include "Box2D/Box2D.h"
+#include "compoundobject.h"
 #include "flameemitter.h"
 #include "reentryflameemitter.h"
 #include "gun.h"
@@ -84,7 +85,7 @@ public:
 
 DECLARE_SMART(LeapFrog, spLeapFrog);
 
-class LeapFrog : public oxygine::Sprite, CollisionEntity
+class LeapFrog : public CompoundObject, public CollisionEntity
 {
 private:
    const static ModeAngles c_resetModeAngles;
@@ -126,16 +127,14 @@ private:
 
 	b2World * m_world;
 	b2Body* m_mainBody;
+    b2Body* m_boostBody;
+	b2Body* m_rightBigLegBody;
+	b2Body* m_leftBigLegBody;
+	b2Body* m_rightSteerBody;
+	b2Body* m_leftSteerBody;
 
-   spLfBooster m_lfBoost;
-   spLfBigLeg m_lfRightBigLeg;
-   spLfBigLeg m_lfLeftBigLeg;
-   spLfSmallLeg m_lfRightSmallLeg;
-   spLfSmallLeg m_lfLeftSmallLeg;
-   spLfFoot m_lfRightFoot;
-   spLfFoot m_lfLeftFoot;
-   spLfRightSteer m_lfRightSteer;
-   spLfLeftSteer m_lfLeftSteer;
+	CompoundObject* m_lfRightBigLeg;
+	CompoundObject* m_lfLeftBigLeg;
 
    b2WeldJoint* m_boostJoint;
    b2WeldJoint* m_rightSteerJoint;
@@ -148,16 +147,16 @@ private:
    b2RevoluteJoint* m_leftFootLegJoint;
    b2RevoluteJoint* m_shieldJoint;
 
-   //  Weld joints are for locking arms and legs during
-   // instant rotation, they are supposed to be removed
-   // after the instant rotation
-   b2WeldJoint* m_rightBigLegWeldJoint;
-   b2WeldJoint* m_leftBigLegWeldJoint;
-   b2WeldJoint* m_rightSmallLegWeldJoint;
-   b2WeldJoint* m_leftSmallLegWeldJoint;
-   b2WeldJoint* m_rightFootLegWeldJoint;
-   b2WeldJoint* m_leftFootLegWeldJoint;
-   b2WeldJoint* m_shieldWeldJoint;
+   ////  Weld joints are for locking arms and legs during
+   //// instant rotation, they are supposed to be removed
+   //// after the instant rotation
+   //b2WeldJoint* m_rightBigLegWeldJoint;
+   //b2WeldJoint* m_leftBigLegWeldJoint;
+   //b2WeldJoint* m_rightSmallLegWeldJoint;
+   //b2WeldJoint* m_leftSmallLegWeldJoint;
+   //b2WeldJoint* m_rightFootLegWeldJoint;
+   //b2WeldJoint* m_leftFootLegWeldJoint;
+   //b2WeldJoint* m_shieldWeldJoint;
 
    spFlameEmitter m_boosterFlame;
    spFlameEmitter m_leftSteerFlame;
@@ -168,8 +167,7 @@ private:
 
    spGun m_gun;
 
-   float	m_physDispScale;
-	spBox2DDraw m_debugDraw;
+   spBox2DDraw m_debugDraw;
    
 
    oxygine::Resources* m_gameResources;
@@ -183,13 +181,14 @@ public:
 
 
 	LeapFrog(
-      oxygine::Resources& gameResources, 
-      SceneActor* sceneActor,
-      b2World* world, 
-      oxygine::Actor* actor, 
-      const oxygine::Vector2& pos /*,
-      float assemblyAngle*/);   // Indicates if the actor pointer implements the bounded bodies
+		oxygine::Resources& gameResources,
+		oxygine::Actor* parent,
+		b2World* world,
+		const oxygine::Vector2& pos,
+		std::string& defXmlFileName);
 	~LeapFrog();
+
+	void initLeapfrog(SceneActor* sceneActor);
 
    virtual CollisionEntityTypeEnum getEntityType(void);
 

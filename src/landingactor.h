@@ -8,6 +8,6 @@ DECLARE_SMART(LandingActor, spLandingActor);
 class LandingActor : public SceneActor
 {
 public:
-	LandingActor(oxygine::Resources& gameResources);
+	LandingActor(oxygine::Resources& gameResources, std::string fileName);
 
 };

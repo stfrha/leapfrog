@@ -4,7 +4,7 @@
 // and thus can be instansiated as children to one
 // CompoundObject
 #include "launchsite.h"
-
+#include "leapfrog.h"
 
 #include "polygonvertices.h"
 
@@ -163,21 +163,22 @@ void DualPropEventTrigger::updateProperty(int propId)
 	}
 }
 
+CompoundObject::CompoundObject()
+{ }
 
-
-
-CompoundObject::CompoundObject(oxygine::Resources& gameResources, Actor* parent, b2World* world, const oxygine::Vector2& pos, std::string& defXmlFileName)
-{
-   readDefinitionXmlFile(gameResources, parent, world, pos, defXmlFileName);
-}
 
 CompoundObject::~CompoundObject()
 {
-   m_boxedSprites.clear();
-   m_polygonSprites.clear();
-   m_staticPolygons.clear();
-   m_namedJoints.clear();
-   m_children.clear();
+	m_boxedSprites.clear();
+	m_polygonSprites.clear();
+	m_staticPolygons.clear();
+	m_namedJoints.clear();
+	m_children.clear();
+}
+
+void CompoundObject::initCompoundObject(oxygine::Resources& gameResources, Actor* parent, b2World* world, const oxygine::Vector2& pos, std::string& defXmlFileName)
+{
+   readDefinitionXmlFile(gameResources, parent, world, pos, defXmlFileName);
 }
 
 bool CompoundObject::readDefinitionXmlFile(Resources& gameResources, Actor* parent, b2World* world, const Vector2& pos, std::string& fileName)
@@ -355,6 +356,44 @@ void CompoundObject::defineStaticBox(Resources& gameResources, Actor* parent, b2
    m_boxedSprites.push_back(object);
 }
 
+//void CompoundObject::defineStaticCircle(oxygine::Resources& gameResources, oxygine::Actor* parent, b2World* world, const oxygine::Vector2& pos, pugi::xml_node& objectNode)
+//{
+//	spSprite object = new Sprite();
+//	object->setName(objectNode.attribute("name").as_string());
+//	object->setResAnim(gameResources.getResAnim(objectNode.attribute("texture").as_string()));
+//
+//	object->setSize(objectNode.attribute("width").as_float(), objectNode.attribute("height").as_float());
+//	object->setAnchor(Vector2(objectNode.attribute("anchorX").as_float(), objectNode.attribute("anchorY").as_float()));
+//	object->setTouchChildrenEnabled(false);
+//	object->setPriority(objectNode.attribute("zLevel").as_int());
+//
+//
+//	object->attachTo(parent);
+//
+//	b2BodyDef bodyDef;
+//	bodyDef.type = b2_staticBody;
+//	b2Vec2 bPos = PhysDispConvert::convert(pos, 1.0f) + b2Vec2(objectNode.attribute("posX").as_float(), objectNode.attribute("posY").as_float());
+//	bodyDef.position = bPos;
+//	b2Body* body = world->CreateBody(&bodyDef);
+//
+//	b2PolygonShape boxShape;
+//	boxShape.SetAsBox(objectNode.attribute("width").as_float() / 2.0f, objectNode.attribute("height").as_float() / 2.0f);
+//
+//	b2FixtureDef fixtureDef;
+//	fixtureDef.shape = &boxShape;
+//	fixtureDef.density = 5.0f;
+//	fixtureDef.friction = 1.3f;
+//	fixtureDef.filter.categoryBits = objectNode.attribute("collisionCategory").as_int();
+//	fixtureDef.filter.maskBits = objectNode.attribute("collisionMask").as_int();
+//
+//	body->CreateFixture(&fixtureDef);
+//
+//	object->setUserData(body);
+//	body->SetUserData(object.get());
+//
+//	m_boxedSprites.push_back(object);
+//}
+
 
 void CompoundObject::defineBoxedObject(oxygine::Resources& gameResources, Actor* parent, b2World* world, const Vector2& pos, xml_node& objectNode)
 {
@@ -483,15 +522,29 @@ void CompoundObject::defineChildObject(
    // Perhaps with some special cases
    string type = objectNode.attribute("type").as_string();
 
-   if (type == "launchSite")
+   if (type == "leapfrog")
    {
-      LaunchSite* ls = new LaunchSite(
+      LeapFrog* lf = new LeapFrog(
          gameResources,
          parent, world,
          pos,
          string(objectNode.attribute("file").as_string()));
 
-      m_children.push_back(static_cast<CompoundObject*>(ls));
+	  lf->setName(objectNode.attribute("name").as_string());
+
+      m_children.push_back(static_cast<CompoundObject*>(lf));
+   }
+   else if (type == "launchSite")
+   {
+	   LaunchSite* ls = new LaunchSite(
+		   gameResources,
+		   parent, world,
+		   pos,
+		   string(objectNode.attribute("file").as_string()));
+
+	   ls->setName(objectNode.attribute("name").as_string());
+
+	   m_children.push_back(static_cast<CompoundObject*>(ls));
    }
 
 }

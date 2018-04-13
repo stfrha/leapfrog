@@ -39,6 +39,7 @@ public:
    b2World* GetWorld(void);
    Resources* getResources(void);
 
+   void setLeapfrog(spLeapFrog lf);
    void setPanorateMode(PanorateModeEnum mode);
 
    void addMeToDeathList(ActorToDie* actor);

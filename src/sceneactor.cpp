@@ -5,13 +5,12 @@
 using namespace oxygine;
 
 SceneActor::SceneActor(Resources& gameResources) :
-   CompoundObject(gameResources, )
    m_gameResources(&gameResources),
 	m_world(NULL),
 	m_zoomScale(0.40f),
 	m_stageToViewPortScale(m_zoomScale * Scales::c_stageToViewPortScale),
 	m_physToStageScale(1.0f),
-   m_panorateMode(PME_CENTER)
+    m_panorateMode(PME_CENTER)
 {
 	Point size = Point(1000, 500);
 	setSize(size);
@@ -24,6 +23,11 @@ SceneActor::SceneActor(Resources& gameResources) :
 SceneActor::~SceneActor()
 {
    delete m_world;
+}
+
+void SceneActor::setLeapfrog(spLeapFrog lf)
+{
+	m_leapfrog = lf;
 }
 
 b2World* SceneActor::GetWorld(void)
@@ -239,11 +243,11 @@ void SceneActor::sweepKillList(void)
 
 void SceneActor::createLeapFrog(Resources& gameResources)
 {
-   spLeapFrog leapFrog = new LeapFrog(gameResources, this, m_world, (Actor*)this, getSize() / 2.0f);
+   //spLeapFrog leapFrog = new LeapFrog(gameResources, this, m_world, (Actor*)this, getSize() / 2.0f);
 
-   addChild(leapFrog);
-   m_leapfrog = leapFrog;
+   //addChild(leapFrog);
+   //m_leapfrog = leapFrog;
 
-   // Here we should attach the shield to get it above the leapfrog
-   addChild(m_leapfrog->m_shield);
+   //// Here we should attach the shield to get it above the leapfrog
+   //addChild(m_leapfrog->m_shield);
 }

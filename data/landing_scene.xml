@@ -48,7 +48,15 @@
 		</triangles>
 	</staticPolygon>
 	<ChildCompoundObjectRef 
-		type="launch_site"
+		name="leapfrog1"
+		type="leapfrog"
+		file="leapfrog.xml" 
+		posX="500.0"
+		posY="250."
+	/>
+	<ChildCompoundObjectRef 
+		name="launchSite1"
+		type="launchSite"
 		file="launch_site.xml" 
 		posX="435.52"
 		posY="375.0"

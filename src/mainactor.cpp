@@ -49,7 +49,7 @@ void MainActor::startScene(SceneTypeEnum scene)
       window->setPosition(50.0f, 50.0f);
       addChild(window);
 
-      spLandingActor landingActor = new LandingActor(m_gameResources);
+      spLandingActor landingActor = new LandingActor(m_gameResources, "landing_scene.xml");
       window->addChild(landingActor);
 
       m_sceneObject = static_cast<CompoundObject*>(landingActor.get());

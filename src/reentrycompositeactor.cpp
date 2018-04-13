@@ -52,7 +52,8 @@ ReentryCompositeActor::ReentryCompositeActor(Resources& gameResources) :
    m_world = new b2World(b2Vec2(0.0f, 0.0f));
 
 //   spLeapFrog lf = new LeapFrog(gameResources, NULL,  m_world, (Actor*)lfStage.get(), Vector2(150.0f, 75.0f));
-   m_leapFrog = new LeapFrog(gameResources, NULL, m_world, m_lfStage.get(), Vector2(150.0f, 75.0f));
+   //m_leapFrog = new LeapFrog(gameResources, NULL, m_world, m_lfStage.get(), Vector2(150.0f, 75.0f));
+   m_leapFrog = NULL;
    m_leapFrog->attachTo(m_lfStage);
    m_leapFrog->initLeapfrog(LFM_DEEP_SPACE, MATH_PI / 2.0f);
 //   m_leapFrog->initMode(LFM_REENTRY);

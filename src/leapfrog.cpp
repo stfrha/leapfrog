@@ -30,14 +30,12 @@ ModeAngles::ModeAngles(float rgtBigLeg, float rgtSmallLeg, float rgtFoot,
 
 
 LeapFrog::LeapFrog(
-   Resources& gameResources,
-   SceneActor* sceneActor,
-   b2World* world,
-   Actor* actor,
-   const Vector2& pos /*,
-   float assemblyAngle*/) :
-   m_world(world),
-   m_physDispScale(10.0f),
+	oxygine::Resources& gameResources,
+	oxygine::Actor* parent,
+	b2World* world,
+	const oxygine::Vector2& pos,
+	std::string& defXmlFileName) :
+	m_world(world),
    m_boostMagnuitude(0.0f),
    m_steerMagnitude(0.0f),
    m_boostInc(900.0f),
@@ -48,228 +46,42 @@ LeapFrog::LeapFrog(
    m_rightSteerFireLastUpdate(false),
    m_leftSteerFireLastUpdate(false),
    m_gameResources(&gameResources),
-   m_sceneActor(sceneActor),
    m_state(LFS_NORMAL),
    m_wantedAngle(0.0f),
    m_initiating(false)
 {
-	// The leapfrog main body is the main sprite of the leapfrog
+	initCompoundObject(gameResources, parent, world, pos, defXmlFileName);
 
-	setResAnim(gameResources.getResAnim("lf_body"));
+	m_mainBody = getBody("lfMainBody");
+	m_boostBody = getBody("lfBooster");
+	m_rightBigLegBody = getBody("rightBigLeg");
+	m_leftBigLegBody = getBody("leftBigLeg");
+	m_rightSteerBody = getBody("rightSteer");
+	m_leftSteerBody = getBody("leftSteer");
 
-	// Size and position is in stage coordinates
-	setSize(9.0f, 9.6f);
-	setPosition(pos);
-	setAnchor(Vector2(0.5f, 0.5f));
-	setTouchChildrenEnabled(false);
-   setPriority(128);
-
-	b2BodyDef bodyDef;
-	bodyDef.type = b2_dynamicBody;
-	bodyDef.position = PhysDispConvert::convert(pos / Scales::c_physToStageScale, 1.0);
-
-	m_mainBody = world->CreateBody(&bodyDef);
-
-	setUserData(m_mainBody);
-
-	b2Vec2 vertices[7];
-
-	// Polygon of a body shape is physical coordinates, i.e. in meters
-	vertices[6].Set(-4.5f, 4.8f);
-	vertices[5].Set(-2.5f, -3.7f);
-	vertices[4].Set(-1.5f, -4.8f);
-	vertices[3].Set(1.5f, -4.8f);
-	vertices[2].Set(2.5f, -3.7f);
-	vertices[1].Set(4.5f, 4.8f);
-	vertices[0].Set(-4.5f, 4.8f);
-
-	b2PolygonShape polyShape;
-
-	polyShape.Set(vertices, 7);
-
-	b2FixtureDef fixtureDef;
-	fixtureDef.shape = &polyShape;
-	fixtureDef.density = 3.0f;
-	fixtureDef.friction = 1.3f;
-   fixtureDef.userData = (CollisionEntity*)this;
-   fixtureDef.filter.categoryBits = 4;
-   fixtureDef.filter.maskBits = 40123;
-
-	m_mainBody->CreateFixture(&fixtureDef);
-	m_mainBody->SetUserData(this);
-
-   m_mainBody->GetFixtureList()->SetUserData((CollisionEntity*)this);
-
-	m_mainBody->ResetMassData();
 	
-	//spLfBody lfBody = new LfBody(gameResources, world, pos, 1);
-	//actor->addChild(lfBody);
-	//m_leapFrogBody = lfBody;
+	m_lfRightBigLeg = getObject("lfRightLeg");
+	m_lfLeftBigLeg = getObject("lfLeftLeg");
 
-	m_lfBoost = new LfBooster(gameResources, world, pos + Vector2(0.0f, 4.8f), 1, -1);
-	actor->addChild(m_lfBoost);
-
-	m_lfRightBigLeg = new LfBigLeg(gameResources, world, pos + Vector2(3.0f, 4.9f), 1, -1);
-	actor->addChild(m_lfRightBigLeg);
-
-	m_lfLeftBigLeg = new LfBigLeg(gameResources, world, pos + Vector2(-3.2f, 4.9f), 1, -1);
-	actor->addChild(m_lfLeftBigLeg);
-
-	m_lfRightSmallLeg = new LfSmallLeg(gameResources, world, pos + Vector2(3.2f, 12.2f), 1, -1);
-	actor->addChild(m_lfRightSmallLeg);
-
-	m_lfLeftSmallLeg = new LfSmallLeg(gameResources, world, pos + Vector2(-3.2f, 12.2f), 1, -1);
-	actor->addChild(m_lfLeftSmallLeg);
-
-	m_lfRightFoot = new LfFoot(gameResources, world, pos + Vector2(3.2f, 17.5f), 1, -1);
-	actor->addChild(m_lfRightFoot);
-
-	m_lfLeftFoot = new LfFoot(gameResources, world, pos + Vector2(-3.2f, 17.5f), 1, -1);
-	actor->addChild(m_lfLeftFoot);
-
-	m_lfRightSteer = new LfRightSteer(gameResources, world, pos + Vector2(3.9f, 17.5f), 1, -1);
-	actor->addChild(m_lfRightSteer);
-
-	m_lfLeftSteer = new LfLeftSteer(gameResources, world, pos + Vector2(-3.9f, 17.5f), 1, -1);
-	actor->addChild(m_lfLeftSteer);
+	m_boostJoint = static_cast<b2WeldJoint*>(getJoint("boostJoint"));
+	m_rightSteerJoint = static_cast<b2WeldJoint*>(getJoint("rightSteerJoint"));
+	m_leftSteerJoint = static_cast<b2WeldJoint*>(getJoint("leftSteerJoint"));
+	m_rightBigLegJoint = static_cast<b2RevoluteJoint*>(getJoint("rightLegJoint"));
+	m_leftBigLegJoint = static_cast<b2RevoluteJoint*>(getJoint("leftLegJoint"));
+	m_rightSmallLegJoint = static_cast<b2RevoluteJoint*>(getJoint("rightSmallLegJoint"));
+	m_leftSmallLegJoint = static_cast<b2RevoluteJoint*>(getJoint("leftSmallLegJoint"));
+	m_rightFootLegJoint = static_cast<b2RevoluteJoint*>(getJoint("rightFootLegJoint"));
+	m_leftFootLegJoint = static_cast<b2RevoluteJoint*>(getJoint("leftFootLegJoint"));
+	m_shieldJoint = static_cast<b2RevoluteJoint*>(getJoint("boostJoint"));
 
    m_shield = new Shield(gameResources, world, pos);
-   // Shield will be attached as a post-production part (createLeapFrog() in sceneactor.cpp)
-
-	// Main Body and booster joint
-	b2WeldJointDef	boostJointDef;
-	boostJointDef.bodyA = m_mainBody;
-	boostJointDef.bodyB = m_lfBoost->m_body;
-	boostJointDef.localAnchorA.Set(0.0f, 4.8f);
-	boostJointDef.localAnchorB.Set(0.0f, -0.8f);
-	boostJointDef.collideConnected = false;
-	m_boostJoint = (b2WeldJoint*)world->CreateJoint(&boostJointDef);
-
-
-	// Main Body and right big leg joint
-	b2RevoluteJointDef	rightLegJointDef;
-	rightLegJointDef.bodyA = m_mainBody;
-	rightLegJointDef.bodyB = m_lfRightBigLeg->m_body;
-	rightLegJointDef.localAnchorA.Set(3.3f, 5.8f);
-	rightLegJointDef.localAnchorB.Set(0.0f, -2.75f);
-	rightLegJointDef.collideConnected = false;
-	rightLegJointDef.enableMotor = true;
-	rightLegJointDef.maxMotorTorque = c_normalJointMotorTorque;
-	rightLegJointDef.motorSpeed = 0;
-	m_rightBigLegJoint = (b2RevoluteJoint*)world->CreateJoint(&rightLegJointDef);
-   JointUserData* jd1 = new JointUserData(false);
-   m_rightBigLegJoint->SetUserData(jd1);
-
-
-	// Main Body and left big leg joint
-	b2RevoluteJointDef	leftLegJointDef;
-	leftLegJointDef.bodyA = m_mainBody;
-	leftLegJointDef.bodyB = m_lfLeftBigLeg->m_body;
-	leftLegJointDef.localAnchorA.Set(-3.3f, 5.8f);
-	leftLegJointDef.localAnchorB.Set(0.0f, -2.75f);
-	leftLegJointDef.collideConnected = false;
-	leftLegJointDef.enableMotor = true;
-	leftLegJointDef.maxMotorTorque = c_normalJointMotorTorque;
-	leftLegJointDef.motorSpeed = 0;
-	m_leftBigLegJoint = (b2RevoluteJoint*)world->CreateJoint(&leftLegJointDef);
-   JointUserData* jd2 = new JointUserData(false);
-   m_leftBigLegJoint->SetUserData(jd2);
-
-
-	// Right Big leg and right small leg joint
-	b2RevoluteJointDef	rightSmallLegJointDef;
-	rightSmallLegJointDef.bodyA = m_lfRightBigLeg->m_body;
-	rightSmallLegJointDef.bodyB = m_lfRightSmallLeg->m_body;
-	rightSmallLegJointDef.localAnchorA.Set(0.0f, 2.95f);
-	rightSmallLegJointDef.localAnchorB.Set(0.0f, -1.95f);
-	rightSmallLegJointDef.collideConnected = false;
-	rightSmallLegJointDef.enableMotor = true;
-	rightSmallLegJointDef.maxMotorTorque = c_normalJointMotorTorque;
-	rightSmallLegJointDef.motorSpeed = 0;
-	m_rightSmallLegJoint = (b2RevoluteJoint*)world->CreateJoint(&rightSmallLegJointDef);
-   JointUserData* jd3 = new JointUserData(false);
-   m_rightSmallLegJoint->SetUserData(jd3);
-
-
-	// Left Big leg and left small leg joint
-	b2RevoluteJointDef	leftSmallLegJointDef;
-	leftSmallLegJointDef.bodyA = m_lfLeftBigLeg->m_body;
-	leftSmallLegJointDef.bodyB = m_lfLeftSmallLeg->m_body;
-	leftSmallLegJointDef.localAnchorA.Set(0.0f, 2.95f);
-	leftSmallLegJointDef.localAnchorB.Set(0.0f, -1.95f);
-	leftSmallLegJointDef.collideConnected = false;
-	leftSmallLegJointDef.enableMotor = true;
-	leftSmallLegJointDef.maxMotorTorque = c_normalJointMotorTorque;
-	leftSmallLegJointDef.motorSpeed = 0;
-	m_leftSmallLegJoint = (b2RevoluteJoint*)world->CreateJoint(&leftSmallLegJointDef);
-   JointUserData* jd4 = new JointUserData(false);
-   m_leftSmallLegJoint->SetUserData(jd4);
-
-
-	// Right Small leg and right foot joint
-	b2RevoluteJointDef	rightFootLegJointDef;
-	rightFootLegJointDef.bodyA = m_lfRightSmallLeg->m_body;
-	rightFootLegJointDef.bodyB = m_lfRightFoot->m_body;
-	rightFootLegJointDef.localAnchorA.Set(0.0f, 2.05f);
-	rightFootLegJointDef.localAnchorB.Set(0.0f, -0.9f);
-	rightFootLegJointDef.collideConnected = false;
-	rightFootLegJointDef.enableMotor = true;
-	rightFootLegJointDef.maxMotorTorque = c_normalJointMotorTorque;
-	rightFootLegJointDef.motorSpeed = 0;
-	m_rightFootLegJoint = (b2RevoluteJoint*)world->CreateJoint(&rightFootLegJointDef);
-   JointUserData* jd5 = new JointUserData(false);
-   m_rightFootLegJoint->SetUserData(jd5);
-
-
-	// Left Small leg and left foot joint
-	b2RevoluteJointDef	leftFootLegJointDef;
-	leftFootLegJointDef.bodyA = m_lfLeftSmallLeg->m_body;
-	leftFootLegJointDef.bodyB = m_lfLeftFoot->m_body;
-	leftFootLegJointDef.localAnchorA.Set(0.0f, 2.05f);
-	leftFootLegJointDef.localAnchorB.Set(0.0f, -0.9f);
-	leftFootLegJointDef.collideConnected = false;
-	leftFootLegJointDef.enableMotor = true;
-	leftFootLegJointDef.maxMotorTorque = c_normalJointMotorTorque;
-	leftFootLegJointDef.motorSpeed = 0;
-	m_leftFootLegJoint = (b2RevoluteJoint*)world->CreateJoint(&leftFootLegJointDef);
-   JointUserData* jd6 = new JointUserData(false);
-   m_leftFootLegJoint->SetUserData(jd6);
-
-
-	// Right small leg and steer booster joint
-	b2WeldJointDef	rightSteerJointDef;
-	rightSteerJointDef.bodyA = m_lfRightSmallLeg->m_body;
-	rightSteerJointDef.bodyB = m_lfRightSteer->m_body;
-	rightSteerJointDef.localAnchorA.Set(-0.7f, 1.4f);
-	rightSteerJointDef.localAnchorB.Set(0.6f, 0.0f);
-	rightSteerJointDef.collideConnected = false;
-	m_rightSteerJoint = (b2WeldJoint*)world->CreateJoint(&rightSteerJointDef);
-
-	// Left small leg and steer booster joint
-	b2WeldJointDef	leftSteerJointDef;
-	leftSteerJointDef.bodyA = m_lfLeftSmallLeg->m_body;
-	leftSteerJointDef.bodyB = m_lfLeftSteer->m_body;
-	leftSteerJointDef.localAnchorA.Set(0.7f, 1.4f);
-	leftSteerJointDef.localAnchorB.Set(-0.6f, 0.0f);
-	leftSteerJointDef.collideConnected = false;
-	m_leftSteerJoint = (b2WeldJoint*)world->CreateJoint(&leftSteerJointDef);
-
-   // Shield only exists in deep space but for simplicity it is always
-   // there. In deep space it gets its normal size but is other 
-   // environments it is turned very small
-   b2RevoluteJointDef shieldJointDef;
-   shieldJointDef.bodyA = m_mainBody;
-   shieldJointDef.bodyB = m_shield->m_body;
-   shieldJointDef.localAnchorA.Set(0.0f, 1.0f);
-   shieldJointDef.localAnchorB.Set(0.0f, 0.0f);
-   shieldJointDef.collideConnected = false;
-   shieldJointDef.enableMotor = false;
-   m_shieldJoint = (b2RevoluteJoint*)m_world->CreateJoint(&shieldJointDef);
+   CompoundObject* lf = getObject("lfMainBody");
+   m_shield->attachTo(lf);
 
    // Add main engine particle system
    m_boosterFlame = new FlameEmitter(
       gameResources, 
-      m_lfBoost->m_body,
+      m_boostBody,
       b2Vec2(0.0f, 3.0f), 
       90.0f * MATH_PI / 180.0f, 
       4.0f,                            // Emitter width
@@ -283,7 +95,7 @@ LeapFrog::LeapFrog(
    // Add right steering engine particle system
    m_rightSteerFlame = new FlameEmitter(
       gameResources,
-      m_lfRightSteer->m_body,
+	   m_rightSteerBody,
       b2Vec2(-1.0f, 0.0f),
       MATH_PI,
       1.0f,                            // Width
@@ -298,7 +110,7 @@ LeapFrog::LeapFrog(
    // Add left steering engine particle system
    m_leftSteerFlame = new FlameEmitter(
       gameResources,
-      m_lfLeftSteer->m_body,
+	   m_leftSteerBody,
       b2Vec2(1.0f, 0.0f),             // Origin
       0,                               // Angle 
       1.0f,                            // Width
@@ -324,7 +136,7 @@ LeapFrog::LeapFrog(
 
    m_reentryFlameEmitterBooster = new ReentryFlameEmitter(
       gameResources,
-      m_lfBoost->m_body,
+      m_boostBody,
       b2Vec2(-2.0, 0.8f),
       b2Vec2(2.0f, 0.8f),
       MATH_PI / 2.0f,
@@ -336,7 +148,7 @@ LeapFrog::LeapFrog(
 
    m_reentryFlameEmitterRightLeg = new ReentryFlameEmitter(
       gameResources,
-      m_lfBoost->m_body,
+      m_rightBigLegBody,
       b2Vec2(2.0, 1.7f),
       b2Vec2(8.0f, 1.7f),
       MATH_PI / 2.0f,
@@ -348,7 +160,7 @@ LeapFrog::LeapFrog(
 
    m_reentryFlameEmitterLeftLeg = new ReentryFlameEmitter(
       gameResources,
-      m_lfBoost->m_body,
+	   m_leftBigLegBody,
       b2Vec2(-8.0, 1.7f),
       b2Vec2(-2.0f, 1.7f),
       MATH_PI / 2.0f,
@@ -363,19 +175,13 @@ LeapFrog::LeapFrog(
 
 LeapFrog::~LeapFrog()
 {
-   //delete ((JointUserData*)m_rightBigLegJoint->GetUserData());
-
-   //delete ((JointUserData*)m_leftBigLegJoint->GetUserData());
-
-   //delete ((JointUserData*)m_rightSmallLegJoint->GetUserData());
-
-   //delete ((JointUserData*)m_leftSmallLegJoint->GetUserData());
-
-   //delete ((JointUserData*)m_rightFootLegJoint->GetUserData());
-
-   //delete ((JointUserData*)m_leftFootLegJoint->GetUserData());
-
 }
+
+void LeapFrog::initLeapfrog(SceneActor* sceneActor)
+{
+	m_sceneActor = sceneActor;
+}
+
 
 CollisionEntityTypeEnum LeapFrog::getEntityType(void)
 {
@@ -669,77 +475,77 @@ void LeapFrog::unlockJoints(void)
 
 }
 
-void LeapFrog::weldJoints(void)
-{
-   // Main Body and right big leg joint
-   b2WeldJointDef	rightLegJointDef;
-   rightLegJointDef.bodyA = m_mainBody;
-   rightLegJointDef.bodyB = m_lfRightBigLeg->m_body;
-   rightLegJointDef.localAnchorA.Set(3.3f, 5.8f);
-   rightLegJointDef.localAnchorB.Set(0.0f, -2.75f);
-   rightLegJointDef.collideConnected = false;
-   m_rightBigLegWeldJoint = (b2WeldJoint*)m_world->CreateJoint(&rightLegJointDef);
+//void LeapFrog::weldJoints(void)
+//{
+//   // Main Body and right big leg joint
+//   b2WeldJointDef	rightLegJointDef;
+//   rightLegJointDef.bodyA = m_mainBody;
+//   rightLegJointDef.bodyB = m_lfRightBigLeg->m_body;
+//   rightLegJointDef.localAnchorA.Set(3.3f, 5.8f);
+//   rightLegJointDef.localAnchorB.Set(0.0f, -2.75f);
+//   rightLegJointDef.collideConnected = false;
+//   m_rightBigLegWeldJoint = (b2WeldJoint*)m_world->CreateJoint(&rightLegJointDef);
+//
+//   // Main Body and left big leg joint
+//   b2WeldJointDef	leftLegJointDef;
+//   leftLegJointDef.bodyA = m_mainBody;
+//   leftLegJointDef.bodyB = m_lfLeftBigLeg->m_body;
+//   leftLegJointDef.localAnchorA.Set(-3.3f, 5.8f);
+//   leftLegJointDef.localAnchorB.Set(0.0f, -2.75f);
+//   leftLegJointDef.collideConnected = false;
+//   m_leftBigLegWeldJoint = (b2WeldJoint*)m_world->CreateJoint(&leftLegJointDef);
+//
+//   // Right Big leg and right small leg joint
+//   b2WeldJointDef	rightSmallLegJointDef;
+//   rightSmallLegJointDef.bodyA = m_lfRightBigLeg->m_body;
+//   rightSmallLegJointDef.bodyB = m_lfRightSmallLeg->m_body;
+//   rightSmallLegJointDef.localAnchorA.Set(0.0f, 2.95f);
+//   rightSmallLegJointDef.localAnchorB.Set(0.0f, -1.95f);
+//   rightSmallLegJointDef.collideConnected = false;
+//   m_rightSmallLegWeldJoint = (b2WeldJoint*)m_world->CreateJoint(&rightSmallLegJointDef);
+//
+//   // Left Big leg and left small leg joint
+//   b2WeldJointDef	leftSmallLegJointDef;
+//   leftSmallLegJointDef.bodyA = m_lfLeftBigLeg->m_body;
+//   leftSmallLegJointDef.bodyB = m_lfLeftSmallLeg->m_body;
+//   leftSmallLegJointDef.localAnchorA.Set(0.0f, 2.95f);
+//   leftSmallLegJointDef.localAnchorB.Set(0.0f, -1.95f);
+//   leftSmallLegJointDef.collideConnected = false;
+//   m_leftSmallLegWeldJoint = (b2WeldJoint*)m_world->CreateJoint(&leftSmallLegJointDef);
+//
+//   // Right Small leg and right foot joint
+//   b2WeldJointDef	rightFootLegJointDef;
+//   rightFootLegJointDef.bodyA = m_lfRightSmallLeg->m_body;
+//   rightFootLegJointDef.bodyB = m_lfRightFoot->m_body;
+//   rightFootLegJointDef.localAnchorA.Set(0.0f, 2.05f);
+//   rightFootLegJointDef.localAnchorB.Set(0.0f, -0.9f);
+//   rightFootLegJointDef.collideConnected = false;
+//   m_rightFootLegWeldJoint = (b2WeldJoint*)m_world->CreateJoint(&rightFootLegJointDef);
+//
+//   // Left Small leg and left foot joint
+//   b2WeldJointDef	leftFootLegJointDef;
+//   leftFootLegJointDef.bodyA = m_lfLeftSmallLeg->m_body;
+//   leftFootLegJointDef.bodyB = m_lfLeftFoot->m_body;
+//   leftFootLegJointDef.localAnchorA.Set(0.0f, 2.05f);
+//   leftFootLegJointDef.localAnchorB.Set(0.0f, -0.9f);
+//   leftFootLegJointDef.collideConnected = false;
+//   m_leftFootLegWeldJoint = (b2WeldJoint*)m_world->CreateJoint(&leftFootLegJointDef);
+//
+//}
 
-   // Main Body and left big leg joint
-   b2WeldJointDef	leftLegJointDef;
-   leftLegJointDef.bodyA = m_mainBody;
-   leftLegJointDef.bodyB = m_lfLeftBigLeg->m_body;
-   leftLegJointDef.localAnchorA.Set(-3.3f, 5.8f);
-   leftLegJointDef.localAnchorB.Set(0.0f, -2.75f);
-   leftLegJointDef.collideConnected = false;
-   m_leftBigLegWeldJoint = (b2WeldJoint*)m_world->CreateJoint(&leftLegJointDef);
 
-   // Right Big leg and right small leg joint
-   b2WeldJointDef	rightSmallLegJointDef;
-   rightSmallLegJointDef.bodyA = m_lfRightBigLeg->m_body;
-   rightSmallLegJointDef.bodyB = m_lfRightSmallLeg->m_body;
-   rightSmallLegJointDef.localAnchorA.Set(0.0f, 2.95f);
-   rightSmallLegJointDef.localAnchorB.Set(0.0f, -1.95f);
-   rightSmallLegJointDef.collideConnected = false;
-   m_rightSmallLegWeldJoint = (b2WeldJoint*)m_world->CreateJoint(&rightSmallLegJointDef);
-
-   // Left Big leg and left small leg joint
-   b2WeldJointDef	leftSmallLegJointDef;
-   leftSmallLegJointDef.bodyA = m_lfLeftBigLeg->m_body;
-   leftSmallLegJointDef.bodyB = m_lfLeftSmallLeg->m_body;
-   leftSmallLegJointDef.localAnchorA.Set(0.0f, 2.95f);
-   leftSmallLegJointDef.localAnchorB.Set(0.0f, -1.95f);
-   leftSmallLegJointDef.collideConnected = false;
-   m_leftSmallLegWeldJoint = (b2WeldJoint*)m_world->CreateJoint(&leftSmallLegJointDef);
-
-   // Right Small leg and right foot joint
-   b2WeldJointDef	rightFootLegJointDef;
-   rightFootLegJointDef.bodyA = m_lfRightSmallLeg->m_body;
-   rightFootLegJointDef.bodyB = m_lfRightFoot->m_body;
-   rightFootLegJointDef.localAnchorA.Set(0.0f, 2.05f);
-   rightFootLegJointDef.localAnchorB.Set(0.0f, -0.9f);
-   rightFootLegJointDef.collideConnected = false;
-   m_rightFootLegWeldJoint = (b2WeldJoint*)m_world->CreateJoint(&rightFootLegJointDef);
-
-   // Left Small leg and left foot joint
-   b2WeldJointDef	leftFootLegJointDef;
-   leftFootLegJointDef.bodyA = m_lfLeftSmallLeg->m_body;
-   leftFootLegJointDef.bodyB = m_lfLeftFoot->m_body;
-   leftFootLegJointDef.localAnchorA.Set(0.0f, 2.05f);
-   leftFootLegJointDef.localAnchorB.Set(0.0f, -0.9f);
-   leftFootLegJointDef.collideConnected = false;
-   m_leftFootLegWeldJoint = (b2WeldJoint*)m_world->CreateJoint(&leftFootLegJointDef);
-
-}
-
-
-void LeapFrog::unweldJoints(void)
-{
-   if (m_rightBigLegWeldJoint)
-   {
-      m_world->DestroyJoint(m_rightBigLegWeldJoint);
-   }
-   m_world->DestroyJoint(m_leftBigLegWeldJoint);
-   m_world->DestroyJoint(m_rightSmallLegWeldJoint);
-   m_world->DestroyJoint(m_leftSmallLegWeldJoint);
-   m_world->DestroyJoint(m_rightFootLegWeldJoint);
-   m_world->DestroyJoint(m_leftFootLegWeldJoint);
-}
+//void LeapFrog::unweldJoints(void)
+//{
+//   if (m_rightBigLegWeldJoint)
+//   {
+//      m_world->DestroyJoint(m_rightBigLegWeldJoint);
+//   }
+//   m_world->DestroyJoint(m_leftBigLegWeldJoint);
+//   m_world->DestroyJoint(m_rightSmallLegWeldJoint);
+//   m_world->DestroyJoint(m_leftSmallLegWeldJoint);
+//   m_world->DestroyJoint(m_rightFootLegWeldJoint);
+//   m_world->DestroyJoint(m_leftFootLegWeldJoint);
+//}
 
 void LeapFrog::setStrongJoints(void)
 {
