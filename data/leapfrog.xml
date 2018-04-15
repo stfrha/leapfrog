@@ -1,0 +1,276 @@
+<?xml version="1.0"?>
+<compoundObject>
+	<dynamicBox 
+		name="lfBooster"
+		texture="lf_boost"
+		width="4.0"
+		height="1.6"
+		anchorX="0.5"
+		anchorY="0.5"
+		posX="0.0"
+		posY="4.8"
+		zLevel="128"
+		collisionCategory="4"
+		collisionMask="40123" />
+	<dynamicPolygon
+		name="lfLeftBigLeg"
+		texture="lf_big_leg"
+		width="1.8"
+		height="7.3"
+		posX="3.2"
+		posY="4.9"
+		zLevel="128"
+		collisionCategory="4"
+		collisionMask="40123">
+		<vertices>
+			<vertex id="1" x="-0.7" y="3.65" />
+			<vertex id="2" x="0.7" y="3.65" />
+			<vertex id="3" x="0.9" y="-3.65" />
+			<vertex id="4" x="-0.9" y="-3.65" />
+		</vertices>
+		<triangles>
+			<triangle id="1" v1="1" v2="3" v3="2" />
+			<triangle id="2" v1="1" v2="4" v3="3" />
+		</triangles>
+	</dynamicPolygon>
+	<dynamicPolygon
+		name="lfRightBigLeg"
+		texture="lf_big_leg"
+		width="1.8"
+		height="7.3"
+		posX="-3.2"
+		posY="4.9"
+		zLevel="128"
+		collisionCategory="4"
+		collisionMask="40123">
+		<vertices>
+			<vertex id="1" x="-0.7" y="3.65" />
+			<vertex id="2" x="0.7" y="3.65" />
+			<vertex id="3" x="0.9" y="-3.65" />
+			<vertex id="4" x="-0.9" y="-3.65" />
+		</vertices>
+		<triangles>
+			<triangle id="1" v1="1" v2="3" v3="2" />
+			<triangle id="2" v1="1" v2="4" v3="3" />
+		</triangles>
+	</dynamicPolygon>
+	<dynamicPolygon
+		name="lfLeftSmallLeg"
+		texture="lf_small_leg"
+		width="1.8"
+		height="7.3"
+		posX="3.2"
+		posY="12.2"
+		zLevel="128"
+		collisionCategory="4"
+		collisionMask="40123" >
+		<vertices>
+			<vertex id="1" x="-0.6" y="2.65" />
+			<vertex id="2" x="0.6" y="2.65" />
+			<vertex id="3" x="0.7" y="-2.65" />
+			<vertex id="4" x="-0.7" y="-2.65" />
+		</vertices>
+		<triangles>
+			<triangle id="1" v1="1" v2="3" v3="2" />
+			<triangle id="2" v1="1" v2="4" v3="3" />
+		</triangles>
+	</dynamicPolygon>
+	<dynamicPolygon
+		name="lfRightSmallLeg"
+		texture="lf_small_leg"
+		width="1.8"
+		height="7.3"
+		posX="-3.2"
+		posY="12.2"
+		zLevel="128"
+		collisionCategory="4"
+		collisionMask="40123" >
+		<vertices>
+			<vertex id="1" x="-0.6" y="2.65" />
+			<vertex id="2" x="0.6" y="2.65" />
+			<vertex id="3" x="0.7" y="-2.65" />
+			<vertex id="4" x="-0.7" y="-2.65" />
+		</vertices>
+		<triangles>
+			<triangle id="1" v1="1" v2="3" v3="2" />
+			<triangle id="2" v1="1" v2="4" v3="3" />
+		</triangles>
+	</dynamicPolygon>
+	<dynamicPolygon
+		name="lfLeftFoot"
+		texture="lf_small_leg"
+		width="4.0"
+		height="0.6"
+		posX="3.2"
+		posY="17.5"
+		zLevel="128"
+		collisionCategory="4"
+		collisionMask="40123">
+		<vertices>
+			<vertex id="1" x="-1.4" y="0.3" />
+			<vertex id="2" x="1.4" y="0.3" />
+			<vertex id="3" x="2.0" y="-0.3" />
+			<vertex id="4" x="-2.0" y="-0.3" />
+		</vertices>
+		<triangles>
+			<triangle id="1" v1="1" v2="3" v3="2" />
+			<triangle id="2" v1="1" v2="4" v3="3" />
+		</triangles>
+	</dynamicPolygon>
+	<dynamicPolygon
+		name="lfRightFoot"
+		texture="lf_small_leg"
+		width="4.0"
+		height="0.6"
+		posX="-3.2"
+		posY="17.5"
+		zLevel="128"
+		collisionCategory="4"
+		collisionMask="40123" >
+		<vertices>
+			<vertex id="1" x="-1.4" y="0.3" />
+			<vertex id="2" x="1.4" y="0.3" />
+			<vertex id="3" x="2.0" y="-0.3" />
+			<vertex id="4" x="-2.0" y="-0.3" />
+		</vertices>
+		<triangles>
+			<triangle id="1" v1="1" v2="3" v3="2" />
+			<triangle id="2" v1="1" v2="4" v3="3" />
+		</triangles>
+	</dynamicPolygon>
+	<dynamicBox 
+		name="lfRightSteer"
+		texture="lf_right_steer"
+		width="1.2"
+		height="1.0"
+		anchorX="0.5"
+		anchorY="0.5"
+		posX="3.9"
+		posY="17.5"
+		zLevel="128"
+		collisionCategory="4"
+		collisionMask="40123" />
+	<dynamicBox 
+		name="lfLeftSteer"
+		texture="lf_right_steer"
+		width="1.2"
+		height="1.0"
+		anchorX="0.5"
+		anchorY="0.5"
+		posX="-3.9"
+		posY="17.5"
+		zLevel="128"
+		collisionCategory="4"s
+		collisionMask="40123" />
+	<dynamicPolygon
+		name="lfMainBody"
+		texture="lf_body"
+		width="9.0"
+		height="9.6"
+		posX="0.0"
+		posY="0.0"
+		zLevel="128"
+		collisionCategory="4"
+		collisionMask="40123"  >
+		<vertices>
+			<vertex id="1" x="-4.5" y="4.8" />
+			<vertex id="2" x="4.5" y="4.8" />
+			<vertex id="3" x="2.5" y="-3.7" />
+			<vertex id="4" x="1.5" y="-4.8" />
+			<vertex id="5" x="-1.5" y="-4.8" />
+			<vertex id="6" x="-2.5" y="-3.7" />
+		</vertices>
+		<triangles>
+			<triangle id="1" v1="1" v2="2" v3="3" />
+			<triangle id="2" v1="1" v2="3" v3="4" />
+			<triangle id="1" v1="1" v2="4" v3="5" />
+			<triangle id="2" v1="1" v2="5" v3="6" />
+		</triangles>
+	</dynamicPolygon>
+<!--
+	<dynamicCircle
+		name="lfShield"
+		texture="shield_exciter"
+		diameter="1.2"
+		anchorX="0.5"
+		anchorY="0.5"
+		posX="-3.9"
+		posY="17.5"
+		zLevel="128"
+		collisionCategory="4"
+		collisionMask="40123" />	
+		--->
+	<weldJoint
+		name="boostJoint"
+		objectAName="lfMainBody"
+		objectBName="lfBooster"
+		objectAAnchorX="0.0"
+		objectAAnchorY="4.8"
+		objectBAnchorX="0.0"
+		objectBAnchorY="-0.8" />
+	<revoluteJoint
+		name="rightLegJoint"
+		objectAName="lfMainBody"
+		objectBName="lfRightBigLeg"
+		objectAAnchorX="3.3"
+		objectAAnchorY="5.8"
+		objectBAnchorX="0.0"
+		objectBAnchorY="-2.75" />
+	<revoluteJoint
+		name="leftLegJoint"
+		objectAName="lfMainBody"
+		objectBName="lfLeftBigLeg"
+		objectAAnchorX="-3.3"
+		objectAAnchorY="5.8"
+		objectBAnchorX="0.0"
+		objectBAnchorY="-2.75" />
+	<revoluteJoint
+		name="rightSmallLegJoint"
+		objectAName="lfRightBigLeg"
+		objectBName="lfRightSmallLeg"
+		objectAAnchorX="0.0"
+		objectAAnchorY="2.95"
+		objectBAnchorX="0.0"
+		objectBAnchorY="-1.95" />
+	<revoluteJoint
+		name="leftSmallLegJoint"
+		objectAName="lfLeftBigLeg"
+		objectBName="lfLeftSmallLeg"
+		objectAAnchorX="0.0"
+		objectAAnchorY="2.95"
+		objectBAnchorX="0.0"
+		objectBAnchorY="-1.95" />
+	<revoluteJoint
+		name="rightFootLegJoint"
+		objectAName="lfRightSmallLeg"
+		objectBName="lfRightFoot"
+		objectAAnchorX="0.0"
+		objectAAnchorY="2.05"
+		objectBAnchorX="0.0"
+		objectBAnchorY="-0.9" />
+	<revoluteJoint
+		name="leftFootLegJoint"
+		objectAName="lfLeftSmallLeg"
+		objectBName="lfLeftFoot"
+		objectAAnchorX="0.0"
+		objectAAnchorY="2.05"
+		objectBAnchorX="0.0"
+		objectBAnchorY="-0.9" />
+	<weldJoint
+		name="rightSteerJoint"
+		objectAName="lfRightSmallLeg"
+		objectBName="lfRightSteer"
+		objectAAnchorX="-0.7"
+		objectAAnchorY="1.4"
+		objectBAnchorX="0.6"
+		objectBAnchorY="0.0" />
+	<weldJoint
+		name="leftSteerJoint"
+		objectAName="lfLeftSmallLeg"
+		objectBName="lfLeftSteer"
+		objectAAnchorX="0.7"
+		objectAAnchorY="1.4"
+		objectBAnchorX="-0.6"
+		objectBAnchorY="0.0" />
+</compoundObject>
+
