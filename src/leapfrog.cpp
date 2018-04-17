@@ -7,6 +7,8 @@
 #include "leapfrog.h"
 #include "shield.h"
 
+#include "leapfrogevents.h"
+
 using namespace oxygine;
 
 ModeAngles::ModeAngles() : 
@@ -52,31 +54,61 @@ LeapFrog::LeapFrog(
 {
 	initCompoundObject(gameResources, parent, world, pos, defXmlFileName);
 
-	m_mainBody = getBody("lfMainBody");
-	m_boostBody = getBody("lfBooster");
-	m_rightBigLegBody = getBody("rightBigLeg");
-	m_leftBigLegBody = getBody("leftBigLeg");
-	m_rightSteerBody = getBody("rightSteer");
-	m_leftSteerBody = getBody("leftSteer");
+   m_mainObject = getObject("lfMainBody");
+   m_lfRightBigLeg = getObject("lfRightBigLeg");
+   m_lfLeftBigLeg = getObject("lfLeftBigLeg");
+   m_mainBody = (b2Body*)m_mainObject->getUserData();
+   m_rightBigLegBody = (b2Body*)m_lfRightBigLeg->getUserData();
+   m_leftBigLegBody = (b2Body*)m_lfLeftBigLeg->getUserData();
 
-	
-	m_lfRightBigLeg = getObject("lfRightLeg");
-	m_lfLeftBigLeg = getObject("lfLeftLeg");
+   m_mainBody = getBody("lfMainBody");
+	m_boostBody = getBody("lfBooster");
+	m_rightSteerBody = getBody("lfRightSteer");
+	m_leftSteerBody = getBody("lfLeftSteer");
+
+   JointUserData* jd;
 
 	m_boostJoint = static_cast<b2WeldJoint*>(getJoint("boostJoint"));
-	m_rightSteerJoint = static_cast<b2WeldJoint*>(getJoint("rightSteerJoint"));
-	m_leftSteerJoint = static_cast<b2WeldJoint*>(getJoint("leftSteerJoint"));
-	m_rightBigLegJoint = static_cast<b2RevoluteJoint*>(getJoint("rightLegJoint"));
-	m_leftBigLegJoint = static_cast<b2RevoluteJoint*>(getJoint("leftLegJoint"));
-	m_rightSmallLegJoint = static_cast<b2RevoluteJoint*>(getJoint("rightSmallLegJoint"));
-	m_leftSmallLegJoint = static_cast<b2RevoluteJoint*>(getJoint("leftSmallLegJoint"));
-	m_rightFootLegJoint = static_cast<b2RevoluteJoint*>(getJoint("rightFootLegJoint"));
-	m_leftFootLegJoint = static_cast<b2RevoluteJoint*>(getJoint("leftFootLegJoint"));
-	m_shieldJoint = static_cast<b2RevoluteJoint*>(getJoint("boostJoint"));
+   jd = new JointUserData(false);
+   m_boostJoint->SetUserData(jd);
+
+   m_rightSteerJoint = static_cast<b2WeldJoint*>(getJoint("rightSteerJoint"));
+   jd = new JointUserData(false);
+   m_rightSteerJoint->SetUserData(jd);
+   
+   m_leftSteerJoint = static_cast<b2WeldJoint*>(getJoint("leftSteerJoint"));
+   jd = new JointUserData(false);
+   m_leftSteerJoint->SetUserData(jd);
+   
+   m_rightBigLegJoint = static_cast<b2RevoluteJoint*>(getJoint("rightLegJoint"));
+   jd = new JointUserData(false);
+   m_rightBigLegJoint->SetUserData(jd);
+   
+   m_leftBigLegJoint = static_cast<b2RevoluteJoint*>(getJoint("leftLegJoint"));
+   jd = new JointUserData(false);
+   m_leftBigLegJoint->SetUserData(jd);
+   
+   m_rightSmallLegJoint = static_cast<b2RevoluteJoint*>(getJoint("rightSmallLegJoint"));
+   jd = new JointUserData(false);
+   m_rightSmallLegJoint->SetUserData(jd);
+   
+   m_leftSmallLegJoint = static_cast<b2RevoluteJoint*>(getJoint("leftSmallLegJoint"));
+   jd = new JointUserData(false);
+   m_leftSmallLegJoint->SetUserData(jd);
+   
+   m_rightFootLegJoint = static_cast<b2RevoluteJoint*>(getJoint("rightFootLegJoint"));
+   jd = new JointUserData(false);
+   m_rightFootLegJoint->SetUserData(jd);
+   
+   m_leftFootLegJoint = static_cast<b2RevoluteJoint*>(getJoint("leftFootLegJoint"));
+   jd = new JointUserData(false);
+   m_leftFootLegJoint->SetUserData(jd);
+   
+   //	m_shieldJoint = static_cast<b2RevoluteJoint*>(getJoint("boostJoint"));
 
    m_shield = new Shield(gameResources, world, pos);
-   CompoundObject* lf = getObject("lfMainBody");
-   m_shield->attachTo(lf);
+//   CompoundObject* lf = getObject("lfMainBody");
+   m_shield->attachTo(this);
 
    // Add main engine particle system
    m_boosterFlame = new FlameEmitter(
@@ -170,12 +202,54 @@ LeapFrog::LeapFrog(
 
    m_reentryFlameEmitterLeftLeg->attachTo(this);
 
-//   setAlpha(0);
+   // Register all properties:
+   m_properties.push_back(ObjectProperty(this, 0, 0.0f)); // Mode
+   m_properties.push_back(ObjectProperty(this, 1, 0.0f)); // Environment
+   m_properties.push_back(ObjectProperty(this, 2, 0.0f)); // State
+   m_properties.push_back(ObjectProperty(this, 3, 0.0f)); // xPos
+   m_properties.push_back(ObjectProperty(this, 4, 0.0f)); // yPos
+
+   // Here we attach Leapfrog object to tree so it gets updates etc.
+   attachTo(parent);
+
 }
 
 LeapFrog::~LeapFrog()
 {
 }
+
+oxygine::Actor* LeapFrog::getMainActor(void)
+{
+   return m_mainObject;
+}
+
+void LeapFrog::setPropertyImpl(int propId, float value)
+{
+   if (propId == propMode)
+   {
+      if ((value > -0.5) && (value < 0.5))
+      {
+         goToMode(LFM_RESET);
+      }
+      else if ((value > 0.5) && (value < 1.5))
+      {
+         goToMode(LFM_DEEP_SPACE);
+      }
+      else if ((value > 1.5) && (value < 2.5))
+      {
+         goToMode(LFM_LANDING);
+      }
+      else if ((value > 2.5) && (value < 3.5))
+      {
+         goToMode(LFM_ORBIT);
+      }
+      else if ((value > 3.5) && (value < 4.5))
+      {
+         goToMode(LFM_REENTRY);
+      }
+   }
+}
+
 
 void LeapFrog::initLeapfrog(SceneActor* sceneActor)
 {
@@ -196,6 +270,10 @@ void LeapFrog::hitByAsteroid(b2Contact* contact)
 
 void LeapFrog::doUpdate(const UpdateState &us)
 {
+   b2Vec2 pos = m_mainBody->GetPosition();
+   m_properties[propXPos].setProperty(pos.x);
+   m_properties[propYPos].setProperty(pos.y);
+
    float angle = 0.0f;
    b2Vec2 boostForce = b2Vec2(0.0f, 0.0f);
    float magAngVel = 0.0f;
@@ -475,78 +553,6 @@ void LeapFrog::unlockJoints(void)
 
 }
 
-//void LeapFrog::weldJoints(void)
-//{
-//   // Main Body and right big leg joint
-//   b2WeldJointDef	rightLegJointDef;
-//   rightLegJointDef.bodyA = m_mainBody;
-//   rightLegJointDef.bodyB = m_lfRightBigLeg->m_body;
-//   rightLegJointDef.localAnchorA.Set(3.3f, 5.8f);
-//   rightLegJointDef.localAnchorB.Set(0.0f, -2.75f);
-//   rightLegJointDef.collideConnected = false;
-//   m_rightBigLegWeldJoint = (b2WeldJoint*)m_world->CreateJoint(&rightLegJointDef);
-//
-//   // Main Body and left big leg joint
-//   b2WeldJointDef	leftLegJointDef;
-//   leftLegJointDef.bodyA = m_mainBody;
-//   leftLegJointDef.bodyB = m_lfLeftBigLeg->m_body;
-//   leftLegJointDef.localAnchorA.Set(-3.3f, 5.8f);
-//   leftLegJointDef.localAnchorB.Set(0.0f, -2.75f);
-//   leftLegJointDef.collideConnected = false;
-//   m_leftBigLegWeldJoint = (b2WeldJoint*)m_world->CreateJoint(&leftLegJointDef);
-//
-//   // Right Big leg and right small leg joint
-//   b2WeldJointDef	rightSmallLegJointDef;
-//   rightSmallLegJointDef.bodyA = m_lfRightBigLeg->m_body;
-//   rightSmallLegJointDef.bodyB = m_lfRightSmallLeg->m_body;
-//   rightSmallLegJointDef.localAnchorA.Set(0.0f, 2.95f);
-//   rightSmallLegJointDef.localAnchorB.Set(0.0f, -1.95f);
-//   rightSmallLegJointDef.collideConnected = false;
-//   m_rightSmallLegWeldJoint = (b2WeldJoint*)m_world->CreateJoint(&rightSmallLegJointDef);
-//
-//   // Left Big leg and left small leg joint
-//   b2WeldJointDef	leftSmallLegJointDef;
-//   leftSmallLegJointDef.bodyA = m_lfLeftBigLeg->m_body;
-//   leftSmallLegJointDef.bodyB = m_lfLeftSmallLeg->m_body;
-//   leftSmallLegJointDef.localAnchorA.Set(0.0f, 2.95f);
-//   leftSmallLegJointDef.localAnchorB.Set(0.0f, -1.95f);
-//   leftSmallLegJointDef.collideConnected = false;
-//   m_leftSmallLegWeldJoint = (b2WeldJoint*)m_world->CreateJoint(&leftSmallLegJointDef);
-//
-//   // Right Small leg and right foot joint
-//   b2WeldJointDef	rightFootLegJointDef;
-//   rightFootLegJointDef.bodyA = m_lfRightSmallLeg->m_body;
-//   rightFootLegJointDef.bodyB = m_lfRightFoot->m_body;
-//   rightFootLegJointDef.localAnchorA.Set(0.0f, 2.05f);
-//   rightFootLegJointDef.localAnchorB.Set(0.0f, -0.9f);
-//   rightFootLegJointDef.collideConnected = false;
-//   m_rightFootLegWeldJoint = (b2WeldJoint*)m_world->CreateJoint(&rightFootLegJointDef);
-//
-//   // Left Small leg and left foot joint
-//   b2WeldJointDef	leftFootLegJointDef;
-//   leftFootLegJointDef.bodyA = m_lfLeftSmallLeg->m_body;
-//   leftFootLegJointDef.bodyB = m_lfLeftFoot->m_body;
-//   leftFootLegJointDef.localAnchorA.Set(0.0f, 2.05f);
-//   leftFootLegJointDef.localAnchorB.Set(0.0f, -0.9f);
-//   leftFootLegJointDef.collideConnected = false;
-//   m_leftFootLegWeldJoint = (b2WeldJoint*)m_world->CreateJoint(&leftFootLegJointDef);
-//
-//}
-
-
-//void LeapFrog::unweldJoints(void)
-//{
-//   if (m_rightBigLegWeldJoint)
-//   {
-//      m_world->DestroyJoint(m_rightBigLegWeldJoint);
-//   }
-//   m_world->DestroyJoint(m_leftBigLegWeldJoint);
-//   m_world->DestroyJoint(m_rightSmallLegWeldJoint);
-//   m_world->DestroyJoint(m_leftSmallLegWeldJoint);
-//   m_world->DestroyJoint(m_rightFootLegWeldJoint);
-//   m_world->DestroyJoint(m_leftFootLegWeldJoint);
-//}
-
 void LeapFrog::setStrongJoints(void)
 {
    m_rightBigLegJoint->SetMaxMotorTorque(c_instantJointMotorTorque);
@@ -657,18 +663,24 @@ void LeapFrog::setInstantAngle(float angle)
 
    stopAllJointMotors();
    lockJoints();
+
    m_state = LFS_INSTANTLY_ROTATING;
+   m_properties[propState].setProperty((float)m_state);
+
 }
 
 void LeapFrog::setHoldAngle(float angle)
 {
    m_wantedAngle = angle;
+
    m_state = LFS_HOLD_ANGLE;
+   m_properties[propState].setProperty((float)m_state);
 }
 
 void LeapFrog::releaseHoldAngle(void)
 {
    m_state = LFS_NORMAL;
+   m_properties[propState].setProperty((float)m_state);
 }
 
 void LeapFrog::breakJoints(void)
@@ -728,15 +740,15 @@ void LeapFrog::initLeapfrog(LeapFrogModeEnum mode, float angle)
 {
    m_initiating = true;
    m_mode = mode;
+   m_properties[propMode].setProperty((float)m_mode);
 
    setInstantAngle(angle);
-
-   m_initiating = true;
 }
 
 void LeapFrog::initMode(LeapFrogModeEnum mode)
 {
    m_mode = mode;
+   m_properties[propMode].setProperty((float)m_mode);
 
    unlockJoints();
 
@@ -765,6 +777,7 @@ void LeapFrog::initMode(LeapFrogModeEnum mode)
 
    setStrongJoints();
    m_state = LFS_INITIATING_MODE;
+   m_properties[propState].setProperty((float)m_state);
 
    //// Now set all joints angles directly
    //m_rightBigLegJoint->SetLimits(m_modeAngleGoals.m_rightBigJointAngle, m_modeAngleGoals.m_rightBigJointAngle);
@@ -785,7 +798,9 @@ void LeapFrog::initMode(LeapFrogModeEnum mode)
 void LeapFrog::goToMode(LeapFrogModeEnum mode)
 {
    m_state = LFS_MODE_IN_TRANSIT;
+   m_properties[propState].setProperty((float)m_state);
    m_mode = mode;
+   m_properties[propMode].setProperty((float)m_mode);
 
    unlockJoints();
 
@@ -915,6 +930,11 @@ void LeapFrog::modeReached(void)
    }
 
    m_state = LFS_NORMAL;
+   m_properties[propState].setProperty((float)m_state);
+
+   LeapfrogModeReachedEvent event("Test");
+   dispatchEvent(&event);
+
 }
 
 void LeapFrog::instantAngleReached(void)
@@ -923,7 +943,8 @@ void LeapFrog::instantAngleReached(void)
    m_steerMagnitude = 0.0f;
  
    m_state = LFS_GET_TO_EQUILIBRIUM;
- 
+   m_properties[propState].setProperty((float)m_state);
+
    //if (m_initiating)
    //{
    //   initMode(m_mode);
@@ -937,6 +958,7 @@ void LeapFrog::instantAngleReached(void)
 void LeapFrog::equilibriumReached(void)
 {
    m_state = LFS_NORMAL;
+   m_properties[propState].setProperty((float)m_state);
 
    if (m_initiating)
    {

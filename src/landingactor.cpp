@@ -5,6 +5,7 @@
 #include "marker.h"
 #include "launchsite.h"
 #include "compoundobject.h"
+#include "leapfrogevents.h"
 
 using namespace oxygine;
 using namespace std;
@@ -19,43 +20,61 @@ LandingActor::LandingActor(Resources& gameResources, std::string fileName) :
 
    initCompoundObject(gameResources, this, m_world, Vector2(435.52f, 375.0f), fileName);
 
-   m_leapfrog = static_cast<LeapFrog*>(getObject("lfMainBody"));
+   m_leapfrog = static_cast<LeapFrog*>(getObject("leapfrog1"));
    m_leapfrog->initLeapfrog(LFM_LANDING, 0.0f);
    m_leapfrog->goToEnvironment(ENV_GROUND);
 
+   m_leapfrog->addEventListener(LeapfrogModeReachedEvent::EVENT, CLOSURE(this, &LandingActor::modeReachedListener));
+   m_leapfrog->addEventListener(ObjectPropertyTriggeredEvent::EVENT, CLOSURE(this, &LandingActor::handlePropertyTriggeredEvent));
 
-   //createLeapFrog(gameResources);
+   m_leapfrog->m_properties[LeapFrog::propXPos].registerPropertyEventTrigger(1, PropertyEventTrigger::insideRange, 1200.0f, 10000.0f);
 
-   //spMarker marker = new Marker(gameResources, RectF(300.0f, 250.0f, 128.0f, 128.0f), m_world);
-   //addChild(marker);
-
-   //for (int i = 0; i < 10; i++)
-   //{
-   //   spColorRectSprite sp1 = new ColorRectSprite();
-   //   sp1->setAnchor(0.0f, 0.0f);
-   //   sp1->setSize(10.0f, 10.0f);
-   //   sp1->setColor(Color::Aqua);
-   //   sp1->setPosition(i * 20.0f + 300.0f - 64.0f, 250.0f - 64.0f - 10.0f);
-   //   addChild(sp1);
-   //}
+//   m_leapfrog->m_properties[LeapFrog::propXPos].registerPropertyEventTrigger(1, PropertyEventTrigger::insideRange, -10000.0f, 700.0f);
 
 
+}
 
-   // I should probably load resources that are uniuqe to the landing mode here
+void LandingActor::modeReachedListener(Event *ev)
+{
+   LeapfrogModeReachedEvent* event = static_cast<LeapfrogModeReachedEvent*>(ev);
+   logs::messageln("Mode reached with info: %s", event->extraInfo.c_str());
 
-	//spStatic ground = new Static(gameResources, m_world, RectF(465, 270, 25, 1));
-	//addChild(ground);
-
-	//spStatic platform = new Static(gameResources, m_world, RectF(520, 230, 25, 1));
-	//addChild(platform);
-
-	//spStatic pillar = new Static(gameResources, m_world, RectF(500, 305, 3, 100));
- //  addChild(pillar);
-
-   //spStaticPolygon grotto = new StaticPolygon(gameResources, "landing_map_1.xml", m_world);
-   //addChild(grotto);
+   float mode = m_leapfrog->m_properties[LeapFrog::propMode].getProperty();
+   float state = m_leapfrog->m_properties[LeapFrog::propState].getProperty();
+   logs::messageln("Mode is now: %d", (int)mode);
+   logs::messageln("State is now: %d", (int)state);
+}
 
 
-//   spLaunchSite launchSite = new LaunchSite(gameResources, (Actor*)this, m_world, Vector2(435.52f, 375.0f), string("launch_site.xml"));
-//   spCompoundObject landingScene = new CompoundObject(gameResources, (Actor*)this, m_world, Vector2(435.52f, 375.0f), string("landing_scene.xml"));
+void LandingActor::handlePropertyTriggeredEvent(oxygine::Event *ev)
+{
+   ObjectPropertyTriggeredEvent* event = static_cast<ObjectPropertyTriggeredEvent*>(ev);
+
+   // Decode the triggered event id:
+   switch (event->m_triggedEventId)
+   {
+   case 1:
+      logs::message("Entered right area, changeing mode.");
+      m_leapfrog->m_properties[LeapFrog::propMode].extSetProperty((float)LFM_DEEP_SPACE);
+      
+      // Unregister this event so that it does not spam
+      m_leapfrog->m_properties[LeapFrog::propXPos].unregisterPropertyEventTrigger(1);
+
+      // Register new event for when we go back to the left
+      m_leapfrog->m_properties[LeapFrog::propXPos].registerPropertyEventTrigger(2, PropertyEventTrigger::insideRange, -10000.0f, 1200.0f);
+
+      break;
+   case 2:
+      logs::message("Entered left area, changeing mode.");
+      m_leapfrog->m_properties[LeapFrog::propMode].extSetProperty((float)LFM_LANDING);
+
+      // Unregister this event so that it does not spam
+      m_leapfrog->m_properties[LeapFrog::propXPos].unregisterPropertyEventTrigger(2);
+
+      // Register new event for when we go back to the left
+      m_leapfrog->m_properties[LeapFrog::propXPos].registerPropertyEventTrigger(1, PropertyEventTrigger::insideRange, 1200.0f, 10000.0f);
+
+      break;
+   }
+
 }

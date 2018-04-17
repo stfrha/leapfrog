@@ -23,10 +23,10 @@ PropertyEventTrigger::PropertyEventTrigger() :
 }
 
 PropertyEventTrigger::PropertyEventTrigger(int eventId, TriggerType triggerType, float upperLimit, float lowerLimit) :
-   m_eventId(0),
+   m_eventId(eventId),
    m_triggerType(triggerType),
 	m_upperLimit(upperLimit),
-	m_lowerLimit(e_atLowerLimit)
+	m_lowerLimit(lowerLimit)
 {
 }
 
@@ -44,15 +44,23 @@ bool PropertyEventTrigger::evaluateTrigger(float value)
 	return false;
 }
 
+int PropertyEventTrigger::getEventId(void)
+{
+   return m_eventId;
+}
+
 
 ObjectProperty::ObjectProperty() :
+   m_extReadOnly(false),
 	m_value(0.0f),
 	m_id(0)
 {
 }
 
-ObjectProperty::ObjectProperty(int id, float value) :
-	m_value(value),
+ObjectProperty::ObjectProperty(CompoundObject* obj, int id, float value, bool readOnly) :
+   m_object(obj),
+   m_extReadOnly(readOnly),
+   m_value(value),
 	m_id(id)
 {
 }
@@ -67,18 +75,49 @@ void ObjectProperty::setProperty(float value)
 {
 	m_value = value;
 
+   // Handeling an even may cause it to be removed as a trigger from this 
+   // list which would invalidate the iterator. Therefore we build a list of
+   // all events to be sent and send them after the loop
+   vector<ObjectPropertyTriggeredEvent> m_eventList;
+
 	for (auto it = m_eventTriggers.begin(); it != m_eventTriggers.end(); ++it)
 	{
 		if (it->evaluateTrigger(value))
 		{
-         // Trigger m_eventId
+         // Trigger event
+         m_eventList.push_back(ObjectPropertyTriggeredEvent(it->getEventId(), m_id, value));
 		}		
 	}
+
+   for (auto it = m_eventList.begin(); it != m_eventList.end(); ++it)
+   {
+      m_object->dispatchEvent(&(*it));
+   }
 
 	for (auto it = m_dualEventTriggers.begin(); it != m_dualEventTriggers.end(); ++it)
 	{
 		(*it)->updateProperty(m_id);
 	}
+}
+
+// This is used to set properties from outside of the object that 
+// owns the property. 
+void ObjectProperty::extSetProperty(float value)
+{
+   if (!m_extReadOnly)
+   {
+      setProperty(value);
+
+      setPropertyImpl(m_id, value);
+   }
+}
+
+// Default implementation of this does nothing. It is overridden
+// to decode the property value and execute accordingly in each
+// specialised CompoundObject
+void ObjectProperty::setPropertyImpl(int propId, float value)
+{
+
 }
 
 float ObjectProperty::getProperty(void)
@@ -94,6 +133,23 @@ void ObjectProperty::registerPropertyEventTrigger(
 {
 	m_eventTriggers.push_back(PropertyEventTrigger(eventId, triggerType, upper, lower));
 }
+
+void ObjectProperty::unregisterPropertyEventTrigger(int eventId)
+{
+   // iterate all triggers and remove those the has eventId
+   for (auto it = m_eventTriggers.begin(); it != m_eventTriggers.end();)
+   {
+      if (it->getEventId() == eventId)
+      {
+         it = m_eventTriggers.erase(it);
+      }
+      else
+      {
+         ++it;
+      }
+   }
+}
+
 
 void ObjectProperty::registerDualPropEventTrigger( DualPropEventTrigger* trigger)
 {
@@ -145,6 +201,7 @@ void DualPropEventTrigger::updateProperty(int propId)
 			if (m_prop2Trigger.evaluateTrigger(p2Val))
 			{
 				// Trigger m_eventId
+
 			}
 		}
 	}
@@ -169,9 +226,9 @@ CompoundObject::CompoundObject()
 
 CompoundObject::~CompoundObject()
 {
-	m_boxedSprites.clear();
-	m_polygonSprites.clear();
-	m_staticPolygons.clear();
+	//m_boxedSprites.clear();
+	//m_polygonSprites.clear();
+	//m_staticPolygons.clear();
 	m_namedJoints.clear();
 	m_children.clear();
 }
@@ -218,6 +275,7 @@ bool CompoundObject::readDefinitionXmlFile(Resources& gameResources, Actor* pare
       ++it)
    {
       // define a polygon object
+      string a = (*it).attribute("name").as_string();
       definePolygonObject(gameResources, parent, world, pos, *it);
    }
 
@@ -226,6 +284,13 @@ bool CompoundObject::readDefinitionXmlFile(Resources& gameResources, Actor* pare
       ++it)
    {
       defineChildObject(gameResources, parent, world, pos, *it);
+   }
+
+   for (auto it = root.children("boxedSpritePolygonBody").begin();
+      it != root.children("boxedSpritePolygonBody").end();
+      ++it)
+   {
+      defineBoxedSpritePolygonBody(gameResources, parent, world, pos, *it);
    }
 
    for (auto it = root.children("weldJoint").begin();
@@ -315,7 +380,7 @@ void CompoundObject::defineStaticPolygon(Resources& gameResources, Actor* parent
    
    body->SetUserData(object.get());
 
-   m_staticPolygons.push_back(object);
+   m_children.push_back((CompoundObject*)object.get());
 }
 
 void CompoundObject::defineStaticBox(Resources& gameResources, Actor* parent, b2World* world, const Vector2& pos, xml_node& objectNode)
@@ -353,7 +418,7 @@ void CompoundObject::defineStaticBox(Resources& gameResources, Actor* parent, b2
    object->setUserData(body);
    body->SetUserData(object.get());
 
-   m_boxedSprites.push_back(object);
+   m_children.push_back((CompoundObject*)object.get());
 }
 
 //void CompoundObject::defineStaticCircle(oxygine::Resources& gameResources, oxygine::Actor* parent, b2World* world, const oxygine::Vector2& pos, pugi::xml_node& objectNode)
@@ -429,7 +494,7 @@ void CompoundObject::defineBoxedObject(oxygine::Resources& gameResources, Actor*
    object->setUserData(body);
    body->SetUserData(object.get());
 
-   m_boxedSprites.push_back(object);
+   m_children.push_back((CompoundObject*)object.get());
 }
 
 void CompoundObject::definePolygonObject(oxygine::Resources& gameResources, Actor* parent, b2World* world, const Vector2& pos, xml_node& objectNode)
@@ -507,8 +572,89 @@ void CompoundObject::definePolygonObject(oxygine::Resources& gameResources, Acto
 
    body->SetUserData(object.get());
 
-   m_polygonSprites.push_back(object);
+   m_children.push_back((CompoundObject*)object.get());
 }
+
+
+void CompoundObject::defineBoxedSpritePolygonBody(
+   Resources& gameResources,
+   Actor* parent,
+   b2World* world,
+   const Vector2& pos,
+   xml_node& objectNode)
+{
+   vector<Vector2> vertices;
+   vector<VectorT3<int> > triangles;
+
+   spSprite object = new Sprite();
+   object->setName(objectNode.attribute("name").as_string());
+   object->setResAnim(gameResources.getResAnim(objectNode.attribute("texture").as_string()));
+
+   object->setSize(objectNode.attribute("width").as_float(), objectNode.attribute("height").as_float());
+   object->setAnchor(Vector2(objectNode.attribute("anchorX").as_float(), objectNode.attribute("anchorY").as_float()));
+   object->setTouchChildrenEnabled(false);
+   object->setPriority(objectNode.attribute("zLevel").as_int());
+
+   object->attachTo(parent);
+
+   for (auto it = objectNode.child("vertices").children("vertex").begin();
+      it != objectNode.child("vertices").children("vertex").end();
+      ++it)
+   {
+      vertices.push_back(Vector2(it->attribute("x").as_float(), it->attribute("y").as_float()));
+   }
+
+   for (auto it = objectNode.child("triangles").children("triangle").begin();
+      it != objectNode.child("triangles").children("triangle").end();
+      ++it)
+   {
+      triangles.push_back(VectorT3<int>(
+         it->attribute("v1").as_int(),
+         it->attribute("v2").as_int(),
+         it->attribute("v3").as_int()));
+   }
+
+   int num = vertices.size() + 1;
+
+   b2Vec2* b2vertices = new b2Vec2[num];
+
+   // Polygon of a body shape is physical coordinates, i.e. in meters
+   Vector2 tv;
+
+   for (int i = 0; i < num - 1; i++)
+   {
+      tv = vertices[i];
+      b2vertices[i] = PhysDispConvert::convert(tv, 1.0f);
+   }
+
+   tv = vertices[0];
+   b2vertices[num - 1] = PhysDispConvert::convert(tv, 1.0f);
+
+   b2BodyDef bodyDef;
+   bodyDef.type = b2_dynamicBody;
+   b2Vec2 bPos = PhysDispConvert::convert(pos, 1.0f) + b2Vec2(objectNode.attribute("posX").as_float(), objectNode.attribute("posY").as_float());
+   bodyDef.position = bPos;
+   b2Body* body = world->CreateBody(&bodyDef);
+
+   b2PolygonShape polyShape;
+   polyShape.Set(b2vertices, num - 1);
+
+   b2FixtureDef fixtureDef;
+   fixtureDef.shape = &polyShape;
+   fixtureDef.density = 5.0f;
+   fixtureDef.friction = 1.3f;
+   fixtureDef.filter.categoryBits = objectNode.attribute("collisionCategory").as_int();
+   fixtureDef.filter.maskBits = objectNode.attribute("collisionMask").as_int();
+
+   body->CreateFixture(&fixtureDef);
+
+   object->setUserData(body);
+
+   body->SetUserData(object.get());
+
+   m_children.push_back((CompoundObject*)object.get());
+}
+
 
 void CompoundObject::defineChildObject(
    Resources& gameResources, 
@@ -522,12 +668,15 @@ void CompoundObject::defineChildObject(
    // Perhaps with some special cases
    string type = objectNode.attribute("type").as_string();
 
+   Vector2 objPos = Vector2(objectNode.attribute("posX").as_float(), objectNode.attribute("posY").as_float());
+   objPos += pos;
+
    if (type == "leapfrog")
    {
       LeapFrog* lf = new LeapFrog(
          gameResources,
          parent, world,
-         pos,
+         objPos,
          string(objectNode.attribute("file").as_string()));
 
 	  lf->setName(objectNode.attribute("name").as_string());
@@ -539,7 +688,7 @@ void CompoundObject::defineChildObject(
 	   LaunchSite* ls = new LaunchSite(
 		   gameResources,
 		   parent, world,
-		   pos,
+         objPos,
 		   string(objectNode.attribute("file").as_string()));
 
 	   ls->setName(objectNode.attribute("name").as_string());
@@ -623,42 +772,81 @@ CompoundObject* CompoundObject::getObjectImpl(const std::string& name)
       }
    }
      
+   //for (auto it = m_boxedSprites.begin(); it != m_boxedSprites.end(); ++it)
+   //{
+   //   if (it->get()->getName() == name)
+   //   {
+   //      return (CompoundObject*)(it->get());
+   //   }
+   //}
+
+   //for (auto it = m_polygonSprites.begin(); it != m_polygonSprites.end(); ++it)
+   //{
+   //   if (it->get()->getName() == name)
+   //   {
+   //      return (CompoundObject*)(it->get());
+   //   }
+   //}
+
+   //for (auto it = m_staticPolygons.begin(); it != m_staticPolygons.end(); ++it)
+   //{
+   //   if (it->get()->getName() == name)
+   //   {
+   //      return (CompoundObject*)(it->get());
+   //   }
+   //}
+
+   //for (auto it = m_staticBoxes.begin(); it != m_staticBoxes.end(); ++it)
+   //{
+   //   if (it->get()->getName() == name)
+   //   {
+   //      return (CompoundObject*)(it->get());
+   //   }
+   //}
+
    return NULL;
 }
 
 b2Body* CompoundObject::getBodyImpl(const std::string& name)
 {
-   for (auto it = m_boxedSprites.begin(); it != m_boxedSprites.end(); ++it)
+   CompoundObject* co = getObjectImpl(name);
+
+   if (co)
    {
-      if (it->get()->getName() == name)
-      {
-         return (b2Body*)it->get()->getUserData();
-      }
+      return (b2Body*)co->getUserData();
    }
 
-   for (auto it = m_polygonSprites.begin(); it != m_polygonSprites.end(); ++it)
-   {
-      if (it->get()->getName() == name)
-      {
-         return (b2Body*)it->get()->getUserData();
-      }
-   }
+   //for (auto it = m_boxedSprites.begin(); it != m_boxedSprites.end(); ++it)
+   //{
+   //   if (it->get()->getName() == name)
+   //   {
+   //      return (b2Body*)it->get()->getUserData();
+   //   }
+   //}
 
-   for (auto it = m_staticPolygons.begin(); it != m_staticPolygons.end(); ++it)
-   {
-      if (it->get()->getName() == name)
-      {
-         return (b2Body*)it->get()->getUserData();
-      }
-   }
+   //for (auto it = m_polygonSprites.begin(); it != m_polygonSprites.end(); ++it)
+   //{
+   //   if (it->get()->getName() == name)
+   //   {
+   //      return (b2Body*)it->get()->getUserData();
+   //   }
+   //}
 
-   for (auto it = m_staticBoxes.begin(); it != m_staticBoxes.end(); ++it)
-   {
-      if (it->get()->getName() == name)
-      {
-         return (b2Body*)it->get()->getUserData();
-      }
-   }
+   //for (auto it = m_staticPolygons.begin(); it != m_staticPolygons.end(); ++it)
+   //{
+   //   if (it->get()->getName() == name)
+   //   {
+   //      return (b2Body*)it->get()->getUserData();
+   //   }
+   //}
+
+   //for (auto it = m_staticBoxes.begin(); it != m_staticBoxes.end(); ++it)
+   //{
+   //   if (it->get()->getName() == name)
+   //   {
+   //      return (b2Body*)it->get()->getUserData();
+   //   }
+   //}
 
    return NULL;
 }
@@ -695,6 +883,19 @@ void CompoundObject::setProperty(int propId, float value)
    }
 }
 
+void CompoundObject::extSetProperty(int propId, float value)
+{
+   setProperty(propId, value);
+   setPropertyImpl(propId, value);
+}
+
+// The setPropertyImpl here does nothing. It is ment to be 
+// overridden by a inherited class to decode and do special
+// handling when a property is changed.
+void CompoundObject::setPropertyImpl(int propId, float value)
+{
+}
+
 float CompoundObject::getProperty(int propId)
 {
    ObjectProperty* p = getProp(propId);
@@ -702,6 +903,8 @@ float CompoundObject::getProperty(int propId)
    {
       return p->getProperty();
    }
+
+   return 0.0f;
 }
 
 void CompoundObject::registerPropertyEventTrigger(

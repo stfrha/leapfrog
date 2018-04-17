@@ -87,6 +87,26 @@ DECLARE_SMART(LeapFrog, spLeapFrog);
 
 class LeapFrog : public CompoundObject, public CollisionEntity
 {
+public:
+   /*
+   Lets define properties:
+   Prop     Description
+   0     =  Mode
+   1     =  Environment
+   2     =  State (read only)
+   3     =  X-pos (read only)
+   4     =  Y-pos (read only)
+   */
+
+   enum properties
+   {
+      propMode    = 0,
+      propEnv     = 1,
+      propState   = 2,
+      propXPos    = 3,
+      propYPos    = 4
+   };
+
 private:
    const static ModeAngles c_resetModeAngles;
    const static ModeAngles c_landingModeAngles;
@@ -127,13 +147,14 @@ private:
 
 	b2World * m_world;
 	b2Body* m_mainBody;
-    b2Body* m_boostBody;
+   b2Body* m_boostBody;
 	b2Body* m_rightBigLegBody;
 	b2Body* m_leftBigLegBody;
 	b2Body* m_rightSteerBody;
 	b2Body* m_leftSteerBody;
 
-	CompoundObject* m_lfRightBigLeg;
+   CompoundObject* m_mainObject;
+   CompoundObject* m_lfRightBigLeg;
 	CompoundObject* m_lfLeftBigLeg;
 
    b2WeldJoint* m_boostJoint;
@@ -196,6 +217,14 @@ public:
 
    void hitByAsteroid(b2Contact* contact);
 
+   oxygine::Actor* getMainActor(void);
+
+   /*
+   To be controlled by Game Manager:
+   goToMode
+   goToEnvironment
+   */
+
    void initLeapfrog(LeapFrogModeEnum mode, float angle);
 	void initMode(LeapFrogModeEnum mode);
    void goToMode(LeapFrogModeEnum mode);
@@ -218,8 +247,6 @@ private:
    void setWeakJoints(void);
    void lockJoints(void);
    void unlockJoints(void);
-   void weldJoints(void);
-   void unweldJoints(void);
    bool modeIsReached(void);
    void resetModeReached(void);
    void equilibriumReached(void);
@@ -227,6 +254,7 @@ private:
    void instantAngleReached(void);
    void holdAngleReached(void);
    void stopAllJointMotors(void);
+
 
 protected:
    void doUpdate(const UpdateState &us);

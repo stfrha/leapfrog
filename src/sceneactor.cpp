@@ -201,7 +201,7 @@ void SceneActor::doUpdate(const UpdateState& us)
 	Point vpSize = core::getDisplaySize();
 
 	// Frog position in stage coordinates
-	Vector2 frogPos = m_leapfrog->getPosition();
+	Vector2 frogPos = m_leapfrog->getMainActor()->getPosition();
 
    Vector2 wantedVpPos = Vector2(0.0f, 0.0f);
    

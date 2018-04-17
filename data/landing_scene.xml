@@ -3,11 +3,11 @@
 	<staticPolygon 
 		name="grotto"
 		texture="grotto"
-		posX="-300"
-		posY="-250"
+		posX="0"
+		posY="0"
 		width="512"
 		height="512"
-		zLevel="192"
+		zLevel="26"
 		collisionCategory="2048"
 		collisionMask="65535" >
 		<vertices>
@@ -52,7 +52,7 @@
 		type="leapfrog"
 		file="leapfrog.xml" 
 		posX="500.0"
-		posY="250."
+		posY="150.0"
 	/>
 	<ChildCompoundObjectRef 
 		name="launchSite1"

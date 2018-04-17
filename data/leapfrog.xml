@@ -12,11 +12,13 @@
 		zLevel="128"
 		collisionCategory="4"
 		collisionMask="40123" />
-	<dynamicPolygon
+	<boxedSpritePolygonBody
 		name="lfLeftBigLeg"
 		texture="lf_big_leg"
 		width="1.8"
 		height="7.3"
+		anchorX="0.5"
+		anchorY="0.5"
 		posX="3.2"
 		posY="4.9"
 		zLevel="128"
@@ -32,12 +34,14 @@
 			<triangle id="1" v1="1" v2="3" v3="2" />
 			<triangle id="2" v1="1" v2="4" v3="3" />
 		</triangles>
-	</dynamicPolygon>
-	<dynamicPolygon
+	</boxedSpritePolygonBody>
+	<boxedSpritePolygonBody
 		name="lfRightBigLeg"
 		texture="lf_big_leg"
 		width="1.8"
 		height="7.3"
+		anchorX="0.5"
+		anchorY="0.5"
 		posX="-3.2"
 		posY="4.9"
 		zLevel="128"
@@ -53,20 +57,22 @@
 			<triangle id="1" v1="1" v2="3" v3="2" />
 			<triangle id="2" v1="1" v2="4" v3="3" />
 		</triangles>
-	</dynamicPolygon>
-	<dynamicPolygon
+	</boxedSpritePolygonBody>
+	<boxedSpritePolygonBody
 		name="lfLeftSmallLeg"
 		texture="lf_small_leg"
-		width="1.8"
-		height="7.3"
+		width="1.4"
+		height="5.3"
+		anchorX="0.5"
+		anchorY="0.5"
 		posX="3.2"
 		posY="12.2"
 		zLevel="128"
 		collisionCategory="4"
 		collisionMask="40123" >
 		<vertices>
-			<vertex id="1" x="-0.6" y="2.65" />
-			<vertex id="2" x="0.6" y="2.65" />
+			<vertex id="1" x="-0.7" y="2.65" />
+			<vertex id="2" x="0.7" y="2.65" />
 			<vertex id="3" x="0.7" y="-2.65" />
 			<vertex id="4" x="-0.7" y="-2.65" />
 		</vertices>
@@ -74,20 +80,22 @@
 			<triangle id="1" v1="1" v2="3" v3="2" />
 			<triangle id="2" v1="1" v2="4" v3="3" />
 		</triangles>
-	</dynamicPolygon>
-	<dynamicPolygon
+	</boxedSpritePolygonBody>
+	<boxedSpritePolygonBody
 		name="lfRightSmallLeg"
 		texture="lf_small_leg"
-		width="1.8"
-		height="7.3"
+		width="1.4"
+		height="5.3"
+		anchorX="0.5"
+		anchorY="0.5"
 		posX="-3.2"
 		posY="12.2"
 		zLevel="128"
 		collisionCategory="4"
 		collisionMask="40123" >
 		<vertices>
-			<vertex id="1" x="-0.6" y="2.65" />
-			<vertex id="2" x="0.6" y="2.65" />
+			<vertex id="1" x="-0.7" y="2.65" />
+			<vertex id="2" x="0.7" y="2.65" />
 			<vertex id="3" x="0.7" y="-2.65" />
 			<vertex id="4" x="-0.7" y="-2.65" />
 		</vertices>
@@ -95,12 +103,14 @@
 			<triangle id="1" v1="1" v2="3" v3="2" />
 			<triangle id="2" v1="1" v2="4" v3="3" />
 		</triangles>
-	</dynamicPolygon>
-	<dynamicPolygon
+	</boxedSpritePolygonBody>
+	<boxedSpritePolygonBody
 		name="lfLeftFoot"
-		texture="lf_small_leg"
+		texture="lf_foot"
 		width="4.0"
 		height="0.6"
+		anchorX="0.5"
+		anchorY="0.5"
 		posX="3.2"
 		posY="17.5"
 		zLevel="128"
@@ -116,12 +126,14 @@
 			<triangle id="1" v1="1" v2="3" v3="2" />
 			<triangle id="2" v1="1" v2="4" v3="3" />
 		</triangles>
-	</dynamicPolygon>
-	<dynamicPolygon
+	</boxedSpritePolygonBody>
+	<boxedSpritePolygonBody
 		name="lfRightFoot"
-		texture="lf_small_leg"
+		texture="lf_foot"
 		width="4.0"
 		height="0.6"
+		anchorX="0.5"
+		anchorY="0.5"
 		posX="-3.2"
 		posY="17.5"
 		zLevel="128"
@@ -137,7 +149,7 @@
 			<triangle id="1" v1="1" v2="3" v3="2" />
 			<triangle id="2" v1="1" v2="4" v3="3" />
 		</triangles>
-	</dynamicPolygon>
+	</boxedSpritePolygonBody>
 	<dynamicBox 
 		name="lfRightSteer"
 		texture="lf_right_steer"
@@ -152,7 +164,7 @@
 		collisionMask="40123" />
 	<dynamicBox 
 		name="lfLeftSteer"
-		texture="lf_right_steer"
+		texture="lf_left_steer"
 		width="1.2"
 		height="1.0"
 		anchorX="0.5"
@@ -160,18 +172,20 @@
 		posX="-3.9"
 		posY="17.5"
 		zLevel="128"
-		collisionCategory="4"s
+		collisionCategory="4"
 		collisionMask="40123" />
-	<dynamicPolygon
+	<boxedSpritePolygonBody
 		name="lfMainBody"
 		texture="lf_body"
 		width="9.0"
 		height="9.6"
+		anchorX="0.5"
+		anchorY="0.5"
 		posX="0.0"
 		posY="0.0"
 		zLevel="128"
 		collisionCategory="4"
-		collisionMask="40123"  >
+		collisionMask="40123" >
 		<vertices>
 			<vertex id="1" x="-4.5" y="4.8" />
 			<vertex id="2" x="4.5" y="4.8" />
@@ -186,20 +200,7 @@
 			<triangle id="1" v1="1" v2="4" v3="5" />
 			<triangle id="2" v1="1" v2="5" v3="6" />
 		</triangles>
-	</dynamicPolygon>
-<!--
-	<dynamicCircle
-		name="lfShield"
-		texture="shield_exciter"
-		diameter="1.2"
-		anchorX="0.5"
-		anchorY="0.5"
-		posX="-3.9"
-		posY="17.5"
-		zLevel="128"
-		collisionCategory="4"
-		collisionMask="40123" />	
-		--->
+	</boxedSpritePolygonBody>
 	<weldJoint
 		name="boostJoint"
 		objectAName="lfMainBody"
