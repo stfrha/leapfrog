@@ -243,6 +243,9 @@ public:
    void releaseHoldAngle(void);
    void breakJoints(void);
 
+   void dumpPart(std::string name, b2Body* body);
+   void dumpParts(void);
+
 private:
 	void setJointMotor(b2RevoluteJoint* joint, float goal, float speedMagnitude);
    void setStrongJoints(void);

@@ -225,6 +225,8 @@ LeapFrog::LeapFrog(
 
 void LeapFrog::setModePropHandler(oxygine::Event *ev)
 {
+   dumpParts();
+
    float value = m_properties[propMode].getProperty();
    
    if ((value > -0.5) && (value < 0.5))
@@ -1360,6 +1362,24 @@ const float LeapFrog::c_instantJointMotorTorque = 2000000.0f;
 const float LeapFrog::c_instnatJointMotorSpeed = 150.0f * MATH_PI / 180.0f;
 
 
+void LeapFrog::dumpPart(std::string name, b2Body* body)
+{
+   b2Vec2 p;
+   float a;
 
+   p = body->GetPosition();
+   a = body->GetAngle();
+   logs::messageln("%s: pos: %f, %f, angle: %f", name.c_str(), p.x, p.y, a);
+}
+
+void LeapFrog::dumpParts(void)
+{
+   dumpPart("Main Body:", m_mainBody);
+   dumpPart("Booster:", m_boostBody);
+   dumpPart("Right Big leg:", m_rightBigLegBody);
+   dumpPart("Left Big leg:", m_leftBigLegBody);
+   dumpPart("Right Steer Booster:", m_rightSteerBody);
+   dumpPart("Left Steer Booster:", m_leftSteerBody);
+}
 
 
