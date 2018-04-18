@@ -405,6 +405,7 @@ void CompoundObject::defineStaticBox(Resources& gameResources, Actor* parent, b2
    bodyDef.type = b2_staticBody;
    b2Vec2 bPos = PhysDispConvert::convert(pos, 1.0f) + b2Vec2(objectNode.attribute("posX").as_float(), objectNode.attribute("posY").as_float());
    bodyDef.position = bPos;
+   bodyDef.angle = objectNode.attribute("angle").as_float();
    b2Body* body = world->CreateBody(&bodyDef);
 
    b2PolygonShape boxShape;
@@ -481,6 +482,7 @@ void CompoundObject::defineBoxedObject(oxygine::Resources& gameResources, Actor*
    bodyDef.type = b2_dynamicBody;
    b2Vec2 bPos = PhysDispConvert::convert(pos, 1.0f) + b2Vec2(objectNode.attribute("posX").as_float(), objectNode.attribute("posY").as_float());
    bodyDef.position = bPos;
+   bodyDef.angle = objectNode.attribute("angle").as_float();
    b2Body* body = world->CreateBody(&bodyDef);
 
    b2PolygonShape boxShape;
@@ -558,6 +560,7 @@ void CompoundObject::definePolygonObject(oxygine::Resources& gameResources, Acto
    bodyDef.type = b2_dynamicBody;
    b2Vec2 bPos = PhysDispConvert::convert(pos, 1.0f) + b2Vec2(objectNode.attribute("posX").as_float(), objectNode.attribute("posY").as_float());
    bodyDef.position = bPos;
+   bodyDef.angle = objectNode.attribute("angle").as_float();
    b2Body* body = world->CreateBody(&bodyDef);
 
    b2PolygonShape polyShape;
@@ -638,6 +641,7 @@ void CompoundObject::defineBoxedSpritePolygonBody(
    bodyDef.type = b2_dynamicBody;
    b2Vec2 bPos = PhysDispConvert::convert(pos, 1.0f) + b2Vec2(objectNode.attribute("posX").as_float(), objectNode.attribute("posY").as_float());
    bodyDef.position = bPos;
+   bodyDef.angle = objectNode.attribute("angle").as_float();
    b2Body* body = world->CreateBody(&bodyDef);
 
    b2PolygonShape polyShape;

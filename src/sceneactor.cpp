@@ -154,9 +154,14 @@ void SceneActor::doUpdate(const UpdateState& us)
    {
       m_leapfrog->fireReentryFlames(true);
    }
-   else if (data[SDL_SCANCODE_1])
+   else if (data[SDL_SCANCODE_KP_8])
    {
       m_leapfrog->fireReentryFlames(false);
+   }
+
+   if (data[SDL_SCANCODE_P])
+   {
+      m_leapfrog->dumpParts();
    }
 
 

@@ -243,7 +243,7 @@ public:
    void releaseHoldAngle(void);
    void breakJoints(void);
 
-   void dumpPart(std::string name, b2Body* body);
+   void dumpPart(std::string name, b2Body* body, b2Body* mainBody);
    void dumpParts(void);
 
 private:

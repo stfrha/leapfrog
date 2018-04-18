@@ -21,7 +21,7 @@ LandingActor::LandingActor(Resources& gameResources, std::string fileName) :
    initCompoundObject(gameResources, this, m_world, Vector2(435.52f, 375.0f), fileName);
 
    m_leapfrog = static_cast<LeapFrog*>(getObject("leapfrog1"));
-   m_leapfrog->initLeapfrog(LFM_LANDING, 0.0f);
+//   m_leapfrog->initLeapfrog(LFM_LANDING, 0.0f);
    m_leapfrog->goToEnvironment(ENV_GROUND);
 
    m_leapfrog->addEventListener(LeapfrogModeReachedEvent::EVENT, CLOSURE(this, &LandingActor::modeReachedListener));

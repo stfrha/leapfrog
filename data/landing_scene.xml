@@ -50,7 +50,7 @@
 	<ChildCompoundObjectRef 
 		name="leapfrog1"
 		type="leapfrog"
-		file="leapfrog.xml" 
+		file="leapfrog_reentry.xml" 
 		posX="500.0"
 		posY="150.0"
 	/>

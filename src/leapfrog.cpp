@@ -1362,24 +1362,32 @@ const float LeapFrog::c_instantJointMotorTorque = 2000000.0f;
 const float LeapFrog::c_instnatJointMotorSpeed = 150.0f * MATH_PI / 180.0f;
 
 
-void LeapFrog::dumpPart(std::string name, b2Body* body)
+void LeapFrog::dumpPart(std::string name, b2Body* body, b2Body* mainBody)
 {
    b2Vec2 p;
+   b2Vec2 mp;
    float a;
+   float ma;
 
-   p = body->GetPosition();
-   a = body->GetAngle();
+   mp = mainBody->GetPosition();
+   p = body->GetPosition() - mp;
+   ma = mainBody->GetAngle();
+   a = body->GetAngle() - ma;
    logs::messageln("%s: pos: %f, %f, angle: %f", name.c_str(), p.x, p.y, a);
 }
 
 void LeapFrog::dumpParts(void)
 {
-   dumpPart("Main Body:", m_mainBody);
-   dumpPart("Booster:", m_boostBody);
-   dumpPart("Right Big leg:", m_rightBigLegBody);
-   dumpPart("Left Big leg:", m_leftBigLegBody);
-   dumpPart("Right Steer Booster:", m_rightSteerBody);
-   dumpPart("Left Steer Booster:", m_leftSteerBody);
+   dumpPart("Main Body:", m_mainBody, m_mainBody);
+   dumpPart("Booster:", m_boostBody, m_mainBody);
+   dumpPart("Right Big leg:", m_rightBigLegBody, m_mainBody);
+   dumpPart("Left Big leg:", m_leftBigLegBody, m_mainBody);
+   dumpPart("Right Small leg:", getBody("lfRightSmallLeg"), m_mainBody);
+   dumpPart("Left Small leg:", getBody("lfLeftSmallLeg"), m_mainBody);
+   dumpPart("Right foot:", getBody("lfRightFoot"), m_mainBody);
+   dumpPart("Left foot:", getBody("lfLeftFoot"), m_mainBody);
+   dumpPart("Right Steer Booster:", m_rightSteerBody, m_mainBody);
+   dumpPart("Left Steer Booster:", m_leftSteerBody, m_mainBody);
 }
 
 
