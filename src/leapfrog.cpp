@@ -11,6 +11,11 @@
 
 using namespace oxygine;
 
+void setModePropCallback(void)
+{
+
+}
+
 ModeAngles::ModeAngles() : 
 	m_rightBigJointAngle(0),
 	m_rightSmallJointAngle(0),
@@ -67,6 +72,7 @@ LeapFrog::LeapFrog(
 	m_leftSteerBody = getBody("lfLeftSteer");
 
    JointUserData* jd;
+
 
 	m_boostJoint = static_cast<b2WeldJoint*>(getJoint("boostJoint"));
    jd = new JointUserData(false);
@@ -203,15 +209,51 @@ LeapFrog::LeapFrog(
    m_reentryFlameEmitterLeftLeg->attachTo(this);
 
    // Register all properties:
-   m_properties.push_back(ObjectProperty(this, 0, 0.0f)); // Mode
-   m_properties.push_back(ObjectProperty(this, 1, 0.0f)); // Environment
-   m_properties.push_back(ObjectProperty(this, 2, 0.0f)); // State
-   m_properties.push_back(ObjectProperty(this, 3, 0.0f)); // xPos
-   m_properties.push_back(ObjectProperty(this, 4, 0.0f)); // yPos
+   m_properties.push_back(ObjectProperty(this, new LeapfrogExtSetModeEvent, 0, 0.0f)); // Mode
+   m_properties.push_back(ObjectProperty(this, new LeapfrogExtSetEnvEvent, 1, 0.0f)); // Environment
+   m_properties.push_back(ObjectProperty(this, NULL, 2, 0.0f, true)); // State
+   m_properties.push_back(ObjectProperty(this, NULL, 3, 0.0f, true)); // xPos
+   m_properties.push_back(ObjectProperty(this, NULL, 4, 0.0f, true)); // yPos
+
+   addEventListener(LeapfrogExtSetModeEvent::EVENT, CLOSURE(this, &LeapFrog::setModePropHandler));
+   addEventListener(LeapfrogExtSetEnvEvent::EVENT, CLOSURE(this, &LeapFrog::setEnvPropHandler));
 
    // Here we attach Leapfrog object to tree so it gets updates etc.
    attachTo(parent);
 
+}
+
+void LeapFrog::setModePropHandler(oxygine::Event *ev)
+{
+   float value = m_properties[propMode].getProperty();
+   
+   if ((value > -0.5) && (value < 0.5))
+   {
+      goToMode(LFM_RESET);
+   }
+   else if ((value > 0.5) && (value < 1.5))
+   {
+      goToMode(LFM_DEEP_SPACE);
+   }
+   else if ((value > 1.5) && (value < 2.5))
+   {
+      goToMode(LFM_LANDING);
+   }
+   else if ((value > 2.5) && (value < 3.5))
+   {
+      goToMode(LFM_ORBIT);
+   }
+   else if ((value > 3.5) && (value < 4.5))
+   {
+      goToMode(LFM_REENTRY);
+   }
+}
+
+void LeapFrog::setEnvPropHandler(oxygine::Event *ev)
+{
+   //float value = m_properties[propMode].getProperty();
+
+   //goToEnvironment((int) value);
 }
 
 LeapFrog::~LeapFrog()
@@ -223,33 +265,33 @@ oxygine::Actor* LeapFrog::getMainActor(void)
    return m_mainObject;
 }
 
-void LeapFrog::setPropertyImpl(int propId, float value)
-{
-   if (propId == propMode)
-   {
-      if ((value > -0.5) && (value < 0.5))
-      {
-         goToMode(LFM_RESET);
-      }
-      else if ((value > 0.5) && (value < 1.5))
-      {
-         goToMode(LFM_DEEP_SPACE);
-      }
-      else if ((value > 1.5) && (value < 2.5))
-      {
-         goToMode(LFM_LANDING);
-      }
-      else if ((value > 2.5) && (value < 3.5))
-      {
-         goToMode(LFM_ORBIT);
-      }
-      else if ((value > 3.5) && (value < 4.5))
-      {
-         goToMode(LFM_REENTRY);
-      }
-   }
-}
-
+//void LeapFrog::setPropertyImpl(int propId, float value)
+//{
+//   if (propId == propMode)
+//   {
+//      if ((value > -0.5) && (value < 0.5))
+//      {
+//         goToMode(LFM_RESET);
+//      }
+//      else if ((value > 0.5) && (value < 1.5))
+//      {
+//         goToMode(LFM_DEEP_SPACE);
+//      }
+//      else if ((value > 1.5) && (value < 2.5))
+//      {
+//         goToMode(LFM_LANDING);
+//      }
+//      else if ((value > 2.5) && (value < 3.5))
+//      {
+//         goToMode(LFM_ORBIT);
+//      }
+//      else if ((value > 3.5) && (value < 4.5))
+//      {
+//         goToMode(LFM_REENTRY);
+//      }
+//   }
+//}
+//
 
 void LeapFrog::initLeapfrog(SceneActor* sceneActor)
 {

@@ -61,20 +61,30 @@ public:
 	void updateProperty(int propId);
 };
 
+class CompoundObject;
+
 class ObjectProperty
 {
+   typedef void(*ExtSetProperyCallback)();
+
 private:
    bool m_extReadOnly;
 	int m_id;
 	float m_value;
    CompoundObject* m_object;
+   oxygine::Event* m_extSetPropEvent;
 
 	std::vector<PropertyEventTrigger> m_eventTriggers;
 	std::vector<DualPropEventTrigger*> m_dualEventTriggers;
 
 public:
 	ObjectProperty();
-	ObjectProperty(CompoundObject* obj, int id, float value, bool readOnly = false);
+	ObjectProperty(
+      CompoundObject* obj, 
+      oxygine::Event* extSetPropEvent, 
+      int id, 
+      float value, 
+      bool readOnly = false);
 	~ObjectProperty();
 
 	void setProperty(float value);
@@ -88,9 +98,6 @@ public:
    void unregisterPropertyEventTrigger(int eventId);
    void registerDualPropEventTrigger(DualPropEventTrigger* trigger);
 	void unregisterDualPropEventTrigger(DualPropEventTrigger* trigger);
-
-protected:
-   virtual void setPropertyImpl(int propId, float value);
 };
 
 

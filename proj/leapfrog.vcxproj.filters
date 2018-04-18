@@ -279,9 +279,6 @@
     <ClCompile Include="..\src\compoundinterface .cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\gamemanager.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Box2D\Box2D\Box2D\Collision\Shapes\b2ChainShape.h">
@@ -519,9 +516,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\src\compoundinterface.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\gamemanager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\src\leapfrogevents.h">

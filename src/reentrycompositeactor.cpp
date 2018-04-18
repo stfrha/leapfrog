@@ -124,7 +124,7 @@ void ReentryCompositeActor::doUpdate(const UpdateState& us)
             if (time > 3333)
             {
                // increse burn
-               unsigned int heat = (time - 3333.0f) * 255 / 1666;
+               unsigned int heat = (unsigned int)((time - 3333.0f) * 255.0f / 1666.0f);
 
                if (heat > 255)
                {
@@ -137,7 +137,7 @@ void ReentryCompositeActor::doUpdate(const UpdateState& us)
          else
          {
             // Dissassemble the leapfrog to pieces whith flames
-            m_leapFrog->setInstantAngle(20.0 * MATH_PI);
+            m_leapFrog->setInstantAngle(20.0f * MATH_PI);
 
             if (time > 9000)
             {
@@ -157,13 +157,13 @@ void ReentryCompositeActor::doUpdate(const UpdateState& us)
             if (time > 3333)
             {
                // increse burn
-               m_leapFrog->reentrySetHeat((time - 3333.0f) * 255 / 3333);
+               m_leapFrog->reentrySetHeat((unsigned int)((time - 3333.0f) * 255.0f / 3333.0f));
             }
          }
          else
          {
             // Remove heat and tumble the leapfrog
-            m_leapFrog->setInstantAngle(20.0 * MATH_PI);
+            m_leapFrog->setInstantAngle(20.0f * MATH_PI);
             m_leapFrog->reentrySetHeat(0);
          }
 
@@ -183,7 +183,7 @@ void ReentryCompositeActor::doUpdate(const UpdateState& us)
          else if (time > 3333)
          {
             // increse burn
-            unsigned int heat = (time - 3333.0f) * 255 / 3333;
+            unsigned int heat = (unsigned int) ((time - 3333.0f) * 255.0f / 3333.0f);
 
             if (heat > 255)
             {

@@ -51,14 +51,22 @@ int PropertyEventTrigger::getEventId(void)
 
 
 ObjectProperty::ObjectProperty() :
+   m_object(NULL),
+   m_extSetPropEvent(NULL),
    m_extReadOnly(false),
 	m_value(0.0f),
 	m_id(0)
 {
 }
 
-ObjectProperty::ObjectProperty(CompoundObject* obj, int id, float value, bool readOnly) :
+ObjectProperty::ObjectProperty(
+   CompoundObject* obj, 
+   Event* extSetPropEvent,
+   int id,
+   float value, 
+   bool readOnly) :
    m_object(obj),
+   m_extSetPropEvent(extSetPropEvent),
    m_extReadOnly(readOnly),
    m_value(value),
 	m_id(id)
@@ -108,16 +116,12 @@ void ObjectProperty::extSetProperty(float value)
    {
       setProperty(value);
 
-      setPropertyImpl(m_id, value);
+      //test if event is set, and only dispatch event in that case
+      if (m_extSetPropEvent)
+      {
+         m_object->dispatchEvent(m_extSetPropEvent);
+      }
    }
-}
-
-// Default implementation of this does nothing. It is overridden
-// to decode the property value and execute accordingly in each
-// specialised CompoundObject
-void ObjectProperty::setPropertyImpl(int propId, float value)
-{
-
 }
 
 float ObjectProperty::getProperty(void)
@@ -191,33 +195,33 @@ DualPropEventTrigger::DualPropEventTrigger(
 
 void DualPropEventTrigger::updateProperty(int propId)
 {
-	if (propId == m_prop1Id)
-	{
-		if (m_prop1Trigger.evaluateTrigger(propId))
-		{
-			// use pointer to CompoundObject to read value of the 
-			// prop2Id into p2Val
-			float p2Val /* = compoundObject->getValue(m_prop2Id)*/;
-			if (m_prop2Trigger.evaluateTrigger(p2Val))
-			{
-				// Trigger m_eventId
+	//if (propId == m_prop1Id)
+	//{
+	//	if (m_prop1Trigger.evaluateTrigger(m_))
+	//	{
+	//		// use pointer to CompoundObject to read value of the 
+	//		// prop2Id into p2Val
+	//		float p2Val /* = compoundObject->getValue(m_prop2Id)*/;
+	//		if (m_prop2Trigger.evaluateTrigger(p2Val))
+	//		{
+	//			// Trigger m_eventId
 
-			}
-		}
-	}
-	else if (propId == m_prop2Id)
-	{
-		if (m_prop2Trigger.evaluateTrigger(propId))
-		{
-			// use pointer to CompoundObject to read value of the 
-			// prop1Id into p1Val
-			float p1Val /* = compoundObject->getValue(m_prop1Id)*/;
-			if (m_prop1Trigger.evaluateTrigger(p1Val))
-			{
-            // Trigger m_eventId
-			}
-		}
-	}
+	//		}
+	//	}
+	//}
+	//else if (propId == m_prop2Id)
+	//{
+	//	if (m_prop2Trigger.evaluateTrigger(propId))
+	//	{
+	//		// use pointer to CompoundObject to read value of the 
+	//		// prop1Id into p1Val
+	//		float p1Val /* = compoundObject->getValue(m_prop1Id)*/;
+	//		if (m_prop1Trigger.evaluateTrigger(p1Val))
+	//		{
+ //           // Trigger m_eventId
+	//		}
+	//	}
+	//}
 }
 
 CompoundObject::CompoundObject()
@@ -866,7 +870,7 @@ b2Joint* CompoundObject::getJointImpl(const std::string& name)
 
 ObjectProperty* CompoundObject::getProp(int propId)
 {
-   if ((propId > 0) && (propId < m_properties.size()))
+   if ((propId > 0) && ((unsigned int)propId < m_properties.size()))
    {
       return &(m_properties[propId]);
    }

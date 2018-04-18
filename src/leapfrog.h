@@ -13,6 +13,9 @@
 
 class SceneActor;
 
+//void setModePropCallback(void);
+
+
 class ModeAngles
 {
 public:
@@ -240,7 +243,6 @@ public:
    void releaseHoldAngle(void);
    void breakJoints(void);
 
-
 private:
 	void setJointMotor(b2RevoluteJoint* joint, float goal, float speedMagnitude);
    void setStrongJoints(void);
@@ -255,6 +257,8 @@ private:
    void holdAngleReached(void);
    void stopAllJointMotors(void);
 
+   void setModePropHandler(oxygine::Event *ev);
+   void setEnvPropHandler(oxygine::Event *ev);
 
 protected:
    void doUpdate(const UpdateState &us);
