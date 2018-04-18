@@ -14,7 +14,14 @@ private:
    oxygine::Resources * m_gameResources;
 
 public:
-	FlameParticle(oxygine::Resources& gameResources, b2World* world, const b2Vec2& pos, int m_lifetime, b2Vec2 m_impulseForce, float radius);
+	FlameParticle(
+      oxygine::Resources& gameResources, 
+      b2World* world, 
+      const b2Vec2& pos, 
+      const b2Vec2& vel, 
+      int m_lifetime, 
+      b2Vec2 m_impulseForce, 
+      float radius);
 
    virtual CollisionEntityTypeEnum getEntityType(void);
 

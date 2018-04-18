@@ -7,6 +7,7 @@ FlameParticle::FlameParticle(
    Resources& gameResources,
    b2World* world,
    const b2Vec2& pos,
+   const b2Vec2& vel,
    int lifetime,
    b2Vec2 impulseForce,
    float radius) :
@@ -46,6 +47,9 @@ FlameParticle::FlameParticle(
    body->SetUserData(this);
 
    body->GetFixtureList()->SetUserData((CollisionEntity*)this);
+
+   // Give particle the same speed as the emitter body
+   body->SetLinearVelocity(vel);
 
    body->ApplyLinearImpulse(impulseForce, b2Vec2(0.5, 0.5), true);
 }

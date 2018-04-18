@@ -70,7 +70,14 @@ void FlameEmitter::doUpdate(const oxygine::UpdateState& us)
       b2Vec2 impulse = b2Vec2(m_impulseMagnitude * cos(emitAngle), m_impulseMagnitude * sin(emitAngle));
 
       // Create one test flame particle
-      spFlameParticle flameParticle = new FlameParticle(*m_gameResources, m_emitterBody->GetWorld(), emitPos, m_lifetime, impulse, m_radius);
+      spFlameParticle flameParticle = new FlameParticle(
+         *m_gameResources, 
+         m_emitterBody->GetWorld(), 
+         emitPos, 
+         m_emitterBody->GetLinearVelocity(),
+         m_lifetime, 
+         impulse, 
+         m_radius);
 
       // Attach to parent's parent which is the view actor
       flameParticle->attachTo(getParent()->getParent());
