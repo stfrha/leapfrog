@@ -1,3 +1,14 @@
+34151 Main Body:: pos: 0.000000, 0.000000, angle: 0.000000
+34151 Booster:: pos: 0.039368, 5.599854, angle: 0.000000
+34151 Right Big leg:: pos: 5.840759, 6.922180, angle: -1.134090
+34152 Left Big leg:: pos: -5.777344, 6.928162, angle: 1.164277
+34152 Right Small leg:: pos: 8.477905, 10.100525, angle: 0.029962
+34152 Left Small leg:: pos: -8.552612, 10.062317, angle: 0.045000
+34152 Right foot:: pos: 8.401855, 13.049438, angle: 0.039343
+34152 Left foot:: pos: -8.671387, 13.009888, angle: 0.052606
+34152 Right Steer Booster:: pos: 7.146118, 11.470398, angle: 0.029962
+34153 Left Steer Booster:: pos: -7.306702, 11.510620, angle: 0.045000
+
 <?xml version="1.0"?>
 <compoundObject>
 	<dynamicBox 

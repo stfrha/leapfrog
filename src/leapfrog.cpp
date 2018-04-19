@@ -1372,7 +1372,7 @@ void LeapFrog::dumpPart(std::string name, b2Body* body, b2Body* mainBody)
    mp = mainBody->GetPosition();
    p = body->GetPosition() - mp;
    ma = mainBody->GetAngle();
-   a = body->GetAngle() - ma;
+   a = body->GetAngle() - ma /* + MATH_PI / 2.0f*/;
    logs::messageln("%s: pos: %f, %f, angle: %f", name.c_str(), p.x, p.y, a);
 }
 
