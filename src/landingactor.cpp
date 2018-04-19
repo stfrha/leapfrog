@@ -10,28 +10,25 @@
 using namespace oxygine;
 using namespace std;
 
-LandingActor::LandingActor(Resources& gameResources, std::string fileName) :
+LandingActor::LandingActor(Resources& gameResources, string& fileName, string& initialState) :
 	SceneActor(gameResources)
 {
-   setPanorateMode(PME_TOP);
+   setPanorateMode(PME_CENTER);
 
 //   m_world->SetGravity(b2Vec2(0, 1.62));
    m_world->SetGravity(b2Vec2(0, 3.0f));
 
-   initCompoundObject(gameResources, this, m_world, Vector2(435.52f, 375.0f), fileName);
+   initCompoundObject(gameResources, this, m_world, Vector2(435.52f, 375.0f), fileName, initialState);
 
    m_leapfrog = static_cast<LeapFrog*>(getObject("leapfrog1"));
-//   m_leapfrog->initLeapfrog(LFM_LANDING, 0.0f);
    m_leapfrog->goToEnvironment(ENV_GROUND);
 
    m_leapfrog->addEventListener(LeapfrogModeReachedEvent::EVENT, CLOSURE(this, &LandingActor::modeReachedListener));
-   m_leapfrog->addEventListener(ObjectPropertyTriggeredEvent::EVENT, CLOSURE(this, &LandingActor::handlePropertyTriggeredEvent));
+   
+   // m_leapfrog->addEventListener(ObjectPropertyTriggeredEvent::EVENT, CLOSURE(this, &LandingActor::handlePropertyTriggeredEvent));
+   // m_leapfrog->m_properties[LeapFrog::propXPos].registerPropertyEventTrigger(1, PropertyEventTrigger::insideRange, 1200.0f, 10000.0f);
 
-   m_leapfrog->m_properties[LeapFrog::propXPos].registerPropertyEventTrigger(1, PropertyEventTrigger::insideRange, 1200.0f, 10000.0f);
-
-//   m_leapfrog->m_properties[LeapFrog::propXPos].registerPropertyEventTrigger(1, PropertyEventTrigger::insideRange, -10000.0f, 700.0f);
-
-
+   m_leapfrog->goToMode(LFM_LANDING);
 }
 
 void LandingActor::modeReachedListener(Event *ev)

@@ -49,11 +49,16 @@
 	</staticPolygon>
 	<ChildCompoundObjectRef 
 		name="leapfrog1"
-		type="leapfrog"
-		file="leapfrog_deep_space.xml" 
-		posX="500.0"
-		posY="150.0"
-	/>
+		type="leapfrog">
+		<landingState 
+			file="leapfrog_reentry.xml" 
+			posX="500.0"
+			posY="150.0" />
+		<groundState 
+			file="leapfrog_landing.xml" 
+			posX="700.0"
+			posY="175.0" />
+	</ChildCompoundObjectRef>
 	<ChildCompoundObjectRef 
 		name="launchSite1"
 		type="launchSite"

@@ -237,12 +237,24 @@ CompoundObject::~CompoundObject()
 	m_children.clear();
 }
 
-void CompoundObject::initCompoundObject(oxygine::Resources& gameResources, Actor* parent, b2World* world, const oxygine::Vector2& pos, std::string& defXmlFileName)
+void CompoundObject::initCompoundObject(
+   oxygine::Resources& gameResources, 
+   Actor* parent, 
+   b2World* world, 
+   const Vector2& pos, 
+   string& defXmlFileName,
+   string& initialState)
 {
-   readDefinitionXmlFile(gameResources, parent, world, pos, defXmlFileName);
+   readDefinitionXmlFile(gameResources, parent, world, pos, defXmlFileName, initialState);
 }
 
-bool CompoundObject::readDefinitionXmlFile(Resources& gameResources, Actor* parent, b2World* world, const Vector2& pos, std::string& fileName)
+bool CompoundObject::readDefinitionXmlFile(
+   Resources& gameResources, 
+   Actor* parent, 
+   b2World* world, 
+   const Vector2& pos, 
+   string& fileName,
+   string& initialState)
 {
    xml_document doc;
 
@@ -283,18 +295,18 @@ bool CompoundObject::readDefinitionXmlFile(Resources& gameResources, Actor* pare
       definePolygonObject(gameResources, parent, world, pos, *it);
    }
 
-   for (auto it = root.children("ChildCompoundObjectRef").begin();
-      it != root.children("ChildCompoundObjectRef").end();
-      ++it)
-   {
-      defineChildObject(gameResources, parent, world, pos, *it);
-   }
-
    for (auto it = root.children("boxedSpritePolygonBody").begin();
       it != root.children("boxedSpritePolygonBody").end();
       ++it)
    {
       defineBoxedSpritePolygonBody(gameResources, parent, world, pos, *it);
+   }
+
+   for (auto it = root.children("ChildCompoundObjectRef").begin();
+      it != root.children("ChildCompoundObjectRef").end();
+      ++it)
+   {
+      defineChildObject(gameResources, parent, world, pos, *it, initialState);
    }
 
    for (auto it = root.children("weldJoint").begin();
@@ -669,30 +681,42 @@ void CompoundObject::defineChildObject(
    Actor* parent, 
    b2World* world, 
    const Vector2& pos, 
-   xml_node& objectNode)
+   xml_node& objectNode,
+   string& initialState)
 {
    // Decode the type string to create the correct type of object
    // but only store the pointer to the CompoundObject
    // Perhaps with some special cases
    string type = objectNode.attribute("type").as_string();
 
-   Vector2 objPos = Vector2(objectNode.attribute("posX").as_float(), objectNode.attribute("posY").as_float());
-   objPos += pos;
-
    if (type == "leapfrog")
    {
+      Vector2 objPos = Vector2(
+         objectNode.child(initialState.c_str()).attribute("posX").as_float(), 
+         objectNode.child(initialState.c_str()).attribute("posY").as_float());
+
+      objPos += pos;
+
       LeapFrog* lf = new LeapFrog(
          gameResources,
          parent, world,
          objPos,
-         string(objectNode.attribute("file").as_string()));
+         string(objectNode.child(initialState.c_str()).attribute("file").as_string()));
 
-	  lf->setName(objectNode.attribute("name").as_string());
 
       m_children.push_back(static_cast<CompoundObject*>(lf));
+
+      lf->setName(objectNode.attribute("name").as_string());
    }
    else if (type == "launchSite")
    {
+      Vector2 objPos = Vector2(
+         objectNode.attribute("posX").as_float(),
+         objectNode.attribute("posY").as_float());
+
+      objPos += pos;
+
+
 	   LaunchSite* ls = new LaunchSite(
 		   gameResources,
 		   parent, world,

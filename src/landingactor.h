@@ -12,6 +12,6 @@ private:
    void handlePropertyTriggeredEvent(oxygine::Event *ev);
 
 public:
-	LandingActor(oxygine::Resources& gameResources, std::string fileName);
+	LandingActor(oxygine::Resources& gameResources, std::string& fileName, std::string& initialState);
 
 };

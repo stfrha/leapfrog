@@ -12,7 +12,7 @@ LaunchSite::LaunchSite(
    const Vector2& pos,
    string& defXmlFileName) 
 {
-	initCompoundObject(gameResources, parent, world, pos, defXmlFileName);
+	initCompoundObject(gameResources, parent, world, pos, defXmlFileName, string(""));
 	b2Joint* leftHolderJoint = getJoint("leftHolderTankJoint");
 	b2Joint* rightHolderJoint = getJoint("rightHolderTankJoint");
 	b2RevoluteJoint* leftHolderTrolleyJoint = (b2RevoluteJoint*) getJoint("leftHolderJoint");

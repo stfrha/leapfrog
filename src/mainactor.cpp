@@ -8,6 +8,7 @@
 #include "mainactor.h"
 
 using namespace oxygine;
+using namespace std;
 
 MainActor::MainActor()
 {
@@ -49,7 +50,7 @@ void MainActor::startScene(SceneTypeEnum scene)
       window->setPosition(50.0f, 50.0f);
       addChild(window);
 
-      spLandingActor landingActor = new LandingActor(m_gameResources, "landing_scene.xml");
+      spLandingActor landingActor = new LandingActor(m_gameResources, string("landing_scene.xml"), string("landingState"));
       window->addChild(landingActor);
 
       m_sceneObject = static_cast<CompoundObject*>(landingActor.get());

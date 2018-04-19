@@ -10,6 +10,7 @@
 #include "leapfrogevents.h"
 
 using namespace oxygine;
+using namespace std;
 
 void setModePropCallback(void)
 {
@@ -57,7 +58,7 @@ LeapFrog::LeapFrog(
    m_wantedAngle(0.0f),
    m_initiating(false)
 {
-	initCompoundObject(gameResources, parent, world, pos, defXmlFileName);
+	initCompoundObject(gameResources, parent, world, pos, defXmlFileName, string(""));
 
    m_mainObject = getObject("lfMainBody");
    m_lfRightBigLeg = getObject("lfRightBigLeg");
@@ -220,6 +221,8 @@ LeapFrog::LeapFrog(
 
    // Here we attach Leapfrog object to tree so it gets updates etc.
    attachTo(parent);
+   setWeakJoints();
+
 
 }
 
@@ -822,21 +825,6 @@ void LeapFrog::initMode(LeapFrogModeEnum mode)
    setStrongJoints();
    m_state = LFS_INITIATING_MODE;
    m_properties[propState].setProperty((float)m_state);
-
-   //// Now set all joints angles directly
-   //m_rightBigLegJoint->SetLimits(m_modeAngleGoals.m_rightBigJointAngle, m_modeAngleGoals.m_rightBigJointAngle);
-   //m_rightSmallLegJoint->SetLimits(m_modeAngleGoals.m_rightSmallJointAngle, m_modeAngleGoals.m_rightSmallJointAngle);
-   //m_rightFootLegJoint->SetLimits(m_modeAngleGoals.m_rightFootJointAngle, m_modeAngleGoals.m_rightFootJointAngle);
-   //m_leftBigLegJoint->SetLimits(m_modeAngleGoals.m_leftBigJointAngle, m_modeAngleGoals.m_leftBigJointAngle);
-   //m_leftSmallLegJoint->SetLimits(m_modeAngleGoals.m_leftSmallJointAngle, m_modeAngleGoals.m_leftSmallJointAngle);
-   //m_leftFootLegJoint->SetLimits(m_modeAngleGoals.m_leftFootJointAngle, m_modeAngleGoals.m_leftFootJointAngle);
-   //m_rightBigLegJoint->EnableLimit(true);
-   //m_leftBigLegJoint->EnableLimit(true);
-   //m_rightSmallLegJoint->EnableLimit(true);
-   //m_leftSmallLegJoint->EnableLimit(true);
-   //m_rightFootLegJoint->EnableLimit(true);
-   //m_leftFootLegJoint->EnableLimit(true);
-
 }
 
 void LeapFrog::goToMode(LeapFrogModeEnum mode)
@@ -988,15 +976,6 @@ void LeapFrog::instantAngleReached(void)
  
    m_state = LFS_GET_TO_EQUILIBRIUM;
    m_properties[propState].setProperty((float)m_state);
-
-   //if (m_initiating)
-   //{
-   //   initMode(m_mode);
-   //}
-   //else
-   //{ 
-   //   m_state = LFS_GET_TO_EQUILIBRIUM;
-   //}
 }
 
 void LeapFrog::equilibriumReached(void)
@@ -1231,53 +1210,6 @@ void LeapFrog::fireSteeringBooster(int dir)
       m_rightSteerFireLastUpdate = false;
       m_leftSteerFireLastUpdate = false;
    }
-
-   //if (dir == -1)
-   //{
-   //   m_leftSteerFlame->stopEmitter();
-
-   //   if (m_rightSteerFireLastUpdate == false)
-   //   {
-   //      m_rightSteerFlame->startEmitter();
-   //   }
-
-   //   m_steerMagnitude = -m_steerImpulse;
-
-   //   m_rightSteerFireLastUpdate = true;
-   //}
-   //else if (dir == 1)
-   //{
-   //   m_rightSteerFlame->stopEmitter();
-
-   //   if (m_leftSteerFireLastUpdate == false)
-   //   {
-   //      m_leftSteerFlame->startEmitter();
-   //   }
-
-   //   m_steerMagnitude = m_steerImpulse;
-
-   //   m_leftSteerFireLastUpdate = true;
-   //}
-   //else if (dir == 0)
-   //{
-   //   float angleVel = m_mainBody->GetAngularVelocity();
-
-   //   m_rightSteerFlame->stopEmitter();
-   //   m_leftSteerFlame->stopEmitter();
-
-   //   if (angleVel > 0)
-   //   {
-   //      m_steerMagnitude = -m_eveningMagnitude;
-   //   }
-   //   else if (angleVel < 0)
-   //   {
-   //      m_steerMagnitude = m_eveningMagnitude;
-   //   }
-
-   //   m_rightSteerFireLastUpdate = false;
-   //   m_leftSteerFireLastUpdate = false;
-   //}
-
 }
 
 void LeapFrog::fireGun(bool fire)
