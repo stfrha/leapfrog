@@ -47,6 +47,10 @@ void SceneActor::setPanorateMode(PanorateModeEnum mode)
 
 void SceneActor::addMeToDeathList(ActorToDie* actor)
 {
+   if (m_deathList.size() == 0)
+   {
+      int a = 10;
+   }
 
    if (std::find(m_deathList.begin(), m_deathList.end(), actor) != m_deathList.end())
    {

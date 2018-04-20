@@ -86,12 +86,10 @@ void Gun::doUpdate(const oxygine::UpdateState& us)
 
          if (m_freeSpaceActor != NULL)
          {
-            m_freeSpaceActor->addBoundingBody((Actor*)bullet.get());
+            m_freeSpaceActor->addBoundingBody((b2Body*)bullet.get()->getUserData());
          }
-
-
+         
          m_timeSinceLast = 0;
-
       }
    }
 }

@@ -8,7 +8,7 @@
 #include "actortodie.h"
 
 class SceneActor;
-class FreeSpaceActor;
+class AsteroidField;
 
 enum AsteroidStateEnum
 {
@@ -22,19 +22,22 @@ class AsteroidSpawnInstruction
 public:
    int m_num;
    AsteroidStateEnum m_state;
-   b2Vec2 m_pos;
+   b2Vec2 m_leftTop;
+   b2Vec2 m_rightBottom;
 
    AsteroidSpawnInstruction() :
       m_num(0),
       m_state(ASE_SMALL),
-      m_pos(b2Vec2(0.0f, 0.0f))
+      m_leftTop(b2Vec2(0.0f, 0.0f)),
+      m_rightBottom(b2Vec2(0.0f, 0.0f))
    {
    }
 
-   AsteroidSpawnInstruction(int num, AsteroidStateEnum state, b2Vec2 pos) :
+   AsteroidSpawnInstruction(int num, AsteroidStateEnum state, b2Vec2 leftTop, b2Vec2 rightBottom) :
       m_num(num),
       m_state(state),
-      m_pos(pos)
+      m_leftTop(leftTop),
+      m_rightBottom(rightBottom)
    {
    }
 };
@@ -69,7 +72,7 @@ private:
    int   m_damage;
 
    SceneActor* m_sceneActor;
-   FreeSpaceActor * m_freeSpaceActor;
+   AsteroidField * m_asteroidField;
 
 public:
 	Asteroid(
@@ -78,7 +81,7 @@ public:
       b2World* world,
       const b2Vec2& pos, 
       AsteroidStateEnum state,
-      FreeSpaceActor* actor);
+      AsteroidField* field);
 
    virtual CollisionEntityTypeEnum getEntityType(void);
 

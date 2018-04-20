@@ -20,6 +20,9 @@ private:
    int m_debugTimeAtCreation;
    int m_debugHistoryOfTime[10];
 
+   bool m_firstUpdate;
+   int m_lifetime;
+
 public:
    Bullet(
       oxygine::Resources& gameResources,

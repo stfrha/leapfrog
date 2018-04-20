@@ -212,7 +212,7 @@ public:
 		std::string& defXmlFileName);
 	~LeapFrog();
 
-	void initLeapfrog(SceneActor* sceneActor);
+//	void initLeapfrog(SceneActor* sceneActor);
 
    virtual CollisionEntityTypeEnum getEntityType(void);
 

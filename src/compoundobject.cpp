@@ -5,6 +5,7 @@
 // CompoundObject
 #include "launchsite.h"
 #include "leapfrog.h"
+#include "asteroidfield.h"
 
 #include "polygonvertices.h"
 
@@ -703,7 +704,6 @@ void CompoundObject::defineChildObject(
          objPos,
          string(objectNode.child(initialState.c_str()).attribute("file").as_string()));
 
-
       m_children.push_back(static_cast<CompoundObject*>(lf));
 
       lf->setName(objectNode.attribute("name").as_string());
@@ -727,7 +727,17 @@ void CompoundObject::defineChildObject(
 
 	   m_children.push_back(static_cast<CompoundObject*>(ls));
    }
+   else if (type == "asteroidField")
+   {
+      AsteroidField* af = new AsteroidField(
+         gameResources,
+         parent, world,
+         objectNode);
 
+      af->setName(objectNode.attribute("name").as_string());
+
+      m_children.push_back(static_cast<CompoundObject*>(af));
+   }
 }
 
 void CompoundObject::defineWeldJoint(b2World* world, pugi::xml_node& jointNode)

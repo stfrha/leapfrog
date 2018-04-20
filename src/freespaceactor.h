@@ -18,22 +18,22 @@ private:
    spSoftBoundary m_topBoundary;
 
    std::vector<b2Body*>   m_boundedBodies;
-   std::vector<AsteroidSpawnInstruction>  m_asteroidSpawnList;
 
    FreeSpaceContactListener   m_contactListener;
 
 public:
-	FreeSpaceActor(oxygine::Resources& gameResources);
+	FreeSpaceActor(
+      oxygine::Resources& gameResources, 
+      std::string& fileName, 
+      std::string& initialState);
 
-   void addBoundingBody(oxygine::Actor* body);
-   void removeBoundingBody(oxygine::Actor* body);
+   void addBoundingBody(b2Body* body);
+   void removeBoundingBody(b2Body* body);
    void testForBoundaryRepel(void);
-   void addAsteroidSpawnInstruction(AsteroidSpawnInstruction& inst);
 
 
 protected:
    void doUpdate(const oxygine::UpdateState &us);
-   void spawnAsteroids(void);
    void generateBackground(Resources& gameResources);
 
 };

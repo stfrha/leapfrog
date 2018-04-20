@@ -60,6 +60,8 @@ LeapFrog::LeapFrog(
 {
 	initCompoundObject(gameResources, parent, world, pos, defXmlFileName, string(""));
 
+   m_sceneActor = (SceneActor*) parent;
+
    m_mainObject = getObject("lfMainBody");
    m_lfRightBigLeg = getObject("lfRightBigLeg");
    m_lfLeftBigLeg = getObject("lfLeftBigLeg");
@@ -110,12 +112,25 @@ LeapFrog::LeapFrog(
    m_leftFootLegJoint = static_cast<b2RevoluteJoint*>(getJoint("leftFootLegJoint"));
    jd = new JointUserData(false);
    m_leftFootLegJoint->SetUserData(jd);
+
+   // Shield only exists in deep space but for simplicity it is always
+   // there. In deep space it gets its normal size but is other 
+   // environments it is turned very small
+   m_shield = new Shield(gameResources, world, pos);
+   m_shield->attachTo(parent);
+   m_shield->setPriority(147);
+
+
+   b2RevoluteJointDef shieldJointDef;
+   shieldJointDef.bodyA = m_mainBody;
+   shieldJointDef.bodyB = m_shield->m_body;
+   shieldJointDef.localAnchorA.Set(0.0f, 1.0f);
+   shieldJointDef.localAnchorB.Set(0.0f, 0.0f);
+   shieldJointDef.collideConnected = false;
+   shieldJointDef.enableMotor = false;
+   m_shieldJoint = (b2RevoluteJoint*)m_world->CreateJoint(&shieldJointDef);
    
    //	m_shieldJoint = static_cast<b2RevoluteJoint*>(getJoint("boostJoint"));
-
-   m_shield = new Shield(gameResources, world, pos);
-//   CompoundObject* lf = getObject("lfMainBody");
-   m_shield->attachTo(this);
 
    // Add main engine particle system
    m_boosterFlame = new FlameEmitter(
@@ -167,7 +182,7 @@ LeapFrog::LeapFrog(
       b2Vec2(0.0f, -4.0f),             // Origin
       3.0f * MATH_PI / 2.0f,           // Angle 
       4.0f,                            // Intensity [bullets per second]
-      250,                             // Lifetime [ms]
+      2000,                            // Lifetime [ms]
       1000.0f,                         // Bullet speed
       false);                          // Bouncy
 
@@ -222,8 +237,6 @@ LeapFrog::LeapFrog(
    // Here we attach Leapfrog object to tree so it gets updates etc.
    attachTo(parent);
    setWeakJoints();
-
-
 }
 
 void LeapFrog::setModePropHandler(oxygine::Event *ev)
@@ -298,10 +311,10 @@ oxygine::Actor* LeapFrog::getMainActor(void)
 //}
 //
 
-void LeapFrog::initLeapfrog(SceneActor* sceneActor)
-{
-	m_sceneActor = sceneActor;
-}
+//void LeapFrog::initLeapfrog(SceneActor* sceneActor)
+//{
+//	m_sceneActor = sceneActor;
+//}
 
 
 CollisionEntityTypeEnum LeapFrog::getEntityType(void)

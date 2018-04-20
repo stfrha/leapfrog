@@ -1,5 +1,6 @@
 
 #include "asteroid.h"
+#include "asteroidfield.h"
 
 #include "sceneactor.h"
 #include "freespaceactor.h"
@@ -13,7 +14,7 @@ Asteroid::Asteroid(
    b2World* world,
    const b2Vec2& pos,
    AsteroidStateEnum state,
-   FreeSpaceActor* actor) :
+   AsteroidField* field) :
    m_state(state),
    m_radius(generateRadius()),
    m_num(generateNum()),
@@ -23,7 +24,7 @@ Asteroid::Asteroid(
    m_damage(0),
    m_sceneActor(sceneActor),
    m_gameResource(&gameResources),
-   m_freeSpaceActor(actor)
+   m_asteroidField(field)
 {
    m_poly = new oxygine::Polygon;
 
@@ -37,6 +38,8 @@ Asteroid::Asteroid(
    */
 
    m_poly->setResAnim(gameResources.getResAnim("crater_rock"));
+
+   setPriority(160);
 
    Vector2*  v2vertices = new Vector2[m_num];
 
@@ -151,23 +154,24 @@ bool Asteroid::hitByBullet(b2Contact* contact)
       shattered = true;
    }
 
-   if (m_state == ASE_MIDDLE && m_damage >= 2)
-   {
-      b2Body* b = (b2Body*) getUserData();
+   b2Body* b = (b2Body*)getUserData();
+   b2Vec2 pos = b->GetPosition();
+   b2Vec2 spawnLeftTop = pos + b2Vec2(-1.0f, -1.0f);
+   b2Vec2 spawnRightBottom = pos + b2Vec2(1.0f, 1.0f);
 
+   if ((m_state == ASE_MIDDLE) && (m_damage >= 2))
+   {
       // Spawn three small 
-      m_freeSpaceActor->addAsteroidSpawnInstruction(AsteroidSpawnInstruction(3, ASE_SMALL, b->GetPosition()));
+      m_asteroidField->addAsteroidSpawnInstruction(AsteroidSpawnInstruction(3, ASE_SMALL, spawnLeftTop, spawnRightBottom));
 
       m_sceneActor->addMeToDeathList((ActorToDie*)this);
       shattered = true;
    }
 
-   if (m_state == ASE_LARGE && m_damage >= 4)
+   if ((m_state == ASE_LARGE) && (m_damage >= 4))
    {
-      b2Body* b = (b2Body*)getUserData();
-
       // Spawn three middle 
-      m_freeSpaceActor->addAsteroidSpawnInstruction(AsteroidSpawnInstruction(3, ASE_MIDDLE, b->GetPosition()));
+      m_asteroidField->addAsteroidSpawnInstruction(AsteroidSpawnInstruction(3, ASE_MIDDLE, spawnLeftTop, spawnRightBottom));
 
       m_sceneActor->addMeToDeathList((ActorToDie*)this);
 

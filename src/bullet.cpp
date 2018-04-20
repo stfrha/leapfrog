@@ -12,13 +12,16 @@ Bullet::Bullet(
    const float angle,
    float bulletSpeed,
    b2Vec2& craftSpeed,
-   int m_lifetime,
+   int lifetime,
    bool bouncy) : 
-   m_sceneActor(sceneActor)
+   m_sceneActor(sceneActor),
+   m_firstUpdate(true),
+   m_lifetime(lifetime)
 {
    setSize(0.75f, 0.75f);
    setPosition(PhysDispConvert::convert(pos, 1.0f));
    setAnchor(Vector2(0.5f, 0.5f));
+   setPriority(163);
 
    //spTween tranpTween = addTween(Actor::TweenAlpha(0), lifetime);
    //spTween scaleTween = addTween(Actor::TweenScale(0.25, 0.25), lifetime);
@@ -55,12 +58,6 @@ Bullet::Bullet(
    vel += craftSpeed;
 
    body->SetLinearVelocity(vel);
-
-   m_debugTimeAtCreation = getTimeMS();
-
-   m_debugHistoryOfTime[0] = m_debugTimeAtCreation;
-
-   m_deathTime = m_debugTimeAtCreation + m_lifetime;
 }
 
 CollisionEntityTypeEnum Bullet::getEntityType(void)
@@ -85,6 +82,12 @@ void Bullet::hitAsteroid(b2Contact* contact)
 
 void Bullet::doUpdate(const oxygine::UpdateState& us)
 {
+   if (m_firstUpdate)
+   {
+      m_deathTime = us.time + m_lifetime;
+      m_firstUpdate = false;
+   }
+
    if (us.time >= m_deathTime)
    {
       if (m_sceneActor)

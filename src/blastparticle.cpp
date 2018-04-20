@@ -13,6 +13,7 @@ BlastParticle::BlastParticle(
    setSize(particleSize, particleSize);
    setPosition(pos);
    setAnchor(Vector2(0.5f, 0.5f));
+   setPriority(162);
 
    // Randomise value between 0 and 255
    float color = static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / 255.0f));

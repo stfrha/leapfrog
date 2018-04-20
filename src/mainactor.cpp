@@ -18,6 +18,7 @@ MainActor::MainActor()
 	setSize(getStage()->getSize());
 
    startScene(STE_LANDING);
+//   startScene(STE_FREE_SPACE);
 }
 
 MainActor::~MainActor()
@@ -71,7 +72,7 @@ void MainActor::startScene(SceneTypeEnum scene)
       window->setPosition(50.0f, 50.0f);
       addChild(window);
 
-      spFreeSpaceActor freeSpaceActor = new FreeSpaceActor(m_gameResources);
+      spFreeSpaceActor freeSpaceActor = new FreeSpaceActor(m_gameResources, string("deep_space_scene.xml"), string("deepSpaceState"));
       window->addChild(freeSpaceActor);
 
       //m_debugDraw = new Box2DDraw;
