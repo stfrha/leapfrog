@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+<compoundObject>
+	<ChildCompoundObjectRef
+		name="asteroids1"
+		type="asteroidField"
+		left="200.0"
+		right="700.0"
+		top="200.0"
+		bottom="400.0"
+		spawnInitial="20"
+		intensity="0.25"
+		lifeTime="60000" />		
+	<ChildCompoundObjectRef 
+		name="leapfrog1"
+		type="leapfrog">
+		<deepSpaceState 
+			file="leapfrog_deep_space.xml" 
+			posX="-450.0"
+			posY="150.0" />
+	</ChildCompoundObjectRef>
+</compoundObject>
+
