@@ -176,6 +176,7 @@
     <ClCompile Include="..\src\freespaceactor.cpp" />
     <ClCompile Include="..\src\freespacecontactlistener.cpp" />
     <ClCompile Include="..\src\gun.cpp" />
+    <ClCompile Include="..\src\landercontactlistener.cpp" />
     <ClCompile Include="..\src\launchsite.cpp" />
     <ClCompile Include="..\src\leapfrogparts.cpp" />
     <ClCompile Include="..\src\mainactor.cpp" />
@@ -259,6 +260,7 @@
     <ClInclude Include="..\src\freespaceactor.h" />
     <ClInclude Include="..\src\freespacecontactlistener.h" />
     <ClInclude Include="..\src\gun.h" />
+    <ClInclude Include="..\src\landercontactlistener.h" />
     <ClInclude Include="..\src\launchsite.h" />
     <ClInclude Include="..\src\leapfrogevents.h" />
     <ClInclude Include="..\src\leapfrogparts.h" />

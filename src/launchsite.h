@@ -21,7 +21,7 @@ Available states:
 - launch execute - Unstoppable countdown, booster fire, is released and all goes up
 */
 
-class LaunchSite : public CompoundObject, public CollisionEntity
+class LaunchSite : public CompoundObject
 {
 public:
 	enum propertyId
@@ -39,5 +39,8 @@ public:
       std::string& defXmlFileName);
 
    virtual CollisionEntityTypeEnum getEntityType(void);
+
+   void leapfrogLanded(b2Contact* contact);
+
 };
 

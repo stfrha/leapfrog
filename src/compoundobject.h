@@ -4,6 +4,7 @@
 #include "Box2D/Box2D.h"
 #include "compoundinterface.h"
 #include "staticpolygon.h"
+#include "collisionentity.h"
 
 class ObjectPropertyTriggeredEvent : public oxygine::Event
 {
@@ -122,7 +123,7 @@ public:
 
 DECLARE_SMART(CompoundObject, spCompoundObject);
 
-class CompoundObject : public oxygine::Sprite, public CompoundInterface
+class CompoundObject : public oxygine::Sprite, public CompoundInterface, public CollisionEntity
 {
 protected:
 
@@ -136,6 +137,7 @@ private:
 
    std::vector<CompoundObject*> m_children;
 
+   CollisionEntityTypeEnum m_collisionType;
 
    bool readDefinitionXmlFile(
       oxygine::Resources& gameResources, 

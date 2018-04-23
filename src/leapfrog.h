@@ -88,7 +88,7 @@ public:
 
 DECLARE_SMART(LeapFrog, spLeapFrog);
 
-class LeapFrog : public CompoundObject, public CollisionEntity
+class LeapFrog : public CompoundObject
 {
 public:
    /*

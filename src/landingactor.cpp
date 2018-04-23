@@ -18,6 +18,8 @@ LandingActor::LandingActor(Resources& gameResources, string& fileName, string& i
 //   m_world->SetGravity(b2Vec2(0, 1.62));
    m_world->SetGravity(b2Vec2(0, 3.0f));
 
+   m_world->SetContactListener(&m_contactListener);
+
    initCompoundObject(gameResources, this, m_world, Vector2(435.52f, 375.0f), fileName, initialState);
 
    m_leapfrog = static_cast<LeapFrog*>(getObject("leapfrog1"));
@@ -29,6 +31,11 @@ LandingActor::LandingActor(Resources& gameResources, string& fileName, string& i
    // m_leapfrog->m_properties[LeapFrog::propXPos].registerPropertyEventTrigger(1, PropertyEventTrigger::insideRange, 1200.0f, 10000.0f);
 
    m_leapfrog->goToMode(LFM_LANDING);
+}
+
+CollisionEntityTypeEnum LandingActor::getEntityType(void)
+{
+   return CET_NOT_APPLICABLE;
 }
 
 void LandingActor::modeReachedListener(Event *ev)

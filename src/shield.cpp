@@ -56,8 +56,20 @@ float Shield::getAngle(void)
    return m_angle;
 }
 
-void Shield::shieldHit(void)
+void Shield::shieldHit(b2Contact* contact)
 {
+   b2WorldManifold m;
+   contact->GetWorldManifold(&m);
+
+   if (contact->GetManifold()->pointCount > 0)
+   {
+      b2Vec2 collVec = m.points[0] - m_body->GetPosition();
+
+      float angle = atan2(collVec.y, collVec.x) + MATH_PI / 2.0f;
+
+      setAngle(angle);
+   }
+
    setAlpha(255);
    spTween animTween = addTween(TweenAnim(m_resAnim), 500);
    spTween alphaTween = addTween(Actor::TweenAlpha(64), 500);

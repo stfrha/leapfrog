@@ -4,6 +4,7 @@
 
 #include "sceneactor.h"
 #include "freespaceactor.h"
+#include "blastemitter.h"
 
 
 using namespace oxygine;
@@ -87,11 +88,12 @@ Asteroid::Asteroid(
    fixtureDef.friction = 1.3f;
    fixtureDef.filter.categoryBits = 8;
    fixtureDef.filter.maskBits = 64703;
+   fixtureDef.userData = (CollisionEntity*)this;
 
    body->CreateFixture(&fixtureDef);
    body->SetUserData(this);
 
-   body->GetFixtureList()->SetUserData((CollisionEntity*)this);
+//   body->GetFixtureList()->SetUserData((CollisionEntity*)this);
 
    body->ResetMassData();
 
@@ -141,8 +143,15 @@ void Asteroid::killActor(void)
    atDeathOfAsteroid();
 }
 
-bool Asteroid::hitByBullet(b2Contact* contact)
+void Asteroid::hitByBullet(b2Contact* contact)
 {
+   // Assume unshattered blast
+   int emitterLifetime = 150;
+   int particleLifetime = 500;
+   float particleDistance = 30.0f;
+   float particleSize = 0.75f;
+   float blastIntensity = 200.0f;
+
    bool shattered = false;
 
    // Take damage
@@ -178,8 +187,53 @@ bool Asteroid::hitByBullet(b2Contact* contact)
       shattered = true;
    }
 
-   return shattered;
+   if (shattered)
+   {
+      emitterLifetime = 250;
+      particleLifetime = 500;
+      particleDistance = 60.0f;
+      particleSize = 0.9f;
+      blastIntensity = 300.0f;
+   }
+
+   b2WorldManifold m;
+   contact->GetWorldManifold(&m);
+
+   if (contact->GetManifold()->pointCount > 0)
+   {
+      spBlastEmitter blast = new BlastEmitter(
+         m_sceneActor->getResources(),
+         PhysDispConvert::convert(m.points[0], 1.0f),
+         blastIntensity,                                     // Intensity, particles / sec
+         emitterLifetime,                                    // Emitter Lifetime
+         particleLifetime,                                   // Particle lifetime
+         particleDistance,                                   // Particle distance
+         particleSize);                                      // Particle spawn size
+      blast->attachTo(m_sceneActor);
+   }
 }
+
+void Asteroid::hitShield(b2Contact* contact)
+{
+   int emitterLifetime = 250;
+   int particleLifetime = 350;
+   float particleDistance = 40.0f;
+   float particleSize = 0.9f;
+
+   b2WorldManifold m;
+   contact->GetWorldManifold(&m);
+
+   spBlastEmitter blast = new BlastEmitter(
+      m_sceneActor->getResources(),
+      PhysDispConvert::convert(m.points[0], 1.0f),
+      150.0f,                                             // Intensity, particles / sec
+      emitterLifetime,                                    // Emitter Lifetime
+      particleLifetime,                                   // Particle lifetime
+      particleDistance,                                   // Particle distance
+      particleSize);                                      // Particle spawn size
+   blast->attachTo(m_sceneActor);
+}
+
 
 void Asteroid::hitByLepfrog(b2Contact* contact)
 {

@@ -225,7 +225,8 @@ void DualPropEventTrigger::updateProperty(int propId)
 	//}
 }
 
-CompoundObject::CompoundObject()
+CompoundObject::CompoundObject() :
+   m_collisionType(CET_NOT_APPLICABLE)
 { }
 
 
@@ -385,7 +386,10 @@ void CompoundObject::defineStaticPolygon(Resources& gameResources, Actor* parent
    b2ChainShape chain;
    chain.CreateChain(b2vertices, num);
 
-   body->CreateFixture(&chain, 1);
+   b2Fixture* fixture = body->CreateFixture(&chain, 1);
+   fixture->SetUserData((CollisionEntity*)this);
+
+   m_collisionType = CollisionEntity::convert(objectNode.attribute("collisionType").as_string());
 
    b2Filter filter;
 
@@ -430,6 +434,8 @@ void CompoundObject::defineStaticBox(Resources& gameResources, Actor* parent, b2
    fixtureDef.friction = 1.3f;
    fixtureDef.filter.categoryBits = objectNode.attribute("collisionCategory").as_int();
    fixtureDef.filter.maskBits = objectNode.attribute("collisionMask").as_int();
+   fixtureDef.userData = (CollisionEntity*)this;
+   m_collisionType = CollisionEntity::convert(objectNode.attribute("collisionType").as_string());
 
    body->CreateFixture(&fixtureDef);
 
@@ -507,6 +513,8 @@ void CompoundObject::defineBoxedObject(oxygine::Resources& gameResources, Actor*
    fixtureDef.friction = 1.3f;
    fixtureDef.filter.categoryBits = objectNode.attribute("collisionCategory").as_int();
    fixtureDef.filter.maskBits = objectNode.attribute("collisionMask").as_int();
+   fixtureDef.userData = (CollisionEntity*)this;
+   m_collisionType = CollisionEntity::convert(objectNode.attribute("collisionType").as_string());
 
    body->CreateFixture(&fixtureDef);
 
@@ -585,6 +593,8 @@ void CompoundObject::definePolygonObject(oxygine::Resources& gameResources, Acto
    fixtureDef.friction = 1.3f;
    fixtureDef.filter.categoryBits = objectNode.attribute("collisionCategory").as_int();
    fixtureDef.filter.maskBits = objectNode.attribute("collisionMask").as_int();
+   fixtureDef.userData = (CollisionEntity*)this;
+   m_collisionType = CollisionEntity::convert(objectNode.attribute("collisionType").as_string());
 
    body->CreateFixture(&fixtureDef);
 
@@ -666,6 +676,8 @@ void CompoundObject::defineBoxedSpritePolygonBody(
    fixtureDef.friction = 1.3f;
    fixtureDef.filter.categoryBits = objectNode.attribute("collisionCategory").as_int();
    fixtureDef.filter.maskBits = objectNode.attribute("collisionMask").as_int();
+   fixtureDef.userData = (CollisionEntity*)this;
+   m_collisionType = CollisionEntity::convert(objectNode.attribute("collisionType").as_string());
 
    body->CreateFixture(&fixtureDef);
 

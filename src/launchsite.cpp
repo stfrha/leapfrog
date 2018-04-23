@@ -26,6 +26,10 @@ LaunchSite::LaunchSite(
 
 CollisionEntityTypeEnum LaunchSite::getEntityType(void)
 {
-   return CBT_LAUNCH_SITE_STATIC;
+   return CET_NOT_APPLICABLE;
 }
 
+void LaunchSite::leapfrogLanded(b2Contact* contact)
+{
+   int a = 10;
+}

@@ -87,7 +87,8 @@ public:
 
    virtual void killActor(void);
 
-   bool hitByBullet(b2Contact* contact);     // Returns true if asteroid was shattered
+   void hitByBullet(b2Contact* contact); 
+   void hitShield(b2Contact* contact);     // Returns true if asteroid was shattered
    void hitByLepfrog(b2Contact* contact);
 
 protected:

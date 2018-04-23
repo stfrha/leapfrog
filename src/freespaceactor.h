@@ -27,6 +27,8 @@ public:
       std::string& fileName, 
       std::string& initialState);
 
+   virtual CollisionEntityTypeEnum getEntityType(void);
+
    void addBoundingBody(b2Body* body);
    void removeBoundingBody(b2Body* body);
    void testForBoundaryRepel(void);

@@ -34,6 +34,13 @@ void AsteroidField::readAsteroidFieldNode(xml_node& objectNode)
 
 }
 
+CollisionEntityTypeEnum AsteroidField::getEntityType(void)
+{
+   return CET_NOT_APPLICABLE;
+}
+
+
+
 void AsteroidField::addAsteroidSpawnInstruction(AsteroidSpawnInstruction& inst)
 {
    m_asteroidSpawnList.push_back(inst);

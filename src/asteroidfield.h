@@ -49,6 +49,9 @@ public:
 
    void addAsteroidSpawnInstruction(AsteroidSpawnInstruction& inst);
 
+   virtual CollisionEntityTypeEnum getEntityType(void);
+
+
 protected:
 	void doUpdate(const oxygine::UpdateState& us);
 

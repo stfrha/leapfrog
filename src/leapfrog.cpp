@@ -47,7 +47,7 @@ LeapFrog::LeapFrog(
    m_boostMagnuitude(0.0f),
    m_steerMagnitude(0.0f),
    m_boostInc(900.0f),
-   m_boostMaxMagnitude(3000.0f),
+   m_boostMaxMagnitude(6000.0f),
    m_steerMaxMagnitude(10000.0f),
    m_eveningMagnitude(10000.0f),
    m_boostFireLastUpdate(false),
@@ -893,7 +893,7 @@ void LeapFrog::goToEnvironment(EnvironmentEnum env)
 
    case ENV_GROUND:
       m_boostInc = 900.0f;
-      m_boostMaxMagnitude = 3000.0f;
+      m_boostMaxMagnitude = 6000.0f;
       m_steerMaxMagnitude = 40000.0f;;
       m_eveningMagnitude = 10000.0f;
       m_maxVelocity = 400.0f;    // [m/s]

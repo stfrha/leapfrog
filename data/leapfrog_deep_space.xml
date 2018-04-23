@@ -3,6 +3,7 @@
 	<dynamicBox 
 		name="lfBooster"
 		texture="lf_boost"
+		collisionEntity="lfBooster"
 		width="4.0"
 		height="1.6"
 		anchorX="0.5"
@@ -16,6 +17,7 @@
 	<boxedSpritePolygonBody
 		name="lfLeftBigLeg"
 		texture="lf_big_leg"
+		collisionEntity="lfBigLeg"
 		width="1.8"
 		height="7.3"
 		anchorX="0.5"
@@ -40,6 +42,7 @@
 	<boxedSpritePolygonBody
 		name="lfRightBigLeg"
 		texture="lf_big_leg"
+		collisionEntity="lfBigLeg"
 		width="1.8"
 		height="7.3"
 		anchorX="0.5"
@@ -64,6 +67,7 @@
 	<boxedSpritePolygonBody
 		name="lfLeftSmallLeg"
 		texture="lf_small_leg"
+		collisionEntity="lfSmallLeg"
 		width="1.4"
 		height="5.3"
 		anchorX="0.5"
@@ -88,6 +92,7 @@
 	<boxedSpritePolygonBody
 		name="lfRightSmallLeg"
 		texture="lf_small_leg"
+		collisionEntity="lfSmallLeg"
 		width="1.4"
 		height="5.3"
 		anchorX="0.5"
@@ -112,6 +117,7 @@
 	<boxedSpritePolygonBody
 		name="lfLeftFoot"
 		texture="lf_foot"
+		collisionEntity="lfFoot"
 		width="4.0"
 		height="0.6"
 		anchorX="0.5"
@@ -136,6 +142,7 @@
 	<boxedSpritePolygonBody
 		name="lfRightFoot"
 		texture="lf_foot"
+		collisionEntity="lfFoot"
 		width="4.0"
 		height="0.6"
 		anchorX="0.5"
@@ -160,6 +167,7 @@
 	<dynamicBox 
 		name="lfRightSteer"
 		texture="lf_right_steer"
+		collisionEntity="lfSteerBooster"
 		width="1.2"
 		height="1.0"
 		anchorX="0.5"
@@ -173,6 +181,7 @@
 	<dynamicBox 
 		name="lfLeftSteer"
 		texture="lf_left_steer"
+		collisionEntity="lfSteerBooster"
 		width="1.2"
 		height="1.0"
 		anchorX="0.5"
@@ -186,6 +195,7 @@
 	<boxedSpritePolygonBody
 		name="lfMainBody"
 		texture="lf_body"
+		collisionEntity="leapfrog"
 		width="9.0"
 		height="9.6"
 		anchorX="0.5"

@@ -15,8 +15,6 @@ FreeSpaceActor::FreeSpaceActor(
 {
    setPanorateMode(PME_CENTER);
 
-   m_contactListener.setSceneActor((SceneActor*)this);
-
    m_world->SetGravity(b2Vec2(0.0f, 0.0f));
 
    m_world->SetContactListener(&m_contactListener);
@@ -67,6 +65,11 @@ FreeSpaceActor::FreeSpaceActor(
 
    m_rightBoundary = new SoftBoundary(gameResources, m_world, RectF(1075.0f, 250.0f, 800.0f, 150.0f), RDE_LEFT);
    addChild(m_rightBoundary);
+}
+
+CollisionEntityTypeEnum FreeSpaceActor::getEntityType(void)
+{
+   return CET_NOT_APPLICABLE;
 }
 
 void FreeSpaceActor::addBoundingBody(b2Body* body)
