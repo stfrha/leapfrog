@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<compoundObject>
+	<staticBox 
+		name="landingPad1"
+		texture="landing_pad"
+		collisionEntity="landingPad"
+		posX="0"
+		posY="0"
+		width="36.0"
+		height="7.5"
+		anchorX="0.5"
+		anchorY="0.5"
+		zLevel="80"
+		collisionCategory="2048"
+		collisionMask="65535" >
+	</staticBox>
+</compoundObject>
