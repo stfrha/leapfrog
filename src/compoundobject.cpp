@@ -242,13 +242,14 @@ CompoundObject::~CompoundObject()
 
 void CompoundObject::initCompoundObject(
    oxygine::Resources& gameResources, 
-   Actor* parent, 
-   b2World* world, 
+   Actor* sceneParent, 
+   CompoundObject* parentObject,
+   b2World* world,
    const Vector2& pos, 
    string& defXmlFileName,
    string& initialState)
 {
-   readDefinitionXmlFile(gameResources, parent, world, pos, defXmlFileName, initialState);
+   readDefinitionXmlFile(gameResources, sceneParent, parentObject, world, pos, defXmlFileName, initialState);
 }
 
 CollisionEntityTypeEnum CompoundObject::getEntityType(void)
@@ -261,16 +262,22 @@ Sprite* CompoundObject::getSprite(void)
    return static_cast<Sprite*>(getFirstChild().get());
 }
 
-
+CompoundObject* CompoundObject::getParentObject(void)
+{
+   return m_parentObject;
+}
 
 bool CompoundObject::readDefinitionXmlFile(
    Resources& gameResources, 
-   Actor* parent, 
-   b2World* world, 
+   Actor* sceneParent, 
+   CompoundObject* parentObject,
+   b2World* world,
    const Vector2& pos, 
    string& fileName,
    string& initialState)
 {
+   m_parentObject = parentObject;
+
    xml_document doc;
 
    xml_parse_result result = doc.load_file(fileName.c_str());
@@ -282,7 +289,7 @@ bool CompoundObject::readDefinitionXmlFile(
       ++it)
    {
       // define a object
-      defineStaticPolygon(gameResources, parent, world, pos, *it);
+      defineStaticPolygon(gameResources, sceneParent, this, world, pos, *it);
    }
 
    for (auto it = root.children("staticBox").begin();
@@ -290,7 +297,7 @@ bool CompoundObject::readDefinitionXmlFile(
       ++it)
    {
       // define a object
-      defineStaticBox(gameResources, parent, world, pos, *it);
+      defineStaticBox(gameResources, sceneParent, this, world, pos, *it);
    }
 
    for (auto it = root.children("dynamicBox").begin();
@@ -298,7 +305,7 @@ bool CompoundObject::readDefinitionXmlFile(
       ++it)
    {
       // define a box object
-      defineBoxedObject(gameResources, parent, world, pos, *it);
+      defineBoxedObject(gameResources, sceneParent, this, world, pos, *it);
    }
 
    for (auto it = root.children("dynamicPolygon").begin();
@@ -307,21 +314,21 @@ bool CompoundObject::readDefinitionXmlFile(
    {
       // define a polygon object
       string a = (*it).attribute("name").as_string();
-      definePolygonObject(gameResources, parent, world, pos, *it);
+      definePolygonObject(gameResources, sceneParent, this, world, pos, *it);
    }
 
    for (auto it = root.children("boxedSpritePolygonBody").begin();
       it != root.children("boxedSpritePolygonBody").end();
       ++it)
    {
-      defineBoxedSpritePolygonBody(gameResources, parent, world, pos, *it);
+      defineBoxedSpritePolygonBody(gameResources, sceneParent, this, world, pos, *it);
    }
 
    for (auto it = root.children("ChildCompoundObjectRef").begin();
       it != root.children("ChildCompoundObjectRef").end();
       ++it)
    {
-      defineChildObject(gameResources, parent, world, pos, *it, initialState);
+      defineChildObject(gameResources, sceneParent, this, world, pos, *it, initialState);
    }
 
    for (auto it = root.children("weldJoint").begin();
@@ -341,12 +348,19 @@ bool CompoundObject::readDefinitionXmlFile(
    return true;
 }
 
-void CompoundObject::defineStaticPolygon(Resources& gameResources, Actor* parent, b2World* world, const Vector2& pos, xml_node& objectNode)
+void CompoundObject::defineStaticPolygon(
+   Resources& gameResources, 
+   Actor* sceneParent, 
+   CompoundObject* parentObject,
+   b2World* world,
+   const Vector2& pos, 
+   xml_node& objectNode)
 {
    CompoundObject* newCo = new CompoundObject();
 
    newCo->setName(objectNode.attribute("name").as_string());
    newCo->setPriority(objectNode.attribute("zLevel").as_int());
+   newCo->m_parentObject = parentObject;
 
    // Define sprite, which is a polygon, in this case
    vector<Vector2> vertices;
@@ -415,17 +429,24 @@ void CompoundObject::defineStaticPolygon(Resources& gameResources, Actor* parent
 
    newCo->setUserData(body);
    newCo->m_collisionType = CollisionEntity::convert(objectNode.attribute("collisionEntity").as_string());
-   newCo->attachTo(parent);
+   newCo->attachTo(sceneParent);
 
    m_children.push_back(newCo);
 }
 
-void CompoundObject::defineStaticBox(Resources& gameResources, Actor* parent, b2World* world, const Vector2& pos, xml_node& objectNode)
+void CompoundObject::defineStaticBox(
+   Resources& gameResources, 
+   Actor* sceneParent, 
+   CompoundObject* parentObject,
+   b2World* world,
+   const Vector2& pos, 
+   xml_node& objectNode)
 {
    CompoundObject* newCo = new CompoundObject();
 
    newCo->setName(objectNode.attribute("name").as_string());
    newCo->setPriority(objectNode.attribute("zLevel").as_int());
+   newCo->m_parentObject = parentObject;
 
    // Define sprite
    spSprite object = new Sprite();
@@ -461,17 +482,24 @@ void CompoundObject::defineStaticBox(Resources& gameResources, Actor* parent, b2
 
    newCo->setUserData(body);
    newCo->m_collisionType = CollisionEntity::convert(objectNode.attribute("collisionEntity").as_string());
-   newCo->attachTo(parent);
+   newCo->attachTo(sceneParent);
 
    m_children.push_back(newCo);
 }
 
-void CompoundObject::defineBoxedObject(oxygine::Resources& gameResources, Actor* parent, b2World* world, const Vector2& pos, xml_node& objectNode)
+void CompoundObject::defineBoxedObject(
+   Resources& gameResources, 
+   Actor* sceneParent, 
+   CompoundObject* parentObject,
+   b2World* world,
+   const Vector2& pos, 
+   xml_node& objectNode)
 {
    CompoundObject* newCo = new CompoundObject();
 
    newCo->setName(objectNode.attribute("name").as_string());
    newCo->setPriority(objectNode.attribute("zLevel").as_int());
+   newCo->m_parentObject = parentObject;
 
    // Define sprite
    spSprite object = new Sprite();
@@ -506,17 +534,24 @@ void CompoundObject::defineBoxedObject(oxygine::Resources& gameResources, Actor*
 
    newCo->setUserData(body);
    newCo->m_collisionType = CollisionEntity::convert(objectNode.attribute("collisionEntity").as_string());
-   newCo->attachTo(parent);
+   newCo->attachTo(sceneParent);
 
    m_children.push_back(newCo);
 }
 
-void CompoundObject::definePolygonObject(oxygine::Resources& gameResources, Actor* parent, b2World* world, const Vector2& pos, xml_node& objectNode)
+void CompoundObject::definePolygonObject(
+   Resources& gameResources, 
+   Actor* sceneParent, 
+   CompoundObject* parentObject,
+   b2World* world,
+   const Vector2& pos, 
+   xml_node& objectNode)
 {
    CompoundObject* newCo = new CompoundObject();
 
    newCo->setName(objectNode.attribute("name").as_string());
    newCo->setPriority(objectNode.attribute("zLevel").as_int());
+   newCo->m_parentObject = parentObject;
 
    // Define sprite, which is a polygon, in this case
    vector<Vector2> vertices;
@@ -593,7 +628,7 @@ void CompoundObject::definePolygonObject(oxygine::Resources& gameResources, Acto
 
    newCo->setUserData(body);
    newCo->m_collisionType = CollisionEntity::convert(objectNode.attribute("collisionEntity").as_string());
-   newCo->attachTo(parent);
+   newCo->attachTo(sceneParent);
 
    m_children.push_back(newCo);
 }
@@ -601,7 +636,8 @@ void CompoundObject::definePolygonObject(oxygine::Resources& gameResources, Acto
 
 void CompoundObject::defineBoxedSpritePolygonBody(
    Resources& gameResources,
-   Actor* parent,
+   Actor* sceneParent,
+   CompoundObject* parentObject,
    b2World* world,
    const Vector2& pos,
    xml_node& objectNode)
@@ -610,6 +646,7 @@ void CompoundObject::defineBoxedSpritePolygonBody(
 
    newCo->setName(objectNode.attribute("name").as_string());
    newCo->setPriority(objectNode.attribute("zLevel").as_int());
+   newCo->m_parentObject = parentObject;
 
    // Define sprite, which is a polygon, in this case
    vector<Vector2> vertices;
@@ -681,7 +718,7 @@ void CompoundObject::defineBoxedSpritePolygonBody(
 
    newCo->setUserData(body);
    newCo->m_collisionType = CollisionEntity::convert(objectNode.attribute("collisionEntity").as_string());
-   newCo->attachTo(parent);
+   newCo->attachTo(sceneParent);
 
    m_children.push_back(newCo);
 }
@@ -689,8 +726,9 @@ void CompoundObject::defineBoxedSpritePolygonBody(
 
 void CompoundObject::defineChildObject(
    Resources& gameResources, 
-   Actor* parent, 
-   b2World* world, 
+   Actor* sceneParent,
+   CompoundObject* parentObject,
+   b2World* world,
    const Vector2& pos, 
    xml_node& objectNode,
    string& initialState)
@@ -710,7 +748,9 @@ void CompoundObject::defineChildObject(
 
       LeapFrog* lf = new LeapFrog(
          gameResources,
-         parent, world,
+         sceneParent, 
+         parentObject,
+         world,
          objPos,
          string(objectNode.child(initialState.c_str()).attribute("file").as_string()));
 
@@ -729,7 +769,9 @@ void CompoundObject::defineChildObject(
 
 	   LaunchSite* ls = new LaunchSite(
 		   gameResources,
-		   parent, world,
+		   sceneParent, 
+         parentObject,
+         world,
          objPos,
 		   string(objectNode.attribute("file").as_string()));
 
@@ -748,7 +790,9 @@ void CompoundObject::defineChildObject(
 
       LandingPad* ls = new LandingPad(
          gameResources,
-         parent, world,
+         sceneParent, 
+         parentObject,
+         world,
          objPos,
          string(objectNode.attribute("file").as_string()));
 
@@ -760,7 +804,9 @@ void CompoundObject::defineChildObject(
    {
       AsteroidField* af = new AsteroidField(
          gameResources,
-         parent, world,
+         sceneParent, 
+         parentObject,
+         world,
          objectNode);
 
       af->setName(objectNode.attribute("name").as_string());

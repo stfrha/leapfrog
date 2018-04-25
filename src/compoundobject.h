@@ -136,56 +136,64 @@ private:
    std::vector<NamedJoint*> m_namedJoints;
 
    std::vector<CompoundObject*> m_children;
+   CompoundObject* m_parentObject;
 
    CollisionEntityTypeEnum m_collisionType;
 
    bool readDefinitionXmlFile(
       oxygine::Resources& gameResources, 
-      oxygine::Actor* parent, 
-      b2World* world, 
+      oxygine::Actor* sceneParent, 
+      CompoundObject* parentObject,
+      b2World* world,
       const oxygine::Vector2& pos, 
       std::string& fileName,
       std::string& initialState);
 
    void defineStaticBox(
       oxygine::Resources& gameResources, 
-      oxygine::Actor* parent, 
-      b2World* world, 
+      oxygine::Actor* sceneParent, 
+      CompoundObject* parentObject,
+      b2World* world,
       const oxygine::Vector2& pos, 
       pugi::xml_node& objectNode);
 
    void defineStaticPolygon(
       oxygine::Resources& gameResources, 
-      oxygine::Actor* parent, 
-      b2World* world, 
+      oxygine::Actor* sceneParent, 
+      CompoundObject* parentObject,
+      b2World* world,
       const oxygine::Vector2& pos, 
       pugi::xml_node& objectNode);
 
    void defineBoxedObject(
       oxygine::Resources& gameResources, 
-      oxygine::Actor* parent, 
-      b2World* world, 
+      oxygine::Actor* sceneParent, 
+      CompoundObject* parentObject,
+      b2World* world,
       const oxygine::Vector2& pos, 
       pugi::xml_node& objectNode);
 
    void definePolygonObject(
       oxygine::Resources& gameResources, 
-      oxygine::Actor* parent, 
-      b2World* world, 
+      oxygine::Actor* sceneParent, 
+      CompoundObject* parentObject,
+      b2World* world,
       const oxygine::Vector2& pos, 
       pugi::xml_node& objectNode);
 
    void defineBoxedSpritePolygonBody(
       oxygine::Resources& gameResources, 
-      oxygine::Actor* parent, 
-      b2World* world, 
+      oxygine::Actor* sceneParent, 
+      CompoundObject* parentObject,
+      b2World* world,
       const oxygine::Vector2& pos, 
       pugi::xml_node& objectNode);
 
    void defineChildObject(
       oxygine::Resources& gameResources, 
-      oxygine::Actor* parent, 
-      b2World* world, 
+      oxygine::Actor* sceneParent, 
+      CompoundObject* parentObject,
+      b2World* world,
       const oxygine::Vector2& pos, 
       pugi::xml_node& objectNode,
       std::string& initialState);
@@ -213,7 +221,8 @@ public:
 
    void initCompoundObject(
 	   oxygine::Resources& gameResources,
-	   oxygine::Actor* parent,
+	   oxygine::Actor* sceneParent,
+      CompoundObject* parentObject,
 	   b2World* world,
 	   const oxygine::Vector2& pos,
 	   std::string& defXmlFileName,
@@ -222,6 +231,7 @@ public:
    virtual CollisionEntityTypeEnum getEntityType(void);
 
    oxygine::Sprite* getSprite(void);
+   CompoundObject* getParentObject(void);
 
    // Should these three be protected since they are called by the base class?
    virtual CompoundObject* getObjectImpl(const std::string& name);

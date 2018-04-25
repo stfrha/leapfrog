@@ -10,7 +10,10 @@
 using namespace oxygine;
 using namespace std;
 
-LandingActor::LandingActor(Resources& gameResources, string& fileName, string& initialState) :
+LandingActor::LandingActor(
+   Resources& gameResources, 
+   string& fileName, 
+   string& initialState) :
 	SceneActor(gameResources)
 {
    setPanorateMode(PME_CENTER);
@@ -20,7 +23,7 @@ LandingActor::LandingActor(Resources& gameResources, string& fileName, string& i
 
    m_world->SetContactListener(&m_contactListener);
 
-   initCompoundObject(gameResources, this, m_world, Vector2(435.52f, 375.0f), fileName, initialState);
+   initCompoundObject(gameResources, this, NULL, m_world, Vector2(435.52f, 375.0f), fileName, initialState);
 
    m_leapfrog = static_cast<LeapFrog*>(getObject("leapfrog1"));
    m_leapfrog->goToEnvironment(ENV_GROUND);

@@ -21,17 +21,23 @@ public:
 		lfLanded = 1
 	};
 
+private:
+   bool m_leftFootContact;
+   bool m_rightFootContact;
+
 public:
 	LandingPad(
       oxygine::Resources& gameResources,
-      oxygine::Actor* parent,
+      oxygine::Actor* sceneParent,
+      CompoundObject* parentObject,
       b2World* world,
       const oxygine::Vector2& pos,
       std::string& defXmlFileName);
 
    virtual CollisionEntityTypeEnum getEntityType(void);
 
-   void leapfrogLanded(b2Contact* contact);
+   void leapfrogFootTouch(b2Contact* contact, bool leftFoot);
+   void leapfrogFootLift(b2Contact* contact, bool leftFoot);
 
 };
 

@@ -206,7 +206,8 @@ public:
 
 	LeapFrog(
 		oxygine::Resources& gameResources,
-		oxygine::Actor* parent,
+		oxygine::Actor* sceneParent,
+      CompoundObject* parentObject,
 		b2World* world,
 		const oxygine::Vector2& pos,
 		std::string& defXmlFileName);

@@ -38,8 +38,9 @@ ModeAngles::ModeAngles(float rgtBigLeg, float rgtSmallLeg, float rgtFoot,
 
 
 LeapFrog::LeapFrog(
-	oxygine::Resources& gameResources,
-	oxygine::Actor* parent,
+	Resources& gameResources,
+	Actor* sceneParent,
+   CompoundObject* parentObject,
 	b2World* world,
 	const oxygine::Vector2& pos,
 	std::string& defXmlFileName) :
@@ -58,9 +59,9 @@ LeapFrog::LeapFrog(
    m_wantedAngle(0.0f),
    m_initiating(false)
 {
-	initCompoundObject(gameResources, parent, world, pos, defXmlFileName, string(""));
+	initCompoundObject(gameResources, sceneParent, parentObject, world, pos, defXmlFileName, string(""));
 
-   m_sceneActor = (SceneActor*) parent;
+   m_sceneActor = (SceneActor*) sceneParent;
 
    m_mainObject = getObject("lfMainBody");
    m_lfRightBigLeg = getObject("lfRightBigLeg");
@@ -117,7 +118,7 @@ LeapFrog::LeapFrog(
    // there. In deep space it gets its normal size but is other 
    // environments it is turned very small
    m_shield = new Shield(gameResources, world, pos);
-   m_shield->attachTo(parent);
+   m_shield->attachTo(sceneParent);
    m_shield->setPriority(147);
 
 
@@ -235,7 +236,7 @@ LeapFrog::LeapFrog(
    addEventListener(LeapfrogExtSetEnvEvent::EVENT, CLOSURE(this, &LeapFrog::setEnvPropHandler));
 
    // Here we attach Leapfrog object to tree so it gets updates etc.
-   attachTo(parent);
+   attachTo(sceneParent);
    setWeakJoints();
 }
 

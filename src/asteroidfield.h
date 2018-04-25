@@ -43,7 +43,8 @@ private:
 public:
    AsteroidField(
       oxygine::Resources& gameResources,
-      oxygine::Actor* parent,
+      oxygine::Actor* sceneParent,
+      CompoundObject* parentObject,
       b2World* world,
       pugi::xml_node& objectNode);
 

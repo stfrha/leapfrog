@@ -7,16 +7,17 @@ using namespace pugi;
 
 AsteroidField::AsteroidField(
    Resources& gameResources,
-   Actor* parent,
+   Actor* sceneParent,
+   CompoundObject* parentObject,
    b2World* world,
    xml_node& objectNode) :
    m_gameResources(&gameResources),
    m_world(world),
-   m_spaceActor((FreeSpaceActor*)parent),
+   m_spaceActor((FreeSpaceActor*)sceneParent),
    m_timeSinceLast(0)
 {
    readAsteroidFieldNode(objectNode);
-   attachTo(parent);
+   attachTo(sceneParent);
    spawnAsteroids();
 }
 
