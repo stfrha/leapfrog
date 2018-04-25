@@ -117,7 +117,7 @@
 	<boxedSpritePolygonBody
 		name="lfLeftFoot"
 		texture="lf_foot"
-		collisionEntity="lfFoot"
+		collisionEntity="lfLeftFoot"
 		width="4.0"
 		height="0.6"
 		anchorX="0.5"
@@ -142,7 +142,7 @@
 	<boxedSpritePolygonBody
 		name="lfRightFoot"
 		texture="lf_foot"
-		collisionEntity="lfFoot"
+		collisionEntity="lfRightFoot"
 		width="4.0"
 		height="0.6"
 		anchorX="0.5"

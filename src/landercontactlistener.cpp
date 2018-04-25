@@ -3,6 +3,7 @@
 #include "bullet.h"
 #include "leapfrog.h"
 #include "launchsite.h"
+#include "landingpad.h"
 
 void LanderContactListener::BeginContact(b2Contact* contact)
 {
@@ -13,23 +14,24 @@ void LanderContactListener::BeginContact(b2Contact* contact)
    LeapFrog* leapfrog = NULL;
    Bullet* bullet = NULL;
    LaunchSite* launchSite = NULL;
+   LandingPad* landingPad = NULL;
 
-   if (eA == CET_LAUNCH_SITE_FOOT_REST)
+   if (eA == CET_LAUNCH_SITE_LEFT_FOOT_REST)
    {
       launchSite = (LaunchSite*)contact->GetFixtureA()->GetBody()->GetUserData();
    }
 
-   if (eB == CET_LAUNCH_SITE_FOOT_REST)
+   if (eB == CET_LAUNCH_SITE_LEFT_FOOT_REST)
    {
       launchSite = (LaunchSite*)contact->GetFixtureB()->GetBody()->GetUserData();
    }
 
-   if (eA == CET_LF_FOOT)
+   if (eA == CET_LF_LEFT_FOOT)
    {
       leapfrog = (LeapFrog*)contact->GetFixtureA()->GetBody()->GetUserData();
    }
 
-   if (eB == CET_LF_FOOT)
+   if (eB == CET_LF_LEFT_FOOT)
    {
       leapfrog = (LeapFrog*)contact->GetFixtureB()->GetBody()->GetUserData();
    }
@@ -44,11 +46,28 @@ void LanderContactListener::BeginContact(b2Contact* contact)
       bullet = (Bullet*)contact->GetFixtureB()->GetBody()->GetUserData();
    }
 
+   if (eA == CET_LANDING_PAD)
+   {
+      landingPad = (LandingPad*)contact->GetFixtureA()->GetBody()->GetUserData();
+   }
+
+   if (eB == CET_LANDING_PAD)
+   {
+      landingPad = (LandingPad*)contact->GetFixtureB()->GetBody()->GetUserData();
+   }
+
 
    if (launchSite && leapfrog)
    {
       // Leapfrog foot toouched Launch site foot rest
       launchSite->leapfrogLanded(contact);
+   }
+
+   if (landingPad && leapfrog)
+   {
+      // Leapfrog foot toouched Launch site foot rest
+      landingPad->leapfrogLanded(contact);
+
    }
 
 }

@@ -64,7 +64,12 @@
 		type="launchSite"
 		file="launch_site.xml" 
 		posX="435.52"
-		posY="375.0"
-	/>
+		posY="375.0" />
+	<ChildCompoundObjectRef 
+		name="landingPad1"
+		type="landingPad"
+		file="landing_pad.xml" 
+		posX="400"
+		posY="300" />
 </compoundObject>
 

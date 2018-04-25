@@ -9,10 +9,13 @@ enum CollisionEntityTypeEnum
    CET_LF_BIG_LEG,
    CET_LF_SMALL_LEG,
    CET_LF_BOOSTER,
-   CET_LF_FOOT,
+   CET_LF_LEFT_FOOT,
+   CET_LF_RIGHT_FOOT,
    CET_LF_STEER_BOOSTER,
    CET_LF_SHIELD,
-   CET_LAUNCH_SITE_FOOT_REST,
+   CET_LAUNCH_SITE_LEFT_FOOT_REST,
+   CET_LAUNCH_SITE_RIGHT_FOOT_REST,
+   CET_LANDING_PAD,
    CET_NOT_APPLICABLE
 };
 
@@ -30,10 +33,13 @@ public:
       else if (value == "lfBigLeg") return CET_LF_BIG_LEG;
       else if (value == "lfSmallLeg") return CET_LF_SMALL_LEG;
       else if (value == "lfBooster") return CET_LF_BOOSTER;
-      else if (value == "lfFoot") return CET_LF_FOOT;
+      else if (value == "lfLeftFoot") return CET_LF_LEFT_FOOT;
+      else if (value == "lfRightFoot") return CET_LF_RIGHT_FOOT;
       else if (value == "lfSteerBooster") return CET_LF_STEER_BOOSTER;
       else if (value == "lfShield") return CET_LF_SHIELD;
-      else if (value == "launchSiteFootRest") return CET_LAUNCH_SITE_FOOT_REST;
+      else if (value == "launchSiteLeftFootRest") return CET_LAUNCH_SITE_LEFT_FOOT_REST;
+      else if (value == "launchSiteRightFootRest") return CET_LAUNCH_SITE_RIGHT_FOOT_REST;
+      else if (value == "landingPad") return CET_LANDING_PAD;
       return CET_NOT_APPLICABLE;
    }
 };

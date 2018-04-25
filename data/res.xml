@@ -34,6 +34,7 @@
 		<image file="ls_support_booster.png"/>	
 		<image file="ls_tower.png"/>	
 		<image file="ls_foundation.png"/>	
+		<image file="landing_pad.png"/>	
 	</atlas>
 	<atlas clamp2edge="false"> 
 		<image file="ls_booster_tank.png" trim="false" extend="false"/>

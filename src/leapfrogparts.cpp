@@ -214,7 +214,7 @@ LfFoot::LfFoot(Resources& gameResources, b2World* world, const Vector2& pos, flo
 
 CollisionEntityTypeEnum LfFoot::getEntityType(void)
 {
-   return CET_LF_FOOT;
+   return CET_LF_LEFT_FOOT;
 }
 
 LfRightSteer::LfRightSteer(Resources& gameResources, b2World* world, const Vector2& pos, float scale, int16 groupIndex)

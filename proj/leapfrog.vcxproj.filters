@@ -219,9 +219,6 @@
     <ClCompile Include="..\src\softboundary.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\leapfrogparts.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\src\bullet.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -283,6 +280,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\src\landercontactlistener.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\landingpad.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -458,9 +458,6 @@
     <ClInclude Include="..\src\softboundary.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\leapfrogparts.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\src\bullet.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -531,6 +528,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\src\landercontactlistener.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\landingpad.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

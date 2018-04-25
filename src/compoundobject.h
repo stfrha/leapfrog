@@ -123,7 +123,7 @@ public:
 
 DECLARE_SMART(CompoundObject, spCompoundObject);
 
-class CompoundObject : public oxygine::Sprite, public CompoundInterface, public CollisionEntity
+class CompoundObject : public oxygine::Actor, public CompoundInterface, public CollisionEntity
 {
 protected:
 
@@ -218,6 +218,10 @@ public:
 	   const oxygine::Vector2& pos,
 	   std::string& defXmlFileName,
       std::string& initialState);
+
+   virtual CollisionEntityTypeEnum getEntityType(void);
+
+   oxygine::Sprite* getSprite(void);
 
    // Should these three be protected since they are called by the base class?
    virtual CompoundObject* getObjectImpl(const std::string& name);

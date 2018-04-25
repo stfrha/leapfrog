@@ -5,6 +5,7 @@
 // CompoundObject
 #include "launchsite.h"
 #include "leapfrog.h"
+#include "landingpad.h"
 #include "asteroidfield.h"
 
 #include "polygonvertices.h"
@@ -250,6 +251,18 @@ void CompoundObject::initCompoundObject(
    readDefinitionXmlFile(gameResources, parent, world, pos, defXmlFileName, initialState);
 }
 
+CollisionEntityTypeEnum CompoundObject::getEntityType(void)
+{
+   return m_collisionType;
+}
+
+Sprite* CompoundObject::getSprite(void)
+{
+   return static_cast<Sprite*>(getFirstChild().get());
+}
+
+
+
 bool CompoundObject::readDefinitionXmlFile(
    Resources& gameResources, 
    Actor* parent, 
@@ -330,14 +343,18 @@ bool CompoundObject::readDefinitionXmlFile(
 
 void CompoundObject::defineStaticPolygon(Resources& gameResources, Actor* parent, b2World* world, const Vector2& pos, xml_node& objectNode)
 {
+   CompoundObject* newCo = new CompoundObject();
+
+   newCo->setName(objectNode.attribute("name").as_string());
+   newCo->setPriority(objectNode.attribute("zLevel").as_int());
+
+   // Define sprite, which is a polygon, in this case
    vector<Vector2> vertices;
    vector<VectorT3<int> > triangles;
 
    spPolygon object = new oxygine::Polygon();
-   object->setName(objectNode.attribute("name").as_string());
    object->setResAnim(gameResources.getResAnim(objectNode.attribute("texture").as_string()));
    Vector2 mSize = Vector2(objectNode.attribute("width").as_float(), objectNode.attribute("height").as_float());
-   object->setPriority(objectNode.attribute("zLevel").as_int());
 
    for (auto it = objectNode.child("vertices").children("vertex").begin();
       it != objectNode.child("vertices").children("vertex").end();
@@ -359,7 +376,7 @@ void CompoundObject::defineStaticPolygon(Resources& gameResources, Actor* parent
    vertexPCT2* vs = PolygonVertices::createTriangleVertices(vertices, triangles, mSize, Vector2(0.0f, 0.0f));
    object->setVertices(vs, sizeof(vertexPCT2) *  triangles.size() * 4, vertexPCT2::FORMAT, true);
 
-   object->attachTo(parent);
+   object->attachTo(newCo);
 
    int num = vertices.size() + 1;
 
@@ -387,36 +404,38 @@ void CompoundObject::defineStaticPolygon(Resources& gameResources, Actor* parent
    chain.CreateChain(b2vertices, num);
 
    b2Fixture* fixture = body->CreateFixture(&chain, 1);
-   fixture->SetUserData((CollisionEntity*)this);
-
-   m_collisionType = CollisionEntity::convert(objectNode.attribute("collisionType").as_string());
+   fixture->SetUserData((CollisionEntity*)newCo);
 
    b2Filter filter;
-
    filter.categoryBits = objectNode.attribute("collisionCategory").as_int();
    filter.maskBits = objectNode.attribute("collisionMask").as_int();
-   body->GetFixtureList()->SetFilterData(filter);
+   fixture->SetFilterData(filter);
 
-   object->setUserData(body);
-   
-   body->SetUserData(object.get());
+   body->SetUserData(newCo);
 
-   m_children.push_back((CompoundObject*)object.get());
+   newCo->setUserData(body);
+   newCo->m_collisionType = CollisionEntity::convert(objectNode.attribute("collisionEntity").as_string());
+   newCo->attachTo(parent);
+
+   m_children.push_back(newCo);
 }
 
 void CompoundObject::defineStaticBox(Resources& gameResources, Actor* parent, b2World* world, const Vector2& pos, xml_node& objectNode)
 {
+   CompoundObject* newCo = new CompoundObject();
+
+   newCo->setName(objectNode.attribute("name").as_string());
+   newCo->setPriority(objectNode.attribute("zLevel").as_int());
+
+   // Define sprite
    spSprite object = new Sprite();
-   object->setName(objectNode.attribute("name").as_string());
    object->setResAnim(gameResources.getResAnim(objectNode.attribute("texture").as_string()));
 
    object->setSize(objectNode.attribute("width").as_float(), objectNode.attribute("height").as_float());
    object->setAnchor(Vector2(objectNode.attribute("anchorX").as_float(), objectNode.attribute("anchorY").as_float()));
    object->setTouchChildrenEnabled(false);
-   object->setPriority(objectNode.attribute("zLevel").as_int());
 
-
-   object->attachTo(parent);
+   object->attachTo(newCo);
 
    b2BodyDef bodyDef;
    bodyDef.type = b2_staticBody;
@@ -434,68 +453,34 @@ void CompoundObject::defineStaticBox(Resources& gameResources, Actor* parent, b2
    fixtureDef.friction = 1.3f;
    fixtureDef.filter.categoryBits = objectNode.attribute("collisionCategory").as_int();
    fixtureDef.filter.maskBits = objectNode.attribute("collisionMask").as_int();
-   fixtureDef.userData = (CollisionEntity*)this;
-   m_collisionType = CollisionEntity::convert(objectNode.attribute("collisionType").as_string());
+   fixtureDef.userData = (CollisionEntity*)newCo;
 
    body->CreateFixture(&fixtureDef);
 
-   object->setUserData(body);
-   body->SetUserData(object.get());
+   body->SetUserData(newCo);
 
-   m_children.push_back((CompoundObject*)object.get());
+   newCo->setUserData(body);
+   newCo->m_collisionType = CollisionEntity::convert(objectNode.attribute("collisionEntity").as_string());
+   newCo->attachTo(parent);
+
+   m_children.push_back(newCo);
 }
-
-//void CompoundObject::defineStaticCircle(oxygine::Resources& gameResources, oxygine::Actor* parent, b2World* world, const oxygine::Vector2& pos, pugi::xml_node& objectNode)
-//{
-//	spSprite object = new Sprite();
-//	object->setName(objectNode.attribute("name").as_string());
-//	object->setResAnim(gameResources.getResAnim(objectNode.attribute("texture").as_string()));
-//
-//	object->setSize(objectNode.attribute("width").as_float(), objectNode.attribute("height").as_float());
-//	object->setAnchor(Vector2(objectNode.attribute("anchorX").as_float(), objectNode.attribute("anchorY").as_float()));
-//	object->setTouchChildrenEnabled(false);
-//	object->setPriority(objectNode.attribute("zLevel").as_int());
-//
-//
-//	object->attachTo(parent);
-//
-//	b2BodyDef bodyDef;
-//	bodyDef.type = b2_staticBody;
-//	b2Vec2 bPos = PhysDispConvert::convert(pos, 1.0f) + b2Vec2(objectNode.attribute("posX").as_float(), objectNode.attribute("posY").as_float());
-//	bodyDef.position = bPos;
-//	b2Body* body = world->CreateBody(&bodyDef);
-//
-//	b2PolygonShape boxShape;
-//	boxShape.SetAsBox(objectNode.attribute("width").as_float() / 2.0f, objectNode.attribute("height").as_float() / 2.0f);
-//
-//	b2FixtureDef fixtureDef;
-//	fixtureDef.shape = &boxShape;
-//	fixtureDef.density = 5.0f;
-//	fixtureDef.friction = 1.3f;
-//	fixtureDef.filter.categoryBits = objectNode.attribute("collisionCategory").as_int();
-//	fixtureDef.filter.maskBits = objectNode.attribute("collisionMask").as_int();
-//
-//	body->CreateFixture(&fixtureDef);
-//
-//	object->setUserData(body);
-//	body->SetUserData(object.get());
-//
-//	m_boxedSprites.push_back(object);
-//}
-
 
 void CompoundObject::defineBoxedObject(oxygine::Resources& gameResources, Actor* parent, b2World* world, const Vector2& pos, xml_node& objectNode)
 {
-   spSprite object = new Sprite();
-   object->setName(objectNode.attribute("name").as_string());
-   object->setResAnim(gameResources.getResAnim(objectNode.attribute("texture").as_string()));
+   CompoundObject* newCo = new CompoundObject();
 
+   newCo->setName(objectNode.attribute("name").as_string());
+   newCo->setPriority(objectNode.attribute("zLevel").as_int());
+
+   // Define sprite
+   spSprite object = new Sprite();
+   object->setResAnim(gameResources.getResAnim(objectNode.attribute("texture").as_string()));
    object->setSize(objectNode.attribute("width").as_float(), objectNode.attribute("height").as_float());
    object->setAnchor(Vector2(objectNode.attribute("anchorX").as_float(), objectNode.attribute("anchorY").as_float()));
    object->setTouchChildrenEnabled(false);
-   object->setPriority(objectNode.attribute("zLevel").as_int());
 
-   object->attachTo(parent);
+   object->attachTo(newCo);
 
    b2BodyDef bodyDef;
    bodyDef.type = b2_dynamicBody;
@@ -513,24 +498,31 @@ void CompoundObject::defineBoxedObject(oxygine::Resources& gameResources, Actor*
    fixtureDef.friction = 1.3f;
    fixtureDef.filter.categoryBits = objectNode.attribute("collisionCategory").as_int();
    fixtureDef.filter.maskBits = objectNode.attribute("collisionMask").as_int();
-   fixtureDef.userData = (CollisionEntity*)this;
-   m_collisionType = CollisionEntity::convert(objectNode.attribute("collisionType").as_string());
+   fixtureDef.userData = (CollisionEntity*)newCo;
 
    body->CreateFixture(&fixtureDef);
 
-   object->setUserData(body);
-   body->SetUserData(object.get());
+   body->SetUserData(newCo);
 
-   m_children.push_back((CompoundObject*)object.get());
+   newCo->setUserData(body);
+   newCo->m_collisionType = CollisionEntity::convert(objectNode.attribute("collisionEntity").as_string());
+   newCo->attachTo(parent);
+
+   m_children.push_back(newCo);
 }
 
 void CompoundObject::definePolygonObject(oxygine::Resources& gameResources, Actor* parent, b2World* world, const Vector2& pos, xml_node& objectNode)
 {
+   CompoundObject* newCo = new CompoundObject();
+
+   newCo->setName(objectNode.attribute("name").as_string());
+   newCo->setPriority(objectNode.attribute("zLevel").as_int());
+
+   // Define sprite, which is a polygon, in this case
    vector<Vector2> vertices;
    vector<VectorT3<int> > triangles;
 
    spPolygon object = new oxygine::Polygon();
-   object->setName(objectNode.attribute("name").as_string());
    object->setResAnim(gameResources.getResAnim(objectNode.attribute("texture").as_string()));
 
    Vector2 mSize = Vector2(objectNode.attribute("width").as_float(), objectNode.attribute("height").as_float());
@@ -559,7 +551,7 @@ void CompoundObject::definePolygonObject(oxygine::Resources& gameResources, Acto
    vertexPCT2* vs = PolygonVertices::createTriangleVertices(vertices, triangles, mSize, Vector2(0.0f, 0.0f));
    object->setVertices(vs, sizeof(vertexPCT2) *  triangles.size() * 4, vertexPCT2::FORMAT, true);
 
-   object->attachTo(parent);
+   object->attachTo(newCo);
 
    int num = vertices.size() + 1;
 
@@ -593,16 +585,17 @@ void CompoundObject::definePolygonObject(oxygine::Resources& gameResources, Acto
    fixtureDef.friction = 1.3f;
    fixtureDef.filter.categoryBits = objectNode.attribute("collisionCategory").as_int();
    fixtureDef.filter.maskBits = objectNode.attribute("collisionMask").as_int();
-   fixtureDef.userData = (CollisionEntity*)this;
-   m_collisionType = CollisionEntity::convert(objectNode.attribute("collisionType").as_string());
+   fixtureDef.userData = (CollisionEntity*)newCo;
 
    body->CreateFixture(&fixtureDef);
 
-   object->setUserData(body);
+   body->SetUserData(newCo);
 
-   body->SetUserData(object.get());
+   newCo->setUserData(body);
+   newCo->m_collisionType = CollisionEntity::convert(objectNode.attribute("collisionEntity").as_string());
+   newCo->attachTo(parent);
 
-   m_children.push_back((CompoundObject*)object.get());
+   m_children.push_back(newCo);
 }
 
 
@@ -613,19 +606,23 @@ void CompoundObject::defineBoxedSpritePolygonBody(
    const Vector2& pos,
    xml_node& objectNode)
 {
+   CompoundObject* newCo = new CompoundObject();
+
+   newCo->setName(objectNode.attribute("name").as_string());
+   newCo->setPriority(objectNode.attribute("zLevel").as_int());
+
+   // Define sprite, which is a polygon, in this case
    vector<Vector2> vertices;
    vector<VectorT3<int> > triangles;
 
    spSprite object = new Sprite();
-   object->setName(objectNode.attribute("name").as_string());
    object->setResAnim(gameResources.getResAnim(objectNode.attribute("texture").as_string()));
 
    object->setSize(objectNode.attribute("width").as_float(), objectNode.attribute("height").as_float());
    object->setAnchor(Vector2(objectNode.attribute("anchorX").as_float(), objectNode.attribute("anchorY").as_float()));
    object->setTouchChildrenEnabled(false);
-   object->setPriority(objectNode.attribute("zLevel").as_int());
 
-   object->attachTo(parent);
+   object->attachTo(newCo);
 
    for (auto it = objectNode.child("vertices").children("vertex").begin();
       it != objectNode.child("vertices").children("vertex").end();
@@ -676,16 +673,17 @@ void CompoundObject::defineBoxedSpritePolygonBody(
    fixtureDef.friction = 1.3f;
    fixtureDef.filter.categoryBits = objectNode.attribute("collisionCategory").as_int();
    fixtureDef.filter.maskBits = objectNode.attribute("collisionMask").as_int();
-   fixtureDef.userData = (CollisionEntity*)this;
-   m_collisionType = CollisionEntity::convert(objectNode.attribute("collisionType").as_string());
+   fixtureDef.userData = (CollisionEntity*)newCo;
 
    body->CreateFixture(&fixtureDef);
 
-   object->setUserData(body);
+   body->SetUserData(newCo);
 
-   body->SetUserData(object.get());
+   newCo->setUserData(body);
+   newCo->m_collisionType = CollisionEntity::convert(objectNode.attribute("collisionEntity").as_string());
+   newCo->attachTo(parent);
 
-   m_children.push_back((CompoundObject*)object.get());
+   m_children.push_back(newCo);
 }
 
 
@@ -738,6 +736,25 @@ void CompoundObject::defineChildObject(
 	   ls->setName(objectNode.attribute("name").as_string());
 
 	   m_children.push_back(static_cast<CompoundObject*>(ls));
+   }
+   else if (type == "landingPad")
+   {
+      Vector2 objPos = Vector2(
+         objectNode.attribute("posX").as_float(),
+         objectNode.attribute("posY").as_float());
+
+      objPos += pos;
+
+
+      LandingPad* ls = new LandingPad(
+         gameResources,
+         parent, world,
+         objPos,
+         string(objectNode.attribute("file").as_string()));
+
+      ls->setName(objectNode.attribute("name").as_string());
+
+      m_children.push_back(static_cast<CompoundObject*>(ls));
    }
    else if (type == "asteroidField")
    {

@@ -1260,8 +1260,8 @@ void LeapFrog::reentrySetHeat(unsigned char heatAmount)
    float vSize = 5.0f + 25.0f / 255.0f * heatAmount;
    int white = 128 + heatAmount / 2;
 
-   m_lfRightBigLeg->setColor(255, white, white, 255);
-   m_lfLeftBigLeg->setColor(255, white, white, 255);
+   m_lfRightBigLeg->getSprite()->setColor(255, white, white, 255);
+   m_lfLeftBigLeg->getSprite()->setColor(255, white, white, 255);
    m_reentryFlameEmitterBooster->setParameters(intensity, 500, b2Vec2(hSize, vSize));
    m_reentryFlameEmitterRightLeg->setParameters(intensity, 500, b2Vec2(hSize, vSize));
    m_reentryFlameEmitterLeftLeg->setParameters(intensity, 500, b2Vec2(hSize, vSize));

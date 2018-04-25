@@ -68,6 +68,7 @@
 		zLevel="166"
 		collisionCategory="32"
 		collisionMask="61439"  />
+		<!--
 	<dynamicPolygon
 		name="leftRestLeftFootGlider"
 		texture="ls_left_foot_glider"
@@ -90,6 +91,7 @@
 			<triangle id="2" v1="1" v2="4" v3="3" />
 		</triangles>
 	</dynamicPolygon>
+	-->
 	<dynamicPolygon
 		name="leftRestRightFootGlider"
 		texture="ls_right_foot_glider"
@@ -134,6 +136,7 @@
 			<triangle id="2" v1="1" v2="4" v3="3" />
 		</triangles>
 	</dynamicPolygon>
+	<!--
 	<dynamicPolygon
 		name="rightRestRightFootGlider"
 		texture="ls_right_foot_glider"
@@ -156,10 +159,11 @@
 			<triangle id="2" v1="1" v2="4" v3="3" />
 		</triangles>
 	</dynamicPolygon>
+	-->
 	<dynamicBox 
 		name="leftRest"
 		texture="ls_left_leg_rest"
-		collisionEntity="launchSiteFootRest"
+		collisionEntity="launchSiteLeftFootRest"
 		width="19.275"
 		height="3.24"
 		anchorX="0.5"
@@ -172,7 +176,7 @@
 	<dynamicBox 
 		name="rightRest"
 		texture="ls_right_leg_rest"
-		collisionEntity="launchSiteFootRest"
+		collisionEntity="launchSiteRightFootRest"
 		width="19.275"
 		height="3.24"
 		anchorX="0.5"
