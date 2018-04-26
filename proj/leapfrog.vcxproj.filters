@@ -533,5 +533,11 @@
     <ClInclude Include="..\src\landingpad.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="..\src\landingpadevents.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\launchsiteevents.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

@@ -6,6 +6,7 @@
 #include "launchsite.h"
 #include "compoundobject.h"
 #include "leapfrogevents.h"
+#include "launchsiteevents.h"
 
 using namespace oxygine;
 using namespace std;
@@ -34,6 +35,9 @@ LandingActor::LandingActor(
    // m_leapfrog->m_properties[LeapFrog::propXPos].registerPropertyEventTrigger(1, PropertyEventTrigger::insideRange, 1200.0f, 10000.0f);
 
    m_leapfrog->goToMode(LFM_LANDING);
+
+   m_launchSite = static_cast<LaunchSite*>(getObject("launchSite1"));
+   m_launchSite->addEventListener(LaunchSiteLeapfrogLandedEvent::EVENT, CLOSURE(this, &LandingActor::leapfrogLandedOnLaunchSiteHandler));
 }
 
 CollisionEntityTypeEnum LandingActor::getEntityType(void)
@@ -52,6 +56,12 @@ void LandingActor::modeReachedListener(Event *ev)
    logs::messageln("State is now: %d", (int)state);
 }
 
+void LandingActor::leapfrogLandedOnLaunchSiteHandler(oxygine::Event *ev)
+{
+   logs::messageln("Launch Site landing stable");
+
+   m_launchSite->startLaunchSequence();
+}
 
 void LandingActor::handlePropertyTriggeredEvent(oxygine::Event *ev)
 {
@@ -85,3 +95,7 @@ void LandingActor::handlePropertyTriggeredEvent(oxygine::Event *ev)
    }
 
 }
+
+
+
+

@@ -3,6 +3,7 @@
 #include "Box2D/Box2D.h"
 #include "compoundobject.h"
 #include "leapfrog.h"
+#include "launchsite.h"
 #include "scales.h"
 #include "physdispconvert.h"
 #include "actortodie.h"
@@ -28,6 +29,7 @@ protected:
    float	m_physToStageScale;
    b2World * m_world;
    spLeapFrog  m_leapfrog;
+   spLaunchSite m_launchSite;
    std::vector<ActorToDie*> m_deathList;
    PanorateModeEnum m_panorateMode;
 

@@ -31,9 +31,13 @@ public:
 	};
 
 private:
+   b2World * m_world;
+
    bool m_leftFootContact;
    bool m_rightFootContact;
 
+   bool m_launch;
+   bool m_started;
 
 
 public:
@@ -49,6 +53,11 @@ public:
 
    void leapfrogFootTouch(b2Contact* contact, bool leftFoot);
    void leapfrogFootLift(b2Contact* contact, bool leftFoot);
+
+   void startLaunchSequence(void);
+
+protected:
+   void doUpdate(const oxygine::UpdateState &us);
 
 };
 

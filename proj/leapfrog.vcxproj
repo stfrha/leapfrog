@@ -262,7 +262,9 @@
     <ClInclude Include="..\src\gun.h" />
     <ClInclude Include="..\src\landercontactlistener.h" />
     <ClInclude Include="..\src\landingpad.h" />
+    <ClInclude Include="..\src\landingpadevents.h" />
     <ClInclude Include="..\src\launchsite.h" />
+    <ClInclude Include="..\src\launchsiteevents.h" />
     <ClInclude Include="..\src\leapfrogevents.h" />
     <ClInclude Include="..\src\mainactor.h" />
     <ClInclude Include="..\src\landingactor.h" />

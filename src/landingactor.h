@@ -10,6 +10,7 @@ class LandingActor : public SceneActor
 {
 private:
    void modeReachedListener(oxygine::Event *ev);
+   void leapfrogLandedOnLaunchSiteHandler(oxygine::Event *ev);
    void handlePropertyTriggeredEvent(oxygine::Event *ev);
 
    LanderContactListener   m_contactListener;
