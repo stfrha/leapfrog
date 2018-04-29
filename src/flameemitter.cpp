@@ -60,14 +60,20 @@ void FlameEmitter::doUpdate(const oxygine::UpdateState& us)
       b2Vec2 originPos = m_emitterBody->GetWorldPoint(m_emitterOrigin);
 
       // Randomise value between -m_emitterWidth / 2 and m_emitterWidth / 2
-      float dist = static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / m_emitterWidth)) - m_emitterWidth / 2;
+      float dist = static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / m_emitterWidth)) - (m_emitterWidth / 2.0f);
 
-      float bodyAngle = m_emitterBody->GetAngle();
+      // Randomise angle to get spread
+      float ra = static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (30.0f / 180.0f * MATH_PI))) - (15.0f / 180.0f * MATH_PI);
+
+      float bodyAngle = m_emitterBody->GetAngle() + ra;
       float emitAngle = bodyAngle + m_emittAngle;
 
       b2Vec2 emitPos = b2Vec2(dist * cos(bodyAngle), dist * sin(bodyAngle)) + originPos;
 
-      b2Vec2 impulse = b2Vec2(m_impulseMagnitude * cos(emitAngle), m_impulseMagnitude * sin(emitAngle));
+      // Randomise impulse magnistude to get spread
+      float ri = static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / 250.0f)) - 125.0f;
+
+      b2Vec2 impulse = b2Vec2((ri + m_impulseMagnitude) * cos(emitAngle), (ri + m_impulseMagnitude) * sin(emitAngle));
 
       // Create one test flame particle
       spFlameParticle flameParticle = new FlameParticle(
@@ -82,5 +88,4 @@ void FlameEmitter::doUpdate(const oxygine::UpdateState& us)
       // Attach to parent's parent which is the view actor
       flameParticle->attachTo(getParent()->getParent());
    }
-
 }

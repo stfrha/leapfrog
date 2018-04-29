@@ -17,7 +17,7 @@ LandingActor::LandingActor(
    string& initialState) :
 	SceneActor(gameResources)
 {
-   setPanorateMode(PME_CENTER);
+   setPanorateMode(PME_TOP);
 
 //   m_world->SetGravity(b2Vec2(0, 1.62));
    m_world->SetGravity(b2Vec2(0, 3.0f));
@@ -60,7 +60,7 @@ void LandingActor::leapfrogLandedOnLaunchSiteHandler(oxygine::Event *ev)
 {
    logs::messageln("Launch Site landing stable");
 
-   m_launchSite->startLaunchSequence();
+   m_launchSite->startLaunchSequence(m_leapfrog.get());
 }
 
 void LandingActor::handlePropertyTriggeredEvent(oxygine::Event *ev)

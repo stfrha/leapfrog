@@ -173,6 +173,7 @@
     <ClCompile Include="..\src\compoundobject.cpp" />
     <ClCompile Include="..\src\flameemitter.cpp" />
     <ClCompile Include="..\src\flameparticle.cpp" />
+    <ClCompile Include="..\src\flamesmokeparticle.cpp" />
     <ClCompile Include="..\src\freespaceactor.cpp" />
     <ClCompile Include="..\src\freespacecontactlistener.cpp" />
     <ClCompile Include="..\src\gun.cpp" />
@@ -257,6 +258,7 @@
     <ClInclude Include="..\src\compoundobject.h" />
     <ClInclude Include="..\src\flameemitter.h" />
     <ClInclude Include="..\src\flameparticle.h" />
+    <ClInclude Include="..\src\flamesmokeparticle.h" />
     <ClInclude Include="..\src\freespaceactor.h" />
     <ClInclude Include="..\src\freespacecontactlistener.h" />
     <ClInclude Include="..\src\gun.h" />

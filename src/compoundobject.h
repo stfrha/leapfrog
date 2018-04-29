@@ -206,6 +206,10 @@ private:
       b2World* world, 
       pugi::xml_node& revoluteJointNode);
 
+   void definePrismaticJoint(
+      b2World* world,
+      pugi::xml_node& jointNode);
+
    ObjectProperty* getProp(int propId);
 
    virtual void setPropertyImpl(int propId, float value);

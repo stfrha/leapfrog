@@ -1,5 +1,5 @@
 #include "flameparticle.h"
-#include "smokeparticle.h"
+#include "flamesmokeparticle.h"
 
 using namespace oxygine;
 
@@ -11,7 +11,8 @@ FlameParticle::FlameParticle(
    int lifetime,
    b2Vec2 impulseForce,
    float radius) :
-   m_gameResources(&gameResources)
+   m_gameResources(&gameResources),
+   m_world(world)
 {
    setResAnim(gameResources.getResAnim("flame_particle"));
    setSize(radius, radius);
@@ -52,6 +53,8 @@ FlameParticle::FlameParticle(
    body->SetLinearVelocity(vel);
 
    body->ApplyLinearImpulse(impulseForce, b2Vec2(0.5, 0.5), true);
+
+   m_body = body;
 }
 
 CollisionEntityTypeEnum FlameParticle::getEntityType(void)
@@ -65,7 +68,38 @@ void FlameParticle::doUpdate(const oxygine::UpdateState& us)
 
 void FlameParticle::atParticleDeath(oxygine::Event* event)
 {
-   // Create a smoke particle
+   // Create three smoke particles
+
+   //spFlameSmokeParticle p1 = new FlameSmokeParticle(
+   //   *m_gameResources, 
+   //   m_world, 
+   //   m_body->GetPosition(), 
+   //   m_body->GetLinearVelocity(), 
+   //   1500, 
+   //   2.0f);
+
+   //p1->attachTo(getParent());
+
+   //spFlameSmokeParticle p2 = new FlameSmokeParticle(
+   //   *m_gameResources,
+   //   m_world,
+   //   m_body->GetPosition(),
+   //   m_body->GetLinearVelocity(),
+   //   1500,
+   //   2.0f);
+
+   //p2->attachTo(getParent());
+
+   //spFlameSmokeParticle p3 = new FlameSmokeParticle(
+   //   *m_gameResources,
+   //   m_world,
+   //   m_body->GetPosition(),
+   //   m_body->GetLinearVelocity(),
+   //   1500,
+   //   2.0f);
+
+   //p3->attachTo(getParent());
+
    //spSmokeParticle smoke = new SmokeParticle(m_gameResources, getPosition(), 1000.0f, 0.0f, 10.0f);
    //smoke->attachTo(getParent());
 
@@ -76,7 +110,4 @@ void FlameParticle::atParticleDeath(oxygine::Event* event)
    myBody->GetWorld()->DestroyBody(myBody);
 
    this->detach();
-
-
-
 }

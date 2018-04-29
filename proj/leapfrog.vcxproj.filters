@@ -285,6 +285,9 @@
     <ClCompile Include="..\src\landingpad.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\flamesmokeparticle.cpp">
+      <Filter>Particles</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Box2D\Box2D\Box2D\Collision\Shapes\b2ChainShape.h">
@@ -538,6 +541,9 @@
     </ClInclude>
     <ClInclude Include="..\src\launchsiteevents.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\flamesmokeparticle.h">
+      <Filter>Particles</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

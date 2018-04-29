@@ -345,6 +345,13 @@ bool CompoundObject::readDefinitionXmlFile(
       defineRevoluteJoint(world, *it);
    }
 
+   for (auto it = root.children("prismaticJoint").begin();
+      it != root.children("prismaticJoint").end();
+      ++it)
+   {
+      definePrismaticJoint(world, *it);
+   }
+
    return true;
 }
 
@@ -872,6 +879,43 @@ void CompoundObject::defineRevoluteJoint(b2World* world, pugi::xml_node& jointNo
 
    joint->EnableMotor(false);
    joint->SetLimits(joint->GetJointAngle(), joint->GetJointAngle());
+   joint->EnableLimit(true);
+
+   NamedJoint* nj = new NamedJoint(joint, jointNode.attribute("name").as_string());
+   m_namedJoints.push_back(nj);
+
+}
+
+void CompoundObject::definePrismaticJoint(b2World* world, pugi::xml_node& jointNode)
+{
+   b2PrismaticJointDef  jointDef;
+
+   b2Body* bodyA = getBody(jointNode.attribute("objectAName").as_string());
+
+   if (!bodyA)
+   {
+      return;
+   }
+
+   b2Body* bodyB = getBody(jointNode.attribute("objectBName").as_string());
+
+   if (!bodyB)
+   {
+      return;
+   }
+
+   jointDef.bodyA = bodyA;
+   jointDef.bodyB = bodyB;
+   jointDef.localAnchorA.Set(jointNode.attribute("objectAAnchorX").as_float(), jointNode.attribute("objectAAnchorY").as_float());
+   jointDef.localAnchorB.Set(jointNode.attribute("objectBAnchorX").as_float(), jointNode.attribute("objectBAnchorY").as_float());
+   jointDef.collideConnected = false;
+   jointDef.localAxisA.Set(jointNode.attribute("objectALocalAxisX").as_float(), jointNode.attribute("objectALocalAxisY").as_float());
+   jointDef.referenceAngle = jointNode.attribute("refAngle").as_float();
+   jointDef.lowerTranslation = jointNode.attribute("lowerLimit").as_float();
+   jointDef.upperTranslation = jointNode.attribute("upperLimit").as_float();
+   b2PrismaticJoint* joint = (b2PrismaticJoint*)world->CreateJoint(&jointDef);
+
+   joint->EnableMotor(false);
    joint->EnableLimit(true);
 
    NamedJoint* nj = new NamedJoint(joint, jointNode.attribute("name").as_string());

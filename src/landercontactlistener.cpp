@@ -24,56 +24,56 @@ void LanderContactListener::ContactHandler(b2Contact* contact, bool begin)
    {
       CompoundObject* t = (CompoundObject*)(contact->GetFixtureA()->GetBody()->GetUserData());
       launchSite = (LaunchSite*)t->getParentObject();
-      launchSiteLeftRest = false;
+      launchSiteLeftRest = true;
    }
 
    if (eB == CET_LAUNCH_SITE_LEFT_FOOT_REST)
    {
       CompoundObject* t = (CompoundObject*)(contact->GetFixtureB()->GetBody()->GetUserData());
       launchSite = (LaunchSite*)t->getParentObject();
-      launchSiteLeftRest = false;
+      launchSiteLeftRest = true;
    }
 
    if (eA == CET_LAUNCH_SITE_RIGHT_FOOT_REST)
    {
       CompoundObject* t = (CompoundObject*)(contact->GetFixtureA()->GetBody()->GetUserData());
       launchSite = (LaunchSite*)t->getParentObject();
-      launchSiteLeftRest = true;
+      launchSiteLeftRest = false;
    }
 
    if (eB == CET_LAUNCH_SITE_RIGHT_FOOT_REST)
    {
       CompoundObject* t = (CompoundObject*)(contact->GetFixtureB()->GetBody()->GetUserData());
       launchSite = (LaunchSite*)t->getParentObject();
-      launchSiteLeftRest = true;
+      launchSiteLeftRest = false;
    }
 
    if (eA == CET_LF_LEFT_FOOT)
    {
       CompoundObject* t = (CompoundObject*)(contact->GetFixtureA()->GetBody()->GetUserData());
       leapfrog = (LeapFrog*)t->getParentObject();
-      leapfrogLeftFoot = false;
+      leapfrogLeftFoot = true;
    }
 
    if (eB == CET_LF_LEFT_FOOT)
    {
       CompoundObject* t = (CompoundObject*)(contact->GetFixtureB()->GetBody()->GetUserData());
       leapfrog = (LeapFrog*)t->getParentObject();
-      leapfrogLeftFoot = false;
+      leapfrogLeftFoot = true;
    }
 
    if (eA == CET_LF_RIGHT_FOOT)
    {
       CompoundObject* t = (CompoundObject*)(contact->GetFixtureA()->GetBody()->GetUserData());
       leapfrog = (LeapFrog*)t->getParentObject();
-      leapfrogLeftFoot = true;
+      leapfrogLeftFoot = false;
    }
 
    if (eB == CET_LF_RIGHT_FOOT)
    {
       CompoundObject* t = (CompoundObject*)(contact->GetFixtureB()->GetBody()->GetUserData());
       leapfrog = (LeapFrog*)t->getParentObject();
-      leapfrogLeftFoot = true;
+      leapfrogLeftFoot = false;
    }
 
    if (eA == CET_BULLET)

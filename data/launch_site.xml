@@ -343,7 +343,7 @@
 		collisionCategory="64"
 		collisionMask="0"  />
 	<dynamicBox 
-		name="spring"
+		name="grabber"
 		texture="ls_pull_spring"
 		collisionEntity="notApplicable"
 		width="3.7"
@@ -351,8 +351,8 @@
 		anchorX="0.5"
 		anchorY="0.5"
 		posX="65.39"
-		posY="-92.28" 
-		zLevel="166"
+		posY="-80.08" 
+		zLevel="118"
 		collisionCategory="32"
 		collisionMask="61439"  />
 	<weldJoint
@@ -439,7 +439,7 @@
 		name="leftHolderJoint"
 		objectAName="leftHolder"
 		objectBName="leftHolderTrolley"
-		objectAAnchorX="-13.28"
+		objectAAnchorX="-13.8"
 		objectAAnchorY="0"
 		objectBAnchorX="0.275"
 		objectBAnchorY="0" />
@@ -447,7 +447,7 @@
 		name="rightHolderJoint"
 		objectAName="rightHolder"
 		objectBName="rightHolderTrolley"
-		objectAAnchorX="13.28"
+		objectAAnchorX="13.8"
 		objectAAnchorY="0"
 		objectBAnchorX="-0.275"
 		objectBAnchorY="0" />
@@ -483,14 +483,19 @@
 		objectAAnchorY="0"
 		objectBAnchorX="-2.9"
 		objectBAnchorY="-4.8 " />
-	<weldJoint
-		name="pullSpringJoint"
+	<prismaticJoint
+		name="grabberSpringJoint"
 		objectAName="mainTank"
-		objectBName="spring"
+		objectBName="grabber"
+		refAngle="0.0"
+		lowerLimit="0.0"
+		upperLimit="12.2"
+		objectALocalAxisX="0.0"
+		objectALocalAxisY="-1.0"
 		objectAAnchorX="0"
 		objectAAnchorY="-26.5"
 		objectBAnchorX="0"
-		objectBAnchorY="6.1" />
+		objectBAnchorY="-6.1" />
 		
 </compoundObject>
 
