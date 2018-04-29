@@ -56,7 +56,11 @@ public:
       countdown,
       ignite,
       tZero,
-      release
+      release,
+      supportBoosterBurnout,
+      dropSupportBooster,
+      mainBoosterBurnout,
+      dropMainBooster
    };
 
 private:
@@ -78,11 +82,15 @@ private:
    b2RevoluteJoint* m_leftHolderTrolleyJoint;
    b2RevoluteJoint* m_rightHolderTrolleyJoint;
    b2PrismaticJoint* m_grabberJoint;
-   b2WeldJoint* m_leapfrogJoint;
+   b2WeldJoint* m_leftSupportBoosterJoint;
+   b2WeldJoint* m_rightSupportBoosterJoint;
 
    LeapFrog* m_leapFrog;
    b2Body*  m_grabberBody;
-   b2WeldJointDef*	m_jointDef;
+   b2RevoluteJointDef*	m_grabLeapfrogJointDef1;
+   b2RevoluteJointDef*	m_grabLeapfrogJointDef2;
+   b2RevoluteJoint* m_grabLeapfrogJoint1;
+   b2RevoluteJoint* m_grabLeapfrogJoint2;
 
    CompoundObject* m_tankObject;
 

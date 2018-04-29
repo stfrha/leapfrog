@@ -36,6 +36,8 @@ LaunchSite::LaunchSite(
    m_mainTankBody = getBody("mainTank");
    m_leftBoosterBody = getBody("leftSupportBooster");
    m_rightBoosterBody = getBody("rightSupportBooster");
+   m_leftSupportBoosterJoint = (b2WeldJoint*)getJoint("leftSupportBoosterJoint");
+   m_rightSupportBoosterJoint = (b2WeldJoint*)getJoint("rightSupportBoosterJoint");
 
    // Add main engine particle system
    m_boosterFlame = new FlameEmitter(
@@ -121,14 +123,21 @@ void LaunchSite::doUpdate(const UpdateState &us)
    case extendGrabber:
       if (us.time >= m_stateStartTime + 2000)
       {
-         m_jointDef = new b2WeldJointDef;
-         m_jointDef->bodyA = m_leapFrog->getBody("lfBooster");
-         m_jointDef->bodyB = m_grabberBody;
-         m_jointDef->localAnchorA.Set(0.0f, 0.8f);
-         m_jointDef->localAnchorB.Set(0.0f, -6.1f);
-         m_jointDef->collideConnected = false;
+         m_grabLeapfrogJointDef1 = new b2RevoluteJointDef;
+         m_grabLeapfrogJointDef1->bodyA = m_leapFrog->getBody("lfBooster");
+         m_grabLeapfrogJointDef1->bodyB = m_grabberBody;
+         m_grabLeapfrogJointDef1->localAnchorA.Set(-1.85f, 0.8f);
+         m_grabLeapfrogJointDef1->localAnchorB.Set(-1.85f, -6.1f);
+         m_grabLeapfrogJointDef1->collideConnected = false;
+         m_grabLeapfrogJoint1 = (b2RevoluteJoint*)m_world->CreateJoint(m_grabLeapfrogJointDef1);
 
-         m_leapfrogJoint = (b2WeldJoint*)m_world->CreateJoint(m_jointDef);
+         m_grabLeapfrogJointDef2 = new b2RevoluteJointDef;
+         m_grabLeapfrogJointDef2->bodyA = m_leapFrog->getBody("lfBooster");
+         m_grabLeapfrogJointDef2->bodyB = m_grabberBody;
+         m_grabLeapfrogJointDef2->localAnchorA.Set(1.85f, 0.8f);
+         m_grabLeapfrogJointDef2->localAnchorB.Set(1.85f, -6.1f);
+         m_grabLeapfrogJointDef2->collideConnected = false;
+         m_grabLeapfrogJoint2 = (b2RevoluteJoint*)m_world->CreateJoint(m_grabLeapfrogJointDef2);
 
          // Lower foot rests, let them fall
          m_leftFootRestJoint->EnableLimit(false);
@@ -225,15 +234,75 @@ void LaunchSite::doUpdate(const UpdateState &us)
    case release:
       m_mainTankBody->ApplyForceToCenter(b2Vec2(0.0f, -100000.0f), true);
 
-      if (us.time >= m_stateStartTime + 4000)
+      if (us.time >= m_stateStartTime + 8000)
       {
+         m_leftFlame->stopEmitter();
+         m_rightFlame->stopEmitter();
+
          m_stateStartTime = us.time;
-         m_state = release;
+         m_state = supportBoosterBurnout;
+         m_properties[state].setProperty((float)m_state);
+      }
+      break;
+   case supportBoosterBurnout:
+      m_mainTankBody->ApplyForceToCenter(b2Vec2(0.0f, -100000.0f), true);
+
+      if (us.time >= m_stateStartTime + 1000)
+      {
+         m_world->DestroyJoint(m_leftSupportBoosterJoint);
+         m_world->DestroyJoint(m_rightSupportBoosterJoint);
+
+         m_stateStartTime = us.time;
+         m_state = dropSupportBooster;
+         m_properties[state].setProperty((float)m_state);
+      }
+      break;
+   case dropSupportBooster:
+      m_mainTankBody->ApplyForceToCenter(b2Vec2(0.0f, -100000.0f), true);
+
+      if (us.time >= m_stateStartTime + 6000)
+      {
+         m_boosterFlame->stopEmitter();
+
+         m_stateStartTime = us.time;
+         m_state = mainBoosterBurnout;
+         m_properties[state].setProperty((float)m_state);
+      }
+      break;
+   case mainBoosterBurnout:
+      m_mainTankBody->ApplyForceToCenter(b2Vec2(0.0f, -100000.0f), true);
+
+      if (us.time >= m_stateStartTime + 1000)
+      {
+         m_world->DestroyJoint(m_grabLeapfrogJoint1);
+         m_world->DestroyJoint(m_grabLeapfrogJoint2);
+         m_mainTankBody->ApplyForceToCenter(b2Vec2(0.0f, 1000.0f), true);
+
+         m_stateStartTime = us.time;
+         m_state = dropMainBooster;
+         m_properties[state].setProperty((float)m_state);
+      }
+      break;
+   case dropMainBooster:
+      m_mainTankBody->ApplyForceToCenter(b2Vec2(0.0f, -100000.0f), true);
+
+      if (us.time >= m_stateStartTime + 1000)
+      {
+
+         m_stateStartTime = us.time;
+         m_state = dropMainBooster;
          m_properties[state].setProperty((float)m_state);
       }
       break;
    }
 }
+
+//supportBoosterBurnout,
+//dropSupportBooster,
+//mainBoosterBurnout,
+//dropMainBooster
+
+
 
 void LaunchSite::leapfrogFootTouch(b2Contact* contact, bool leftFoot)
 {
