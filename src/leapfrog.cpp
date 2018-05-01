@@ -425,6 +425,12 @@ void LeapFrog::doUpdate(const UpdateState &us)
       break;
 
    case LFS_HOLD_ANGLE:
+
+      // In hold angle state the steering is disabled but booster still works
+      angle = m_mainBody->GetAngle();
+      boostForce = b2Vec2(m_boostMagnuitude * sin(angle), -m_boostMagnuitude * cos(angle));
+      m_mainBody->ApplyForceToCenter(boostForce, true);
+
       angle = m_mainBody->GetAngle();
 
       while (angle > 2.0f * MATH_PI)

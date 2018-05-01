@@ -32,6 +32,7 @@ protected:
    spLaunchSite m_launchSite;
    std::vector<ActorToDie*> m_deathList;
    PanorateModeEnum m_panorateMode;
+   bool m_externalControl;
 
 
 public:
@@ -45,7 +46,8 @@ public:
    void setPanorateMode(PanorateModeEnum mode);
 
    void addMeToDeathList(ActorToDie* actor);
-   void addBlast();
+
+   void takeControlOfLeapfrog(bool control);
 
 protected:
 	void doUpdate(const UpdateState& us);

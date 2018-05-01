@@ -102,9 +102,14 @@ private:
    spFlameEmitter m_leftFlame;
    spFlameEmitter m_rightFlame;
 
+   oxygine::timeMS m_angleHoldStartTime;
+   oxygine::timeMS m_angleHoldDuration;
+
+
+
    void showCountdownNumber(int n);
    void countDownFadeInComplete(oxygine::Event *event);
-
+   void updateHoldAngle(oxygine::timeMS now);
 
 public:
 	LaunchSite(

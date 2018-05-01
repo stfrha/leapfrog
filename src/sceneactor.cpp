@@ -6,11 +6,12 @@ using namespace oxygine;
 
 SceneActor::SceneActor(Resources& gameResources) :
    m_gameResources(&gameResources),
-	m_world(NULL),
-	m_zoomScale(0.40f),
-	m_stageToViewPortScale(m_zoomScale * Scales::c_stageToViewPortScale),
-	m_physToStageScale(1.0f),
-    m_panorateMode(PME_CENTER)
+   m_world(NULL),
+   m_zoomScale(0.40f),
+   m_stageToViewPortScale(m_zoomScale * Scales::c_stageToViewPortScale),
+   m_physToStageScale(1.0f),
+   m_panorateMode(PME_CENTER),
+   m_externalControl(false)
 {
 	Point size = Point(1000, 500);
 	setSize(size);
@@ -62,6 +63,11 @@ void SceneActor::addMeToDeathList(ActorToDie* actor)
    }
 }
 
+void SceneActor::takeControlOfLeapfrog(bool control)
+{
+   m_externalControl = control;
+}
+
 void SceneActor::doUpdate(const UpdateState& us)
 {
 	//in real project you should make steps with fixed dt, check box2d documentation
@@ -83,27 +89,30 @@ void SceneActor::doUpdate(const UpdateState& us)
 
 	m_stageToViewPortScale = m_zoomScale * Scales::c_stageToViewPortScale;
 
-	if (data[SDL_SCANCODE_W])
-	{
-		m_leapfrog->fireMainBooster(true);
-	}
-	else
-	{
-		m_leapfrog->fireMainBooster(false);
-	}
+   if (!m_externalControl)
+   {
+      if (data[SDL_SCANCODE_W])
+      {
+         m_leapfrog->fireMainBooster(true);
+      }
+      else
+      {
+         m_leapfrog->fireMainBooster(false);
+      }
 
-	if (data[SDL_SCANCODE_A])
-	{
-		m_leapfrog->fireSteeringBooster(-1);
-	}
-	else if (data[SDL_SCANCODE_D])
-	{
-		m_leapfrog->fireSteeringBooster(1);
-	}
-	else
-	{
-		m_leapfrog->fireSteeringBooster(0);
-	}
+      if (data[SDL_SCANCODE_A])
+      {
+         m_leapfrog->fireSteeringBooster(-1);
+      }
+      else if (data[SDL_SCANCODE_D])
+      {
+         m_leapfrog->fireSteeringBooster(1);
+      }
+      else
+      {
+         m_leapfrog->fireSteeringBooster(0);
+      }
+   }
 
    if (data[SDL_SCANCODE_KP_ENTER])
    {

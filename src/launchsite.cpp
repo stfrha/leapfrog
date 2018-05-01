@@ -1,6 +1,7 @@
 
 #include "launchsite.h"
 #include "leapfrog.h"
+#include "sceneactor.h"
 
 #include "launchsiteevents.h"
 
@@ -20,7 +21,10 @@ LaunchSite::LaunchSite(
    m_sceneParent(sceneParent),
    m_state(idle),
    m_leftFootContact(false),
-   m_rightFootContact(false)
+   m_rightFootContact(false),
+   m_angleHoldStartTime(0),
+   m_angleHoldDuration(16000)
+
 {
 	initCompoundObject(gameResources, sceneParent, parentObject, world, pos, defXmlFileName, string(""));
 
@@ -166,6 +170,8 @@ void LaunchSite::doUpdate(const UpdateState &us)
          m_countdownCounter = 7;
          showCountdownNumber(m_countdownCounter);
 
+         ((SceneActor*)m_sceneParent)->takeControlOfLeapfrog(true);
+
          m_stateStartTime = us.time;
          m_state = countdown;
          m_properties[state].setProperty((float)m_state);
@@ -219,6 +225,8 @@ void LaunchSite::doUpdate(const UpdateState &us)
 
       if (us.time >= m_stateStartTime + 1000)
       {
+         m_angleHoldStartTime = us.time;
+         updateHoldAngle(us.time);
          m_mainTankBody->ApplyForceToCenter(b2Vec2(0.0f, -100000.0f), true);
 
          m_world->DestroyJoint(m_leftHolderJoint);
@@ -232,6 +240,7 @@ void LaunchSite::doUpdate(const UpdateState &us)
       }
       break;
    case release:
+      updateHoldAngle(us.time);
       m_mainTankBody->ApplyForceToCenter(b2Vec2(0.0f, -100000.0f), true);
 
       if (us.time >= m_stateStartTime + 8000)
@@ -245,12 +254,17 @@ void LaunchSite::doUpdate(const UpdateState &us)
       }
       break;
    case supportBoosterBurnout:
+      updateHoldAngle(us.time);
       m_mainTankBody->ApplyForceToCenter(b2Vec2(0.0f, -100000.0f), true);
 
       if (us.time >= m_stateStartTime + 1000)
       {
          m_world->DestroyJoint(m_leftSupportBoosterJoint);
          m_world->DestroyJoint(m_rightSupportBoosterJoint);
+         //m_leftBoosterBody->ApplyAngularImpulse(-10000000.0f / 180.0f * MATH_PI, true);
+         //m_leftBoosterBody->ApplyAngularImpulse(10000000.0f / 180.0f * MATH_PI, true);
+         m_leftBoosterBody->ApplyLinearImpulse(b2Vec2(-10000.0f, -1500.0f), b2Vec2(0.0f, -8.0f), true);
+         m_rightBoosterBody->ApplyLinearImpulse(b2Vec2(1000.0f, 50.0f), b2Vec2(0.0f, -8.0f), true);
 
          m_stateStartTime = us.time;
          m_state = dropSupportBooster;
@@ -258,6 +272,7 @@ void LaunchSite::doUpdate(const UpdateState &us)
       }
       break;
    case dropSupportBooster:
+      updateHoldAngle(us.time);
       m_mainTankBody->ApplyForceToCenter(b2Vec2(0.0f, -100000.0f), true);
 
       if (us.time >= m_stateStartTime + 6000)
@@ -270,13 +285,15 @@ void LaunchSite::doUpdate(const UpdateState &us)
       }
       break;
    case mainBoosterBurnout:
+      updateHoldAngle(us.time);
       m_mainTankBody->ApplyForceToCenter(b2Vec2(0.0f, -100000.0f), true);
 
       if (us.time >= m_stateStartTime + 1000)
       {
          m_world->DestroyJoint(m_grabLeapfrogJoint1);
          m_world->DestroyJoint(m_grabLeapfrogJoint2);
-         m_mainTankBody->ApplyForceToCenter(b2Vec2(0.0f, 1000.0f), true);
+         m_mainTankBody->ApplyForceToCenter(b2Vec2(0.0f, 10000.0f), true);
+         m_leapFrog->fireMainBooster(true);
 
          m_stateStartTime = us.time;
          m_state = dropMainBooster;
@@ -284,15 +301,9 @@ void LaunchSite::doUpdate(const UpdateState &us)
       }
       break;
    case dropMainBooster:
-      m_mainTankBody->ApplyForceToCenter(b2Vec2(0.0f, -100000.0f), true);
-
-      if (us.time >= m_stateStartTime + 1000)
-      {
-
-         m_stateStartTime = us.time;
-         m_state = dropMainBooster;
-         m_properties[state].setProperty((float)m_state);
-      }
+      m_mainTankBody->ApplyForceToCenter(b2Vec2(0.0f, 10000.0f), true);
+      m_leapFrog->fireMainBooster(true);
+      m_leapFrog->setHoldAngle(MATH_PI / 2.0f);
       break;
    }
 }
@@ -384,4 +395,48 @@ void LaunchSite::countDownFadeInComplete(Event *event)
    spTween tween = ta->addTween(Actor::TweenAlpha(0), 1500);
 
    tween->detachWhenDone();
+}
+
+void LaunchSite::updateHoldAngle(timeMS now)
+{
+   float wantedAngle = MATH_PI / 2.0f * ( 1.0f - cos( (float)(now - m_angleHoldStartTime) * MATH_PI / 2.0f / (float)m_angleHoldDuration )) ;
+
+   float angle = m_mainTankBody->GetAngle();
+
+   while (angle > 2.0f * MATH_PI)
+   {
+      angle -= 2.0f * MATH_PI;
+   }
+
+   while (angle < -2.0f * MATH_PI)
+   {
+      angle += 2.0f * MATH_PI;
+   }
+
+   // Calculate magnitude of angular velocity as a function of how
+   // close to the goal angle we are 
+   float magAngVel = fabs(wantedAngle - angle); // get there in one second
+
+   // check if we have reached the gaol, i.e. one degree within goal
+   if (magAngVel < 1.0f * MATH_PI / 180.0f)
+   {
+      m_mainTankBody->SetAngularVelocity(0.0f);
+      //holdAngleReached();
+   }
+   else
+   {
+      if (magAngVel > 2.0f * MATH_PI)
+      {
+         magAngVel = 2.0f * MATH_PI;
+      }
+
+      if (angle < wantedAngle)
+      {
+         m_mainTankBody->SetAngularVelocity(magAngVel);
+      }
+      else if (angle > wantedAngle)
+      {
+         m_mainTankBody->SetAngularVelocity(-magAngVel);
+      }
+   }
 }
