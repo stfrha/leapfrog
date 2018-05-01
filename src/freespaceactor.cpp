@@ -1,6 +1,7 @@
 #include <algorithm>
 
 #include "asteroidfield.h"
+#include "deepspacesceneevents.h"
 
 #include "freespaceactor.h"
 
@@ -11,7 +12,8 @@ FreeSpaceActor::FreeSpaceActor(
    Resources& gameResources,
    std::string& fileName,
    std::string& initialState) :
-	SceneActor(gameResources)
+	SceneActor(gameResources),
+   m_inOrbitField(false)
 {
    setPanorateMode(PME_CENTER);
 
@@ -30,29 +32,9 @@ FreeSpaceActor::FreeSpaceActor(
    m_leapfrog->setBoundedWallsActor(this);
 
    CompoundObject* co = m_leapfrog->getObject("lfMainBody");
-   b2Body* mainBody = (b2Body*)co->getUserData();
+   m_leapfrogBody = (b2Body*)co->getUserData();
 
-   addBoundingBody(mainBody);
-
-   AsteroidField* asteroidField = (AsteroidField*)(getObject("asteroids1"));
-
-
-   //addAsteroidSpawnInstruction(AsteroidSpawnInstruction(1, ASE_SMALL, b2Vec2(550.0f, 250.0f)));
-   //addAsteroidSpawnInstruction(AsteroidSpawnInstruction(1, ASE_MIDDLE, b2Vec2(450.0f, 250.0f)));
-   //addAsteroidSpawnInstruction(AsteroidSpawnInstruction(1, ASE_LARGE, b2Vec2(500.0f, 230.0f)));
-   //addAsteroidSpawnInstruction(AsteroidSpawnInstruction(15, ASE_LARGE, b2Vec2(100.0f, 100.0f)));
-
-   //spAsteroid asteroid1 = new Asteroid(gameResources, (SceneActor*)this, m_world, b2Vec2(550.0f, 250.0f), ASE_SMALL, this);
-   //addChild(asteroid1);
-   //addBoundingBody((Actor*)asteroid1.get());
-
-   //spAsteroid asteroid2 = new Asteroid(gameResources, (SceneActor*)this, m_world, b2Vec2(450.0f, 250.0f), ASE_MIDDLE, this);
-   //addChild(asteroid2);
-   //addBoundingBody((Actor*)asteroid2.get());
-
-   //spAsteroid asteroid3 = new Asteroid(gameResources, (SceneActor*)this, m_world, b2Vec2(500.0f, 230.0f), ASE_LARGE, this);
-   //addChild(asteroid3);
-   //addBoundingBody((Actor*)asteroid3.get());
+   addBoundingBody(m_leapfrogBody);
 
    m_lowerBoundary = new SoftBoundary(gameResources, m_world, RectF(500.0f, 575.0f, 1300.0f, 150.0f), RDE_UP);
    addChild(m_lowerBoundary);
@@ -97,13 +79,44 @@ void FreeSpaceActor::testForBoundaryRepel(void)
    }
 }
 
+bool FreeSpaceActor::isInsideOrbitField(b2Body* body)
+{
+   return (m_lowerBoundary->isInside(body) && m_rightBoundary->isInside(body));
+
+}
+
 void FreeSpaceActor::doUpdate(const oxygine::UpdateState &us)
 {
    SceneActor::doUpdate(us);
 
    testForBoundaryRepel();
 
-   // spawnAsteroids();
+
+   if (m_inOrbitField)
+   {
+      if (isInsideOrbitField(m_leapfrogBody))
+      {
+         if (us.time > m_enteredOrbitFieldAtTime + 2500)
+         {
+            // Go to Orbit scene
+            DeepSpaceSceneTranstToOrbitEvent event;
+            dispatchEvent(&event);
+         }
+      }
+      else
+      {
+         m_inOrbitField = false;
+         m_enteredOrbitFieldAtTime = us.time;
+      }
+   }
+   else
+   {
+      if (isInsideOrbitField(m_leapfrogBody))
+      {
+         m_inOrbitField = true;
+         m_enteredOrbitFieldAtTime = us.time;
+      }
+   }
 }
 
 void FreeSpaceActor::generateBackground(Resources& gameResources)

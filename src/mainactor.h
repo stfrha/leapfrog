@@ -28,6 +28,10 @@ private:
 
    CompoundObject* m_sceneObject;
 
+   void transitToDeepSpaceListner(oxygine::Event *ev);
+   void transitToOrbitListner(oxygine::Event *ev);
+
+
 public:
 
 	MainActor();

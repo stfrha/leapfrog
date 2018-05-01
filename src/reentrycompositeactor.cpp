@@ -4,18 +4,21 @@
 
 
 using namespace oxygine;
+using namespace std;
 
-ReentryCompositeActor::ReentryCompositeActor(Resources& gameResources) :
+ReentryCompositeActor::ReentryCompositeActor(
+   Resources& gameResources,
+   string& fileName,
+   string& initialState) :
+   SceneActor(gameResources),
    m_burnedLastUpdate(false),
    m_state(RES_INITITAL)
 {
-   //// I should probably load resources that are uniuqe here
-   //setPanorateMode(PME_FIX);
+   setPanorateMode(PME_CENTER);
 
-   //createLeapFrog(gameResources);
+   m_world->SetGravity(b2Vec2(0.0f, 0.0f));
 
-   //m_leapfrog->goToMode(LFM_ORBIT);
-   //m_leapfrog->goToEnvironment(ENV_ORBIT);
+   initCompoundObject(gameResources, this, NULL, m_world, Vector2(435.52f, 375.0f), fileName, initialState);
 
    m_planetActor = new PlanetActor(gameResources);
    m_planetActor->setAnchor(0.5f, 0.5f);

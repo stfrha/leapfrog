@@ -304,16 +304,26 @@ void LaunchSite::doUpdate(const UpdateState &us)
       m_mainTankBody->ApplyForceToCenter(b2Vec2(0.0f, 10000.0f), true);
       m_leapFrog->fireMainBooster(true);
       m_leapFrog->setHoldAngle(MATH_PI / 2.0f);
+
+      if (us.time >= m_stateStartTime + 4000)
+      {
+         LaunchSequenceCompleteEvent event;
+         dispatchEvent(&event);
+
+         m_stateStartTime = us.time;
+         m_state = finishSequence;
+         m_properties[state].setProperty((float)m_state);
+      }
+      break;
+   case finishSequence:
+      // We wait here idenfinetly for someone to kill us
+      m_mainTankBody->ApplyForceToCenter(b2Vec2(0.0f, 10000.0f), true);
+      m_leapFrog->fireMainBooster(true);
+      m_leapFrog->setHoldAngle(MATH_PI / 2.0f);
+
       break;
    }
 }
-
-//supportBoosterBurnout,
-//dropSupportBooster,
-//mainBoosterBurnout,
-//dropMainBooster
-
-
 
 void LaunchSite::leapfrogFootTouch(b2Contact* contact, bool leftFoot)
 {

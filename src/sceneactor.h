@@ -21,6 +21,13 @@ DECLARE_SMART(SceneActor, spSceneActor);
 
 class SceneActor : public CompoundObject
 {
+public:
+   enum launchState
+   {
+      fadeIn,
+      sceneIsOn,
+      fadeOut
+   };
 
 protected:
    oxygine::Resources * m_gameResources;

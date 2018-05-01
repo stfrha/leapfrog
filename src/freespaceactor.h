@@ -17,6 +17,11 @@ private:
    spSoftBoundary m_rightBoundary;
    spSoftBoundary m_topBoundary;
 
+   bool m_inOrbitField;
+   oxygine::timeMS m_enteredOrbitFieldAtTime;
+
+   b2Body* m_leapfrogBody;
+
    std::vector<b2Body*>   m_boundedBodies;
 
    FreeSpaceContactListener   m_contactListener;
@@ -32,6 +37,8 @@ public:
    void addBoundingBody(b2Body* body);
    void removeBoundingBody(b2Body* body);
    void testForBoundaryRepel(void);
+   bool isInsideOrbitField(b2Body* body);
+
 
 
 protected:

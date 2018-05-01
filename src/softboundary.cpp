@@ -140,3 +140,41 @@ void SoftBoundary::testForRepel(b2Body* body)
    }
 
 }
+
+bool SoftBoundary::isInside(b2Body* body)
+{
+   // Test if body should be handled:
+   if (m_repelDir == RDE_UP)
+   {
+      if (body->GetPosition().y > m_threshold)
+      {
+         return true;
+      }
+   }
+
+   if (m_repelDir == RDE_DOWN)
+   {
+      if (body->GetPosition().y < m_threshold)
+      {
+         return true;
+      }
+   }
+
+   if (m_repelDir == RDE_RIGHT)
+   {
+      if (body->GetPosition().x < m_threshold)
+      {
+         return true;
+      }
+   }
+
+   if (m_repelDir == RDE_LEFT)
+   {
+      if (body->GetPosition().x > m_threshold)
+      {
+         return true;
+      }
+   }
+
+   return false;
+}

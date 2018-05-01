@@ -11,3 +11,10 @@ public:
    LaunchSiteLeapfrogLandedEvent(void) :Event(EVENT) {}
 };
 
+class LaunchSequenceCompleteEvent : public oxygine::Event
+{
+public:
+   enum { EVENT = eventID('L', 's', 'S', 'C') };
+   LaunchSequenceCompleteEvent(void) :Event(EVENT) {}
+};
+

@@ -60,7 +60,8 @@ public:
       supportBoosterBurnout,
       dropSupportBooster,
       mainBoosterBurnout,
-      dropMainBooster
+      dropMainBooster,
+      finishSequence
    };
 
 private:

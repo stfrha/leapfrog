@@ -12,14 +12,14 @@ using namespace oxygine;
 using namespace std;
 
 LandingActor::LandingActor(
-   Resources& gameResources, 
-   string& fileName, 
+   Resources& gameResources,
+   string& fileName,
    string& initialState) :
-	SceneActor(gameResources)
+   SceneActor(gameResources)
 {
    setPanorateMode(PME_TOP);
 
-//   m_world->SetGravity(b2Vec2(0, 1.62));
+   //   m_world->SetGravity(b2Vec2(0, 1.62));
    m_world->SetGravity(b2Vec2(0, 3.0f));
 
    m_world->SetContactListener(&m_contactListener);
@@ -30,7 +30,7 @@ LandingActor::LandingActor(
    m_leapfrog->goToEnvironment(ENV_GROUND);
 
    m_leapfrog->addEventListener(LeapfrogModeReachedEvent::EVENT, CLOSURE(this, &LandingActor::modeReachedListener));
-   
+
    // m_leapfrog->addEventListener(ObjectPropertyTriggeredEvent::EVENT, CLOSURE(this, &LandingActor::handlePropertyTriggeredEvent));
    // m_leapfrog->m_properties[LeapFrog::propXPos].registerPropertyEventTrigger(1, PropertyEventTrigger::insideRange, 1200.0f, 10000.0f);
 
@@ -38,6 +38,7 @@ LandingActor::LandingActor(
 
    m_launchSite = static_cast<LaunchSite*>(getObject("launchSite1"));
    m_launchSite->addEventListener(LaunchSiteLeapfrogLandedEvent::EVENT, CLOSURE(this, &LandingActor::leapfrogLandedOnLaunchSiteHandler));
+   m_launchSite->addEventListener(LaunchSequenceCompleteEvent::EVENT, CLOSURE(this, &LandingActor::transitToDeepSpace));
 }
 
 CollisionEntityTypeEnum LandingActor::getEntityType(void)
@@ -96,6 +97,10 @@ void LandingActor::handlePropertyTriggeredEvent(oxygine::Event *ev)
 
 }
 
-
+void LandingActor::transitToDeepSpace(oxygine::Event *ev)
+{
+   LandingActorTranstToDeepSpaceEvent event;
+   dispatchEvent(&event);
+}
 
 

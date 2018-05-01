@@ -256,6 +256,7 @@
     <ClInclude Include="..\src\collisionentity.h" />
     <ClInclude Include="..\src\compoundinterface.h" />
     <ClInclude Include="..\src\compoundobject.h" />
+    <ClInclude Include="..\src\deepspacesceneevents.h" />
     <ClInclude Include="..\src\flameemitter.h" />
     <ClInclude Include="..\src\flameparticle.h" />
     <ClInclude Include="..\src\flamesmokeparticle.h" />
@@ -263,6 +264,7 @@
     <ClInclude Include="..\src\freespacecontactlistener.h" />
     <ClInclude Include="..\src\gun.h" />
     <ClInclude Include="..\src\landercontactlistener.h" />
+    <ClInclude Include="..\src\landingactorevents.h" />
     <ClInclude Include="..\src\landingpad.h" />
     <ClInclude Include="..\src\landingpadevents.h" />
     <ClInclude Include="..\src\launchsite.h" />

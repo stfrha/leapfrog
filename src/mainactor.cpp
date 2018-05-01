@@ -4,6 +4,8 @@
 #include "Box2DDebugDraw.h"
 #include "physdispconvert.h"
 #include "scales.h"
+#include "landingactorevents.h"
+#include "deepspacesceneevents.h"
 
 #include "mainactor.h"
 
@@ -19,6 +21,7 @@ MainActor::MainActor()
 
    startScene(STE_LANDING);
 //   startScene(STE_FREE_SPACE);
+//   startScene(STE_ORBIT);
 }
 
 MainActor::~MainActor()
@@ -53,6 +56,7 @@ void MainActor::startScene(SceneTypeEnum scene)
 
       spLandingActor landingActor = new LandingActor(m_gameResources, string("landing_scene.xml"), string("landingState"));
       window->addChild(landingActor);
+      landingActor->addEventListener(LandingActorTranstToDeepSpaceEvent::EVENT, CLOSURE(this, &MainActor::transitToDeepSpaceListner));
 
       m_sceneObject = static_cast<CompoundObject*>(landingActor.get());
 
@@ -75,6 +79,8 @@ void MainActor::startScene(SceneTypeEnum scene)
       spFreeSpaceActor freeSpaceActor = new FreeSpaceActor(m_gameResources, string("deep_space_scene.xml"), string("deepSpaceState"));
       window->addChild(freeSpaceActor);
 
+      freeSpaceActor->addEventListener(DeepSpaceSceneTranstToOrbitEvent::EVENT, CLOSURE(this, &MainActor::transitToOrbitListner));
+
       //m_debugDraw = new Box2DDraw;
       //m_debugDraw->SetFlags(b2Draw::e_shapeBit | b2Draw::e_jointBit | b2Draw::e_pairBit | b2Draw::e_centerOfMassBit);
       //m_debugDraw->attachTo(freeSpaceActor);
@@ -90,7 +96,7 @@ void MainActor::startScene(SceneTypeEnum scene)
       window->setPosition(50.0f, 50.0f);
       addChild(window);
 
-      spReentryCompositeActor reentryActor = new ReentryCompositeActor(m_gameResources);
+      spReentryCompositeActor reentryActor = new ReentryCompositeActor(m_gameResources, string("orbit_scene.xml"), string("deepSpaceState"));
       window->addChild(reentryActor);
 
       //m_debugDraw = new Box2DDraw;
@@ -158,4 +164,15 @@ void MainActor::sendEvent(int eventId)
 {
 
 
+}
+
+
+void MainActor::transitToDeepSpaceListner(Event *ev)
+{
+   startScene(STE_FREE_SPACE);
+}
+
+void MainActor::transitToOrbitListner(Event *ev)
+{
+   startScene(STE_ORBIT);
 }

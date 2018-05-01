@@ -545,5 +545,11 @@
     <ClInclude Include="..\src\flamesmokeparticle.h">
       <Filter>Particles</Filter>
     </ClInclude>
+    <ClInclude Include="..\src\landingactorevents.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\deepspacesceneevents.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

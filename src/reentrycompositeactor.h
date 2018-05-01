@@ -2,8 +2,8 @@
 
 #include "oxygine-framework.h"
 #include "Box2D/Box2D.h"
+#include "sceneactor.h"
 #include "planetactor.h"
-#include "leapfrog.h"
 
 enum ReentryStateEnum
 {
@@ -15,7 +15,7 @@ enum ReentryStateEnum
 
 DECLARE_SMART(ReentryCompositeActor, spReentryCompositeActor);
 
-class ReentryCompositeActor : public Actor
+class ReentryCompositeActor : public SceneActor
 {
 private:
    spPlanetActor m_planetActor;
@@ -28,7 +28,11 @@ private:
 
 
 public:
-   ReentryCompositeActor(oxygine::Resources& gameResources);
+   ReentryCompositeActor(
+      oxygine::Resources& gameResources,
+      std::string& fileName,
+      std::string& initialState);
+
    void doUpdate(const UpdateState& us);
 
    void onWaitDone(Event* event);

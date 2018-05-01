@@ -37,6 +37,7 @@ public:
       RepelDirectionEnum repelDir);
 
    void testForRepel(b2Body* body);
+   bool isInside(b2Body* body);
 };
 
 
