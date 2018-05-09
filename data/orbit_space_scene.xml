@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+<compoundObject>
+	<ChildCompoundObjectRef 
+		name="leapfrog1"
+		type="leapfrog">
+		<deepSpaceState 
+			file="leapfrog_deep_space.xml" 
+			posX="-8.0"
+			posY="18.0" />
+	</ChildCompoundObjectRef>
+</compoundObject>
+

@@ -7,6 +7,8 @@
 #include "leapfrog.h"
 #include "landingpad.h"
 #include "asteroidfield.h"
+#include "planetactor.h"
+#include "orbitwindow.h"
 
 #include "polygonvertices.h"
 
@@ -268,11 +270,11 @@ CompoundObject* CompoundObject::getParentObject(void)
 }
 
 bool CompoundObject::readDefinitionXmlFile(
-   Resources& gameResources, 
-   Actor* sceneParent, 
+   Resources& gameResources,
+   Actor* sceneParent,
    CompoundObject* parentObject,
    b2World* world,
-   const Vector2& pos, 
+   const Vector2& pos,
    string& fileName,
    string& initialState)
 {
@@ -283,6 +285,19 @@ bool CompoundObject::readDefinitionXmlFile(
    xml_parse_result result = doc.load_file(fileName.c_str());
 
    xml_node root = doc.child("compoundObject");
+
+   return initCompoundObject(gameResources, sceneParent, parentObject, world, pos, root, initialState);
+}
+
+bool CompoundObject::initCompoundObject(
+   oxygine::Resources& gameResources,
+   Actor* sceneParent,
+   CompoundObject* parentObject,
+   b2World* world,
+   const Vector2& pos,
+   pugi::xml_node& root,
+   string& initialState)
+{
 
    for (auto it = root.children("staticPolygon").begin();
       it != root.children("staticPolygon").end();
@@ -819,6 +834,31 @@ void CompoundObject::defineChildObject(
       af->setName(objectNode.attribute("name").as_string());
 
       m_children.push_back(static_cast<CompoundObject*>(af));
+   }
+   else if (type == "planetActor")
+   {
+      PlanetActor* pa = new PlanetActor(
+         gameResources,
+         sceneParent,
+         parentObject,
+         objectNode);
+
+      pa->setName(objectNode.attribute("name").as_string());
+
+      m_children.push_back(static_cast<CompoundObject*>(pa));
+   }
+   else if (type == "clippedWindow")
+   {
+      OrbitWindow* ow = new OrbitWindow(
+         gameResources,
+         sceneParent,
+         parentObject,
+         objectNode,
+         initialState);
+
+      ow->setName(objectNode.attribute("name").as_string());
+
+      m_children.push_back(static_cast<CompoundObject*>(ow));
    }
 }
 

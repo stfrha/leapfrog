@@ -15,7 +15,7 @@ LandingActor::LandingActor(
    Resources& gameResources,
    string& fileName,
    string& initialState) :
-   SceneActor(gameResources)
+   SceneActor(gameResources, 0.4f)
 {
    setPanorateMode(PME_TOP);
 

@@ -12,7 +12,7 @@ FreeSpaceActor::FreeSpaceActor(
    Resources& gameResources,
    std::string& fileName,
    std::string& initialState) :
-	SceneActor(gameResources),
+	SceneActor(gameResources, 0.4f),
    m_inOrbitField(false)
 {
    setPanorateMode(PME_CENTER);

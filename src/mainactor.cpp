@@ -19,9 +19,9 @@ MainActor::MainActor()
 
 	setSize(getStage()->getSize());
 
-   startScene(STE_LANDING);
+//   startScene(STE_LANDING);
 //   startScene(STE_FREE_SPACE);
-//   startScene(STE_ORBIT);
+   startScene(STE_ORBIT);
 }
 
 MainActor::~MainActor()
@@ -96,7 +96,7 @@ void MainActor::startScene(SceneTypeEnum scene)
       window->setPosition(50.0f, 50.0f);
       addChild(window);
 
-      spReentryCompositeActor reentryActor = new ReentryCompositeActor(m_gameResources, string("orbit_scene.xml"), string("deepSpaceState"));
+      spOrbitScene reentryActor = new OrbitScene(m_gameResources, string("orbit_scene.xml"), string("deepSpaceState"));
       window->addChild(reentryActor);
 
       //m_debugDraw = new Box2DDraw;

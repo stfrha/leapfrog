@@ -3,7 +3,7 @@
 #include "oxygine-framework.h"
 #include "landingactor.h"
 #include "freespaceactor.h"
-#include "reentrycompositeactor.h"
+#include "orbitscene.h"
 #include "compoundobject.h"
 
 enum SceneTypeEnum

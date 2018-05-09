@@ -135,7 +135,6 @@ private:
 
    std::vector<NamedJoint*> m_namedJoints;
 
-   std::vector<CompoundObject*> m_children;
    CompoundObject* m_parentObject;
 
    CollisionEntityTypeEnum m_collisionType;
@@ -218,6 +217,7 @@ public:
    // Property values are protected within the ObjectProperty type
    // so it is safe to expose the list of properties here.
    std::vector<ObjectProperty> m_properties;
+   std::vector<CompoundObject*> m_children;
 
 	CompoundObject();
 
@@ -230,6 +230,15 @@ public:
 	   b2World* world,
 	   const oxygine::Vector2& pos,
 	   std::string& defXmlFileName,
+      std::string& initialState);
+
+   bool initCompoundObject(
+      oxygine::Resources& gameResources,
+      oxygine::Actor* sceneParent,
+      CompoundObject* parentObject,
+      b2World* world,
+      const oxygine::Vector2& pos,
+      pugi::xml_node& objectNode,
       std::string& initialState);
 
    virtual CollisionEntityTypeEnum getEntityType(void);

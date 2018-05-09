@@ -1,8 +1,45 @@
 #pragma once
 
+#include <set>
+
 #include "oxygine-framework.h"
 #include "Box2D/Box2D.h"
-#include "sceneactor.h"
+#include "compoundobject.h"
+
+class LandingSite
+{
+public:
+   std::string m_name;
+   float m_angle;
+   std::string m_texture;
+
+public:
+   LandingSite() :
+      m_name("noName"),
+      m_angle(0.0f),
+      m_texture("noTexture")
+   {  }
+
+   LandingSite(std::string name, float angle, std::string texture) :
+      m_name(name),
+      m_angle(angle),
+      m_texture(texture)
+   {  }
+
+   LandingSite(pugi::xml_node& objectNode) 
+   {  
+      m_name = objectNode.attribute("name").as_string();
+      m_angle = objectNode.attribute("angle").as_float();
+      m_texture = objectNode.attribute("texture").as_string();
+   }
+
+   bool operator< (const LandingSite & obj) const
+   {
+      return (this->m_angle < obj.m_angle);
+   }
+};
+
+
 
 DECLARE_SMART(PlanetActor, spPlanetActor);
 
@@ -28,7 +65,7 @@ enum PlanetActorStateEnum
 };
 
 
-class PlanetActor : public oxygine::Actor
+class PlanetActor : public CompoundObject
 {
 private:
    const static float c_relativeTrajectoryAngles[];
@@ -36,19 +73,25 @@ private:
    const static oxygine::Vector2 c_trajectoryPositions[];
    const static oxygine::Vector2 c_bouncyTrajectoryPositions[];
 
+   std::set<LandingSite> m_landingSites;
+
    PlanetActorStateEnum m_state;
    oxygine::Vector2 m_orbitStartPos;
 
 
    oxygine::Resources* m_gameResources;
-   spActor m_planet;
+   oxygine::spActor m_planet;
    oxygine::spSprite m_positionIndicator;
    oxygine::spProgressBar m_burnIndicator;
 
 
 
 public:
-   PlanetActor(oxygine::Resources& gameResources);
+   PlanetActor(
+      oxygine::Resources& gameResources,
+      oxygine::Actor* sceneParent,
+      CompoundObject* parentObject,
+      pugi::xml_node& objectNode);
    void orbitEstablished(void);
    void startReentry(float relativeBurnDeviation, float deviationDistance);
    void startBurn(void);
@@ -57,6 +100,6 @@ public:
    float getReentryLeapfrogAngle(float time);
 
 protected:
-   void doUpdate(const UpdateState& us);
+   void doUpdate(const oxygine::UpdateState& us);
 
 };

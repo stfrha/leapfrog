@@ -2,8 +2,13 @@
 
 
 using namespace oxygine;
+using namespace pugi;
 
-PlanetActor::PlanetActor(Resources& gameResources) : 
+PlanetActor::PlanetActor(
+   Resources& gameResources,
+   Actor* sceneParent,
+   CompoundObject* parentObject,
+   xml_node& objectNode) :
    m_gameResources(&gameResources),
    m_state(PAS_INITITAL),
    m_orbitStartPos(Vector2(500.0f, 150.0f))
@@ -23,6 +28,7 @@ PlanetActor::PlanetActor(Resources& gameResources) :
 
    spBox9Sprite planetSprite = new Box9Sprite();
    planetSprite->setResAnim(gameResources.getResAnim("planet_rock"));
+//   planetSprite->setResAnim(gameResources.getResAnim(objectNode.attribute("texture").as_string()));
    planetSprite->setSize(7000.0f, 7000.0f);
    planetSprite->setAnchor(0.5f, 0.5f);
    planetSprite->setGuides(0, 0, 0, 0);
@@ -39,6 +45,20 @@ PlanetActor::PlanetActor(Resources& gameResources) :
 
    maskedSprite->setMask(mask, true);
 
+   for (auto it = objectNode.child("landingSites").children("landingSite").begin();
+      it != objectNode.child("landingSites").children("landingSite").end();
+      ++it)
+   {
+      LandingSite ls(*it);
+      m_landingSites.insert(ls);
+   }
+
+
+   setAnchor(objectNode.attribute("anchorX").as_float(), objectNode.attribute("anchorY").as_float());
+   setPosition(objectNode.attribute("posX").as_float(), objectNode.attribute("posY").as_float());
+   setScale(objectNode.attribute("scale").as_float());
+   attachTo(sceneParent);
+
    spTween rotTween = m_planet->addTween(Actor::TweenRotation(2.0f * MATH_PI), 90000, -1);
 
 }
@@ -46,16 +66,21 @@ PlanetActor::PlanetActor(Resources& gameResources) :
 
 void PlanetActor::orbitEstablished(void)
 {
-   spSprite crs = new Sprite();
-   crs->setResAnim(m_gameResources->getResAnim("predicted_site"));
-   crs->setSize(100.0f, 30.0f);
-   crs->setAnchor(0.5f, 0.5f);
+   // Generate predicted landing sites
+   // TODO: Generate real landing sites also
+   for (auto it = m_landingSites.begin(); it != m_landingSites.end(); ++it)
+   {
+      spSprite crs = new Sprite();
+      crs->setResAnim(m_gameResources->getResAnim("predicted_site"));
+      crs->setSize(100.0f, 30.0f);
+      crs->setAnchor(0.5f, 0.5f);
 
-   float planetAngle = m_planet->getRotation();
-   float alpha = -100.0f / 180.0f * MATH_PI - planetAngle;
-   crs->setPosition(Vector2(3500.0f * cos(alpha), 3500.0f * sin(alpha)));
-   crs->setRotation(alpha + MATH_PI / 2.0f);
-   crs->attachTo(m_planet);
+      float planetAngle = m_planet->getRotation();
+      float alpha = -100.0f / 180.0f * MATH_PI - planetAngle + it->m_angle;
+      crs->setPosition(Vector2(3500.0f * cos(alpha), 3500.0f * sin(alpha)));
+      crs->setRotation(alpha + MATH_PI / 2.0f);
+      crs->attachTo(m_planet);
+   }
 
    // generate the trajectory, without angles set to zero, to begin with
    spSprite trajectory[44];

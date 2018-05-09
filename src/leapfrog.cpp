@@ -57,7 +57,7 @@ LeapFrog::LeapFrog(
    m_gameResources(&gameResources),
    m_state(LFS_NORMAL),
    m_wantedAngle(0.0f),
-   m_initiating(false)
+   m_modeInTransit(false)
 {
 	initCompoundObject(gameResources, sceneParent, parentObject, world, pos, defXmlFileName, string(""));
 
@@ -343,11 +343,10 @@ void LeapFrog::doUpdate(const UpdateState &us)
    switch (m_state)
    {
    case LFS_NORMAL:
-   case LFS_MODE_IN_TRANSIT:
       angle = m_mainBody->GetAngle();
       boostForce = b2Vec2(m_boostMagnuitude * sin(angle), -m_boostMagnuitude * cos(angle));
 
-      if (m_environment != ENV_DEEP_SPACE)
+      if ((m_environment != ENV_DEEP_SPACE) && (m_environment != ENV_ORBIT))
       {
          m_mainBody->ApplyTorque(m_steerMagnitude, true);
       }
@@ -360,68 +359,6 @@ void LeapFrog::doUpdate(const UpdateState &us)
       setJointMotor(m_leftBigLegJoint, m_modeAngleGoals.m_leftBigJointAngle, c_normalJointMotorSpeed);
       setJointMotor(m_leftSmallLegJoint, m_modeAngleGoals.m_leftSmallJointAngle, c_normalJointMotorSpeed);
       setJointMotor(m_leftFootLegJoint, m_modeAngleGoals.m_leftFootJointAngle, c_normalJointMotorSpeed);
-      break;
-
-   case LFS_INITIATING_MODE:
-      setJointMotor(m_rightBigLegJoint, m_modeAngleGoals.m_rightBigJointAngle, c_instnatJointMotorSpeed);
-      setJointMotor(m_rightSmallLegJoint, m_modeAngleGoals.m_rightSmallJointAngle, c_instnatJointMotorSpeed);
-      setJointMotor(m_rightFootLegJoint, m_modeAngleGoals.m_rightFootJointAngle, c_instnatJointMotorSpeed);
-      setJointMotor(m_leftBigLegJoint, m_modeAngleGoals.m_leftBigJointAngle, c_instnatJointMotorSpeed);
-      setJointMotor(m_leftSmallLegJoint, m_modeAngleGoals.m_leftSmallJointAngle, c_instnatJointMotorSpeed);
-      setJointMotor(m_leftFootLegJoint, m_modeAngleGoals.m_leftFootJointAngle, c_instnatJointMotorSpeed);
-      break;
-
-   case LFS_INSTANTLY_ROTATING:
-      angle = m_mainBody->GetAngle();
-
-      while (angle > 2.0f * MATH_PI)
-      {
-         angle -= 2.0f * MATH_PI;
-      }
-
-      while (angle < -2.0f * MATH_PI)
-      {
-         angle += 2.0f * MATH_PI;
-      }
-
-      // Calculate magnitude of angular velocity as a function of how
-      // close to the goal angle we are but not more than m_maxAngularVelocity
-      magAngVel =  4.0f * fabs(m_wantedAngle - angle); // get there in one second
-
-      // check if we have reached the gaol
-      if (magAngVel < 1.0f * MATH_PI / 180.0f)
-      {
-         instantAngleReached();
-      }
-      else
-      {
-         if (magAngVel > 2.0f * MATH_PI)
-         {
-            magAngVel = 2.0f * MATH_PI;
-         }
-
-         if (angle < m_wantedAngle)
-         {
-            m_mainBody->SetAngularVelocity(magAngVel);
-         }
-         else if (angle > m_wantedAngle)
-         {
-            m_mainBody->SetAngularVelocity(-magAngVel);
-         }
-      }
-
-      break;
-
-   case LFS_GET_TO_EQUILIBRIUM:
-
-      if (fabs(m_mainBody->GetAngularVelocity()) < 0.1f)
-      {
-         equilibriumReached();
-      }
-      else
-      {
-         m_mainBody->SetAngularVelocity(0.0f);
-      }
       break;
 
    case LFS_HOLD_ANGLE:
@@ -498,7 +435,7 @@ void LeapFrog::setJointMotor(b2RevoluteJoint* joint, float goal, float speedMagn
          // Here the goal is reached. Lets call a function
          // that can do some things at this time, for instance
          // lock leg joints
-         if ((m_state == LFS_MODE_IN_TRANSIT) || (m_state == LFS_INITIATING_MODE))
+         if (m_modeInTransit)
          {
             ((JointUserData*)joint->GetUserData())->setModeReached(true);
             if (modeIsReached())
@@ -520,7 +457,7 @@ void LeapFrog::setJointMotor(b2RevoluteJoint* joint, float goal, float speedMagn
          // Here the goal is reached. Lets call a function
          // that can do some things at this time, for instance
          // lock leg joints
-         if ((m_state == LFS_MODE_IN_TRANSIT) || (m_state == LFS_INITIATING_MODE))
+         if (m_modeInTransit)
          {
             ((JointUserData*)joint->GetUserData())->setModeReached(true);
             if (modeIsReached())
@@ -724,18 +661,6 @@ void LeapFrog::stopAllJointMotors(void)
    }
 }
 
-void LeapFrog::setInstantAngle(float angle)
-{
-   m_wantedAngle = angle;
-
-   stopAllJointMotors();
-   lockJoints();
-
-   m_state = LFS_INSTANTLY_ROTATING;
-   m_properties[propState].setProperty((float)m_state);
-
-}
-
 void LeapFrog::setHoldAngle(float angle)
 {
    m_wantedAngle = angle;
@@ -802,54 +727,9 @@ void LeapFrog::breakJoints(void)
    m_leftFootLegJoint = NULL;
 }
 
-
-void LeapFrog::initLeapfrog(LeapFrogModeEnum mode, float angle)
-{
-   m_initiating = true;
-   m_mode = mode;
-   m_properties[propMode].setProperty((float)m_mode);
-
-   setInstantAngle(angle);
-}
-
-void LeapFrog::initMode(LeapFrogModeEnum mode)
-{
-   m_mode = mode;
-   m_properties[propMode].setProperty((float)m_mode);
-
-   unlockJoints();
-
-   switch (mode)
-   {
-   case LFM_LANDING:
-      m_modeAngleGoals = c_landingModeAngles;
-      break;
-
-   case LFM_DEEP_SPACE:
-      m_modeAngleGoals = c_deepSpaceModeAngles;
-      break;
-
-   case LFM_ORBIT:
-      m_modeAngleGoals = c_orbitModeAngles;
-      break;
-
-   case LFM_REENTRY:
-      m_modeAngleGoals = c_reentryModeAngles;
-      break;
-
-   case LFM_RESET:
-      m_modeAngleGoals = c_resetModeAngles;
-      break;
-   }
-
-   setStrongJoints();
-   m_state = LFS_INITIATING_MODE;
-   m_properties[propState].setProperty((float)m_state);
-}
-
 void LeapFrog::goToMode(LeapFrogModeEnum mode)
 {
-   m_state = LFS_MODE_IN_TRANSIT;
+   m_modeInTransit = true;
    m_properties[propState].setProperty((float)m_state);
    m_mode = mode;
    m_properties[propMode].setProperty((float)m_mode);
@@ -910,25 +790,14 @@ void LeapFrog::goToEnvironment(EnvironmentEnum env)
       break;
 
    case ENV_ORBIT:
-      m_boostInc = 900.0f;
-      m_boostMaxMagnitude = 3000.0f;
+      m_boostInc = 2000.0f;
+      m_boostMaxMagnitude = 30000.0f;
       m_steerMaxMagnitude = 30000.0f;;
-      m_eveningMagnitude = 10000.0f;
-      m_maxVelocity = 400.0f;    // [m/s]
-      m_maxAngularVelocity = MATH_PI; // [rad/s]
-      m_boosterFlame->setParameters(0, 250, 70.0f, 10.0f);
-      m_shield->m_body->SetActive(false);
-      break;
-
-   case ENV_REENTRY:
-      m_boostInc = 900.0f;
-      m_boostMaxMagnitude = 3000.0f;
-      m_steerMaxMagnitude = 30000.0f;;
-      m_eveningMagnitude = 10000.0f;
-      m_maxVelocity = 400.0f;    // [m/s]
-      m_maxAngularVelocity = MATH_PI; // [rad/s]
-      m_boosterFlame->setParameters(0, 250, 70.0f, 10.0f);
-      m_shield->m_body->SetActive(false);
+      m_eveningMagnitude = 60000.0f;
+      m_maxVelocity = 80.0f;    // [m/s]
+      m_maxAngularVelocity = 4.0f * MATH_PI; // [rad/s]
+      m_boosterFlame->setParameters(0, 500, 90.0f, 10.0f);
+      m_shield->m_body->SetActive(true);
       break;
 
    case ENV_LAUNCH:
@@ -949,15 +818,9 @@ void LeapFrog::modeReached(void)
 {
    resetModeReached();
 
-   if (m_state == LFS_MODE_IN_TRANSIT)
+   if (m_modeInTransit)
    {
       // Don't know anything special here...
-   }
-
-   if (m_state == LFS_INITIATING_MODE)
-   {
-      stopAllJointMotors();
-      setWeakJoints();
    }
 
    if (m_mode == LFM_DEEP_SPACE)
@@ -973,47 +836,11 @@ void LeapFrog::modeReached(void)
       unlockJoints();
    }
 
-   if (m_initiating)
-   {
-//      setAlpha(255);
-      
-
-      m_initiating = false;
-   }
-
-   m_state = LFS_NORMAL;
+   m_modeInTransit = false;
    m_properties[propState].setProperty((float)m_state);
 
    LeapfrogModeReachedEvent event("Test");
    dispatchEvent(&event);
-
-}
-
-void LeapFrog::instantAngleReached(void)
-{
-   m_mainBody->SetAngularVelocity(0.0f);
-   m_steerMagnitude = 0.0f;
- 
-   m_state = LFS_GET_TO_EQUILIBRIUM;
-   m_properties[propState].setProperty((float)m_state);
-}
-
-void LeapFrog::equilibriumReached(void)
-{
-   m_state = LFS_NORMAL;
-   m_properties[propState].setProperty((float)m_state);
-
-   if (m_initiating)
-   {
-      initMode(m_mode);
-   }
-   else
-   {
-      if (m_mode != LFM_DEEP_SPACE)
-      {
-         unlockJoints();
-      }
-   }
 
 }
 
@@ -1058,7 +885,7 @@ void LeapFrog::fireMainBooster(bool fire)
    // In ground mode we apply force independently of the velocity
    // and rotation is slowly decellerating
 
-   if (m_environment == ENV_DEEP_SPACE)
+   if ((m_environment == ENV_DEEP_SPACE) || (m_environment == ENV_ORBIT))
    {
       float vel = m_mainBody->GetLinearVelocity().Length();
 
@@ -1163,11 +990,11 @@ void LeapFrog::fireSteeringBooster(int dir)
       }
    }
 
-   if (m_environment == ENV_DEEP_SPACE)
+   if ((m_environment == ENV_DEEP_SPACE) || (m_environment == ENV_ORBIT))
    {
       // In deep space we accellerate fast to a maximum
       // angular speed and hold that speed until steering
-      // is released. We the immediately stop turning
+      // is released. We then immediately stop turning
       if (dir == -1)
       {
          m_mainBody->SetAngularVelocity(-m_maxAngularVelocity);

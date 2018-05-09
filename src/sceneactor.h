@@ -43,7 +43,7 @@ protected:
 
 
 public:
-	SceneActor(oxygine::Resources& gameResources);
+	SceneActor(oxygine::Resources& gameResources, float zoomScale);
    ~SceneActor();
 
    b2World* GetWorld(void);

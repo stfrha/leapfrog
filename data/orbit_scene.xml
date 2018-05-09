@@ -1,0 +1,35 @@
+<?xml version="1.0"?>
+<compoundObject>
+	<ChildCompoundObjectRef 
+		name="planetAlpha"
+		type="planetActor"
+		texture="planet_rock" 
+		anchorX="0.5"
+		anchorY="0.5"
+		posX="-30.0"
+		posY="20.0"
+		scale="0.3"	>
+		<landingSites>
+			<landingSite
+				name="goldMine"
+				angle="0.0"
+				texture="mineWhole" />
+			<landingSite
+				name="urbanCity1"
+				angle="0.4"
+				texture="skyline" />
+		</landingSites>
+	</ChildCompoundObjectRef>
+	<ChildCompoundObjectRef
+		name="orbitWindow"
+		type="clippedWindow"
+		posX="550.0"
+		posY="0.0"
+		width="300"
+		height="150"
+		background="starfield"
+		frameThickness="1.0"
+		zoomScale="0.4" 
+		spaceSceneFile="orbit_space_scene.xml" />
+</compoundObject>
+

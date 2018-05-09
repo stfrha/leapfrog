@@ -20,7 +20,8 @@ ReentryCompositeActor::ReentryCompositeActor(
 
    initCompoundObject(gameResources, this, NULL, m_world, Vector2(435.52f, 375.0f), fileName, initialState);
 
-   m_planetActor = new PlanetActor(gameResources);
+   m_planetActor = new PlanetActor(
+      gameResources);
    m_planetActor->setAnchor(0.5f, 0.5f);
    m_planetActor->setPosition(-30.0f, 20.0f);
 //   m_planetActor->setScale(0.075f);
@@ -37,7 +38,7 @@ ReentryCompositeActor::ReentryCompositeActor(
    spClipRectActor clip = new ClipRectActor();
    clip->setSize(300.0f, 150.0f);
    clip->setPosition(2.0f, 2.0f);
-   clip->attachTo(frame);
+   clip->attachTo(frame); 
 
    spSprite test = new Sprite();
    test->setResAnim(gameResources.getResAnim("starfield"));

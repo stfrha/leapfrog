@@ -33,10 +33,6 @@ public:
 enum LeapFrogStateEnum
 {
    LFS_NORMAL,
-   LFS_MODE_IN_TRANSIT,
-   LFS_INITIATING_MODE,
-   LFS_INSTANTLY_ROTATING,
-   LFS_GET_TO_EQUILIBRIUM,
    LFS_HOLD_ANGLE
 };
 
@@ -54,7 +50,6 @@ enum EnvironmentEnum
    ENV_DEEP_SPACE,
    ENV_GROUND,
    ENV_ORBIT,
-   ENV_REENTRY,
    ENV_LAUNCH
 };
 
@@ -122,7 +117,6 @@ private:
    const static float c_instnatJointMotorSpeed;
 
    LeapFrogStateEnum m_state;
-   bool m_initiating;
    LeapFrogModeEnum  m_mode;
    EnvironmentEnum m_environment;
    bool	m_mainBoosterFire;
@@ -147,6 +141,7 @@ private:
    // depending on mode
    ModeAngles m_modeAngleGoals;
    float m_wantedAngle;
+   bool m_modeInTransit;
 
 	b2World * m_world;
 	b2Body* m_mainBody;
@@ -229,8 +224,6 @@ public:
    goToEnvironment
    */
 
-   void initLeapfrog(LeapFrogModeEnum mode, float angle);
-	void initMode(LeapFrogModeEnum mode);
    void goToMode(LeapFrogModeEnum mode);
    void goToEnvironment(EnvironmentEnum env);
    void fireMainBooster(bool fire);
@@ -239,7 +232,6 @@ public:
    void fireReentryFlames(bool fire);
    void reentrySetHeat(unsigned char heatAmount);   // 0 = off, 1 = coldest, 255 = hottest, most intense
    void setBoundedWallsActor(FreeSpaceActor* actor);
-   void setInstantAngle(float angle);
    void setHoldAngle(float angle);
    void releaseHoldAngle(void);
    void breakJoints(void);
@@ -255,9 +247,7 @@ private:
    void unlockJoints(void);
    bool modeIsReached(void);
    void resetModeReached(void);
-   void equilibriumReached(void);
    void modeReached(void);
-   void instantAngleReached(void);
    void holdAngleReached(void);
    void stopAllJointMotors(void);
 

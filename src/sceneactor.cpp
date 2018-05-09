@@ -4,10 +4,10 @@
 
 using namespace oxygine;
 
-SceneActor::SceneActor(Resources& gameResources) :
+SceneActor::SceneActor(Resources& gameResources, float zoomScale) :
    m_gameResources(&gameResources),
    m_world(NULL),
-   m_zoomScale(0.40f),
+   m_zoomScale(zoomScale),
    m_stageToViewPortScale(m_zoomScale * Scales::c_stageToViewPortScale),
    m_physToStageScale(1.0f),
    m_panorateMode(PME_CENTER),
@@ -141,27 +141,6 @@ void SceneActor::doUpdate(const UpdateState& us)
 		m_leapfrog->goToMode(LFM_REENTRY);
 	}
 
-   if (data[SDL_SCANCODE_KP_0])
-   {
-      m_leapfrog->initMode(LFM_RESET);
-   }
-   else if (data[SDL_SCANCODE_KP_1])
-   {
-      m_leapfrog->initMode(LFM_LANDING);
-   }
-   else if (data[SDL_SCANCODE_KP_2])
-   {
-      m_leapfrog->initMode(LFM_DEEP_SPACE);
-   }
-   else if (data[SDL_SCANCODE_KP_3])
-   {
-      m_leapfrog->initMode(LFM_REENTRY);
-   }
-
-   else if (data[SDL_SCANCODE_KP_5])
-   {
-      m_leapfrog->setInstantAngle(0.0f);
-   }
 
    if (data[SDL_SCANCODE_KP_9])
    {
