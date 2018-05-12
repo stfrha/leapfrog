@@ -13,7 +13,9 @@ FreeSpaceActor::FreeSpaceActor(
    std::string& fileName,
    std::string& initialState) :
 	SceneActor(gameResources, 0.4f),
-   m_inOrbitField(false)
+   m_inOrbitField(false),
+   m_state(insertBurn),
+   m_stateChangeTime(0)
 {
    setPanorateMode(PME_CENTER);
 
@@ -90,6 +92,32 @@ void FreeSpaceActor::doUpdate(const oxygine::UpdateState &us)
    SceneActor::doUpdate(us);
 
    testForBoundaryRepel();
+
+   if (m_stateChangeTime == 0)
+   {
+      m_stateChangeTime = us.time;
+      m_leapfrog->fireMainBooster(true);
+      takeControlOfLeapfrog(true);
+   }
+   else
+   {
+      switch (m_state)
+      {
+      case insertBurn:
+         if (us.time > m_stateChangeTime + 1000)
+         {
+            m_state = operate;
+            m_stateChangeTime = us.time;
+            m_leapfrog->fireMainBooster(false);
+            takeControlOfLeapfrog(false);
+         }
+
+         break;
+      case operate:
+         // Do nothing special here
+         break;
+      }
+   }
 
 
    if (m_inOrbitField)

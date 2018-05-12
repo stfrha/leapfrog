@@ -263,7 +263,7 @@ void LaunchSite::doUpdate(const UpdateState &us)
          m_world->DestroyJoint(m_rightSupportBoosterJoint);
          //m_leftBoosterBody->ApplyAngularImpulse(-10000000.0f / 180.0f * MATH_PI, true);
          //m_leftBoosterBody->ApplyAngularImpulse(10000000.0f / 180.0f * MATH_PI, true);
-         m_leftBoosterBody->ApplyLinearImpulse(b2Vec2(-10000.0f, -1500.0f), b2Vec2(0.0f, -8.0f), true);
+         m_leftBoosterBody->ApplyLinearImpulse(b2Vec2(-5000.0f, -1500.0f), b2Vec2(0.0f, -8.0f), true);
          m_rightBoosterBody->ApplyLinearImpulse(b2Vec2(1000.0f, 50.0f), b2Vec2(0.0f, -8.0f), true);
 
          m_stateStartTime = us.time;

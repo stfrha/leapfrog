@@ -3,7 +3,7 @@
 #include "Box2D/Box2D.h"
 #include "Box2DDebugDraw.h"
 #include "physdispconvert.h"
-#include "scales.h"
+#include "scales.h" 
 #include "landingactorevents.h"
 #include "deepspacesceneevents.h"
 
@@ -20,8 +20,8 @@ MainActor::MainActor()
 	setSize(getStage()->getSize());
 
 //   startScene(STE_LANDING);
-//   startScene(STE_FREE_SPACE);
-   startScene(STE_ORBIT);
+   startScene(STE_FREE_SPACE);
+//   startScene(STE_ORBIT);
 }
 
 MainActor::~MainActor()

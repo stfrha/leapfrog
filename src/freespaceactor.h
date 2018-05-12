@@ -11,11 +11,22 @@ DECLARE_SMART(FreeSpaceActor, spFreeSpaceActor);
 
 class FreeSpaceActor : public SceneActor
 {
+public:
+   enum States
+   {
+      insertBurn,
+      operate
+   };
+
+
 private:
    spSoftBoundary m_lowerBoundary;
    spSoftBoundary m_leftBoundary;
    spSoftBoundary m_rightBoundary;
    spSoftBoundary m_topBoundary;
+
+   States m_state;
+   int m_stateChangeTime;
 
    bool m_inOrbitField;
    oxygine::timeMS m_enteredOrbitFieldAtTime;

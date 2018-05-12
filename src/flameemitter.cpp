@@ -11,7 +11,7 @@ FlameEmitter::FlameEmitter(
    float angle, 
    float emitterWidth,
    float intensity,
-   float lifetime,
+   int lifetime,
    float impulseMagnitude,
    float radius) :
    m_emit(false),
@@ -39,7 +39,7 @@ void FlameEmitter::stopEmitter(void)
 }
 
 void FlameEmitter::setParameters(float intensity,
-   float lifetime,
+   int lifetime,
    float impulseMagnitude,
    float radius)
 {

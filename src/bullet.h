@@ -30,7 +30,7 @@ public:
       b2World* world,
       const b2Vec2& pos,
       const float angle,
-      float bulletSpeed,
+      float impulseMagnitude,
       b2Vec2& craftSpeed,
       int m_lifetime,
       bool bouncy);

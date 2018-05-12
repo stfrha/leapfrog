@@ -18,7 +18,7 @@ PlanetActor::PlanetActor(
    // angle offset is 0.0698 * 11.4 = 0.796
    c_predictedAngleOffset(0.796f),
    c_startOffset(-100.0f / 180.0f * MATH_PI),
-   c_landingPointAngle(-1.142),
+   c_landingPointAngle(-1.142f),
    c_angleZeroRotation(0.952f + 100.0f / 180.0f * MATH_PI),
    c_safeLandingMaxRadDeviation(100.0f / 3500.0f / 2.0f)
 {

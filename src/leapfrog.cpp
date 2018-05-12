@@ -181,10 +181,10 @@ LeapFrog::LeapFrog(
       m_sceneActor,
       m_mainBody,
       b2Vec2(0.0f, -4.0f),             // Origin
-      3.0f * MATH_PI / 2.0f,           // Angle 
+      -MATH_PI / 2.0f,                 // Angle 
       4.0f,                            // Intensity [bullets per second]
       2000,                            // Lifetime [ms]
-      1000.0f,                         // Bullet speed
+      10000.0f,                         // Bullet speed
       false);                          // Bouncy
 
    m_gun->attachTo(this);
@@ -203,10 +203,10 @@ LeapFrog::LeapFrog(
 
    m_reentryFlameEmitterRightLeg = new ReentryFlameEmitter(
       gameResources,
-      m_rightBigLegBody,
+      m_boostBody,
       b2Vec2(2.0, 1.7f),
       b2Vec2(8.0f, 1.7f),
-      MATH_PI,
+      MATH_PI / 2.0f,
       4.0f,
       500,
       b2Vec2(0.1f, 5.0f));
@@ -215,10 +215,10 @@ LeapFrog::LeapFrog(
 
    m_reentryFlameEmitterLeftLeg = new ReentryFlameEmitter(
       gameResources,
-	   m_leftBigLegBody,
+      m_boostBody,
       b2Vec2(-8.0, 1.7f),
       b2Vec2(-2.0f, 1.7f),
-      0.0f,
+      MATH_PI / 2.0f,
       4.0f,
       500,
       b2Vec2(0.1f, 5.0f));
@@ -771,27 +771,16 @@ void LeapFrog::goToEnvironment(EnvironmentEnum env)
       m_boostMaxMagnitude = 30000.0f;
       m_steerMaxMagnitude = 30000.0f;;
       m_eveningMagnitude = 60000.0f;
-      m_maxVelocity = 200.0f;    // [m/s]
+      m_maxVelocity = 50.0f;    // [m/s]
       m_maxAngularVelocity = MATH_PI; // [rad/s]
       m_boosterFlame->setParameters(0, 500, 90.0f, 10.0f);
       m_shield->m_body->SetActive(true);
 
       break;
 
-   case ENV_GROUND:
-      m_boostInc = 900.0f;
-      m_boostMaxMagnitude = 6000.0f;
-      m_steerMaxMagnitude = 40000.0f;;
-      m_eveningMagnitude = 10000.0f;
-      m_maxVelocity = 400.0f;    // [m/s]
-      m_maxAngularVelocity = MATH_PI; // [rad/s]
-      m_boosterFlame->setParameters(0, 250, 70.0f, 10.0f);
-      m_shield->m_body->SetActive(false);
-      break;
-
    case ENV_ORBIT:
       m_boostInc = 2000.0f;
-      m_boostMaxMagnitude = 30000.0f;
+      m_boostMaxMagnitude = 4000.0f;
       m_steerMaxMagnitude = 30000.0f;;
       m_eveningMagnitude = 60000.0f;
       m_maxVelocity = 80.0f;    // [m/s]
@@ -799,6 +788,18 @@ void LeapFrog::goToEnvironment(EnvironmentEnum env)
       m_boosterFlame->setParameters(0, 500, 90.0f, 10.0f);
       m_shield->m_body->SetActive(true);
       break;
+
+   case ENV_GROUND:
+      m_boostInc = 900.0f;
+      m_boostMaxMagnitude = 6000.0f;
+      m_steerMaxMagnitude = 40000.0f;;
+      m_eveningMagnitude = 10000.0f;
+      m_maxVelocity = 120.0f;    // [m/s]
+      m_maxAngularVelocity = MATH_PI; // [rad/s]
+      m_boosterFlame->setParameters(0, 250, 70.0f, 10.0f);
+      m_shield->m_body->SetActive(false);
+      break;
+
 
    case ENV_LAUNCH:
       m_boostInc = 900.0f;
@@ -895,7 +896,7 @@ void LeapFrog::fireMainBooster(bool fire, bool flamesOnly)
             if (m_boostFireLastUpdate == false)
             {
                // Turn damping off
-               m_mainBody->SetLinearDamping(0.0f);
+               m_mainBody->SetLinearDamping(1.0f);
             }
          }
          else
@@ -903,7 +904,7 @@ void LeapFrog::fireMainBooster(bool fire, bool flamesOnly)
             if (m_boostFireLastUpdate == true)
             {
                // Turn damping on
-               m_mainBody->SetLinearDamping(2.0f);
+               m_mainBody->SetLinearDamping(1.0f);
             }
          }
 
@@ -915,15 +916,24 @@ void LeapFrog::fireMainBooster(bool fire, bool flamesOnly)
             // drop force then. Then, when no boost fire, 
             // break with a negative force linear with speed
             // making it regulate itself to stand-still
+            //if (vel < m_maxVelocity * 0.95f)
+            //{
+            //   m_boostMagnuitude += m_boostInc;
+
+            //   if (m_boostMagnuitude > m_boostMaxMagnitude)
+            //   {
+            //      m_boostMagnuitude = m_boostMaxMagnitude;
+            //   }
+            //}
             if (vel < m_maxVelocity * 0.95f)
             {
-               m_boostMagnuitude += m_boostInc;
-
-               if (m_boostMagnuitude > m_boostMaxMagnitude)
-               {
-                  m_boostMagnuitude = m_boostMaxMagnitude;
-               }
+               m_boostMagnuitude = m_boostMaxMagnitude;
             }
+            else
+            {
+               m_boostMagnuitude = 0.0f;
+            }
+
          }
          else
          {
@@ -1104,7 +1114,7 @@ void LeapFrog::reentrySetHeat(unsigned char heatAmount)
 
 void LeapFrog::setBoundedWallsActor(FreeSpaceActor* actor)
 {
-   m_gun->setBoundedWallsActor(actor);
+//   m_gun->setBoundedWallsActor(actor);
 }
 
 

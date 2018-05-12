@@ -14,26 +14,26 @@ Gun::Gun(
    float angle,
    float fireRate,
    int lifetime,
-   float bulletSpeed,
+   float impulseMagnitude,
    bool bouncy) :
    m_fire(false),
-   m_freeSpaceActor(NULL),
+//   m_freeSpaceActor(NULL),
    m_emitterBody(body),
    m_emitterOrigin(emitterOrigin),
    m_emittAngle(angle),
    m_interval(1.0f / fireRate * 1000.0f),
    m_lifetime(lifetime),
-   m_bulletSpeed(bulletSpeed),
+   m_impulseMagnitude(impulseMagnitude),
    m_gameResources(&gameResources),
    m_sceneActor(sceneActor)
 {
 }
 
-void Gun::setBoundedWallsActor(FreeSpaceActor* actor)
-{
-   m_freeSpaceActor = actor;
-}
-
+//void Gun::setBoundedWallsActor(FreeSpaceActor* actor)
+//{
+//   m_freeSpaceActor = actor;
+//}
+//
 
 void Gun::startGun(void)
 {
@@ -76,7 +76,7 @@ void Gun::doUpdate(const oxygine::UpdateState& us)
             m_emitterBody->GetWorld(),
             emitPos,
             emitAngle,
-            m_bulletSpeed,
+            m_impulseMagnitude,
             craftSpeed,
             m_lifetime,
             false);
@@ -84,10 +84,10 @@ void Gun::doUpdate(const oxygine::UpdateState& us)
          // Attach to parent's parent which is the view actor
          bullet->attachTo(getParent()->getParent());
 
-         if (m_freeSpaceActor != NULL)
-         {
-            m_freeSpaceActor->addBoundingBody((b2Body*)bullet.get()->getUserData());
-         }
+         //if (m_freeSpaceActor != NULL)
+         //{
+         //   m_freeSpaceActor->addBoundingBody((b2Body*)bullet.get()->getUserData());
+         //}
          
          m_timeSinceLast = 0;
       }

@@ -46,13 +46,13 @@ public:
       float angle, 
       float emitterWidth,
       float intensity,
-      float lifetime,
+      int lifetime,
       float impulseMagnitude,
       float radius);
 	void startEmitter(void);
 	void stopEmitter(void);
    void setParameters(float intensity,
-      float lifetime,
+      int lifetime,
       float impulseMagnitude,
       float radius);
 

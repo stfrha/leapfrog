@@ -13,7 +13,7 @@ DECLARE_SMART(Gun, spGun);
 class Gun : public oxygine::Actor
 {
 private:
-   FreeSpaceActor * m_freeSpaceActor;
+//   FreeSpaceActor * m_freeSpaceActor;
    oxygine::Resources* m_gameResources;
 
    bool m_fire;
@@ -32,7 +32,7 @@ private:
 
 	int m_lifetime; // [ms}
 
-   float m_bulletSpeed;
+   float m_impulseMagnitude;
 
    int m_timeSinceLast;
 
@@ -47,11 +47,11 @@ public:
       float angle, 
       float fireRate,
       int lifetime,
-      float bulletSpeed,
+      float impulseMagnitude,
       bool bouncy
    );
 
-   void setBoundedWallsActor(FreeSpaceActor* actor);
+//   void setBoundedWallsActor(FreeSpaceActor* actor);
 
 	void startGun(void);
 	void stopGun(void);

@@ -10,7 +10,7 @@ Bullet::Bullet(
    b2World* world,
    const b2Vec2& pos,
    const float angle,
-   float bulletSpeed,
+   float impulseMagnitude,
    b2Vec2& craftSpeed,
    int lifetime,
    bool bouncy) : 
@@ -37,11 +37,11 @@ Bullet::Bullet(
    setUserData(body);
 
    b2CircleShape shape;
-   shape.m_radius = 0.1f;
+   shape.m_radius = 0.5f;
 
    b2FixtureDef fixtureDef;
    fixtureDef.shape = &shape;
-   fixtureDef.density = 150.0f;
+   fixtureDef.density = 3.0f;
    fixtureDef.friction = 0.3f;
    fixtureDef.restitution = 0.5f;
    fixtureDef.filter.categoryBits = 4;
@@ -53,11 +53,14 @@ Bullet::Bullet(
 
    body->GetFixtureList()->SetUserData((CollisionEntity*)this);
    
-   b2Vec2 vel = b2Vec2(bulletSpeed * cos(angle), bulletSpeed * sin(angle));
+   b2Vec2 vel = b2Vec2(impulseMagnitude * cos(angle), impulseMagnitude * sin(angle));
 
-   vel += craftSpeed;
+//   vel += craftSpeed;
 
-   body->SetLinearVelocity(vel);
+   body->SetLinearVelocity(craftSpeed);
+
+   body->ApplyLinearImpulseToCenter(vel, true);
+
 }
 
 CollisionEntityTypeEnum Bullet::getEntityType(void)
