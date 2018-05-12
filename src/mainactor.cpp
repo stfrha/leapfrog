@@ -99,6 +99,9 @@ void MainActor::startScene(SceneTypeEnum scene)
       spOrbitScene reentryActor = new OrbitScene(m_gameResources, string("orbit_scene.xml"), string("deepSpaceState"));
       window->addChild(reentryActor);
 
+      reentryActor->addEventListener(OrbitSceneLandingComplete::EVENT, CLOSURE(this, &MainActor::landingCompleteListner));
+
+
       //m_debugDraw = new Box2DDraw;
       //m_debugDraw->SetFlags(b2Draw::e_shapeBit | b2Draw::e_jointBit | b2Draw::e_pairBit | b2Draw::e_centerOfMassBit);
       //m_debugDraw->attachTo(freeSpaceActor);
@@ -175,4 +178,9 @@ void MainActor::transitToDeepSpaceListner(Event *ev)
 void MainActor::transitToOrbitListner(Event *ev)
 {
    startScene(STE_ORBIT);
+}
+
+void MainActor::landingCompleteListner(oxygine::Event *ev)
+{
+   startScene(STE_LANDING);
 }

@@ -11,7 +11,16 @@ PlanetActor::PlanetActor(
    xml_node& objectNode) :
    m_gameResources(&gameResources),
    m_state(PAS_INITITAL),
-   m_orbitStartPos(Vector2(500.0f, 150.0f))
+   m_stateChange(true),
+   m_orbitStartPos(Vector2(500.0f, 150.0f)),
+   // 11.4 seconds from start of burn to normal landing
+   // Planet turn at 0.0698 rad/s
+   // angle offset is 0.0698 * 11.4 = 0.796
+   c_predictedAngleOffset(0.796f),
+   c_startOffset(-100.0f / 180.0f * MATH_PI),
+   c_landingPointAngle(-1.142),
+   c_angleZeroRotation(0.952f + 100.0f / 180.0f * MATH_PI),
+   c_safeLandingMaxRadDeviation(100.0f / 3500.0f / 2.0f)
 {
    //// I should probably load resources that are uniuqe here
    //setPanorateMode(PME_TOP_LEFT);
@@ -52,31 +61,88 @@ PlanetActor::PlanetActor(
       LandingSite ls(*it);
       m_landingSites.insert(ls);
    }
-
-
+   
    setAnchor(objectNode.attribute("anchorX").as_float(), objectNode.attribute("anchorY").as_float());
    setPosition(objectNode.attribute("posX").as_float(), objectNode.attribute("posY").as_float());
    setScale(objectNode.attribute("scale").as_float());
    attachTo(sceneParent);
+
+   m_positionIndicator = new Sprite();
+   m_positionIndicator->setResAnim(m_gameResources->getResAnim("lf_position"));
+   m_positionIndicator->setSize(40.0f, 40.0f);
+   m_positionIndicator->setAnchor(0.5f, 0.5f);
+   m_positionIndicator->setPosition(Vector2(100.0f, 150.0f));
+   m_positionIndicator->attachTo(this);
+
+   m_positionIndicator->addTween(Actor::TweenPosition(c_trajectoryPositions[0] + m_orbitStartPos), 6000, 1, false, 0, Tween::ease_outQuad);
 
    spTween rotTween = m_planet->addTween(Actor::TweenRotation(2.0f * MATH_PI), 90000, -1);
 
 }
 
 
+void PlanetActor::doUpdate(const UpdateState& us)
+{
+   //if (m_stateChange)
+   //{
+   //   logs::message("State changed in %d, ", us.time);
+
+   //   switch (m_state)
+   //   {
+   //   case PAS_INITITAL:
+   //      logs::messageln("PAS_INITITAL");
+   //      break;
+   //   case PAS_ORBIT_ESTABLISHED:
+   //      logs::messageln("PAS_ORBIT_ESTABLISHED");
+   //      break;
+   //   case PAS_BURN:
+   //      logs::messageln("PAS_BURN");
+   //      break;
+   //   case PAS_REENTRY:
+   //      logs::messageln("PAS_REENTRY");
+   //      break;
+   //   case PAS_LANDED:
+   //      logs::messageln("PAS_LANDED");
+   //      break;
+   //   }
+   //   m_stateChange = false;
+   //}
+
+   if (m_state == PAS_BURN)
+   {
+      m_burnIndicator->setProgress(m_burnIndicator->getProgress() + 0.01f);
+   }
+   else if (m_state == PAS_REENTRY)
+   {
+//      logs::messageln("Time in reentry: %d", us.time);
+   }
+}
+
 void PlanetActor::orbitEstablished(void)
 {
+   m_planetAngleAtOrbitEstablished = m_planet->getRotation();
+
    // Generate predicted landing sites
-   // TODO: Generate real landing sites also
+
    for (auto it = m_landingSites.begin(); it != m_landingSites.end(); ++it)
    {
+      spSprite predSite = new Sprite();
+      predSite->setResAnim(m_gameResources->getResAnim("predicted_site"));
+      predSite->setSize(100.0f, 30.0f);
+      predSite->setAnchor(0.5f, 0.5f);
+
+
+      float alpha = c_startOffset - m_planetAngleAtOrbitEstablished - it->m_angle;
+      predSite->setPosition(Vector2(3500.0f * cos(alpha), 3500.0f * sin(alpha)));
+      predSite->setRotation(alpha + MATH_PI / 2.0f);
+      predSite->attachTo(m_planet);
+
       spSprite crs = new Sprite();
-      crs->setResAnim(m_gameResources->getResAnim("predicted_site"));
+      crs->setResAnim(m_gameResources->getResAnim(it->m_texture));
       crs->setSize(100.0f, 30.0f);
       crs->setAnchor(0.5f, 0.5f);
 
-      float planetAngle = m_planet->getRotation();
-      float alpha = -100.0f / 180.0f * MATH_PI - planetAngle + it->m_angle;
+      alpha = c_startOffset - m_planetAngleAtOrbitEstablished - it->m_angle - c_predictedAngleOffset;
       crs->setPosition(Vector2(3500.0f * cos(alpha), 3500.0f * sin(alpha)));
       crs->setRotation(alpha + MATH_PI / 2.0f);
       crs->attachTo(m_planet);
@@ -96,12 +162,7 @@ void PlanetActor::orbitEstablished(void)
       trajectory[i]->attachTo(this);
    }
 
-   m_positionIndicator = new Sprite();
-   m_positionIndicator->setResAnim(m_gameResources->getResAnim("lf_position"));
-   m_positionIndicator->setSize(40.0f, 40.0f);
-   m_positionIndicator->setAnchor(0.5f, 0.5f);
    m_positionIndicator->setPosition(c_trajectoryPositions[0] + m_orbitStartPos);
-   m_positionIndicator->attachTo(this);
 
    spColorRectSprite burnFrame = new ColorRectSprite();
    burnFrame->setAnchor(0.5f, 0.5f);
@@ -142,14 +203,6 @@ void PlanetActor::orbitEstablished(void)
    level->attachTo(this);
 }
 
-void PlanetActor::doUpdate(const UpdateState& us)
-{
-   if (m_state == PAS_BURN)
-   {
-      m_burnIndicator->setProgress(m_burnIndicator->getProgress() + 0.01f);
-   }
-}
-
 
 void PlanetActor::startReentry(float relativeBurnDeviation, float deviationDistance)
 // The relativeBurnDeviation is the relative error from the 
@@ -166,7 +219,7 @@ void PlanetActor::startReentry(float relativeBurnDeviation, float deviationDista
    // TODO: Check if the relativeBurnDeviation is above 1
    // in which case a bouncy trajectory should be used.
 
-   spTweenQueue frogTweenQueue = new TweenQueue;
+   m_frogTweenQueue = new TweenQueue;
    if (relativeBurnDeviation > 1.0f)
    {
       // Create bouncy trajectory
@@ -174,7 +227,7 @@ void PlanetActor::startReentry(float relativeBurnDeviation, float deviationDista
       {
          Vector2 idelaPos = c_bouncyTrajectoryPositions[i] + m_orbitStartPos;
          Vector2 burnDeviation = Vector2(i * relativeBurnDeviation * deviationDistance / 44.0f, 0.0f);
-         frogTweenQueue->add(Actor::TweenPosition(idelaPos + burnDeviation), 220);
+         m_frogTweenQueue->add(Actor::TweenPosition(idelaPos + burnDeviation), 220);
       }
    }
    else
@@ -184,20 +237,70 @@ void PlanetActor::startReentry(float relativeBurnDeviation, float deviationDista
       {
          Vector2 idelaPos = c_trajectoryPositions[i] + m_orbitStartPos;
          Vector2 burnDeviation = Vector2(i * relativeBurnDeviation * deviationDistance / 44.0f, 0.0f);
-         frogTweenQueue->add(Actor::TweenPosition(idelaPos + burnDeviation), 220);
+         m_frogTweenQueue->add(Actor::TweenPosition(idelaPos + burnDeviation), 220);
       }
    }
-   m_positionIndicator->addTween(frogTweenQueue);
+   m_positionIndicator->addTween(m_frogTweenQueue);
+}
+
+void PlanetActor::surfaceReached(void)
+{
+   m_planetAngleAtSurface = m_planet->getRotation();
+
+   float landingAngle = 
+      m_planetAngleAtSurface - 
+      c_predictedAngleOffset - 
+      (c_landingPointAngle - c_startOffset) - 
+      m_planetAngleAtOrbitEstablished;
+
+   logs::messageln("Landing angle: %f", landingAngle);
+   
+   float minAngleToLandingSite = 2.0f * MATH_PI;
+
+   // Check the closest landing site
+   for (auto it = m_landingSites.begin(); it != m_landingSites.end(); ++it)
+   {
+      float absDiff = fabs(it->m_angle - landingAngle);
+      if (absDiff < minAngleToLandingSite)
+      {
+         minAngleToLandingSite = absDiff;
+         m_results.m_angleFromClosestSite = it->m_angle - landingAngle;
+         m_results.m_closestSite = it->m_name;
+
+         if (absDiff < c_safeLandingMaxRadDeviation)
+         {
+            m_results.m_landingSuccessfull = true;
+         }
+         else
+         {
+            m_results.m_landingSuccessfull = false;
+         }
+      }
+   }
+
+   m_state = PAS_LANDED;
+   m_stateChange = true;
+
+   m_frogTweenQueue->remove();
+}
+
+LandingResult PlanetActor::getLandingResult()
+{
+   return m_results;
 }
 
 void PlanetActor::startBurn(void)
 {
+   m_planetAngleAtBurnStart = m_planet->getRotation();
+
    m_state = PAS_BURN;
+   m_stateChange = true;
 }
 
 void PlanetActor::stopBurn(void)
 {
    m_state = PAS_REENTRY;
+   m_stateChange = true;
 }
 
 float PlanetActor::getBurnAmount(void)

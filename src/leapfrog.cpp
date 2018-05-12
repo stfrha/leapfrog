@@ -206,7 +206,7 @@ LeapFrog::LeapFrog(
       m_rightBigLegBody,
       b2Vec2(2.0, 1.7f),
       b2Vec2(8.0f, 1.7f),
-      MATH_PI / 2.0f,
+      MATH_PI,
       4.0f,
       500,
       b2Vec2(0.1f, 5.0f));
@@ -218,7 +218,7 @@ LeapFrog::LeapFrog(
 	   m_leftBigLegBody,
       b2Vec2(-8.0, 1.7f),
       b2Vec2(-2.0f, 1.7f),
-      MATH_PI / 2.0f,
+      0.0f,
       4.0f,
       500,
       b2Vec2(0.1f, 5.0f));
@@ -852,10 +852,8 @@ void LeapFrog::holdAngleReached(void)
 }
 
 
-void LeapFrog::fireMainBooster(bool fire)
+void LeapFrog::fireMainBooster(bool fire, bool flamesOnly)
 {
-
-
    // Handle booster flame particles
 
    if (fire)
@@ -875,77 +873,79 @@ void LeapFrog::fireMainBooster(bool fire)
       }
    }
 
-
-   // Handle forces of Leapfrog
-   // This is done differently for Deep-space and ground environment
-   // In Deep space we accellerate to a maximum speed and decellerate
-   // fast when booster is turned off.
-   // Steering is fast and near instantaneous and stop turning directly
-
-   // In ground mode we apply force independently of the velocity
-   // and rotation is slowly decellerating
-
-   if ((m_environment == ENV_DEEP_SPACE) || (m_environment == ENV_ORBIT))
+   if (!flamesOnly)
    {
-      float vel = m_mainBody->GetLinearVelocity().Length();
+      // Handle forces of Leapfrog
+      // This is done differently for Deep-space and ground environment
+      // In Deep space we accellerate to a maximum speed and decellerate
+      // fast when booster is turned off.
+      // Steering is fast and near instantaneous and stop turning directly
 
-      // We start damping when booster is released
-      // and remove damping when it is fired
-      if (fire)
-      {
-         if (m_boostFireLastUpdate == false)
-         {
-            // Turn damping off
-            m_mainBody->SetLinearDamping(0.0f);
-         }
-      }
-      else
-      {
-         if (m_boostFireLastUpdate == true)
-         {
-            // Turn damping on
-            m_mainBody->SetLinearDamping(2.0f);
-         }
-      }
+      // In ground mode we apply force independently of the velocity
+      // and rotation is slowly decellerating
 
-      if (fire)
+      if ((m_environment == ENV_DEEP_SPACE) || (m_environment == ENV_ORBIT))
       {
-         // Increment force with m_boostInc until more than
-         // m_boostMaxMagnitude and remain this max magnitude
-         // force until speed is more than 90 of max speed, 
-         // drop force then. Then, when no boost fire, 
-         // break with a negative force linear with speed
-         // making it regulate itself to stand-still
-         if (vel < m_maxVelocity * 0.95f)
+         float vel = m_mainBody->GetLinearVelocity().Length();
+
+         // We start damping when booster is released
+         // and remove damping when it is fired
+         if (fire)
+         {
+            if (m_boostFireLastUpdate == false)
+            {
+               // Turn damping off
+               m_mainBody->SetLinearDamping(0.0f);
+            }
+         }
+         else
+         {
+            if (m_boostFireLastUpdate == true)
+            {
+               // Turn damping on
+               m_mainBody->SetLinearDamping(2.0f);
+            }
+         }
+
+         if (fire)
+         {
+            // Increment force with m_boostInc until more than
+            // m_boostMaxMagnitude and remain this max magnitude
+            // force until speed is more than 90 of max speed, 
+            // drop force then. Then, when no boost fire, 
+            // break with a negative force linear with speed
+            // making it regulate itself to stand-still
+            if (vel < m_maxVelocity * 0.95f)
+            {
+               m_boostMagnuitude += m_boostInc;
+
+               if (m_boostMagnuitude > m_boostMaxMagnitude)
+               {
+                  m_boostMagnuitude = m_boostMaxMagnitude;
+               }
+            }
+         }
+         else
+         {
+            m_boostMagnuitude = 0;
+            //m_boostMagnuitude = vel * -m_boostInc;
+         }
+
+      }
+      else if (m_environment == ENV_GROUND)
+      {
+         if (fire)
          {
             m_boostMagnuitude += m_boostInc;
-
             if (m_boostMagnuitude > m_boostMaxMagnitude)
             {
                m_boostMagnuitude = m_boostMaxMagnitude;
             }
          }
-      }
-      else
-      {
-         m_boostMagnuitude = 0;
-         //m_boostMagnuitude = vel * -m_boostInc;
-      }
-
-   }
-   else if (m_environment == ENV_GROUND)
-   {
-      if (fire)
-      {
-         m_boostMagnuitude += m_boostInc;
-         if (m_boostMagnuitude > m_boostMaxMagnitude)
+         else
          {
-            m_boostMagnuitude = m_boostMaxMagnitude;
+            m_boostMagnuitude = 0;
          }
-      }
-      else
-      {
-         m_boostMagnuitude = 0;
       }
    }
 
@@ -957,6 +957,7 @@ void LeapFrog::fireMainBooster(bool fire)
    {
       m_boostFireLastUpdate = false;
    }
+
 }
 
 void LeapFrog::fireSteeringBooster(int dir)

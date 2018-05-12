@@ -255,9 +255,6 @@
     <ClCompile Include="..\src\smokeparticle.cpp">
       <Filter>Particles</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\reentrycompositeactor.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\src\reentryflameparticle.cpp">
       <Filter>Particles</Filter>
     </ClCompile>
@@ -287,6 +284,15 @@
     </ClCompile>
     <ClCompile Include="..\src\flamesmokeparticle.cpp">
       <Filter>Particles</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\orbitwindow.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\orbitscene.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\orbitspacescene.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -503,9 +509,6 @@
     <ClInclude Include="..\src\smokeparticle.h">
       <Filter>Particles</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\reentrycompositeactor.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\src\reentryflameparticle.h">
       <Filter>Particles</Filter>
     </ClInclude>
@@ -549,6 +552,21 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\src\deepspacesceneevents.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\orbitwindow.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\orbitscene.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\orbitspacescene.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\orbitspacesceneevents.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\orbitsceneevents.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

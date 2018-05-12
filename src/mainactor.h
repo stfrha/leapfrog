@@ -30,6 +30,7 @@ private:
 
    void transitToDeepSpaceListner(oxygine::Event *ev);
    void transitToOrbitListner(oxygine::Event *ev);
+   void landingCompleteListner(oxygine::Event *ev);
 
 
 public:

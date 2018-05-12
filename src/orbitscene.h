@@ -2,6 +2,7 @@
 #include "oxygine-framework.h"
 #include "Box2D/Box2D.h"
 #include "compoundobject.h"
+#include "orbitsceneevents.h"
 
 class OrbitSpaceScene;
 class PlanetActor;

@@ -51,7 +51,7 @@ void OrbitScene::doUpdate(const oxygine::UpdateState &us)
       if (data[SDL_SCANCODE_W])
       {
          m_planet->startBurn();
-         m_leapfrog->fireMainBooster(true);
+         m_leapfrog->fireMainBooster(true, true);
          m_state = breaking;
       }
 
@@ -155,8 +155,20 @@ void OrbitScene::doUpdate(const oxygine::UpdateState &us)
             m_leapfrog->reentrySetHeat((unsigned char)heat);
          }
       }
+
+      if (time > 10200)
+      {
+         m_leapfrog->reentrySetHeat(0xff);
+         m_planet->surfaceReached();
+         m_stateChangeTime = us.time;
+         m_state = touchDown;
+      }
       break;
    case touchDown:
+      
+      // Sending landing complete event with the result
+      OrbitSceneLandingComplete event(m_planet->getLandingResult());
+      dispatchEvent(&event);
       break;
    }
 }

@@ -13,11 +13,11 @@
 			<landingSite
 				name="goldMine"
 				angle="0.0"
-				texture="mineWhole" />
+				texture="alpha_mine1" />
 			<landingSite
-				name="urbanCity1"
-				angle="0.4"
-				texture="skyline" />
+				name="alphaCity"
+				angle="0.1"
+				texture="alpha_city1" />
 		</landingSites>
 	</ChildCompoundObjectRef>
 	<ChildCompoundObjectRef
