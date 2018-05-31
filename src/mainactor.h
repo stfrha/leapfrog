@@ -66,5 +66,9 @@ public:
       int eventId);
    void sendEvent(int eventId);
 
+protected:
+   void doUpdate(const UpdateState& us);
+
+
 };
 

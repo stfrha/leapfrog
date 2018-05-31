@@ -390,7 +390,12 @@ void CompoundObject::defineStaticPolygon(
 
    spPolygon object = new oxygine::Polygon();
    object->setResAnim(gameResources.getResAnim(objectNode.attribute("texture").as_string()));
-   Vector2 mSize = Vector2(objectNode.attribute("width").as_float(), objectNode.attribute("height").as_float());
+   
+   Vector2 textureMeterSize = Vector2(objectNode.attribute("textureMeterWidth").as_float(), 
+      objectNode.attribute("textureMeterHeight").as_float());
+   
+   Vector2 textureMeterOffset = Vector2(objectNode.attribute("textureOffsetMeterX").as_float(), 
+      objectNode.attribute("textureOffsetMeterY").as_float());
 
    for (auto it = objectNode.child("vertices").children("vertex").begin();
       it != objectNode.child("vertices").children("vertex").end();
@@ -409,7 +414,12 @@ void CompoundObject::defineStaticPolygon(
          it->attribute("v3").as_int()));
    }
 
-   vertexPCT2* vs = PolygonVertices::createTriangleVertices(vertices, triangles, mSize, Vector2(0.0f, 0.0f));
+   vertexPCT2* vs = PolygonVertices::createTriangleVertices(
+      vertices, 
+      triangles, 
+      textureMeterSize, 
+      textureMeterOffset);
+
    object->setVertices(vs, sizeof(vertexPCT2) *  triangles.size() * 4, vertexPCT2::FORMAT, true);
 
    object->attachTo(newCo);
@@ -582,7 +592,12 @@ void CompoundObject::definePolygonObject(
    spPolygon object = new oxygine::Polygon();
    object->setResAnim(gameResources.getResAnim(objectNode.attribute("texture").as_string()));
 
-   Vector2 mSize = Vector2(objectNode.attribute("width").as_float(), objectNode.attribute("height").as_float());
+   Vector2 textureMeterSize = Vector2(objectNode.attribute("textureMeterWidth").as_float(),
+      objectNode.attribute("textureMeterHeight").as_float());
+
+   Vector2 textureMeterOffset = Vector2(objectNode.attribute("textureOffsetMeterX").as_float(),
+      objectNode.attribute("textureOffsetMeterY").as_float());
+
 
    //object->setSize(objectNode.attribute("width").as_float(), objectNode.attribute("height").as_float());
    //object->setAnchor(Vector2(objectNode.attribute("anchorX").as_float(), objectNode.attribute("anchorY").as_float()));
@@ -605,7 +620,7 @@ void CompoundObject::definePolygonObject(
          it->attribute("v3").as_int()));
    }
 
-   vertexPCT2* vs = PolygonVertices::createTriangleVertices(vertices, triangles, mSize, Vector2(0.0f, 0.0f));
+   vertexPCT2* vs = PolygonVertices::createTriangleVertices(vertices, triangles, textureMeterSize, textureMeterOffset);
    object->setVertices(vs, sizeof(vertexPCT2) *  triangles.size() * 4, vertexPCT2::FORMAT, true);
 
    object->attachTo(newCo);

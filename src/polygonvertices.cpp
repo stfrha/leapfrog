@@ -8,9 +8,9 @@ using namespace std;
 vertexPCT2 PolygonVertices::initVertex(
    const Vector2& pos, 
    const unsigned int color, 
-   const Vector2& bmSize, 
+   const Vector2& textureMeterSize,
    const Vector2& alignment, 
-   const Vector2& bmOffset)
+   const Vector2& textureMeterOffset)
 {
    vertexPCT2 v;
    v.color = color;
@@ -18,10 +18,9 @@ vertexPCT2 PolygonVertices::initVertex(
    v.y = pos.y;
    v.z = 0;
 
-   // TODO: Learn how this works and correct accordingly
-   Vector2 scale = bmSize;
-   v.u = v.x / scale.x + bmOffset.x / scale.x - alignment.x / scale.x;
-   v.v = v.y / scale.y + bmOffset.y / scale.y - alignment.y / scale.y ;
+   // I don't really know why there should be "-(minus) textureMeterOffsett, but it works
+   v.u = v.x / textureMeterSize.x - textureMeterOffset.x / textureMeterSize.x /*- alignment.x / textureMeterSize.x*/;
+   v.v = v.y / textureMeterSize.y - textureMeterOffset.y / textureMeterSize.y /*- alignment.y / textureMeterSize.y */;
 
    return v;
 }
@@ -29,10 +28,10 @@ vertexPCT2 PolygonVertices::initVertex(
 vertexPCT2* PolygonVertices::createTriangleVertices(
    const vector<Vector2>& vertices, 
    const vector<VectorT3<int> >& triangles, 
-   const Vector2& mSize, 
-   const Vector2& mOffset)
+   const Vector2& textureMeterSize, 
+   const Vector2& textureMeterOffset)
 {
-   // find alignment so bitmap "starts" at the left-most point of the polygone
+   // find alignment so bitmap "starts" at the left-most point of the polygon
    // This is done by finding the min of the x and y coordinates of all 
    // vertices
    Vector2 alignment = Vector2(FLT_MAX, FLT_MAX);
@@ -50,9 +49,6 @@ vertexPCT2* PolygonVertices::createTriangleVertices(
       }
    }
 
-   alignment.x = alignment.x;
-   alignment.y = alignment.y;
-
    int num = triangles.size();
    int verticesCount = num * 4;
 
@@ -67,26 +63,26 @@ vertexPCT2* PolygonVertices::createTriangleVertices(
          vertices[(size_t)triangles[t].x - 1].x,
          vertices[(size_t)triangles[t].x - 1].y);
 
-      *p = initVertex(pos, Color::White, mSize, alignment, mOffset);
+      *p = initVertex(pos, Color::White, textureMeterSize, alignment, textureMeterOffset);
       ++p;
 
       pos = Vector2(
          vertices[(size_t)triangles[t].y - 1].x,
          vertices[(size_t)triangles[t].y - 1].y);
 
-      *p = initVertex(pos, Color::White, mSize, alignment, mOffset);
+      *p = initVertex(pos, Color::White, textureMeterSize, alignment, textureMeterOffset);
       ++p;
 
       pos = Vector2(
          vertices[(size_t)triangles[t].z - 1].x,
          vertices[(size_t)triangles[t].z - 1].y);
 
-      *p = initVertex(pos, Color::White, mSize, alignment, mOffset);
+      *p = initVertex(pos, Color::White, textureMeterSize, alignment, textureMeterOffset);
       ++p;
 
       //Oxygine uses "triangles strip" rendering mode
       //dublicate last vertex (degenerate triangles)
-      *p = initVertex(pos, Color::White, mSize, alignment, mOffset);
+      *p = initVertex(pos, Color::White, textureMeterSize, alignment, textureMeterOffset);
       ++p;
    }
 

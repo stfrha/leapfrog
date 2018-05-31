@@ -1,5 +1,6 @@
 <?xml version="1.0"?>
-<compoundObject>
+<compoundObject
+	type="landingPad" >
 	<staticBox 
 		name="landingPad1"
 		texture="landing_pad"

@@ -1,5 +1,6 @@
 <?xml version="1.0"?>
-<compoundObject>
+<compoundObject
+	type="landingScene" >
 	<staticPolygon 
 		name="grotto"
 		texture="grotto"
@@ -48,28 +49,33 @@
 		</triangles>
 	</staticPolygon>
 	<ChildCompoundObjectRef 
-		name="leapfrog1"
-		type="leapfrog">
-		<landingState 
+		name="leapfrog1">
+		<stateProperties
+			state="landingState"
 			file="leapfrog_reentry.xml" 
 			posX="500.0"
 			posY="150.0" />
-		<groundState 
+		<stateProperties
+			state="groundState"
 			file="leapfrog_landing.xml" 
 			posX="700.0"
 			posY="175.0" />
 	</ChildCompoundObjectRef>
 	<ChildCompoundObjectRef 
-		name="launchSite1"
-		type="launchSite"
-		file="launch_site.xml" 
-		posX="60.0"
-		posY="480.0" />
+		name="launchSite1" >
+		<stateProperties
+			state="default"
+			file="launch_site.xml" 
+			posX="60.0"
+			posY="480.0" />
+	</ChildCompoundObjectRef>
 	<ChildCompoundObjectRef 
-		name="landingPad1"
-		type="landingPad"
-		file="landing_pad.xml" 
-		posX="400"
-		posY="300" />
+		name="landingPad1">
+		<stateProperties
+			state="default"
+			file="landing_pad.xml" 
+			posX="400"
+			posY="300" />
+	</ChildCompoundObjectRef>
 </compoundObject>
 

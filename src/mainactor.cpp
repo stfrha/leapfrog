@@ -15,12 +15,12 @@ using namespace std;
 MainActor::MainActor()
 {
 	//load xml file with resources definition
-	m_gameResources.loadXML("res.xml");
+	m_gameResources.loadXML("..\\data\\res.xml");
 
 	setSize(getStage()->getSize());
 
-//   startScene(STE_LANDING);
-   startScene(STE_FREE_SPACE);
+   startScene(STE_LANDING);
+//   startScene(STE_FREE_SPACE);
 //   startScene(STE_ORBIT);
 }
 
@@ -183,4 +183,22 @@ void MainActor::transitToOrbitListner(Event *ev)
 void MainActor::landingCompleteListner(oxygine::Event *ev)
 {
    startScene(STE_LANDING);
+}
+
+void MainActor::doUpdate(const UpdateState& us)
+{
+   const Uint8* data = SDL_GetKeyboardState(0);
+
+   if (data[SDL_SCANCODE_F1])
+   {
+      startScene(STE_LANDING);
+   }
+   else if (data[SDL_SCANCODE_F2])
+   {
+      startScene(STE_FREE_SPACE);
+   }
+   else if (data[SDL_SCANCODE_F3])
+   {
+      startScene(STE_ORBIT);
+   }
 }

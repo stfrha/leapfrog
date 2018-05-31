@@ -1,5 +1,6 @@
 <?xml version="1.0"?>
-<compoundObject>
+<compoundObject
+	type="launchSite" >
 	<staticPolygon
 		name="foundation"
 		texture="concrete"
