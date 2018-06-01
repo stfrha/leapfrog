@@ -7,8 +7,10 @@
 		collisionEntity="notApplicable"
 		posX="0"
 		posY="0"		
-		width="150"
-		height="105"
+		textureMeterWidth="150"
+		textureMeterHeight="105"
+		textureOffsetMeterX="0"
+		textureOffsetMeterY="0"
 		zLevel="167"
 		collisionCategory="2048"
 		collisionMask="65535" >
@@ -97,10 +99,12 @@
 		name="leftRestRightFootGlider"
 		texture="ls_right_foot_glider"
 		collisionEntity="notApplicable"
-		width="3.4"
-		height="2.2"
 		posX="59.98"
 		posY="-90.2"
+		textureMeterWidth="3.4"
+		textureMeterHeight="2.2"
+		textureOffsetMeterX="0"
+		textureOffsetMeterY="0"
 		zLevel="166"
 		collisionCategory="32"
 		collisionMask="61439"  >
@@ -119,10 +123,12 @@
 		name="rightRestLeftFootGlider"
 		texture="ls_left_foot_glider"
 		collisionEntity="notApplicable"
-		width="3.4"
-		height="2.2"
 		posX="69.94"
 		posY="-90.2"
+		textureMeterWidth="3.4"
+		textureMeterHeight="2.2"
+		textureOffsetMeterX="0"
+		textureOffsetMeterY="0"
 		zLevel="166"
 		collisionCategory="32"
 		collisionMask="61439"  >
@@ -213,14 +219,17 @@
 		zLevel="166"
 		collisionCategory="32"
 		collisionMask="61439"  />
-	<dynamicPolygon 
+	<boxedSpritePolygonBody 
 		name="mainTank"
 		texture="ls_booster_tank"
 		collisionEntity="notApplicable"
-		width="13.2"
-		height="53"
 		posX="65.39"
 		posY="-59.68"
+		angle="0"
+		width="13.2"
+		height="53"
+		anchorX="0.5"
+		anchorY="0.5"
 		zLevel="120"
 		collisionCategory="4096"
 		collisionMask="65503"  >
@@ -238,7 +247,7 @@
 			<triangle id="1" v1="1" v2="4" v3="5" />
 			<triangle id="1" v1="1" v2="5" v3="6" />
 		</triangles>
-	</dynamicPolygon>		
+	</boxedSpritePolygonBody>		
 	<dynamicBox 
 		name="leftSupportBooster"
 		texture="ls_support_booster"
