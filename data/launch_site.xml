@@ -7,6 +7,7 @@
 		collisionEntity="notApplicable"
 		posX="0"
 		posY="0"		
+		angle="0.2"
 		textureMeterWidth="150"
 		textureMeterHeight="105"
 		textureOffsetMeterX="0"
@@ -58,6 +59,16 @@
 		zLevel="166"
 		collisionCategory="32"
 		collisionMask="61439"  />
+	<staticCircle
+		name="sun"
+		texture="lf_position"
+		collisionEntity="notApplicable"
+		radius="25"
+		posX="50"
+		posY="50"
+		zLevel="166"
+		collisionCategory="32"
+		collisionMask="61439"  />
 	<staticBox
 		name="rightTower"
 		texture="ls_tower"
@@ -95,16 +106,14 @@
 		</triangles>
 	</dynamicPolygon>
 	-->
-	<dynamicPolygon
+	<dynamicBoxedSpritePolygonBody
 		name="leftRestRightFootGlider"
 		texture="ls_right_foot_glider"
 		collisionEntity="notApplicable"
 		posX="59.98"
 		posY="-90.2"
-		textureMeterWidth="3.4"
-		textureMeterHeight="2.2"
-		textureOffsetMeterX="0"
-		textureOffsetMeterY="0"
+		width="3.4"
+		height="2.2"
 		zLevel="166"
 		collisionCategory="32"
 		collisionMask="61439"  >
@@ -118,17 +127,15 @@
 			<triangle id="1" v1="1" v2="3" v3="2" />
 			<triangle id="2" v1="1" v2="4" v3="3" />
 		</triangles>
-	</dynamicPolygon>
-	<dynamicPolygon
+	</dynamicBoxedSpritePolygonBody>
+	<dynamicBoxedSpritePolygonBody
 		name="rightRestLeftFootGlider"
 		texture="ls_left_foot_glider"
 		collisionEntity="notApplicable"
 		posX="69.94"
 		posY="-90.2"
-		textureMeterWidth="3.4"
-		textureMeterHeight="2.2"
-		textureOffsetMeterX="0"
-		textureOffsetMeterY="0"
+		width="3.4"
+		height="2.2"
 		zLevel="166"
 		collisionCategory="32"
 		collisionMask="61439"  >
@@ -142,7 +149,7 @@
 			<triangle id="1" v1="1" v2="3" v3="2" />
 			<triangle id="2" v1="1" v2="4" v3="3" />
 		</triangles>
-	</dynamicPolygon>
+	</dynamicBoxedSpritePolygonBody>
 	<!--
 	<dynamicPolygon
 		name="rightRestRightFootGlider"
@@ -219,7 +226,7 @@
 		zLevel="166"
 		collisionCategory="32"
 		collisionMask="61439"  />
-	<boxedSpritePolygonBody 
+	<dynamicBoxedSpritePolygonBody 
 		name="mainTank"
 		texture="ls_booster_tank"
 		collisionEntity="notApplicable"
@@ -247,7 +254,7 @@
 			<triangle id="1" v1="1" v2="4" v3="5" />
 			<triangle id="1" v1="1" v2="5" v3="6" />
 		</triangles>
-	</boxedSpritePolygonBody>		
+	</dynamicBoxedSpritePolygonBody>		
 	<dynamicBox 
 		name="leftSupportBooster"
 		texture="ls_support_booster"
@@ -365,14 +372,14 @@
 		zLevel="118"
 		collisionCategory="32"
 		collisionMask="61439"  />
-	<weldJoint
+	<!-- <weldJoint
 		name="leftRestLeftGliderJoint"
 		objectAName="leftRest"
 		objectBName="leftRestLeftFootGlider"
 		objectAAnchorX="-1.162"
 		objectAAnchorY="-1.62"
 		objectBAnchorX="-1.7"
-		objectBAnchorY="1.1" />
+		objectBAnchorY="1.1" /> -->
 	<weldJoint
 		name="leftRestRightGliderJoint"
 		objectAName="leftRest"
@@ -389,14 +396,14 @@
 		objectAAnchorY="-1.62"
 		objectBAnchorX="-1.7"
 		objectBAnchorY="1.1" />
-	<weldJoint
+	<!-- <weldJoint
 		name="rightRestRightGliderJoint"
 		objectAName="rightRest"
 		objectBName="rightRestRightFootGlider"
 		objectAAnchorX="1.162"
 		objectAAnchorY="-1.62"
 		objectBAnchorX="1.7"
-		objectBAnchorY="1.1" />
+		objectBAnchorY="1.1" /> -->
 	<revoluteJoint
 		name="leftRestJoint"
 		objectAName="leftRest"
@@ -411,7 +418,7 @@
 		objectBName="leftRestTrolley"
 		objectAAnchorX="4.5"
 		objectAAnchorY="-22.04"
-		objectBAnchorX="-2,425"
+		objectBAnchorX="-2.425"
 		objectBAnchorY="0" />
 	<revoluteJoint
 		name="rightRestJoint"
@@ -427,7 +434,7 @@
 		objectBName="rightRestTrolley"
 		objectAAnchorX="-4.5"
 		objectAAnchorY="-22.04"
-		objectBAnchorX="2,425"
+		objectBAnchorX="2.425"
 		objectBAnchorY="0" />
 	<weldJoint
 		name="leftHolderTrolleyJoint"
@@ -435,7 +442,7 @@
 		objectBName="leftHolderTrolley"
 		objectAAnchorX="4.5"
 		objectAAnchorY="22.04"
-		objectBAnchorX="-2,425"
+		objectBAnchorX="-2.425"
 		objectBAnchorY="0" />
 	<weldJoint
 		name="rightHolderTrolleyJoint"
@@ -443,7 +450,7 @@
 		objectBName="rightHolderTrolley"
 		objectAAnchorX="-4.5"
 		objectAAnchorY="4.45"
-		objectBAnchorX="2,425"
+		objectBAnchorX="2.425"
 		objectBAnchorY="0" />
 	<revoluteJoint
 		name="leftHolderJoint"

@@ -15,7 +15,7 @@
 		zLevel="128"
 		collisionCategory="4"
 		collisionMask="40123" />
-	<boxedSpritePolygonBody
+	<dynamicBoxedSpritePolygonBody
 		name="lfLeftBigLeg"
 		texture="lf_big_leg"
 		collisionEntity="lfBigLeg"
@@ -39,8 +39,8 @@
 			<triangle id="1" v1="1" v2="3" v3="2" />
 			<triangle id="2" v1="1" v2="4" v3="3" />
 		</triangles>
-	</boxedSpritePolygonBody>
-	<boxedSpritePolygonBody
+	</dynamicBoxedSpritePolygonBody>
+	<dynamicBoxedSpritePolygonBody
 		name="lfRightBigLeg"
 		texture="lf_big_leg"
 		collisionEntity="lfBigLeg"
@@ -64,8 +64,8 @@
 			<triangle id="1" v1="1" v2="3" v3="2" />
 			<triangle id="2" v1="1" v2="4" v3="3" />
 		</triangles>
-	</boxedSpritePolygonBody>
-	<boxedSpritePolygonBody
+	</dynamicBoxedSpritePolygonBody>
+	<dynamicBoxedSpritePolygonBody
 		name="lfLeftSmallLeg"
 		texture="lf_small_leg"
 		collisionEntity="lfSmallLeg"
@@ -89,8 +89,8 @@
 			<triangle id="1" v1="1" v2="3" v3="2" />
 			<triangle id="2" v1="1" v2="4" v3="3" />
 		</triangles>
-	</boxedSpritePolygonBody>
-	<boxedSpritePolygonBody
+	</dynamicBoxedSpritePolygonBody>
+	<dynamicBoxedSpritePolygonBody
 		name="lfRightSmallLeg"
 		texture="lf_small_leg"
 		collisionEntity="lfSmallLeg"
@@ -114,8 +114,8 @@
 			<triangle id="1" v1="1" v2="3" v3="2" />
 			<triangle id="2" v1="1" v2="4" v3="3" />
 		</triangles>
-	</boxedSpritePolygonBody>
-	<boxedSpritePolygonBody
+	</dynamicBoxedSpritePolygonBody>
+	<dynamicBoxedSpritePolygonBody
 		name="lfLeftFoot"
 		texture="lf_foot"
 		collisionEntity="lfLeftFoot"
@@ -139,8 +139,8 @@
 			<triangle id="1" v1="1" v2="3" v3="2" />
 			<triangle id="2" v1="1" v2="4" v3="3" />
 		</triangles>
-	</boxedSpritePolygonBody>
-	<boxedSpritePolygonBody
+	</dynamicBoxedSpritePolygonBody>
+	<dynamicBoxedSpritePolygonBody
 		name="lfRightFoot"
 		texture="lf_foot"
 		collisionEntity="lfRightFoot"
@@ -164,7 +164,7 @@
 			<triangle id="1" v1="1" v2="3" v3="2" />
 			<triangle id="2" v1="1" v2="4" v3="3" />
 		</triangles>
-	</boxedSpritePolygonBody>
+	</dynamicBoxedSpritePolygonBody>
 	<dynamicBox 
 		name="lfRightSteer"
 		texture="lf_right_steer"
@@ -193,7 +193,7 @@
 		zLevel="128"
 		collisionCategory="4"
 		collisionMask="40123" />
-	<boxedSpritePolygonBody
+	<dynamicBoxedSpritePolygonBody
 		name="lfMainBody"
 		texture="lf_body"
 		collisionEntity="leapfrog"
@@ -221,7 +221,7 @@
 			<triangle id="1" v1="1" v2="4" v3="5" />
 			<triangle id="2" v1="1" v2="5" v3="6" />
 		</triangles>
-	</boxedSpritePolygonBody>
+	</dynamicBoxedSpritePolygonBody>
 	<weldJoint
 		name="boostJoint"
 		objectAName="lfMainBody"
