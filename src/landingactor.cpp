@@ -24,7 +24,7 @@ LandingActor::LandingActor(
 
    m_world->SetContactListener(&m_contactListener);
 
-   initCompoundObject(gameResources, this, NULL, m_world, Vector2(435.52f, 375.0f), fileName, initialState);
+   readDefinitionXmlFile(gameResources, this, NULL, m_world, Vector2(435.52f, 375.0f), fileName, initialState);
 
    m_leapfrog = static_cast<LeapFrog*>(getObject("leapfrog1"));
    m_leapfrog->goToEnvironment(ENV_GROUND);

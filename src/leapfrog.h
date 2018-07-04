@@ -205,7 +205,7 @@ public:
       CompoundObject* parentObject,
 		b2World* world,
 		const oxygine::Vector2& pos,
-		std::string& defXmlFileName);
+      pugi::xml_node& root);
 	~LeapFrog();
 
 //	void initLeapfrog(SceneActor* sceneActor);

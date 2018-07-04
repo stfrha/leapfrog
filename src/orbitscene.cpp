@@ -17,7 +17,7 @@ OrbitScene::OrbitScene(
    std::string& initialState) :
    m_state(enteringOrbit)
 {
-   initCompoundObject(gameResources, this, NULL, NULL, Vector2(0.02f, 0.0f), fileName, initialState);
+   readDefinitionXmlFile(gameResources, this, NULL, NULL, Vector2(0.02f, 0.0f), fileName, initialState);
 
    m_space = static_cast<OrbitSpaceScene*>(getObject("orbitWindow.spaceScene"));
 

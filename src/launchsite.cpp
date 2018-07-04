@@ -15,7 +15,7 @@ LaunchSite::LaunchSite(
    CompoundObject* parentObject,
    b2World* world,
    const Vector2& pos,
-   string& defXmlFileName) :
+   pugi::xml_node& root) :
    m_gameResources(&gameResources),
    m_world(world),
    m_sceneParent(sceneParent),
@@ -26,7 +26,7 @@ LaunchSite::LaunchSite(
    m_angleHoldDuration(16000)
 
 {
-	initCompoundObject(gameResources, sceneParent, parentObject, world, pos, defXmlFileName, string(""));
+	initCompoundObjectParts(gameResources, sceneParent, parentObject, world, pos, root, string(""));
 
    m_leftFootRestJoint = (b2RevoluteJoint*)getJoint("leftRestJoint");
    m_rightFootRestJoint = (b2RevoluteJoint*)getJoint("rightRestJoint");

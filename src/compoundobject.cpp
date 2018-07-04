@@ -242,7 +242,7 @@ CompoundObject::~CompoundObject()
 	m_children.clear();
 }
 
-void CompoundObject::initCompoundObject(
+void CompoundObject::initCompoundObjectTop(
    oxygine::Resources& gameResources, 
    Actor* sceneParent, 
    CompoundObject* parentObject,
@@ -269,7 +269,7 @@ CompoundObject* CompoundObject::getParentObject(void)
    return m_parentObject;
 }
 
-bool CompoundObject::readDefinitionXmlFile(
+CompoundObject* CompoundObject::readDefinitionXmlFile(
    Resources& gameResources,
    Actor* sceneParent,
    CompoundObject* parentObject,
@@ -289,7 +289,110 @@ bool CompoundObject::readDefinitionXmlFile(
    return initCompoundObject(gameResources, sceneParent, parentObject, world, pos, root, initialState);
 }
 
-bool CompoundObject::initCompoundObject(
+CompoundObject* CompoundObject::initCompoundObject(
+   oxygine::Resources& gameResources,
+   Actor* sceneParent,
+   CompoundObject* parentObject,
+   b2World* world,
+   const Vector2& pos,
+   pugi::xml_node& root,
+   string& initialState)
+{
+   // Decode the type string to create the correct type of object
+   // but only store the pointer to the CompoundObject
+   // Perhaps with some special cases
+   string type = root.attribute("type").as_string();
+
+   if (type == "leapfrog")
+   {
+      LeapFrog* lf = new LeapFrog(
+         gameResources,
+         sceneParent,
+         parentObject,
+         world,
+         pos,
+         root);
+
+      return static_cast<CompoundObject*>(lf);
+   }
+   else if (type == "launchSite")
+   {
+      LaunchSite* ls = new LaunchSite(
+         gameResources,
+         sceneParent,
+         parentObject,
+         world,
+         pos,
+         root);
+
+      return static_cast<CompoundObject*>(ls);
+   }
+   else if (type == "landingPad")
+   {
+      LandingPad* lp = new LandingPad(
+         gameResources,
+         sceneParent,
+         parentObject,
+         world,
+         pos,
+         root);
+   
+      return static_cast<CompoundObject*>(lp);
+   }
+   else if (type == "asteroidField")
+   {
+      AsteroidField* af = new AsteroidField(
+         gameResources,
+         sceneParent,
+         parentObject,
+         world,
+         root);
+   
+      return static_cast<CompoundObject*>(af);
+   }
+   else if (type == "planetActor")
+   {
+      PlanetActor* pa = new PlanetActor(
+         gameResources,
+         sceneParent,
+         parentObject,
+         root);
+
+      return static_cast<CompoundObject*>(pa);
+   }
+   else if (type == "clippedWindow")
+   {
+      OrbitWindow* ow = new OrbitWindow(
+         gameResources,
+         sceneParent,
+         parentObject,
+         root,
+         initialState);
+
+      return static_cast<CompoundObject*>(ow);
+   }
+   else
+   {
+      // This is for no type specified
+      CompoundObject* co = new CompoundObject();
+
+      co->initCompoundObjectParts(
+         gameResources,
+         sceneParent,
+         parentObject,
+         world,
+         pos,
+         root,
+         string(""));
+
+      return co;
+   }
+
+   return NULL;
+}
+
+
+bool CompoundObject::initCompoundObjectParts(
    oxygine::Resources& gameResources,
    Actor* sceneParent,
    CompoundObject* parentObject,
@@ -770,111 +873,52 @@ void CompoundObject::defineChildObject(
    xml_node& objectNode,
    string& initialState)
 {
-   // Decode the type string to create the correct type of object
-   // but only store the pointer to the CompoundObject
-   // Perhaps with some special cases
-   string type = objectNode.attribute("type").as_string();
 
-   if (type == "leapfrog")
+   //TODO: Here the stateProperties should be checked. Iterate all
+   // of the objectNode and check the state attribute. When there is 
+   // a match to the initialState the posX, posY and file name is 
+   // extracted. 
+   // When file is opened and check the type attribute of the root element 
+   // to find what behaviour to start
+
+   // Iterate the stateProperties of the node, looking for state attributes
+   // that matches the supplied initialState
+   xml_node* stateNode = NULL;
+
+   for (auto it = objectNode.child("stateProperties").begin(); it != objectNode.child("stateProperties").end(); ++it)
    {
-      Vector2 objPos = Vector2(
-         objectNode.child(initialState.c_str()).attribute("posX").as_float(), 
-         objectNode.child(initialState.c_str()).attribute("posY").as_float());
-
-      objPos += pos;
-
-      LeapFrog* lf = new LeapFrog(
-         gameResources,
-         sceneParent, 
-         parentObject,
-         world,
-         objPos,
-         string(objectNode.child(initialState.c_str()).attribute("file").as_string()));
-
-      m_children.push_back(static_cast<CompoundObject*>(lf));
-
-      lf->setName(objectNode.attribute("name").as_string());
+      if (it->attribute("state").as_string() == initialState)
+      {
+         stateNode = &(*it);
+      }
    }
-   else if (type == "launchSite")
+
+   if (!stateNode)
    {
-      Vector2 objPos = Vector2(
-         objectNode.attribute("posX").as_float(),
-         objectNode.attribute("posY").as_float());
-
-      objPos += pos;
-
-
-	   LaunchSite* ls = new LaunchSite(
-		   gameResources,
-		   sceneParent, 
-         parentObject,
-         world,
-         objPos,
-		   string(objectNode.attribute("file").as_string()));
-
-	   ls->setName(objectNode.attribute("name").as_string());
-
-	   m_children.push_back(static_cast<CompoundObject*>(ls));
+      return;
    }
-   else if (type == "landingPad")
-   {
-      Vector2 objPos = Vector2(
-         objectNode.attribute("posX").as_float(),
-         objectNode.attribute("posY").as_float());
 
-      objPos += pos;
+   Vector2 objPos = Vector2(
+      stateNode->attribute("posX").as_float(),
+      stateNode->attribute("posY").as_float());
 
+   objPos += pos;
 
-      LandingPad* ls = new LandingPad(
-         gameResources,
-         sceneParent, 
-         parentObject,
-         world,
-         objPos,
-         string(objectNode.attribute("file").as_string()));
+   string fileName = stateNode->attribute("file").as_string();
 
-      ls->setName(objectNode.attribute("name").as_string());
+   // Read the child XML file
+   CompoundObject* co = readDefinitionXmlFile(
+      gameResources, 
+      sceneParent, 
+      parentObject, 
+      world, 
+      objPos, 
+      fileName, 
+      initialState);
 
-      m_children.push_back(static_cast<CompoundObject*>(ls));
-   }
-   else if (type == "asteroidField")
-   {
-      AsteroidField* af = new AsteroidField(
-         gameResources,
-         sceneParent, 
-         parentObject,
-         world,
-         objectNode);
+   m_children.push_back(static_cast<CompoundObject*>(co));
 
-      af->setName(objectNode.attribute("name").as_string());
-
-      m_children.push_back(static_cast<CompoundObject*>(af));
-   }
-   else if (type == "planetActor")
-   {
-      PlanetActor* pa = new PlanetActor(
-         gameResources,
-         sceneParent,
-         parentObject,
-         objectNode);
-
-      pa->setName(objectNode.attribute("name").as_string());
-
-      m_children.push_back(static_cast<CompoundObject*>(pa));
-   }
-   else if (type == "clippedWindow")
-   {
-      OrbitWindow* ow = new OrbitWindow(
-         gameResources,
-         sceneParent,
-         parentObject,
-         objectNode,
-         initialState);
-
-      ow->setName(objectNode.attribute("name").as_string());
-
-      m_children.push_back(static_cast<CompoundObject*>(ow));
-   }
+   co->setName(objectNode.attribute("name").as_string());
 }
 
 void CompoundObject::defineWeldJoint(b2World* world, pugi::xml_node& jointNode)

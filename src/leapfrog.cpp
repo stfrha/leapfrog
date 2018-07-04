@@ -43,7 +43,7 @@ LeapFrog::LeapFrog(
    CompoundObject* parentObject,
 	b2World* world,
 	const oxygine::Vector2& pos,
-	std::string& defXmlFileName) :
+   pugi::xml_node& root) :
 	m_world(world),
    m_boostMagnuitude(0.0f),
    m_steerMagnitude(0.0f),
@@ -59,7 +59,7 @@ LeapFrog::LeapFrog(
    m_wantedAngle(0.0f),
    m_modeInTransit(false)
 {
-	initCompoundObject(gameResources, sceneParent, parentObject, world, pos, defXmlFileName, string(""));
+	initCompoundObjectParts(gameResources, sceneParent, parentObject, world, pos, root, string(""));
 
    m_sceneActor = (SceneActor*) sceneParent;
 

@@ -11,11 +11,11 @@ LandingPad::LandingPad(
    CompoundObject* parentObject,
    b2World* world,
    const Vector2& pos,
-   string& defXmlFileName) :
+   pugi::xml_node& root) :
    m_leftFootContact(false),
    m_rightFootContact(false)
 {
-	initCompoundObject(gameResources, sceneParent, parentObject, world, pos, defXmlFileName, string(""));
+	initCompoundObjectParts(gameResources, sceneParent, parentObject, world, pos, root, string(""));
 }
 
 CollisionEntityTypeEnum LandingPad::getEntityType(void)

@@ -139,15 +139,6 @@ private:
 
    CollisionEntityTypeEnum m_collisionType;
 
-   bool readDefinitionXmlFile(
-      oxygine::Resources& gameResources, 
-      oxygine::Actor* sceneParent, 
-      CompoundObject* parentObject,
-      b2World* world,
-      const oxygine::Vector2& pos, 
-      std::string& fileName,
-      std::string& initialState);
-
    void defineStaticBox(
       oxygine::Resources& gameResources, 
       oxygine::Actor* sceneParent, 
@@ -223,7 +214,7 @@ public:
 
    ~CompoundObject();
 
-   void initCompoundObject(
+   void initCompoundObjectTop(
 	   oxygine::Resources& gameResources,
 	   oxygine::Actor* sceneParent,
       CompoundObject* parentObject,
@@ -232,7 +223,25 @@ public:
 	   std::string& defXmlFileName,
       std::string& initialState);
 
-   bool initCompoundObject(
+   CompoundObject* readDefinitionXmlFile(
+      oxygine::Resources& gameResources,
+      oxygine::Actor* sceneParent,
+      CompoundObject* parentObject,
+      b2World* world,
+      const oxygine::Vector2& pos,
+      std::string& fileName,
+      std::string& initialState);
+
+   CompoundObject* initCompoundObject(
+      oxygine::Resources& gameResources,
+      oxygine::Actor* sceneParent,
+      CompoundObject* parentObject,
+      b2World* world,
+      const oxygine::Vector2& pos,
+      pugi::xml_node& objectNode,
+      std::string& initialState);
+
+   bool initCompoundObjectParts(
       oxygine::Resources& gameResources,
       oxygine::Actor* sceneParent,
       CompoundObject* parentObject,
