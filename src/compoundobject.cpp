@@ -373,10 +373,7 @@ CompoundObject* CompoundObject::initCompoundObject(
    }
    else
    {
-      // This is for no type specified
-      CompoundObject* co = new CompoundObject();
-
-      co->initCompoundObjectParts(
+      initCompoundObjectParts(
          gameResources,
          sceneParent,
          parentObject,
@@ -385,7 +382,7 @@ CompoundObject* CompoundObject::initCompoundObject(
          root,
          string(""));
 
-      return co;
+      return this;
    }
 
    return NULL;
@@ -435,8 +432,8 @@ bool CompoundObject::initCompoundObjectParts(
       definePolygonObject(gameResources, sceneParent, this, world, pos, *it);
    }
 
-   for (auto it = root.children("boxedSpritePolygonBody").begin();
-      it != root.children("boxedSpritePolygonBody").end();
+   for (auto it = root.children("dynamicBoxedSpritePolygonBody").begin();
+      it != root.children("dynamicBoxedSpritePolygonBody").end();
       ++it)
    {
       defineBoxedSpritePolygonBody(gameResources, sceneParent, this, world, pos, *it);
@@ -882,14 +879,16 @@ void CompoundObject::defineChildObject(
    // to find what behaviour to start
 
    // Iterate the stateProperties of the node, looking for state attributes
-   // that matches the supplied initialState
+   // that matches the supplied initialState. If initialState is empty,
+   // the first statePropertı is used
    xml_node* stateNode = NULL;
 
-   for (auto it = objectNode.child("stateProperties").begin(); it != objectNode.child("stateProperties").end(); ++it)
+   for (auto it = objectNode.children("stateProperties").begin(); it != objectNode.children("stateProperties").end(); ++it)
    {
-      if (it->attribute("state").as_string() == initialState)
+      if ((initialState == "") || (it->attribute("state").as_string() == initialState))
       {
          stateNode = &(*it);
+         break;
       }
    }
 
