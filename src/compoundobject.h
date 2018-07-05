@@ -139,6 +139,28 @@ private:
 
    CollisionEntityTypeEnum m_collisionType;
 
+   void defineSpriteBox(
+      oxygine::Resources& gameResources,
+      oxygine::Actor* sceneParent,
+      CompoundObject* parentObject,
+      const oxygine::Vector2& pos,
+      pugi::xml_node& objectNode);
+
+   void defineSpritePolygon(
+      oxygine::Resources& gameResources,
+      oxygine::Actor* sceneParent,
+      CompoundObject* parentObject,
+      const oxygine::Vector2& pos,
+      pugi::xml_node& objectNode);
+
+   void defineStaticCircle(
+      oxygine::Resources& gameResources,
+      oxygine::Actor* sceneParent,
+      CompoundObject* parentObject,
+      b2World* world,
+      const oxygine::Vector2& pos,
+      pugi::xml_node& objectNode);
+
    void defineStaticBox(
       oxygine::Resources& gameResources, 
       oxygine::Actor* sceneParent, 
@@ -155,7 +177,23 @@ private:
       const oxygine::Vector2& pos, 
       pugi::xml_node& objectNode);
 
-   void defineBoxedObject(
+   void defineStaticBoxedSpritePolygon(
+      oxygine::Resources& gameResources,
+      oxygine::Actor* sceneParent,
+      CompoundObject* parentObject,
+      b2World* world,
+      const oxygine::Vector2& pos,
+      pugi::xml_node& objectNode);
+
+   void defineDynamicCircle(
+      oxygine::Resources& gameResources,
+      oxygine::Actor* sceneParent,
+      CompoundObject* parentObject,
+      b2World* world,
+      const oxygine::Vector2& pos,
+      pugi::xml_node& objectNode);
+
+   void defineDynamicBox(
       oxygine::Resources& gameResources, 
       oxygine::Actor* sceneParent, 
       CompoundObject* parentObject,
@@ -163,7 +201,7 @@ private:
       const oxygine::Vector2& pos, 
       pugi::xml_node& objectNode);
 
-   void definePolygonObject(
+   void defineDynamicPolygon(
       oxygine::Resources& gameResources, 
       oxygine::Actor* sceneParent, 
       CompoundObject* parentObject,
@@ -171,12 +209,12 @@ private:
       const oxygine::Vector2& pos, 
       pugi::xml_node& objectNode);
 
-   void defineBoxedSpritePolygonBody(
-      oxygine::Resources& gameResources, 
-      oxygine::Actor* sceneParent, 
+   void defineDynamicBoxedSpritePolygon(
+      oxygine::Resources& gameResources,
+      oxygine::Actor* sceneParent,
       CompoundObject* parentObject,
       b2World* world,
-      const oxygine::Vector2& pos, 
+      const oxygine::Vector2& pos,
       pugi::xml_node& objectNode);
 
    void defineChildObject(

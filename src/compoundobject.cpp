@@ -399,12 +399,12 @@ bool CompoundObject::initCompoundObjectParts(
    string& initialState)
 {
 
-   for (auto it = root.children("staticPolygon").begin();
-      it != root.children("staticPolygon").end();
+   for (auto it = root.children("staticCircle").begin();
+      it != root.children("staticCircle").end();
       ++it)
    {
       // define a object
-      defineStaticPolygon(gameResources, sceneParent, this, world, pos, *it);
+      defineStaticCircle(gameResources, sceneParent, this, world, pos, *it);
    }
 
    for (auto it = root.children("staticBox").begin();
@@ -415,12 +415,35 @@ bool CompoundObject::initCompoundObjectParts(
       defineStaticBox(gameResources, sceneParent, this, world, pos, *it);
    }
 
+   for (auto it = root.children("staticPolygon").begin();
+      it != root.children("staticPolygon").end();
+      ++it)
+   {
+      // define a object
+      defineStaticPolygon(gameResources, sceneParent, this, world, pos, *it);
+   }
+
+   for (auto it = root.children("staticBoxedSpritePolygonBody").begin();
+      it != root.children("staticBoxedSpritePolygon").end();
+      ++it)
+   {
+      defineStaticBoxedSpritePolygon(gameResources, sceneParent, this, world, pos, *it);
+   }
+
+   for (auto it = root.children("dynamicCircle").begin();
+      it != root.children("dynamicCircle").end();
+      ++it)
+   {
+      // define a box object
+      defineDynamicCircle(gameResources, sceneParent, this, world, pos, *it);
+   }
+
    for (auto it = root.children("dynamicBox").begin();
       it != root.children("dynamicBox").end();
       ++it)
    {
       // define a box object
-      defineBoxedObject(gameResources, sceneParent, this, world, pos, *it);
+      defineDynamicBox(gameResources, sceneParent, this, world, pos, *it);
    }
 
    for (auto it = root.children("dynamicPolygon").begin();
@@ -429,14 +452,14 @@ bool CompoundObject::initCompoundObjectParts(
    {
       // define a polygon object
       string a = (*it).attribute("name").as_string();
-      definePolygonObject(gameResources, sceneParent, this, world, pos, *it);
+      defineDynamicPolygon(gameResources, sceneParent, this, world, pos, *it);
    }
 
    for (auto it = root.children("dynamicBoxedSpritePolygonBody").begin();
       it != root.children("dynamicBoxedSpritePolygonBody").end();
       ++it)
    {
-      defineBoxedSpritePolygonBody(gameResources, sceneParent, this, world, pos, *it);
+      defineDynamicBoxedSpritePolygon(gameResources, sceneParent, this, world, pos, *it);
    }
 
    for (auto it = root.children("ChildCompoundObjectRef").begin();
@@ -469,6 +492,135 @@ bool CompoundObject::initCompoundObjectParts(
 
    return true;
 }
+
+void CompoundObject::defineSpriteBox(
+   oxygine::Resources& gameResources,
+   oxygine::Actor* sceneParent,
+   CompoundObject* parentObject,
+   const oxygine::Vector2& pos,
+   pugi::xml_node& objectNode)
+{
+
+}
+
+void CompoundObject::defineSpritePolygon(
+   oxygine::Resources& gameResources,
+   oxygine::Actor* sceneParent,
+   CompoundObject* parentObject,
+   const oxygine::Vector2& pos,
+   pugi::xml_node& objectNode)
+{
+
+}
+
+void CompoundObject::defineStaticCircle(
+   oxygine::Resources& gameResources,
+   oxygine::Actor* sceneParent,
+   CompoundObject* parentObject,
+   b2World* world,
+   const oxygine::Vector2& pos,
+   pugi::xml_node& objectNode)
+{
+   CompoundObject* newCo = new CompoundObject();
+
+   newCo->setName(objectNode.attribute("name").as_string());
+   newCo->setPriority(objectNode.attribute("zLevel").as_int());
+   newCo->m_parentObject = parentObject;
+
+   // Define sprite
+   spSprite object = new Sprite();
+   object->setResAnim(gameResources.getResAnim(objectNode.attribute("texture").as_string()));
+
+   object->setSize(objectNode.attribute("radius").as_float() * 2.0f, objectNode.attribute("radius").as_float() * 2.0f);
+   //   object->setAnchor(Vector2(objectNode.attribute("anchorX").as_float(), objectNode.attribute("anchorY").as_float()));
+   object->setAnchor(0.5f, 0.5f);
+   object->setTouchChildrenEnabled(false);
+
+   object->attachTo(newCo);
+
+   b2BodyDef bodyDef;
+   bodyDef.type = b2_staticBody;
+   b2Vec2 bPos = PhysDispConvert::convert(pos, 1.0f) + b2Vec2(objectNode.attribute("posX").as_float(), objectNode.attribute("posY").as_float());
+   bodyDef.position = bPos;
+   bodyDef.angle = objectNode.attribute("angle").as_float();
+   b2Body* body = world->CreateBody(&bodyDef);
+
+   b2CircleShape circleShape;
+   circleShape.m_radius = objectNode.attribute("radius").as_float();
+
+   b2FixtureDef fixtureDef;
+   fixtureDef.shape = &circleShape;
+   fixtureDef.density = 5.0f;
+   fixtureDef.friction = 1.3f;
+   fixtureDef.filter.categoryBits = objectNode.attribute("collisionCategory").as_int();
+   fixtureDef.filter.maskBits = objectNode.attribute("collisionMask").as_int();
+   fixtureDef.userData = (CollisionEntity*)newCo;
+
+   body->CreateFixture(&fixtureDef);
+
+   body->SetUserData(newCo);
+
+   newCo->setUserData(body);
+   newCo->m_collisionType = CollisionEntity::convert(objectNode.attribute("collisionEntity").as_string());
+   newCo->attachTo(sceneParent);
+
+   m_children.push_back(newCo);
+}
+
+void CompoundObject::defineStaticBox(
+   Resources& gameResources,
+   Actor* sceneParent,
+   CompoundObject* parentObject,
+   b2World* world,
+   const Vector2& pos,
+   xml_node& objectNode)
+{
+   CompoundObject* newCo = new CompoundObject();
+
+   newCo->setName(objectNode.attribute("name").as_string());
+   newCo->setPriority(objectNode.attribute("zLevel").as_int());
+   newCo->m_parentObject = parentObject;
+
+   // Define sprite
+   spSprite object = new Sprite();
+   object->setResAnim(gameResources.getResAnim(objectNode.attribute("texture").as_string()));
+
+   object->setSize(objectNode.attribute("width").as_float(), objectNode.attribute("height").as_float());
+   //   object->setAnchor(Vector2(objectNode.attribute("anchorX").as_float(), objectNode.attribute("anchorY").as_float()));
+   object->setAnchor(0.5f, 0.5f);
+   object->setTouchChildrenEnabled(false);
+
+   object->attachTo(newCo);
+
+   b2BodyDef bodyDef;
+   bodyDef.type = b2_staticBody;
+   b2Vec2 bPos = PhysDispConvert::convert(pos, 1.0f) + b2Vec2(objectNode.attribute("posX").as_float(), objectNode.attribute("posY").as_float());
+   bodyDef.position = bPos;
+   bodyDef.angle = objectNode.attribute("angle").as_float();
+   b2Body* body = world->CreateBody(&bodyDef);
+
+   b2PolygonShape boxShape;
+   boxShape.SetAsBox(objectNode.attribute("width").as_float() / 2.0f, objectNode.attribute("height").as_float() / 2.0f);
+
+   b2FixtureDef fixtureDef;
+   fixtureDef.shape = &boxShape;
+   fixtureDef.density = 5.0f;
+   fixtureDef.friction = 1.3f;
+   fixtureDef.filter.categoryBits = objectNode.attribute("collisionCategory").as_int();
+   fixtureDef.filter.maskBits = objectNode.attribute("collisionMask").as_int();
+   fixtureDef.userData = (CollisionEntity*)newCo;
+
+   body->CreateFixture(&fixtureDef);
+
+   body->SetUserData(newCo);
+
+   newCo->setUserData(body);
+   newCo->m_collisionType = CollisionEntity::convert(objectNode.attribute("collisionEntity").as_string());
+   newCo->attachTo(sceneParent);
+
+   m_children.push_back(newCo);
+}
+
 
 void CompoundObject::defineStaticPolygon(
    Resources& gameResources, 
@@ -566,12 +718,12 @@ void CompoundObject::defineStaticPolygon(
    m_children.push_back(newCo);
 }
 
-void CompoundObject::defineStaticBox(
-   Resources& gameResources, 
-   Actor* sceneParent, 
+void CompoundObject::defineStaticBoxedSpritePolygon(
+   Resources& gameResources,
+   Actor* sceneParent,
    CompoundObject* parentObject,
    b2World* world,
-   const Vector2& pos, 
+   const Vector2& pos,
    xml_node& objectNode)
 {
    CompoundObject* newCo = new CompoundObject();
@@ -580,28 +732,65 @@ void CompoundObject::defineStaticBox(
    newCo->setPriority(objectNode.attribute("zLevel").as_int());
    newCo->m_parentObject = parentObject;
 
-   // Define sprite
+   // Define sprite, which is a polygon, in this case
+   vector<Vector2> vertices;
+   vector<VectorT3<int> > triangles;
+
    spSprite object = new Sprite();
    object->setResAnim(gameResources.getResAnim(objectNode.attribute("texture").as_string()));
 
    object->setSize(objectNode.attribute("width").as_float(), objectNode.attribute("height").as_float());
-   object->setAnchor(Vector2(objectNode.attribute("anchorX").as_float(), objectNode.attribute("anchorY").as_float()));
+   //   object->setAnchor(Vector2(objectNode.attribute("anchorX").as_float(), objectNode.attribute("anchorY").as_float()));
+   object->setAnchor(0.5f, 0.5f);
    object->setTouchChildrenEnabled(false);
 
    object->attachTo(newCo);
 
+   for (auto it = objectNode.child("vertices").children("vertex").begin();
+      it != objectNode.child("vertices").children("vertex").end();
+      ++it)
+   {
+      vertices.push_back(Vector2(it->attribute("x").as_float(), it->attribute("y").as_float()));
+   }
+
+   for (auto it = objectNode.child("triangles").children("triangle").begin();
+      it != objectNode.child("triangles").children("triangle").end();
+      ++it)
+   {
+      triangles.push_back(VectorT3<int>(
+         it->attribute("v1").as_int(),
+         it->attribute("v2").as_int(),
+         it->attribute("v3").as_int()));
+   }
+
+   int num = vertices.size() + 1;
+
+   b2Vec2* b2vertices = new b2Vec2[num];
+
+   // Polygon of a body shape is physical coordinates, i.e. in meters
+   Vector2 tv;
+
+   for (int i = 0; i < num - 1; i++)
+   {
+      tv = vertices[i];
+      b2vertices[i] = PhysDispConvert::convert(tv, 1.0f);
+   }
+
+   tv = vertices[0];
+   b2vertices[num - 1] = PhysDispConvert::convert(tv, 1.0f);
+
    b2BodyDef bodyDef;
-   bodyDef.type = b2_staticBody;
+   bodyDef.type = b2_dynamicBody;
    b2Vec2 bPos = PhysDispConvert::convert(pos, 1.0f) + b2Vec2(objectNode.attribute("posX").as_float(), objectNode.attribute("posY").as_float());
    bodyDef.position = bPos;
    bodyDef.angle = objectNode.attribute("angle").as_float();
    b2Body* body = world->CreateBody(&bodyDef);
 
-   b2PolygonShape boxShape;
-   boxShape.SetAsBox(objectNode.attribute("width").as_float() / 2.0f, objectNode.attribute("height").as_float() / 2.0f);
+   b2PolygonShape polyShape;
+   polyShape.Set(b2vertices, num - 1);
 
    b2FixtureDef fixtureDef;
-   fixtureDef.shape = &boxShape;
+   fixtureDef.shape = &polyShape;
    fixtureDef.density = 5.0f;
    fixtureDef.friction = 1.3f;
    fixtureDef.filter.categoryBits = objectNode.attribute("collisionCategory").as_int();
@@ -619,7 +808,60 @@ void CompoundObject::defineStaticBox(
    m_children.push_back(newCo);
 }
 
-void CompoundObject::defineBoxedObject(
+void CompoundObject::defineDynamicCircle(
+   Resources& gameResources,
+   Actor* sceneParent,
+   CompoundObject* parentObject,
+   b2World* world,
+   const Vector2& pos,
+   xml_node& objectNode)
+{
+   CompoundObject* newCo = new CompoundObject();
+
+   newCo->setName(objectNode.attribute("name").as_string());
+   newCo->setPriority(objectNode.attribute("zLevel").as_int());
+   newCo->m_parentObject = parentObject;
+
+   // Define sprite
+   spSprite object = new Sprite();
+   object->setResAnim(gameResources.getResAnim(objectNode.attribute("texture").as_string()));
+   object->setSize(objectNode.attribute("radius").as_float() * 2.0f, objectNode.attribute("radius").as_float() * 2.0f);
+   //   object->setAnchor(Vector2(objectNode.attribute("anchorX").as_float(), objectNode.attribute("anchorY").as_float()));
+   object->setAnchor(0.5f, 0.5f);
+   object->setTouchChildrenEnabled(false);
+
+   object->attachTo(newCo);
+
+   b2BodyDef bodyDef;
+   bodyDef.type = b2_dynamicBody;
+   b2Vec2 bPos = PhysDispConvert::convert(pos, 1.0f) + b2Vec2(objectNode.attribute("posX").as_float(), objectNode.attribute("posY").as_float());
+   bodyDef.position = bPos;
+   bodyDef.angle = objectNode.attribute("angle").as_float();
+   b2Body* body = world->CreateBody(&bodyDef);
+
+   b2CircleShape circleShape;
+   circleShape.m_radius = objectNode.attribute("radius").as_float();
+
+   b2FixtureDef fixtureDef;
+   fixtureDef.shape = &circleShape;
+   fixtureDef.density = 5.0f;
+   fixtureDef.friction = 1.3f;
+   fixtureDef.filter.categoryBits = objectNode.attribute("collisionCategory").as_int();
+   fixtureDef.filter.maskBits = objectNode.attribute("collisionMask").as_int();
+   fixtureDef.userData = (CollisionEntity*)newCo;
+
+   body->CreateFixture(&fixtureDef);
+
+   body->SetUserData(newCo);
+
+   newCo->setUserData(body);
+   newCo->m_collisionType = CollisionEntity::convert(objectNode.attribute("collisionEntity").as_string());
+   newCo->attachTo(sceneParent);
+
+   m_children.push_back(newCo);
+}
+
+void CompoundObject::defineDynamicBox(
    Resources& gameResources, 
    Actor* sceneParent, 
    CompoundObject* parentObject,
@@ -637,7 +879,8 @@ void CompoundObject::defineBoxedObject(
    spSprite object = new Sprite();
    object->setResAnim(gameResources.getResAnim(objectNode.attribute("texture").as_string()));
    object->setSize(objectNode.attribute("width").as_float(), objectNode.attribute("height").as_float());
-   object->setAnchor(Vector2(objectNode.attribute("anchorX").as_float(), objectNode.attribute("anchorY").as_float()));
+   //   object->setAnchor(Vector2(objectNode.attribute("anchorX").as_float(), objectNode.attribute("anchorY").as_float()));
+   object->setAnchor(0.5f, 0.5f);
    object->setTouchChildrenEnabled(false);
 
    object->attachTo(newCo);
@@ -671,7 +914,7 @@ void CompoundObject::defineBoxedObject(
    m_children.push_back(newCo);
 }
 
-void CompoundObject::definePolygonObject(
+void CompoundObject::defineDynamicPolygon(
    Resources& gameResources, 
    Actor* sceneParent, 
    CompoundObject* parentObject,
@@ -770,8 +1013,7 @@ void CompoundObject::definePolygonObject(
    m_children.push_back(newCo);
 }
 
-
-void CompoundObject::defineBoxedSpritePolygonBody(
+void CompoundObject::defineDynamicBoxedSpritePolygon(
    Resources& gameResources,
    Actor* sceneParent,
    CompoundObject* parentObject,
@@ -793,7 +1035,8 @@ void CompoundObject::defineBoxedSpritePolygonBody(
    object->setResAnim(gameResources.getResAnim(objectNode.attribute("texture").as_string()));
 
    object->setSize(objectNode.attribute("width").as_float(), objectNode.attribute("height").as_float());
-   object->setAnchor(Vector2(objectNode.attribute("anchorX").as_float(), objectNode.attribute("anchorY").as_float()));
+   //   object->setAnchor(Vector2(objectNode.attribute("anchorX").as_float(), objectNode.attribute("anchorY").as_float()));
+   object->setAnchor(0.5f, 0.5f);
    object->setTouchChildrenEnabled(false);
 
    object->attachTo(newCo);
@@ -859,7 +1102,6 @@ void CompoundObject::defineBoxedSpritePolygonBody(
 
    m_children.push_back(newCo);
 }
-
 
 void CompoundObject::defineChildObject(
    Resources& gameResources, 

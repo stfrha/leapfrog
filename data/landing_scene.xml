@@ -163,6 +163,18 @@
         v3="1" />
     </triangles>
   </staticPolygon>
+  <dynamicCircle
+    name="noName"
+    texture="default"
+    posX="387"
+    posY="129"
+    angle="0"
+    zLevel="0"
+    collisionEntity="notApplicable"
+    collisionCategory="0"
+    collisionMask="0"
+    radius="100"
+    density="1" />
   <ChildCompoundObjectRef
     name="leapfrog1">
     <stateProperties
