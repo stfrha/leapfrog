@@ -37,8 +37,10 @@
 		<image file="landing_pad.png"/>	
 		<image file="alpha_mine1.png"/>	
 		<image file="alpha_city1.png"/>	
-		<image file="default.png"/>	
 	</atlas>
+	<atlas clamp2edge="false"> 
+		<image file="default.png" trim="false" extend="false"/>
+	</atlas>	
 	<atlas clamp2edge="false"> 
 		<image file="ls_booster_tank.png" trim="false" extend="false"/>
 	</atlas>	

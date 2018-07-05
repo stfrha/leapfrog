@@ -399,6 +399,22 @@ bool CompoundObject::initCompoundObjectParts(
    string& initialState)
 {
 
+   for (auto it = root.children("spriteBox").begin();
+      it != root.children("spriteBox").end();
+      ++it)
+   {
+      // define a object
+      defineSpriteBox(gameResources, sceneParent, this, pos, *it);
+   }
+
+   for (auto it = root.children("spritePolygon").begin();
+      it != root.children("spritePolygon").end();
+      ++it)
+   {
+      // define a object
+      defineSpritePolygon(gameResources, sceneParent, this, pos, *it);
+   }
+
    for (auto it = root.children("staticCircle").begin();
       it != root.children("staticCircle").end();
       ++it)
@@ -500,7 +516,30 @@ void CompoundObject::defineSpriteBox(
    const oxygine::Vector2& pos,
    pugi::xml_node& objectNode)
 {
+   CompoundObject* newCo = new CompoundObject();
 
+   newCo->setName(objectNode.attribute("name").as_string());
+   newCo->setPriority(objectNode.attribute("zLevel").as_int());
+   newCo->m_parentObject = parentObject;
+
+   // Define sprite
+   spSprite object = new Sprite();
+   object->setResAnim(gameResources.getResAnim(objectNode.attribute("texture").as_string()));
+
+   object->setSize(objectNode.attribute("width").as_float(), objectNode.attribute("height").as_float());
+   //   object->setAnchor(Vector2(objectNode.attribute("anchorX").as_float(), objectNode.attribute("anchorY").as_float()));
+   object->setAnchor(0.5f, 0.5f);
+   object->setTouchChildrenEnabled(false);
+
+   object->attachTo(newCo);
+
+   Vector2 newPos(pos.x + objectNode.attribute("posX").as_float(), pos.y + objectNode.attribute("posY").as_float());
+   newCo->setPosition(newPos);
+   newCo->setRotation(objectNode.attribute("angle").as_float());
+
+   newCo->attachTo(sceneParent);
+
+   m_children.push_back(newCo);
 }
 
 void CompoundObject::defineSpritePolygon(
@@ -510,7 +549,55 @@ void CompoundObject::defineSpritePolygon(
    const oxygine::Vector2& pos,
    pugi::xml_node& objectNode)
 {
+   CompoundObject* newCo = new CompoundObject();
 
+   newCo->setName(objectNode.attribute("name").as_string());
+   newCo->setPriority(objectNode.attribute("zLevel").as_int());
+   newCo->m_parentObject = parentObject;
+
+   // Define sprite, which is a polygon, in this case
+   vector<Vector2> vertices;
+   vector<VectorT3<int> > triangles;
+
+   spPolygon object = new oxygine::Polygon();
+   object->setResAnim(gameResources.getResAnim(objectNode.attribute("texture").as_string()));
+
+   Vector2 textureMeterSize = Vector2(objectNode.attribute("textureMeterWidth").as_float(),
+      objectNode.attribute("textureMeterHeight").as_float());
+
+   Vector2 textureMeterOffset = Vector2(objectNode.attribute("textureOffsetMeterX").as_float(),
+      objectNode.attribute("textureOffsetMeterY").as_float());
+
+   for (auto it = objectNode.child("vertices").children("vertex").begin();
+      it != objectNode.child("vertices").children("vertex").end();
+      ++it)
+   {
+      vertices.push_back(Vector2(it->attribute("x").as_float(), it->attribute("y").as_float()));
+   }
+
+   for (auto it = objectNode.child("triangles").children("triangle").begin();
+      it != objectNode.child("triangles").children("triangle").end();
+      ++it)
+   {
+      triangles.push_back(VectorT3<int>(
+         it->attribute("v1").as_int(),
+         it->attribute("v2").as_int(),
+         it->attribute("v3").as_int()));
+   }
+
+   vertexPCT2* vs = PolygonVertices::createTriangleVertices(
+      vertices,
+      triangles,
+      textureMeterSize,
+      textureMeterOffset);
+
+   object->setVertices(vs, sizeof(vertexPCT2) *  triangles.size() * 4, vertexPCT2::FORMAT, true);
+
+   object->attachTo(newCo);
+
+   newCo->attachTo(sceneParent);
+
+   m_children.push_back(newCo);
 }
 
 void CompoundObject::defineStaticCircle(

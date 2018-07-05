@@ -60,11 +60,11 @@ void MainActor::startScene(SceneTypeEnum scene)
 
       m_sceneObject = static_cast<CompoundObject*>(landingActor.get());
 
-      m_debugDraw = new Box2DDraw;
-      m_debugDraw->SetFlags(b2Draw::e_shapeBit | b2Draw::e_jointBit | b2Draw::e_pairBit | b2Draw::e_centerOfMassBit);
-      m_debugDraw->attachTo(landingActor);
-      m_debugDraw->setWorld(Scales::c_physToStageScale, landingActor->GetWorld());
-      m_debugDraw->setPriority(1);
+      //m_debugDraw = new Box2DDraw;
+      //m_debugDraw->SetFlags(b2Draw::e_shapeBit | b2Draw::e_jointBit | b2Draw::e_pairBit | b2Draw::e_centerOfMassBit);
+      //m_debugDraw->attachTo(landingActor);
+      //m_debugDraw->setWorld(Scales::c_physToStageScale, landingActor->GetWorld());
+      //m_debugDraw->setPriority(1);
 
 
    }
