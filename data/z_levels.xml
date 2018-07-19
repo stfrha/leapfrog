@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <zLevels>
-	<zLevel id="0" name="top" />
-	<zLevel id="1" name="" />
+	<zLevel id="0" name="Reserved - do not use" />
+	<zLevel id="1" name="DebugDraw" />
 	<zLevel id="2" name="" />
 	<zLevel id="3" name="" />
 	<zLevel id="4" name="" />
@@ -10,7 +10,7 @@
 	<zLevel id="7" name="" />
 	<zLevel id="8" name="" />
 	<zLevel id="9" name="" />
-	<zLevel id="10" name="" />
+	<zLevel id="10" name="" /> 
 	<zLevel id="11" name="" />
 	<zLevel id="12" name="" />
 	<zLevel id="13" name="" />
@@ -26,19 +26,19 @@
 	<zLevel id="23" name="" />
 	<zLevel id="24" name="" />
 	<zLevel id="25" name="" />
-	<zLevel id="26" name="" />
+	<zLevel id="26" name="Far static background" />
 	<zLevel id="27" name="" />
 	<zLevel id="28" name="" />
 	<zLevel id="29" name="" />
-	<zLevel id="30" name="" />
+	<zLevel id="30" name="Far parallax background" />
 	<zLevel id="31" name="" />
 	<zLevel id="32" name="" />
 	<zLevel id="33" name="" />
-	<zLevel id="34" name="" />
-	<zLevel id="35" name="" />
+	<zLevel id="34" name="Near parallax background" />
+	<zLevel id="35" name="" /> 
 	<zLevel id="36" name="" />
 	<zLevel id="37" name="" />
-	<zLevel id="38" name="" />
+	<zLevel id="38" name="Near object-static background" />
 	<zLevel id="39" name="" />
 	<zLevel id="40" name="" />
 	<zLevel id="41" name="" />
@@ -106,7 +106,7 @@
 	<zLevel id="103" name="" />
 	<zLevel id="104" name="" />
 	<zLevel id="105" name="" />
-	<zLevel id="106" name="" />
+	<zLevel id="106" name="Engine Flames and smoke" />
 	<zLevel id="107" name="" />
 	<zLevel id="108" name="" />
 	<zLevel id="109" name="" />
@@ -120,7 +120,7 @@
 	<zLevel id="117" name="" />
 	<zLevel id="118" name="" />
 	<zLevel id="119" name="" />
-	<zLevel id="120" name="" />
+	<zLevel id="120" name="Booster tank and support boosters" />
 	<zLevel id="121" name="" />
 	<zLevel id="122" name="" />
 	<zLevel id="123" name="" />
@@ -128,7 +128,7 @@
 	<zLevel id="125" name="" />
 	<zLevel id="126" name="" />
 	<zLevel id="127" name="" />
-	<zLevel id="128" name="middle" />
+	<zLevel id="128" name="Leapfrog" />
 	<zLevel id="129" name="" />
 	<zLevel id="130" name="" />
 	<zLevel id="131" name="" />
@@ -138,7 +138,7 @@
 	<zLevel id="135" name="" />
 	<zLevel id="136" name="" />
 	<zLevel id="137" name="" />
-	<zLevel id="138" name="" />
+	<zLevel id="138" name="Reentry flames" />
 	<zLevel id="139" name="" />
 	<zLevel id="140" name="" />
 	<zLevel id="141" name="" />
@@ -147,7 +147,7 @@
 	<zLevel id="144" name="" />
 	<zLevel id="145" name="" />
 	<zLevel id="146" name="" />
-	<zLevel id="147" name="" />
+	<zLevel id="147" name="Shield" />
 	<zLevel id="148" name="" />
 	<zLevel id="149" name="" />
 	<zLevel id="150" name="" />
@@ -162,12 +162,12 @@
 	<zLevel id="159" name="" />
 	<zLevel id="160" name="" />
 	<zLevel id="161" name="" />
-	<zLevel id="162" name="" />
-	<zLevel id="163" name="" />
+	<zLevel id="162" name="Blast particles" />
+	<zLevel id="163" name="Bullets" />
 	<zLevel id="164" name="" />
 	<zLevel id="165" name="" />
-	<zLevel id="166" name="" />
-	<zLevel id="167" name="" />
+	<zLevel id="166" name="Launch objects except foundation" />
+	<zLevel id="167" name="Launch foundation" />
 	<zLevel id="168" name="" />
 	<zLevel id="169" name="" />
 	<zLevel id="170" name="" />
@@ -192,7 +192,7 @@
 	<zLevel id="189" name="" />
 	<zLevel id="190" name="" />
 	<zLevel id="191" name="" />
-	<zLevel id="192" name="" />
+	<zLevel id="192" name="Static and unbreakable objects" />
 	<zLevel id="193" name="" />
 	<zLevel id="194" name="" />
 	<zLevel id="195" name="" />
@@ -216,7 +216,7 @@
 	<zLevel id="213" name="" />
 	<zLevel id="214" name="" />
 	<zLevel id="215" name="" />
-	<zLevel id="216" name="" />
+	<zLevel id="216" name="Soft boundary" />
 	<zLevel id="217" name="" />
 	<zLevel id="218" name="" />
 	<zLevel id="219" name="" />
@@ -255,5 +255,5 @@
 	<zLevel id="252" name="" />
 	<zLevel id="253" name="" />
 	<zLevel id="254" name="" />
-	<zLevel id="255" name="bottom" />
+	<zLevel id="255" name="" />
 </zLevels>
