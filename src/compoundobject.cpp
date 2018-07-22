@@ -931,8 +931,8 @@ void CompoundObject::defineDynamicCircle(
 
    b2FixtureDef fixtureDef;
    fixtureDef.shape = &circleShape;
-   fixtureDef.density = 5.0f;
-   fixtureDef.friction = 1.3f;
+   fixtureDef.density = objectNode.attribute("density").as_float(1.0f);
+   fixtureDef.friction = objectNode.attribute("friction").as_float(1.0f);
    fixtureDef.filter.categoryBits = objectNode.attribute("collisionCategory").as_int();
    fixtureDef.filter.maskBits = objectNode.attribute("collisionMask").as_int();
    fixtureDef.userData = (CollisionEntity*)newCo;
@@ -984,8 +984,8 @@ void CompoundObject::defineDynamicBox(
 
    b2FixtureDef fixtureDef;
    fixtureDef.shape = &boxShape;
-   fixtureDef.density = 5.0f;
-   fixtureDef.friction = 1.3f;
+   fixtureDef.density = objectNode.attribute("density").as_float(1.0f);
+   fixtureDef.friction = objectNode.attribute("friction").as_float(1.0f);
    fixtureDef.filter.categoryBits = objectNode.attribute("collisionCategory").as_int();
    fixtureDef.filter.maskBits = objectNode.attribute("collisionMask").as_int();
    fixtureDef.userData = (CollisionEntity*)newCo;
@@ -1083,8 +1083,8 @@ void CompoundObject::defineDynamicPolygon(
 
    b2FixtureDef fixtureDef;
    fixtureDef.shape = &polyShape;
-   fixtureDef.density = 5.0f;
-   fixtureDef.friction = 1.3f;
+   fixtureDef.density = objectNode.attribute("density").as_float(1.0f);
+   fixtureDef.friction = objectNode.attribute("friction").as_float(1.0f);
    fixtureDef.filter.categoryBits = objectNode.attribute("collisionCategory").as_int();
    fixtureDef.filter.maskBits = objectNode.attribute("collisionMask").as_int();
    fixtureDef.userData = (CollisionEntity*)newCo;
@@ -1173,8 +1173,8 @@ void CompoundObject::defineDynamicBoxedSpritePolygon(
 
    b2FixtureDef fixtureDef;
    fixtureDef.shape = &polyShape;
-   fixtureDef.density = 5.0f;
-   fixtureDef.friction = 1.3f;
+   fixtureDef.density = objectNode.attribute("density").as_float(1.0f);
+   fixtureDef.friction = objectNode.attribute("friction").as_float(1.0f);
    fixtureDef.filter.categoryBits = objectNode.attribute("collisionCategory").as_int();
    fixtureDef.filter.maskBits = objectNode.attribute("collisionMask").as_int();
    fixtureDef.userData = (CollisionEntity*)newCo;

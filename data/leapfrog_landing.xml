@@ -13,7 +13,8 @@
     collisionMask="40123"
     width="4"
     height="1.6"
-    density="1" />
+    density="5"
+    friction="1" />
   <dynamicBox
     name="lfRightSteer"
     texture="lf_right_steer"
@@ -26,7 +27,8 @@
     collisionMask="40123"
     width="1.2"
     height="1"
-    density="1" />
+    density="5"
+    friction="1" />
   <dynamicBox
     name="lfLeftSteer"
     texture="lf_left_steer"
@@ -39,7 +41,8 @@
     collisionMask="40123"
     width="1.2"
     height="1"
-    density="1" />
+    density="5"
+    friction="1" />
   <dynamicBoxedSpritePolygonBody
     name="lfLeftBigLeg"
     texture="lf_big_leg"
@@ -52,7 +55,8 @@
     collisionMask="40123"
     width="1.8"
     height="7.3"
-    density="1">
+    density="5"
+    friction="1">
     <vertices>
       <vertex
         id="1"
@@ -96,7 +100,8 @@
     collisionMask="40123"
     width="1.8"
     height="7.3"
-    density="1">
+    density="5"
+    friction="1">
     <vertices>
       <vertex
         id="1"
@@ -140,7 +145,8 @@
     collisionMask="40123"
     width="1.4"
     height="5.3"
-    density="1">
+    density="5"
+    friction="1">
     <vertices>
       <vertex
         id="1"
@@ -184,7 +190,8 @@
     collisionMask="40123"
     width="1.4"
     height="5.3"
-    density="1">
+    density="5"
+    friction="1">
     <vertices>
       <vertex
         id="1"
@@ -228,7 +235,8 @@
     collisionMask="40123"
     width="4"
     height="0.6"
-    density="1">
+    density="5"
+    friction="1">
     <vertices>
       <vertex
         id="1"
@@ -272,7 +280,8 @@
     collisionMask="40123"
     width="4"
     height="0.6"
-    density="1">
+    density="5"
+    friction="1">
     <vertices>
       <vertex
         id="1"
@@ -316,7 +325,8 @@
     collisionMask="40123"
     width="9"
     height="9.6"
-    density="1">
+    density="5"
+    friction="1">
     <vertices>
       <vertex
         id="1"

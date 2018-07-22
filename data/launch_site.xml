@@ -196,7 +196,8 @@
     collisionMask="61439"
     width="19.275"
     height="3.24"
-    density="1" />
+    density="5"
+    friction="1" />
   <dynamicBox
     name="rightRest"
     texture="ls_right_leg_rest"
@@ -209,7 +210,8 @@
     collisionMask="61439"
     width="19.275"
     height="3.24"
-    density="1" />
+    density="5"
+    friction="1" />
   <dynamicBox
     name="leftRestTrolley"
     texture="ls_left_trolley"
@@ -222,7 +224,8 @@
     collisionMask="61439"
     width="4.85"
     height="7.45"
-    density="1" />
+    density="5"
+    friction="1" />
   <dynamicBox
     name="rightRestTrolley"
     texture="ls_right_trolley"
@@ -235,7 +238,8 @@
     collisionMask="61439"
     width="4.85"
     height="7.45"
-    density="1" />
+    density="5"
+    friction="1" />
   <dynamicBox
     name="leftSupportBooster"
     texture="ls_support_booster"
@@ -248,7 +252,8 @@
     collisionMask="65503"
     width="5.8"
     height="34.46"
-    density="1" />
+    density="5"
+    friction="1" />
   <dynamicBox
     name="rightSupportBooster"
     texture="ls_support_booster"
@@ -261,7 +266,8 @@
     collisionMask="65503"
     width="5.8"
     height="34.46"
-    density="1" />
+    density="5"
+    friction="1" />
   <dynamicBox
     name="leftHolderTrolley"
     texture="ls_left_trolley"
@@ -274,7 +280,8 @@
     collisionMask="61439"
     width="4.85"
     height="7.45"
-    density="1" />
+    density="5"
+    friction="1" />
   <dynamicBox
     name="leftHolder"
     texture="ls_left_tank_holder"
@@ -287,7 +294,8 @@
     collisionMask="61439"
     width="26.564"
     height="5.739"
-    density="1" />
+    density="5"
+    friction="1" />
   <dynamicBox
     name="rightHolderTrolley"
     texture="ls_right_trolley"
@@ -300,7 +308,8 @@
     collisionMask="61439"
     width="4.85"
     height="7.45"
-    density="1" />
+    density="5"
+    friction="1" />
   <dynamicBox
     name="rightHolder"
     texture="ls_right_tank_holder"
@@ -313,7 +322,8 @@
     collisionMask="61439"
     width="26.564"
     height="5.739"
-    density="1" />
+    density="1"
+    friction="0" />
   <dynamicBox
     name="grabber"
     texture="ls_pull_spring"
@@ -326,7 +336,8 @@
     collisionMask="61439"
     width="3.7"
     height="12.2"
-    density="1" />
+    density="5"
+    friction="1" />
   <dynamicBoxedSpritePolygonBody
     name="leftRestRightFootGlider"
     texture="ls_right_foot_glider"
@@ -339,7 +350,8 @@
     collisionMask="61439"
     width="3.4"
     height="2.2"
-    density="1">
+    density="5"
+    friction="1">
     <vertices>
       <vertex
         id="1"
@@ -383,7 +395,8 @@
     collisionMask="61439"
     width="3.4"
     height="2.2"
-    density="1">
+    density="5"
+    friction="1">
     <vertices>
       <vertex
         id="1"
@@ -427,7 +440,8 @@
     collisionMask="65503"
     width="13.2"
     height="53"
-    density="1">
+    density="5"
+    friction="1">
     <vertices>
       <vertex
         id="1"

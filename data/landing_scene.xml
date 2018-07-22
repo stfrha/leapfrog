@@ -1,18 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <compoundObject
   type="landingScene">
-  <spriteBox
-    name="noName"
-    texture="default"
-    posX="388"
-    posY="209"
-    angle="1.9825467074800567"
-    zLevel="0"
-    collisionEntity="notApplicable"
-    collisionCategory="0"
-    collisionMask="0"
-    width="200"
-    height="200" />
   <staticPolygon
     name="grotto"
     texture="grotto"
@@ -175,6 +163,19 @@
         v3="1" />
     </triangles>
   </staticPolygon>
+  <dynamicCircle
+    name="falling_star"
+    texture="flame_particle"
+    posX="506"
+    posY="59"
+    angle="0"
+    zLevel="0"
+    collisionEntity="notApplicable"
+    collisionCategory="8"
+    collisionMask="65535"
+    radius="25"
+    density="1"
+    friction="0" />
   <ChildCompoundObjectRef
     name="leapfrog1">
     <stateProperties
