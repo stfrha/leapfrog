@@ -226,6 +226,15 @@ private:
       pugi::xml_node& objectNode,
       std::string& initialState);
 
+   void defineObjectSystem(
+      oxygine::Resources& gameResources,
+      oxygine::Actor* sceneParent,
+      CompoundObject* parentObject,
+      b2World* world,
+      const oxygine::Vector2& pos,
+      pugi::xml_node& objectNode,
+      std::string& initialState);
+
    void defineWeldJoint(
       b2World* world, 
       pugi::xml_node& weldJointNode);
