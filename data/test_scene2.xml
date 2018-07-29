@@ -1,0 +1,14 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<compoundObject>
+  <staticCircle
+    name="noName"
+    texture="default"
+    posX="104"
+    posY="101"
+    angle="0"
+    zLevel="0"
+    collisionEntity="notApplicable"
+    collisionCategory="0"
+    collisionMask="0"
+    radius="100" />
+</compoundObject>

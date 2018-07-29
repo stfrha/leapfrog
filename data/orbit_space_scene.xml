@@ -4,7 +4,8 @@
 	<ChildCompoundObjectRef 
 		name="leapfrog1"
 		type="leapfrog">
-		<deepSpaceState 
+		<stateProperties 
+			state="default"
 			file="leapfrog_deep_space.xml" 
 			posX="-8.0"
 			posY="18.0" />

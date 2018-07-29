@@ -8,8 +8,8 @@
     angle="0"
     zLevel="0"
     collisionEntity="notApplicable"
-    collisionCategory="32"
-    collisionMask="65534"
+    collisionCategory="0"
+    collisionMask="0"
     textureMeterWidth="200"
     textureMeterHeight="200"
     textureOffsetMeterX="0"
@@ -107,8 +107,8 @@
     angle="0"
     zLevel="0"
     collisionEntity="notApplicable"
-    collisionCategory="32"
-    collisionMask="65534"
+    collisionCategory="0"
+    collisionMask="0"
     textureMeterWidth="200"
     textureMeterHeight="200"
     textureOffsetMeterX="0"
@@ -377,8 +377,8 @@
     angle="0"
     zLevel="0"
     collisionEntity="notApplicable"
-    collisionCategory="32"
-    collisionMask="65534"
+    collisionCategory="0"
+    collisionMask="0"
     textureMeterWidth="200"
     textureMeterHeight="200"
     textureOffsetMeterX="0"
@@ -585,8 +585,7 @@
         v3="1" />
     </triangles>
   </staticPolygon>
-  <ChildCompoundObjectRef
-    name="launchSite1">
+  <ChildCompoundObjectRef>
     <stateProperties
       state="default"
       file="launch_site.xml"
@@ -599,13 +598,5 @@
       file="landing_pad.xml"
       posX="1044.500394431919"
       posY="138.31563146609295" />
-  </ChildCompoundObjectRef>
-  <ChildCompoundObjectRef
-    name="leapfrog1">
-    <stateProperties
-      state="default"
-      file="C:\git\LeapfrogEditor\bin\Debug\..\..\..\leapfrog\data\leapfrog_reentry.xml"
-      posX="172.25477430555554"
-      posY="99.012586805555543" />
   </ChildCompoundObjectRef>
 </compoundObject>

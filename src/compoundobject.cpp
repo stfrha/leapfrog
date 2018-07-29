@@ -339,38 +339,38 @@ CompoundObject* CompoundObject::initCompoundObject(
    
       return static_cast<CompoundObject*>(lp);
    }
-   else if (type == "asteroidField")
-   {
-      AsteroidField* af = new AsteroidField(
-         gameResources,
-         sceneParent,
-         parentObject,
-         world,
-         root);
-   
-      return static_cast<CompoundObject*>(af);
-   }
-   else if (type == "planetActor")
-   {
-      PlanetActor* pa = new PlanetActor(
-         gameResources,
-         sceneParent,
-         parentObject,
-         root);
+   //else if (type == "asteroidField")
+   //{
+   //   AsteroidField* af = new AsteroidField(
+   //      gameResources,
+   //      sceneParent,
+   //      parentObject,
+   //      world,
+   //      root);
+   //
+   //   return static_cast<CompoundObject*>(af);
+   //}
+   //else if (type == "planetActor")
+   //{
+   //   PlanetActor* pa = new PlanetActor(
+   //      gameResources,
+   //      sceneParent,
+   //      parentObject,
+   //      root);
 
-      return static_cast<CompoundObject*>(pa);
-   }
-   else if (type == "clippedWindow")
-   {
-      OrbitWindow* ow = new OrbitWindow(
-         gameResources,
-         sceneParent,
-         parentObject,
-         root,
-         initialState);
+   //   return static_cast<CompoundObject*>(pa);
+   //}
+   //else if (type == "clippedWindow")
+   //{
+   //   OrbitWindow* ow = new OrbitWindow(
+   //      gameResources,
+   //      sceneParent,
+   //      parentObject,
+   //      root,
+   //      initialState);
 
-      return static_cast<CompoundObject*>(ow);
-   }
+   //   return static_cast<CompoundObject*>(ow);
+   //}
    else
    {
       initCompoundObjectParts(
@@ -1307,10 +1307,31 @@ void CompoundObject::defineObjectSystem(
 
       af->setName(objectNode.attribute("name").as_string());
    }
+   else if (type == "planetActor")
+   {
+      PlanetActor* pa = new PlanetActor(
+         gameResources,
+         sceneParent,
+         parentObject,
+         *stateNode);
 
+      m_children.push_back(static_cast<CompoundObject*>(pa));
 
+      pa->setName(objectNode.attribute("name").as_string());
+   }
+   else if (type == "clippedWindow")
+   {
+      OrbitWindow* ow = new OrbitWindow(
+         gameResources,
+         sceneParent,
+         parentObject,
+         *stateNode,
+         initialState);
 
+      m_children.push_back(static_cast<CompoundObject*>(ow));
 
+      ow->setName(objectNode.attribute("name").as_string());
+   }
 }
 void CompoundObject::defineWeldJoint(b2World* world, pugi::xml_node& jointNode)
 {

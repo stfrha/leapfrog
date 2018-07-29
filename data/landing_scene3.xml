@@ -1,0 +1,208 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<compoundObject
+  type="landingScene">
+  <staticPolygon
+    name="grotto"
+    texture="grotto"
+    posX="0"
+    posY="0"
+    angle="0"
+    zLevel="26"
+    collisionEntity="notApplicable"
+    collisionCategory="2048"
+    collisionMask="65535"
+    textureMeterWidth="512"
+    textureMeterHeight="512"
+    textureOffsetMeterX="0"
+    textureOffsetMeterY="0">
+    <vertices>
+      <vertex
+        id="1"
+        x="-28"
+        y="148" />
+      <vertex
+        id="2"
+        x="55"
+        y="169" />
+      <vertex
+        id="3"
+        x="60"
+        y="474" />
+      <vertex
+        id="4"
+        x="536"
+        y="476" />
+      <vertex
+        id="5"
+        x="642"
+        y="344" />
+      <vertex
+        id="6"
+        x="724"
+        y="423" />
+      <vertex
+        id="7"
+        x="920"
+        y="301" />
+      <vertex
+        id="8"
+        x="916"
+        y="118" />
+      <vertex
+        id="9"
+        x="658"
+        y="115" />
+      <vertex
+        id="10"
+        x="669"
+        y="202" />
+      <vertex
+        id="11"
+        x="804"
+        y="207" />
+      <vertex
+        id="12"
+        x="802"
+        y="284" />
+      <vertex
+        id="13"
+        x="591"
+        y="264" />
+      <vertex
+        id="14"
+        x="595"
+        y="24" />
+      <vertex
+        id="15"
+        x="1029"
+        y="21" />
+      <vertex
+        id="16"
+        x="1023"
+        y="588" />
+      <vertex
+        id="17"
+        x="-33"
+        y="562" />
+    </vertices>
+    <triangles>
+      <triangle
+        id="1"
+        v1="13"
+        v2="12"
+        v3="11" />
+      <triangle
+        id="2"
+        v1="13"
+        v2="11"
+        v3="10" />
+      <triangle
+        id="3"
+        v1="14"
+        v2="13"
+        v3="10" />
+      <triangle
+        id="4"
+        v1="14"
+        v2="10"
+        v3="9" />
+      <triangle
+        id="5"
+        v1="15"
+        v2="14"
+        v3="9" />
+      <triangle
+        id="6"
+        v1="15"
+        v2="9"
+        v3="8" />
+      <triangle
+        id="7"
+        v1="16"
+        v2="15"
+        v3="8" />
+      <triangle
+        id="8"
+        v1="16"
+        v2="8"
+        v3="7" />
+      <triangle
+        id="9"
+        v1="16"
+        v2="7"
+        v3="6" />
+      <triangle
+        id="10"
+        v1="6"
+        v2="5"
+        v3="4" />
+      <triangle
+        id="11"
+        v1="16"
+        v2="6"
+        v3="4" />
+      <triangle
+        id="12"
+        v1="17"
+        v2="16"
+        v3="4" />
+      <triangle
+        id="13"
+        v1="17"
+        v2="4"
+        v3="3" />
+      <triangle
+        id="14"
+        v1="1"
+        v2="17"
+        v3="3" />
+      <triangle
+        id="15"
+        v1="3"
+        v2="2"
+        v3="1" />
+    </triangles>
+  </staticPolygon>
+  <dynamicCircle
+    name="falling_star"
+    texture="flame_particle"
+    posX="332"
+    posY="187"
+    angle="0"
+    zLevel="0"
+    collisionEntity="notApplicable"
+    collisionCategory="8"
+    collisionMask="65535"
+    radius="25"
+    density="1"
+    friction="0" />
+  <ChildCompoundObjectRef
+    name="leapfrog1">
+    <stateProperties
+      state="landingState"
+      file="leapfrog_reentry.xml"
+      posX="500"
+      posY="150" />
+    <stateProperties
+      state="groundState"
+      file="leapfrog_landing.xml"
+      posX="700"
+      posY="175" />
+  </ChildCompoundObjectRef>
+  <ChildCompoundObjectRef
+    name="launchSite1">
+    <stateProperties
+      state="default"
+      file="launch_site.xml"
+      posX="57.479382939038267"
+      posY="479.92123071684495" />
+  </ChildCompoundObjectRef>
+  <ChildCompoundObjectRef
+    name="landingPad1">
+    <stateProperties
+      state="default"
+      file="landing_pad.xml"
+      posX="749.29858967764062"
+      posY="203.54938271604937" />
+  </ChildCompoundObjectRef>
+</compoundObject>

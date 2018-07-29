@@ -20,8 +20,8 @@ MainActor::MainActor()
 	setSize(getStage()->getSize());
 
 //   startScene(STE_LANDING);
-   startScene(STE_FREE_SPACE);
-//   startScene(STE_ORBIT);
+//   startScene(STE_FREE_SPACE);
+   startScene(STE_ORBIT);
 }
 
 MainActor::~MainActor()

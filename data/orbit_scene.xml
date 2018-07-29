@@ -1,36 +1,42 @@
 <?xml version="1.0"?>
 <compoundObject
 	type="orbitScene" >
-	<ChildCompoundObjectRef 
+	<CompoundObjectSystemRef 
 		name="planetAlpha"
-		type="planetActor"
-		texture="planet_rock" 
-		anchorX="0.5"
-		anchorY="0.5"
-		posX="-30.0"
-		posY="20.0"
-		scale="0.3"	>
-		<landingSites>
-			<landingSite
-				name="goldMine"
-				angle="0.0"
-				texture="alpha_mine1" />
-			<landingSite
-				name="alphaCity"
-				angle="0.1"
-				texture="alpha_city1" />
-		</landingSites>
-	</ChildCompoundObjectRef>
-	<ChildCompoundObjectRef
+		type="planetActor" >
+		<stateProperties
+			state="default"
+			texture="planet_rock" 
+			anchorX="0.5"
+			anchorY="0.5"
+			posX="-30.0"
+			posY="20.0"
+			scale="0.3"	>
+			<landingSites>
+				<landingSite
+					name="goldMine"
+					angle="0.0"
+					texture="alpha_mine1" />
+				<landingSite
+					name="alphaCity"
+					angle="0.1"
+					texture="alpha_city1" />
+			</landingSites>
+		</stateProperties>	
+	</CompoundObjectSystemRef>
+	<CompoundObjectSystemRef
 		name="orbitWindow"
-		type="clippedWindow"
-		posX="550.0"
-		posY="0.0"
-		width="300"
-		height="150"
-		background="starfield"
-		frameThickness="1.0"
-		zoomScale="0.4" 
-		spaceSceneFile="orbit_space_scene.xml" />
+		type="clippedWindow">
+		<stateProperties
+			state="default"
+			posX="550.0"
+			posY="0.0"
+			width="300"
+			height="150"
+			background="starfield"
+			frameThickness="1.0"
+			zoomScale="0.4" 
+			spaceSceneFile="orbit_space_scene.xml" />
+	</CompoundObjectSystemRef>
 </compoundObject>
 
