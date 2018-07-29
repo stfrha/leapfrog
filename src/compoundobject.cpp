@@ -485,14 +485,6 @@ bool CompoundObject::initCompoundObjectParts(
       defineChildObject(gameResources, sceneParent, this, world, pos, *it, initialState);
    }
 
-   for (auto it = root.children("CompoundObjectSystemRef").begin();
-      it != root.children("CompoundObjectSystemRef").end();
-      ++it)
-   {
-      defineObjectSystem(gameResources, sceneParent, this, world, pos, *it, initialState);
-   }
-
-
    for (auto it = root.children("weldJoint").begin();
       it != root.children("weldJoint").end();
       ++it)
@@ -512,6 +504,75 @@ bool CompoundObject::initCompoundObjectParts(
       ++it)
    {
       definePrismaticJoint(world, *it);
+   }
+
+   //for (auto it = root.children("CompoundObjectSystemRef").begin();
+   //   it != root.children("CompoundObjectSystemRef").end();
+   //   ++it)
+   //{
+   //   defineObjectSystem(gameResources, sceneParent, this, world, pos, *it, initialState);
+   //}
+
+   for (auto it = root.children("planetActor").begin();
+      it != root.children("planetActor").end();
+      ++it)
+   {
+      xml_node stateNode;
+      
+      if (getStateNode(*it, initialState, stateNode))
+      {
+         PlanetActor* pa = new PlanetActor(
+            gameResources,
+            sceneParent,
+            parentObject,
+            stateNode);
+
+         m_children.push_back(static_cast<CompoundObject*>(pa));
+
+         pa->setName(it->attribute("name").as_string());
+      }
+   }
+
+   for (auto it = root.children("asteroidField").begin();
+      it != root.children("asteroidField").end();
+      ++it)
+   {
+      xml_node stateNode;
+
+      if (getStateNode(*it, initialState, stateNode))
+      {
+         AsteroidField* af = new AsteroidField(
+            gameResources,
+            sceneParent,
+            parentObject,
+            world,
+            stateNode);
+
+         m_children.push_back(static_cast<CompoundObject*>(af));
+
+         af->setName(it->attribute("name").as_string());
+      }
+   }
+
+   for (auto it = root.children("clippedWindow").begin();
+      it != root.children("clippedWindow").end();
+      ++it)
+   {
+      xml_node stateNode;
+
+      if (getStateNode(*it, initialState, stateNode))
+      {
+         OrbitWindow* ow = new OrbitWindow(
+            gameResources,
+            sceneParent,
+            parentObject,
+            stateNode,
+            initialState);
+
+         m_children.push_back(static_cast<CompoundObject*>(ow));
+
+         ow->setName(it->attribute("name").as_string());
+      }
    }
 
    return true;
@@ -1249,90 +1310,109 @@ void CompoundObject::defineChildObject(
    co->setName(objectNode.attribute("name").as_string());
 }
 
-void CompoundObject::defineObjectSystem(
-   Resources& gameResources,
-   Actor* sceneParent,
-   CompoundObject* parentObject,
-   b2World* world,
-   const Vector2& pos,
-   xml_node& objectNode,
-   string& initialState)
+bool CompoundObject::getStateNode(xml_node& objectNode, string& initialState, xml_node& stateNode)
 {
-   // But there is a type of objects that are not to be handeled like this. They
-   // are, for instance, particle systems or object factories. They are not compound 
-   // objects really but could define shapes or CO as children (for instance can a 
-   // object factory define a CO from a file as its spawning object). They are also 
-   // defined by a set of object specific parameters (xml attributes). How to handle
-   // these? Are they CO-children? Are they special behaviour elements (which require 
-   // their own collections in CO or scenes.
-   // They shall be defined as other CO with state properties since different states 
-   // may require differnt settings. But they may not require a PosX, PosY and file
-   // but other parameters
-   // Let there be Compound Object Systems!!!
-
    // Iterate the stateProperties of the node, looking for state attributes
    // that matches the supplied initialState. If initialState is empty,
    // the first statePropertý is used
-   xml_node* stateNode = NULL;
 
    for (auto it = objectNode.children("stateProperties").begin(); it != objectNode.children("stateProperties").end(); ++it)
    {
       if ((initialState == "") || (it->attribute("state").as_string() == initialState))
       {
-         stateNode = &(*it);
-         break;
+         stateNode = *it;
+         return true;
       }
    }
 
-   if (!stateNode)
-   {
-      return;
-   }
-
-   // Decode the type string to create the correct type of object
-   // but only store the pointer to the CompoundObject
-   // Perhaps with some special cases
-   string type = objectNode.attribute("type").as_string();
-
-   if (type == "asteroidField")
-   {
-      AsteroidField* af = new AsteroidField(
-         gameResources,
-         sceneParent,
-         parentObject,
-         world,
-         *stateNode);
-
-      m_children.push_back(static_cast<CompoundObject*>(af));
-
-      af->setName(objectNode.attribute("name").as_string());
-   }
-   else if (type == "planetActor")
-   {
-      PlanetActor* pa = new PlanetActor(
-         gameResources,
-         sceneParent,
-         parentObject,
-         *stateNode);
-
-      m_children.push_back(static_cast<CompoundObject*>(pa));
-
-      pa->setName(objectNode.attribute("name").as_string());
-   }
-   else if (type == "clippedWindow")
-   {
-      OrbitWindow* ow = new OrbitWindow(
-         gameResources,
-         sceneParent,
-         parentObject,
-         *stateNode,
-         initialState);
-
-      m_children.push_back(static_cast<CompoundObject*>(ow));
-
-      ow->setName(objectNode.attribute("name").as_string());
-   }
+   return false;
 }
+
+//void CompoundObject::defineObjectSystem(
+//   Resources& gameResources,
+//   Actor* sceneParent,
+//   CompoundObject* parentObject,
+//   b2World* world,
+//   const Vector2& pos,
+//   xml_node& objectNode,
+//   string& initialState)
+//{
+//   // But there is a type of objects that are not to be handeled like this. They
+//   // are, for instance, particle systems or object factories. They are not compound 
+//   // objects really but could define shapes or CO as children (for instance can a 
+//   // object factory define a CO from a file as its spawning object). They are also 
+//   // defined by a set of object specific parameters (xml attributes). How to handle
+//   // these? Are they CO-children? Are they special behaviour elements (which require 
+//   // their own collections in CO or scenes.
+//   // They shall be defined as other CO with state properties since different states 
+//   // may require differnt settings. But they may not require a PosX, PosY and file
+//   // but other parameters
+//   // Let there be Compound Object Systems!!!
+//
+//   // Iterate the stateProperties of the node, looking for state attributes
+//   // that matches the supplied initialState. If initialState is empty,
+//   // the first statePropertý is used
+//   xml_node* stateNode = NULL;
+//
+//   for (auto it = objectNode.children("stateProperties").begin(); it != objectNode.children("stateProperties").end(); ++it)
+//   {
+//      if ((initialState == "") || (it->attribute("state").as_string() == initialState))
+//      {
+//         stateNode = &(*it);
+//         break;
+//      }
+//   }
+//
+//   if (!stateNode)
+//   {
+//      return;
+//   }
+//
+//   // Decode the type string to create the correct type of object
+//   // but only store the pointer to the CompoundObject
+//   // Perhaps with some special cases
+//   string type = objectNode.attribute("type").as_string();
+//
+//   if (type == "asteroidField")
+//   {
+//      AsteroidField* af = new AsteroidField(
+//         gameResources,
+//         sceneParent,
+//         parentObject,
+//         world,
+//         *stateNode);
+//
+//      m_children.push_back(static_cast<CompoundObject*>(af));
+//
+//      af->setName(objectNode.attribute("name").as_string());
+//   }
+//   else if (type == "planetActor")
+//   {
+//      PlanetActor* pa = new PlanetActor(
+//         gameResources,
+//         sceneParent,
+//         parentObject,
+//         *stateNode);
+//
+//      m_children.push_back(static_cast<CompoundObject*>(pa));
+//
+//      pa->setName(objectNode.attribute("name").as_string());
+//   }
+//   else if (type == "clippedWindow")
+//   {
+//      OrbitWindow* ow = new OrbitWindow(
+//         gameResources,
+//         sceneParent,
+//         parentObject,
+//         *stateNode,
+//         initialState);
+//
+//      m_children.push_back(static_cast<CompoundObject*>(ow));
+//
+//      ow->setName(objectNode.attribute("name").as_string());
+//   }
+//}
+
 void CompoundObject::defineWeldJoint(b2World* world, pugi::xml_node& jointNode)
 {
    b2WeldJointDef	jointDef;

@@ -251,6 +251,8 @@ private:
 
    virtual void setPropertyImpl(int propId, float value);
 
+   bool CompoundObject::getStateNode(pugi::xml_node& objectNode, std::string& initialState, pugi::xml_node& stateNode);
+
 public:
    // Property values are protected within the ObjectProperty type
    // so it is safe to expose the list of properties here.
