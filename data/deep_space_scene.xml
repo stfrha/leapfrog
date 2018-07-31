@@ -4,14 +4,47 @@
 	<asteroidField
 		name="asteroids1">
 		<stateProperties
-			state="default"
-			left="200.0"
-			right="700.0"
-			top="200.0"
-			bottom="400.0"
-			spawnInitial="20"
-			intensity="0.25"
-			lifeTime="60000" />
+			state="default" >
+			<!--
+			<properties
+				posX="450"
+				posY="300"
+				width="500"
+				height="200"
+				spawnInitial="20"
+				intensity="0.25"
+				lifeTime="60000" />
+				-->
+			<properties
+				posX="250"
+				posY="100"
+				width="500"
+				height="200"
+				spawnInitial="20"
+				intensity="0.25"
+				lifeTime="60000" />
+		</stateProperties>
+		<stateProperties
+			state="alt" >
+			<!--
+			<properties
+				posX="450"
+				posY="300"
+				width="500"
+				height="200"
+				spawnInitial="20"
+				intensity="0.25"
+				lifeTime="60000" />
+				-->
+			<properties
+				posX="500"
+				posY="200"
+				width="200"
+				height="100"
+				spawnInitial="20"
+				intensity="0.25"
+				lifeTime="60000" />
+		</stateProperties>
 	</asteroidField>
 
 <!--	<ChildCompoundObjectRef

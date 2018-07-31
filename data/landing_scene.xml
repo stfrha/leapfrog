@@ -17,12 +17,12 @@
     <vertices>
       <vertex
         id="1"
-        x="0"
-        y="0" />
+        x="-4.6874999999999991"
+        y="35.9375" />
       <vertex
         id="2"
-        x="115"
-        y="37" />
+        x="158.75"
+        y="35.4375" />
       <vertex
         id="3"
         x="200"
@@ -585,13 +585,27 @@
         v3="1" />
     </triangles>
   </staticPolygon>
+  <asteroidField
+    name="asteroids1">
+    <stateProperties
+      state="default">
+      <properties
+        posX="314.06249999999977"
+        posY="82.812499999999972"
+        width="200"
+        height="100"
+        spawnInitial="10"
+        intensity="0.4"
+        lifeTime="60000" />
+    </stateProperties>
+  </asteroidField>
   <ChildCompoundObjectRef
     name="launchSite1">
     <stateProperties
       state="default"
       file="launch_site.xml"
-      posX="268.75327645443332"
-      posY="343.13449409872948" />
+      posX="23.440776454433376"
+      posY="277.50949409872953" />
   </ChildCompoundObjectRef>
   <ChildCompoundObjectRef>
     <stateProperties

@@ -62,7 +62,7 @@ PlanetActor::PlanetActor(
       m_landingSites.insert(ls);
    }
    
-   setAnchor(objectNode.attribute("anchorX").as_float(), objectNode.attribute("anchorY").as_float());
+   setAnchor(0.5f, 0.5f);
    setPosition(objectNode.attribute("posX").as_float(), objectNode.attribute("posY").as_float());
    setScale(objectNode.attribute("scale").as_float());
    attachTo(sceneParent);

@@ -525,7 +525,7 @@ bool CompoundObject::initCompoundObjectParts(
             gameResources,
             sceneParent,
             parentObject,
-            stateNode);
+            stateNode.child("properties"));
 
          m_children.push_back(static_cast<CompoundObject*>(pa));
 
@@ -546,7 +546,7 @@ bool CompoundObject::initCompoundObjectParts(
             sceneParent,
             parentObject,
             world,
-            stateNode);
+            stateNode.child("properties"));
 
          m_children.push_back(static_cast<CompoundObject*>(af));
 
@@ -566,11 +566,10 @@ bool CompoundObject::initCompoundObjectParts(
             gameResources,
             sceneParent,
             parentObject,
-            stateNode,
+            stateNode.child("properties"),
             initialState);
 
          m_children.push_back(static_cast<CompoundObject*>(ow));
-
          ow->setName(it->attribute("name").as_string());
       }
    }

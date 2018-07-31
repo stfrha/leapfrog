@@ -23,8 +23,12 @@ AsteroidField::AsteroidField(
 
 void AsteroidField::readAsteroidFieldNode(xml_node& objectNode)
 {
-   m_leftTop = b2Vec2(objectNode.attribute("left").as_float(), objectNode.attribute("top").as_float());
-   m_rightBottom = b2Vec2(objectNode.attribute("right").as_float(), objectNode.attribute("bottom").as_float());
+   float posX = objectNode.attribute("posX").as_float();
+   float posY = objectNode.attribute("posY").as_float();
+   float width = objectNode.attribute("width").as_float();
+   float height = objectNode.attribute("height").as_float();
+   m_leftTop = b2Vec2(posX - width / 2, posY - height / 2);
+   m_rightBottom = b2Vec2(posX + width / 2, posY + height / 2);
    m_initialSpawn = objectNode.attribute("spawnInitial").as_int();
    m_interval = 1.0f / objectNode.attribute("intensity").as_float() * 1000.0f;
    m_fieldLifetime = objectNode.attribute("lifeTime").as_int();
