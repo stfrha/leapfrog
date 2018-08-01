@@ -6,13 +6,6 @@
 #include "orbitscene.h"
 #include "compoundobject.h"
 
-enum SceneTypeEnum
-{
-   STE_LANDING,
-   STE_FREE_SPACE,
-   STE_ORBIT
-};
-
 //DECLARE_SMART is helper, it does forward declaration and declares intrusive_ptr typedef for your class
 DECLARE_SMART(MainActor, spMainActor)
 

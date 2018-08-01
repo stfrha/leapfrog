@@ -17,13 +17,15 @@ FreeSpaceActor::FreeSpaceActor(
    m_state(insertBurn),
    m_stateChangeTime(0)
 {
+   m_sceneType = STE_FREE_SPACE;
+
    setPanorateMode(PME_CENTER);
 
    m_world->SetGravity(b2Vec2(0.0f, 0.0f));
 
    m_world->SetContactListener(&m_contactListener);
 
-   readDefinitionXmlFile(gameResources, this, NULL, m_world, Vector2(435.52f, 375.0f), fileName, initialState);
+   readDefinitionXmlFile(gameResources, this, NULL, m_world, Vector2(0.0f, 0.0f), fileName, initialState);
 
    // Create background before the leapfrog
    generateBackground(gameResources);

@@ -17,7 +17,7 @@ private:
    oxygine::Resources* m_gameResources;
    oxygine::Actor* m_parent;
    b2World* m_world;
-   FreeSpaceActor* m_spaceActor;
+   //FreeSpaceActor* m_spaceActor;
    SceneActor* m_sceneActor;
 
 

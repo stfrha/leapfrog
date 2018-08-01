@@ -17,6 +17,13 @@ enum PanorateModeEnum
    PME_FIX
 };
 
+enum SceneTypeEnum
+{
+   STE_LANDING,
+   STE_FREE_SPACE,
+   STE_ORBIT
+};
+
 DECLARE_SMART(SceneActor, spSceneActor);
 
 class SceneActor : public CompoundObject
@@ -40,7 +47,7 @@ protected:
    std::vector<ActorToDie*> m_deathList;
    PanorateModeEnum m_panorateMode;
    bool m_externalControl;
-
+   SceneTypeEnum m_sceneType;
 
 public:
 	SceneActor(oxygine::Resources& gameResources, float zoomScale);
@@ -55,6 +62,8 @@ public:
    void addMeToDeathList(ActorToDie* actor);
 
    void takeControlOfLeapfrog(bool control);
+
+   SceneTypeEnum getSceneType(void);
 
 protected:
 	void doUpdate(const UpdateState& us);

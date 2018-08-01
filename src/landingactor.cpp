@@ -17,14 +17,16 @@ LandingActor::LandingActor(
    string& initialState) :
    SceneActor(gameResources, 0.4f)
 {
-   setPanorateMode(PME_TOP);
+   m_sceneType = STE_LANDING;
+
+   setPanorateMode(PME_CENTER);
 
    //   m_world->SetGravity(b2Vec2(0, 1.62));
    m_world->SetGravity(b2Vec2(0, 3.0f));
 
    m_world->SetContactListener(&m_contactListener);
 
-   readDefinitionXmlFile(gameResources, this, NULL, m_world, Vector2(435.52f, 375.0f), fileName, initialState);
+   readDefinitionXmlFile(gameResources, this, NULL, m_world, Vector2(0.0f, 0.0f), fileName, initialState);
 
    m_leapfrog = static_cast<LeapFrog*>(getObject("leapfrog1"));
    m_leapfrog->goToEnvironment(ENV_GROUND);

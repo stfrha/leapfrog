@@ -11,7 +11,8 @@ SceneActor::SceneActor(Resources& gameResources, float zoomScale) :
    m_stageToViewPortScale(m_zoomScale * Scales::c_stageToViewPortScale),
    m_physToStageScale(1.0f),
    m_panorateMode(PME_CENTER),
-   m_externalControl(false)
+   m_externalControl(false),
+   m_sceneType(STE_LANDING)
 {
 	Point size = Point(1000, 500);
 	setSize(size);
@@ -24,6 +25,11 @@ SceneActor::SceneActor(Resources& gameResources, float zoomScale) :
 SceneActor::~SceneActor()
 {
    delete m_world;
+}
+
+SceneTypeEnum SceneActor::getSceneType(void)
+{
+   return m_sceneType;
 }
 
 void SceneActor::setLeapfrog(spLeapFrog lf)

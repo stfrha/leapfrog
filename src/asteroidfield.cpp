@@ -13,7 +13,7 @@ AsteroidField::AsteroidField(
    xml_node& objectNode) :
    m_gameResources(&gameResources),
    m_world(world),
-   m_spaceActor((FreeSpaceActor*)sceneParent),
+   m_sceneActor((SceneActor*)sceneParent),
    m_timeSinceLast(0)
 {
    readAsteroidFieldNode(objectNode);
@@ -76,7 +76,7 @@ void AsteroidField::doUpdate(const oxygine::UpdateState& us)
       m_timeSinceLast = 0;
    }
 
-   if (m_spaceActor)
+   if (m_sceneActor)
    {
       spawnAsteroids();
    }
@@ -97,13 +97,19 @@ void AsteroidField::spawnAsteroids(void)
          spAsteroid asteroid = 
             new Asteroid(
                *m_gameResources, 
-               (SceneActor*)m_spaceActor,
+               m_sceneActor,
                m_world, 
                pos, 
                it->m_state, 
                this);
-         asteroid->attachTo(m_spaceActor);
-         m_spaceActor->addBoundingBody((b2Body*)asteroid.get()->getUserData());
+         asteroid->attachTo(m_sceneActor);
+
+         if (m_sceneActor->getSceneType() == STE_FREE_SPACE)
+         {
+            FreeSpaceActor* spaceActor = (FreeSpaceActor*)m_sceneActor;
+
+            spaceActor->addBoundingBody((b2Body*)asteroid.get()->getUserData());
+         }
       }
    }
 
