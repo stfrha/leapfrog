@@ -120,7 +120,7 @@ void SceneActor::doUpdate(const UpdateState& us)
       }
    }
 
-   if (data[SDL_SCANCODE_KP_ENTER])
+   if (data[SDL_SCANCODE_RETURN])
    {
       m_leapfrog->fireGun(true);
    }

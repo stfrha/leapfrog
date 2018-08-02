@@ -585,6 +585,7 @@
         v3="1" />
     </triangles>
   </staticPolygon>
+  <!--
   <asteroidField
     name="asteroids1">
     <stateProperties
@@ -599,6 +600,48 @@
         lifeTime="60000" />
     </stateProperties>
   </asteroidField>
+  -->
+  <objectFactory
+    name="machineFactory">
+    <stateProperties
+      state="default">
+      <properties
+        posX="300"
+        posY="82"
+        width="10"
+        height="10"
+        spawnInitial="1"
+        intensity="0.2"
+        lifeTime="60000" >
+			<CompoundObject>
+				<ChildCompoundObjectRef 
+					name="machine1">
+					<stateProperties 
+						state="default"
+						file="strange_machine.xml" 
+						posX="0.0"
+						posY="0.0" />
+				</ChildCompoundObjectRef>
+			</CompoundObject>
+		</properties>
+    </stateProperties>
+  </objectFactory>
+  <objectFactory
+    name="asteroidField">
+    <stateProperties
+      state="default">
+      <properties
+        posX="250"
+        posY="82"
+        width="10"
+        height="10"
+        spawnInitial="1"
+        intensity="0.2"
+        lifeTime="60000" >
+			<CompoundObject type="asteroid" />
+		</properties>
+	</stateProperties>
+  </objectFactory>
   <ChildCompoundObjectRef
     name="launchSite1">
     <stateProperties

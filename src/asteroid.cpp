@@ -13,11 +13,9 @@ Asteroid::Asteroid(
    Resources& gameResources,
    SceneActor* sceneActor,
    b2World* world,
-   const b2Vec2& pos,
-   AsteroidStateEnum state,
-   AsteroidField* field) :
+   const Vector2& pos,
+   AsteroidStateEnum state) :
    m_state(state),
-   m_radius(generateRadius()),
    m_num(generateNum()),
    m_bitmapPxSize(512),
    m_asteroideMaxRadius(10.0f),
@@ -25,7 +23,7 @@ Asteroid::Asteroid(
    m_damage(0),
    m_sceneActor(sceneActor),
    m_gameResource(&gameResources),
-   m_asteroidField(field)
+   m_world(world)
 {
    m_poly = new oxygine::Polygon;
 
@@ -39,6 +37,26 @@ Asteroid::Asteroid(
    */
 
    m_poly->setResAnim(gameResources.getResAnim("crater_rock"));
+
+   if (m_state == ASE_AUTO)
+   {
+      float size = static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / 3.0f));
+
+      if (size < 0.5f)
+      {
+         m_state = ASE_SMALL;
+      }
+      else if (size < 1.5f)
+      {
+         m_state = ASE_MIDDLE;
+      }
+      else
+      {
+         m_state = ASE_LARGE;
+      }
+   }
+
+   m_radius = generateRadius();
 
    setPriority(160);
 
@@ -58,7 +76,7 @@ Asteroid::Asteroid(
 
    b2BodyDef bodyDef;
    bodyDef.type = b2_dynamicBody;
-   bodyDef.position = pos;
+   bodyDef.position = PhysDispConvert::convert(pos, 1.0f);
 
    b2Body* body = world->CreateBody(&bodyDef);
 
@@ -131,12 +149,20 @@ Asteroid::Asteroid(
 
 
    body->ApplyAngularImpulse(angImpulse * 10.0f, true);
+
+   attachTo(m_sceneActor);
 }
 
 CollisionEntityTypeEnum Asteroid::getEntityType(void)
 {
    return CET_ASTEROID;
 }
+
+void Asteroid::addAsteroidSpawnInstruction(AsteroidSpawnInstruction& inst)
+{
+   m_asteroidSpawnList.push_back(inst);
+}
+
 
 void Asteroid::killActor(void)
 {
@@ -171,18 +197,15 @@ void Asteroid::hitByBullet(b2Contact* contact)
    if ((m_state == ASE_MIDDLE) && (m_damage >= 2))
    {
       // Spawn three small 
-      m_asteroidField->addAsteroidSpawnInstruction(AsteroidSpawnInstruction(3, ASE_SMALL, spawnLeftTop, spawnRightBottom));
+      addAsteroidSpawnInstruction(AsteroidSpawnInstruction(3, ASE_SMALL, spawnLeftTop, spawnRightBottom));
 
-      m_sceneActor->addMeToDeathList((ActorToDie*)this);
       shattered = true;
    }
 
    if ((m_state == ASE_LARGE) && (m_damage >= 4))
    {
       // Spawn three middle 
-      m_asteroidField->addAsteroidSpawnInstruction(AsteroidSpawnInstruction(3, ASE_MIDDLE, spawnLeftTop, spawnRightBottom));
-
-      m_sceneActor->addMeToDeathList((ActorToDie*)this);
+      addAsteroidSpawnInstruction(AsteroidSpawnInstruction(3, ASE_MIDDLE, spawnLeftTop, spawnRightBottom));
 
       shattered = true;
    }
@@ -375,6 +398,7 @@ int Asteroid::generateNum(void)
 
 void Asteroid::doUpdate(const oxygine::UpdateState& us)
 {
+   spawnAsteroids();
 }
 
 void Asteroid::atDeathOfAsteroid(void)
@@ -396,3 +420,42 @@ void Asteroid::atDeathOfAsteroid(void)
 //
 //}
 
+void Asteroid::spawnAsteroids(void)
+{
+   if (m_asteroidSpawnList.size() > 0)
+   {
+      m_sceneActor->addMeToDeathList((ActorToDie*)this);
+
+      for (auto it = m_asteroidSpawnList.begin(); it != m_asteroidSpawnList.end(); ++it)
+      {
+         for (int i = 0; i < it->m_num; i++)
+         {
+            // Randomise position within asteroid field
+            oxygine::Vector2 pos;
+
+            pos.x = static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (it->m_rightBottom.x - it->m_leftTop.x))) + it->m_leftTop.x;
+            pos.y = static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (it->m_rightBottom.y - it->m_leftTop.y))) + it->m_leftTop.y;
+
+            spAsteroid asteroid =
+               new Asteroid(
+                  *m_gameResource,
+                  m_sceneActor,
+                  m_world,
+                  pos,
+                  it->m_state);
+            asteroid->attachTo(m_sceneActor);
+
+            if (m_sceneActor->getSceneType() == STE_FREE_SPACE)
+            {
+               FreeSpaceActor* spaceActor = (FreeSpaceActor*)m_sceneActor;
+
+               spaceActor->addBoundingBody((b2Body*)asteroid.get()->getUserData());
+            }
+         }
+      }
+
+      m_asteroidSpawnList.clear();
+
+   }
+
+}

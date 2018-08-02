@@ -185,6 +185,7 @@
     <ClCompile Include="..\src\leapfrog.cpp" />
     <ClCompile Include="..\src\main.cpp" />
     <ClCompile Include="..\src\marker.cpp" />
+    <ClCompile Include="..\src\objectfactory.cpp" />
     <ClCompile Include="..\src\orbitscene.cpp" />
     <ClCompile Include="..\src\orbitspacescene.cpp" />
     <ClCompile Include="..\src\orbitwindow.cpp" />
@@ -276,6 +277,7 @@
     <ClInclude Include="..\src\landingactor.h" />
     <ClInclude Include="..\src\leapfrog.h" />
     <ClInclude Include="..\src\marker.h" />
+    <ClInclude Include="..\src\objectfactory.h" />
     <ClInclude Include="..\src\orbitscene.h" />
     <ClInclude Include="..\src\orbitsceneevents.h" />
     <ClInclude Include="..\src\orbitspacesceneevents.h" />

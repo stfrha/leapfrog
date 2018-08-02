@@ -2,6 +2,7 @@
 
 #include "oxygine-framework.h"
 #include "Box2D/Box2D.h"
+#include "compoundobject.h"
 #include "scales.h"
 #include "physdispconvert.h"
 #include "collisionentity.h"
@@ -14,7 +15,8 @@ enum AsteroidStateEnum
 {
    ASE_SMALL,     // Has Four edges, is about 2 meters in diameter
    ASE_MIDDLE,    // Has five edges, is about 5 meters in diameter
-   ASE_LARGE      // Has five edges, is about 10 meters in diameter
+   ASE_LARGE,     // Has five edges, is about 10 meters in diameter
+   ASE_AUTO       // Size is selected randomly at creation
 };
 
 class AsteroidSpawnInstruction
@@ -52,10 +54,11 @@ DECLARE_SMART(Asteroid, spAsteroid);
 // The Polygon created by it will be an child of the Asteroid 
 // Actor.
 
-class Asteroid : public oxygine::Actor, CollisionEntity, ActorToDie
+class Asteroid : public CompoundObject, ActorToDie
 {
 private:
    oxygine::Resources* m_gameResource;
+   b2World* m_world;
    oxygine::spPolygon m_poly;
    AsteroidStateEnum m_state;
    int m_num;
@@ -72,16 +75,19 @@ private:
    int   m_damage;
 
    SceneActor* m_sceneActor;
-   AsteroidField * m_asteroidField;
+
+   std::vector<AsteroidSpawnInstruction>  m_asteroidSpawnList;
+
+   void addAsteroidSpawnInstruction(AsteroidSpawnInstruction& inst);
+   void spawnAsteroids(void);
 
 public:
 	Asteroid(
       oxygine::Resources& gameResources, 
       SceneActor* sceneActor,
       b2World* world,
-      const b2Vec2& pos, 
-      AsteroidStateEnum state,
-      AsteroidField* field);
+      const oxygine::Vector2& pos, 
+      AsteroidStateEnum state);
 
    virtual CollisionEntityTypeEnum getEntityType(void);
 

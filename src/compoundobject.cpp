@@ -9,6 +9,7 @@
 #include "asteroidfield.h"
 #include "planetactor.h"
 #include "orbitwindow.h"
+#include "objectfactory.h"
 
 #include "polygonvertices.h"
 
@@ -339,38 +340,12 @@ CompoundObject* CompoundObject::initCompoundObject(
    
       return static_cast<CompoundObject*>(lp);
    }
-   //else if (type == "asteroidField")
-   //{
-   //   AsteroidField* af = new AsteroidField(
-   //      gameResources,
-   //      sceneParent,
-   //      parentObject,
-   //      world,
-   //      root);
-   //
-   //   return static_cast<CompoundObject*>(af);
-   //}
-   //else if (type == "planetActor")
-   //{
-   //   PlanetActor* pa = new PlanetActor(
-   //      gameResources,
-   //      sceneParent,
-   //      parentObject,
-   //      root);
+   else if (type == "asteroid")
+   {
+      Asteroid* lp = new Asteroid(gameResources, (SceneActor*)sceneParent, world, pos, ASE_AUTO);
 
-   //   return static_cast<CompoundObject*>(pa);
-   //}
-   //else if (type == "clippedWindow")
-   //{
-   //   OrbitWindow* ow = new OrbitWindow(
-   //      gameResources,
-   //      sceneParent,
-   //      parentObject,
-   //      root,
-   //      initialState);
-
-   //   return static_cast<CompoundObject*>(ow);
-   //}
+      return static_cast<CompoundObject*>(lp);
+   }
    else
    {
       initCompoundObjectParts(
@@ -542,6 +517,27 @@ bool CompoundObject::initCompoundObjectParts(
       if (getStateNode(*it, initialState, stateNode))
       {
          AsteroidField* af = new AsteroidField(
+            gameResources,
+            sceneParent,
+            parentObject,
+            world,
+            stateNode.child("properties"));
+
+         m_children.push_back(static_cast<CompoundObject*>(af));
+
+         af->setName(it->attribute("name").as_string());
+      }
+   }
+
+   for (auto it = root.children("objectFactory").begin();
+      it != root.children("objectFactory").end();
+      ++it)
+   {
+      xml_node stateNode;
+
+      if (getStateNode(*it, initialState, stateNode))
+      {
+         ObjectFactory* af = new ObjectFactory(
             gameResources,
             sceneParent,
             parentObject,

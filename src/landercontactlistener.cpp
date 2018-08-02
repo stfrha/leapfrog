@@ -4,6 +4,7 @@
 #include "leapfrog.h"
 #include "launchsite.h"
 #include "landingpad.h"
+#include "asteroid.h"
 
 
 void LanderContactListener::ContactHandler(b2Contact* contact, bool begin)
@@ -16,6 +17,7 @@ void LanderContactListener::ContactHandler(b2Contact* contact, bool begin)
    Bullet* bullet = NULL;
    LaunchSite* launchSite = NULL;
    LandingPad* landingPad = NULL;
+   Asteroid* asteroid = NULL;
 
    bool launchSiteLeftRest = false; // true means right leg rest
    bool leapfrogLeftFoot = false; // true means right foot
@@ -86,6 +88,16 @@ void LanderContactListener::ContactHandler(b2Contact* contact, bool begin)
       bullet = (Bullet*)contact->GetFixtureB()->GetBody()->GetUserData();
    }
 
+   if (eA == CET_ASTEROID)
+   {
+      asteroid = (Asteroid*)contact->GetFixtureA()->GetBody()->GetUserData();
+   }
+
+   if (eB == CET_ASTEROID)
+   {
+      asteroid = (Asteroid*)contact->GetFixtureB()->GetBody()->GetUserData();
+   }
+
    if (eA == CET_LANDING_PAD)
    {
       CompoundObject* t = (CompoundObject*)(contact->GetFixtureA()->GetBody()->GetUserData());
@@ -121,6 +133,13 @@ void LanderContactListener::ContactHandler(b2Contact* contact, bool begin)
       {
          landingPad->leapfrogFootLift(contact, leapfrogLeftFoot);
       }
+   }
+
+   if (asteroid && bullet)
+   {
+      // Bullet hit asteroid
+      bullet->hitAsteroid(contact);
+      asteroid->hitByBullet(contact);
    }
 }
 

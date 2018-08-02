@@ -1,11 +1,12 @@
 #include "freespaceactor.h"
 #include "asteroid.h"
-#include "asteroidfield.h"
+#include "ObjectFactory.h"
 
 using namespace oxygine;
 using namespace pugi;
+using namespace std;
 
-AsteroidField::AsteroidField(
+ObjectFactory::ObjectFactory(
    Resources& gameResources,
    Actor* sceneParent,
    CompoundObject* parentObject,
@@ -16,12 +17,12 @@ AsteroidField::AsteroidField(
    m_sceneActor((SceneActor*)sceneParent),
    m_timeSinceLast(0)
 {
-   readAsteroidFieldNode(objectNode);
+   readObjectFactoryNode(objectNode);
    attachTo(sceneParent);
-   spawnAsteroids();
+   spawnObjects();
 }
 
-void AsteroidField::readAsteroidFieldNode(xml_node& objectNode)
+void ObjectFactory::readObjectFactoryNode(xml_node& objectNode)
 {
    float posX = objectNode.attribute("posX").as_float();
    float posY = objectNode.attribute("posY").as_float();
@@ -33,72 +34,75 @@ void AsteroidField::readAsteroidFieldNode(xml_node& objectNode)
    m_interval = 1.0f / objectNode.attribute("intensity").as_float() * 1000.0f;
    m_fieldLifetime = objectNode.attribute("lifeTime").as_int();
 
-   addAsteroidSpawnInstruction(AsteroidSpawnInstruction(m_initialSpawn / 3, ASE_LARGE, m_leftTop, m_rightBottom ));
-   addAsteroidSpawnInstruction(AsteroidSpawnInstruction(m_initialSpawn / 3, ASE_MIDDLE, m_leftTop, m_rightBottom));
-   addAsteroidSpawnInstruction(AsteroidSpawnInstruction(m_initialSpawn / 3, ASE_SMALL, m_leftTop, m_rightBottom));
+   m_coNode = objectNode.child("CompoundObject");
+
+   m_coNodeHolder = new xml_document();
+   m_coNodeHolder->append_copy(m_coNode);
+   m_coNode = m_coNodeHolder->child("CompoundObject");
+
+//   m_coFileName = objectNode.attribute("objectRef").as_string();
+
+   addObjectSpawnInstruction(ObjectSpawnInstruction(m_initialSpawn, m_leftTop, m_rightBottom ));
 
 }
 
-CollisionEntityTypeEnum AsteroidField::getEntityType(void)
+CollisionEntityTypeEnum ObjectFactory::getEntityType(void)
 {
    return CET_NOT_APPLICABLE;
 }
 
 
 
-void AsteroidField::addAsteroidSpawnInstruction(AsteroidSpawnInstruction& inst)
+void ObjectFactory::addObjectSpawnInstruction(ObjectSpawnInstruction& inst)
 {
-   m_asteroidSpawnList.push_back(inst);
+   m_objectSpawnList.push_back(inst);
 }
 
 
-void AsteroidField::doUpdate(const oxygine::UpdateState& us)
+void ObjectFactory::doUpdate(const oxygine::UpdateState& us)
 {
    m_timeSinceLast += us.dt;
 
    if (m_timeSinceLast >= m_interval)
    {
-      addAsteroidSpawnInstruction(AsteroidSpawnInstruction(1, ASE_AUTO, m_leftTop, m_rightBottom));
+      addObjectSpawnInstruction(ObjectSpawnInstruction(1, m_leftTop, m_rightBottom));
 
       m_timeSinceLast = 0;
    }
 
    if (m_sceneActor)
    {
-      spawnAsteroids();
+      spawnObjects();
    }
 }
 
-void AsteroidField::spawnAsteroids(void)
+void ObjectFactory::spawnObjects(void)
 {
-   for (auto it = m_asteroidSpawnList.begin(); it != m_asteroidSpawnList.end(); ++it)
+   for (auto it = m_objectSpawnList.begin(); it != m_objectSpawnList.end(); ++it)
    {
       for (int i = 0; i < it->m_num; i++)
       {
-         // Randomise position within asteroid field
+         // Randomise position within factory field
          Vector2 pos;
 
          pos.x = static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (it->m_rightBottom.x  - it->m_leftTop.x))) + it->m_leftTop.x;
          pos.y = static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (it->m_rightBottom.y - it->m_leftTop.y))) + it->m_leftTop.y;
+
+         spCompoundObject co = new CompoundObject();
+
+         co->initCompoundObject(*m_gameResources, m_sceneActor, this, m_world, pos, m_coNode, string("default"));
          
-         spAsteroid asteroid = 
-            new Asteroid(
-               *m_gameResources, 
-               m_sceneActor,
-               m_world, 
-               pos, 
-               it->m_state);
-         asteroid->attachTo(m_sceneActor);
+         co->attachTo(m_sceneActor);
 
          if (m_sceneActor->getSceneType() == STE_FREE_SPACE)
          {
             FreeSpaceActor* spaceActor = (FreeSpaceActor*)m_sceneActor;
 
-            spaceActor->addBoundingBody((b2Body*)asteroid.get()->getUserData());
+            spaceActor->addBoundingBody((b2Body*)co.get()->getUserData());
          }
       }
    }
 
-   m_asteroidSpawnList.clear();
+   m_objectSpawnList.clear();
 }
 
