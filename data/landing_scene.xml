@@ -601,6 +601,15 @@
     </stateProperties>
   </asteroidField>
   -->
+	<ChildCompoundObjectRef 
+		name="machine1">
+		<stateProperties 
+			state="default"
+			file="strange_machine.xml" 
+			posX="300"
+			posY="200" />
+	</ChildCompoundObjectRef>
+  <!--
   <objectFactory
     name="machineFactory">
     <stateProperties
@@ -642,6 +651,7 @@
 		</properties>
 	</stateProperties>
   </objectFactory>
+  -->
   <ChildCompoundObjectRef
     name="launchSite1">
     <stateProperties

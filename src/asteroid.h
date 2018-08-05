@@ -54,7 +54,7 @@ DECLARE_SMART(Asteroid, spAsteroid);
 // The Polygon created by it will be an child of the Asteroid 
 // Actor.
 
-class Asteroid : public CompoundObject, ActorToDie
+class Asteroid : public CompoundObject
 {
 private:
    oxygine::Resources* m_gameResource;

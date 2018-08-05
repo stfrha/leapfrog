@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <compoundObject
 	type="deepSpaceScene" >
-	<asteroidField
+	<objectFactory
 		name="asteroids1">
 		<stateProperties
 			state="default" >
@@ -22,7 +22,9 @@
 				height="200"
 				spawnInitial="20"
 				intensity="0.25"
-				lifeTime="60000" />
+				lifeTime="60000">
+				<CompoundObject type="asteroid" />
+			</properties>
 		</stateProperties>
 		<stateProperties
 			state="alt" >
@@ -43,9 +45,11 @@
 				height="100"
 				spawnInitial="20"
 				intensity="0.25"
-				lifeTime="60000" />
+				lifeTime="60000">
+				<CompoundObject type="asteroid" />
+			</properties>
 		</stateProperties>
-	</asteroidField>
+	</objectFactory>
 
 <!--	<ChildCompoundObjectRef
 		name="asteroids1"

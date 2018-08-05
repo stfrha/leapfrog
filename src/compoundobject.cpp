@@ -260,6 +260,17 @@ CollisionEntityTypeEnum CompoundObject::getEntityType(void)
    return m_collisionType;
 }
 
+//void CompoundObject::killActor(void)
+//{
+//   b2Body* myBody = (b2Body*)getUserData();
+//
+//   myBody->GetWorld()->DestroyBody(myBody);
+//
+//   this->detach();
+//}
+//
+//
+
 Sprite* CompoundObject::getSprite(void)
 {
    return static_cast<Sprite*>(getFirstChild().get());
@@ -458,6 +469,17 @@ bool CompoundObject::initCompoundObjectParts(
       ++it)
    {
       defineChildObject(gameResources, sceneParent, this, world, pos, *it, initialState);
+   }
+
+   for (auto it = root.children("CompoundObject").begin();
+      it != root.children("CompoundObject").end();
+      ++it)
+   {
+      CompoundObject* co = CompoundObject::initCompoundObject(gameResources, sceneParent, this, world, pos, *it, initialState);
+
+      m_children.push_back(co);
+
+      co->setName(it->attribute("name").as_string());
    }
 
    for (auto it = root.children("weldJoint").begin();

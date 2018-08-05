@@ -88,9 +88,7 @@ void ObjectFactory::spawnObjects(void)
          pos.x = static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (it->m_rightBottom.x  - it->m_leftTop.x))) + it->m_leftTop.x;
          pos.y = static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (it->m_rightBottom.y - it->m_leftTop.y))) + it->m_leftTop.y;
 
-         spCompoundObject co = new CompoundObject();
-
-         co->initCompoundObject(*m_gameResources, m_sceneActor, this, m_world, pos, m_coNode, string("default"));
+         spCompoundObject co = CompoundObject::initCompoundObject(*m_gameResources, m_sceneActor, this, m_world, pos, m_coNode, string("default"));
          
          co->attachTo(m_sceneActor);
 

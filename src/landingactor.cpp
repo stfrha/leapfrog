@@ -17,6 +17,8 @@ LandingActor::LandingActor(
    string& initialState) :
    SceneActor(gameResources, 0.4f)
 {
+   m_contactListener.InitContactListner(this);
+
    m_sceneType = STE_LANDING;
 
    setPanorateMode(PME_CENTER);

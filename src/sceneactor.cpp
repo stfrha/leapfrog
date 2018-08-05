@@ -237,7 +237,7 @@ void SceneActor::sweepKillList(void)
 {
    for (auto it = m_deathList.begin(); it != m_deathList.end(); ++it)
    {
-      ActorToDie* a = *it;
+      ActorToDie* a = (ActorToDie*)*it;
       a->killActor();
    }
 
