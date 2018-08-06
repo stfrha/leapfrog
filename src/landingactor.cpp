@@ -11,11 +11,15 @@
 using namespace oxygine;
 using namespace std;
 
-LandingActor::LandingActor(
-   Resources& gameResources,
+LandingActor::LandingActor(Resources& gameResources) :
+   SceneActor(gameResources, 0.4f),
+   m_gameResources(&gameResources)
+{
+}
+
+void LandingActor::initLandingActor(
    string& fileName,
-   string& initialState) :
-   SceneActor(gameResources, 0.4f)
+   string& initialState)
 {
    m_contactListener.InitContactListner(this);
 
@@ -28,7 +32,7 @@ LandingActor::LandingActor(
 
    m_world->SetContactListener(&m_contactListener);
 
-   readDefinitionXmlFile(gameResources, this, NULL, m_world, Vector2(0.0f, 0.0f), fileName, initialState);
+   readDefinitionXmlFile(*m_gameResources, this, NULL, m_world, Vector2(0.0f, 0.0f), fileName, initialState);
 
    m_leapfrog = static_cast<LeapFrog*>(getObject("leapfrog1"));
    m_leapfrog->goToEnvironment(ENV_GROUND);

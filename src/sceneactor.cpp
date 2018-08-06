@@ -5,6 +5,7 @@
 using namespace oxygine;
 
 SceneActor::SceneActor(Resources& gameResources, float zoomScale) :
+   CompoundObject(),
    m_gameResources(&gameResources),
    m_world(NULL),
    m_zoomScale(zoomScale),
@@ -52,13 +53,8 @@ void SceneActor::setPanorateMode(PanorateModeEnum mode)
    m_panorateMode = mode;
 }
 
-void SceneActor::addMeToDeathList(ActorToDie* actor)
+void SceneActor::addMeToDeathList(CompoundObject* actor)
 {
-   if (m_deathList.size() == 0)
-   {
-      int a = 10;
-   }
-
    if (std::find(m_deathList.begin(), m_deathList.end(), actor) != m_deathList.end())
    {
       // Attempted to add same object twice
@@ -237,7 +233,7 @@ void SceneActor::sweepKillList(void)
 {
    for (auto it = m_deathList.begin(); it != m_deathList.end(); ++it)
    {
-      ActorToDie* a = (ActorToDie*)*it;
+      CompoundObject* a = (CompoundObject*)*it;
       a->killActor();
    }
 

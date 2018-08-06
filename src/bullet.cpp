@@ -18,10 +18,14 @@ Bullet::Bullet(
    m_firstUpdate(true),
    m_lifetime(lifetime)
 {
-   setSize(0.75f, 0.75f);
-   setPosition(PhysDispConvert::convert(pos, 1.0f));
-   setAnchor(Vector2(0.5f, 0.5f));
-   setPriority(163);
+   spColorRectSprite crs = new ColorRectSprite();
+
+   crs->setSize(0.75f, 0.75f);
+   crs->setPosition(PhysDispConvert::convert(pos, 1.0f));
+   crs->setAnchor(Vector2(0.5f, 0.5f));
+   crs->setPriority(163);
+
+   addChild(crs);
 
    //spTween tranpTween = addTween(Actor::TweenAlpha(0), lifetime);
    //spTween scaleTween = addTween(Actor::TweenScale(0.25, 0.25), lifetime);
@@ -61,6 +65,7 @@ Bullet::Bullet(
 
    body->ApplyLinearImpulseToCenter(vel, true);
 
+   attachTo(sceneActor);
 }
 
 CollisionEntityTypeEnum Bullet::getEntityType(void)
@@ -79,7 +84,7 @@ void Bullet::hitAsteroid(b2Contact* contact)
 {
    if (m_sceneActor)
    {
-      m_sceneActor->addMeToDeathList((ActorToDie*)this);
+      m_sceneActor->addMeToDeathList(this);
    }
 }
 
@@ -95,7 +100,7 @@ void Bullet::doUpdate(const oxygine::UpdateState& us)
    {
       if (m_sceneActor)
       {
-         m_sceneActor->addMeToDeathList((ActorToDie*)this);
+         m_sceneActor->addMeToDeathList(this);
       }
    }
 }

@@ -185,7 +185,7 @@ void Asteroid::hitByBullet(b2Contact* contact)
 
    if (m_state == ASE_SMALL && m_damage >= 1)
    {
-      m_sceneActor->addMeToDeathList((ActorToDie*)this);
+      m_sceneActor->addMeToDeathList(this);
       shattered = true;
    }
 
@@ -403,6 +403,7 @@ void Asteroid::doUpdate(const oxygine::UpdateState& us)
 
 void Asteroid::atDeathOfAsteroid(void)
 {
+   // Did we reach this code?
    b2Body* myBody = (b2Body*)getUserData();
    
    myBody->GetWorld()->DestroyBody(myBody);
@@ -424,7 +425,7 @@ void Asteroid::spawnAsteroids(void)
 {
    if (m_asteroidSpawnList.size() > 0)
    {
-      m_sceneActor->addMeToDeathList((ActorToDie*)this);
+      m_sceneActor->addMeToDeathList(this);
 
       for (auto it = m_asteroidSpawnList.begin(); it != m_asteroidSpawnList.end(); ++it)
       {

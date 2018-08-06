@@ -54,7 +54,10 @@ void MainActor::startScene(SceneTypeEnum scene)
       window->setPosition(50.0f, 50.0f);
       addChild(window);
 
-      spLandingActor landingActor = new LandingActor(m_gameResources, string("landing_scene.xml"), string("landingState"));
+      spLandingActor landingActor = new LandingActor(m_gameResources);
+
+      landingActor->initLandingActor(string("landing_scene.xml"), string("landingState"));
+      
       window->addChild(landingActor);
       landingActor->addEventListener(LandingActorTranstToDeepSpaceEvent::EVENT, CLOSURE(this, &MainActor::transitToDeepSpaceListner));
 

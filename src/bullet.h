@@ -2,6 +2,7 @@
 
 #include "oxygine-framework.h"
 #include "Box2D/Box2D.h"
+#include "compoundobject.h"
 #include "scales.h"
 #include "physdispconvert.h"
 #include "collisionentity.h"
@@ -11,7 +12,7 @@ class SceneActor;
 
 DECLARE_SMART(Bullet, spBullet);
 
-class Bullet : public oxygine::ColorRectSprite, CollisionEntity, ActorToDie
+class Bullet : public CompoundObject
 {
 private:
    int m_deathTime;
