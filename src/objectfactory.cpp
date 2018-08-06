@@ -8,13 +8,14 @@ using namespace std;
 
 ObjectFactory::ObjectFactory(
    Resources& gameResources,
-   Actor* sceneParent,
+   SceneActor* sceneParent,
    CompoundObject* parentObject,
    b2World* world,
    xml_node& objectNode) :
+   CompoundObject(sceneParent),
    m_gameResources(&gameResources),
    m_world(world),
-   m_sceneActor((SceneActor*)sceneParent),
+   m_sceneActor(sceneParent),
    m_timeSinceLast(0)
 {
    readObjectFactoryNode(objectNode);

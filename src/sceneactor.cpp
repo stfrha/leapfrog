@@ -5,6 +5,7 @@
 using namespace oxygine;
 
 SceneActor::SceneActor(Resources& gameResources, float zoomScale) :
+   CompoundObject(this),
    m_gameResources(&gameResources),
    m_world(NULL),
    m_zoomScale(zoomScale),
@@ -12,7 +13,7 @@ SceneActor::SceneActor(Resources& gameResources, float zoomScale) :
    m_physToStageScale(1.0f),
    m_panorateMode(PME_CENTER),
    m_externalControl(false),
-   m_sceneType(STE_LANDING)
+   m_sceneType(STE_LANDING) 
 {
 	Point size = Point(1000, 500);
 	setSize(size);
@@ -52,13 +53,8 @@ void SceneActor::setPanorateMode(PanorateModeEnum mode)
    m_panorateMode = mode;
 }
 
-void SceneActor::addMeToDeathList(ActorToDie* actor)
+void SceneActor::addMeToDeathList(CompoundObject* actor)
 {
-   if (m_deathList.size() == 0)
-   {
-      int a = 10;
-   }
-
    if (std::find(m_deathList.begin(), m_deathList.end(), actor) != m_deathList.end())
    {
       // Attempted to add same object twice
@@ -237,8 +233,15 @@ void SceneActor::sweepKillList(void)
 {
    for (auto it = m_deathList.begin(); it != m_deathList.end(); ++it)
    {
-      ActorToDie* a = (ActorToDie*)*it;
-      a->killActor();
+      CompoundObject* a = (CompoundObject*)*it;
+      //a->killActor();
+
+      b2Body* myBody = (b2Body*)a->getUserData();
+
+      myBody->GetWorld()->DestroyBody(myBody);
+
+      a->detach();
+
    }
 
    m_deathList.clear();

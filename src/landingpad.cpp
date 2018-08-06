@@ -1,17 +1,20 @@
 
 #include "LandingPad.h"
 
+#include "sceneactor.h"
+
 using namespace oxygine;
 using namespace std;
 
 
 LandingPad::LandingPad(
    Resources& gameResources,
-   Actor* sceneParent,
+   SceneActor* sceneParent,
    CompoundObject* parentObject,
    b2World* world,
    const Vector2& pos,
    pugi::xml_node& root) :
+   CompoundObject(sceneParent),
    m_leftFootContact(false),
    m_rightFootContact(false)
 {

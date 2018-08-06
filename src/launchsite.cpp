@@ -11,11 +11,12 @@ using namespace std;
 
 LaunchSite::LaunchSite(
    Resources& gameResources,
-   Actor* sceneParent,
+   SceneActor* sceneParent,
    CompoundObject* parentObject,
    b2World* world,
    const Vector2& pos,
    pugi::xml_node& root) :
+   CompoundObject(sceneParent),
    m_gameResources(&gameResources),
    m_world(world),
    m_sceneParent(sceneParent),

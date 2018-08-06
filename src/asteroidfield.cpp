@@ -1,16 +1,18 @@
 #include "freespaceactor.h"
 #include "asteroid.h"
 #include "asteroidfield.h"
+#include "sceneactor.h"
 
 using namespace oxygine;
 using namespace pugi;
 
 AsteroidField::AsteroidField(
    Resources& gameResources,
-   Actor* sceneParent,
+   SceneActor* sceneParent,
    CompoundObject* parentObject,
    b2World* world,
    xml_node& objectNode) :
+   CompoundObject(sceneParent),
    m_gameResources(&gameResources),
    m_world(world),
    m_sceneActor((SceneActor*)sceneParent),

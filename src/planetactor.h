@@ -77,6 +77,7 @@ enum PlanetActorStateEnum
    PAS_LANDED
 };
 
+class SceneActor;
 
 class PlanetActor : public CompoundObject
 {
@@ -117,7 +118,7 @@ private:
 public:
    PlanetActor(
       oxygine::Resources& gameResources,
-      oxygine::Actor* sceneParent,
+      SceneActor* sceneParent,
       CompoundObject* parentObject,
       pugi::xml_node& objectNode);
    void orbitEstablished(void);

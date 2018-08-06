@@ -1,5 +1,7 @@
 #include <algorithm>
 
+#include "Box2D/Box2D.h"
+
 // All objects that are derived from CompoundObject
 // and thus can be instansiated as children to one
 // CompoundObject
@@ -10,10 +12,12 @@
 #include "planetactor.h"
 #include "orbitwindow.h"
 #include "objectfactory.h"
+#include "blastemitter.h"
 
 #include "polygonvertices.h"
 
 #include "compoundobject.h"
+#include "sceneactor.h"
 
 using namespace oxygine;
 using namespace std;
@@ -229,7 +233,8 @@ void DualPropEventTrigger::updateProperty(int propId)
 	//}
 }
 
-CompoundObject::CompoundObject() :
+CompoundObject::CompoundObject(SceneActor* sceneActor) :
+   m_sceneActor(sceneActor),
    m_collisionType(CET_NOT_APPLICABLE)
 { }
 
@@ -245,19 +250,58 @@ CompoundObject::~CompoundObject()
 
 void CompoundObject::initCompoundObjectTop(
    oxygine::Resources& gameResources, 
-   Actor* sceneParent, 
    CompoundObject* parentObject,
    b2World* world,
    const Vector2& pos, 
    string& defXmlFileName,
    string& initialState)
 {
-   readDefinitionXmlFile(gameResources, sceneParent, parentObject, world, pos, defXmlFileName, initialState);
+   readDefinitionXmlFile(gameResources, m_sceneActor, parentObject, world, pos, defXmlFileName, initialState);
 }
 
 CollisionEntityTypeEnum CompoundObject::getEntityType(void)
 {
    return m_collisionType;
+}
+
+void CompoundObject::hitByBullet(b2Contact* contact)
+{
+   // Assume unshattered blast
+   int emitterLifetime = 150;
+   int particleLifetime = 500;
+   float particleDistance = 30.0f;
+   float particleSize = 0.75f;
+   float blastIntensity = 200.0f;
+   
+   // Take damage
+//   m_damage += 1;
+   
+   //if (m_damage >= 4)
+   //{
+      emitterLifetime = 250;
+      particleLifetime = 500;
+      particleDistance = 60.0f;
+      particleSize = 0.9f;
+      blastIntensity = 300.0f;
+   
+      m_sceneActor->addMeToDeathList(this);
+   //}
+   
+   b2WorldManifold m;
+   contact->GetWorldManifold(&m);
+   
+   if (contact->GetManifold()->pointCount > 0)
+   {
+      spBlastEmitter blast = new BlastEmitter(
+         m_sceneActor->getResources(),
+         PhysDispConvert::convert(m.points[0], 1.0f),
+         blastIntensity,                                     // Intensity, particles / sec
+         emitterLifetime,                                    // Emitter Lifetime
+         particleLifetime,                                   // Particle lifetime
+         particleDistance,                                   // Particle distance
+         particleSize);                                      // Particle spawn size
+      blast->attachTo(m_sceneActor);
+   }
 }
 
 //void CompoundObject::killActor(void)
@@ -283,7 +327,7 @@ CompoundObject* CompoundObject::getParentObject(void)
 
 CompoundObject* CompoundObject::readDefinitionXmlFile(
    Resources& gameResources,
-   Actor* sceneParent,
+   SceneActor* sceneParent,
    CompoundObject* parentObject,
    b2World* world,
    const Vector2& pos,
@@ -303,7 +347,7 @@ CompoundObject* CompoundObject::readDefinitionXmlFile(
 
 CompoundObject* CompoundObject::initCompoundObject(
    oxygine::Resources& gameResources,
-   Actor* sceneParent,
+   SceneActor* sceneParent,
    CompoundObject* parentObject,
    b2World* world,
    const Vector2& pos,
@@ -377,7 +421,7 @@ CompoundObject* CompoundObject::initCompoundObject(
 
 bool CompoundObject::initCompoundObjectParts(
    oxygine::Resources& gameResources,
-   Actor* sceneParent,
+   SceneActor* sceneParent,
    CompoundObject* parentObject,
    b2World* world,
    const Vector2& pos,
@@ -597,12 +641,12 @@ bool CompoundObject::initCompoundObjectParts(
 
 void CompoundObject::defineSpriteBox(
    oxygine::Resources& gameResources,
-   oxygine::Actor* sceneParent,
+   SceneActor* sceneParent,
    CompoundObject* parentObject,
    const oxygine::Vector2& pos,
    pugi::xml_node& objectNode)
 {
-   CompoundObject* newCo = new CompoundObject();
+   CompoundObject* newCo = new CompoundObject(sceneParent);
 
    newCo->setName(objectNode.attribute("name").as_string());
    newCo->setPriority(objectNode.attribute("zLevel").as_int());
@@ -630,12 +674,12 @@ void CompoundObject::defineSpriteBox(
 
 void CompoundObject::defineSpritePolygon(
    oxygine::Resources& gameResources,
-   oxygine::Actor* sceneParent,
+   SceneActor* sceneParent,
    CompoundObject* parentObject,
    const oxygine::Vector2& pos,
    pugi::xml_node& objectNode)
 {
-   CompoundObject* newCo = new CompoundObject();
+   CompoundObject* newCo = new CompoundObject(sceneParent);
 
    newCo->setName(objectNode.attribute("name").as_string());
    newCo->setPriority(objectNode.attribute("zLevel").as_int());
@@ -688,13 +732,13 @@ void CompoundObject::defineSpritePolygon(
 
 void CompoundObject::defineStaticCircle(
    oxygine::Resources& gameResources,
-   oxygine::Actor* sceneParent,
+   SceneActor* sceneParent,
    CompoundObject* parentObject,
    b2World* world,
    const oxygine::Vector2& pos,
    pugi::xml_node& objectNode)
 {
-   CompoundObject* newCo = new CompoundObject();
+   CompoundObject* newCo = new CompoundObject(sceneParent);
 
    newCo->setName(objectNode.attribute("name").as_string());
    newCo->setPriority(objectNode.attribute("zLevel").as_int());
@@ -742,13 +786,13 @@ void CompoundObject::defineStaticCircle(
 
 void CompoundObject::defineStaticBox(
    Resources& gameResources,
-   Actor* sceneParent,
+   SceneActor* sceneParent,
    CompoundObject* parentObject,
    b2World* world,
    const Vector2& pos,
    xml_node& objectNode)
 {
-   CompoundObject* newCo = new CompoundObject();
+   CompoundObject* newCo = new CompoundObject(sceneParent);
 
    newCo->setName(objectNode.attribute("name").as_string());
    newCo->setPriority(objectNode.attribute("zLevel").as_int());
@@ -797,13 +841,13 @@ void CompoundObject::defineStaticBox(
 
 void CompoundObject::defineStaticPolygon(
    Resources& gameResources, 
-   Actor* sceneParent, 
+   SceneActor* sceneParent,
    CompoundObject* parentObject,
    b2World* world,
    const Vector2& pos, 
    xml_node& objectNode)
 {
-   CompoundObject* newCo = new CompoundObject();
+   CompoundObject* newCo = new CompoundObject(sceneParent);
 
    newCo->setName(objectNode.attribute("name").as_string());
    newCo->setPriority(objectNode.attribute("zLevel").as_int());
@@ -893,13 +937,13 @@ void CompoundObject::defineStaticPolygon(
 
 void CompoundObject::defineStaticBoxedSpritePolygon(
    Resources& gameResources,
-   Actor* sceneParent,
+   SceneActor* sceneParent,
    CompoundObject* parentObject,
    b2World* world,
    const Vector2& pos,
    xml_node& objectNode)
 {
-   CompoundObject* newCo = new CompoundObject();
+   CompoundObject* newCo = new CompoundObject(sceneParent);
 
    newCo->setName(objectNode.attribute("name").as_string());
    newCo->setPriority(objectNode.attribute("zLevel").as_int());
@@ -983,13 +1027,13 @@ void CompoundObject::defineStaticBoxedSpritePolygon(
 
 void CompoundObject::defineDynamicCircle(
    Resources& gameResources,
-   Actor* sceneParent,
+   SceneActor* sceneParent,
    CompoundObject* parentObject,
    b2World* world,
    const Vector2& pos,
    xml_node& objectNode)
 {
-   CompoundObject* newCo = new CompoundObject();
+   CompoundObject* newCo = new CompoundObject(sceneParent);
 
    newCo->setName(objectNode.attribute("name").as_string());
    newCo->setPriority(objectNode.attribute("zLevel").as_int());
@@ -1036,13 +1080,13 @@ void CompoundObject::defineDynamicCircle(
 
 void CompoundObject::defineDynamicBox(
    Resources& gameResources, 
-   Actor* sceneParent, 
+   SceneActor* sceneParent,
    CompoundObject* parentObject,
    b2World* world,
    const Vector2& pos, 
    xml_node& objectNode)
 {
-   CompoundObject* newCo = new CompoundObject();
+   CompoundObject* newCo = new CompoundObject(sceneParent);
 
    newCo->setName(objectNode.attribute("name").as_string());
    newCo->setPriority(objectNode.attribute("zLevel").as_int());
@@ -1089,13 +1133,13 @@ void CompoundObject::defineDynamicBox(
 
 void CompoundObject::defineDynamicPolygon(
    Resources& gameResources, 
-   Actor* sceneParent, 
+   SceneActor* sceneParent,
    CompoundObject* parentObject,
    b2World* world,
    const Vector2& pos, 
    xml_node& objectNode)
 {
-   CompoundObject* newCo = new CompoundObject();
+   CompoundObject* newCo = new CompoundObject(sceneParent);
 
    newCo->setName(objectNode.attribute("name").as_string());
    newCo->setPriority(objectNode.attribute("zLevel").as_int());
@@ -1188,13 +1232,13 @@ void CompoundObject::defineDynamicPolygon(
 
 void CompoundObject::defineDynamicBoxedSpritePolygon(
    Resources& gameResources,
-   Actor* sceneParent,
+   SceneActor* sceneParent,
    CompoundObject* parentObject,
    b2World* world,
    const Vector2& pos,
    xml_node& objectNode)
 {
-   CompoundObject* newCo = new CompoundObject();
+   CompoundObject* newCo = new CompoundObject(sceneParent);
 
    newCo->setName(objectNode.attribute("name").as_string());
    newCo->setPriority(objectNode.attribute("zLevel").as_int());
@@ -1278,7 +1322,7 @@ void CompoundObject::defineDynamicBoxedSpritePolygon(
 
 void CompoundObject::defineChildObject(
    Resources& gameResources, 
-   Actor* sceneParent,
+   SceneActor* sceneParent,
    CompoundObject* parentObject,
    b2World* world,
    const Vector2& pos, 

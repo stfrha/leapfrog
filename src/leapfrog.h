@@ -201,7 +201,7 @@ public:
 
 	LeapFrog(
 		oxygine::Resources& gameResources,
-		oxygine::Actor* sceneParent,
+		SceneActor* sceneParent,
       CompoundObject* parentObject,
 		b2World* world,
 		const oxygine::Vector2& pos,

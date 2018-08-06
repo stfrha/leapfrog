@@ -15,6 +15,7 @@ Asteroid::Asteroid(
    b2World* world,
    const Vector2& pos,
    AsteroidStateEnum state) :
+   CompoundObject(sceneActor),
    m_state(state),
    m_num(generateNum()),
    m_bitmapPxSize(512),
@@ -164,11 +165,11 @@ void Asteroid::addAsteroidSpawnInstruction(AsteroidSpawnInstruction& inst)
 }
 
 
-void Asteroid::killActor(void)
-{
-   atDeathOfAsteroid();
-}
-
+//void Asteroid::killActor(void)
+//{
+//   atDeathOfAsteroid();
+//}
+//
 void Asteroid::hitByBullet(b2Contact* contact)
 {
    // Assume unshattered blast
@@ -185,7 +186,7 @@ void Asteroid::hitByBullet(b2Contact* contact)
 
    if (m_state == ASE_SMALL && m_damage >= 1)
    {
-      m_sceneActor->addMeToDeathList((ActorToDie*)this);
+      m_sceneActor->addMeToDeathList(this);
       shattered = true;
    }
 
@@ -424,7 +425,7 @@ void Asteroid::spawnAsteroids(void)
 {
    if (m_asteroidSpawnList.size() > 0)
    {
-      m_sceneActor->addMeToDeathList((ActorToDie*)this);
+      m_sceneActor->addMeToDeathList(this);
 
       for (auto it = m_asteroidSpawnList.begin(); it != m_asteroidSpawnList.end(); ++it)
       {

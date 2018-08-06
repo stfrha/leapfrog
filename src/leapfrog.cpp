@@ -7,6 +7,8 @@
 #include "leapfrog.h"
 #include "shield.h"
 
+#include "sceneactor.h"
+
 #include "leapfrogevents.h"
 
 using namespace oxygine;
@@ -39,11 +41,12 @@ ModeAngles::ModeAngles(float rgtBigLeg, float rgtSmallLeg, float rgtFoot,
 
 LeapFrog::LeapFrog(
 	Resources& gameResources,
-	Actor* sceneParent,
+	SceneActor* sceneParent,
    CompoundObject* parentObject,
 	b2World* world,
 	const oxygine::Vector2& pos,
    pugi::xml_node& root) :
+   CompoundObject(sceneParent),
 	m_world(world),
    m_boostMagnuitude(0.0f),
    m_steerMagnitude(0.0f),

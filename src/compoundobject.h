@@ -124,15 +124,15 @@ public:
 
 DECLARE_SMART(CompoundObject, spCompoundObject);
 
+class SceneActor;
+
 class CompoundObject : public oxygine::Actor, public CompoundInterface, public CollisionEntity
 {
 protected:
 
 private:
-   //std::vector<oxygine::spSprite> m_boxedSprites;
-   //std::vector<oxygine::spSprite> m_polygonSprites;
-   //std::vector<oxygine::spSprite> m_staticPolygons;
-   //std::vector<oxygine::spSprite> m_staticBoxes;
+
+   SceneActor * m_sceneActor;
 
    std::vector<NamedJoint*> m_namedJoints;
 
@@ -142,21 +142,21 @@ private:
 
    void defineSpriteBox(
       oxygine::Resources& gameResources,
-      oxygine::Actor* sceneParent,
+      SceneActor* sceneParent,
       CompoundObject* parentObject,
       const oxygine::Vector2& pos,
       pugi::xml_node& objectNode);
 
    void defineSpritePolygon(
       oxygine::Resources& gameResources,
-      oxygine::Actor* sceneParent,
+      SceneActor* sceneParent,
       CompoundObject* parentObject,
       const oxygine::Vector2& pos,
       pugi::xml_node& objectNode);
 
    void defineStaticCircle(
       oxygine::Resources& gameResources,
-      oxygine::Actor* sceneParent,
+      SceneActor* sceneParent,
       CompoundObject* parentObject,
       b2World* world,
       const oxygine::Vector2& pos,
@@ -164,7 +164,7 @@ private:
 
    void defineStaticBox(
       oxygine::Resources& gameResources, 
-      oxygine::Actor* sceneParent, 
+      SceneActor* sceneParent,
       CompoundObject* parentObject,
       b2World* world,
       const oxygine::Vector2& pos, 
@@ -172,7 +172,7 @@ private:
 
    void defineStaticPolygon(
       oxygine::Resources& gameResources, 
-      oxygine::Actor* sceneParent, 
+      SceneActor* sceneParent,
       CompoundObject* parentObject,
       b2World* world,
       const oxygine::Vector2& pos, 
@@ -180,7 +180,7 @@ private:
 
    void defineStaticBoxedSpritePolygon(
       oxygine::Resources& gameResources,
-      oxygine::Actor* sceneParent,
+      SceneActor* sceneParent,
       CompoundObject* parentObject,
       b2World* world,
       const oxygine::Vector2& pos,
@@ -188,7 +188,7 @@ private:
 
    void defineDynamicCircle(
       oxygine::Resources& gameResources,
-      oxygine::Actor* sceneParent,
+      SceneActor* sceneParent,
       CompoundObject* parentObject,
       b2World* world,
       const oxygine::Vector2& pos,
@@ -196,7 +196,7 @@ private:
 
    void defineDynamicBox(
       oxygine::Resources& gameResources, 
-      oxygine::Actor* sceneParent, 
+      SceneActor* sceneParent,
       CompoundObject* parentObject,
       b2World* world,
       const oxygine::Vector2& pos, 
@@ -204,7 +204,7 @@ private:
 
    void defineDynamicPolygon(
       oxygine::Resources& gameResources, 
-      oxygine::Actor* sceneParent, 
+      SceneActor* sceneParent,
       CompoundObject* parentObject,
       b2World* world,
       const oxygine::Vector2& pos, 
@@ -212,7 +212,7 @@ private:
 
    void defineDynamicBoxedSpritePolygon(
       oxygine::Resources& gameResources,
-      oxygine::Actor* sceneParent,
+      SceneActor* sceneParent,
       CompoundObject* parentObject,
       b2World* world,
       const oxygine::Vector2& pos,
@@ -220,19 +220,10 @@ private:
 
    void defineChildObject(
       oxygine::Resources& gameResources, 
-      oxygine::Actor* sceneParent, 
+      SceneActor* sceneParent,
       CompoundObject* parentObject,
       b2World* world,
       const oxygine::Vector2& pos, 
-      pugi::xml_node& objectNode,
-      std::string& initialState);
-
-   void defineObjectSystem(
-      oxygine::Resources& gameResources,
-      oxygine::Actor* sceneParent,
-      CompoundObject* parentObject,
-      b2World* world,
-      const oxygine::Vector2& pos,
       pugi::xml_node& objectNode,
       std::string& initialState);
 
@@ -260,13 +251,12 @@ public:
    std::vector<ObjectProperty> m_properties;
    std::vector<CompoundObject*> m_children;
 
-	CompoundObject();
+   CompoundObject(SceneActor* sceneActor);
 
    ~CompoundObject();
 
    void initCompoundObjectTop(
 	   oxygine::Resources& gameResources,
-	   oxygine::Actor* sceneParent,
       CompoundObject* parentObject,
 	   b2World* world,
 	   const oxygine::Vector2& pos,
@@ -275,7 +265,7 @@ public:
 
    CompoundObject* readDefinitionXmlFile(
       oxygine::Resources& gameResources,
-      oxygine::Actor* sceneParent,
+      SceneActor* sceneParent,
       CompoundObject* parentObject,
       b2World* world,
       const oxygine::Vector2& pos,
@@ -284,7 +274,7 @@ public:
 
    CompoundObject* initCompoundObject(
       oxygine::Resources& gameResources,
-      oxygine::Actor* sceneParent,
+      SceneActor* sceneParent,
       CompoundObject* parentObject,
       b2World* world,
       const oxygine::Vector2& pos,
@@ -293,7 +283,7 @@ public:
 
    bool initCompoundObjectParts(
       oxygine::Resources& gameResources,
-      oxygine::Actor* sceneParent,
+      SceneActor* sceneParent,
       CompoundObject* parentObject,
       b2World* world,
       const oxygine::Vector2& pos,
@@ -301,6 +291,8 @@ public:
       std::string& initialState);
 
    virtual CollisionEntityTypeEnum getEntityType(void);
+
+   void hitByBullet(b2Contact* contact);
 
    oxygine::Sprite* getSprite(void);
    CompoundObject* getParentObject(void);

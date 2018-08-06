@@ -68,10 +68,10 @@ CollisionEntityTypeEnum Bullet::getEntityType(void)
    return CET_BULLET;
 }
 
-void Bullet::killActor(void)
-{
-   atBulletDeath();
-}
+//void Bullet::killActor(void)
+//{
+//   atBulletDeath();
+//}
 
 
 
@@ -79,7 +79,7 @@ void Bullet::hitAsteroid(b2Contact* contact)
 {
    if (m_sceneActor)
    {
-      m_sceneActor->addMeToDeathList((ActorToDie*)this);
+      m_sceneActor->addMeToDeathList((CompoundObject*)this);
    }
 }
 
@@ -95,7 +95,7 @@ void Bullet::doUpdate(const oxygine::UpdateState& us)
    {
       if (m_sceneActor)
       {
-         m_sceneActor->addMeToDeathList((ActorToDie*)this);
+         m_sceneActor->addMeToDeathList((CompoundObject*)this);
       }
    }
 }

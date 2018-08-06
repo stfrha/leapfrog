@@ -1,4 +1,5 @@
 #include "LanderContactListener.h"
+#include "compoundobject.h"
 #include "collisionentity.h"
 #include "bullet.h"
 #include "leapfrog.h"
@@ -25,8 +26,7 @@ void LanderContactListener::ContactHandler(b2Contact* contact, bool begin)
    LaunchSite* launchSite = NULL;
    LandingPad* landingPad = NULL;
    Asteroid* asteroid = NULL;
-   Actor* destroyable = NULL;
-   b2Contact* destroyableContact;
+   CompoundObject* destroyable = NULL;
 
    bool launchSiteLeftRest = false; // true means right leg rest
    bool leapfrogLeftFoot = false; // true means right foot
@@ -109,14 +109,12 @@ void LanderContactListener::ContactHandler(b2Contact* contact, bool begin)
 
    if (eA == CET_DESTROYABLE_OBJECT)
    {
-      destroyable = (Actor*)contact->GetFixtureA()->GetBody()->GetUserData();
-      destroyableContact = contact;
+      destroyable = (CompoundObject*)contact->GetFixtureA()->GetBody()->GetUserData();
    }
 
    if (eB == CET_DESTROYABLE_OBJECT)
    {
-      destroyable = (Actor*)contact->GetFixtureB()->GetBody()->GetUserData();
-      destroyableContact = contact;
+      destroyable = (CompoundObject*)contact->GetFixtureB()->GetBody()->GetUserData();
    }
 
    if (eA == CET_LANDING_PAD)
@@ -167,7 +165,7 @@ void LanderContactListener::ContactHandler(b2Contact* contact, bool begin)
    {
       // Bullet hit asteroid
       bullet->hitAsteroid(contact);
-      KillDestroyable(destroyableContact, destroyable);
+      destroyable->hitByBullet(contact);
    }
 
 }
@@ -182,43 +180,43 @@ void LanderContactListener::EndContact(b2Contact* contact)
    ContactHandler(contact, false);
 }
 
-void LanderContactListener::KillDestroyable(b2Contact* contact, oxygine::Actor* actor)
-{
-   // Assume unshattered blast
-   int emitterLifetime = 150;
-   int particleLifetime = 500;
-   float particleDistance = 30.0f;
-   float particleSize = 0.75f;
-   float blastIntensity = 200.0f;
-
-   // Take damage
-//   m_damage += 1;
-
-   //if (m_damage >= 4)
-   //{
-      emitterLifetime = 250;
-      particleLifetime = 500;
-      particleDistance = 60.0f;
-      particleSize = 0.9f;
-      blastIntensity = 300.0f;
-
-      m_sceneActor->addMeToDeathList((ActorToDie*)actor);
-   //}
-
-   b2WorldManifold m;
-   contact->GetWorldManifold(&m);
-
-   if (contact->GetManifold()->pointCount > 0)
-   {
-      spBlastEmitter blast = new BlastEmitter(
-         m_sceneActor->getResources(),
-         PhysDispConvert::convert(m.points[0], 1.0f),
-         blastIntensity,                                     // Intensity, particles / sec
-         emitterLifetime,                                    // Emitter Lifetime
-         particleLifetime,                                   // Particle lifetime
-         particleDistance,                                   // Particle distance
-         particleSize);                                      // Particle spawn size
-      blast->attachTo(m_sceneActor);
-   }
-}
+//void LanderContactListener::KillDestroyable(b2Contact* contact, oxygine::Actor* actor)
+//{
+//   // Assume unshattered blast
+//   int emitterLifetime = 150;
+//   int particleLifetime = 500;
+//   float particleDistance = 30.0f;
+//   float particleSize = 0.75f;
+//   float blastIntensity = 200.0f;
+//
+//   // Take damage
+////   m_damage += 1;
+//
+//   //if (m_damage >= 4)
+//   //{
+//      emitterLifetime = 250;
+//      particleLifetime = 500;
+//      particleDistance = 60.0f;
+//      particleSize = 0.9f;
+//      blastIntensity = 300.0f;
+//
+//      m_sceneActor->addMeToDeathList((CompoundObject*)actor);
+//   //}
+//
+//   b2WorldManifold m;
+//   contact->GetWorldManifold(&m);
+//
+//   if (contact->GetManifold()->pointCount > 0)
+//   {
+//      spBlastEmitter blast = new BlastEmitter(
+//         m_sceneActor->getResources(),
+//         PhysDispConvert::convert(m.points[0], 1.0f),
+//         blastIntensity,                                     // Intensity, particles / sec
+//         emitterLifetime,                                    // Emitter Lifetime
+//         particleLifetime,                                   // Particle lifetime
+//         particleDistance,                                   // Particle distance
+//         particleSize);                                      // Particle spawn size
+//      blast->attachTo(m_sceneActor);
+//   }
+//}
 

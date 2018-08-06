@@ -14,6 +14,6 @@ public:
    void BeginContact(b2Contact* contact);
    void EndContact(b2Contact* contact);
    void ContactHandler(b2Contact* contact, bool begin); // begin = false means the end of the contact
-   void KillDestroyable(b2Contact* contact, oxygine::Actor* actor);
+   //void KillDestroyable(b2Contact* contact, oxygine::Actor* actor);
 
 };

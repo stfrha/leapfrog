@@ -5,6 +5,8 @@
 #include "collisionentity.h"
 #include "compoundobject.h"
 
+class SceneActor;
+
 DECLARE_SMART(LandingPad, spLandingPad);
 
 /*
@@ -28,7 +30,7 @@ private:
 public:
 	LandingPad(
       oxygine::Resources& gameResources,
-      oxygine::Actor* sceneParent,
+      SceneActor* sceneParent,
       CompoundObject* parentObject,
       b2World* world,
       const oxygine::Vector2& pos,

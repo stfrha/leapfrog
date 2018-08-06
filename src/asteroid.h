@@ -6,7 +6,7 @@
 #include "scales.h"
 #include "physdispconvert.h"
 #include "collisionentity.h"
-#include "actortodie.h"
+//#include "actortodie.h"
 
 class SceneActor;
 class AsteroidField;
@@ -90,8 +90,6 @@ public:
       AsteroidStateEnum state);
 
    virtual CollisionEntityTypeEnum getEntityType(void);
-
-   virtual void killActor(void);
 
    void hitByBullet(b2Contact* contact); 
    void hitShield(b2Contact* contact);     // Returns true if asteroid was shattered

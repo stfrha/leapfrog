@@ -1,14 +1,15 @@
 #include "planetactor.h"
-
+#include "sceneactor.h"
 
 using namespace oxygine;
 using namespace pugi;
 
 PlanetActor::PlanetActor(
    Resources& gameResources,
-   Actor* sceneParent,
+   SceneActor* sceneParent,
    CompoundObject* parentObject,
    xml_node& objectNode) :
+   CompoundObject((SceneActor*)this),
    m_gameResources(&gameResources),
    m_state(PAS_INITITAL),
    m_stateChange(true),

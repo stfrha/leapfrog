@@ -34,7 +34,6 @@ class ObjectFactory : public CompoundObject
 {
 private:
    oxygine::Resources* m_gameResources;
-   oxygine::Actor* m_parent;
    b2World* m_world;
    SceneActor* m_sceneActor;
    b2Vec2 m_leftTop;
@@ -61,7 +60,7 @@ private:
 public:
    ObjectFactory(
       oxygine::Resources& gameResources,
-      oxygine::Actor* sceneParent,
+      SceneActor* sceneParent,
       CompoundObject* parentObject,
       b2World* world,
       pugi::xml_node& objectNode);

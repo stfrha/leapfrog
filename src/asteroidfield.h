@@ -9,6 +9,8 @@
 
 DECLARE_SMART(AsteroidField, spAsteroidField);
 
+class SceneActor;
+
 class AsteroidField : public CompoundObject
 {
 private:
@@ -40,7 +42,7 @@ private:
 public:
    AsteroidField(
       oxygine::Resources& gameResources,
-      oxygine::Actor* sceneParent,
+      SceneActor* sceneParent,
       CompoundObject* parentObject,
       b2World* world,
       pugi::xml_node& objectNode);
