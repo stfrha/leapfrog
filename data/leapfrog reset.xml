@@ -217,7 +217,10 @@
 		objectAAnchorX="3.3"
 		objectAAnchorY="5.8"
 		objectBAnchorX="0.0"
-		objectBAnchorY="-2.75" />
+		objectBAnchorY="-2.75"
+		lockJoint="true"
+		useMotor="false"
+		motorSpeed="0"  />
 	<revoluteJoint
 		name="leftLegJoint"
 		objectAName="lfMainBody"
@@ -225,7 +228,10 @@
 		objectAAnchorX="-3.3"
 		objectAAnchorY="5.8"
 		objectBAnchorX="0.0"
-		objectBAnchorY="-2.75" />
+		objectBAnchorY="-2.75"
+		lockJoint="true"
+		useMotor="false"
+		motorSpeed="0"  />
 	<revoluteJoint
 		name="rightSmallLegJoint"
 		objectAName="lfRightBigLeg"
@@ -233,7 +239,10 @@
 		objectAAnchorX="0.0"
 		objectAAnchorY="2.95"
 		objectBAnchorX="0.0"
-		objectBAnchorY="-1.95" />
+		objectBAnchorY="-1.95"
+		lockJoint="true"
+		useMotor="false"
+		motorSpeed="0"  />
 	<revoluteJoint
 		name="leftSmallLegJoint"
 		objectAName="lfLeftBigLeg"
@@ -241,7 +250,10 @@
 		objectAAnchorX="0.0"
 		objectAAnchorY="2.95"
 		objectBAnchorX="0.0"
-		objectBAnchorY="-1.95" />
+		objectBAnchorY="-1.95"
+		lockJoint="true"
+		useMotor="false"
+		motorSpeed="0"  />
 	<revoluteJoint
 		name="rightFootLegJoint"
 		objectAName="lfRightSmallLeg"
@@ -249,7 +261,10 @@
 		objectAAnchorX="0.0"
 		objectAAnchorY="2.05"
 		objectBAnchorX="0.0"
-		objectBAnchorY="-0.9" />
+		objectBAnchorY="-0.9"
+		lockJoint="true"
+		useMotor="false"
+		motorSpeed="0"  />
 	<revoluteJoint
 		name="leftFootLegJoint"
 		objectAName="lfLeftSmallLeg"
@@ -257,7 +272,10 @@
 		objectAAnchorX="0.0"
 		objectAAnchorY="2.05"
 		objectBAnchorX="0.0"
-		objectBAnchorY="-0.9" />
+		objectBAnchorY="-0.9"
+		lockJoint="true"
+		useMotor="false"
+		motorSpeed="0"  />
 	<weldJoint
 		name="rightSteerJoint"
 		objectAName="lfRightSmallLeg"

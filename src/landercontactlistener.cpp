@@ -6,7 +6,6 @@
 #include "launchsite.h"
 #include "landingpad.h"
 #include "asteroid.h"
-#include "destroyable.h"
 #include "blastemitter.h"
 
 void LanderContactListener::InitContactListner(SceneActor* sceneActor)

@@ -1,0 +1,10 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<compoundObject>
+  <ChildCompoundObjectRef>
+    <stateProperties
+      state="default"
+      file="C:\git\LeapfrogEditor\bin\Debug\..\..\..\leapfrog\data\launch_site.xml"
+      posX="156.40258789062489"
+      posY="385.28442382812489" />
+  </ChildCompoundObjectRef>
+</compoundObject>

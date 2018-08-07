@@ -578,7 +578,11 @@
     objectAAnchorX="-8.544647020494347"
     objectAAnchorY="0.0076458250314885845"
     objectBAnchorX="0.275"
-    objectBAnchorY="0" />
+    objectBAnchorY="0"
+    lockJoint="true"
+    useMotor="false"
+    motorSpeed="0"
+    maxMotorTorque="0" />
   <revoluteJoint
     name="rightRestJoint"
     objectAName="rightRest"
@@ -586,7 +590,11 @@
     objectAAnchorX="9.0061210704842782"
     objectAAnchorY="0.0060178945668099"
     objectBAnchorX="-0.275"
-    objectBAnchorY="0" />
+    objectBAnchorY="0"
+    lockJoint="true"
+    useMotor="false"
+    motorSpeed="0"
+    maxMotorTorque="0" />
   <revoluteJoint
     name="leftHolderJoint"
     objectAName="leftHolder"
@@ -594,7 +602,11 @@
     objectAAnchorX="-13.481512539346358"
     objectAAnchorY="0.005398092553434708"
     objectBAnchorX="0.275"
-    objectBAnchorY="0" />
+    objectBAnchorY="0"
+    lockJoint="false"
+    useMotor="false"
+    motorSpeed="0"
+    maxMotorTorque="0" />
   <revoluteJoint
     name="rightHolderJoint"
     objectAName="rightHolder"
@@ -602,7 +614,11 @@
     objectAAnchorX="12.8825432558795"
     objectAAnchorY="-0.0072814027311096652"
     objectBAnchorX="-0.275"
-    objectBAnchorY="0" />
+    objectBAnchorY="0"
+    lockJoint="false"
+    useMotor="false"
+    motorSpeed="0"
+    maxMotorTorque="0" />
   <prismaticJoint
     name="grabberSpringJoint"
     objectAName="mainTank"
@@ -611,9 +627,13 @@
     objectAAnchorY="-26.5"
     objectBAnchorX="0"
     objectBAnchorY="-6.1"
+    lockJoint="true"
+    useMotor="false"
+    motorSpeed="0"
     objectALocalAxisX="0"
     objectALocalAxisY="-1"
     refAngle="0"
     lowerLimit="0"
-    upperLimit="12.2" />
+    upperLimit="12.2"
+    maxMotorForce="0" />
 </compoundObject>

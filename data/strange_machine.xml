@@ -2,36 +2,40 @@
 <compoundObject>
   <staticBox
     name="block1"
-    texture="crater_rock"
+    texture="lf_position"
     posX="0"
     posY="0"
-    angle="0"
+    angle="0.680678408277789"
     zLevel="0"
     collisionEntity="destroyableObject"
     collisionCategory="9"
     collisionMask="65534"
     width="20"
-    height="20"/>
+    height="20" />
   <dynamicBox
     name="block2"
     texture="crater_rock"
-    posX="15"
-    posY="15"
-    angle="0"
+    posX="13.019242202182795"
+    posY="10.213168655275069"
+    angle="-0.89011791851710886"
     zLevel="0"
-    collisionEntity="destroyableObject"
+    collisionEntity="notApplicable"
     collisionCategory="9"
     collisionMask="65534"
     width="20"
     height="20"
     density="1"
     friction="0" />
-  <weldJoint
+  <revoluteJoint
     name="noJointName"
     objectAName="block2"
     objectBName="block1"
-    objectAAnchorX="-7.7998498764003106"
-    objectAAnchorY="-7.7737724575140046"
-    objectBAnchorX="7.2351562499998749"
-    objectBAnchorY="7.2281249999999826" />
+    objectAAnchorX="-8.04165127267344"
+    objectAAnchorY="-8.2214437176487483"
+    objectBAnchorX="8.3032768898561855"
+    objectBAnchorY="7.9227608436405079"
+    lockJoint="false"
+    useMotor="true"
+    motorSpeed="40"
+    maxMotorTorque="50000" />
 </compoundObject>

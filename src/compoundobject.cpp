@@ -547,13 +547,6 @@ bool CompoundObject::initCompoundObjectParts(
       definePrismaticJoint(world, *it);
    }
 
-   //for (auto it = root.children("CompoundObjectSystemRef").begin();
-   //   it != root.children("CompoundObjectSystemRef").end();
-   //   ++it)
-   //{
-   //   defineObjectSystem(gameResources, sceneParent, this, world, pos, *it, initialState);
-   //}
-
    for (auto it = root.children("planetActor").begin();
       it != root.children("planetActor").end();
       ++it)
@@ -853,10 +846,6 @@ void CompoundObject::defineStaticPolygon(
    newCo->setPriority(objectNode.attribute("zLevel").as_int());
    newCo->m_parentObject = parentObject;
 
-   // Define sprite, which is a polygon, in this case
-   vector<Vector2> vertices;
-   vector<VectorT3<int> > triangles;
-
    spPolygon object = new oxygine::Polygon();
    object->setResAnim(gameResources.getResAnim(objectNode.attribute("texture").as_string()));
    
@@ -866,21 +855,25 @@ void CompoundObject::defineStaticPolygon(
    Vector2 textureMeterOffset = Vector2(objectNode.attribute("textureOffsetMeterX").as_float(), 
       objectNode.attribute("textureOffsetMeterY").as_float());
 
+   vector<Vector2> vertices(distance(objectNode.child("vertices").children("vertex").begin(), objectNode.child("vertices").children("vertex").end()));
+
    for (auto it = objectNode.child("vertices").children("vertex").begin();
       it != objectNode.child("vertices").children("vertex").end();
       ++it)
    {
-      vertices.push_back(Vector2(it->attribute("x").as_float(), it->attribute("y").as_float()));
+      vertices[it->attribute("id").as_int() - 1] = Vector2(it->attribute("x").as_float(), it->attribute("y").as_float());
    }
+
+   vector<VectorT3<int> > triangles(distance(objectNode.child("triangles").children("triangle").begin(), objectNode.child("triangles").children("triangle").end()));
 
    for (auto it = objectNode.child("triangles").children("triangle").begin();
       it != objectNode.child("triangles").children("triangle").end();
       ++it)
    {
-      triangles.push_back(VectorT3<int>(
+      triangles[it->attribute("id").as_int() - 1] = VectorT3<int>(
          it->attribute("v1").as_int(),
          it->attribute("v2").as_int(),
-         it->attribute("v3").as_int()));
+         it->attribute("v3").as_int());
    }
 
    vertexPCT2* vs = PolygonVertices::createTriangleVertices(
@@ -950,8 +943,6 @@ void CompoundObject::defineStaticBoxedSpritePolygon(
    newCo->m_parentObject = parentObject;
 
    // Define sprite, which is a polygon, in this case
-   vector<Vector2> vertices;
-   vector<VectorT3<int> > triangles;
 
    spSprite object = new Sprite();
    object->setResAnim(gameResources.getResAnim(objectNode.attribute("texture").as_string()));
@@ -963,21 +954,25 @@ void CompoundObject::defineStaticBoxedSpritePolygon(
 
    object->attachTo(newCo);
 
+   vector<Vector2> vertices(distance(objectNode.child("vertices").children("vertex").begin(), objectNode.child("vertices").children("vertex").end()));
+
    for (auto it = objectNode.child("vertices").children("vertex").begin();
       it != objectNode.child("vertices").children("vertex").end();
       ++it)
    {
-      vertices.push_back(Vector2(it->attribute("x").as_float(), it->attribute("y").as_float()));
+      vertices[it->attribute("id").as_int() - 1] = Vector2(it->attribute("x").as_float(), it->attribute("y").as_float());
    }
+
+   vector<VectorT3<int> > triangles(distance(objectNode.child("triangles").children("triangle").begin(), objectNode.child("triangles").children("triangle").end()));
 
    for (auto it = objectNode.child("triangles").children("triangle").begin();
       it != objectNode.child("triangles").children("triangle").end();
       ++it)
    {
-      triangles.push_back(VectorT3<int>(
+      triangles[it->attribute("id").as_int() - 1] = VectorT3<int>(
          it->attribute("v1").as_int(),
          it->attribute("v2").as_int(),
-         it->attribute("v3").as_int()));
+         it->attribute("v3").as_int());
    }
 
    int num = vertices.size() + 1;
@@ -1146,8 +1141,6 @@ void CompoundObject::defineDynamicPolygon(
    newCo->m_parentObject = parentObject;
 
    // Define sprite, which is a polygon, in this case
-   vector<Vector2> vertices;
-   vector<VectorT3<int> > triangles;
 
    spPolygon object = new oxygine::Polygon();
    object->setResAnim(gameResources.getResAnim(objectNode.attribute("texture").as_string()));
@@ -1163,21 +1156,25 @@ void CompoundObject::defineDynamicPolygon(
    //object->setAnchor(Vector2(objectNode.attribute("anchorX").as_float(), objectNode.attribute("anchorY").as_float()));
    object->setTouchChildrenEnabled(false);
 
+   vector<Vector2> vertices(distance(objectNode.child("vertices").children("vertex").begin(), objectNode.child("vertices").children("vertex").end()));
+
    for (auto it = objectNode.child("vertices").children("vertex").begin();
       it != objectNode.child("vertices").children("vertex").end();
       ++it)
    {
-      vertices.push_back(Vector2(it->attribute("x").as_float(), it->attribute("y").as_float()));
+      vertices[it->attribute("id").as_int() - 1] = Vector2(it->attribute("x").as_float(), it->attribute("y").as_float());
    }
+
+   vector<VectorT3<int> > triangles(distance(objectNode.child("triangles").children("triangle").begin(), objectNode.child("triangles").children("triangle").end()));
 
    for (auto it = objectNode.child("triangles").children("triangle").begin();
       it != objectNode.child("triangles").children("triangle").end();
       ++it)
    {
-      triangles.push_back(VectorT3<int>(
+      triangles[it->attribute("id").as_int() - 1] = VectorT3<int>(
          it->attribute("v1").as_int(),
          it->attribute("v2").as_int(),
-         it->attribute("v3").as_int()));
+         it->attribute("v3").as_int());
    }
 
    vertexPCT2* vs = PolygonVertices::createTriangleVertices(vertices, triangles, textureMeterSize, textureMeterOffset);
@@ -1245,8 +1242,6 @@ void CompoundObject::defineDynamicBoxedSpritePolygon(
    newCo->m_parentObject = parentObject;
 
    // Define sprite, which is a polygon, in this case
-   vector<Vector2> vertices;
-   vector<VectorT3<int> > triangles;
 
    spSprite object = new Sprite();
    object->setResAnim(gameResources.getResAnim(objectNode.attribute("texture").as_string()));
@@ -1258,21 +1253,25 @@ void CompoundObject::defineDynamicBoxedSpritePolygon(
 
    object->attachTo(newCo);
 
+   vector<Vector2> vertices(distance(objectNode.child("vertices").children("vertex").begin(), objectNode.child("vertices").children("vertex").end()));
+
    for (auto it = objectNode.child("vertices").children("vertex").begin();
       it != objectNode.child("vertices").children("vertex").end();
       ++it)
    {
-      vertices.push_back(Vector2(it->attribute("x").as_float(), it->attribute("y").as_float()));
+      vertices[it->attribute("id").as_int() - 1] = Vector2(it->attribute("x").as_float(), it->attribute("y").as_float());
    }
+
+   vector<VectorT3<int> > triangles(distance(objectNode.child("triangles").children("triangle").begin(), objectNode.child("triangles").children("triangle").end()));
 
    for (auto it = objectNode.child("triangles").children("triangle").begin();
       it != objectNode.child("triangles").children("triangle").end();
       ++it)
    {
-      triangles.push_back(VectorT3<int>(
+      triangles[it->attribute("id").as_int() - 1] = VectorT3<int>(
          it->attribute("v1").as_int(),
          it->attribute("v2").as_int(),
-         it->attribute("v3").as_int()));
+         it->attribute("v3").as_int());
    }
 
    int num = vertices.size() + 1;
@@ -1529,9 +1528,30 @@ void CompoundObject::defineRevoluteJoint(b2World* world, pugi::xml_node& jointNo
    jointDef.collideConnected = false;
    b2RevoluteJoint* joint = (b2RevoluteJoint*)world->CreateJoint(&jointDef);
 
-   joint->EnableMotor(false);
-   joint->SetLimits(joint->GetJointAngle(), joint->GetJointAngle());
-   joint->EnableLimit(true);
+   //joint->EnableMotor(false);
+   //joint->SetLimits(joint->GetJointAngle(), joint->GetJointAngle());
+   //joint->EnableLimit(true);
+
+   if (jointNode.attribute("useMotor").as_bool())
+   {
+      joint->SetMotorSpeed(jointNode.attribute("motorSpeed").as_float());
+      joint->SetMaxMotorTorque(jointNode.attribute("maxMotorTorque").as_float());
+      joint->EnableMotor(true);
+   }
+   else
+   {
+      joint->EnableMotor(false);
+   }
+
+   if (jointNode.attribute("lockJoint").as_bool())
+   {
+      joint->SetLimits(joint->GetJointAngle(), joint->GetJointAngle());
+      joint->EnableLimit(true);
+   }
+   else
+   {
+      joint->EnableLimit(false);
+   }
 
    NamedJoint* nj = new NamedJoint(joint, jointNode.attribute("name").as_string());
    m_namedJoints.push_back(nj);
@@ -1567,8 +1587,29 @@ void CompoundObject::definePrismaticJoint(b2World* world, pugi::xml_node& jointN
    jointDef.upperTranslation = jointNode.attribute("upperLimit").as_float();
    b2PrismaticJoint* joint = (b2PrismaticJoint*)world->CreateJoint(&jointDef);
 
-   joint->EnableMotor(false);
-   joint->EnableLimit(true);
+   //joint->EnableMotor(false);
+   //joint->EnableLimit(true);
+
+   if (jointNode.attribute("useMotor").as_bool())
+   {
+      joint->SetMotorSpeed(jointNode.attribute("motorSpeed").as_float());
+      joint->SetMaxMotorForce(jointNode.attribute("maxMotorForce").as_float());
+      joint->EnableMotor(true);
+   }
+   else
+   {
+      joint->EnableMotor(false);
+   }
+
+   if (jointNode.attribute("lockJoint").as_bool())
+   {
+      joint->EnableLimit(true);
+   }
+   else
+   {
+      joint->EnableLimit(false);
+   }
+
 
    NamedJoint* nj = new NamedJoint(joint, jointNode.attribute("name").as_string());
    m_namedJoints.push_back(nj);
@@ -1752,6 +1793,5 @@ void CompoundObject::unregisterDualPropEventTrigger(int propId, DualPropEventTri
       return p->unregisterDualPropEventTrigger(trigger);
    }
 }
-
 
 

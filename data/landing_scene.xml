@@ -1,7 +1,19 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <compoundObject>
+  <staticBox
+    name="springDestroyable"
+    texture="lf_position"
+    posX="625.11145463894582"
+    posY="161.4572729849277"
+    angle="0"
+    zLevel="0"
+    collisionEntity="destroyableObject"
+    collisionCategory="33"
+    collisionMask="65534"
+    width="10"
+    height="10" />
   <staticPolygon
-    name="noName"
+    name="grotto1"
     texture="grotto"
     posX="10"
     posY="231"
@@ -37,70 +49,97 @@
         y="34" />
       <vertex
         id="6"
+        x="639.60498026647883"
+        y="-24.000726191701432" />
+      <vertex
+        id="7"
         x="685"
         y="-24" />
       <vertex
-        id="7"
+        id="8"
+        x="723"
+        y="-17" />
+      <vertex
+        id="9"
+        x="740"
+        y="-5" />
+      <vertex
+        id="10"
         x="836"
         y="8" />
       <vertex
-        id="8"
+        id="11"
         x="891"
         y="127" />
       <vertex
-        id="9"
+        id="12"
         x="883"
         y="270" />
       <vertex
-        id="10"
+        id="13"
         x="-10"
         y="271" />
     </vertices>
     <triangles>
       <triangle
         id="1"
-        v1="10"
+        v1="13"
+        v2="12"
+        v3="11" />
+      <triangle
+        id="2"
+        v1="13"
+        v2="11"
+        v3="10" />
+      <triangle
+        id="3"
+        v1="13"
+        v2="10"
+        v3="9" />
+      <triangle
+        id="4"
+        v1="13"
         v2="9"
         v3="8" />
       <triangle
-        id="2"
-        v1="10"
-        v2="8"
-        v3="7" />
+        id="5"
+        v1="8"
+        v2="7"
+        v3="6" />
       <triangle
-        id="3"
-        v1="7"
+        id="6"
+        v1="8"
         v2="6"
         v3="5" />
       <triangle
-        id="4"
-        v1="10"
-        v2="7"
+        id="7"
+        v1="13"
+        v2="8"
         v3="5" />
       <triangle
-        id="5"
-        v1="10"
+        id="8"
+        v1="13"
         v2="5"
         v3="4" />
       <triangle
-        id="6"
-        v1="10"
+        id="9"
+        v1="13"
         v2="4"
         v3="3" />
       <triangle
-        id="7"
+        id="10"
         v1="1"
-        v2="10"
+        v2="13"
         v3="3" />
       <triangle
-        id="8"
+        id="11"
         v1="3"
         v2="2"
         v3="1" />
     </triangles>
   </staticPolygon>
   <staticPolygon
-    name="noName"
+    name="grotto2"
     texture="grotto"
     posX="453.8022151803919"
     posY="14.757795615622499"
@@ -132,241 +171,250 @@
         y="199.23024081090375" />
       <vertex
         id="5"
-        x="20.291968971480912"
-        y="225.05638313824318" />
+        x="30.673806248572816"
+        y="230.07985278844896" />
       <vertex
         id="6"
+        x="44.794337642793096"
+        y="217.99759460452304" />
+      <vertex
+        id="7"
+        x="57.4572155466314"
+        y="230.87787825269027" />
+      <vertex
+        id="8"
         x="84.85732478982942"
         y="223.21165868629032" />
       <vertex
-        id="7"
+        id="9"
         x="130.9754360886497"
         y="186.3171696472341" />
       <vertex
-        id="8"
+        id="10"
         x="158.64630286794187"
         y="149.42268060817781" />
       <vertex
-        id="9"
-        x="202.91968971480941"
-        y="130.9754360886497" />
-      <vertex
-        id="10"
-        x="232.43528094605432"
-        y="121.75181382888563" />
-      <vertex
         id="11"
-        x="263.7955966292522"
-        y="136.50960944450816" />
+        x="196.48964856254605"
+        y="119.72286407218877" />
       <vertex
         id="12"
-        x="289.62173895659151"
-        y="166.02520067575313" />
+        x="276.65567893377892"
+        y="114.40634298360283" />
       <vertex
         id="13"
-        x="313.60315683197808"
-        y="175.24882293551718" />
+        x="304.89308669321707"
+        y="139.90315849468317" />
       <vertex
         id="14"
-        x="359.72126813079848"
-        y="167.86992512770593" />
+        x="319.22944284020861"
+        y="183.68825194786288" />
       <vertex
         id="15"
+        x="370.17008500322646"
+        y="194.7957224528088" />
+      <vertex
+        id="16"
         x="411.37355278547722"
         y="160.49102731989467" />
       <vertex
-        id="16"
+        id="17"
         x="431.66552175695807"
         y="180.78299629137564" />
       <vertex
-        id="17"
+        id="18"
         x="448.26804182453344"
         y="243.50362765777123" />
       <vertex
-        id="18"
+        id="19"
         x="475.93890860382561"
         y="317.29260573588374" />
       <vertex
-        id="19"
+        id="20"
         x="507.29922428702349"
         y="389.23685936204339" />
       <vertex
-        id="20"
+        id="21"
         x="558.95150894170229"
         y="461.1811129882031" />
       <vertex
-        id="21"
+        id="22"
         x="623.51686476005079"
         y="435.35497066086373" />
       <vertex
-        id="22"
+        id="23"
         x="677.01387386668216"
         y="402.1499305257131" />
       <vertex
-        id="23"
+        id="24"
         x="700.99529174206873"
         y="306.22425902416683" />
       <vertex
-        id="24"
+        id="25"
         x="695.46111838621027"
         y="225.05638313824318" />
       <vertex
-        id="25"
+        id="26"
         x="641.96410927957891"
         y="127.2859871847441" />
       <vertex
-        id="26"
+        id="27"
         x="547.88316222998537"
         y="125.44126273279126" />
       <vertex
-        id="27"
+        id="28"
         x="514.67812209483463"
         y="70.099529174206893" />
       <vertex
-        id="28"
+        id="29"
         x="490.69670421944812"
         y="9.2236222597640634" />
       <vertex
-        id="29"
+        id="30"
         x="387.39213491009065"
         y="3.6894489039056211" />
     </vertices>
     <triangles>
       <triangle
         id="1"
-        v1="29"
+        v1="30"
         v2="1"
         v3="2" />
       <triangle
         id="2"
-        v1="29"
+        v1="30"
         v2="2"
         v3="3" />
       <triangle
         id="3"
-        v1="29"
+        v1="30"
         v2="3"
         v3="4" />
       <triangle
         id="4"
-        v1="29"
-        v2="4"
-        v3="5" />
+        v1="4"
+        v2="5"
+        v3="6" />
       <triangle
         id="5"
-        v1="5"
-        v2="6"
-        v3="7" />
-      <triangle
-        id="6"
-        v1="5"
+        v1="6"
         v2="7"
         v3="8" />
       <triangle
-        id="7"
-        v1="29"
-        v2="5"
+        id="6"
+        v1="4"
+        v2="6"
         v3="8" />
       <triangle
-        id="8"
-        v1="29"
+        id="7"
+        v1="4"
         v2="8"
         v3="9" />
       <triangle
-        id="9"
-        v1="29"
+        id="8"
+        v1="4"
         v2="9"
         v3="10" />
       <triangle
-        id="10"
-        v1="29"
+        id="9"
+        v1="4"
         v2="10"
         v3="11" />
       <triangle
+        id="10"
+        v1="30"
+        v2="4"
+        v3="11" />
+      <triangle
         id="11"
-        v1="29"
+        v1="30"
         v2="11"
         v3="12" />
       <triangle
         id="12"
-        v1="29"
+        v1="30"
         v2="12"
         v3="13" />
       <triangle
         id="13"
-        v1="29"
+        v1="30"
         v2="13"
         v3="14" />
       <triangle
         id="14"
-        v1="29"
+        v1="30"
         v2="14"
         v3="15" />
       <triangle
         id="15"
-        v1="29"
+        v1="30"
         v2="15"
         v3="16" />
       <triangle
         id="16"
-        v1="29"
+        v1="30"
         v2="16"
         v3="17" />
       <triangle
         id="17"
-        v1="29"
+        v1="30"
         v2="17"
         v3="18" />
       <triangle
         id="18"
-        v1="29"
+        v1="30"
         v2="18"
         v3="19" />
       <triangle
         id="19"
-        v1="29"
+        v1="30"
         v2="19"
         v3="20" />
       <triangle
         id="20"
-        v1="29"
+        v1="30"
         v2="20"
         v3="21" />
       <triangle
         id="21"
-        v1="29"
+        v1="30"
         v2="21"
         v3="22" />
       <triangle
         id="22"
-        v1="29"
+        v1="30"
         v2="22"
         v3="23" />
       <triangle
         id="23"
-        v1="23"
-        v2="24"
-        v3="25" />
+        v1="30"
+        v2="23"
+        v3="24" />
       <triangle
         id="24"
-        v1="23"
+        v1="24"
         v2="25"
         v3="26" />
       <triangle
         id="25"
-        v1="29"
-        v2="23"
-        v3="26" />
-      <triangle
-        id="26"
-        v1="29"
+        v1="24"
         v2="26"
         v3="27" />
       <triangle
+        id="26"
+        v1="30"
+        v2="24"
+        v3="27" />
+      <triangle
         id="27"
-        v1="27"
-        v2="28"
-        v3="29" />
+        v1="30"
+        v2="27"
+        v3="28" />
+      <triangle
+        id="28"
+        v1="28"
+        v2="29"
+        v3="30" />
     </triangles>
   </staticPolygon>
   <staticPolygon
@@ -585,80 +633,143 @@
         v3="1" />
     </triangles>
   </staticPolygon>
-  <!--
-  <asteroidField
-    name="asteroids1">
-    <stateProperties
-      state="default">
-      <properties
-        posX="314.06249999999977"
-        posY="82.812499999999972"
-        width="200"
-        height="100"
-        spawnInitial="10"
-        intensity="0.4"
-        lifeTime="60000" />
-    </stateProperties>
-  </asteroidField>
-  -->
-	<ChildCompoundObjectRef 
-		name="machine1">
-		<stateProperties 
-			state="default"
-			file="strange_machine.xml" 
-			posX="300"
-			posY="200" />
-	</ChildCompoundObjectRef>
-  <!--
-  <objectFactory
-    name="machineFactory">
-    <stateProperties
-      state="default">
-      <properties
-        posX="300"
-        posY="82"
-        width="10"
-        height="10"
-        spawnInitial="1"
-        intensity="0.2"
-        lifeTime="60000" >
-			<CompoundObject>
-				<ChildCompoundObjectRef 
-					name="machine1">
-					<stateProperties 
-						state="default"
-						file="strange_machine.xml" 
-						posX="0.0"
-						posY="0.0" />
-				</ChildCompoundObjectRef>
-			</CompoundObject>
-		</properties>
-    </stateProperties>
-  </objectFactory>
+  <staticPolygon
+    name="springHolder"
+    texture="crater_rock"
+    posX="662.04695772976891"
+    posY="210.20026244541327"
+    angle="0"
+    zLevel="0"
+    collisionEntity="notApplicable"
+    collisionCategory="33"
+    collisionMask="65534"
+    textureMeterWidth="10"
+    textureMeterHeight="10"
+    textureOffsetMeterX="0"
+    textureOffsetMeterY="0">
+    <vertices>
+      <vertex
+        id="1"
+        x="0"
+        y="0" />
+      <vertex
+        id="2"
+        x="5.27512978751156"
+        y="-23.816583136741002" />
+      <vertex
+        id="3"
+        x="12.160048877618578"
+        y="0" />
+    </vertices>
+    <triangles>
+      <triangle
+        id="1"
+        v1="3"
+        v2="2"
+        v3="1" />
+    </triangles>
+  </staticPolygon>
+  <dynamicBox
+    name="plank"
+    texture="concrete"
+    posX="667.93849314015449"
+    posY="185.41396978024989"
+    angle="0.50614548307835583"
+    zLevel="0"
+    collisionEntity="notApplicable"
+    collisionCategory="33"
+    collisionMask="65534"
+    width="100"
+    height="2"
+    density="1"
+    friction="0" />
+  <dynamicBox
+    name="springWeight"
+    texture="concrete"
+    posX="651.48863894401916"
+    posY="169.65053470367769"
+    angle="0.506145483078356"
+    zLevel="0"
+    collisionEntity="notApplicable"
+    collisionCategory="33"
+    collisionMask="65534"
+    width="10"
+    height="10"
+    density="1"
+    friction="0" />
+  <weldJoint
+    name="noJointName"
+    objectAName="springWeight"
+    objectBName="plank"
+    objectAAnchorX="-0.011118706305387992"
+    objectAAnchorY="5.1746795831890147"
+    objectBAnchorX="-21.978551850253766"
+    objectBAnchorY="-0.68233217477888575" />
+  <revoluteJoint
+    name="noJointName"
+    objectAName="springHolder"
+    objectBName="plank"
+    objectAAnchorX="5.291370673866254"
+    objectAAnchorY="-24.050963677123434"
+    objectBAnchorX="-0.1047338857955617"
+    objectBAnchorY="0.72199657104785464"
+    lockJoint="false"
+    useMotor="false"
+    motorSpeed="0"
+    maxMotorTorque="0" />
+  <revoluteJoint
+    name="noJointName"
+    objectAName="springDestroyable"
+    objectBName="plank"
+    objectAAnchorX="0.032617398948559639"
+    objectAAnchorY="-0.11420251524893388"
+    objectBAnchorX="-49.140878382052222"
+    objectBAnchorY="-0.29308232879679491"
+    lockJoint="false"
+    useMotor="false"
+    motorSpeed="0"
+    maxMotorTorque="0" />
+  <revoluteJoint
+    name="badJoint"
+    objectAName="noName"
+    objectBName="springHolder"
+    objectAAnchorX="651.964191873903"
+    objectAAnchorY="-32.973378574308924"
+    objectBAnchorX="0.20602863105591496"
+    objectBAnchorY="-12.173641019722169"
+    lockJoint="false"
+    useMotor="false"
+    motorSpeed="0"
+    maxMotorTorque="0" />
   <objectFactory
     name="asteroidField">
     <stateProperties
       state="default">
       <properties
-        posX="250"
-        posY="82"
+        posX="368.94376116632873"
+        posY="67.132029854208866"
         width="10"
         height="10"
         spawnInitial="1"
         intensity="0.2"
-        lifeTime="60000" >
-			<CompoundObject type="asteroid" />
-		</properties>
-	</stateProperties>
+        lifeTime="60000" />
+    </stateProperties>
   </objectFactory>
-  -->
+  <ChildCompoundObjectRef
+    name="machine1">
+    <stateProperties
+      state="default"
+      file="strange_machine.xml"
+      posX="300"
+      posY="200" />
+  </ChildCompoundObjectRef>
   <ChildCompoundObjectRef
     name="launchSite1">
     <stateProperties
       state="default"
       file="launch_site.xml"
-      posX="23.440776454433376"
-      posY="277.50949409872953" />
+      posX="21.408452163020343"
+      posY="274.31301658904727" />
   </ChildCompoundObjectRef>
   <ChildCompoundObjectRef>
     <stateProperties
@@ -672,7 +783,7 @@
     <stateProperties
       state="default"
       file="C:\git\LeapfrogEditor\bin\Debug\..\..\..\leapfrog\data\leapfrog_reentry.xml"
-      posX="172.25477430555554"
-      posY="99.012586805555543" />
+      posX="237.00628536522629"
+      posY="136.3823543595679" />
   </ChildCompoundObjectRef>
 </compoundObject>
