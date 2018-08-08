@@ -243,8 +243,8 @@
   <dynamicBox
     name="leftSupportBooster"
     texture="ls_support_booster"
-    posX="55.89"
-    posY="-54.98"
+    posX="55.682250501904619"
+    posY="-54.772250501904388"
     angle="0"
     zLevel="120"
     collisionEntity="notApplicable"
@@ -257,7 +257,7 @@
   <dynamicBox
     name="rightSupportBooster"
     texture="ls_support_booster"
-    posX="74.89"
+    posX="75.0365103184214"
     posY="-54.98"
     angle="0"
     zLevel="120"
@@ -559,18 +559,18 @@
     name="leftSupportBoosterJoint"
     objectAName="mainTank"
     objectBName="leftSupportBooster"
-    objectAAnchorX="-6.6"
-    objectAAnchorY="0"
-    objectBAnchorX="2.9"
-    objectBAnchorY="-4.8" />
+    objectAAnchorX="-6.7006581113547323"
+    objectAAnchorY="0.010065811135518743"
+    objectBAnchorX="3.0107239224902513"
+    objectBAnchorY="-4.8905923002194411" />
   <weldJoint
     name="rightSupportBoosterJoint"
     objectAName="mainTank"
     objectBName="rightSupportBooster"
-    objectAAnchorX="6.6"
-    objectAAnchorY="0"
-    objectBAnchorX="-2.9"
-    objectBAnchorY="-4.8" />
+    objectAAnchorX="6.6798600410189461"
+    objectAAnchorY="-0.011408577288420929"
+    objectBAnchorX="-2.9798600410189464"
+    objectBAnchorY="-4.7201399589810533" />
   <revoluteJoint
     name="leftRestJoint"
     objectAName="leftRest"

@@ -697,6 +697,47 @@
     height="10"
     density="1"
     friction="0" />
+  <staticBox 
+    name="ropeHolder"
+    texture="lf_position"
+    posX="200"
+    posY="200"
+    angle="0"
+    zLevel="0"
+    collisionEntity="notApplicable"
+    collisionCategory="9"
+    collisionMask="65534"
+    width="20"
+    height="20" />
+  <dynamicBox
+    name="wrecker"
+    texture="crater_rock"
+    posX="200"
+    posY="245"
+    angle="0"
+    zLevel="0"
+    collisionEntity="notApplicable"
+    collisionCategory="9"
+    collisionMask="65534"
+    width="20"
+    height="20"
+    density="1"
+    friction="0" />
+  <rope
+	name="rope1"
+	texture="concrete"
+	thickness="0.5"
+	noOfSegments="5"
+    objectAName="ropeHolder"
+    objectBName="wrecker"
+    objectAAnchorX="0"
+    objectAAnchorY="10"
+    objectBAnchorX="0"
+    objectBAnchorY="-10"
+    zLevel="0"
+    collisionEntity="notApplicable"
+    collisionCategory="33"
+    collisionMask="65534" />
   <weldJoint
     name="noJointName"
     objectAName="springWeight"

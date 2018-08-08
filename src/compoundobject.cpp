@@ -508,6 +508,13 @@ bool CompoundObject::initCompoundObjectParts(
       defineDynamicBoxedSpritePolygon(gameResources, sceneParent, this, world, pos, *it);
    }
 
+   for (auto it = root.children("rope").begin();
+      it != root.children("rope").end();
+      ++it)
+   {
+      defineRope(gameResources, sceneParent, this, world, pos, *it);
+   }
+
    for (auto it = root.children("ChildCompoundObjectRef").begin();
       it != root.children("ChildCompoundObjectRef").end();
       ++it)
@@ -1314,6 +1321,160 @@ void CompoundObject::defineDynamicBoxedSpritePolygon(
 
    newCo->setUserData(body);
    newCo->m_collisionType = CollisionEntity::convert(objectNode.attribute("collisionEntity").as_string());
+   newCo->attachTo(sceneParent);
+
+   m_children.push_back(newCo);
+}
+
+void CompoundObject::defineRope(
+   Resources& gameResources,
+   SceneActor* sceneParent,
+   CompoundObject* parentObject,
+   b2World* world,
+   const Vector2& pos,
+   xml_node& jointNode)
+{
+   // The whole rope is a CO, all segments attach to it.
+   CompoundObject* newCo = new CompoundObject(sceneParent);
+
+   newCo->setName(jointNode.attribute("name").as_string());
+   newCo->setPriority(jointNode.attribute("zLevel").as_int());
+   newCo->m_parentObject = parentObject;
+   
+   int numOfSegments = jointNode.attribute("noOfSegments").as_int();
+   float segmentLength = 5.0f;   // Should later be set from some attributes of the XML
+   float thickness = jointNode.attribute("thickness").as_float();
+   float density = jointNode.attribute("density").as_float(1.0f);
+   string texture = jointNode.attribute("texture").as_string();
+   float maxLength = 0.01f;
+
+   vector<b2Body*> ropeBodies;
+
+   // Find first body to attach the rope to.
+   b2RopeJointDef	jointDef;
+
+   b2Body* bodyA = getBody(jointNode.attribute("objectAName").as_string());
+
+   if (!bodyA)
+   {
+      return;
+   }
+
+   // Find ending body to attach the rope to. If there is no defined a loose rope
+   // will be created
+   b2Body* bodyB = getBody(jointNode.attribute("objectBName").as_string());
+
+   // Now create the first segment. This is done outside the loop
+   // since the fastening body is special (not a rope segment) and
+   // has its own anchor point.
+
+   // Define sprite of first segment
+   spSprite object = new Sprite();
+   object->setResAnim(gameResources.getResAnim(texture));
+   object->setSize(segmentLength, thickness);
+   object->setAnchor(0.5f, 0.5f);
+   object->setTouchChildrenEnabled(false);
+   object->attachTo(newCo);
+
+   // Define body of first segment
+   b2BodyDef bodyDef;
+   bodyDef.type = b2_dynamicBody;
+
+   // TODO: Hardcoded, only works for one example, need to be changed
+   bodyDef.position = b2Vec2(200.0f, 210.0f);
+
+   b2Body* firstSegBody = world->CreateBody(&bodyDef);
+
+   b2PolygonShape boxShape;
+   boxShape.SetAsBox(segmentLength, thickness);
+
+   b2FixtureDef fixtureDef;
+   fixtureDef.shape = &boxShape;
+   fixtureDef.density = jointNode.attribute("density").as_float(1.0f);
+   fixtureDef.friction = 1.0f;
+   fixtureDef.filter.categoryBits = jointNode.attribute("collisionCategory").as_int();
+   fixtureDef.filter.maskBits = jointNode.attribute("collisionMask").as_int();
+   fixtureDef.userData = (CollisionEntity*)newCo;
+
+   firstSegBody->CreateFixture(&fixtureDef);
+   firstSegBody->SetUserData(object.get());
+   object->setUserData(firstSegBody);
+
+   // Define joint between beginning fastening body and first segment
+   jointDef.bodyA = bodyA;
+   jointDef.bodyB = firstSegBody;
+   jointDef.localAnchorA.Set(jointNode.attribute("objectAAnchorX").as_float(), jointNode.attribute("objectAAnchorY").as_float());
+   jointDef.localAnchorB.Set(segmentLength / 2.0f, 0.0f);
+   jointDef.collideConnected = false;
+   jointDef.maxLength = maxLength;
+
+   world->CreateJoint(&jointDef);
+
+   ropeBodies.push_back(firstSegBody);
+
+   // Now loop all segments until the last
+   for (int i = 1; i < numOfSegments; i++)
+   {
+      // Create sprite of segment i
+      spSprite object = new Sprite();
+      object->setResAnim(gameResources.getResAnim(texture));
+      object->setSize(segmentLength, thickness);
+      object->setAnchor(0.5f, 0.5f);
+      object->setTouchChildrenEnabled(false);
+      object->attachTo(newCo);
+
+      // Define body of segment i
+      b2BodyDef bodyDef;
+      bodyDef.type = b2_dynamicBody;
+
+      // TODO: Hardcoded, only works for one example, need to be changed
+      bodyDef.position = b2Vec2(200.0f, 210.0f + i * segmentLength);
+
+      b2Body* segBody = world->CreateBody(&bodyDef);
+
+      b2PolygonShape boxShape;
+      boxShape.SetAsBox(segmentLength, thickness);
+
+      b2FixtureDef fixtureDef;
+      fixtureDef.shape = &boxShape;
+      fixtureDef.density = jointNode.attribute("density").as_float(1.0f);
+      fixtureDef.friction = 1.0f;
+      fixtureDef.filter.categoryBits = jointNode.attribute("collisionCategory").as_int();
+      fixtureDef.filter.maskBits = jointNode.attribute("collisionMask").as_int();
+      fixtureDef.userData = (CollisionEntity*)newCo;
+
+      segBody->CreateFixture(&fixtureDef);
+      segBody->SetUserData(object.get());
+      object->setUserData(segBody);
+
+      // Define joint between beginning fastening body and first segment
+      jointDef.bodyA = ropeBodies[i-1];
+      jointDef.bodyB = segBody;
+      jointDef.localAnchorA.Set(-segmentLength / 2.0f, 0.0f);
+      jointDef.localAnchorB.Set(segmentLength / 2.0f, 0.0f);
+      jointDef.collideConnected = false;
+      jointDef.maxLength = maxLength;
+
+      world->CreateJoint(&jointDef);
+
+      ropeBodies.push_back(segBody);
+   }
+
+   // Only if BodyB is defined in XML will the last segment be
+   // attached to something
+   if (bodyB)
+   {
+      // Define joint between last segment and ending fastening body 
+      jointDef.bodyA = ropeBodies[numOfSegments - 1];
+      jointDef.bodyB = bodyB;
+      jointDef.localAnchorA.Set(-segmentLength / 2.0f, 0.0f);
+      jointDef.localAnchorB.Set(jointNode.attribute("objectBAnchorX").as_float(), jointNode.attribute("objectBAnchorY").as_float());
+      jointDef.collideConnected = false;
+      jointDef.maxLength = maxLength;
+
+      world->CreateJoint(&jointDef);
+   }
+
    newCo->attachTo(sceneParent);
 
    m_children.push_back(newCo);

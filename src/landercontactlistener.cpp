@@ -19,7 +19,6 @@ void LanderContactListener::ContactHandler(b2Contact* contact, bool begin)
    CollisionEntityTypeEnum eA = ((CollisionEntity *)contact->GetFixtureA()->GetUserData())->getEntityType();
    CollisionEntityTypeEnum eB = ((CollisionEntity *)contact->GetFixtureB()->GetUserData())->getEntityType();
 
-
    LeapFrog* leapfrog = NULL;
    Bullet* bullet = NULL;
    LaunchSite* launchSite = NULL;

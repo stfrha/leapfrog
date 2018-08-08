@@ -218,6 +218,14 @@ private:
       const oxygine::Vector2& pos,
       pugi::xml_node& objectNode);
 
+   void defineRope(
+      oxygine::Resources& gameResources,
+      SceneActor* sceneParent,
+      CompoundObject* parentObject,
+      b2World* world,
+      const oxygine::Vector2& pos,
+      pugi::xml_node& objectNode);
+
    void defineChildObject(
       oxygine::Resources& gameResources, 
       SceneActor* sceneParent,
