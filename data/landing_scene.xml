@@ -729,18 +729,6 @@
     useMotor="false"
     motorSpeed="0"
     maxMotorTorque="0" />
-  <revoluteJoint
-    name="badJoint"
-    objectAName="noName"
-    objectBName="springHolder"
-    objectAAnchorX="651.964191873903"
-    objectAAnchorY="-32.973378574308924"
-    objectBAnchorX="0.20602863105591496"
-    objectBAnchorY="-12.173641019722169"
-    lockJoint="false"
-    useMotor="false"
-    motorSpeed="0"
-    maxMotorTorque="0" />
   <objectFactory
     name="asteroidField">
     <stateProperties

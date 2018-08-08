@@ -1,316 +1,475 @@
-<?xml version="1.0"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <compoundObject
-	type="leapfrog"	>
-	<dynamicBox 
-		name="lfBooster"
-		texture="lf_boost"
-		posX="-5.6"
-		posY="0"
-		angle="1.57"
-		zLevel="128"
-		collisionEntity="lfBooster"
-		collisionCategory="4"
-		collisionMask="40123"
-		width="4.0"
-		height="1.6"
-		density="5"
-		friction="1" />
-	<dynamicBoxedSpritePolygonBody
-		name="lfLeftBigLeg"
-		texture="lf_big_leg"
-		width="1.8"
-		height="7.3"
-		posX="-3.0"
-		posY="-2.9"
-		angle="4.8"
-		zLevel="128"
-		collisionEntity="lfBigLeg"
-		collisionCategory="4"
-		collisionMask="40123"
-		density="5"
-		friction="1">
-		<vertices>
-			<vertex id="1" x="-0.7" y="3.65" />
-			<vertex id="2" x="0.7" y="3.65" />
-			<vertex id="3" x="0.9" y="-3.65" />
-			<vertex id="4" x="-0.9" y="-3.65" />
-		</vertices>
-		<triangles>
-			<triangle id="1" v1="1" v2="3" v3="2" />
-			<triangle id="2" v1="1" v2="4" v3="3" />
-		</triangles>
-	</dynamicBoxedSpritePolygonBody>
-	<dynamicBoxedSpritePolygonBody
-		name="lfRightBigLeg"
-		texture="lf_big_leg"
-		collisionEntity="lfBigLeg"
-		width="1.8"
-		height="7.3"
-		posX="2.9"
-		posY="4.9"
-		angle="-1.7"
-		zLevel="128"
-		collisionCategory="4"
-		collisionMask="40123"
-		density="5"
-		friction="1">
-		<vertices>
-			<vertex id="1" x="-0.7" y="3.65" />
-			<vertex id="2" x="0.7" y="3.65" />
-			<vertex id="3" x="0.9" y="-3.65" />
-			<vertex id="4" x="-0.9" y="-3.65" />
-		</vertices>
-		<triangles>
-			<triangle id="1" v1="1" v2="3" v3="2" />
-			<triangle id="2" v1="1" v2="4" v3="3" />
-		</triangles>
-	</dynamicBoxedSpritePolygonBody>
-	<dynamicBoxedSpritePolygonBody
-		name="lfLeftSmallLeg"
-		texture="lf_small_leg"
-		collisionEntity="lfSmallLeg"
-		width="1.4"
-		height="5.3"
-		posX="1.75"
-		posY="-2.2"
-		angle="4.9"
-		zLevel="128"
-		collisionCategory="4"
-		collisionMask="40123"
-		density="5"
-		friction="1"		>
-		<vertices>
-			<vertex id="1" x="-0.7" y="2.65" />
-			<vertex id="2" x="0.7" y="2.65" />
-			<vertex id="3" x="0.7" y="-2.65" />
-			<vertex id="4" x="-0.7" y="-2.65" />
-		</vertices>
-		<triangles>
-			<triangle id="1" v1="1" v2="3" v3="2" />
-			<triangle id="2" v1="1" v2="4" v3="3" />
-		</triangles>
-	</dynamicBoxedSpritePolygonBody>
-	<dynamicBoxedSpritePolygonBody
-		name="lfRightSmallLeg"
-		texture="lf_small_leg"
-		collisionEntity="lfSmallLeg"
-		width="1.4"
-		height="5.3"
-		posX="1.75"
-		posY="2.2"
-		angle="-1.76"
-		zLevel="128"
-		collisionCategory="4"
-		collisionMask="40123"
-		density="5"
-		friction="1" >
-		<vertices>
-			<vertex id="1" x="-0.7" y="2.65" />
-			<vertex id="2" x="0.7" y="2.65" />
-			<vertex id="3" x="0.7" y="-2.65" />
-			<vertex id="4" x="-0.7" y="-2.65" />
-		</vertices>
-		<triangles>
-			<triangle id="1" v1="1" v2="3" v3="2" />
-			<triangle id="2" v1="1" v2="4" v3="3" />
-		</triangles>
-	</dynamicBoxedSpritePolygonBody>
-	<dynamicBoxedSpritePolygonBody
-		name="lfLeftFoot"
-		texture="lf_foot"
-		collisionEntity="lfLeftFoot"
-		width="4.0"
-		height="0.6"
-		posX="3.2"
-		posY="-1.1"
-		angle="6.9"
-		zLevel="128"
-		collisionCategory="4"
-		collisionMask="40123"
-		density="5"
-		friction="1">
-		<vertices>
-			<vertex id="1" x="-1.4" y="0.3" />
-			<vertex id="2" x="1.4" y="0.3" />
-			<vertex id="3" x="2.0" y="-0.3" />
-			<vertex id="4" x="-2.0" y="-0.3" />
-		</vertices>
-		<triangles>
-			<triangle id="1" v1="1" v2="3" v3="2" />
-			<triangle id="2" v1="1" v2="4" v3="3" />
-		</triangles>
-	</dynamicBoxedSpritePolygonBody>
-	<dynamicBoxedSpritePolygonBody
-		name="lfRightFoot"
-		texture="lf_foot"
-		collisionEntity="lfRightFoot"
-		width="4.0"
-		height="0.6"
-		posX="3.2"
-		posY="1.1"
-		angle="-3.8"
-		zLevel="128"
-		collisionCategory="4"
-		collisionMask="40123"
-		density="5"
-		friction="1" >
-		<vertices>
-			<vertex id="1" x="-1.4" y="0.3" />
-			<vertex id="2" x="1.4" y="0.3" />
-			<vertex id="3" x="2.0" y="-0.3" />
-			<vertex id="4" x="-2.0" y="-0.3" />
-		</vertices>
-		<triangles>
-			<triangle id="1" v1="1" v2="3" v3="2" />
-			<triangle id="2" v1="1" v2="4" v3="3" />
-		</triangles>
-	</dynamicBoxedSpritePolygonBody>
-	<dynamicBox 
-		name="lfRightSteer"
-		texture="lf_right_steer"
-		collisionEntity="lfSteerBooster"
-		width="1.2"
-		height="1.0"
-		posX="3.4"
-		posY="3.2"
-		angle="-1.76"
-		zLevel="128"
-		collisionCategory="4"
-		collisionMask="40123" 
-		density="5"
-		friction="1" />
-	<dynamicBox 
-		name="lfLeftSteer"
-		texture="lf_left_steer"
-		collisionEntity="lfSteerBooster"
-		width="1.2"
-		height="1.0"
-		posX="3.4"
-		posY="-3.2"
-		angle="4.9"
-		zLevel="128"
-		collisionCategory="4"
-		collisionMask="40123" 
-		density="5"
-		friction="1" />
-	<dynamicBoxedSpritePolygonBody
-		name="lfMainBody"
-		texture="lf_body"
-		collisionEntity="leapfrog"
-		width="9.0"
-		height="9.6"
-		posX="0.0"
-		posY="0.0"
-		angle="1.57"
-		zLevel="128"
-		collisionCategory="4"
-		collisionMask="40123"
-		density="5"
-		friction="1"  >
-		<vertices>
-			<vertex id="1" x="-4.5" y="4.8" />
-			<vertex id="2" x="4.5" y="4.8" />
-			<vertex id="3" x="2.5" y="-3.7" />
-			<vertex id="4" x="1.5" y="-4.8" />
-			<vertex id="5" x="-1.5" y="-4.8" />
-			<vertex id="6" x="-2.5" y="-3.7" />
-		</vertices>
-		<triangles>
-			<triangle id="1" v1="1" v2="2" v3="3" />
-			<triangle id="2" v1="1" v2="3" v3="4" />
-			<triangle id="1" v1="1" v2="4" v3="5" />
-			<triangle id="2" v1="1" v2="5" v3="6" />
-		</triangles>
-	</dynamicBoxedSpritePolygonBody>
-	<weldJoint
-		name="boostJoint"
-		objectAName="lfMainBody"
-		objectBName="lfBooster"
-		objectAAnchorX="0.0"
-		objectAAnchorY="4.8"
-		objectBAnchorX="0.0"
-		objectBAnchorY="-0.8" />
-	<revoluteJoint
-		name="rightLegJoint"
-		objectAName="lfMainBody"
-		objectBName="lfRightBigLeg"
-		objectAAnchorX="3.3"
-		objectAAnchorY="5.8"
-		objectBAnchorX="0.0"
-		objectBAnchorY="-2.75"
-		lockJoint="true"
-		useMotor="false"
-		motorSpeed="0"  />
-	<revoluteJoint
-		name="leftLegJoint"
-		objectAName="lfMainBody"
-		objectBName="lfLeftBigLeg"
-		objectAAnchorX="-3.3"
-		objectAAnchorY="5.8"
-		objectBAnchorX="0.0"
-		objectBAnchorY="-2.75"
-		lockJoint="true"
-		useMotor="false"
-		motorSpeed="0"  />
-	<revoluteJoint
-		name="rightSmallLegJoint"
-		objectAName="lfRightBigLeg"
-		objectBName="lfRightSmallLeg"
-		objectAAnchorX="0.0"
-		objectAAnchorY="2.95"
-		objectBAnchorX="0.0"
-		objectBAnchorY="-1.95"
-		lockJoint="true"
-		useMotor="false"
-		motorSpeed="0"  />
-	<revoluteJoint
-		name="leftSmallLegJoint"
-		objectAName="lfLeftBigLeg"
-		objectBName="lfLeftSmallLeg"
-		objectAAnchorX="0.0"
-		objectAAnchorY="2.95"
-		objectBAnchorX="0.0"
-		objectBAnchorY="-1.95"
-		lockJoint="true"
-		useMotor="false"
-		motorSpeed="0"  />
-	<revoluteJoint
-		name="rightFootLegJoint"
-		objectAName="lfRightSmallLeg"
-		objectBName="lfRightFoot"
-		objectAAnchorX="0.0"
-		objectAAnchorY="2.05"
-		objectBAnchorX="0.0"
-		objectBAnchorY="-0.9"
-		lockJoint="true"
-		useMotor="false"
-		motorSpeed="0"  />
-	<revoluteJoint
-		name="leftFootLegJoint"
-		objectAName="lfLeftSmallLeg"
-		objectBName="lfLeftFoot"
-		objectAAnchorX="0.0"
-		objectAAnchorY="2.05"
-		objectBAnchorX="0.0"
-		objectBAnchorY="-0.9"
-		lockJoint="true"
-		useMotor="false"
-		motorSpeed="0"  />
-	<weldJoint
-		name="rightSteerJoint"
-		objectAName="lfRightSmallLeg"
-		objectBName="lfRightSteer"
-		objectAAnchorX="-0.7"
-		objectAAnchorY="1.4"
-		objectBAnchorX="0.6"
-		objectBAnchorY="0.0" />
-	<weldJoint
-		name="leftSteerJoint"
-		objectAName="lfLeftSmallLeg"
-		objectBName="lfLeftSteer"
-		objectAAnchorX="0.7"
-		objectAAnchorY="1.4"
-		objectBAnchorX="-0.6"
-		objectBAnchorY="0.0" />
+  type="leapfrog">
+  <dynamicBox
+    name="lfBooster"
+    texture="lf_boost"
+    posX="-5.6"
+    posY="0"
+    angle="1.57"
+    zLevel="128"
+    collisionEntity="lfBooster"
+    collisionCategory="4"
+    collisionMask="40123"
+    width="4"
+    height="1.6"
+    density="5"
+    friction="1" />
+  <dynamicBox
+    name="lfRightSteer"
+    texture="lf_right_steer"
+    posX="3.4"
+    posY="3.2"
+    angle="-1.76"
+    zLevel="128"
+    collisionEntity="lfSteerBooster"
+    collisionCategory="4"
+    collisionMask="40123"
+    width="1.2"
+    height="1"
+    density="5"
+    friction="1" />
+  <dynamicBox
+    name="lfLeftSteer"
+    texture="lf_left_steer"
+    posX="3.4"
+    posY="-3.2"
+    angle="4.9"
+    zLevel="128"
+    collisionEntity="lfSteerBooster"
+    collisionCategory="4"
+    collisionMask="40123"
+    width="1.2"
+    height="1"
+    density="5"
+    friction="1" />
+  <dynamicBoxedSpritePolygonBody
+    name="lfLeftBigLeg"
+    texture="lf_big_leg"
+    posX="-3.05859375"
+    posY="-3.03671875"
+    angle="4.8"
+    zLevel="128"
+    collisionEntity="lfBigLeg"
+    collisionCategory="4"
+    collisionMask="40123"
+    width="1.8"
+    height="7.3"
+    density="5"
+    friction="1">
+    <vertices>
+      <vertex
+        id="1"
+        x="-0.7"
+        y="3.65" />
+      <vertex
+        id="2"
+        x="0.7"
+        y="3.65" />
+      <vertex
+        id="3"
+        x="0.9"
+        y="-3.65" />
+      <vertex
+        id="4"
+        x="-0.9"
+        y="-3.65" />
+    </vertices>
+    <triangles>
+      <triangle
+        id="1"
+        v1="4"
+        v2="1"
+        v3="2" />
+      <triangle
+        id="2"
+        v1="2"
+        v2="3"
+        v3="4" />
+    </triangles>
+  </dynamicBoxedSpritePolygonBody>
+  <dynamicBoxedSpritePolygonBody
+    name="lfRightBigLeg"
+    texture="lf_big_leg"
+    posX="-3.05703125"
+    posY="2.9468750000000004"
+    angle="-1.7"
+    zLevel="128"
+    collisionEntity="lfBigLeg"
+    collisionCategory="4"
+    collisionMask="40123"
+    width="1.8"
+    height="7.3"
+    density="5"
+    friction="1">
+    <vertices>
+      <vertex
+        id="1"
+        x="-0.7"
+        y="3.65" />
+      <vertex
+        id="2"
+        x="0.7"
+        y="3.65" />
+      <vertex
+        id="3"
+        x="0.9"
+        y="-3.65" />
+      <vertex
+        id="4"
+        x="-0.9"
+        y="-3.65" />
+    </vertices>
+    <triangles>
+      <triangle
+        id="1"
+        v1="4"
+        v2="1"
+        v3="2" />
+      <triangle
+        id="2"
+        v1="2"
+        v2="3"
+        v3="4" />
+    </triangles>
+  </dynamicBoxedSpritePolygonBody>
+  <dynamicBoxedSpritePolygonBody
+    name="lfLeftSmallLeg"
+    texture="lf_small_leg"
+    posX="1.75"
+    posY="-2.2"
+    angle="4.9"
+    zLevel="128"
+    collisionEntity="lfSmallLeg"
+    collisionCategory="4"
+    collisionMask="40123"
+    width="1.4"
+    height="5.3"
+    density="5"
+    friction="1">
+    <vertices>
+      <vertex
+        id="1"
+        x="-0.7"
+        y="2.65" />
+      <vertex
+        id="2"
+        x="0.7"
+        y="2.65" />
+      <vertex
+        id="3"
+        x="0.7"
+        y="-2.65" />
+      <vertex
+        id="4"
+        x="-0.7"
+        y="-2.65" />
+    </vertices>
+    <triangles>
+      <triangle
+        id="1"
+        v1="4"
+        v2="1"
+        v3="2" />
+      <triangle
+        id="2"
+        v1="2"
+        v2="3"
+        v3="4" />
+    </triangles>
+  </dynamicBoxedSpritePolygonBody>
+  <dynamicBoxedSpritePolygonBody
+    name="lfRightSmallLeg"
+    texture="lf_small_leg"
+    posX="1.75"
+    posY="2.2"
+    angle="-1.76"
+    zLevel="128"
+    collisionEntity="lfSmallLeg"
+    collisionCategory="4"
+    collisionMask="40123"
+    width="1.4"
+    height="5.3"
+    density="5"
+    friction="1">
+    <vertices>
+      <vertex
+        id="1"
+        x="-0.7"
+        y="2.65" />
+      <vertex
+        id="2"
+        x="0.7"
+        y="2.65" />
+      <vertex
+        id="3"
+        x="0.7"
+        y="-2.65" />
+      <vertex
+        id="4"
+        x="-0.7"
+        y="-2.65" />
+    </vertices>
+    <triangles>
+      <triangle
+        id="1"
+        v1="4"
+        v2="1"
+        v3="2" />
+      <triangle
+        id="2"
+        v1="2"
+        v2="3"
+        v3="4" />
+    </triangles>
+  </dynamicBoxedSpritePolygonBody>
+  <dynamicBoxedSpritePolygonBody
+    name="lfLeftFoot"
+    texture="lf_foot"
+    posX="3.2"
+    posY="-1.1"
+    angle="6.9"
+    zLevel="128"
+    collisionEntity="lfLeftFoot"
+    collisionCategory="4"
+    collisionMask="40123"
+    width="4"
+    height="0.6"
+    density="5"
+    friction="1">
+    <vertices>
+      <vertex
+        id="1"
+        x="-1.4"
+        y="0.3" />
+      <vertex
+        id="2"
+        x="1.4"
+        y="0.3" />
+      <vertex
+        id="3"
+        x="2"
+        y="-0.3" />
+      <vertex
+        id="4"
+        x="-2"
+        y="-0.3" />
+    </vertices>
+    <triangles>
+      <triangle
+        id="1"
+        v1="4"
+        v2="1"
+        v3="2" />
+      <triangle
+        id="2"
+        v1="2"
+        v2="3"
+        v3="4" />
+    </triangles>
+  </dynamicBoxedSpritePolygonBody>
+  <dynamicBoxedSpritePolygonBody
+    name="lfRightFoot"
+    texture="lf_foot"
+    posX="3.2"
+    posY="1.1"
+    angle="-3.8"
+    zLevel="128"
+    collisionEntity="lfRightFoot"
+    collisionCategory="4"
+    collisionMask="40123"
+    width="4"
+    height="0.6"
+    density="5"
+    friction="1">
+    <vertices>
+      <vertex
+        id="1"
+        x="-1.4"
+        y="0.3" />
+      <vertex
+        id="2"
+        x="1.4"
+        y="0.3" />
+      <vertex
+        id="3"
+        x="2"
+        y="-0.3" />
+      <vertex
+        id="4"
+        x="-2"
+        y="-0.3" />
+    </vertices>
+    <triangles>
+      <triangle
+        id="1"
+        v1="4"
+        v2="1"
+        v3="2" />
+      <triangle
+        id="2"
+        v1="2"
+        v2="3"
+        v3="4" />
+    </triangles>
+  </dynamicBoxedSpritePolygonBody>
+  <dynamicBoxedSpritePolygonBody
+    name="lfMainBody"
+    texture="lf_body"
+    posX="0"
+    posY="0"
+    angle="1.57"
+    zLevel="128"
+    collisionEntity="leapfrog"
+    collisionCategory="4"
+    collisionMask="40123"
+    width="9"
+    height="9.6"
+    density="5"
+    friction="1">
+    <vertices>
+      <vertex
+        id="1"
+        x="-4.5"
+        y="4.8" />
+      <vertex
+        id="2"
+        x="4.5"
+        y="4.8" />
+      <vertex
+        id="3"
+        x="2.5"
+        y="-3.7" />
+      <vertex
+        id="4"
+        x="1.5"
+        y="-4.8" />
+      <vertex
+        id="5"
+        x="-1.5"
+        y="-4.8" />
+      <vertex
+        id="6"
+        x="-2.5"
+        y="-3.7" />
+    </vertices>
+    <triangles>
+      <triangle
+        id="1"
+        v1="6"
+        v2="1"
+        v3="2" />
+      <triangle
+        id="2"
+        v1="6"
+        v2="2"
+        v3="3" />
+      <triangle
+        id="3"
+        v1="6"
+        v2="3"
+        v3="4" />
+      <triangle
+        id="4"
+        v1="4"
+        v2="5"
+        v3="6" />
+    </triangles>
+  </dynamicBoxedSpritePolygonBody>
+  <weldJoint
+    name="boostJoint"
+    objectAName="lfMainBody"
+    objectBName="lfBooster"
+    objectAAnchorX="0"
+    objectAAnchorY="4.8"
+    objectBAnchorX="0"
+    objectBAnchorY="-0.8" />
+  <weldJoint
+    name="rightSteerJoint"
+    objectAName="lfRightSmallLeg"
+    objectBName="lfRightSteer"
+    objectAAnchorX="-0.7"
+    objectAAnchorY="1.4"
+    objectBAnchorX="0.6"
+    objectBAnchorY="0" />
+  <weldJoint
+    name="leftSteerJoint"
+    objectAName="lfLeftSmallLeg"
+    objectBName="lfLeftSteer"
+    objectAAnchorX="0.7"
+    objectAAnchorY="1.4"
+    objectBAnchorX="-0.6"
+    objectBAnchorY="0" />
+  <revoluteJoint
+    name="rightLegJoint"
+    objectAName="lfMainBody"
+    objectBName="lfRightBigLeg"
+    objectAAnchorX="3.3"
+    objectAAnchorY="5.8"
+    objectBAnchorX="0"
+    objectBAnchorY="-2.75"
+    lockJoint="true"
+    useMotor="false"
+    motorSpeed="0"
+    maxMotorTorque="0" />
+  <revoluteJoint
+    name="leftLegJoint"
+    objectAName="lfMainBody"
+    objectBName="lfLeftBigLeg"
+    objectAAnchorX="-3.3"
+    objectAAnchorY="5.8"
+    objectBAnchorX="0"
+    objectBAnchorY="-2.75"
+    lockJoint="true"
+    useMotor="false"
+    motorSpeed="0"
+    maxMotorTorque="0" />
+  <revoluteJoint
+    name="rightSmallLegJoint"
+    objectAName="lfRightBigLeg"
+    objectBName="lfRightSmallLeg"
+    objectAAnchorX="0"
+    objectAAnchorY="2.95"
+    objectBAnchorX="0"
+    objectBAnchorY="-1.95"
+    lockJoint="true"
+    useMotor="false"
+    motorSpeed="0"
+    maxMotorTorque="0" />
+  <revoluteJoint
+    name="leftSmallLegJoint"
+    objectAName="lfLeftBigLeg"
+    objectBName="lfLeftSmallLeg"
+    objectAAnchorX="0"
+    objectAAnchorY="2.95"
+    objectBAnchorX="0"
+    objectBAnchorY="-1.95"
+    lockJoint="true"
+    useMotor="false"
+    motorSpeed="0"
+    maxMotorTorque="0" />
+  <revoluteJoint
+    name="rightFootLegJoint"
+    objectAName="lfRightSmallLeg"
+    objectBName="lfRightFoot"
+    objectAAnchorX="0"
+    objectAAnchorY="2.05"
+    objectBAnchorX="0"
+    objectBAnchorY="-0.9"
+    lockJoint="true"
+    useMotor="false"
+    motorSpeed="0"
+    maxMotorTorque="0" />
+  <revoluteJoint
+    name="leftFootLegJoint"
+    objectAName="lfLeftSmallLeg"
+    objectBName="lfLeftFoot"
+    objectAAnchorX="0"
+    objectAAnchorY="2.05"
+    objectBAnchorX="0"
+    objectBAnchorY="-0.9"
+    lockJoint="true"
+    useMotor="false"
+    motorSpeed="0"
+    maxMotorTorque="0" />
 </compoundObject>
-

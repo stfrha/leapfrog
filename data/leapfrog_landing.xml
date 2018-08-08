@@ -18,8 +18,8 @@
   <dynamicBox
     name="lfRightSteer"
     texture="lf_right_steer"
-    posX="7.2"
-    posY="11.5"
+    posX="7.1278013782695782"
+    posY="11.471120551307877"
     angle="0.04"
     zLevel="128"
     collisionEntity="lfSteerBooster"
@@ -32,8 +32,8 @@
   <dynamicBox
     name="lfLeftSteer"
     texture="lf_left_steer"
-    posX="-7.2"
-    posY="11.5"
+    posX="-7.3226433020069637"
+    posY="11.454008761747446"
     angle="0.04"
     zLevel="128"
     collisionEntity="lfSteerBooster"
@@ -78,14 +78,14 @@
     <triangles>
       <triangle
         id="1"
-        v1="1"
-        v2="3"
+        v1="4"
+        v2="1"
         v3="2" />
       <triangle
         id="2"
-        v1="1"
-        v2="4"
-        v3="3" />
+        v1="2"
+        v2="3"
+        v3="4" />
     </triangles>
   </dynamicBoxedSpritePolygonBody>
   <dynamicBoxedSpritePolygonBody
@@ -123,21 +123,21 @@
     <triangles>
       <triangle
         id="1"
-        v1="1"
-        v2="3"
+        v1="4"
+        v2="1"
         v3="2" />
       <triangle
         id="2"
-        v1="1"
-        v2="4"
-        v3="3" />
+        v1="2"
+        v2="3"
+        v3="4" />
     </triangles>
   </dynamicBoxedSpritePolygonBody>
   <dynamicBoxedSpritePolygonBody
     name="lfLeftSmallLeg"
     texture="lf_small_leg"
-    posX="-8.5"
-    posY="10"
+    posX="-8.576652063754409"
+    posY="10.015330412750927"
     angle="0.045"
     zLevel="128"
     collisionEntity="lfSmallLeg"
@@ -168,21 +168,21 @@
     <triangles>
       <triangle
         id="1"
-        v1="1"
-        v2="3"
+        v1="4"
+        v2="1"
         v3="2" />
       <triangle
         id="2"
-        v1="1"
-        v2="4"
-        v3="3" />
+        v1="2"
+        v2="3"
+        v3="4" />
     </triangles>
   </dynamicBoxedSpritePolygonBody>
   <dynamicBoxedSpritePolygonBody
     name="lfRightSmallLeg"
     texture="lf_small_leg"
-    posX="8.5"
-    posY="10"
+    posX="8.4566808269617013"
+    posY="10.101078070422545"
     angle="0.03"
     zLevel="128"
     collisionEntity="lfSmallLeg"
@@ -213,22 +213,22 @@
     <triangles>
       <triangle
         id="1"
-        v1="1"
-        v2="3"
+        v1="4"
+        v2="1"
         v3="2" />
       <triangle
         id="2"
-        v1="1"
-        v2="4"
-        v3="3" />
+        v1="2"
+        v2="3"
+        v3="4" />
     </triangles>
   </dynamicBoxedSpritePolygonBody>
   <dynamicBoxedSpritePolygonBody
     name="lfLeftFoot"
     texture="lf_foot"
-    posX="-8.5"
-    posY="13"
-    angle="0.053"
+    posX="-8.668634540259518"
+    posY="12.969339174498373"
+    angle="-0"
     zLevel="128"
     collisionEntity="lfLeftFoot"
     collisionCategory="4"
@@ -258,22 +258,22 @@
     <triangles>
       <triangle
         id="1"
-        v1="1"
-        v2="3"
+        v1="4"
+        v2="1"
         v3="2" />
       <triangle
         id="2"
-        v1="1"
-        v2="4"
-        v3="3" />
+        v1="2"
+        v2="3"
+        v3="4" />
     </triangles>
   </dynamicBoxedSpritePolygonBody>
   <dynamicBoxedSpritePolygonBody
     name="lfRightFoot"
     texture="lf_foot"
-    posX="8.5"
-    posY="13"
-    angle="0.039"
+    posX="8.3844822052315067"
+    posY="13.043319173038299"
+    angle="-0"
     zLevel="128"
     collisionEntity="lfRightFoot"
     collisionCategory="4"
@@ -303,14 +303,14 @@
     <triangles>
       <triangle
         id="1"
-        v1="1"
-        v2="3"
+        v1="4"
+        v2="1"
         v3="2" />
       <triangle
         id="2"
-        v1="1"
-        v2="4"
-        v3="3" />
+        v1="2"
+        v2="3"
+        v3="4" />
     </triangles>
   </dynamicBoxedSpritePolygonBody>
   <dynamicBoxedSpritePolygonBody
@@ -356,22 +356,22 @@
     <triangles>
       <triangle
         id="1"
-        v1="1"
+        v1="6"
+        v2="1"
+        v3="2" />
+      <triangle
+        id="2"
+        v1="6"
         v2="2"
         v3="3" />
       <triangle
-        id="2"
-        v1="1"
+        id="3"
+        v1="6"
         v2="3"
         v3="4" />
       <triangle
-        id="1"
-        v1="1"
-        v2="4"
-        v3="5" />
-      <triangle
-        id="2"
-        v1="1"
+        id="4"
+        v1="4"
         v2="5"
         v3="6" />
     </triangles>
@@ -408,9 +408,10 @@
     objectAAnchorY="5.8"
     objectBAnchorX="0"
     objectBAnchorY="-2.75"
-	lockJoint="true"
-	useMotor="false"
-	motorSpeed="0"  />
+    lockJoint="true"
+    useMotor="false"
+    motorSpeed="0"
+    maxMotorTorque="0" />
   <revoluteJoint
     name="leftLegJoint"
     objectAName="lfMainBody"
@@ -419,9 +420,10 @@
     objectAAnchorY="5.8"
     objectBAnchorX="0"
     objectBAnchorY="-2.75"
-	lockJoint="true"
-	useMotor="false"
-	motorSpeed="0"  />
+    lockJoint="true"
+    useMotor="false"
+    motorSpeed="0"
+    maxMotorTorque="0" />
   <revoluteJoint
     name="rightSmallLegJoint"
     objectAName="lfRightBigLeg"
@@ -430,9 +432,10 @@
     objectAAnchorY="2.95"
     objectBAnchorX="0"
     objectBAnchorY="-1.95"
-	lockJoint="true"
-	useMotor="false"
-	motorSpeed="0"  />
+    lockJoint="true"
+    useMotor="false"
+    motorSpeed="0"
+    maxMotorTorque="0" />
   <revoluteJoint
     name="leftSmallLegJoint"
     objectAName="lfLeftBigLeg"
@@ -441,9 +444,10 @@
     objectAAnchorY="2.95"
     objectBAnchorX="0"
     objectBAnchorY="-1.95"
-	lockJoint="true"
-	useMotor="false"
-	motorSpeed="0"  />
+    lockJoint="true"
+    useMotor="false"
+    motorSpeed="0"
+    maxMotorTorque="0" />
   <revoluteJoint
     name="rightFootLegJoint"
     objectAName="lfRightSmallLeg"
@@ -451,10 +455,11 @@
     objectAAnchorX="0"
     objectAAnchorY="2.05"
     objectBAnchorX="0"
-    objectBAnchorY="-0.9" 
-	lockJoint="true"
-	useMotor="false"
-	motorSpeed="0" />
+    objectBAnchorY="-0.9"
+    lockJoint="true"
+    useMotor="false"
+    motorSpeed="0"
+    maxMotorTorque="0" />
   <revoluteJoint
     name="leftFootLegJoint"
     objectAName="lfLeftSmallLeg"
@@ -463,7 +468,8 @@
     objectAAnchorY="2.05"
     objectBAnchorX="0"
     objectBAnchorY="-0.9"
-	lockJoint="true"
-	useMotor="false"
-	motorSpeed="0"  />
+    lockJoint="true"
+    useMotor="false"
+    motorSpeed="0"
+    maxMotorTorque="0" />
 </compoundObject>
