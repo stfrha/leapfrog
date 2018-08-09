@@ -1342,7 +1342,8 @@ void CompoundObject::defineRope(
    newCo->m_parentObject = parentObject;
    
    int numOfSegments = jointNode.attribute("noOfSegments").as_int();
-   float segmentLength = 5.0f;   // Should later be set from some attributes of the XML
+   float ropeLength = jointNode.attribute("length").as_float(10.0f);
+   float segmentLength = ropeLength / numOfSegments;
    float thickness = jointNode.attribute("thickness").as_float();
    float density = jointNode.attribute("density").as_float(1.0f);
    string texture = jointNode.attribute("texture").as_string();
@@ -1364,6 +1365,35 @@ void CompoundObject::defineRope(
    // will be created
    b2Body* bodyB = getBody(jointNode.attribute("objectBName").as_string());
 
+
+
+   // To get the initial position and angle of each segment correct we need to 
+   // get the start and end point of the rope. The start point is always 
+   // the anchorpoint to body A.
+   // The end point is anchor of body B if body B exists. If body B does not exist
+   // the end point is the rope length directly below the start point 
+   // (a straight haning rope)
+   b2Vec2 bodyAAnchor = b2Vec2(jointNode.attribute("objectAAnchorX").as_float(), jointNode.attribute("objectAAnchorY").as_float());   
+   b2Vec2 startPos = bodyA->GetWorldPoint(bodyAAnchor);
+   b2Vec2 endPos;
+   b2Vec2 bodyBAnchor;
+
+   if (bodyB != NULL)
+   {
+      bodyBAnchor = b2Vec2(jointNode.attribute("objectBAnchorX").as_float(), jointNode.attribute("objectBAnchorY").as_float());
+      endPos = bodyB->GetWorldPoint(bodyBAnchor);
+   }
+   else
+   {
+      endPos = startPos + b2Vec2(0, ropeLength);
+   }
+
+   b2Vec2 ropeVector = endPos - startPos;
+   b2Vec2 ropeDirection = ropeVector;
+   float distance = ropeDirection.Normalize();
+
+   float ropeAngle = acos(ropeVector.x / distance);
+
    // Now create the first segment. This is done outside the loop
    // since the fastening body is special (not a rope segment) and
    // has its own anchor point.
@@ -1374,14 +1404,19 @@ void CompoundObject::defineRope(
    object->setSize(segmentLength, thickness);
    object->setAnchor(0.5f, 0.5f);
    object->setTouchChildrenEnabled(false);
+   b2Vec2 segmentPos = startPos + segmentLength * 0.5f * ropeDirection;
+   object->setPosition(PhysDispConvert::convert(segmentPos, 1.0f));
+   object->setRotation(ropeAngle);
    object->attachTo(newCo);
 
    // Define body of first segment
    b2BodyDef bodyDef;
    bodyDef.type = b2_dynamicBody;
+   bodyDef.position = segmentPos;
+   bodyDef.angle = ropeAngle;
 
-   // TODO: Hardcoded, only works for one example, need to be changed
-   bodyDef.position = b2Vec2(200.0f, 210.0f);
+   //// TODO: Hardcoded, only works for one example, need to be changed
+   //bodyDef.position = b2Vec2(200.0f, 210.0f);
 
    b2Body* firstSegBody = world->CreateBody(&bodyDef);
 
@@ -1404,7 +1439,7 @@ void CompoundObject::defineRope(
    jointDef.bodyA = bodyA;
    jointDef.bodyB = firstSegBody;
    jointDef.localAnchorA.Set(jointNode.attribute("objectAAnchorX").as_float(), jointNode.attribute("objectAAnchorY").as_float());
-   jointDef.localAnchorB.Set(segmentLength / 2.0f, 0.0f);
+   jointDef.localAnchorB.Set(-segmentLength / 2.0f, 0.0f);
    jointDef.collideConnected = false;
    jointDef.maxLength = maxLength;
 
@@ -1421,14 +1456,19 @@ void CompoundObject::defineRope(
       object->setSize(segmentLength, thickness);
       object->setAnchor(0.5f, 0.5f);
       object->setTouchChildrenEnabled(false);
+      b2Vec2 segmentPos = startPos + segmentLength * (0.5f + i) * ropeDirection;
+      object->setPosition(PhysDispConvert::convert(segmentPos, 1.0f));
+      object->setRotation(ropeAngle);
       object->attachTo(newCo);
 
       // Define body of segment i
       b2BodyDef bodyDef;
       bodyDef.type = b2_dynamicBody;
+      bodyDef.position = segmentPos;
+      bodyDef.angle = ropeAngle;
 
-      // TODO: Hardcoded, only works for one example, need to be changed
-      bodyDef.position = b2Vec2(200.0f, 210.0f + i * segmentLength);
+      //// TODO: Hardcoded, only works for one example, need to be changed
+      //bodyDef.position = b2Vec2(200.0f, 210.0f + i * segmentLength);
 
       b2Body* segBody = world->CreateBody(&bodyDef);
 
@@ -1450,8 +1490,8 @@ void CompoundObject::defineRope(
       // Define joint between beginning fastening body and first segment
       jointDef.bodyA = ropeBodies[i-1];
       jointDef.bodyB = segBody;
-      jointDef.localAnchorA.Set(-segmentLength / 2.0f, 0.0f);
-      jointDef.localAnchorB.Set(segmentLength / 2.0f, 0.0f);
+      jointDef.localAnchorA.Set(segmentLength / 2.0f, 0.0f);
+      jointDef.localAnchorB.Set(-segmentLength / 2.0f, 0.0f);
       jointDef.collideConnected = false;
       jointDef.maxLength = maxLength;
 
@@ -1467,7 +1507,7 @@ void CompoundObject::defineRope(
       // Define joint between last segment and ending fastening body 
       jointDef.bodyA = ropeBodies[numOfSegments - 1];
       jointDef.bodyB = bodyB;
-      jointDef.localAnchorA.Set(-segmentLength / 2.0f, 0.0f);
+      jointDef.localAnchorA.Set(segmentLength / 2.0f, 0.0f);
       jointDef.localAnchorB.Set(jointNode.attribute("objectBAnchorX").as_float(), jointNode.attribute("objectBAnchorY").as_float());
       jointDef.collideConnected = false;
       jointDef.maxLength = maxLength;

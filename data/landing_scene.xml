@@ -12,6 +12,18 @@
     collisionMask="65534"
     width="10"
     height="10" />
+  <staticBox
+    name="ropeHolder"
+    texture="lf_position"
+    posX="200"
+    posY="200"
+    angle="0"
+    zLevel="0"
+    collisionEntity="notApplicable"
+    collisionCategory="9"
+    collisionMask="65534"
+    width="20"
+    height="20" />
   <staticPolygon
     name="grotto1"
     texture="grotto"
@@ -697,23 +709,11 @@
     height="10"
     density="1"
     friction="0" />
-  <staticBox 
-    name="ropeHolder"
-    texture="lf_position"
-    posX="200"
-    posY="200"
-    angle="0"
-    zLevel="0"
-    collisionEntity="notApplicable"
-    collisionCategory="9"
-    collisionMask="65534"
-    width="20"
-    height="20" />
   <dynamicBox
     name="wrecker"
     texture="crater_rock"
-    posX="200"
-    posY="245"
+    posX="230"
+    posY="235"
     angle="0"
     zLevel="0"
     collisionEntity="notApplicable"
@@ -723,21 +723,6 @@
     height="20"
     density="1"
     friction="0" />
-  <rope
-	name="rope1"
-	texture="concrete"
-	thickness="0.5"
-	noOfSegments="5"
-    objectAName="ropeHolder"
-    objectBName="wrecker"
-    objectAAnchorX="0"
-    objectAAnchorY="10"
-    objectBAnchorX="0"
-    objectBAnchorY="-10"
-    zLevel="0"
-    collisionEntity="notApplicable"
-    collisionCategory="33"
-    collisionMask="65534" />
   <weldJoint
     name="noJointName"
     objectAName="springWeight"
@@ -770,6 +755,38 @@
     useMotor="false"
     motorSpeed="0"
     maxMotorTorque="0" />
+  <rope
+    name="rope1"
+    objectAName="ropeHolder"
+    objectBName="wrecker"
+    objectAAnchorX="0"
+    objectAAnchorY="10"
+    objectBAnchorX="0"
+    objectBAnchorY="-10"
+    texture="concrete"
+    length="40"
+    thickness="0.5"
+    noOfSegments="5"
+    zLevel="0"
+    collisionEntity="notApplicable"
+    collisionCategory="33"
+    collisionMask="65534" />
+  <rope
+    name="noJointName"
+    objectAName="ropeHolder"
+    objectBName="notDef"
+    objectAAnchorX="-7.5913335343902872"
+    objectAAnchorY="9.0465291874247669"
+    objectBAnchorX="0"
+    objectBAnchorY="0"
+    texture="default"
+    length="20"
+    thickness="0.5"
+    noOfSegments="10"
+    zLevel="0"
+    collisionEntity="notApplicable"
+    collisionCategory="1"
+    collisionMask="65534" />
   <objectFactory
     name="asteroidField">
     <stateProperties
@@ -813,6 +830,6 @@
       state="default"
       file="C:\git\LeapfrogEditor\bin\Debug\..\..\..\leapfrog\data\leapfrog_reentry.xml"
       posX="237.00628536522629"
-      posY="136.3823543595679" />
+      posY="220" />
   </ChildCompoundObjectRef>
 </compoundObject>
