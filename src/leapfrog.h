@@ -9,7 +9,6 @@
 #include "gun.h"
 #include "collisionentity.h"
 #include "shield.h"
-#include "leapfrogparts.h"
 
 class SceneActor;
 

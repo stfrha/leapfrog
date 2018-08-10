@@ -771,22 +771,6 @@
     collisionEntity="notApplicable"
     collisionCategory="33"
     collisionMask="65534" />
-  <rope
-    name="noJointName"
-    objectAName="ropeHolder"
-    objectBName="notDef"
-    objectAAnchorX="-7.448049550172982"
-    objectAAnchorY="9.0465291874247669"
-    objectBAnchorX="0"
-    objectBAnchorY="0"
-    texture="default"
-    length="20"
-    thickness="0.5"
-    noOfSegments="10"
-    zLevel="0"
-    collisionEntity="notApplicable"
-    collisionCategory="1"
-    collisionMask="65534" />
   <objectFactory
     name="asteroidField">
     <stateProperties

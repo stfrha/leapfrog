@@ -200,7 +200,6 @@
     <ClCompile Include="..\src\shield.cpp" />
     <ClCompile Include="..\src\smokeparticle.cpp" />
     <ClCompile Include="..\src\softboundary.cpp" />
-    <ClCompile Include="..\src\static.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Box2D\Box2D\Box2D\Box2D.h" />

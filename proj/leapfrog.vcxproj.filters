@@ -201,9 +201,6 @@
     <ClCompile Include="..\src\landingactor.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\static.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\src\mainactor.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>

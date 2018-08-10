@@ -3,9 +3,7 @@
 #include "oxygine-framework.h"
 #include "Box2D/Box2D.h"
 #include "compoundinterface.h"
-#include "staticpolygon.h"
 #include "collisionentity.h"
-#include "actortodie.h"
 
 class ObjectPropertyTriggeredEvent : public oxygine::Event
 {

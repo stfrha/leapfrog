@@ -1,7 +1,5 @@
 #include "sceneactor.h"
 
-#include "static.h"
-
 using namespace oxygine;
 
 SceneActor::SceneActor(Resources& gameResources, float zoomScale) :
