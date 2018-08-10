@@ -13,8 +13,8 @@ OrbitWindow::OrbitWindow(
    Resources& gameResources,
    Actor* sceneParent,
    CompoundObject* parentObject,
-   xml_node& objectNode,
-   string& initialState) :
+   const xml_node& objectNode,
+   const string& initialState) :
    CompoundObject((SceneActor*)this)
 {
    // Set up clip window which becoms the boundary for the SceneActor

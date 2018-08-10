@@ -34,9 +34,9 @@ public:
 	OrbitSpaceScene(
       oxygine::Resources& gameResources, 
       float zoomScale,
-      std::string& backgroundTexture,
-      std::string& fileName,
-      std::string& initialState);
+      const std::string& backgroundTexture,
+      const std::string& fileName,
+      const std::string& initialState);
 
    virtual CollisionEntityTypeEnum getEntityType(void);
 

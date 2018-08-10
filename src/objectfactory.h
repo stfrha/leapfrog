@@ -54,7 +54,7 @@ private:
 
    std::vector<ObjectSpawnInstruction>  m_objectSpawnList;
    
-   void readObjectFactoryNode(pugi::xml_node& objectNode);
+   void readObjectFactoryNode(const pugi::xml_node& objectNode);
    void spawnObjects(void);
    
 public:
@@ -63,9 +63,9 @@ public:
       SceneActor* sceneParent,
       CompoundObject* parentObject,
       b2World* world,
-      pugi::xml_node& objectNode);
+      const pugi::xml_node& objectNode);
 
-   void addObjectSpawnInstruction(ObjectSpawnInstruction& inst);
+   void addObjectSpawnInstruction(const ObjectSpawnInstruction& inst);
 
    virtual CollisionEntityTypeEnum getEntityType(void);
 

@@ -8,7 +8,7 @@ PlanetActor::PlanetActor(
    Resources& gameResources,
    SceneActor* sceneParent,
    CompoundObject* parentObject,
-   xml_node& objectNode) :
+   const xml_node& objectNode) :
    CompoundObject((SceneActor*)this),
    m_gameResources(&gameResources),
    m_state(PAS_INITITAL),

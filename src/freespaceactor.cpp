@@ -10,8 +10,8 @@ using namespace oxygine;
 
 FreeSpaceActor::FreeSpaceActor(
    Resources& gameResources,
-   std::string& fileName,
-   std::string& initialState) :
+   const std::string& fileName,
+   const std::string& initialState) :
 	SceneActor(gameResources, 0.4f),
    m_inOrbitField(false),
    m_state(insertBurn),

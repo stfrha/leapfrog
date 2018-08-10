@@ -120,7 +120,7 @@ public:
       oxygine::Resources& gameResources,
       SceneActor* sceneParent,
       CompoundObject* parentObject,
-      pugi::xml_node& objectNode);
+      const pugi::xml_node& objectNode);
    void orbitEstablished(void);
    void startReentry(float relativeBurnDeviation, float deviationDistance);
    void surfaceReached(void);

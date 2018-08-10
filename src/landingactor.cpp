@@ -1,7 +1,5 @@
 #include "landingactor.h"
 
-#include "static.h"
-//#include "staticpolygon.h"
 #include "marker.h"
 #include "launchsite.h"
 #include "compoundobject.h"
@@ -13,8 +11,8 @@ using namespace std;
 
 LandingActor::LandingActor(
    Resources& gameResources,
-   string& fileName,
-   string& initialState) :
+   const string& fileName,
+   const string& initialState) :
    SceneActor(gameResources, 0.4f)
 {
    m_contactListener.InitContactListner(this);

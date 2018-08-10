@@ -35,7 +35,7 @@ public:
       int m_lifetime,
       bool bouncy);
 
-   CollisionEntityTypeEnum Bullet::getEntityType(void);
+   CollisionEntityTypeEnum getEntityType(void);
 
    //virtual void killActor(void);
 

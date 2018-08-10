@@ -37,9 +37,9 @@ private:
 
 public:
 	OrbitScene(
-      oxygine::Resources& gameResources, 
-      std::string& fileName,
-      std::string& initialState);
+      oxygine::Resources& gameResources,
+      const std::string& fileName,
+      const std::string& initialState);
 
    virtual CollisionEntityTypeEnum getEntityType(void);
 

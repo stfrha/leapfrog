@@ -14,8 +14,8 @@ public:
       oxygine::Resources& gameResources, 
       oxygine::Actor* sceneParent,
       CompoundObject* parentObject,
-      pugi::xml_node& objectNode,
-      std::string& initialState);
+      const pugi::xml_node& objectNode,
+	  const std::string& initialState);
 
    virtual CollisionEntityTypeEnum getEntityType(void);
 

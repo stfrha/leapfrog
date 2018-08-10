@@ -253,8 +253,8 @@ void CompoundObject::initCompoundObjectTop(
    CompoundObject* parentObject,
    b2World* world,
    const Vector2& pos, 
-   string& defXmlFileName,
-   string& initialState)
+   const string& defXmlFileName,
+   const string& initialState)
 {
    readDefinitionXmlFile(gameResources, m_sceneActor, parentObject, world, pos, defXmlFileName, initialState);
 }
@@ -331,14 +331,18 @@ CompoundObject* CompoundObject::readDefinitionXmlFile(
    CompoundObject* parentObject,
    b2World* world,
    const Vector2& pos,
-   string& fileName,
-   string& initialState)
+   const string& fileName,
+   const string& initialState)
 {
    m_parentObject = parentObject;
 
+   ox::file::buffer bf;
+   ox::file::read(fileName.c_str(), bf);
+
    xml_document doc;
 
-   xml_parse_result result = doc.load_file(fileName.c_str());
+//   xml_parse_result result = doc.load_file(fileName.c_str());
+   xml_parse_result result = doc.load_buffer(&bf.data[0], bf.size());
 
    xml_node root = doc.child("compoundObject");
 
@@ -352,7 +356,7 @@ CompoundObject* CompoundObject::initCompoundObject(
    b2World* world,
    const Vector2& pos,
    pugi::xml_node& root,
-   string& initialState)
+   const string& initialState)
 {
    // Decode the type string to create the correct type of object
    // but only store the pointer to the CompoundObject
@@ -426,7 +430,7 @@ bool CompoundObject::initCompoundObjectParts(
    b2World* world,
    const Vector2& pos,
    pugi::xml_node& root,
-   string& initialState)
+   const string& initialState)
 {
 
    for (auto it = root.children("spriteBox").begin();
@@ -1527,11 +1531,11 @@ void CompoundObject::defineChildObject(
    b2World* world,
    const Vector2& pos, 
    xml_node& objectNode,
-   string& initialState)
+   const string& initialState)
 {
    // Iterate the stateProperties of the node, looking for state attributes
    // that matches the supplied initialState. If initialState is empty,
-   // the first statePropertý is used
+   // the first statePropertï¿½ is used
    xml_node* stateNode = NULL;
 
    for (auto it = objectNode.children("stateProperties").begin(); it != objectNode.children("stateProperties").end(); ++it)
@@ -1571,11 +1575,11 @@ void CompoundObject::defineChildObject(
    co->setName(objectNode.attribute("name").as_string());
 }
 
-bool CompoundObject::getStateNode(xml_node& objectNode, string& initialState, xml_node& stateNode)
+bool CompoundObject::getStateNode(xml_node& objectNode, const string& initialState, xml_node& stateNode)
 {
    // Iterate the stateProperties of the node, looking for state attributes
    // that matches the supplied initialState. If initialState is empty,
-   // the first statePropertý is used
+   // the first statePropertï¿½ is used
 
    for (auto it = objectNode.children("stateProperties").begin(); it != objectNode.children("stateProperties").end(); ++it)
    {
@@ -1612,7 +1616,7 @@ bool CompoundObject::getStateNode(xml_node& objectNode, string& initialState, xm
 //
 //   // Iterate the stateProperties of the node, looking for state attributes
 //   // that matches the supplied initialState. If initialState is empty,
-//   // the first statePropertý is used
+//   // the first statePropertï¿½ is used
 //   xml_node* stateNode = NULL;
 //
 //   for (auto it = objectNode.children("stateProperties").begin(); it != objectNode.children("stateProperties").end(); ++it)

@@ -169,7 +169,7 @@
     <ClCompile Include="..\src\blastparticle.cpp" />
     <ClCompile Include="..\src\Box2DDebugDraw.cpp" />
     <ClCompile Include="..\src\bullet.cpp" />
-    <ClCompile Include="..\src\compoundinterface .cpp" />
+    <ClCompile Include="..\src\compoundinterface.cpp" />
     <ClCompile Include="..\src\compoundobject.cpp" />
     <ClCompile Include="..\src\flameemitter.cpp" />
     <ClCompile Include="..\src\flameparticle.cpp" />

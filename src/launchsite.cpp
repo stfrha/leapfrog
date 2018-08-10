@@ -116,7 +116,9 @@ void LaunchSite::doUpdate(const UpdateState &us)
 {
    switch (m_state)
    {
-   case lfLanded:
+       case idle:
+      break;
+   case leapfrogLanded:
       m_grabberJoint->EnableMotor(true);
       m_grabberJoint->SetMaxMotorForce(100000.0);
       m_grabberJoint->SetMotorSpeed(6.0);

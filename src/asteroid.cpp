@@ -136,6 +136,10 @@ Asteroid::Asteroid(
       maxImp = 10000.0f;
       maxAng = 20000.0f;
       break;
+   case ASE_AUTO:
+      maxImp = 10000.0f;
+           maxAng = 20000.0f;
+           break;
    }
 
    // Randomise value between 0 and maxImp
@@ -159,7 +163,7 @@ CollisionEntityTypeEnum Asteroid::getEntityType(void)
    return CET_ASTEROID;
 }
 
-void Asteroid::addAsteroidSpawnInstruction(AsteroidSpawnInstruction& inst)
+void Asteroid::addAsteroidSpawnInstruction(const AsteroidSpawnInstruction& inst)
 {
    m_asteroidSpawnList.push_back(inst);
 }
@@ -197,7 +201,7 @@ void Asteroid::hitByBullet(b2Contact* contact)
 
    if ((m_state == ASE_MIDDLE) && (m_damage >= 2))
    {
-      // Spawn three small 
+      // Spawn three small
       addAsteroidSpawnInstruction(AsteroidSpawnInstruction(3, ASE_SMALL, spawnLeftTop, spawnRightBottom));
 
       shattered = true;
@@ -362,6 +366,8 @@ float Asteroid::generateRadius(void)
       return 5.0f;
    case ASE_LARGE:
       return 10.0f;
+   case ASE_AUTO:
+       return 10.0f;
    }
 
    return 0;
@@ -377,6 +383,8 @@ int Asteroid::generateNum(void)
       return 5;
    case ASE_LARGE:
       return 5;
+   case ASE_AUTO:
+       return 5;
    }
 
    return 4;

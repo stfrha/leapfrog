@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <resources>
-	<set path = "..\data\images" />
+	<set path = "images" />
 	<atlas>
 		<image file="anim.png" cols = "8" />
 		<image file="button.png"/>		
@@ -74,6 +74,6 @@
 	<atlas clamp2edge="false"> 
 		<image file="concrete.png" trim="false" extend="false"/>
 	</atlas>		
-	<set path = "..\data\fonts" />
+	<set path = "fonts" />
 	<font file="main.fnt" />	
 </resources>

@@ -1,4 +1,4 @@
-#include "PhysDispConvert.h"
+#include "physdispconvert.h"
 
 using namespace oxygine;
 

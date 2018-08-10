@@ -78,7 +78,7 @@ private:
 
    std::vector<AsteroidSpawnInstruction>  m_asteroidSpawnList;
 
-   void addAsteroidSpawnInstruction(AsteroidSpawnInstruction& inst);
+   void addAsteroidSpawnInstruction(const AsteroidSpawnInstruction& inst);
    void spawnAsteroids(void);
 
 public:

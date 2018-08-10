@@ -36,7 +36,7 @@ private:
 
    std::vector<AsteroidSpawnInstruction>  m_asteroidSpawnList;
    
-   void readAsteroidFieldNode(pugi::xml_node& objectNode);
+   void readAsteroidFieldNode(const pugi::xml_node& objectNode);
    void spawnAsteroids(void);
    
 public:
@@ -45,9 +45,9 @@ public:
       SceneActor* sceneParent,
       CompoundObject* parentObject,
       b2World* world,
-      pugi::xml_node& objectNode);
+	  const pugi::xml_node& objectNode);
 
-   void addAsteroidSpawnInstruction(AsteroidSpawnInstruction& inst);
+   void addAsteroidSpawnInstruction(const AsteroidSpawnInstruction& inst);
 
    virtual CollisionEntityTypeEnum getEntityType(void);
 

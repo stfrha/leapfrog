@@ -12,9 +12,9 @@ using namespace std;
 OrbitSpaceScene::OrbitSpaceScene(
    Resources& gameResources,
    float zoomScale,
-   string& backgroundTexture,
-   string& fileName,
-   string& initialState) :
+   const string& backgroundTexture,
+   const string& fileName,
+   const string& initialState) :
 	SceneActor(gameResources, zoomScale),
    m_state(enteringOrbit),
    m_stateStartTime(0)

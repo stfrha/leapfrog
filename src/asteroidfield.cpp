@@ -11,7 +11,7 @@ AsteroidField::AsteroidField(
    SceneActor* sceneParent,
    CompoundObject* parentObject,
    b2World* world,
-   xml_node& objectNode) :
+   const xml_node& objectNode) :
    CompoundObject(sceneParent),
    m_gameResources(&gameResources),
    m_world(world),
@@ -23,7 +23,7 @@ AsteroidField::AsteroidField(
    spawnAsteroids();
 }
 
-void AsteroidField::readAsteroidFieldNode(xml_node& objectNode)
+void AsteroidField::readAsteroidFieldNode(const xml_node& objectNode)
 {
    float posX = objectNode.attribute("posX").as_float();
    float posY = objectNode.attribute("posY").as_float();
@@ -48,7 +48,7 @@ CollisionEntityTypeEnum AsteroidField::getEntityType(void)
 
 
 
-void AsteroidField::addAsteroidSpawnInstruction(AsteroidSpawnInstruction& inst)
+void AsteroidField::addAsteroidSpawnInstruction(const AsteroidSpawnInstruction& inst)
 {
    m_asteroidSpawnList.push_back(inst);
 }

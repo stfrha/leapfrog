@@ -812,7 +812,7 @@
     name="leapfrog1">
     <stateProperties
       state="default"
-      file="C:\git\LeapfrogEditor\bin\Debug\..\..\..\leapfrog\data\leapfrog_reentry.xml"
+      file="leapfrog_reentry.xml"
       posX="237.00628536522629"
       posY="220" />
   </ChildCompoundObjectRef>

@@ -15,7 +15,7 @@ using namespace std;
 MainActor::MainActor()
 {
 	//load xml file with resources definition
-	m_gameResources.loadXML("..\\data\\res.xml");
+	m_gameResources.loadXML("res.xml");
 
 	setSize(getStage()->getSize());
 
@@ -38,7 +38,7 @@ void MainActor::startScene(SceneTypeEnum scene)
    while (actor)
    {
       spActor next = actor->getNextSibling();
-      if (actor != NULL)
+      if (actor.get() != NULL)
       {
    	   actor->detach();
       }

@@ -231,7 +231,7 @@ private:
       b2World* world,
       const oxygine::Vector2& pos, 
       pugi::xml_node& objectNode,
-      std::string& initialState);
+      const std::string& initialState);
 
    void defineWeldJoint(
       b2World* world, 
@@ -249,7 +249,7 @@ private:
 
    virtual void setPropertyImpl(int propId, float value);
 
-   bool CompoundObject::getStateNode(pugi::xml_node& objectNode, std::string& initialState, pugi::xml_node& stateNode);
+   bool getStateNode(pugi::xml_node& objectNode, const std::string& initialState, pugi::xml_node& stateNode);
 
 public:
    // Property values are protected within the ObjectProperty type
@@ -266,8 +266,8 @@ public:
       CompoundObject* parentObject,
 	   b2World* world,
 	   const oxygine::Vector2& pos,
-	   std::string& defXmlFileName,
-      std::string& initialState);
+	   const std::string& defXmlFileName,
+	   const std::string& initialState);
 
    CompoundObject* readDefinitionXmlFile(
       oxygine::Resources& gameResources,
@@ -275,8 +275,8 @@ public:
       CompoundObject* parentObject,
       b2World* world,
       const oxygine::Vector2& pos,
-      std::string& fileName,
-      std::string& initialState);
+	  const std::string& fileName,
+	  const std::string& initialState);
 
    CompoundObject* initCompoundObject(
       oxygine::Resources& gameResources,
@@ -285,7 +285,7 @@ public:
       b2World* world,
       const oxygine::Vector2& pos,
       pugi::xml_node& objectNode,
-      std::string& initialState);
+	  const std::string& initialState);
 
    bool initCompoundObjectParts(
       oxygine::Resources& gameResources,
@@ -294,7 +294,7 @@ public:
       b2World* world,
       const oxygine::Vector2& pos,
       pugi::xml_node& objectNode,
-      std::string& initialState);
+      const std::string& initialState);
 
    virtual CollisionEntityTypeEnum getEntityType(void);
 

@@ -13,8 +13,8 @@ using namespace oxygine;
 
 OrbitScene::OrbitScene(
    Resources& gameResources,
-   std::string& fileName,
-   std::string& initialState) :
+   const std::string& fileName,
+   const std::string& initialState) :
    CompoundObject((SceneActor*)this),
    m_state(enteringOrbit)
 {

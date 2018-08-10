@@ -1,6 +1,6 @@
 #include "freespaceactor.h"
 #include "asteroid.h"
-#include "ObjectFactory.h"
+#include "objectfactory.h"
 
 using namespace oxygine;
 using namespace pugi;
@@ -11,7 +11,7 @@ ObjectFactory::ObjectFactory(
    SceneActor* sceneParent,
    CompoundObject* parentObject,
    b2World* world,
-   xml_node& objectNode) :
+   const xml_node& objectNode) :
    CompoundObject(sceneParent),
    m_gameResources(&gameResources),
    m_world(world),
@@ -23,7 +23,7 @@ ObjectFactory::ObjectFactory(
    spawnObjects();
 }
 
-void ObjectFactory::readObjectFactoryNode(xml_node& objectNode)
+void ObjectFactory::readObjectFactoryNode(const xml_node& objectNode)
 {
    float posX = objectNode.attribute("posX").as_float();
    float posY = objectNode.attribute("posY").as_float();
@@ -54,7 +54,7 @@ CollisionEntityTypeEnum ObjectFactory::getEntityType(void)
 
 
 
-void ObjectFactory::addObjectSpawnInstruction(ObjectSpawnInstruction& inst)
+void ObjectFactory::addObjectSpawnInstruction(const ObjectSpawnInstruction& inst)
 {
    m_objectSpawnList.push_back(inst);
 }

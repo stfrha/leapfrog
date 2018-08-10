@@ -1,4 +1,4 @@
-#include "FlameSmokeParticle.h"
+#include "flamesmokeparticle.h"
 #include "smokeparticle.h"
 
 using namespace oxygine;

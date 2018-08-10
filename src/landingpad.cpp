@@ -1,5 +1,5 @@
 
-#include "LandingPad.h"
+#include "landingpad.h"
 
 #include "sceneactor.h"
 

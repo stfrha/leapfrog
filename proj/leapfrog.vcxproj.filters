@@ -267,9 +267,6 @@
     <ClCompile Include="..\src\launchsite.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\compoundinterface .cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\src\asteroidfield.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -292,6 +289,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\src\objectfactory.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\compoundinterface.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
