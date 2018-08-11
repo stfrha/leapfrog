@@ -23,8 +23,9 @@ public:
       touchDown            // Reentry is complete
    };
 
-private:
    OrbitSpaceScene * m_space;
+
+private:
    PlanetActor* m_planet;
    LeapFrog* m_leapfrog;
    States m_state;

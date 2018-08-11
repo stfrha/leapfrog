@@ -41,6 +41,7 @@ LandingActor::LandingActor(
    m_launchSite = static_cast<LaunchSite*>(getObject("launchSite1"));
    m_launchSite->addEventListener(LaunchSiteLeapfrogLandedEvent::EVENT, CLOSURE(this, &LandingActor::leapfrogLandedOnLaunchSiteHandler));
    m_launchSite->addEventListener(LaunchSequenceCompleteEvent::EVENT, CLOSURE(this, &LandingActor::transitToDeepSpace));
+
 }
 
 CollisionEntityTypeEnum LandingActor::getEntityType(void)

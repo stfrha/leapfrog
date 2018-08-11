@@ -51,6 +51,7 @@ FreeSpaceActor::FreeSpaceActor(
 
    m_rightBoundary = new SoftBoundary(gameResources, m_world, RectF(1075.0f, 250.0f, 800.0f, 150.0f), RDE_LEFT);
    addChild(m_rightBoundary);
+
 }
 
 CollisionEntityTypeEnum FreeSpaceActor::getEntityType(void)

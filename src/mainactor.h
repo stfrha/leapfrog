@@ -4,7 +4,7 @@
 #include "landingactor.h"
 #include "freespaceactor.h"
 #include "orbitscene.h"
-#include "compoundobject.h"
+#include "sceneactor.h"
 
 //DECLARE_SMART is helper, it does forward declaration and declares intrusive_ptr typedef for your class
 DECLARE_SMART(MainActor, spMainActor)
@@ -19,12 +19,24 @@ private:
 
    spBox2DDraw m_debugDraw;
 
-   CompoundObject* m_sceneObject;
+   SceneActor* m_sceneObject;
 
    void transitToDeepSpaceListner(oxygine::Event *ev);
    void transitToOrbitListner(oxygine::Event *ev);
    void landingCompleteListner(oxygine::Event *ev);
 
+   void turnLeftButtonDownHandler(Event* event);
+   void turnLeftButtonUpHandler(Event* event);
+   void turnRightButtonDownHandler(Event* event);
+   void turnRightButtonUpHandler(Event* event);
+   void boosterButtonDownHandler(Event* event);
+   void boosterButtonUpHandler(Event* event);
+   void fireButtonDownHandler(Event* event);
+   void fireButtonUpHandler(Event* event);
+   void zoomInButtonDownHandler(Event* event);
+   void zoomInButtonUpHandler(Event* event);
+   void zoomOutButtonDownHandler(Event* event);
+   void zoomOutButtonUpHandler(Event* event);
 
 public:
 
@@ -61,7 +73,7 @@ public:
 
 protected:
    void doUpdate(const UpdateState& us);
-
+   void createButtonOverlay(void);
 
 };
 

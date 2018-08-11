@@ -52,6 +52,13 @@ public:
 	SceneActor(oxygine::Resources& gameResources, float zoomScale);
    ~SceneActor();
 
+   bool m_turnLeftPressed;
+   bool m_turnRightPressed;
+   bool m_boosterPressed;
+   bool m_firePressed;
+   bool m_zoomInPressed;
+   bool m_zoomOutPressed;
+
    b2World* GetWorld(void);
    Resources* getResources(void);
 
@@ -69,5 +76,4 @@ protected:
 
    void sweepKillList(void);
 
-   void createLeapFrog(oxygine::Resources& gameResources);
 };

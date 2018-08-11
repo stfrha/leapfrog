@@ -11,7 +11,14 @@ SceneActor::SceneActor(Resources& gameResources, float zoomScale) :
    m_physToStageScale(1.0f),
    m_panorateMode(PME_CENTER),
    m_externalControl(false),
-   m_sceneType(STE_LANDING) 
+   m_sceneType(STE_LANDING),
+   m_turnLeftPressed(false),
+   m_turnRightPressed(false),
+   m_boosterPressed(false),
+   m_firePressed(false),
+   m_zoomInPressed(false),
+   m_zoomOutPressed(false)
+
 {
 	Point size = Point(1000, 500);
 	setSize(size);
@@ -78,11 +85,11 @@ void SceneActor::doUpdate(const UpdateState& us)
 
 	const Uint8* data = SDL_GetKeyboardState(0);
 	
-	if (data[SDL_SCANCODE_KP_PLUS])
+	if (data[SDL_SCANCODE_KP_PLUS] || m_zoomInPressed)
 	{
 		m_zoomScale *= 1.1f;
 	}
-	else if (data[SDL_SCANCODE_KP_MINUS])
+	else if (data[SDL_SCANCODE_KP_MINUS] || m_zoomOutPressed)
 	{
 		m_zoomScale *= 0.9f;
 	}
@@ -91,7 +98,7 @@ void SceneActor::doUpdate(const UpdateState& us)
 
    if (!m_externalControl)
    {
-      if (data[SDL_SCANCODE_W])
+      if (data[SDL_SCANCODE_W] || m_boosterPressed)
       {
          m_leapfrog->fireMainBooster(true);
       }
@@ -100,11 +107,11 @@ void SceneActor::doUpdate(const UpdateState& us)
          m_leapfrog->fireMainBooster(false);
       }
 
-      if (data[SDL_SCANCODE_A])
+      if (data[SDL_SCANCODE_A] || m_turnLeftPressed)
       {
          m_leapfrog->fireSteeringBooster(-1);
       }
-      else if (data[SDL_SCANCODE_D])
+      else if (data[SDL_SCANCODE_D] || m_turnRightPressed)
       {
          m_leapfrog->fireSteeringBooster(1);
       }
@@ -114,7 +121,7 @@ void SceneActor::doUpdate(const UpdateState& us)
       }
    }
 
-   if (data[SDL_SCANCODE_RETURN])
+   if (data[SDL_SCANCODE_RETURN] || m_firePressed)
    {
       m_leapfrog->fireGun(true);
    }
@@ -245,13 +252,4 @@ void SceneActor::sweepKillList(void)
    m_deathList.clear();
 }
 
-void SceneActor::createLeapFrog(Resources& gameResources)
-{
-   //spLeapFrog leapFrog = new LeapFrog(gameResources, this, m_world, (Actor*)this, getSize() / 2.0f);
 
-   //addChild(leapFrog);
-   //m_leapfrog = leapFrog;
-
-   //// Here we should attach the shield to get it above the leapfrog
-   //addChild(m_leapfrog->m_shield);
-}
