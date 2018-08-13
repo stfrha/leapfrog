@@ -21,22 +21,34 @@ private:
 
    SceneActor* m_sceneObject;
 
+   oxygine::Rect m_turnRightButtonRect;
+   oxygine::Rect m_turnLeftButtonRect;
+   oxygine::Rect m_boosterButtonRect;
+   oxygine::Rect m_fireButtonRect;
+   oxygine::Rect m_zoomInButtonRect;
+   oxygine::Rect m_zoomOutButtonRect;
+
    void transitToDeepSpaceListner(oxygine::Event *ev);
    void transitToOrbitListner(oxygine::Event *ev);
    void landingCompleteListner(oxygine::Event *ev);
 
-   void turnLeftButtonDownHandler(Event* event);
-   void turnLeftButtonUpHandler(Event* event);
-   void turnRightButtonDownHandler(Event* event);
-   void turnRightButtonUpHandler(Event* event);
-   void boosterButtonDownHandler(Event* event);
-   void boosterButtonUpHandler(Event* event);
-   void fireButtonDownHandler(Event* event);
-   void fireButtonUpHandler(Event* event);
-   void zoomInButtonDownHandler(Event* event);
-   void zoomInButtonUpHandler(Event* event);
-   void zoomOutButtonDownHandler(Event* event);
-   void zoomOutButtonUpHandler(Event* event);
+   //void calculateButtonGeometrics(void);
+   //void turnLeftButtonDownHandler(Event* event);
+   //void turnLeftButtonUpHandler(Event* event);
+   //void turnRightButtonDownHandler(Event* event);
+   //void turnRightButtonUpHandler(Event* event);
+   //void boosterButtonDownHandler(Event* event);
+   //void boosterButtonUpHandler(Event* event);
+   //void fireButtonDownHandler(Event* event);
+   //void fireButtonUpHandler(Event* event);
+   //void zoomInButtonDownHandler(Event* event);
+   //void zoomInButtonUpHandler(Event* event);
+   //void zoomOutButtonDownHandler(Event* event);
+   //void zoomOutButtonUpHandler(Event* event);
+
+   void sceneDownHandler(Event* event);
+   void sceneUpHandler(Event* event);
+   void sceneMoveHandler(Event* event);
 
 public:
 

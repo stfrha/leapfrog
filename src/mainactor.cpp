@@ -14,14 +14,21 @@ using namespace std;
 
 MainActor::MainActor()
 {
+
+
 	//load xml file with resources definition
 	m_gameResources.loadXML("res.xml");
 
 	setSize(getStage()->getSize());
 
    startScene(STE_LANDING);
-//   startScene(STE_FREE_SPACE);
-//   startScene(STE_ORBIT);
+   //   startScene(STE_FREE_SPACE);
+   //   startScene(STE_ORBIT);
+
+   addTouchDownListener(CLOSURE(this, &MainActor::sceneDownHandler));
+   addTouchUpListener(CLOSURE(this, &MainActor::sceneUpHandler));
+//   addEventListener(TouchEvent::MOVE, CLOSURE(this, &MainActor::sceneMoveHandler));
+
 }
 
 MainActor::~MainActor()
@@ -198,127 +205,209 @@ void MainActor::doUpdate(const UpdateState& us)
 
 void MainActor::createButtonOverlay(void)
 {
-   // Each button is a tenth of the screen height
-   float d = (getStage()->getSize()).y / 10.0f;
+   float division = 8.0f;
+   float buttonWidth = (getStage()->getSize()).y / division;
+   float halfButtonWidth = buttonWidth / 2;
+   float bottomRow = (getStage()->getSize()).y - buttonWidth;
+   float aboveBottomRow = bottomRow - buttonWidth;
+   float colLast = (getStage()->getSize()).x - buttonWidth;
+   float colSecondLast = colLast - buttonWidth;
+
+   // Caluclate button geometrics
+   m_turnLeftButtonRect = Rect(0, aboveBottomRow, buttonWidth, buttonWidth);
+   m_turnRightButtonRect = Rect(buttonWidth, bottomRow, buttonWidth, buttonWidth);
+   m_boosterButtonRect = Rect(colLast, aboveBottomRow, buttonWidth, buttonWidth);
+   m_fireButtonRect = Rect(colSecondLast, bottomRow, buttonWidth, buttonWidth);
+   m_zoomInButtonRect = Rect(colSecondLast - halfButtonWidth, 0, buttonWidth, buttonWidth);
+   m_zoomOutButtonRect = Rect(colLast, 0, buttonWidth, buttonWidth);
 
    // Define sprites
    spSprite turnLeftButton = new Sprite();
    turnLeftButton->setResAnim(m_gameResources.getResAnim("button"));
-   turnLeftButton->setSize(d, d);
-   turnLeftButton->setPosition(d / 2, (getStage()->getSize()).y - d - d - d + d / 2);
-   turnLeftButton->setAnchor(0.5f, 0.5f);
+   turnLeftButton->setSize(buttonWidth, buttonWidth);
+   turnLeftButton->setPosition(m_turnLeftButtonRect.getLeftTop());
+   turnLeftButton->setAnchor(0.0f, 0.0f);
+   turnLeftButton->setTouchEnabled(false);
    turnLeftButton->attachTo(this);
-   turnLeftButton->setTouchEnabled(true);
-   turnLeftButton->addTouchDownListener(CLOSURE(this, &MainActor::turnLeftButtonDownHandler));
-   turnLeftButton->addTouchUpListener(CLOSURE(this, &MainActor::turnLeftButtonUpHandler));
 
    spSprite turnRightButton = new Sprite();
    turnRightButton->setResAnim(m_gameResources.getResAnim("button"));
-   turnRightButton->setSize(d, d);
-   turnRightButton->setPosition(d / 2 + d / 2, (getStage()->getSize()).y - d + d / 2);
-   turnRightButton->setAnchor(0.5f, 0.5f);
+   turnRightButton->setSize(buttonWidth, buttonWidth);
+   turnRightButton->setPosition(m_turnRightButtonRect.getLeftTop());
+   turnRightButton->setAnchor(0.0f, 0.0f);
+   turnRightButton->setTouchEnabled(false);
    turnRightButton->attachTo(this);
-   turnRightButton->setTouchEnabled(true);
-   turnRightButton->addTouchDownListener(CLOSURE(this, &MainActor::turnRightButtonDownHandler));
-   turnRightButton->addTouchUpListener(CLOSURE(this, &MainActor::turnRightButtonUpHandler));
-
-   spSprite thursterButton = new Sprite();
-   thursterButton->setResAnim(m_gameResources.getResAnim("button"));
-   thursterButton->setSize(d, d);
-   thursterButton->setPosition((getStage()->getSize()).x - d - d / 2 + d / 2, (getStage()->getSize()).y - d + d / 2);
-   thursterButton->setAnchor(0.5f, 0.5f);
-   thursterButton->attachTo(this);
-   thursterButton->setTouchEnabled(true);
-   thursterButton->addTouchDownListener(CLOSURE(this, &MainActor::boosterButtonDownHandler));
-   thursterButton->addTouchUpListener(CLOSURE(this, &MainActor::boosterButtonUpHandler));
 
    spSprite fireButton = new Sprite();
    fireButton->setResAnim(m_gameResources.getResAnim("button"));
-   fireButton->setSize(d, d);
-   fireButton->setPosition((getStage()->getSize()).x - d + d / 2, (getStage()->getSize()).y - d - d - d + d / 2);
-   fireButton->setAnchor(0.5f, 0.5f);
+   fireButton->setSize(buttonWidth, buttonWidth);
+   fireButton->setPosition(m_fireButtonRect.getLeftTop());
+   fireButton->setAnchor(0.0f, 0.0f);
+   fireButton->setTouchEnabled(false);
    fireButton->attachTo(this);
-   fireButton->setTouchEnabled(true);
-   fireButton->addTouchDownListener(CLOSURE(this, &MainActor::fireButtonDownHandler));
-   fireButton->addTouchUpListener(CLOSURE(this, &MainActor::fireButtonUpHandler));
+
+   spSprite thursterButton = new Sprite();
+   thursterButton->setResAnim(m_gameResources.getResAnim("button"));
+   thursterButton->setSize(buttonWidth, buttonWidth);
+   thursterButton->setPosition(m_boosterButtonRect.getLeftTop());
+   thursterButton->setAnchor(0.0f, 0.0f);
+   thursterButton->setTouchEnabled(false);
+   thursterButton->attachTo(this);
 
    spSprite zoomOutButton = new Sprite();
    zoomOutButton->setResAnim(m_gameResources.getResAnim("button"));
-   zoomOutButton->setSize(d, d);
-   zoomOutButton->setPosition((getStage()->getSize()).x - d - d - d / 2 + d / 2, d / 2);
-   zoomOutButton->setAnchor(0.5f, 0.5f);
+   zoomOutButton->setSize(buttonWidth, buttonWidth);
+   zoomOutButton->setPosition(m_zoomOutButtonRect.getLeftTop());
+   zoomOutButton->setAnchor(0.0f, 0.0f);
+   zoomOutButton->setTouchEnabled(false);
    zoomOutButton->attachTo(this);
-   zoomOutButton->setTouchEnabled(true);
-   zoomOutButton->addTouchDownListener(CLOSURE(this, &MainActor::zoomOutButtonDownHandler));
-   zoomOutButton->addTouchUpListener(CLOSURE(this, &MainActor::zoomOutButtonUpHandler));
 
    spSprite zoomInButton = new Sprite();
    zoomInButton->setResAnim(m_gameResources.getResAnim("button"));
-   zoomInButton->setSize(d, d);
-   zoomInButton->setPosition((getStage()->getSize()).x - d + d / 2, d / 2);
-   zoomInButton->setAnchor(0.5f, 0.5f);
+   zoomInButton->setSize(buttonWidth, buttonWidth);
+   zoomInButton->setPosition(m_zoomInButtonRect.getLeftTop());
+   zoomInButton->setAnchor(0.0f, 0.0f);
+   zoomInButton->setTouchEnabled(false);
    zoomInButton->attachTo(this);
-   zoomInButton->setTouchEnabled(true);
-   zoomInButton->addTouchDownListener(CLOSURE(this, &MainActor::zoomInButtonDownHandler));
-   zoomInButton->addTouchUpListener(CLOSURE(this, &MainActor::zoomInButtonUpHandler));
 }
 
-void MainActor::turnLeftButtonDownHandler(Event* event)
+//void MainActor::turnLeftButtonDownHandler(Event* event)
+//{
+//   m_sceneObject->m_turnLeftPressed = true;
+//}
+//
+//void MainActor::turnLeftButtonUpHandler(Event* event)
+//{
+//   m_sceneObject->m_turnLeftPressed = false;
+//}
+//
+//void MainActor::turnRightButtonDownHandler(Event* event)
+//{
+//   m_sceneObject->m_turnRightPressed = true;
+//}
+//
+//void MainActor::turnRightButtonUpHandler(Event* event)
+//{
+//   m_sceneObject->m_turnRightPressed = false;
+//}
+//
+//void MainActor::boosterButtonDownHandler(Event* event)
+//{
+//   m_sceneObject->m_boosterPressed = true;
+//}
+//
+//void MainActor::boosterButtonUpHandler(Event* event)
+//{
+//   m_sceneObject->m_boosterPressed = false;
+//}
+//
+//void MainActor::fireButtonDownHandler(Event* event)
+//{
+//   m_sceneObject->m_firePressed = true;
+//}
+//
+//void MainActor::fireButtonUpHandler(Event* event)
+//{
+//   m_sceneObject->m_firePressed = false;
+//}
+//
+//void MainActor::zoomInButtonDownHandler(Event* event)
+//{
+//   m_sceneObject->m_zoomInPressed = true;
+//}
+//
+//void MainActor::zoomInButtonUpHandler(Event* event)
+//{
+//   m_sceneObject->m_zoomInPressed = false;
+//}
+//
+//void MainActor::zoomOutButtonDownHandler(Event* event)
+//{
+//   m_sceneObject->m_zoomOutPressed = true;
+//}
+//
+//void MainActor::zoomOutButtonUpHandler(Event* event)
+//{
+//   m_sceneObject->m_zoomOutPressed = false;
+//}
+
+void MainActor::sceneDownHandler(Event* event)
 {
-   m_sceneObject->m_turnLeftPressed = true;
+   TouchEvent* te = (TouchEvent*)event;
+   Vector2 v = te->localPosition;
+
+   logs::messageln("Down with index: %d", te->index);
+
+   Point p = Point((int)v.x, (int)v.y);
+
+   if (m_turnLeftButtonRect.pointIn(p))
+   {
+      m_sceneObject->m_turnLeftPressed = true;
+   }
+   else if (m_turnRightButtonRect.pointIn(p))
+   {
+      m_sceneObject->m_turnRightPressed = true;
+   }
+   else if (m_boosterButtonRect.pointIn(p))
+   {
+      m_sceneObject->m_boosterPressed = true;
+   }
+   else if (m_fireButtonRect.pointIn(p))
+   {
+      m_sceneObject->m_firePressed = true;
+   }
+   else if (m_zoomInButtonRect.pointIn(p))
+   {
+      m_sceneObject->m_zoomInPressed = true;
+   }
+   else if (m_zoomOutButtonRect.pointIn(p))
+   {
+      m_sceneObject->m_zoomOutPressed = true;
+   }
 }
 
-void MainActor::turnLeftButtonUpHandler(Event* event)
+
+void MainActor::sceneUpHandler(Event* event)
 {
-   m_sceneObject->m_turnLeftPressed = false;
+   TouchEvent* te = (TouchEvent*)event;
+   Vector2 v = te->localPosition;
+
+   logs::messageln("Up with index: %d", te->index);
+
+   Point p = Point((int)v.x, (int)v.y);
+
+   if (m_turnLeftButtonRect.pointIn(p))
+   {
+      m_sceneObject->m_turnLeftPressed = false;
+   }
+   else if (m_turnRightButtonRect.pointIn(p))
+   {
+      m_sceneObject->m_turnRightPressed = false;
+   }
+   else if (m_boosterButtonRect.pointIn(p))
+   {
+      m_sceneObject->m_boosterPressed = false;
+   }
+   else if (m_fireButtonRect.pointIn(p))
+   {
+      m_sceneObject->m_firePressed = false;
+   }
+   else if (m_zoomInButtonRect.pointIn(p))
+   {
+      m_sceneObject->m_zoomInPressed = false;
+   }
+   else if (m_zoomOutButtonRect.pointIn(p))
+   {
+      m_sceneObject->m_zoomOutPressed = false;
+   }
 }
 
-void MainActor::turnRightButtonDownHandler(Event* event)
+void MainActor::sceneMoveHandler(Event* event)
 {
-   m_sceneObject->m_turnRightPressed = true;
+   TouchEvent* te = (TouchEvent*)event;
+   Vector2 v = te->localPosition;
+
+   logs::messageln("Move with index: %d", te->index);
+
 }
 
-void MainActor::turnRightButtonUpHandler(Event* event)
-{
-   m_sceneObject->m_turnRightPressed = false;
-}
-
-void MainActor::boosterButtonDownHandler(Event* event)
-{
-   m_sceneObject->m_boosterPressed = true;
-}
-
-void MainActor::boosterButtonUpHandler(Event* event)
-{
-   m_sceneObject->m_boosterPressed = false;
-}
-
-void MainActor::fireButtonDownHandler(Event* event)
-{
-   m_sceneObject->m_firePressed = true;
-}
-
-void MainActor::fireButtonUpHandler(Event* event)
-{
-   m_sceneObject->m_firePressed = false;
-}
-
-void MainActor::zoomInButtonDownHandler(Event* event)
-{
-   m_sceneObject->m_zoomInPressed = true;
-}
-
-void MainActor::zoomInButtonUpHandler(Event* event)
-{
-   m_sceneObject->m_zoomInPressed = false;
-}
-
-void MainActor::zoomOutButtonDownHandler(Event* event)
-{
-   m_sceneObject->m_zoomOutPressed = true;
-}
-
-void MainActor::zoomOutButtonUpHandler(Event* event)
-{
-   m_sceneObject->m_zoomOutPressed = false;
-}

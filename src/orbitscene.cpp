@@ -49,7 +49,7 @@ void OrbitScene::doUpdate(const oxygine::UpdateState &us)
       break;
    case waitForUserBreak:
       
-      if (data[SDL_SCANCODE_W])
+      if (data[SDL_SCANCODE_W] || m_space->m_boosterPressed)
       {
          m_planet->startBurn();
          m_leapfrog->fireMainBooster(true, true);
@@ -59,7 +59,7 @@ void OrbitScene::doUpdate(const oxygine::UpdateState &us)
       break;
    case breaking:
       // TODO: Add timeout for if burn is too long, it should fall regardless
-      if (!data[SDL_SCANCODE_W])
+      if (!data[SDL_SCANCODE_W] && !m_space->m_boosterPressed)
       {
          m_planet->stopBurn();
          m_stateChangeTime = us.time;

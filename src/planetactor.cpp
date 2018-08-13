@@ -65,7 +65,16 @@ PlanetActor::PlanetActor(
    
    setAnchor(0.5f, 0.5f);
    setPosition(objectNode.attribute("posX").as_float(), objectNode.attribute("posY").as_float());
-   setScale(objectNode.attribute("scale").as_float());
+
+   // The scale set in xml-file (0.3) was empirically found
+   // for the size of the screen at the time. 
+   // For another screen size this does not apply.
+   // The screen size at the time was 640. So lets
+   // set scale with this relationship
+   float height = getStage()->getSize().y;
+   float scale = objectNode.attribute("scale").as_float() / 640.0f * height;
+   setScale(scale);
+
    attachTo(sceneParent);
 
    m_positionIndicator = new Sprite();
