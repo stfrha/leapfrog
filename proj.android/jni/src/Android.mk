@@ -5,11 +5,8 @@ LOCAL_MODULE := main
 
 LOCAL_C_INCLUDES += $(LOCAL_PATH)/../../../../Box2D/Box2D/
 
-
 #SDK_ROOT points to folder with SDL and oxygine-framework
 LOCAL_SRC_FILES := ../../../..//SDL/src/main/android/SDL_android_main.c
-
-#LOCAL_SRC_FILES += ../../../src/example.cpp ../../../src/main.cpp 
 
 LOCAL_SRC_FILES += ../../../../Box2D/Box2D/Box2D/Collision/b2BroadPhase.cpp
 LOCAL_SRC_FILES += ../../../../Box2D/Box2D/Box2D/Collision/b2CollideCircle.cpp
@@ -94,6 +91,7 @@ LOCAL_SRC_FILES += ../../../src/shield.cpp
 LOCAL_SRC_FILES += ../../../src/smokeparticle.cpp
 LOCAL_SRC_FILES += ../../../src/softboundary.cpp
 LOCAL_SRC_FILES += ../../../src/main.cpp
+
 
 LOCAL_STATIC_LIBRARIES := oxygine-framework_static
 LOCAL_SHARED_LIBRARIES := SDL2
