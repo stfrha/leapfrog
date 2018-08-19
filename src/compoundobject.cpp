@@ -433,6 +433,24 @@ bool CompoundObject::initCompoundObjectParts(
    const string& initialState)
 {
 
+   for (auto it = root.children("ChildCompoundObjectRef").begin();
+      it != root.children("ChildCompoundObjectRef").end();
+      ++it)
+   {
+      defineChildObject(gameResources, sceneParent, this, world, pos, *it, initialState);
+   }
+
+   for (auto it = root.children("CompoundObject").begin();
+      it != root.children("CompoundObject").end();
+      ++it)
+   {
+      CompoundObject* co = CompoundObject::initCompoundObject(gameResources, sceneParent, this, world, pos, *it, initialState);
+
+      m_children.push_back(co);
+
+      co->setName(it->attribute("name").as_string());
+   }
+
    for (auto it = root.children("spriteBox").begin();
       it != root.children("spriteBox").end();
       ++it)
@@ -517,24 +535,6 @@ bool CompoundObject::initCompoundObjectParts(
       ++it)
    {
       defineRope(gameResources, sceneParent, this, world, pos, *it);
-   }
-
-   for (auto it = root.children("ChildCompoundObjectRef").begin();
-      it != root.children("ChildCompoundObjectRef").end();
-      ++it)
-   {
-      defineChildObject(gameResources, sceneParent, this, world, pos, *it, initialState);
-   }
-
-   for (auto it = root.children("CompoundObject").begin();
-      it != root.children("CompoundObject").end();
-      ++it)
-   {
-      CompoundObject* co = CompoundObject::initCompoundObject(gameResources, sceneParent, this, world, pos, *it, initialState);
-
-      m_children.push_back(co);
-
-      co->setName(it->attribute("name").as_string());
    }
 
    for (auto it = root.children("weldJoint").begin();
@@ -897,6 +897,92 @@ void CompoundObject::defineStaticPolygon(
 
    object->attachTo(newCo);
 
+
+   // Here we should attach border to all edges of the polygon
+   int edgeNum = vertices.size();
+
+   // Polygon of a body shape is physical coordinates, i.e. in meters
+   for (int i = 1; i < edgeNum - 1; i++)
+   {
+      // We draw a border sprite from prev to current. Set anchor to 0,0.5
+      // So position should be prev. Calculate angle between points and
+      // set that to sprite. Then attach it to polygon.
+
+      Vector2 prev = vertices[i-1];
+      Vector2 current = vertices[i];
+      Vector2 diffV = current - prev;
+      float angle = atan2(diffV.y, diffV.x) + MATH_PI;
+      float distance = diffV.length();
+      Vector2 rotatedNormal = Vector2(-sin(angle), cos(angle));
+
+      spPolygon border = new oxygine::Polygon();
+      border->setResAnim(gameResources.getResAnim("grotto_border"));
+      border->setAnchor(0.0f, 0.5f);
+
+      vector<Vector2> vertices(4);
+      vertices[0] = Vector2(0.0f, 0.0f);
+      vertices[1] = Vector2(0.0f, 5.0f);
+      vertices[2] = Vector2(distance, 5.0);
+      vertices[3] = Vector2(distance, 0.0f);
+
+      vector<VectorT3<int> > triangles(2);
+
+      triangles[0] = VectorT3<int>(1, 2, 3);
+      triangles[1] = VectorT3<int>(1, 3, 4);
+
+      vertexPCT2* vs = PolygonVertices::createTriangleVertices(
+         vertices,
+         triangles,
+         Vector2(128.0f, 10.0f),
+         Vector2(0.0f, 0.0f));
+
+      border->setVertices(vs, sizeof(vertexPCT2) *  triangles.size() * 4, vertexPCT2::FORMAT, true);
+
+      border->setAnchor(0.0f, 0.0f);
+      border->setPosition(current - rotatedNormal * 2.0);
+      border->setRotation(angle);
+
+      border->attachTo(object);
+
+   }
+
+   Vector2 prev = vertices[edgeNum - 1];
+   Vector2 current = vertices[0];
+   Vector2 diffV = current - prev;
+   float angle = atan2(diffV.y, diffV.x) + MATH_PI;
+   float distance = diffV.length();
+   Vector2 rotatedNormal = Vector2(-sin(angle), cos(angle));
+
+   spPolygon border = new oxygine::Polygon();
+   border->setResAnim(gameResources.getResAnim("grotto_border"));
+   border->setAnchor(0.0f, 0.5f);
+
+   vector<Vector2> lastVertices(4);
+   lastVertices[0] = Vector2(0.0f, 0.0f);
+   lastVertices[1] = Vector2(0.0f, 5.0f);
+   lastVertices[2] = Vector2(distance, 5.0);
+   lastVertices[3] = Vector2(distance, 0.0f);
+
+   vector<VectorT3<int> > lastTriangles(2);
+
+   lastTriangles[0] = VectorT3<int>(1, 2, 3);
+   lastTriangles[1] = VectorT3<int>(1, 3, 4);
+
+   vertexPCT2* lastVs = PolygonVertices::createTriangleVertices(
+      lastVertices,
+      lastTriangles,
+      Vector2(128.0f, 10.0f),
+      Vector2(0.0f, 0.0f));
+
+   border->setVertices(lastVs, sizeof(vertexPCT2) *  lastTriangles.size() * 4, vertexPCT2::FORMAT, true);
+
+   border->setAnchor(0.0f, 0.0f);
+   border->setPosition(current - rotatedNormal * 2.0);
+   border->setRotation(angle);
+
+   border->attachTo(object);
+
+
    int num = vertices.size() + 1;
 
    b2Vec2* b2vertices = new b2Vec2[num];
@@ -1075,6 +1161,8 @@ void CompoundObject::defineDynamicCircle(
 
    body->CreateFixture(&fixtureDef);
 
+   body->ResetMassData();
+
    body->SetUserData(newCo);
 
    newCo->setUserData(body);
@@ -1129,6 +1217,7 @@ void CompoundObject::defineDynamicBox(
    body->CreateFixture(&fixtureDef);
 
    body->SetUserData(newCo);
+   body->ResetMassData();
 
    newCo->setUserData(body);
    newCo->m_collisionType = CollisionEntity::convert(objectNode.attribute("collisionEntity").as_string());
@@ -1229,6 +1318,7 @@ void CompoundObject::defineDynamicPolygon(
 
    body->CreateFixture(&fixtureDef);
 
+   body->ResetMassData();
    body->SetUserData(newCo);
 
    newCo->setUserData(body);
@@ -1321,6 +1411,7 @@ void CompoundObject::defineDynamicBoxedSpritePolygon(
 
    body->CreateFixture(&fixtureDef);
 
+   body->ResetMassData();
    body->SetUserData(newCo);
 
    newCo->setUserData(body);

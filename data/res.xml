@@ -57,6 +57,9 @@
 		<image file="grotto.png" trim="false" extend="false"/>
 	</atlas>	
 	<atlas clamp2edge="false"> 
+		<image file="grotto_border.png" trim="false" extend="false"/>
+	</atlas>	
+	<atlas clamp2edge="false"> 
 		<image file="markers.png" trim="false" extend="false"/>
 	</atlas>	
 	<atlas clamp2edge="false"> 
