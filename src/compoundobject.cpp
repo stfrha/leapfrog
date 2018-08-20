@@ -866,7 +866,7 @@ void CompoundObject::defineStaticPolygon(
    Vector2 textureMeterOffset = Vector2(objectNode.attribute("textureOffsetMeterX").as_float(), 
       objectNode.attribute("textureOffsetMeterY").as_float());
 
-   vector<Vector2> vertices(distance(objectNode.child("vertices").children("vertex").begin(), objectNode.child("vertices").children("vertex").end()));
+   vector<Vector2> vertices(std::distance(objectNode.child("vertices").children("vertex").begin(), objectNode.child("vertices").children("vertex").end()));
 
    for (auto it = objectNode.child("vertices").children("vertex").begin();
       it != objectNode.child("vertices").children("vertex").end();
@@ -875,7 +875,7 @@ void CompoundObject::defineStaticPolygon(
       vertices[it->attribute("id").as_int() - 1] = Vector2(it->attribute("x").as_float(), it->attribute("y").as_float());
    }
 
-   vector<VectorT3<int> > triangles(distance(objectNode.child("triangles").children("triangle").begin(), objectNode.child("triangles").children("triangle").end()));
+   vector<VectorT3<int> > triangles(std::distance(objectNode.child("triangles").children("triangle").begin(), objectNode.child("triangles").children("triangle").end()));
 
    for (auto it = objectNode.child("triangles").children("triangle").begin();
       it != objectNode.child("triangles").children("triangle").end();
@@ -901,86 +901,331 @@ void CompoundObject::defineStaticPolygon(
    // Here we should attach border to all edges of the polygon
    int edgeNum = vertices.size();
 
-   // Polygon of a body shape is physical coordinates, i.e. in meters
-   for (int i = 1; i < edgeNum - 1; i++)
+   xml_node borderNode = objectNode.child("border");
+
+   if (!borderNode.empty())
    {
-      // We draw a border sprite from prev to current. Set anchor to 0,0.5
-      // So position should be prev. Calculate angle between points and
-      // set that to sprite. Then attach it to polygon.
+      // Prepare all xml data in advance to speed up processing
+      float groundLeftAngle = borderNode.attribute("leftGroundAngle").as_float() * MATH_PI / 180.0f;
+      float groundRightAngle = borderNode.attribute("rightGroundAngle").as_float() * MATH_PI / 180.0f;
+      float ceilingLeftAngle = borderNode.attribute("leftCeilingAngle").as_float() * MATH_PI / 180.0f;
+      float ceilingRightAngle = borderNode.attribute("rightCeilingAngle").as_float() * MATH_PI / 180.0f;
 
-      Vector2 prev = vertices[i-1];
-      Vector2 current = vertices[i];
-      Vector2 diffV = current - prev;
-      float angle = atan2(diffV.y, diffV.x) + MATH_PI;
-      float distance = diffV.length();
-      Vector2 rotatedNormal = Vector2(-sin(angle), cos(angle));
+      bool groundBorder = false;
+      bool ceilingBorder = false;
+      bool leftWallBorder = false;
+      bool rightWallBorder = false;
 
-      spPolygon border = new oxygine::Polygon();
-      border->setResAnim(gameResources.getResAnim("grotto_border"));
-      border->setAnchor(0.0f, 0.5f);
+      string groundTexture = borderNode.child("groundBorder").attribute("texture").as_string("notDefined");
+      string ceilingTexture = borderNode.child("ceilingBorder").attribute("texture").as_string("notDefined");
+      string leftWallTexture = borderNode.child("leftWallBorder").attribute("texture").as_string("notDefined");
+      string rightWallTexture = borderNode.child("rightWallBorder").attribute("texture").as_string("notDefined");
 
-      vector<Vector2> vertices(4);
-      vertices[0] = Vector2(0.0f, 0.0f);
-      vertices[1] = Vector2(0.0f, 5.0f);
-      vertices[2] = Vector2(distance, 5.0);
-      vertices[3] = Vector2(distance, 0.0f);
+      float groundHorOffset;
+      float groundTextMeterWidth;
+      float groundTextMeterHeight;
 
-      vector<VectorT3<int> > triangles(2);
+      float ceilingHorOffset;
+      float ceilingTextMeterWidth;
+      float ceilingTextMeterHeight;
 
-      triangles[0] = VectorT3<int>(1, 2, 3);
-      triangles[1] = VectorT3<int>(1, 3, 4);
+      float leftWallHorOffset;
+      float leftWallTextMeterWidth;
+      float leftWallTextMeterHeight;
 
-      vertexPCT2* vs = PolygonVertices::createTriangleVertices(
-         vertices,
-         triangles,
-         Vector2(128.0f, 10.0f),
-         Vector2(0.0f, 0.0f));
+      float rightWallHorOffset;
+      float rightWallTextMeterWidth;
+      float rightWallTextMeterHeight;
 
-      border->setVertices(vs, sizeof(vertexPCT2) *  triangles.size() * 4, vertexPCT2::FORMAT, true);
+      //ResAnim groundRes = gameResources.getResAnim("grotto_border");
+      //ResAnim ceilingRes = gameResources.getResAnim("grotto_ceiling_border");
+      //ResAnim leftRes = gameResources.getResAnim("grotto_left_border");
+      //ResAnim rightRes = gameResources.getResAnim("grotto_left_border");
 
-      border->setAnchor(0.0f, 0.0f);
-      border->setPosition(current - rotatedNormal * 2.0);
-      border->setRotation(angle);
 
-      border->attachTo(object);
+      if (groundTexture != "notDefined")
+      {
+         groundBorder = true;
+         groundHorOffset = borderNode.child("groundBorder").attribute("horisontalMeterOffset").as_float();
+         groundTextMeterWidth = borderNode.child("groundBorder").attribute("textureMeterWidth").as_float();
+         groundTextMeterHeight = borderNode.child("groundBorder").attribute("textureMeterHeight").as_float();
+      }
+
+      if (ceilingTexture != "notDefined")
+      {
+         ceilingBorder = true;
+         ceilingHorOffset = borderNode.child("ceilingBorder").attribute("horisontalMeterOffset").as_float();
+         ceilingTextMeterWidth = borderNode.child("ceilingBorder").attribute("textureMeterWidth").as_float();
+         ceilingTextMeterHeight = borderNode.child("ceilingBorder").attribute("textureMeterHeight").as_float();
+      }
+
+      if (leftWallTexture != "notDefined")
+      {
+         leftWallBorder = true;
+         leftWallHorOffset = borderNode.child("leftWallBorder").attribute("horisontalMeterOffset").as_float();
+         leftWallTextMeterWidth = borderNode.child("leftWallBorder").attribute("textureMeterWidth").as_float();
+         leftWallTextMeterHeight = borderNode.child("leftWallBorder").attribute("textureMeterHeight").as_float();
+      }
+
+      if (rightWallTexture != "notDefined")
+      {
+         rightWallBorder = true;
+         rightWallHorOffset = borderNode.child("rightWallBorder").attribute("horisontalMeterOffset").as_float();
+         rightWallTextMeterWidth = borderNode.child("rightWallBorder").attribute("textureMeterWidth").as_float();
+         rightWallTextMeterHeight = borderNode.child("rightWallBorder").attribute("textureMeterHeight").as_float();
+      }
+
+      if (groundBorder || ceilingBorder || leftWallBorder || rightWallBorder)
+      {
+         ResAnim groundRes = gameResources.getResAnim("grotto_border");
+         ResAnim ceilingRes = gameResources.getResAnim("grotto_ceiling_border");
+         ResAnim leftRes = gameResources.getResAnim("grotto_left_border");
+         ResAnim rightRes = gameResources.getResAnim("grotto_left_border");
+
+         // Polygon of a body shape is physical coordinates, i.e. in meters
+         for (int i = 1; i < edgeNum - 1; i++)
+         {
+            // We draw a border sprite from prev to current. Set anchor to 0,0.5
+            // So position should be prev. Calculate angle between points and
+            // set that to sprite. Then attach it to polygon.
+
+            Vector2 prev = vertices[i - 1];
+            Vector2 current = vertices[i];
+            Vector2 diffV = current - prev;
+            float compAngle = atan2(diffV.y, diffV.x);
+            float angle = compAngle + MATH_PI;
+            
+            if (angle > MATH_PI)
+            {
+               angle -= 2.0f * MATH_PI;
+            }
+
+            compAngle = angle;
+
+            float distance = diffV.length();
+            Vector2 rotatedNormal = Vector2(-sin(angle), cos(angle));
+
+            bool doThisBorder = false;
+            float horOffset;
+            float textMeterWidth;
+            float textMeterHeight;
+            string texture;
+
+            // angle is the amount to rotate the texture. This should be between 
+            // -pi/2 and pi/2 for ground and above 3*pi/2 or below -3*pi/2 for ceiling.
+            // compAngle is -PI away, i.e. Ground should have compAngle from pi/2 to 3pi/2
+            // But why does it not work with angle (non-comp)?
+            // compAngle goes from -pi to pi which means that angle goes from
+            // 0 to 2*pi. This is the problem. We would like to change so that
+            // angle goes from -pi to pi. I.e. If angle > pi, angle = angle - 2 * pi
+
+            // Select border data by the angle and the angle limits
+            if ((compAngle <= groundRightAngle) && (compAngle > groundLeftAngle))
+            {
+               // This is a ground border
+               doThisBorder = groundBorder;
+               horOffset = groundHorOffset;
+               textMeterWidth = groundTextMeterWidth;
+               textMeterHeight = groundTextMeterHeight;
+               texture = groundTexture;
+            }
+            else if ((compAngle > groundRightAngle) && (compAngle < ceilingRightAngle))
+            {
+               // This is a right wall border
+               doThisBorder = rightWallBorder;
+               horOffset = rightWallHorOffset;
+               textMeterWidth = rightWallTextMeterWidth;
+               textMeterHeight = rightWallTextMeterHeight;
+               texture = rightWallTexture;
+            }
+            else if ((compAngle < groundLeftAngle) && (compAngle > ceilingLeftAngle))
+            {
+               // This is a left wall border
+               doThisBorder = leftWallBorder;
+               horOffset = leftWallHorOffset;
+               textMeterWidth = leftWallTextMeterWidth;
+               textMeterHeight = leftWallTextMeterHeight;
+               texture = leftWallTexture;
+            }
+            else
+            {
+               // This is a ceiling border
+               doThisBorder = ceilingBorder;
+               horOffset = ceilingHorOffset;
+               textMeterWidth = ceilingTextMeterWidth;
+               textMeterHeight = ceilingTextMeterHeight;
+               texture = ceilingTexture;
+            }
+
+            if (doThisBorder)
+            {
+               spPolygon border = new oxygine::Polygon();
+               border->setResAnim(gameResources.getResAnim(texture));
+               border->setAnchor(0.0f, 0.5f);
+
+               vector<Vector2> vertices(4);
+               vertices[0] = Vector2(0.0f, 0.0f);
+               vertices[1] = Vector2(0.0f, textMeterHeight);
+               vertices[2] = Vector2(distance, textMeterHeight);
+               vertices[3] = Vector2(distance, 0.0f);
+
+               vector<VectorT3<int> > triangles(2);
+
+               triangles[0] = VectorT3<int>(1, 2, 3);
+               triangles[1] = VectorT3<int>(1, 3, 4);
+
+               vertexPCT2* vs = PolygonVertices::createTriangleVertices(
+                  vertices,
+                  triangles,
+                  Vector2(textMeterWidth, textMeterHeight),
+                  Vector2(0.0f, 0.0f));
+
+               border->setVertices(vs, sizeof(vertexPCT2) *  triangles.size() * 4, vertexPCT2::FORMAT, true);
+
+               border->setAnchor(0.0f, 0.0f);
+               border->setPosition(current - rotatedNormal * leftWallHorOffset);
+               border->setRotation(angle);
+
+               border->attachTo(object);
+
+            }
+         }
+
+         Vector2 prev = vertices[edgeNum - 1];
+         Vector2 current = vertices[0];
+         Vector2 diffV = current - prev;
+         float compAngle = atan2(diffV.y, diffV.x);
+         float angle = compAngle + MATH_PI;
+
+         if (angle > MATH_PI)
+         {
+            angle -= 2.0f * MATH_PI;
+         }
+
+         compAngle = angle;
+
+         float distance = diffV.length();
+         Vector2 rotatedNormal = Vector2(-sin(angle), cos(angle));
+
+         bool doThisBorder = false;
+         float horOffset;
+         float textMeterWidth;
+         float textMeterHeight;
+         string texture;
+
+         // Select border data by the angle and the angle limits
+         if ((compAngle <= groundRightAngle) && (compAngle > groundLeftAngle))
+         {
+            // This is a ground border
+            doThisBorder = groundBorder;
+            horOffset = groundHorOffset;
+            textMeterWidth = groundTextMeterWidth;
+            textMeterHeight = groundTextMeterHeight;
+            texture = groundTexture;
+         }
+         else if ((compAngle > groundRightAngle) && (compAngle < ceilingRightAngle))
+         {
+            // This is a right wall border
+            doThisBorder = rightWallBorder;
+            horOffset = rightWallHorOffset;
+            textMeterWidth = rightWallTextMeterWidth;
+            textMeterHeight = rightWallTextMeterHeight;
+            texture = rightWallTexture;
+         }
+         else if ((compAngle < groundLeftAngle) && (compAngle > ceilingLeftAngle))
+         {
+            // This is a left wall border
+            doThisBorder = leftWallBorder;
+            horOffset = leftWallHorOffset;
+            textMeterWidth = leftWallTextMeterWidth;
+            textMeterHeight = leftWallTextMeterHeight;
+            texture = leftWallTexture;
+         }
+         else
+         {
+            // This is a ceiling border
+            doThisBorder = ceilingBorder;
+            horOffset = ceilingHorOffset;
+            textMeterWidth = ceilingTextMeterWidth;
+            textMeterHeight = ceilingTextMeterHeight;
+            texture = ceilingTexture;
+         }
+
+         if (doThisBorder)
+         {
+            spPolygon border = new oxygine::Polygon();
+            border->setResAnim(gameResources.getResAnim(texture));
+            border->setAnchor(0.0f, 0.5f);
+
+            vector<Vector2> vertices(4);
+            vertices[0] = Vector2(0.0f, 0.0f);
+            vertices[1] = Vector2(0.0f, textMeterHeight);
+            vertices[2] = Vector2(distance, textMeterHeight);
+            vertices[3] = Vector2(distance, 0.0f);
+
+            vector<VectorT3<int> > triangles(2);
+
+            triangles[0] = VectorT3<int>(1, 2, 3);
+            triangles[1] = VectorT3<int>(1, 3, 4);
+
+            vertexPCT2* vs = PolygonVertices::createTriangleVertices(
+               vertices,
+               triangles,
+               Vector2(textMeterWidth, textMeterHeight),
+               Vector2(0.0f, 0.0f));
+
+            border->setVertices(vs, sizeof(vertexPCT2) *  triangles.size() * 4, vertexPCT2::FORMAT, true);
+
+            border->setAnchor(0.0f, 0.0f);
+            border->setPosition(current - rotatedNormal * leftWallHorOffset);
+            border->setRotation(angle);
+
+            border->attachTo(object);
+
+         }
+
+
+
+
+
+
+
+
+
+
+         //spPolygon border = new oxygine::Polygon();
+         //border->setResAnim(gameResources.getResAnim("grotto_border"));
+         //border->setAnchor(0.0f, 0.5f);
+
+         //vector<Vector2> lastVertices(4);
+         //lastVertices[0] = Vector2(0.0f, 0.0f);
+         //lastVertices[1] = Vector2(0.0f, 5.0f);
+         //lastVertices[2] = Vector2(distance, 5.0);
+         //lastVertices[3] = Vector2(distance, 0.0f);
+
+         //vector<VectorT3<int> > lastTriangles(2);
+
+         //lastTriangles[0] = VectorT3<int>(1, 2, 3);
+         //lastTriangles[1] = VectorT3<int>(1, 3, 4);
+
+         //vertexPCT2* lastVs = PolygonVertices::createTriangleVertices(
+         //   lastVertices,
+         //   lastTriangles,
+         //   Vector2(128.0f, 10.0f),
+         //   Vector2(0.0f, 0.0f));
+
+         //border->setVertices(lastVs, sizeof(vertexPCT2) *  lastTriangles.size() * 4, vertexPCT2::FORMAT, true);
+
+         //border->setAnchor(0.0f, 0.0f);
+         //border->setPosition(current - rotatedNormal * 2.0);
+         //border->setRotation(angle);
+
+         //border->attachTo(object);
+
+      }
+
 
    }
-
-   Vector2 prev = vertices[edgeNum - 1];
-   Vector2 current = vertices[0];
-   Vector2 diffV = current - prev;
-   float angle = atan2(diffV.y, diffV.x) + MATH_PI;
-   float distance = diffV.length();
-   Vector2 rotatedNormal = Vector2(-sin(angle), cos(angle));
-
-   spPolygon border = new oxygine::Polygon();
-   border->setResAnim(gameResources.getResAnim("grotto_border"));
-   border->setAnchor(0.0f, 0.5f);
-
-   vector<Vector2> lastVertices(4);
-   lastVertices[0] = Vector2(0.0f, 0.0f);
-   lastVertices[1] = Vector2(0.0f, 5.0f);
-   lastVertices[2] = Vector2(distance, 5.0);
-   lastVertices[3] = Vector2(distance, 0.0f);
-
-   vector<VectorT3<int> > lastTriangles(2);
-
-   lastTriangles[0] = VectorT3<int>(1, 2, 3);
-   lastTriangles[1] = VectorT3<int>(1, 3, 4);
-
-   vertexPCT2* lastVs = PolygonVertices::createTriangleVertices(
-      lastVertices,
-      lastTriangles,
-      Vector2(128.0f, 10.0f),
-      Vector2(0.0f, 0.0f));
-
-   border->setVertices(lastVs, sizeof(vertexPCT2) *  lastTriangles.size() * 4, vertexPCT2::FORMAT, true);
-
-   border->setAnchor(0.0f, 0.0f);
-   border->setPosition(current - rotatedNormal * 2.0);
-   border->setRotation(angle);
-
-   border->attachTo(object);
 
 
    int num = vertices.size() + 1;

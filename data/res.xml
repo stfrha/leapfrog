@@ -60,6 +60,15 @@
 		<image file="grotto_border.png" trim="false" extend="false"/>
 	</atlas>	
 	<atlas clamp2edge="false"> 
+		<image file="grotto_ceiling_border.png" trim="false" extend="false"/>
+	</atlas>	
+	<atlas clamp2edge="false"> 
+		<image file="grotto_left_border.png" trim="false" extend="false"/>
+	</atlas>	
+	<atlas clamp2edge="false"> 
+		<image file="grotto_right_border.png" trim="false" extend="false"/>
+	</atlas>	
+	<atlas clamp2edge="false"> 
 		<image file="markers.png" trim="false" extend="false"/>
 	</atlas>	
 	<atlas clamp2edge="false"> 
