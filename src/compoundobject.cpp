@@ -977,10 +977,6 @@ void CompoundObject::defineStaticPolygon(
 
       if (groundBorder || ceilingBorder || leftWallBorder || rightWallBorder)
       {
-         ResAnim groundRes = gameResources.getResAnim("grotto_border");
-         ResAnim ceilingRes = gameResources.getResAnim("grotto_ceiling_border");
-         ResAnim leftRes = gameResources.getResAnim("grotto_left_border");
-         ResAnim rightRes = gameResources.getResAnim("grotto_left_border");
 
          // Polygon of a body shape is physical coordinates, i.e. in meters
          for (int i = 1; i < edgeNum - 1; i++)
@@ -1024,37 +1020,49 @@ void CompoundObject::defineStaticPolygon(
             {
                // This is a ground border
                doThisBorder = groundBorder;
-               horOffset = groundHorOffset;
-               textMeterWidth = groundTextMeterWidth;
-               textMeterHeight = groundTextMeterHeight;
-               texture = groundTexture;
+               if (doThisBorder)
+               {
+                  horOffset = groundHorOffset;
+                  textMeterWidth = groundTextMeterWidth;
+                  textMeterHeight = groundTextMeterHeight;
+                  texture = groundTexture;
+               }
             }
             else if ((compAngle > groundRightAngle) && (compAngle < ceilingRightAngle))
             {
                // This is a right wall border
                doThisBorder = rightWallBorder;
-               horOffset = rightWallHorOffset;
-               textMeterWidth = rightWallTextMeterWidth;
-               textMeterHeight = rightWallTextMeterHeight;
-               texture = rightWallTexture;
+               if (doThisBorder)
+               {
+                  horOffset = rightWallHorOffset;
+                  textMeterWidth = rightWallTextMeterWidth;
+                  textMeterHeight = rightWallTextMeterHeight;
+                  texture = rightWallTexture;
+               }
             }
             else if ((compAngle < groundLeftAngle) && (compAngle > ceilingLeftAngle))
             {
                // This is a left wall border
                doThisBorder = leftWallBorder;
-               horOffset = leftWallHorOffset;
-               textMeterWidth = leftWallTextMeterWidth;
-               textMeterHeight = leftWallTextMeterHeight;
-               texture = leftWallTexture;
+               if (doThisBorder)
+               {
+                  horOffset = leftWallHorOffset;
+                  textMeterWidth = leftWallTextMeterWidth;
+                  textMeterHeight = leftWallTextMeterHeight;
+                  texture = leftWallTexture;
+               }
             }
             else
             {
                // This is a ceiling border
                doThisBorder = ceilingBorder;
-               horOffset = ceilingHorOffset;
-               textMeterWidth = ceilingTextMeterWidth;
-               textMeterHeight = ceilingTextMeterHeight;
-               texture = ceilingTexture;
+               if (doThisBorder)
+               {
+                  horOffset = ceilingHorOffset;
+                  textMeterWidth = ceilingTextMeterWidth;
+                  textMeterHeight = ceilingTextMeterHeight;
+                  texture = ceilingTexture;
+               }
             }
 
             if (doThisBorder)
@@ -1083,7 +1091,7 @@ void CompoundObject::defineStaticPolygon(
                border->setVertices(vs, sizeof(vertexPCT2) *  triangles.size() * 4, vertexPCT2::FORMAT, true);
 
                border->setAnchor(0.0f, 0.0f);
-               border->setPosition(current - rotatedNormal * leftWallHorOffset);
+               border->setPosition(current - rotatedNormal * horOffset);
                border->setRotation(angle);
 
                border->attachTo(object);
@@ -1117,38 +1125,50 @@ void CompoundObject::defineStaticPolygon(
          if ((compAngle <= groundRightAngle) && (compAngle > groundLeftAngle))
          {
             // This is a ground border
-            doThisBorder = groundBorder;
-            horOffset = groundHorOffset;
-            textMeterWidth = groundTextMeterWidth;
-            textMeterHeight = groundTextMeterHeight;
-            texture = groundTexture;
+            if (doThisBorder)
+            {
+               doThisBorder = groundBorder;
+               horOffset = groundHorOffset;
+               textMeterWidth = groundTextMeterWidth;
+               textMeterHeight = groundTextMeterHeight;
+               texture = groundTexture;
+            }
          }
          else if ((compAngle > groundRightAngle) && (compAngle < ceilingRightAngle))
          {
             // This is a right wall border
             doThisBorder = rightWallBorder;
-            horOffset = rightWallHorOffset;
-            textMeterWidth = rightWallTextMeterWidth;
-            textMeterHeight = rightWallTextMeterHeight;
-            texture = rightWallTexture;
+            if (doThisBorder)
+            {
+               horOffset = rightWallHorOffset;
+               textMeterWidth = rightWallTextMeterWidth;
+               textMeterHeight = rightWallTextMeterHeight;
+               texture = rightWallTexture;
+            }
          }
          else if ((compAngle < groundLeftAngle) && (compAngle > ceilingLeftAngle))
          {
             // This is a left wall border
             doThisBorder = leftWallBorder;
-            horOffset = leftWallHorOffset;
-            textMeterWidth = leftWallTextMeterWidth;
-            textMeterHeight = leftWallTextMeterHeight;
-            texture = leftWallTexture;
+            if (doThisBorder)
+            {
+               horOffset = leftWallHorOffset;
+               textMeterWidth = leftWallTextMeterWidth;
+               textMeterHeight = leftWallTextMeterHeight;
+               texture = leftWallTexture;
+            }
          }
          else
          {
             // This is a ceiling border
             doThisBorder = ceilingBorder;
-            horOffset = ceilingHorOffset;
-            textMeterWidth = ceilingTextMeterWidth;
-            textMeterHeight = ceilingTextMeterHeight;
-            texture = ceilingTexture;
+            if (doThisBorder)
+            {
+               horOffset = ceilingHorOffset;
+               textMeterWidth = ceilingTextMeterWidth;
+               textMeterHeight = ceilingTextMeterHeight;
+               texture = ceilingTexture;
+            }
          }
 
          if (doThisBorder)
@@ -1177,7 +1197,7 @@ void CompoundObject::defineStaticPolygon(
             border->setVertices(vs, sizeof(vertexPCT2) *  triangles.size() * 4, vertexPCT2::FORMAT, true);
 
             border->setAnchor(0.0f, 0.0f);
-            border->setPosition(current - rotatedNormal * leftWallHorOffset);
+            border->setPosition(current - rotatedNormal * horOffset);
             border->setRotation(angle);
 
             border->attachTo(object);

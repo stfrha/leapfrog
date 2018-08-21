@@ -18,7 +18,7 @@ PlanetActor::PlanetActor(
    // Planet turn at 0.0698 rad/s
    // angle offset is 0.0698 * 11.4 = 0.796
    c_predictedAngleOffset(0.796f),
-   c_startOffset(-100.0f / 180.0f * MATH_PI),
+   c_startAngleOffset(-100.0f / 180.0f * MATH_PI),
    c_landingPointAngle(-1.142f),
    c_angleZeroRotation(0.952f + 100.0f / 180.0f * MATH_PI),
    c_safeLandingMaxRadDeviation(100.0f / 3500.0f / 2.0f)
@@ -142,7 +142,7 @@ void PlanetActor::orbitEstablished(void)
       predSite->setAnchor(0.5f, 0.5f);
 
 
-      float alpha = c_startOffset - m_planetAngleAtOrbitEstablished - it->m_angle;
+      float alpha = c_startAngleOffset - m_planetAngleAtOrbitEstablished - it->m_angle;
       predSite->setPosition(Vector2(3500.0f * cos(alpha), 3500.0f * sin(alpha)));
       predSite->setRotation(alpha + MATH_PI / 2.0f);
       predSite->attachTo(m_planet);
@@ -152,7 +152,7 @@ void PlanetActor::orbitEstablished(void)
       crs->setSize(100.0f, 30.0f);
       crs->setAnchor(0.5f, 0.5f);
 
-      alpha = c_startOffset - m_planetAngleAtOrbitEstablished - it->m_angle - c_predictedAngleOffset;
+      alpha = c_startAngleOffset - m_planetAngleAtOrbitEstablished - it->m_angle - c_predictedAngleOffset;
       crs->setPosition(Vector2(3500.0f * cos(alpha), 3500.0f * sin(alpha)));
       crs->setRotation(alpha + MATH_PI / 2.0f);
       crs->attachTo(m_planet);
@@ -260,7 +260,7 @@ void PlanetActor::surfaceReached(void)
    float landingAngle = 
       m_planetAngleAtSurface - 
       c_predictedAngleOffset - 
-      (c_landingPointAngle - c_startOffset) - 
+      (c_landingPointAngle - c_startAngleOffset) - 
       m_planetAngleAtOrbitEstablished;
 
    logs::messageln("Landing angle: %f", landingAngle);

@@ -21,9 +21,9 @@ MainActor::MainActor()
 
 	setSize(getStage()->getSize());
 
-   startScene(STE_LANDING);
+   // startScene(STE_LANDING);
    //   startScene(STE_FREE_SPACE);
-   //   startScene(STE_ORBIT);
+   startScene(STE_ORBIT);
 
    addTouchDownListener(CLOSURE(this, &MainActor::sceneDownHandler));
    addTouchUpListener(CLOSURE(this, &MainActor::sceneUpHandler));
@@ -223,7 +223,7 @@ void MainActor::createButtonOverlay(void)
 
    // Define sprites
    spSprite turnLeftButton = new Sprite();
-   turnLeftButton->setResAnim(m_gameResources.getResAnim("button"));
+   turnLeftButton->setResAnim(m_gameResources.getResAnim("turn_left_button"));
    turnLeftButton->setSize(buttonWidth, buttonWidth);
    turnLeftButton->setPosition(m_turnLeftButtonRect.getLeftTop());
    turnLeftButton->setAnchor(0.0f, 0.0f);
@@ -231,7 +231,7 @@ void MainActor::createButtonOverlay(void)
    turnLeftButton->attachTo(this);
 
    spSprite turnRightButton = new Sprite();
-   turnRightButton->setResAnim(m_gameResources.getResAnim("button"));
+   turnRightButton->setResAnim(m_gameResources.getResAnim("turn_right_button"));
    turnRightButton->setSize(buttonWidth, buttonWidth);
    turnRightButton->setPosition(m_turnRightButtonRect.getLeftTop());
    turnRightButton->setAnchor(0.0f, 0.0f);
@@ -239,7 +239,7 @@ void MainActor::createButtonOverlay(void)
    turnRightButton->attachTo(this);
 
    spSprite fireButton = new Sprite();
-   fireButton->setResAnim(m_gameResources.getResAnim("button"));
+   fireButton->setResAnim(m_gameResources.getResAnim("fire_button"));
    fireButton->setSize(buttonWidth, buttonWidth);
    fireButton->setPosition(m_fireButtonRect.getLeftTop());
    fireButton->setAnchor(0.0f, 0.0f);
@@ -247,7 +247,7 @@ void MainActor::createButtonOverlay(void)
    fireButton->attachTo(this);
 
    spSprite thursterButton = new Sprite();
-   thursterButton->setResAnim(m_gameResources.getResAnim("button"));
+   thursterButton->setResAnim(m_gameResources.getResAnim("booster_button"));
    thursterButton->setSize(buttonWidth, buttonWidth);
    thursterButton->setPosition(m_boosterButtonRect.getLeftTop());
    thursterButton->setAnchor(0.0f, 0.0f);
@@ -255,7 +255,7 @@ void MainActor::createButtonOverlay(void)
    thursterButton->attachTo(this);
 
    spSprite zoomOutButton = new Sprite();
-   zoomOutButton->setResAnim(m_gameResources.getResAnim("button"));
+   zoomOutButton->setResAnim(m_gameResources.getResAnim("zoom_out_button"));
    zoomOutButton->setSize(buttonWidth, buttonWidth);
    zoomOutButton->setPosition(m_zoomOutButtonRect.getLeftTop());
    zoomOutButton->setAnchor(0.0f, 0.0f);
@@ -263,7 +263,7 @@ void MainActor::createButtonOverlay(void)
    zoomOutButton->attachTo(this);
 
    spSprite zoomInButton = new Sprite();
-   zoomInButton->setResAnim(m_gameResources.getResAnim("button"));
+   zoomInButton->setResAnim(m_gameResources.getResAnim("zoom_in_button"));
    zoomInButton->setSize(buttonWidth, buttonWidth);
    zoomInButton->setPosition(m_zoomInButtonRect.getLeftTop());
    zoomInButton->setAnchor(0.0f, 0.0f);

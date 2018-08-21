@@ -4,6 +4,12 @@
 	<atlas>
 		<image file="anim.png" cols = "8" />
 		<image file="button.png"/>		
+		<image file="booster_button.png"/>		
+		<image file="fire_button.png"/>		
+		<image file="turn_left_button.png"/>		
+		<image file="turn_right_button.png"/>		
+		<image file="zoom_in_button.png"/>		
+		<image file="zoom_out_button.png"/>		
 		<image file="lf_body.png"/>		
 		<image file="lf_boost.png"/>		
 		<image file="lf_small_leg.png"/>		

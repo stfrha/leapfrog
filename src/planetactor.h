@@ -89,7 +89,7 @@ private:
    const float c_predictedAngleOffset;
    const float c_angleZeroRotation;
    const float c_landingPointAngle;
-   const float c_startOffset;
+   const float c_startAngleOffset;
    const float c_safeLandingMaxRadDeviation;
    
 
