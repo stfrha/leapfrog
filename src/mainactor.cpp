@@ -6,6 +6,7 @@
 #include "scales.h" 
 #include "landingactorevents.h"
 #include "deepspacesceneevents.h"
+#include "layout.h"
 
 #include "mainactor.h"
 
@@ -14,7 +15,7 @@ using namespace std;
 
 MainActor::MainActor()
 {
-
+   g_Layout.initLayout();
 
 	//load xml file with resources definition
 	m_gameResources.loadXML("res.xml");
@@ -52,14 +53,15 @@ void MainActor::startScene(SceneTypeEnum scene)
       actor = next;
    }
 
+   spClipRectActor window = new ClipRectActor();
+
+   window->setSize(getStage()->getSize());
+   window->setPosition(0.0f, 0.0f);
+   addChild(window);
+
    // Start selected scene
    if (scene == STE_LANDING)
    { 
-      spClipRectActor window = new ClipRectActor();
-
-      window->setSize(getStage()->getSize() - Vector2(100, 100));
-      window->setPosition(50.0f, 50.0f);
-      addChild(window);
 
       spLandingActor landingActor = new LandingActor(m_gameResources, string("landing_scene.xml"), string("landingState"));
       window->addChild(landingActor);
@@ -70,12 +72,6 @@ void MainActor::startScene(SceneTypeEnum scene)
    }
    else if (scene == STE_FREE_SPACE)
    {
-      spClipRectActor window = new ClipRectActor();
-
-      window->setSize(getStage()->getSize() - Vector2(100, 100));
-      window->setPosition(50.0f, 50.0f);
-      addChild(window);
-
       spFreeSpaceActor freeSpaceActor = new FreeSpaceActor(m_gameResources, string("deep_space_scene.xml"), string("deepSpaceState"));
       window->addChild(freeSpaceActor);
 
@@ -86,11 +82,6 @@ void MainActor::startScene(SceneTypeEnum scene)
    }
    else if (scene == STE_ORBIT)
    {
-      spClipRectActor window = new ClipRectActor();
-
-      window->setSize(getStage()->getSize() - Vector2(100, 100));
-      window->setPosition(50.0f, 50.0f);
-      addChild(window);
 
       spOrbitScene reentryActor = new OrbitScene(m_gameResources, string("orbit_scene.xml"), string("deepSpaceState"));
       window->addChild(reentryActor);
@@ -205,26 +196,26 @@ void MainActor::doUpdate(const UpdateState& us)
 
 void MainActor::createButtonOverlay(void)
 {
-   float division = 8.0f;
-   float buttonWidth = (getStage()->getSize()).y / division;
-   float halfButtonWidth = buttonWidth / 2;
-   float bottomRow = (getStage()->getSize()).y - buttonWidth;
-   float aboveBottomRow = bottomRow - buttonWidth;
-   float colLast = (getStage()->getSize()).x - buttonWidth;
-   float colSecondLast = colLast - buttonWidth;
+   //float division = 8.0f;
+   //float buttonWidth = (getStage()->getSize()).y / division;
+   //float halfButtonWidth = buttonWidth / 2;
+   //float bottomRow = (getStage()->getSize()).y - buttonWidth;
+   //float aboveBottomRow = bottomRow - buttonWidth;
+   //float colLast = (getStage()->getSize()).x - buttonWidth;
+   //float colSecondLast = colLast - buttonWidth;
 
    // Caluclate button geometrics
-   m_turnLeftButtonRect = Rect(0, aboveBottomRow, buttonWidth, buttonWidth);
-   m_turnRightButtonRect = Rect(buttonWidth, bottomRow, buttonWidth, buttonWidth);
-   m_boosterButtonRect = Rect(colLast, aboveBottomRow, buttonWidth, buttonWidth);
-   m_fireButtonRect = Rect(colSecondLast, bottomRow, buttonWidth, buttonWidth);
-   m_zoomInButtonRect = Rect(colSecondLast - halfButtonWidth, 0, buttonWidth, buttonWidth);
-   m_zoomOutButtonRect = Rect(colLast, 0, buttonWidth, buttonWidth);
+   m_turnLeftButtonRect = Rect(0, g_Layout.getYFromBottom(1), g_Layout.getButtonWidth(), g_Layout.getButtonWidth());
+   m_turnRightButtonRect = Rect(g_Layout.getButtonWidth(), g_Layout.getYFromBottom(0), g_Layout.getButtonWidth(), g_Layout.getButtonWidth());
+   m_boosterButtonRect = Rect(g_Layout.getXFromRight(0), g_Layout.getYFromBottom(1), g_Layout.getButtonWidth(), g_Layout.getButtonWidth());
+   m_fireButtonRect = Rect(g_Layout.getXFromRight(1), g_Layout.getYFromBottom(0), g_Layout.getButtonWidth(), g_Layout.getButtonWidth());
+   m_zoomInButtonRect = Rect(g_Layout.getXFromRight(1) - g_Layout.getButtonWidth() / 2.0f, 0, g_Layout.getButtonWidth(), g_Layout.getButtonWidth());
+   m_zoomOutButtonRect = Rect(g_Layout.getXFromRight(0), 0, g_Layout.getButtonWidth(), g_Layout.getButtonWidth());
 
    // Define sprites
    spSprite turnLeftButton = new Sprite();
    turnLeftButton->setResAnim(m_gameResources.getResAnim("turn_left_button"));
-   turnLeftButton->setSize(buttonWidth, buttonWidth);
+   turnLeftButton->setSize(g_Layout.getButtonWidth(), g_Layout.getButtonWidth());
    turnLeftButton->setPosition(m_turnLeftButtonRect.getLeftTop());
    turnLeftButton->setAnchor(0.0f, 0.0f);
    turnLeftButton->setTouchEnabled(false);
@@ -232,7 +223,7 @@ void MainActor::createButtonOverlay(void)
 
    spSprite turnRightButton = new Sprite();
    turnRightButton->setResAnim(m_gameResources.getResAnim("turn_right_button"));
-   turnRightButton->setSize(buttonWidth, buttonWidth);
+   turnRightButton->setSize(g_Layout.getButtonWidth(), g_Layout.getButtonWidth());
    turnRightButton->setPosition(m_turnRightButtonRect.getLeftTop());
    turnRightButton->setAnchor(0.0f, 0.0f);
    turnRightButton->setTouchEnabled(false);
@@ -240,7 +231,7 @@ void MainActor::createButtonOverlay(void)
 
    spSprite fireButton = new Sprite();
    fireButton->setResAnim(m_gameResources.getResAnim("fire_button"));
-   fireButton->setSize(buttonWidth, buttonWidth);
+   fireButton->setSize(g_Layout.getButtonWidth(), g_Layout.getButtonWidth());
    fireButton->setPosition(m_fireButtonRect.getLeftTop());
    fireButton->setAnchor(0.0f, 0.0f);
    fireButton->setTouchEnabled(false);
@@ -248,7 +239,7 @@ void MainActor::createButtonOverlay(void)
 
    spSprite thursterButton = new Sprite();
    thursterButton->setResAnim(m_gameResources.getResAnim("booster_button"));
-   thursterButton->setSize(buttonWidth, buttonWidth);
+   thursterButton->setSize(g_Layout.getButtonWidth(), g_Layout.getButtonWidth());
    thursterButton->setPosition(m_boosterButtonRect.getLeftTop());
    thursterButton->setAnchor(0.0f, 0.0f);
    thursterButton->setTouchEnabled(false);
@@ -256,7 +247,7 @@ void MainActor::createButtonOverlay(void)
 
    spSprite zoomOutButton = new Sprite();
    zoomOutButton->setResAnim(m_gameResources.getResAnim("zoom_out_button"));
-   zoomOutButton->setSize(buttonWidth, buttonWidth);
+   zoomOutButton->setSize(g_Layout.getButtonWidth(), g_Layout.getButtonWidth());
    zoomOutButton->setPosition(m_zoomOutButtonRect.getLeftTop());
    zoomOutButton->setAnchor(0.0f, 0.0f);
    zoomOutButton->setTouchEnabled(false);
@@ -264,7 +255,7 @@ void MainActor::createButtonOverlay(void)
 
    spSprite zoomInButton = new Sprite();
    zoomInButton->setResAnim(m_gameResources.getResAnim("zoom_in_button"));
-   zoomInButton->setSize(buttonWidth, buttonWidth);
+   zoomInButton->setSize(g_Layout.getButtonWidth(), g_Layout.getButtonWidth());
    zoomInButton->setPosition(m_zoomInButtonRect.getLeftTop());
    zoomInButton->setAnchor(0.0f, 0.0f);
    zoomInButton->setTouchEnabled(false);

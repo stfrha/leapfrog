@@ -6,8 +6,9 @@
 #include "planetactor.h"
 #include "leapfrog.h"
 #include "orbitspacescene.h"
-
+#include "orbitwindow.h"
 #include "orbitscene.h"
+#include "layout.h"
 
 using namespace oxygine;
 
@@ -20,13 +21,51 @@ OrbitScene::OrbitScene(
 {
    readDefinitionXmlFile(gameResources, (SceneActor*)this, NULL, NULL, Vector2(0.02f, 0.0f), fileName, initialState);
 
-   m_space = static_cast<OrbitSpaceScene*>(getObject("orbitWindow.spaceScene"));
+   // The XML file no longer defines the clippedWindow (named orbitWindow)
+   // and thus not the space scene with it's leapfrog definition. We must 
+   // add it here specifically
 
    // TODO: the string here will change for each planet, we need some
    // way of getting an object by type.
    m_planet = static_cast<PlanetActor*>(getObject("planetAlpha"));
 
-   m_leapfrog = static_cast<LeapFrog*>(getObject("orbitWindow.spaceScene.leapfrog1"));
+   spOrbitWindow orbWin = new OrbitWindow();
+   
+   // Here we need to calculate some geometrics
+   // Position, size, scale and frameThickness of OrbitWindow is needed
+   // Original values are:
+   // posX 550.0f,
+   // posY   0.0f,
+   // Width   300.0f,
+   // Height   150.0f,
+   // Frame thickness   1.0f,
+   // Scale   0.4f,
+
+   float x = g_Layout.getXFromRight(3);
+   float y = g_Layout.getYFromTop(1);
+   float w = g_Layout.getButtonWidth() * 4.0f;
+   float h = g_Layout.getButtonWidth() * 2.0f;
+   float s = 0.4f / 300.0f * w;
+   float ft = 1.0f / 300.0f * w;
+
+
+   orbWin->InitiateOrbitWindow(
+      gameResources,
+      this,
+      this,
+      x,
+      y,
+      w,
+      h,
+      ft,
+      0.4f,
+      m_planet->m_spaceSceneBackground,
+      m_planet->m_spaceSceneFile,
+      "default");
+
+   m_space = static_cast<OrbitSpaceScene*>(orbWin->getObject("spaceScene"));
+
+   m_leapfrog = static_cast<LeapFrog*>(orbWin->getObject("spaceScene.leapfrog1"));
 
    m_space->addEventListener(OrbitSpaceOrbitEstablished::EVENT, CLOSURE(this, &OrbitScene::orbitEstablishedHandler));
 

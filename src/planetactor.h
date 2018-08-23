@@ -91,8 +91,6 @@ private:
    const float c_landingPointAngle;
    const float c_startAngleOffset;
    const float c_safeLandingMaxRadDeviation;
-   
-
 
    std::set<LandingSite> m_landingSites;
 
@@ -100,7 +98,7 @@ private:
    bool m_stateChange;
    oxygine::Vector2 m_orbitStartPos;
    LandingResult m_results;
-
+   SceneActor* m_sceneParent;
 
    float m_planetAngleAtOrbitEstablished;
    float m_planetAngleAtBurnStart;
@@ -116,6 +114,9 @@ private:
 
 
 public:
+   std::string m_spaceSceneBackground;
+   std::string m_spaceSceneFile;
+
    PlanetActor(
       oxygine::Resources& gameResources,
       SceneActor* sceneParent,

@@ -71,6 +71,7 @@ LOCAL_SRC_FILES += ../../../src/gun.cpp
 LOCAL_SRC_FILES += ../../../src/landercontactlistener.cpp
 LOCAL_SRC_FILES += ../../../src/landingpad.cpp
 LOCAL_SRC_FILES += ../../../src/launchsite.cpp
+LOCAL_SRC_FILES += ../../../src/layout.cpp
 LOCAL_SRC_FILES += ../../../src/mainactor.cpp
 LOCAL_SRC_FILES += ../../../src/landingactor.cpp
 LOCAL_SRC_FILES += ../../../src/leapfrog.cpp

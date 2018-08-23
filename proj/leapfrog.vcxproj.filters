@@ -294,6 +294,9 @@
     <ClCompile Include="..\src\compoundinterface.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\layout.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Box2D\Box2D\Box2D\Collision\Shapes\b2ChainShape.h">
@@ -570,6 +573,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\src\objectfactory.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\layout.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

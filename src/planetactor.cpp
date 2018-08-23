@@ -6,7 +6,7 @@ using namespace pugi;
 
 PlanetActor::PlanetActor(
    Resources& gameResources,
-   SceneActor* sceneParent,
+   SceneActor* m_sceneParent,
    CompoundObject* parentObject,
    const xml_node& objectNode) :
    CompoundObject((SceneActor*)this),
@@ -71,11 +71,13 @@ PlanetActor::PlanetActor(
    // For another screen size this does not apply.
    // The screen size at the time was 640. So lets
    // set scale with this relationship
+   // This means that we no longer want to control this from the XML. 
+   // Lets remove it from there and hardcode scale here
    float height = getStage()->getSize().y;
-   float scale = objectNode.attribute("scale").as_float() / 640.0f * height;
+   float scale = 0.3f / 640.0f * height;
    setScale(scale);
 
-   attachTo(sceneParent);
+   attachTo(m_sceneParent);
 
    m_positionIndicator = new Sprite();
    m_positionIndicator->setResAnim(m_gameResources->getResAnim("lf_position"));
@@ -87,6 +89,9 @@ PlanetActor::PlanetActor(
    m_positionIndicator->addTween(Actor::TweenPosition(c_trajectoryPositions[0] + m_orbitStartPos), 6000, 1, false, 0, Tween::ease_outQuad);
 
    spTween rotTween = m_planet->addTween(Actor::TweenRotation(2.0f * MATH_PI), 90000, -1);
+
+   m_spaceSceneBackground = objectNode.attribute("spaceSceneBackground").as_string();
+   m_spaceSceneFile = objectNode.attribute("spaceSceneFile").as_string();
 
 }
 

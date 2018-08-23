@@ -180,6 +180,7 @@
     <ClCompile Include="..\src\landercontactlistener.cpp" />
     <ClCompile Include="..\src\landingpad.cpp" />
     <ClCompile Include="..\src\launchsite.cpp" />
+    <ClCompile Include="..\src\layout.cpp" />
     <ClCompile Include="..\src\mainactor.cpp" />
     <ClCompile Include="..\src\landingactor.cpp" />
     <ClCompile Include="..\src\leapfrog.cpp" />
@@ -271,6 +272,7 @@
     <ClInclude Include="..\src\landingpadevents.h" />
     <ClInclude Include="..\src\launchsite.h" />
     <ClInclude Include="..\src\launchsiteevents.h" />
+    <ClInclude Include="..\src\layout.h" />
     <ClInclude Include="..\src\leapfrogevents.h" />
     <ClInclude Include="..\src\mainactor.h" />
     <ClInclude Include="..\src\landingactor.h" />

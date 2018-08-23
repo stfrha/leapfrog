@@ -7,9 +7,10 @@
 			state="default" >
 			<properties
 				texture="planet_rock" 
+				spaceSceneBackground="starfield"
+				spaceSceneFile="orbit_space_scene.xml" 
 				posX="-30.0"
-				posY="20.0"
-				scale="0.3"	>
+				posY="20.0" >
 				<landingSites>
 					<landingSite
 						name="goldMine"
@@ -22,7 +23,8 @@
 				</landingSites>
 			</properties>
 		</stateProperties>	
-	</planetActor>
+	</planetActor>	   
+<!--
 	<clippedWindow
 		name="orbitWindow">
 		<stateProperties
@@ -38,5 +40,6 @@
 				spaceSceneFile="orbit_space_scene.xml" />
 		</stateProperties>	
 	</clippedWindow>
+-->
 </compoundObject>
 
