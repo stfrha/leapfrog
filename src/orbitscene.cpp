@@ -46,7 +46,7 @@ OrbitScene::OrbitScene(
    float w = g_Layout.getButtonWidth() * 4.0f;
    float h = g_Layout.getButtonWidth() * 2.0f;
    float s = 0.4f / w * 300.0f;
-   float ft = 1.0f / w * 300.0f;
+   float ft = 1.0f / 300.0f * w;
 
 
    orbWin->InitiateOrbitWindow(
