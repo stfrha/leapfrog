@@ -1,16 +1,18 @@
 #include "planetactor.h"
 #include "sceneactor.h"
+#include "layout.h"
 
 using namespace oxygine;
 using namespace pugi;
 
 PlanetActor::PlanetActor(
    Resources& gameResources,
-   SceneActor* m_sceneParent,
+   SceneActor* sceneParent,
    CompoundObject* parentObject,
    const xml_node& objectNode) :
    CompoundObject((SceneActor*)this),
    m_gameResources(&gameResources),
+   m_sceneParent(sceneParent),
    m_state(PAS_INITITAL),
    m_stateChange(true),
    m_orbitStartPos(Vector2(500.0f, 150.0f)),
@@ -64,7 +66,18 @@ PlanetActor::PlanetActor(
    }
    
    setAnchor(0.5f, 0.5f);
-   setPosition(objectNode.attribute("posX").as_float(), objectNode.attribute("posY").as_float());
+//   setPosition(objectNode.attribute("posX").as_float(), objectNode.attribute("posY").as_float());
+
+   float height = getStage()->getSize().y;
+
+   // Originally the position was read from XML and trimmed to 
+   // -30,50 for a screen resolution of 960,640.
+   // To maintain the position relative to the bottom of 
+   // the screen the 20 value is recalculated.
+   float yp = 20.0f / 640.0f * height;
+   setPosition(-30.0f, yp);
+   
+   //setPosition(objectNode.attribute("posX").as_float(), objectNode.attribute("posY").as_float());
 
    // The scale set in xml-file (0.3) was empirically found
    // for the size of the screen at the time. 
@@ -73,7 +86,6 @@ PlanetActor::PlanetActor(
    // set scale with this relationship
    // This means that we no longer want to control this from the XML. 
    // Lets remove it from there and hardcode scale here
-   float height = getStage()->getSize().y;
    float scale = 0.3f / 640.0f * height;
    setScale(scale);
 
@@ -179,43 +191,92 @@ void PlanetActor::orbitEstablished(void)
 
    m_positionIndicator->setPosition(c_trajectoryPositions[0] + m_orbitStartPos);
 
+   //spColorRectSprite burnFrame = new ColorRectSprite();
+   //burnFrame->setAnchor(0.5f, 0.5f);
+   //burnFrame->setSize(100.0f, 500.0f);
+   //burnFrame->setColor(Color::Fuchsia);
+   //burnFrame->setPosition(2800.0f, 900.0f);
+   //burnFrame->attachTo(this);
+
+   //spColorRectSprite burnHaze = new ColorRectSprite();
+   //burnHaze->setAnchor(0.5f, 0.5f);
+   //burnHaze->setSize(96.0f, 496.0f);
+   //burnHaze->setColor(Color::Purple);
+   //burnHaze->setPosition(2800.0f, 900.0f);
+   //burnHaze->attachTo(this);
+
+   //spColorRectSprite safeZoom = new ColorRectSprite();
+   //safeZoom->setAnchor(0.5f, 0.5f);
+   //safeZoom->setSize(96.0f, 100.0f);
+   //safeZoom->setColor(Color::Fuchsia);
+   //safeZoom->setPosition(2800.0f, 800.0f);
+   //safeZoom->setAlpha(96);
+   //safeZoom->attachTo(this);
+
+   //m_burnIndicator = new ProgressBar();
+   //m_burnIndicator->setAnchor(0.5f, 0.5f);
+   //m_burnIndicator->setSize(100.0f, 500.0f);
+   //m_burnIndicator->setColor(Color::Fuchsia);
+   //m_burnIndicator->setDirection(ProgressBar::dir_90);
+   //m_burnIndicator->setPosition(2800.0f, 900.0f);
+   //m_burnIndicator->attachTo(this);
+   //m_burnIndicator->setProgress(0.0f);
+
+   //spSprite level = new Sprite();
+   //level->setResAnim(m_gameResources->getResAnim("reentry_burn_level"));
+   //level->setAnchor(0.5f, 0.5f);
+   //level->setSize(150.0f, 34.0f);
+   //level->setPosition(2800.0f, 800.0f);
+   //level->attachTo(this);
+
+   float barHeight = 3.0f * g_Layout.getButtonWidth();
+   float barVertCenter = g_Layout.getYFromTop(3) + g_Layout.getButtonWidth() / 2 + barHeight / 2.0f;
+   float barWidth = barHeight * 0.2f;
+   float barHorCenter = g_Layout.getXFromRight(3) + g_Layout.getButtonWidth() / 2 + barWidth / 2.0f;
+   float barCaretWidth = barHeight * 0.3f;
+   float barCaretHeight = barHeight * 0.068f;
+   float barCaretVertCenter = barVertCenter - barHeight * 0.2f; // ALso center of safe zone
+   float barSafeZoneHeight = barHeight * 0.2f;
+   float barInsideFrameWidth = barWidth - barHeight * 0.008;
+   float barInsideFrameHeight = barHeight - barHeight * 0.008;
+
    spColorRectSprite burnFrame = new ColorRectSprite();
    burnFrame->setAnchor(0.5f, 0.5f);
-   burnFrame->setSize(100.0f, 500.0f);
+   burnFrame->setSize(barWidth, barHeight);
    burnFrame->setColor(Color::Fuchsia);
-   burnFrame->setPosition(2800.0f, 900.0f);
-   burnFrame->attachTo(this);
+   burnFrame->setPosition(barHorCenter, barVertCenter);
+   burnFrame->attachTo(m_sceneParent);
 
    spColorRectSprite burnHaze = new ColorRectSprite();
    burnHaze->setAnchor(0.5f, 0.5f);
-   burnHaze->setSize(96.0f, 496.0f);
+   burnHaze->setSize(barInsideFrameWidth, barInsideFrameHeight);
    burnHaze->setColor(Color::Purple);
-   burnHaze->setPosition(2800.0f, 900.0f);
-   burnHaze->attachTo(this);
+   burnHaze->setPosition(barHorCenter, barVertCenter);
+   burnHaze->attachTo(m_sceneParent);
 
    spColorRectSprite safeZoom = new ColorRectSprite();
    safeZoom->setAnchor(0.5f, 0.5f);
-   safeZoom->setSize(96.0f, 100.0f);
+   safeZoom->setSize(barInsideFrameWidth, barSafeZoneHeight);
    safeZoom->setColor(Color::Fuchsia);
-   safeZoom->setPosition(2800.0f, 800.0f);
+   safeZoom->setPosition(barHorCenter, barCaretVertCenter);
    safeZoom->setAlpha(96);
-   safeZoom->attachTo(this);
+   safeZoom->attachTo(m_sceneParent);
 
    m_burnIndicator = new ProgressBar();
    m_burnIndicator->setAnchor(0.5f, 0.5f);
-   m_burnIndicator->setSize(100.0f, 500.0f);
+   m_burnIndicator->setSize(barInsideFrameWidth, barInsideFrameHeight);
    m_burnIndicator->setColor(Color::Fuchsia);
    m_burnIndicator->setDirection(ProgressBar::dir_90);
-   m_burnIndicator->setPosition(2800.0f, 900.0f);
-   m_burnIndicator->attachTo(this);
+   m_burnIndicator->setPosition(barHorCenter, barVertCenter);
+   m_burnIndicator->attachTo(m_sceneParent);
    m_burnIndicator->setProgress(0.0f);
 
    spSprite level = new Sprite();
    level->setResAnim(m_gameResources->getResAnim("reentry_burn_level"));
    level->setAnchor(0.5f, 0.5f);
-   level->setSize(150.0f, 34.0f);
-   level->setPosition(2800.0f, 800.0f);
-   level->attachTo(this);
+   level->setSize(barCaretWidth, barCaretHeight);
+   level->setPosition(barHorCenter, barCaretVertCenter);
+   level->attachTo(m_sceneParent);
 }
 
 

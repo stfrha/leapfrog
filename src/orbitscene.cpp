@@ -41,11 +41,11 @@ OrbitScene::OrbitScene(
    // Frame thickness   1.0f,
    // Scale   0.4f,
 
-   float x = g_Layout.getXFromRight(3) - g_Layout.getButtonWidth() / 2.0f;
+   float x = g_Layout.getXFromRight(2) - g_Layout.getButtonWidth() / 2.0f;
    float y = g_Layout.getYFromTop(1) + g_Layout.getButtonWidth() / 2.0f;
-   float w = g_Layout.getButtonWidth() * 4.0f;
-   float h = g_Layout.getButtonWidth() * 2.0f;
-   float s = 0.4f / w * 300.0f;
+   float w = g_Layout.getButtonWidth() * 3.0f;
+   float h = g_Layout.getButtonWidth() * 1.5f;
+   float s = 0.4f * w / 300.0f;
    float ft = 1.0f / 300.0f * w;
 
 
@@ -58,7 +58,7 @@ OrbitScene::OrbitScene(
       w,
       h,
       ft,
-      0.4f,
+      s,
       m_planet->m_spaceSceneBackground,
       m_planet->m_spaceSceneFile,
       "default");
