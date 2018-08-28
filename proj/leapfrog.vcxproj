@@ -88,6 +88,9 @@
       <AdditionalLibraryDirectories>../../oxygine-framework//oxygine/third_party/win32/libraries;../../oxygine-framework//libs;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalOptions>/ignore:4099 %(AdditionalOptions)</AdditionalOptions>
     </Link>
+    <Manifest>
+      <EnableDpiAwareness>PerMonitorHighDPIAware</EnableDpiAwareness>
+    </Manifest>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
@@ -176,6 +179,7 @@
     <ClCompile Include="..\src\flamesmokeparticle.cpp" />
     <ClCompile Include="..\src\freespaceactor.cpp" />
     <ClCompile Include="..\src\freespacecontactlistener.cpp" />
+    <ClCompile Include="..\src\gamestatus.cpp" />
     <ClCompile Include="..\src\gun.cpp" />
     <ClCompile Include="..\src\landercontactlistener.cpp" />
     <ClCompile Include="..\src\landingpad.cpp" />
@@ -201,6 +205,7 @@
     <ClCompile Include="..\src\shield.cpp" />
     <ClCompile Include="..\src\smokeparticle.cpp" />
     <ClCompile Include="..\src\softboundary.cpp" />
+    <ClCompile Include="..\src\statusbar.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Box2D\Box2D\Box2D\Box2D.h" />
@@ -265,6 +270,8 @@
     <ClInclude Include="..\src\flamesmokeparticle.h" />
     <ClInclude Include="..\src\freespaceactor.h" />
     <ClInclude Include="..\src\freespacecontactlistener.h" />
+    <ClInclude Include="..\src\gamestatus.h" />
+    <ClInclude Include="..\src\gamestatusevents.h" />
     <ClInclude Include="..\src\gun.h" />
     <ClInclude Include="..\src\landercontactlistener.h" />
     <ClInclude Include="..\src\landingactorevents.h" />
@@ -296,6 +303,7 @@
     <ClInclude Include="..\src\smokeparticle.h" />
     <ClInclude Include="..\src\softboundary.h" />
     <ClInclude Include="..\src\static.h" />
+    <ClInclude Include="..\src\statusbar.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

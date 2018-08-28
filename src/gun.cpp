@@ -1,8 +1,7 @@
 #include "freespaceactor.h"
-
 #include "bullet.h"
-
 #include "gun.h"
+#include "gamestatus.h"
 
 using namespace oxygine;
 
@@ -63,33 +62,38 @@ void Gun::doUpdate(const oxygine::UpdateState& us)
 
       if (m_timeSinceLast >= m_interval)
       {
-         b2Vec2 emitPos = m_emitterBody->GetWorldPoint(m_emitterOrigin);
+         if (g_GameStatus.getShots() > 0)
+         {
+            b2Vec2 emitPos = m_emitterBody->GetWorldPoint(m_emitterOrigin);
 
-         float bodyAngle = m_emitterBody->GetAngle();
-         float emitAngle = bodyAngle + m_emittAngle;
+            float bodyAngle = m_emitterBody->GetAngle();
+            float emitAngle = bodyAngle + m_emittAngle;
 
-         b2Vec2 craftSpeed = m_emitterBody->GetLinearVelocity();
+            b2Vec2 craftSpeed = m_emitterBody->GetLinearVelocity();
 
-         spBullet bullet = new Bullet(
-            *m_gameResources,
-            m_sceneActor,
-            m_emitterBody->GetWorld(),
-            emitPos,
-            emitAngle,
-            m_impulseMagnitude,
-            craftSpeed,
-            m_lifetime,
-            false);
+            spBullet bullet = new Bullet(
+               *m_gameResources,
+               m_sceneActor,
+               m_emitterBody->GetWorld(),
+               emitPos,
+               emitAngle,
+               m_impulseMagnitude,
+               craftSpeed,
+               m_lifetime,
+               false);
 
-         // Attach to parent's parent which is the view actor
-         bullet->attachTo(getParent()->getParent());
+            // Attach to parent's parent which is the view actor
+            bullet->attachTo(getParent()->getParent());
 
-         //if (m_freeSpaceActor != NULL)
-         //{
-         //   m_freeSpaceActor->addBoundingBody((b2Body*)bullet.get()->getUserData());
-         //}
-         
-         m_timeSinceLast = 0;
+            //if (m_freeSpaceActor != NULL)
+            //{
+            //   m_freeSpaceActor->addBoundingBody((b2Body*)bullet.get()->getUserData());
+            //}
+
+            m_timeSinceLast = 0;
+
+            g_GameStatus.deltaShots(-1);
+         }
       }
    }
 }

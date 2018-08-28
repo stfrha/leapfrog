@@ -94,4 +94,5 @@
 	</atlas>		
 	<set path = "fonts" />
 	<font file="main.fnt" />	
+	<font file="lf_font.fnt" />	
 </resources>

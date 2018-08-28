@@ -26,14 +26,14 @@ void Layout::initLayout(void)
 
       if (inchButtonWidth < 0.4f)
       {
-         m_buttonWidth = hdpi / 0.4f;
+         m_buttonWidth = hdpi * 0.4f;
       }
 
       float inchButtonHeight = m_buttonWidth / vdpi;
 
       if (inchButtonHeight < 0.4f)
       {
-         m_buttonWidth = vdpi / 0.4f;
+         m_buttonWidth = vdpi * 0.4f;
       }
    }
 }

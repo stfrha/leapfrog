@@ -7,8 +7,10 @@
 #include "landingactorevents.h"
 #include "deepspacesceneevents.h"
 #include "layout.h"
-
+#include "gamestatus.h"
+#include "statusbar.h"
 #include "mainactor.h"
+
 
 using namespace oxygine;
 using namespace std;
@@ -16,15 +18,16 @@ using namespace std;
 MainActor::MainActor()
 {
    g_Layout.initLayout();
+   g_GameStatus.initGameStatus(this);
 
 	//load xml file with resources definition
 	m_gameResources.loadXML("res.xml");
 
 	setSize(getStage()->getSize());
 
-   // startScene(STE_LANDING);
-   //   startScene(STE_FREE_SPACE);
-   startScene(STE_ORBIT);
+   startScene(STE_LANDING);
+   // startScene(STE_FREE_SPACE);
+   // startScene(STE_ORBIT);
 
    addTouchDownListener(CLOSURE(this, &MainActor::sceneDownHandler));
    addTouchUpListener(CLOSURE(this, &MainActor::sceneUpHandler));
@@ -96,6 +99,18 @@ void MainActor::startScene(SceneTypeEnum scene)
    //m_debugDraw->attachTo(freeSpaceActor);
    //m_debugDraw->setWorld(Scales::c_physToStageScale, freeSpaceActor->GetWorld());
    //m_debugDraw->setPriority(1);
+
+   spStatusBar sb = new StatusBar(
+      m_gameResources,
+      m_sceneObject,
+      Vector2(g_Layout.getXFromRight(1), g_Layout.getYFromTop(2)),
+      Vector2(g_Layout.getButtonWidth() * 2.0f, g_Layout.getButtonWidth() / 2.0f),
+      100.0f,
+      g_GameStatus.getShots(),
+      "Ammo:",
+      StatusChangedEvent::GameStatusTypeEnum::shots);
+
+   sb->attachTo(this);
 
    createButtonOverlay();
 }
@@ -191,6 +206,13 @@ void MainActor::doUpdate(const UpdateState& us)
    {
       startScene(STE_ORBIT);
    }
+   else if (data[SDL_SCANCODE_F4])
+   {
+      StatusChangedEvent event(StatusChangedEvent::GameStatusTypeEnum::shots, 50.0f, 100.0f);
+      dispatchEvent(&event);
+   }
+
+
 }
 
 

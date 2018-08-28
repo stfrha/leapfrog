@@ -55,6 +55,13 @@ PlanetActor::PlanetActor(
    mask->attachTo(maskedSprite);
    mask->setVisible(false);
 
+   // Test
+   spColorRectSprite mask2 = new ColorRectSprite();
+   mask2->setColor(Color::Black);
+   mask2->setSize(6000.0f, 6000.0f);
+   mask2->setAnchor(0.5f, 0.5f);
+   mask2->attachTo(mask);
+
    maskedSprite->setMask(mask, true);
 
    for (auto it = objectNode.child("landingSites").children("landingSite").begin();
@@ -69,6 +76,7 @@ PlanetActor::PlanetActor(
 //   setPosition(objectNode.attribute("posX").as_float(), objectNode.attribute("posY").as_float());
 
    float height = getStage()->getSize().y;
+   float width = getStage()->getSize().x;
 
    // Originally the position was read from XML and trimmed to 
    // -30,50 for a screen resolution of 960,640.
@@ -86,8 +94,11 @@ PlanetActor::PlanetActor(
    // set scale with this relationship
    // This means that we no longer want to control this from the XML. 
    // Lets remove it from there and hardcode scale here
-   float scale = 0.3f / 640.0f * height;
-   setScale(scale);
+   float vScale = 0.3f / 640.0f * height;
+   float hScale = 0.3f / 960.0f * width;
+
+
+   setScale(fmin(vScale, hScale));
 
    attachTo(m_sceneParent);
 
@@ -229,10 +240,10 @@ void PlanetActor::orbitEstablished(void)
    //level->setPosition(2800.0f, 800.0f);
    //level->attachTo(this);
 
-   float barHeight = 3.0f * g_Layout.getButtonWidth();
-   float barVertCenter = g_Layout.getYFromTop(3) + g_Layout.getButtonWidth() / 2 + barHeight / 2.0f;
+   float barHeight = 2.0f * g_Layout.getButtonWidth();
+   float barVertCenter = g_Layout.getYFromBottom(1) + barHeight / 2.0f;
    float barWidth = barHeight * 0.2f;
-   float barHorCenter = g_Layout.getXFromRight(3) + g_Layout.getButtonWidth() / 2 + barWidth / 2.0f;
+   float barHorCenter = g_Layout.getXFromLeft(2) + g_Layout.getButtonWidth() / 2 + barWidth / 2.0f;
    float barCaretWidth = barHeight * 0.3f;
    float barCaretHeight = barHeight * 0.068f;
    float barCaretVertCenter = barVertCenter - barHeight * 0.2f; // ALso center of safe zone
