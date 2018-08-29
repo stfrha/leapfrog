@@ -8,16 +8,18 @@ GameStatus g_GameStatus;
 
 GameStatus::GameStatus()
 {
-}
-
-void GameStatus::initGameStatus(Actor* parent)
-{
-   m_parent = parent;
    // This should probably be read from a file or 
    // some non-volatile memory. But how?!?!
    m_leapFrogShots = 100;
-   m_leapFrogShield = 0.5;
+   m_leapFrogFuel = 100.0f;
+   m_leapFrogShield = 0.5f;
    m_credits = 248;
+   m_statusEventOriginator = NULL;
+}
+
+void GameStatus::initGameStatus(Actor* statusEventOriginator)
+{
+   m_statusEventOriginator = statusEventOriginator;
 }
 
 int GameStatus::getShots(void)
@@ -30,7 +32,11 @@ void  GameStatus::deltaShots(int shots)
    m_leapFrogShots += shots;
 
    StatusChangedEvent event(StatusChangedEvent::GameStatusTypeEnum::shots, m_leapFrogShots, 100.0f);
-   m_parent->dispatchEvent(&event);
+   
+   if (m_statusEventOriginator)
+   {
+      m_statusEventOriginator->dispatchEvent(&event);
+   }
 }
 
 float GameStatus::getShield(void)
@@ -43,7 +49,11 @@ void GameStatus::deltaShield(float shield)
    m_leapFrogShield += shield;
 
    StatusChangedEvent event(StatusChangedEvent::GameStatusTypeEnum::shield, m_leapFrogShield, 1.0f);
-   m_parent->dispatchEvent(&event);
+
+   if (m_statusEventOriginator)
+   {
+      m_statusEventOriginator->dispatchEvent(&event);
+   }
 }
 
 float GameStatus::getFuel(void)
@@ -56,7 +66,11 @@ void GameStatus::deltaFuel(float fuel)
    m_leapFrogFuel += fuel;
 
    StatusChangedEvent event(StatusChangedEvent::GameStatusTypeEnum::fuel, m_leapFrogFuel, 100.0f);
-   m_parent->dispatchEvent(&event);
+
+   if (m_statusEventOriginator)
+   {
+      m_statusEventOriginator->dispatchEvent(&event);
+   }
 }
 
 int GameStatus::getCredits(void)
@@ -69,6 +83,10 @@ void  GameStatus::deltaCredits(int credits)
    m_credits += credits;
 
    StatusChangedEvent event(StatusChangedEvent::GameStatusTypeEnum::credits, m_credits, 100.0f);
-   m_parent->dispatchEvent(&event);
+
+   if (m_statusEventOriginator)
+   {
+      m_statusEventOriginator->dispatchEvent(&event);
+   }
 }
 

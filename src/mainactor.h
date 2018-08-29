@@ -50,6 +50,8 @@ private:
    void sceneUpHandler(Event* event);
    void sceneMoveHandler(Event* event);
 
+   void dummyHandler(Event* event);
+
 public:
 
 	MainActor();

@@ -20,6 +20,7 @@ private:
 public:
    StatusBar(
       oxygine::Resources& gameResources,
+      oxygine::Actor* eventActor,
       SceneActor* sceneActor,
       const oxygine::Vector2 & pos,
       const oxygine::Vector2 & size,
@@ -29,6 +30,7 @@ public:
       StatusChangedEvent::GameStatusTypeEnum statusType);
 
    void statusChangedListner(oxygine::Event *ev);
+   void dummyListner(oxygine::Event *ev);
 
 protected:
 	void doUpdate(const oxygine::UpdateState& us);

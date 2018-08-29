@@ -11,13 +11,15 @@ private:
    float m_leapFrogFuel;
    int m_credits;
 
-   // Parent is used to dispatch events (since this global object is bad for being an actor)
-   oxygine::Actor* m_parent;
+   // originators are used to dispatch events (since this global object is bad for being an actor)
+   // and because (I presume) event goes down and back up a hiearchy branch which may differ
+   // for different status views
+   oxygine::Actor* m_statusEventOriginator;
 
 public:
 	GameStatus();
 
-   void initGameStatus(oxygine::Actor* parent);
+   void initGameStatus(oxygine::Actor* originator);
 
    int getShots(void);
    void  deltaShots(int shots);

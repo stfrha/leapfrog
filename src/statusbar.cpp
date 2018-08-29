@@ -2,12 +2,14 @@
 #include "gamestatus.h"
 #include "sceneactor.h"
 #include "gamestatusevents.h"
+#include "leapfrogevents.h"
 
 using namespace oxygine;
 using namespace std;
 
 StatusBar::StatusBar(
    Resources& gameResources,
+   oxygine::Actor* eventActor,
    SceneActor* sceneActor,
    const Vector2& pos,
    const Vector2& size,
@@ -20,9 +22,10 @@ StatusBar::StatusBar(
    m_headline(headline),
    m_statusType(statusType)
 {
-   setPosition(pos);
+   setPosition(pos + Vector2(-2.0f, 0.0f));
    setAnchor(0.0f, 0.0f);
    setPriority(163);
+   attachTo(sceneActor->getParent());
 
    // Status bar has headline and progress bar beneath
 
@@ -37,16 +40,16 @@ StatusBar::StatusBar(
    t->setStyle(style);
 
    t->setText(m_headline);
-   t->setPosition(pos);
+   t->setPosition(0.0f, 0.0f);
    t->setScale(0.5f);
 
-   t->attachTo(sceneActor->getParent());
+   t->attachTo(this);
 
    spActor theBar = new Actor();
    theBar->setAnchor(0.0f, 0.0f);
    theBar->setSize(size.x, size.y / 2.0f);
-   theBar->setPosition(pos + Vector2(-2.0f, size.y / 2.0f));
-   theBar->attachTo(sceneActor->getParent());
+   theBar->setPosition(-2.0f, size.y / 2.0f);
+   theBar->attachTo(this);
 
    spColorRectSprite top = new ColorRectSprite();
    top->setColor(Color::Fuchsia);
@@ -88,8 +91,7 @@ StatusBar::StatusBar(
    m_progressBar->setDirection(ProgressBar::direction::dir_0);
    m_progressBar->setProgress(initialProgress/maxProgress);
 
-   addEventListener(StatusChangedEvent::EVENT, CLOSURE(this, &StatusBar::statusChangedListner));
-
+   eventActor->addEventListener(StatusChangedEvent::EVENT, CLOSURE(this, &StatusBar::statusChangedListner));
 }
 
 void StatusBar::doUpdate(const oxygine::UpdateState& us)
@@ -100,8 +102,13 @@ void StatusBar::statusChangedListner(Event *ev)
 {
    StatusChangedEvent* e = (StatusChangedEvent*)ev;
 
-   if (e->type == m_statusType)
+   if (e->m_type == m_statusType)
    {
       m_progressBar->setProgress(e->m_value / e->m_max);
    }
+}
+
+void StatusBar::dummyListner(oxygine::Event *ev)
+{
+   logs::messageln("Got dummy event inside StatusBar");
 }

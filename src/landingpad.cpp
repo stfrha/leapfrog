@@ -3,6 +3,8 @@
 
 #include "sceneactor.h"
 
+#include "gamestatus.h"
+
 using namespace oxygine;
 using namespace std;
 
@@ -42,6 +44,7 @@ void LandingPad::leapfrogFootTouch(b2Contact* contact, bool leftFoot)
       // Start timer and at the end of that, if both feet still
       // are in contact, send event for Leapfrog has landed.
       logs::messageln("Landing Pad landing stable");
+      g_GameStatus.deltaFuel(100.0f - g_GameStatus.getFuel());
    }
 }
 

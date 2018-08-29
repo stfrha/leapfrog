@@ -11,6 +11,7 @@
 #include "statusbar.h"
 #include "mainactor.h"
 
+#include "gamestatusevents.h"
 
 using namespace oxygine;
 using namespace std;
@@ -25,13 +26,14 @@ MainActor::MainActor()
 
 	setSize(getStage()->getSize());
 
-   startScene(STE_LANDING);
-   // startScene(STE_FREE_SPACE);
+   //startScene(STE_LANDING);
+   startScene(STE_FREE_SPACE);
    // startScene(STE_ORBIT);
 
    addTouchDownListener(CLOSURE(this, &MainActor::sceneDownHandler));
    addTouchUpListener(CLOSURE(this, &MainActor::sceneUpHandler));
-//   addEventListener(TouchEvent::MOVE, CLOSURE(this, &MainActor::sceneMoveHandler));
+
+   //   addEventListener(TouchEvent::MOVE, CLOSURE(this, &MainActor::sceneMoveHandler));
 
 }
 
@@ -65,6 +67,11 @@ void MainActor::startScene(SceneTypeEnum scene)
    // Start selected scene
    if (scene == STE_LANDING)
    { 
+      //spClipRectActor window = new ClipRectActor();
+
+      //window->setSize(getStage()->getSize() - Vector2(100, 100));
+      //window->setPosition(50.0f, 50.0f);
+      //addChild(window);
 
       spLandingActor landingActor = new LandingActor(m_gameResources, string("landing_scene.xml"), string("landingState"));
       window->addChild(landingActor);
@@ -75,6 +82,12 @@ void MainActor::startScene(SceneTypeEnum scene)
    }
    else if (scene == STE_FREE_SPACE)
    {
+      //spClipRectActor window = new ClipRectActor();
+
+      //window->setSize(getStage()->getSize() - Vector2(100, 100));
+      //window->setPosition(50.0f, 50.0f);
+      //addChild(window);
+
       spFreeSpaceActor freeSpaceActor = new FreeSpaceActor(m_gameResources, string("deep_space_scene.xml"), string("deepSpaceState"));
       window->addChild(freeSpaceActor);
 
@@ -85,6 +98,11 @@ void MainActor::startScene(SceneTypeEnum scene)
    }
    else if (scene == STE_ORBIT)
    {
+      //spClipRectActor window = new ClipRectActor();
+
+      //window->setSize(getStage()->getSize() - Vector2(100, 100));
+      //window->setPosition(50.0f, 50.0f);
+      //addChild(window);
 
       spOrbitScene reentryActor = new OrbitScene(m_gameResources, string("orbit_scene.xml"), string("deepSpaceState"));
       window->addChild(reentryActor);
@@ -100,8 +118,9 @@ void MainActor::startScene(SceneTypeEnum scene)
    //m_debugDraw->setWorld(Scales::c_physToStageScale, freeSpaceActor->GetWorld());
    //m_debugDraw->setPriority(1);
 
-   spStatusBar sb = new StatusBar(
+   spStatusBar shotsBar = new StatusBar(
       m_gameResources,
+      this,
       m_sceneObject,
       Vector2(g_Layout.getXFromRight(1), g_Layout.getYFromTop(2)),
       Vector2(g_Layout.getButtonWidth() * 2.0f, g_Layout.getButtonWidth() / 2.0f),
@@ -110,7 +129,16 @@ void MainActor::startScene(SceneTypeEnum scene)
       "Ammo:",
       StatusChangedEvent::GameStatusTypeEnum::shots);
 
-   sb->attachTo(this);
+   spStatusBar fuelBar = new StatusBar(
+      m_gameResources,
+      this,
+      m_sceneObject,
+      Vector2(g_Layout.getXFromRight(1), g_Layout.getYFromTop(2) + g_Layout.getButtonWidth() / 2.0f + 2.0f),
+      Vector2(g_Layout.getButtonWidth() * 2.0f, g_Layout.getButtonWidth() / 2.0f),
+      100.0f,
+      g_GameStatus.getFuel(),
+      "Fuel:",
+      StatusChangedEvent::GameStatusTypeEnum::fuel);
 
    createButtonOverlay();
 }
@@ -206,13 +234,6 @@ void MainActor::doUpdate(const UpdateState& us)
    {
       startScene(STE_ORBIT);
    }
-   else if (data[SDL_SCANCODE_F4])
-   {
-      StatusChangedEvent event(StatusChangedEvent::GameStatusTypeEnum::shots, 50.0f, 100.0f);
-      dispatchEvent(&event);
-   }
-
-
 }
 
 
@@ -424,3 +445,7 @@ void MainActor::sceneMoveHandler(Event* event)
 
 }
 
+void MainActor::dummyHandler(Event* event)
+{
+   logs::messageln("Got dummy event");
+}

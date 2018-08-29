@@ -11,6 +11,8 @@
 
 #include "leapfrogevents.h"
 
+#include "gamestatus.h"
+
 using namespace oxygine;
 using namespace std;
 
@@ -857,6 +859,7 @@ void LeapFrog::holdAngleReached(void)
 
 
 void LeapFrog::fireMainBooster(bool fire, bool flamesOnly)
+// Will be called each doUpdate when fire is pressed
 {
    // Handle booster flame particles
 
@@ -876,6 +879,15 @@ void LeapFrog::fireMainBooster(bool fire, bool flamesOnly)
          m_boosterFlame->stopEmitter();
       }
    }
+
+   // Below override any booster settings on ground if no fuel
+   if ((m_environment == ENV_GROUND) && (g_GameStatus.getFuel() == 0.0f))
+   {
+      // Turn emitter off here, will be turned off each update that 
+      // the booster is pressed with no fule, in land
+      m_boosterFlame->stopEmitter();
+   }
+
 
    if (!flamesOnly)
    {
@@ -947,12 +959,13 @@ void LeapFrog::fireMainBooster(bool fire, bool flamesOnly)
       }
       else if (m_environment == ENV_GROUND)
       {
-         if (fire)
+         if (fire && (g_GameStatus.getFuel() > 0))
          {
             m_boostMagnuitude += m_boostInc;
             if (m_boostMagnuitude > m_boostMaxMagnitude)
             {
                m_boostMagnuitude = m_boostMaxMagnitude;
+               g_GameStatus.deltaFuel(-m_boostMagnuitude / 240000.0f);
             }
          }
          else
@@ -976,7 +989,6 @@ void LeapFrog::fireMainBooster(bool fire, bool flamesOnly)
 void LeapFrog::fireSteeringBooster(int dir)
 {
    // Handle booster flame particles
-
    if (dir == -1)
    {
 
@@ -999,6 +1011,17 @@ void LeapFrog::fireSteeringBooster(int dir)
    {
       if ((m_leftSteerFireLastUpdate == true) || (m_rightSteerFireLastUpdate == true))
       { 
+         m_rightSteerFlame->stopEmitter();
+         m_leftSteerFlame->stopEmitter();
+      }
+   }
+
+   if (m_environment == ENV_GROUND)
+   {
+      if (g_GameStatus.getFuel() == 0.0f)
+      {
+         // Turn emitter off here, will be turned off each update that 
+         // the booster is pressed with no fule, in land
          m_rightSteerFlame->stopEmitter();
          m_leftSteerFlame->stopEmitter();
       }
@@ -1035,11 +1058,11 @@ void LeapFrog::fireSteeringBooster(int dir)
    }
    else if (m_environment == ENV_GROUND)
    {
-      if (dir == -1)
+      if ((dir == -1) && (g_GameStatus.getFuel() > 0.0f))
       {
          m_steerMagnitude = -m_steerMaxMagnitude;
       }
-      else if (dir == 1)
+      else if ((dir == 1) && (g_GameStatus.getFuel() > 0.0f))
       {
          m_steerMagnitude = m_steerMaxMagnitude;
       }
