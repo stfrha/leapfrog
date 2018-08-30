@@ -20,7 +20,7 @@ void Layout::initLayout(void)
    // than 1 cm = 0.4 inch
    float ddpi, hdpi, vdpi;
 
-   if (SDL_GetDisplayDPI(0, &ddpi, &hdpi, &vdpi) == 0);
+   if (SDL_GetDisplayDPI(0, &ddpi, &hdpi, &vdpi) == 0)
    {
       float inchButtonWidth = m_buttonWidth / hdpi;
 
