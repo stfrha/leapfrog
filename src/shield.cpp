@@ -1,5 +1,7 @@
 #include "shield.h"
 
+#include "gamestatus.h"
+
 using namespace oxygine;
 
 Shield::Shield(Resources& gameResources, b2World* world, const Vector2& pos)
@@ -56,7 +58,7 @@ float Shield::getAngle(void)
    return m_angle;
 }
 
-void Shield::shieldHit(b2Contact* contact)
+void Shield::shieldHit(b2Contact* contact, const b2ContactImpulse* impulse)
 {
    b2WorldManifold m;
    contact->GetWorldManifold(&m);
@@ -75,6 +77,31 @@ void Shield::shieldHit(b2Contact* contact)
    spTween alphaTween = addTween(Actor::TweenAlpha(64), 500);
 
    animTween->setDoneCallback(CLOSURE(this, &Shield::atHitComplete));
+
+
+
+
+   float normalImpulses = 0.0f;
+
+   for (int i = 0; i < impulse->count; i++)
+   {
+      normalImpulses += impulse->normalImpulses[i];
+   }
+
+   g_GameStatus.deltaShield(-normalImpulses / 1000.0f);
+
+   if (g_GameStatus.getShield() <= 0.0f)
+   {
+      // Remove shield from collisions
+      b2Filter filt;
+      filt.categoryBits = 0;
+      filt.maskBits = 65535;
+
+      b2Fixture* bf = m_body->GetFixtureList();
+      bf->SetFilterData(filt);
+   }
+
+
 }
 
 

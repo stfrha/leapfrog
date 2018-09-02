@@ -16,8 +16,9 @@ StatusBar::StatusBar(
    const float maxProgress,
    const float initialProgress,
    string headline,
-   StatusChangedEvent::GameStatusTypeEnum statusType) :
+   GameStatusTypeEnum statusType) :
    m_sceneActor(sceneActor),
+   m_eventActor(eventActor),
    m_maxProgess(maxProgress),
    m_headline(headline),
    m_statusType(statusType)
@@ -37,11 +38,14 @@ StatusBar::StatusBar(
 
 //   TextStyle style = TextStyle(gameResources.getResFont("lf_font")).withColor(Color::Fuchsia).alignLeft();
    TextStyle style = TextStyle(gameResources.getResFont("lf_font")).withColor(Color::White).alignLeft();
+   style.fontSize = size.y / 2.0f / 8.0f * 6.0f;
    t->setStyle(style);
 
    t->setText(m_headline);
-   t->setPosition(0.0f, 0.0f);
-   t->setScale(0.5f);
+   t->setPosition(0.0f, size.y / 2.0f / 8.0f );
+   
+   // Set size of text to available height. Fonst size is 32.
+//   t->setScale(0.5f);
 
    t->attachTo(this);
 
@@ -91,7 +95,12 @@ StatusBar::StatusBar(
    m_progressBar->setDirection(ProgressBar::direction::dir_0);
    m_progressBar->setProgress(initialProgress/maxProgress);
 
-   eventActor->addEventListener(StatusChangedEvent::EVENT, CLOSURE(this, &StatusBar::statusChangedListner));
+   m_eventActor->addEventListener(StatusChangedEvent::EVENT, CLOSURE(this, &StatusBar::statusChangedListner));
+}
+
+void StatusBar::disconnectListner(void)
+{
+   m_eventActor->removeEventListener(StatusChangedEvent::EVENT);
 }
 
 void StatusBar::doUpdate(const oxygine::UpdateState& us)

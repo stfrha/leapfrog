@@ -4,8 +4,14 @@
 #include "bullet.h"
 #include "leapfrog.h"
 #include "shield.h"
+#include "gamestatus.h"
 
-void FreeSpaceContactListener::BeginContact(b2Contact* contact)
+
+void FreeSpaceContactListener::PreSolve(b2Contact* contact, const b2Manifold* oldManifold)
+{
+}
+
+void FreeSpaceContactListener::PostSolve(b2Contact* contact, const b2ContactImpulse* impulse)
 {
    CollisionEntityTypeEnum eA = ((CollisionEntity *)contact->GetFixtureA()->GetUserData())->getEntityType();
    CollisionEntityTypeEnum eB = ((CollisionEntity *)contact->GetFixtureB()->GetUserData())->getEntityType();
@@ -66,14 +72,28 @@ void FreeSpaceContactListener::BeginContact(b2Contact* contact)
    if (asteroid && shield)
    {
       // Asteroid hit shield
-      shield->shieldHit(contact);
+      shield->shieldHit(contact, impulse);
       asteroid->hitShield(contact);
    }
 
    // Gets here if shield no longer works
    if (asteroid && leapfrog)
    {
+      // Normally. body hits are prevented by shield
+      // but if it a hard hit body may gegt contact
+      // (from certain angles). In this case, if the 
+      // shield is still active, we do not damage
+      // leapfrog (by not calling hitAnything
+      if (g_GameStatus.getShield() <= 0.0f)
+      {
+         leapfrog->hitAnything(contact, impulse);
+      }
    }
+}
+
+
+void FreeSpaceContactListener::BeginContact(b2Contact* contact)
+{
 }
 
 void FreeSpaceContactListener::EndContact(b2Contact* contact)

@@ -29,8 +29,11 @@ private:
    oxygine::Rect m_zoomOutButtonRect;
 
    void transitToDeepSpaceListner(oxygine::Event *ev);
+   void fadeFromLanding(void);
    void transitToOrbitListner(oxygine::Event *ev);
    void landingCompleteListner(oxygine::Event *ev);
+   void goToDeepSpaceFader(Event *ev);
+   void resourceDepletedHandler(oxygine::Event *ev);
 
    //void calculateButtonGeometrics(void);
    //void turnLeftButtonDownHandler(Event* event);

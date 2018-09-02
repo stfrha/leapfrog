@@ -22,7 +22,7 @@ public:
    virtual CollisionEntityTypeEnum getEntityType(void);
    void setAngle(float angle);
    float getAngle(void);
-   void shieldHit(b2Contact* contact);
+   void shieldHit(b2Contact* contact, const b2ContactImpulse* impulse);
 
 protected:
 	void doUpdate(const oxygine::UpdateState& us);

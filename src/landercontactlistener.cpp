@@ -13,6 +13,40 @@ void LanderContactListener::InitContactListner(SceneActor* sceneActor)
    m_sceneActor = sceneActor;
 }
 
+void LanderContactListener::PostSolve(b2Contact* contact, const b2ContactImpulse* impulse)
+{
+   // We only check for Main body hits here since this is called more often than the
+   //
+   CollisionEntityTypeEnum eA = ((CollisionEntity *)contact->GetFixtureA()->GetUserData())->getEntityType();
+   CollisionEntityTypeEnum eB = ((CollisionEntity *)contact->GetFixtureB()->GetUserData())->getEntityType();
+
+   LeapFrog* leapfrogMainBody = NULL;
+
+   if (eA == CET_LEAPFROG)
+   {
+      CompoundObject* t = (CompoundObject*)(contact->GetFixtureA()->GetBody()->GetUserData());
+      leapfrogMainBody = (LeapFrog*)t->getParentObject();
+   }
+
+   if (eB == CET_LEAPFROG)
+   {
+      CompoundObject* t = (CompoundObject*)(contact->GetFixtureB()->GetBody()->GetUserData());
+      leapfrogMainBody = (LeapFrog*)t->getParentObject();
+   }
+
+
+   if (leapfrogMainBody)
+   {
+      leapfrogMainBody->hitAnything(contact, impulse);
+   }
+}
+
+
+
+
+
+
+
 
 void LanderContactListener::ContactHandler(b2Contact* contact, bool begin)
 {
@@ -57,20 +91,6 @@ void LanderContactListener::ContactHandler(b2Contact* contact, bool begin)
       launchSiteLeftRest = false;
    }
 
-   if (eA == CET_LF_LEFT_FOOT)
-   {
-      CompoundObject* t = (CompoundObject*)(contact->GetFixtureA()->GetBody()->GetUserData());
-      leapfrog = (LeapFrog*)t->getParentObject();
-      leapfrogLeftFoot = true;
-   }
-
-   if (eB == CET_LF_LEFT_FOOT)
-   {
-      CompoundObject* t = (CompoundObject*)(contact->GetFixtureB()->GetBody()->GetUserData());
-      leapfrog = (LeapFrog*)t->getParentObject();
-      leapfrogLeftFoot = true;
-   }
-
    if (eA == CET_LF_RIGHT_FOOT)
    {
       CompoundObject* t = (CompoundObject*)(contact->GetFixtureA()->GetBody()->GetUserData());
@@ -84,6 +104,21 @@ void LanderContactListener::ContactHandler(b2Contact* contact, bool begin)
       leapfrog = (LeapFrog*)t->getParentObject();
       leapfrogLeftFoot = false;
    }
+
+   if (eB == CET_LF_RIGHT_FOOT)
+   {
+      CompoundObject* t = (CompoundObject*)(contact->GetFixtureB()->GetBody()->GetUserData());
+      leapfrog = (LeapFrog*)t->getParentObject();
+      leapfrogLeftFoot = false;
+   }
+
+   if (eB == CET_LF_RIGHT_FOOT)
+   {
+      CompoundObject* t = (CompoundObject*)(contact->GetFixtureB()->GetBody()->GetUserData());
+      leapfrog = (LeapFrog*)t->getParentObject();
+      leapfrogLeftFoot = false;
+   }
+
 
    if (eA == CET_BULLET)
    {
@@ -165,7 +200,6 @@ void LanderContactListener::ContactHandler(b2Contact* contact, bool begin)
       bullet->hitAsteroid(contact);
       destroyable->hitByBullet(contact);
    }
-
 }
 
 void LanderContactListener::BeginContact(b2Contact* contact)

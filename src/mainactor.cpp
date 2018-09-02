@@ -26,12 +26,9 @@ MainActor::MainActor()
 
 	setSize(getStage()->getSize());
 
-   //startScene(STE_LANDING);
-   startScene(STE_FREE_SPACE);
+   startScene(STE_LANDING);
+   // startScene(STE_FREE_SPACE);
    // startScene(STE_ORBIT);
-
-   addTouchDownListener(CLOSURE(this, &MainActor::sceneDownHandler));
-   addTouchUpListener(CLOSURE(this, &MainActor::sceneUpHandler));
 
    //   addEventListener(TouchEvent::MOVE, CLOSURE(this, &MainActor::sceneMoveHandler));
 
@@ -45,6 +42,13 @@ MainActor::~MainActor()
 
 void MainActor::startScene(SceneTypeEnum scene)
 {
+   // Remove listners for statusbars
+   removeAllEventListeners();
+
+   // And then re-add those needed by main actor
+   addTouchDownListener(CLOSURE(this, &MainActor::sceneDownHandler));
+   addTouchUpListener(CLOSURE(this, &MainActor::sceneUpHandler));
+
    // Clean up current scene
    spActor actor = getFirstChild();
 
@@ -57,6 +61,9 @@ void MainActor::startScene(SceneTypeEnum scene)
       }
       actor = next;
    }
+
+
+
 
    spClipRectActor window = new ClipRectActor();
 
@@ -127,7 +134,7 @@ void MainActor::startScene(SceneTypeEnum scene)
       100.0f,
       g_GameStatus.getShots(),
       "Ammo:",
-      StatusChangedEvent::GameStatusTypeEnum::shots);
+      GameStatusTypeEnum::shots);
 
    spStatusBar fuelBar = new StatusBar(
       m_gameResources,
@@ -138,7 +145,31 @@ void MainActor::startScene(SceneTypeEnum scene)
       100.0f,
       g_GameStatus.getFuel(),
       "Fuel:",
-      StatusChangedEvent::GameStatusTypeEnum::fuel);
+      GameStatusTypeEnum::fuel);
+
+   spStatusBar shieldBar = new StatusBar(
+      m_gameResources,
+      this,
+      m_sceneObject,
+      Vector2(g_Layout.getXFromRight(1), g_Layout.getYFromTop(2) + g_Layout.getButtonWidth() / 2.0f * 2.0f + 2.0f),
+      Vector2(g_Layout.getButtonWidth() * 2.0f, g_Layout.getButtonWidth() / 2.0f),
+      100.0f,
+      g_GameStatus.getShield(),
+      "Shield:",
+      GameStatusTypeEnum::shield);
+
+   spStatusBar damageBar = new StatusBar(
+      m_gameResources,
+      this,
+      m_sceneObject,
+      Vector2(g_Layout.getXFromRight(1), g_Layout.getYFromTop(2) + g_Layout.getButtonWidth() / 2.0f * 3.0f + 2.0f),
+      Vector2(g_Layout.getButtonWidth() * 2.0f, g_Layout.getButtonWidth() / 2.0f),
+      100.0f,
+      g_GameStatus.getDamage(),
+      "Damage:",
+      GameStatusTypeEnum::damage);
+
+   addEventListener(StatusResourceDepletedEvent::EVENT, CLOSURE(this, &MainActor::resourceDepletedHandler));
 
    createButtonOverlay();
 }
@@ -205,7 +236,35 @@ void MainActor::sendEvent(int eventId)
 
 void MainActor::transitToDeepSpaceListner(Event *ev)
 {
+   fadeFromLanding();
+}
+
+void MainActor::fadeFromLanding(void)
+{
+   spColorRectSprite fader = new ColorRectSprite();
+   fader->setColor(Color::White);
+   fader->setPosition(m_sceneObject->getPosition());
+   fader->setSize(getStage()->getSize().x * m_sceneObject->getScale().x, getStage()->getSize().y * m_sceneObject->getScale().y);
+   fader->setAlpha(0.0f);
+   fader->setPriority(216);
+   fader->attachTo(m_sceneObject);
+   spTween tween = fader->addTween(Actor::TweenAlpha(255.0f), 500);
+
+   tween->setDoneCallback(CLOSURE(this, &MainActor::goToDeepSpaceFader));
+}
+
+void MainActor::goToDeepSpaceFader(Event *ev)
+{
    startScene(STE_FREE_SPACE);
+
+   spColorRectSprite fader = new ColorRectSprite();
+   fader->setColor(Color::White);
+   fader->setPosition(m_sceneObject->getPosition().x - 200.0f, m_sceneObject->getPosition().y + 200.0f);
+   fader->setSize(getStage()->getSize().x * m_sceneObject->getScale().x, getStage()->getSize().y * m_sceneObject->getScale().y);
+   fader->setAlpha(255.0f);
+   fader->setPriority(216);
+   fader->attachTo(m_sceneObject);
+   spTween tween = fader->addTween(Actor::TweenAlpha(0.0f), 1000);
 }
 
 void MainActor::transitToOrbitListner(Event *ev)
@@ -218,6 +277,31 @@ void MainActor::landingCompleteListner(oxygine::Event *ev)
    startScene(STE_LANDING);
 }
 
+void MainActor::resourceDepletedHandler(oxygine::Event *ev)
+{
+   StatusResourceDepletedEvent* e = (StatusResourceDepletedEvent*)ev;
+
+
+   switch (e->m_type)
+   {
+   case fuel:
+      // Stop current burning 
+      m_sceneObject->m_leapfrog->m_boosterFlame->stopEmitter();
+      m_sceneObject->m_leapfrog->m_leftSteerFlame->stopEmitter();
+      m_sceneObject->m_leapfrog->m_rightSteerFlame->stopEmitter();
+
+      break;
+   case credits:
+      break;
+   case shots:
+      break;
+   case shield:
+      break;
+   case damage:
+      break;
+   }
+}
+
 void MainActor::doUpdate(const UpdateState& us)
 {
    const Uint8* data = SDL_GetKeyboardState(0);
@@ -228,7 +312,9 @@ void MainActor::doUpdate(const UpdateState& us)
    }
    else if (data[SDL_SCANCODE_F2])
    {
-      startScene(STE_FREE_SPACE);
+//      startScene(STE_FREE_SPACE);
+      fadeFromLanding();
+
    }
    else if (data[SDL_SCANCODE_F3])
    {

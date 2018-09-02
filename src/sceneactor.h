@@ -41,7 +41,6 @@ protected:
    float	m_stageToViewPortScale;
    float	m_physToStageScale;
    b2World * m_world;
-   spLeapFrog  m_leapfrog;
    spLaunchSite m_launchSite;
    std::vector<CompoundObject*> m_deathList;
    PanorateModeEnum m_panorateMode;
@@ -58,6 +57,7 @@ public:
    bool m_firePressed;
    bool m_zoomInPressed;
    bool m_zoomOutPressed;
+   spLeapFrog  m_leapfrog;
 
    b2World* GetWorld(void);
    Resources* getResources(void);

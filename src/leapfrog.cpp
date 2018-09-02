@@ -333,6 +333,17 @@ void LeapFrog::hitByAsteroid(b2Contact* contact)
    // Damage to LeapFrog!
 }
 
+void LeapFrog::hitAnything(b2Contact* contact, const b2ContactImpulse* impulse)
+{
+   float normalImpulses = 0.0f;
+
+   for (int i = 0; i < impulse->count; i++)
+   {
+      normalImpulses += impulse->normalImpulses[i];
+   }
+
+   g_GameStatus.deltaDamage(-normalImpulses / 100.0f);
+}
 
 void LeapFrog::doUpdate(const UpdateState &us)
 {
@@ -863,30 +874,37 @@ void LeapFrog::fireMainBooster(bool fire, bool flamesOnly)
 {
    // Handle booster flame particles
 
-   if (fire)
+   if ((m_environment == ENV_GROUND) && (g_GameStatus.getFuel() <= 0.0f))
    {
-      if (m_boostFireLastUpdate == false)
-      {
-         // Turn emitter on here
-         m_boosterFlame->startEmitter();
-      }
+      // No fire here
    }
    else
    {
-      if (m_boostFireLastUpdate == true)
+      if (fire)
       {
-         // Turn emitter off here
-         m_boosterFlame->stopEmitter();
+         if (m_boostFireLastUpdate == false)
+         {
+            // Turn emitter on here
+            m_boosterFlame->startEmitter();
+         }
+      }
+      else
+      {
+         if (m_boostFireLastUpdate == true)
+         {
+            // Turn emitter off here
+            m_boosterFlame->stopEmitter();
+         }
       }
    }
 
-   // Below override any booster settings on ground if no fuel
-   if ((m_environment == ENV_GROUND) && (g_GameStatus.getFuel() == 0.0f))
-   {
-      // Turn emitter off here, will be turned off each update that 
-      // the booster is pressed with no fule, in land
-      m_boosterFlame->stopEmitter();
-   }
+   //// Below override any booster settings on ground if no fuel
+   //if ((m_environment == ENV_GROUND) && (g_GameStatus.getFuel() <= 0.0f))
+   //{
+   //   // Turn emitter off here, will be turned off each update that 
+   //   // the booster is pressed with no fule, in land
+   //   m_boosterFlame->stopEmitter();
+   //}
 
 
    if (!flamesOnly)
@@ -959,13 +977,14 @@ void LeapFrog::fireMainBooster(bool fire, bool flamesOnly)
       }
       else if (m_environment == ENV_GROUND)
       {
-         if (fire && (g_GameStatus.getFuel() > 0))
+         if (fire && (g_GameStatus.getFuel() > 0.0f))
          {
             m_boostMagnuitude += m_boostInc;
             if (m_boostMagnuitude > m_boostMaxMagnitude)
             {
                m_boostMagnuitude = m_boostMaxMagnitude;
                g_GameStatus.deltaFuel(-m_boostMagnuitude / 240000.0f);
+               //g_GameStatus.deltaFuel(-m_boostMagnuitude / 30000.0f);
             }
          }
          else
@@ -989,43 +1008,51 @@ void LeapFrog::fireMainBooster(bool fire, bool flamesOnly)
 void LeapFrog::fireSteeringBooster(int dir)
 {
    // Handle booster flame particles
-   if (dir == -1)
-   {
 
-      if (m_rightSteerFireLastUpdate == false)
-      {
-         m_leftSteerFlame->stopEmitter();
-         m_rightSteerFlame->startEmitter();
-      }
-   }
-   else if (dir == 1)
+   if ((m_environment == ENV_GROUND) && (g_GameStatus.getFuel() <= 0.0f))
    {
+      // No fire here
+   }
+   else
+   {
+      if (dir == -1)
+      {
 
-      if (m_leftSteerFireLastUpdate == false)
-      {
-         m_rightSteerFlame->stopEmitter();
-         m_leftSteerFlame->startEmitter();
+         if (m_rightSteerFireLastUpdate == false)
+         {
+            m_leftSteerFlame->stopEmitter();
+            m_rightSteerFlame->startEmitter();
+         }
       }
-   }
-   else if (dir == 0)
-   {
-      if ((m_leftSteerFireLastUpdate == true) || (m_rightSteerFireLastUpdate == true))
-      { 
-         m_rightSteerFlame->stopEmitter();
-         m_leftSteerFlame->stopEmitter();
+      else if (dir == 1)
+      {
+
+         if (m_leftSteerFireLastUpdate == false)
+         {
+            m_rightSteerFlame->stopEmitter();
+            m_leftSteerFlame->startEmitter();
+         }
+      }
+      else if (dir == 0)
+      {
+         if ((m_leftSteerFireLastUpdate == true) || (m_rightSteerFireLastUpdate == true))
+         {
+            m_rightSteerFlame->stopEmitter();
+            m_leftSteerFlame->stopEmitter();
+         }
       }
    }
 
-   if (m_environment == ENV_GROUND)
-   {
-      if (g_GameStatus.getFuel() == 0.0f)
-      {
-         // Turn emitter off here, will be turned off each update that 
-         // the booster is pressed with no fule, in land
-         m_rightSteerFlame->stopEmitter();
-         m_leftSteerFlame->stopEmitter();
-      }
-   }
+   //if (m_environment == ENV_GROUND)
+   //{
+   //   if (g_GameStatus.getFuel() == 0.0f)
+   //   {
+   //      // Turn emitter off here, will be turned off each update that 
+   //      // the booster is pressed with no fule, in land
+   //      m_rightSteerFlame->stopEmitter();
+   //      m_leftSteerFlame->stopEmitter();
+   //   }
+   //}
 
    if ((m_environment == ENV_DEEP_SPACE) || (m_environment == ENV_ORBIT))
    {
@@ -1058,16 +1085,33 @@ void LeapFrog::fireSteeringBooster(int dir)
    }
    else if (m_environment == ENV_GROUND)
    {
-      if ((dir == -1) && (g_GameStatus.getFuel() > 0.0f))
+      if (g_GameStatus.getFuel() > 0.0f)
       {
-         m_steerMagnitude = -m_steerMaxMagnitude;
+         if ((dir == -1) && (g_GameStatus.getFuel() > 0.0f))
+         {
+            m_steerMagnitude = -m_steerMaxMagnitude;
+         }
+         else if ((dir == 1) && (g_GameStatus.getFuel() > 0.0f))
+         {
+            m_steerMagnitude = m_steerMaxMagnitude;
+         }
+         else if (dir == 0)
+         {
+            float angleVel = m_mainBody->GetAngularVelocity();
+
+            if (angleVel > 0.5 * MATH_PI / 180.0f)
+            {
+               m_steerMagnitude = -m_eveningMagnitude;
+            }
+            else if (angleVel < -0.5 * MATH_PI / 180.0f)
+            {
+               m_steerMagnitude = m_eveningMagnitude;
+            }
+         }
       }
-      else if ((dir == 1) && (g_GameStatus.getFuel() > 0.0f))
+      else
       {
-         m_steerMagnitude = m_steerMaxMagnitude;
-      }
-      else if (dir == 0)
-      {
+         // Even out rotation due to no more fuel
          float angleVel = m_mainBody->GetAngularVelocity();
 
          if (angleVel > 0.5 * MATH_PI / 180.0f)

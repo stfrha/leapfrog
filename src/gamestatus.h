@@ -5,11 +5,14 @@
 // Needs to be an actor to send events
 class GameStatus
 {
+
+
 private:
    int m_leapFrogShots;
    float m_leapFrogShield;
    float m_leapFrogFuel;
    int m_credits;
+   float m_leapFrogDamage;
 
    // originators are used to dispatch events (since this global object is bad for being an actor)
    // and because (I presume) event goes down and back up a hiearchy branch which may differ
@@ -28,10 +31,13 @@ public:
    void deltaShield(float shield);
 
    float getFuel(void);
-   void deltaFuel(float Fuel);
+   void deltaFuel(float fuel);
 
    int getCredits(void);
-   void  deltaCredits(int Credits);
+   void  deltaCredits(int credits);
+
+   float getDamage(void);
+   void deltaDamage(float damage);
 
 };
 

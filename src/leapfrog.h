@@ -176,12 +176,6 @@ private:
    //b2WeldJoint* m_leftFootLegWeldJoint;
    //b2WeldJoint* m_shieldWeldJoint;
 
-   spFlameEmitter m_boosterFlame;
-   spFlameEmitter m_leftSteerFlame;
-   spFlameEmitter m_rightSteerFlame;
-   spReentryFlameEmitter m_reentryFlameEmitterBooster;
-   spReentryFlameEmitter m_reentryFlameEmitterRightLeg;
-   spReentryFlameEmitter m_reentryFlameEmitterLeftLeg;
 
    spGun m_gun;
 
@@ -192,11 +186,17 @@ private:
 
    SceneActor* m_sceneActor;
 
+   void findDamage(b2Contact* contact, const b2ContactImpulse* impulse);
 
 public:
 
    spShield m_shield;
-
+   spFlameEmitter m_boosterFlame;
+   spFlameEmitter m_leftSteerFlame;
+   spFlameEmitter m_rightSteerFlame;
+   spReentryFlameEmitter m_reentryFlameEmitterBooster;
+   spReentryFlameEmitter m_reentryFlameEmitterRightLeg;
+   spReentryFlameEmitter m_reentryFlameEmitterLeftLeg;
 
 	LeapFrog(
 		oxygine::Resources& gameResources,
@@ -214,6 +214,7 @@ public:
 
 
    void hitByAsteroid(b2Contact* contact);
+   void hitAnything(b2Contact* contact, const b2ContactImpulse* impulse);
 
    oxygine::Actor* getMainActor(void);
 

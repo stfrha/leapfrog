@@ -12,10 +12,11 @@ class StatusBar : public oxygine::Actor
 {
 private:
    SceneActor* m_sceneActor;
+   oxygine::Actor* m_eventActor;
    oxygine::ProgressBar* m_progressBar;
    std::string m_headline;
    float m_maxProgess;
-   StatusChangedEvent::GameStatusTypeEnum m_statusType;
+   GameStatusTypeEnum m_statusType;
 
 public:
    StatusBar(
@@ -27,8 +28,9 @@ public:
       const float maxProgress,
       const float initialProgress,
       std::string headline,
-      StatusChangedEvent::GameStatusTypeEnum statusType);
+      GameStatusTypeEnum statusType);
 
+   void disconnectListner(void);
    void statusChangedListner(oxygine::Event *ev);
    void dummyListner(oxygine::Event *ev);
 
