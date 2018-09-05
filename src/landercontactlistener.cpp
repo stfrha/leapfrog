@@ -91,23 +91,23 @@ void LanderContactListener::ContactHandler(b2Contact* contact, bool begin)
       launchSiteLeftRest = false;
    }
 
-   if (eA == CET_LF_RIGHT_FOOT)
+   if (eA == CET_LF_LEFT_FOOT)
    {
       CompoundObject* t = (CompoundObject*)(contact->GetFixtureA()->GetBody()->GetUserData());
       leapfrog = (LeapFrog*)t->getParentObject();
-      leapfrogLeftFoot = false;
+      leapfrogLeftFoot = true;
    }
 
-   if (eB == CET_LF_RIGHT_FOOT)
+   if (eB == CET_LF_LEFT_FOOT)
    {
       CompoundObject* t = (CompoundObject*)(contact->GetFixtureB()->GetBody()->GetUserData());
       leapfrog = (LeapFrog*)t->getParentObject();
-      leapfrogLeftFoot = false;
+      leapfrogLeftFoot = true;
    }
 
-   if (eB == CET_LF_RIGHT_FOOT)
+   if (eA == CET_LF_RIGHT_FOOT)
    {
-      CompoundObject* t = (CompoundObject*)(contact->GetFixtureB()->GetBody()->GetUserData());
+      CompoundObject* t = (CompoundObject*)(contact->GetFixtureA()->GetBody()->GetUserData());
       leapfrog = (LeapFrog*)t->getParentObject();
       leapfrogLeftFoot = false;
    }

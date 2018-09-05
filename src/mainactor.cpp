@@ -171,6 +171,12 @@ void MainActor::startScene(SceneTypeEnum scene)
 
    addEventListener(StatusResourceDepletedEvent::EVENT, CLOSURE(this, &MainActor::resourceDepletedHandler));
 
+   if (scene == STE_LANDING)
+   {
+      shieldBar->setAlpha(128);
+   }
+
+
    createButtonOverlay();
 }
 
