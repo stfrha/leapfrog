@@ -1,6 +1,7 @@
 #include <algorithm>
 
 #include "asteroidfield.h"
+#include "hammer.h"
 #include "deepspacesceneevents.h"
 
 #include "freespaceactor.h"
@@ -51,6 +52,8 @@ FreeSpaceActor::FreeSpaceActor(
 
    m_rightBoundary = new SoftBoundary(gameResources, m_world, RectF(1075.0f, 250.0f, 800.0f, 150.0f), RDE_LEFT);
    addChild(m_rightBoundary);
+
+   spHammer hammer = new Hammer(gameResources, this, m_world, Vector2(250.0f, 450.0f));
 
 }
 

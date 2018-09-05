@@ -26,8 +26,8 @@ MainActor::MainActor()
 
 	setSize(getStage()->getSize());
 
-   startScene(STE_LANDING);
-   // startScene(STE_FREE_SPACE);
+   //startScene(STE_LANDING);
+   startScene(STE_FREE_SPACE);
    // startScene(STE_ORBIT);
 
    //   addEventListener(TouchEvent::MOVE, CLOSURE(this, &MainActor::sceneMoveHandler));
@@ -61,10 +61,7 @@ void MainActor::startScene(SceneTypeEnum scene)
       }
       actor = next;
    }
-
-
-
-
+   
    spClipRectActor window = new ClipRectActor();
 
    window->setSize(getStage()->getSize());
@@ -97,7 +94,6 @@ void MainActor::startScene(SceneTypeEnum scene)
 
       spFreeSpaceActor freeSpaceActor = new FreeSpaceActor(m_gameResources, string("deep_space_scene.xml"), string("deepSpaceState"));
       window->addChild(freeSpaceActor);
-
       freeSpaceActor->addEventListener(DeepSpaceSceneTranstToOrbitEvent::EVENT, CLOSURE(this, &MainActor::transitToOrbitListner));
 
       m_sceneObject = static_cast<SceneActor*>(freeSpaceActor.get());
@@ -113,17 +109,10 @@ void MainActor::startScene(SceneTypeEnum scene)
 
       spOrbitScene reentryActor = new OrbitScene(m_gameResources, string("orbit_scene.xml"), string("deepSpaceState"));
       window->addChild(reentryActor);
-
       reentryActor->addEventListener(OrbitSceneLandingComplete::EVENT, CLOSURE(this, &MainActor::landingCompleteListner));
 
       m_sceneObject = (SceneActor*)reentryActor->m_space;
    }
-
-   //m_debugDraw = new Box2DDraw;
-   //m_debugDraw->SetFlags(b2Draw::e_shapeBit | b2Draw::e_jointBit | b2Draw::e_pairBit | b2Draw::e_centerOfMassBit);
-   //m_debugDraw->attachTo(freeSpaceActor);
-   //m_debugDraw->setWorld(Scales::c_physToStageScale, freeSpaceActor->GetWorld());
-   //m_debugDraw->setPriority(1);
 
    spStatusBar shotsBar = new StatusBar(
       m_gameResources,
@@ -178,6 +167,12 @@ void MainActor::startScene(SceneTypeEnum scene)
 
 
    createButtonOverlay();
+
+   m_debugDraw = new Box2DDraw;
+   m_debugDraw->SetFlags(b2Draw::e_shapeBit | b2Draw::e_jointBit | b2Draw::e_pairBit | b2Draw::e_centerOfMassBit);
+   m_debugDraw->attachTo(m_sceneObject);
+   m_debugDraw->setWorld(Scales::c_physToStageScale, m_sceneObject->GetWorld());
+   m_debugDraw->setPriority(2550);
 }
 
 float MainActor::getProperty(std::string object, int propId)
