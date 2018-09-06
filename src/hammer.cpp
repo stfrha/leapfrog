@@ -18,7 +18,8 @@ Hammer::Hammer(
    m_world(world),
    m_sceneActor(sceneActor),
    m_damage(0),
-   m_state(start)
+   m_state(start),
+   m_steeringManager(NULL)
 {
    Vector2 oSize = Vector2(24.0f, 12.6f);
 
@@ -59,12 +60,15 @@ Hammer::Hammer(
 
    attachTo(m_sceneActor);
 
+   m_steeringManager = new SteeringManager(m_body);
+
    // Start going right
    b2Vec2 vel = m_body->GetLinearVelocity();
    b2Vec2 desiredVel = b2Vec2(15.0f, 0);   // Set to 5 m/s
    b2Vec2 velChange = desiredVel - vel;
    b2Vec2 impulse = m_body->GetMass() * velChange;
    m_body->ApplyLinearImpulse(impulse, m_body->GetWorldCenter(), true);
+
 
    //// Randomise value between 0 and maxImp
    //float magnitude = static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / maxImp));

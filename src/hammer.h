@@ -6,12 +6,12 @@
 #include "scales.h"
 #include "physdispconvert.h"
 #include "collisionentity.h"
+#include "steeringmanager.h"
 
 class SceneActor;
 class AsteroidField;
 
 DECLARE_SMART(Hammer, spHammer);
-
 
 class Hammer : public CompoundObject
 {
@@ -33,11 +33,12 @@ private:
 
    launchState m_state;
    oxygine::timeMS m_stateStartTime;
+   SteeringManager* m_steeringManager;
 
    int   m_damage;
 
    SceneActor* m_sceneActor;
-
+   
 public:
 	Hammer(
       oxygine::Resources& gameResources, 

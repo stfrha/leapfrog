@@ -1,28 +1,25 @@
 #pragma once
 
 #include "Box2D/Box2D.h"
+#include "steeringinterface.h"
 
-
-class SteeringManager
+class SteeringBody : public b2Body, ISteering
 {
 private:
-	b2Body* m_hostBody;
-	b2Vec2 m_steering;
-   
-   // Variable for specific behaviours
-   
-   // Wander variables
-   float m_wanderAngle;
-
-
-   // Steering properties used to define the behaviour
    const float c_maxVelocity;
-   const float c_wanderCircleDistance;
-   const float c_wanderCircleRadius;
-   const float c_wanderAngleChange;
    
-	
-	SteeringManager(
+   b2Body(const b2BodyDef* bd, b2World* world);
+   ~b2Body();
+
+
+   // TODO: Rethink this!!! The SteeringBody class probably needs the b2Body as a
+   // pointer member since the constructor is private and a body normally is 
+   // created using b2World->CreateBody(def);
+
+
+
+
+	SteeringBody(
       b2Body* host,
       float maxVelocity,
       float wanderCircleDistance,
