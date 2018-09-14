@@ -147,13 +147,13 @@ Asteroid::Asteroid(
 
    b2Vec2 impulseForce = b2Vec2(magnitude * cos(angle), magnitude * sin(angle));
 
-   body->ApplyLinearImpulseToCenter(impulseForce, true);
+//   body->ApplyLinearImpulseToCenter(impulseForce, true);
 
    // Randomise value between 0 and maxAng
    float angImpulse = static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / maxAng));
 
 
-   body->ApplyAngularImpulse(angImpulse * 10.0f, true);
+//   body->ApplyAngularImpulse(angImpulse * 10.0f, true);
 
    attachTo(m_sceneActor);
 }
@@ -286,6 +286,10 @@ float Asteroid::generateVertex(Vector2& v, int i, int num)
    return theta;
 }
 
+float Asteroid::getRadius()
+{
+   return m_radius;
+}
 
 void Asteroid::generateVertices(Vector2* vertices)
 {

@@ -17,10 +17,11 @@ SceneActor::SceneActor(Resources& gameResources, float zoomScale) :
    m_boosterPressed(false),
    m_firePressed(false),
    m_zoomInPressed(false),
-   m_zoomOutPressed(false)
-
+   m_zoomOutPressed(false),
+   m_sceneWidth(1000.0f),
+   m_sceneHeight(500.0f)
 {
-	Point size = Point(1000, 500);
+	Point size = Point(m_sceneWidth, m_sceneHeight);
 	setSize(size);
 
 	m_world = new b2World(b2Vec2(0.0f, 0.0f));

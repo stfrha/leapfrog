@@ -30,15 +30,14 @@ private:
 
    bool m_inOrbitField;
    oxygine::timeMS m_enteredOrbitFieldAtTime;
-
-   b2Body* m_leapfrogBody;
-
    std::vector<b2Body*>   m_boundedBodies;
 
    FreeSpaceContactListener   m_contactListener;
 
 public:
-	FreeSpaceActor(
+   b2Body * m_leapfrogBody;
+
+   FreeSpaceActor(
       oxygine::Resources& gameResources,
       const std::string& fileName,
       const std::string& initialState);

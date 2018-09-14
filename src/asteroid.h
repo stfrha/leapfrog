@@ -91,6 +91,8 @@ public:
 
    virtual CollisionEntityTypeEnum getEntityType(void);
 
+   float getRadius();
+
    void hitByBullet(b2Contact* contact); 
    void hitShield(b2Contact* contact);     // Returns true if asteroid was shattered
    void hitByLepfrog(b2Contact* contact);

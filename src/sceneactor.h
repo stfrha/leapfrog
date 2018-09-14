@@ -51,6 +51,9 @@ public:
 	SceneActor(oxygine::Resources& gameResources, float zoomScale);
    ~SceneActor();
 
+   float m_sceneWidth;
+   float m_sceneHeight;
+
    bool m_turnLeftPressed;
    bool m_turnRightPressed;
    bool m_boosterPressed;

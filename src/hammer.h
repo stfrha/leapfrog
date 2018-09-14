@@ -32,12 +32,20 @@ private:
    b2Body* m_body;
 
    launchState m_state;
+   bool m_slowTurningAfterHit;
    oxygine::timeMS m_stateStartTime;
    SteeringManager* m_steeringManager;
+   SteeringBody* m_steeringBody;
+   b2Vec2 m_seekTarget;
 
    int   m_damage;
 
    SceneActor* m_sceneActor;
+
+   oxygine::spSprite m_aheadCircle;
+   oxygine::spSprite m_ahead2Circle;
+
+
    
 public:
 	Hammer(
@@ -48,12 +56,12 @@ public:
 
    virtual CollisionEntityTypeEnum getEntityType(void);
 
+   void hitByAnything(b2Contact* contact);
    void hitByBullet(b2Contact* contact); 
    void hitShield(b2Contact* contact);     // Returns true if hammer was shattered
    void hitByLepfrog(b2Contact* contact);
 
 protected:
 	void doUpdate(const oxygine::UpdateState& us);
-   void atDeathOfAsteroid(void);
 
 };

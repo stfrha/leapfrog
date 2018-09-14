@@ -41,19 +41,42 @@ FreeSpaceActor::FreeSpaceActor(
 
    addBoundingBody(m_leapfrogBody);
 
-   m_lowerBoundary = new SoftBoundary(gameResources, m_world, RectF(500.0f, 575.0f, 1300.0f, 150.0f), RDE_UP);
+   m_lowerBoundary = new SoftBoundary(gameResources, m_world, 
+      RectF(
+         m_sceneWidth / 2.0f, 
+         m_sceneHeight + 75.0f, 
+         m_sceneWidth + 300.0f,
+         150.0f), RDE_UP);
    addChild(m_lowerBoundary);
 
-   m_topBoundary = new SoftBoundary(gameResources, m_world, RectF(500.0f, -75.0f, 1300.0f, 150.0f), RDE_DOWN);
+   m_topBoundary = new SoftBoundary(gameResources, m_world, 
+      RectF(
+         m_sceneWidth / 2.0f,
+         -75.0f, 
+         m_sceneWidth + 300.0f,
+         150.0f), RDE_DOWN);
    addChild(m_topBoundary);
 
-   m_leftBoundary = new SoftBoundary(gameResources, m_world, RectF(-75.0f, 250.0f, 800.0f, 150.0f), RDE_RIGHT);
+   m_leftBoundary = new SoftBoundary(gameResources, m_world, 
+      RectF(
+         -75.0f, 
+         m_sceneHeight / 2.0f, 
+         m_sceneHeight + 300.0f,
+         150.0f), RDE_RIGHT);
    addChild(m_leftBoundary);
 
-   m_rightBoundary = new SoftBoundary(gameResources, m_world, RectF(1075.0f, 250.0f, 800.0f, 150.0f), RDE_LEFT);
+   m_rightBoundary = new SoftBoundary(gameResources, m_world, 
+      RectF(
+         m_sceneWidth + 75.0f, 
+         m_sceneHeight / 2.0f,
+         m_sceneHeight + 300.0f,
+         150.0f), RDE_LEFT);
    addChild(m_rightBoundary);
 
-   spHammer hammer = new Hammer(gameResources, this, m_world, Vector2(250.0f, 450.0f));
+   spHammer hammer = new Hammer(gameResources, this, m_world, Vector2(300.0f, 450.0f));
+
+   spAsteroid a1 = new Asteroid(gameResources, this, m_world, Vector2(200.0f, 451.0f), ASE_LARGE);
+   spAsteroid a2 = new Asteroid(gameResources, this, m_world, Vector2(150.0f, 452.0f), ASE_LARGE);
 
 }
 

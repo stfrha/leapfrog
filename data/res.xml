@@ -44,6 +44,7 @@
 		<image file="alpha_mine1.png"/>	
 		<image file="alpha_city1.png"/>	
 		<image file="hammer.png"/>	
+		<image file="circle.png"/>	
 	</atlas>
 	<atlas clamp2edge="false"> 
 		<image file="default.png" trim="false" extend="false"/>

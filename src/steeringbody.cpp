@@ -1,5 +1,6 @@
 
 #include "steeringbody.h"
+#include "collisionentity.h"
 
 SteeringBody::SteeringBody(
    b2Body* host,
@@ -34,10 +35,29 @@ float SteeringBody::GetMass()
 
 }
 
-
-b2Vec2 SteeringBody::GetMaxVelocity()
+float SteeringBody::GetMaxVelocity()
 {
    return c_maxVelocity;
+}
+
+float SteeringBody::GetCircleDistance()
+{
+   return c_wanderCircleDistance;
+}
+
+float SteeringBody::GetCircleRadius()
+{
+   return c_wanderCircleRadius;
+}
+
+float SteeringBody::GetAngleChange()
+{
+   return c_wanderAngleChange;
+}
+
+b2Body* SteeringBody::GetBodyList()
+{
+   return m_body->GetWorld()->GetBodyList();
 }
 
 

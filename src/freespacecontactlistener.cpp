@@ -4,6 +4,7 @@
 #include "bullet.h"
 #include "leapfrog.h"
 #include "shield.h"
+#include "hammer.h"
 #include "gamestatus.h"
 
 
@@ -20,6 +21,7 @@ void FreeSpaceContactListener::PostSolve(b2Contact* contact, const b2ContactImpu
    Asteroid* asteroid = NULL;
    LeapFrog* leapfrog = NULL;
    Bullet* bullet = NULL;
+   Hammer* hammer = NULL;
 
    if (eA == CET_LF_SHIELD)
    {
@@ -61,6 +63,16 @@ void FreeSpaceContactListener::PostSolve(b2Contact* contact, const b2ContactImpu
       bullet = (Bullet*)contact->GetFixtureB()->GetBody()->GetUserData();
    }
 
+   if (eA == CET_HAMMER)
+   {
+      hammer = (Hammer*)contact->GetFixtureA()->GetBody()->GetUserData();
+   }
+
+   if (eB == CET_HAMMER)
+   {
+      hammer = (Hammer*)contact->GetFixtureB()->GetBody()->GetUserData();
+   }
+
 
    if (asteroid && bullet)
    {
@@ -80,14 +92,20 @@ void FreeSpaceContactListener::PostSolve(b2Contact* contact, const b2ContactImpu
    if (asteroid && leapfrog)
    {
       // Normally. body hits are prevented by shield
-      // but if it a hard hit body may gegt contact
+      // but if it a hard hit body may get contact
       // (from certain angles). In this case, if the 
       // shield is still active, we do not damage
-      // leapfrog (by not calling hitAnything
+      // leapfrog (by not calling hitAnything)
       if (g_GameStatus.getShield() <= 0.0f)
       {
          leapfrog->hitAnything(contact, impulse);
       }
+   }
+
+   // Hammer hit anything
+   if (hammer)
+   {
+      hammer->hitByAnything(contact);
    }
 }
 

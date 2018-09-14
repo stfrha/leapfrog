@@ -1,76 +1,14 @@
 <?xml version="1.0"?>
 <compoundObject
 	type="deepSpaceScene" >
-	<objectFactory
-		name="asteroids1">
-		<stateProperties
-			state="default" >
-			<!--
-			<properties
-				posX="450"
-				posY="300"
-				width="500"
-				height="200"
-				spawnInitial="20"
-				intensity="0.25"
-				lifeTime="60000" />
-				-->
-			<properties
-				posX="250"
-				posY="100"
-				width="500"
-				height="200"
-				spawnInitial="20"
-				intensity="0.25"
-				lifeTime="60000">
-				<CompoundObject type="asteroid" />
-			</properties>
-		</stateProperties>
-		<stateProperties
-			state="alt" >
-			<!--
-			<properties
-				posX="450"
-				posY="300"
-				width="500"
-				height="200"
-				spawnInitial="20"
-				intensity="0.25"
-				lifeTime="60000" />
-				-->
-			<properties
-				posX="500"
-				posY="200"
-				width="200"
-				height="100"
-				spawnInitial="20"
-				intensity="0.25"
-				lifeTime="60000">
-				<CompoundObject type="asteroid" />
-			</properties>
-		</stateProperties>
-	</objectFactory>
-
-<!--	<ChildCompoundObjectRef
-		name="asteroids1"
-		type="asteroidField"
-		left="200.0"
-		right="700.0"
-		top="200.0"
-		bottom="400.0"
-		spawnInitial="20"
-		intensity="0.25"
-		lifeTime="60000" />		
--->
-
 	<ChildCompoundObjectRef 
 		name="leapfrog1"
 		type="leapfrog">
 		<stateProperties
 			state="deepSpaceState"
 			file="leapfrog_deep_space.xml" 
-			posX="-75.0"
-			posY="575.0" />
+			posX="200.0"
+			posY="400.0" />
 	</ChildCompoundObjectRef>
 </compoundObject>
 

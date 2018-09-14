@@ -6,7 +6,7 @@
 class SteeringBody
 {
 private:
-   const b2Vec2 c_maxVelocity;
+   const float c_maxVelocity;
    const float c_wanderCircleDistance;
    const float c_wanderCircleRadius;
    const float c_wanderAngleChange;
@@ -17,7 +17,7 @@ public:
 
    SteeringBody(
       b2Body* host,
-      b2Vec2 maxVelocity,
+      float maxVelocity,
       float wanderCircleDistance,
       float wanderCircleRadius,
       float wanderAngleChange
@@ -26,6 +26,10 @@ public:
    b2Vec2 GetPosition();
    b2Vec2 GetLinearVelocity();
    float GetMass();
-   b2Vec2 GetMaxVelocity();
+   float GetMaxVelocity();
+   float GetCircleDistance();
+   float GetCircleRadius();
+   float GetAngleChange();
+   b2Body* GetBodyList();
 
-}
+};

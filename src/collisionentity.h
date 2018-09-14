@@ -1,5 +1,7 @@
 #pragma once
 
+#include "oxygine-framework.h"
+
 enum CollisionEntityTypeEnum
 {
    CET_LEAPFROG,
