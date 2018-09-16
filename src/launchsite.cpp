@@ -51,7 +51,6 @@ LaunchSite::LaunchSite(
       b2Vec2(0.0f, 28.0f),
       90.0f * MATH_PI / 180.0f,
       12.0f,                            // Emitter width
-      0,                               // Intensity
       1000,                            // Lifetime [ms]
       1500.0f,                          // Impulse magnitude
       30.0f);                          // Radius
@@ -65,7 +64,6 @@ LaunchSite::LaunchSite(
       b2Vec2(0.0f, 19.0f),
       90.0f * MATH_PI / 180.0f,
       2.0f,                            // Width
-      0,                               // Intensity
       1000,                             // Lifetime [ms]
       1500.0f,                           // Impulse magnitude
       20.0f);                           // Radius
@@ -80,7 +78,6 @@ LaunchSite::LaunchSite(
       b2Vec2(0.0f, 19.0f),             // Origin
       90.0f * MATH_PI / 180.0f,                               // Angle 
       2.0f,                            // Width
-      0,                               // Intensity
       1000,                             // Lifetime [ms]
       1500.0f,                           // Impulse magnitude
       20.0f);                           // Radius

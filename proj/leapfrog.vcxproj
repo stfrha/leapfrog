@@ -207,7 +207,6 @@
     <ClCompile Include="..\src\smokeparticle.cpp" />
     <ClCompile Include="..\src\softboundary.cpp" />
     <ClCompile Include="..\src\statusbar.cpp" />
-    <ClCompile Include="..\src\steeringbody.cpp" />
     <ClCompile Include="..\src\steeringmanager.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -308,7 +307,6 @@
     <ClInclude Include="..\src\softboundary.h" />
     <ClInclude Include="..\src\static.h" />
     <ClInclude Include="..\src\statusbar.h" />
-    <ClInclude Include="..\src\steeringbody.h" />
     <ClInclude Include="..\src\steeringinterface.h" />
     <ClInclude Include="..\src\steeringmanager.h" />
   </ItemGroup>

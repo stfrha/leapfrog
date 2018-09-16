@@ -248,8 +248,8 @@ void PlanetActor::orbitEstablished(void)
    float barCaretHeight = barHeight * 0.068f;
    float barCaretVertCenter = barVertCenter - barHeight * 0.2f; // ALso center of safe zone
    float barSafeZoneHeight = barHeight * 0.2f;
-   float barInsideFrameWidth = barWidth - barHeight * 0.008;
-   float barInsideFrameHeight = barHeight - barHeight * 0.008;
+   float barInsideFrameWidth = barWidth - barHeight * 0.008f;
+   float barInsideFrameHeight = barHeight - barHeight * 0.008f;
 
    spColorRectSprite burnFrame = new ColorRectSprite();
    burnFrame->setAnchor(0.5f, 0.5f);

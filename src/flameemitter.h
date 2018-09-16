@@ -26,9 +26,6 @@ private:
 	// Particles are generate from a line with this width perpendicular to the emittAngle
 	float m_emitterWidth;
 
-	// Number of particle per second
-	float m_intensity;
-
 	int m_lifetime; // [ms}
 
    float m_impulseMagnitude;
@@ -36,6 +33,8 @@ private:
 	float m_noiseConeAngle;	// Defines a cone angle of noise added to direction
 
    float m_radius;
+
+   float m_scale;
 
 
 public:
@@ -45,13 +44,13 @@ public:
       b2Vec2 emitterOrigin, 
       float angle, 
       float emitterWidth,
-      float intensity,
       int lifetime,
       float impulseMagnitude,
       float radius);
 	void startEmitter(void);
 	void stopEmitter(void);
-   void setParameters(float intensity,
+   void setFlameScale(float scale);
+   void setParameters(
       int lifetime,
       float impulseMagnitude,
       float radius);

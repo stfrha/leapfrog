@@ -10,7 +10,6 @@ FlameEmitter::FlameEmitter(
    b2Vec2 emitterOrigin, 
    float angle, 
    float emitterWidth,
-   float intensity,
    int lifetime,
    float impulseMagnitude,
    float radius) :
@@ -19,7 +18,7 @@ FlameEmitter::FlameEmitter(
    m_emitterOrigin(emitterOrigin),
    m_emittAngle(angle),
    m_emitterWidth(emitterWidth),
-   m_intensity(intensity),
+   m_scale(1.0f),
    m_lifetime(lifetime),
    m_impulseMagnitude(impulseMagnitude),
    m_gameResources(&gameResources),
@@ -38,12 +37,16 @@ void FlameEmitter::stopEmitter(void)
    m_emit = false;
 }
 
-void FlameEmitter::setParameters(float intensity,
+void FlameEmitter::setFlameScale(float scale)
+{
+   m_scale = scale;
+}
+
+void FlameEmitter::setParameters(
    int lifetime,
    float impulseMagnitude,
    float radius)
 {
-   m_intensity = intensity;
    m_lifetime = lifetime;
    m_impulseMagnitude = impulseMagnitude;
    m_radius = radius;
@@ -81,9 +84,9 @@ void FlameEmitter::doUpdate(const oxygine::UpdateState& us)
          m_emitterBody->GetWorld(), 
          emitPos, 
          m_emitterBody->GetLinearVelocity(),
-         m_lifetime, 
-         impulse, 
-         m_radius);
+         (int)((float)m_lifetime * m_scale), 
+         m_scale * impulse,
+         m_radius * m_scale);
 
       // Attach to parent's parent which is the view actor
       flameParticle->attachTo(getParent()->getParent());

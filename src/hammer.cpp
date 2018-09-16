@@ -49,8 +49,8 @@ Hammer::Hammer(
    fixtureDef.shape = &boxShape;
    fixtureDef.density = 1.0f;
    fixtureDef.friction = 1.0f;
-   fixtureDef.filter.categoryBits = 8;
-   fixtureDef.filter.maskBits = 64703;
+   fixtureDef.filter.categoryBits = 16;
+   fixtureDef.filter.maskBits = 56511;
    fixtureDef.userData = (CollisionEntity*)this;
 
    m_body->CreateFixture(&fixtureDef);
@@ -59,33 +59,31 @@ Hammer::Hammer(
 
    attachTo(m_sceneActor);
 
-   m_steeringBody = new SteeringBody(m_body);
+   // Add main engine particle system
+   m_boosterFlame = new FlameEmitter(
+      gameResources,
+      m_body,
+      b2Vec2(12.0f, 0.0f),
+      /*90.0f * MATH_PI / 180.0f,*/
+      0.0f,                            // Angle
+      4.0f,                            // Emitter width
+      500,                             // Lifetime [ms]
+      90.0f,                           // Impulse magnitude
+      10.0f);                          // Radius
 
-   m_steeringManager = new SteeringManager(m_steeringBody, m_sceneActor);
+   m_boosterFlame->attachTo(this);
+
+   m_boosterFlame->startEmitter();
+
+   m_steeringManager = new SteeringManager(m_body, m_sceneActor);
    m_steeringManager->m_wanderAngle = MATH_PI;
 
-   //// Start velocity
-   //b2Vec2 vel = m_body->GetLinearVelocity();
-   //b2Vec2 desiredVel = b2Vec2(10.0f, 0.0f);   // Set to 5 m/s
-   //b2Vec2 velChange = desiredVel - vel;
-   //b2Vec2 impulse = m_body->GetMass() * velChange;
-   //m_body->ApplyLinearImpulse(impulse, m_body->GetWorldCenter(), true);
 
-   float x = static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / 1000.0));
-   float y = static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / 500.0));
+   //float x = static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / 1000.0));
+   //float y = static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / 500.0));
 
-   m_seekTarget = b2Vec2(x, y);
-
-   //// Randomise value between 0 and maxImp
-   //float magnitude = static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / maxImp));
-
-   //// Randomise value between 0 and 2pi
-   //float angle = static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / 2.0f * MATH_PI));
-
-   //b2Vec2 impulseForce = b2Vec2(maxImp * cos(angle), maxImp * sin(angle));
-
-   //body->ApplyLinearImpulseToCenter(impulseForce, true);
-   //
+   //m_seekTarget = b2Vec2(x, y);
+   
 
 
    //m_aheadCircle = new Sprite();
@@ -105,6 +103,7 @@ Hammer::Hammer(
    //m_ahead2Circle->setTouchChildrenEnabled(false);
    //m_ahead2Circle->setPriority(160);
    //m_ahead2Circle->attachTo(m_sceneActor);
+
 }
 
 CollisionEntityTypeEnum Hammer::getEntityType(void)
@@ -137,10 +136,23 @@ void Hammer::doUpdate(const oxygine::UpdateState& us)
    if (((FreeSpaceActor*)m_sceneActor)->m_leapfrogBody != NULL)
    {
       // m_steeringManager->pursuit(((FreeSpaceActor*)m_sceneActor)->m_leapfrogBody);
-      m_steeringManager->wanderHunt(((FreeSpaceActor*)m_sceneActor)->m_leapfrogBody, 100.0f);
+      m_steeringManager->wanderHunt(us, ((FreeSpaceActor*)m_sceneActor)->m_leapfrogBody, 50.0f);
    }
 
    m_steeringManager->update();
+
+   if (m_steeringManager->m_wanderHunterState == SteeringManager::WanderHunterState::wanderState)
+   {
+      m_boosterFlame->setFlameScale(0.2f);
+   }
+   else if (m_steeringManager->m_wanderHunterState == SteeringManager::WanderHunterState::seekState)
+   {
+      m_boosterFlame->setFlameScale(0.5f);
+   }
+   else
+   {
+      m_boosterFlame->setFlameScale(1.0f);
+   }
 
    if (us.time >= m_stateStartTime + 5000)
    {
@@ -166,10 +178,11 @@ void Hammer::doUpdate(const oxygine::UpdateState& us)
    {
       // Now a slow turn has found the desired angle for forward
       // movement, lets go back to fast rotations
-      if (m_slowTurningAfterHit)
-      {
-         logs::messageln("Turning fast...");
-      }
+
+      //if (m_slowTurningAfterHit)
+      //{
+      //   logs::messageln("Turning fast...");
+      //}
 
       m_slowTurningAfterHit = false;
    }
@@ -259,6 +272,6 @@ void Hammer::doUpdate(const oxygine::UpdateState& us)
 void Hammer::hitByAnything(b2Contact* contact)
 {
    m_slowTurningAfterHit = true;
-   logs::messageln("Turning slow...");
+   // logs::messageln("Turning slow...");
 
 }

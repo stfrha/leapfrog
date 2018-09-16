@@ -7,6 +7,8 @@
 #include "physdispconvert.h"
 #include "collisionentity.h"
 #include "steeringmanager.h"
+#include "flameemitter.h"
+
 
 class SceneActor;
 class AsteroidField;
@@ -35,7 +37,6 @@ private:
    bool m_slowTurningAfterHit;
    oxygine::timeMS m_stateStartTime;
    SteeringManager* m_steeringManager;
-   SteeringBody* m_steeringBody;
    b2Vec2 m_seekTarget;
 
    int   m_damage;
@@ -48,6 +49,9 @@ private:
 
    
 public:
+   spFlameEmitter m_boosterFlame;
+
+
 	Hammer(
       oxygine::Resources& gameResources, 
       SceneActor* sceneActor,

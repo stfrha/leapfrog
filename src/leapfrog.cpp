@@ -145,7 +145,6 @@ LeapFrog::LeapFrog(
       b2Vec2(0.0f, 3.0f), 
       90.0f * MATH_PI / 180.0f, 
       4.0f,                            // Emitter width
-      0,                               // Intensity
       250,                             // Lifetime [ms]
       70.0f,                           // Impulse magnitude
       10.0f);                          // Radius
@@ -159,7 +158,6 @@ LeapFrog::LeapFrog(
       b2Vec2(-1.0f, 0.0f),
       MATH_PI,
       1.0f,                            // Width
-      0,                               // Intensity
       125,                             // Lifetime [ms]
       35.0f,                           // Impulse magnitude
       5.0f);                           // Radius
@@ -174,7 +172,6 @@ LeapFrog::LeapFrog(
       b2Vec2(1.0f, 0.0f),             // Origin
       0,                               // Angle 
       1.0f,                            // Width
-      0,                               // Intensity
       125,                             // Lifetime [ms]
       35.0f,                           // Impulse magnitude
       5.0f);                           // Radius
@@ -789,7 +786,7 @@ void LeapFrog::goToEnvironment(EnvironmentEnum env)
       m_eveningMagnitude = 60000.0f;
       m_maxVelocity = 50.0f;    // [m/s]
       m_maxAngularVelocity = MATH_PI; // [rad/s]
-      m_boosterFlame->setParameters(0, 500, 90.0f, 10.0f);
+      m_boosterFlame->setParameters(500, 90.0f, 10.0f);
       m_shield->m_body->SetActive(true);
 
       break;
@@ -801,7 +798,7 @@ void LeapFrog::goToEnvironment(EnvironmentEnum env)
       m_eveningMagnitude = 60000.0f;
       m_maxVelocity = 80.0f;    // [m/s]
       m_maxAngularVelocity = 4.0f * MATH_PI; // [rad/s]
-      m_boosterFlame->setParameters(0, 500, 90.0f, 10.0f);
+      m_boosterFlame->setParameters(500, 90.0f, 10.0f);
       m_shield->m_body->SetActive(true);
       break;
 
@@ -812,7 +809,7 @@ void LeapFrog::goToEnvironment(EnvironmentEnum env)
       m_eveningMagnitude = 10000.0f;
       m_maxVelocity = 120.0f;    // [m/s]
       m_maxAngularVelocity = MATH_PI; // [rad/s]
-      m_boosterFlame->setParameters(0, 250, 70.0f, 10.0f);
+      m_boosterFlame->setParameters(250, 70.0f, 10.0f);
       m_shield->m_body->SetActive(false);
       break;
 
@@ -824,7 +821,7 @@ void LeapFrog::goToEnvironment(EnvironmentEnum env)
       m_eveningMagnitude = 10000.0f;
       m_maxVelocity = 400.0f;    // [m/s]
       m_maxAngularVelocity = MATH_PI; // [rad/s]
-      m_boosterFlame->setParameters(0, 250, 70.0f, 10.0f);
+      m_boosterFlame->setParameters(250, 70.0f, 10.0f);
       m_shield->m_body->SetActive(false);
       break;
    }

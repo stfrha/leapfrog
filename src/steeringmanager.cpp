@@ -3,14 +3,14 @@
 #include "asteroid.h"
 
 SteeringManager::SteeringManager(
-   SteeringBody* hostBody,
+   b2Body* hostBody,
    SceneActor* sceneActor)
  :
    m_hostBody(hostBody),
    m_sceneActor(sceneActor),
    m_wanderAngle(0.0f),
    m_steering(b2Vec2(0.0f, 0.0f)),
-   m_hunterIsWandering(true)
+   m_wanderHunterState(WanderHunterState::wanderState)
 {
 }
 
@@ -41,7 +41,7 @@ void SteeringManager::update(void)
 
    b2Vec2 velChange = velocity - m_hostBody->GetLinearVelocity();
    b2Vec2 impulse = m_hostBody->GetMass() * velChange;
-   m_hostBody->m_body->ApplyLinearImpulse(impulse, m_hostBody->m_body->GetWorldCenter(), true);
+   m_hostBody->ApplyLinearImpulse(impulse, m_hostBody->GetWorldCenter(), true);
 }
 
 
@@ -76,10 +76,10 @@ void SteeringManager::pursuit(b2Body* target, float maxVelocity)
    m_steering += doPursuit(target, maxVelocity);
 }
 
-void SteeringManager::wanderHunt(b2Body* target, float maxVelocity)
+void SteeringManager::wanderHunt(const UpdateState& us, b2Body* target, float maxVelocity)
 {
    m_maxVelocity = maxVelocity;
-   m_steering += doWanderHunt(target, maxVelocity);
+   m_steering += doWanderHunt(us, target, maxVelocity);
 }
 
 // doSeek, target is point to seek to, slowingRadius is the radius to target in which
@@ -88,6 +88,7 @@ void SteeringManager::wanderHunt(b2Body* target, float maxVelocity)
 b2Vec2 SteeringManager::doSeek(
    b2Vec2 target, 
    float maxVelocity,
+   bool enableFire,
    float slowingRadius,
    float turnBooster)
 {
@@ -98,7 +99,19 @@ b2Vec2 SteeringManager::doSeek(
    distance = desired.Length();
 
    b2Vec2 myVel = m_hostBody->GetPosition();
-   float angle = b2Dot(target, myVel) / target.Normalize() / myVel.Normalize();
+   
+   float turnBoosterMag = b2Dot(target, myVel) / target.Normalize() / myVel.Normalize();
+
+   if (enableFire)
+   {
+      float angle = acos(turnBoosterMag);
+
+      if (angle < 5.0f / 180.0f * MATH_PI)
+      {
+         // We now point in the direction of the, shot, if enabled
+         logs::message("Fire!");
+      }
+   }
 
    desired.Normalize();
    
@@ -112,7 +125,7 @@ b2Vec2 SteeringManager::doSeek(
    }
 
    force = (desired - m_hostBody->GetLinearVelocity());
-   force *= (angle * turnBooster + 1.0f);
+   force *= (turnBoosterMag * turnBooster + 1.0f);
 
    return force;   
 }
@@ -195,7 +208,7 @@ b2Vec2 SteeringManager::doPursuit(b2Body* target, float maxVelocity)
 
    b2Vec2 targetFuturePosition = target->GetPosition() + tv;
 
-   return doSeek(targetFuturePosition, maxVelocity, 0.0f, 2.0f);
+   return doSeek(targetFuturePosition, maxVelocity, true, 0.0f, 2.0f);
 }
 
 b2Vec2 SteeringManager::doStayInScene(void)
@@ -333,7 +346,7 @@ b2Body* SteeringManager::findMostThreatening(b2Vec2 pos, b2Vec2 ahead, b2Vec2 ah
 
    b2Body* mostThreatening = NULL;
 
-   b2Body* body = m_hostBody->GetBodyList();
+   b2Body* body = m_hostBody->GetWorld()->GetBodyList();
    while (body)
    {
       // So far, only avoid asteroids
@@ -416,45 +429,117 @@ public:
 
 
 
-b2Vec2 SteeringManager::doWanderHunt(b2Body* target, float maxVelocity)
+b2Vec2 SteeringManager::doWanderHunt(const UpdateState& us, b2Body* target, float maxVelocity)
 {
    MyRaycastCallback mrcc;
 
-   m_hostBody->m_body->GetWorld()->RayCast(&mrcc, m_hostBody->GetPosition(), target->GetPosition());
-
-   if (mrcc.m_targetIsHiding)
+   switch (m_wanderHunterState)
    {
-      if (m_hunterIsWandering)
-      {
-         logs::messageln("Wander");
+   case WanderHunterState::wanderState:
+      // While in wander, we look for target twice a second
+      // If found we go to pursuit
+      // If not found, we do the actual wander
 
+      if (us.time >= m_stateStartTime + 500)
+      {
+         m_stateStartTime = us.time;
+
+         m_hostBody->GetWorld()->RayCast(&mrcc, m_hostBody->GetPosition(), target->GetPosition());
+
+         if (!mrcc.m_targetIsHiding)
+         {
+            // Go to pursuit
+            m_wanderHunterState = WanderHunterState::pursuitState;
+
+            // logs::messageln("Pursuit");
+
+            m_lastKnowTargetPos = target->GetPosition();
+            m_maxVelocity = maxVelocity;
+            return doPursuit(target, maxVelocity);
+         }
+      }
+
+      // logs::messageln("Wander");
+
+      m_maxVelocity = maxVelocity * 0.2f;
+      return doWander(maxVelocity * 0.2f);
+      
+      break;
+
+   case WanderHunterState::seekState:
+      // While in seek, we look for target twice a second
+      // If found we go to pursuit
+      // If not found, we check if we reached last known 
+      // position of target. If so, we go to Wander.
+      // If not we do the actual seek
+
+      if (us.time >= m_stateStartTime + 500)
+      {
+         m_stateStartTime = us.time;
+
+         m_hostBody->GetWorld()->RayCast(&mrcc, m_hostBody->GetPosition(), target->GetPosition());
+
+         if (!mrcc.m_targetIsHiding)
+         {
+            // Go to pursuit
+            m_wanderHunterState = WanderHunterState::pursuitState;
+
+            // logs::messageln("Pursuit");
+
+            m_lastKnowTargetPos = target->GetPosition();
+            m_maxVelocity = maxVelocity;
+            return doPursuit(target, maxVelocity);
+         }
+      }
+
+      if ((m_hostBody->GetPosition() - m_lastKnowTargetPos).Length() < 20.0f)
+      {
+         // Go to wander
+         m_wanderHunterState = WanderHunterState::wanderState;
+         m_stateStartTime = us.time;
+
+         // logs::messageln("Wander");
+
+         m_maxVelocity = maxVelocity * 0.2f;
          return doWander(maxVelocity * 0.2f);
+      }
+
+      // logs::messageln("Seeking");
+
+      m_maxVelocity = maxVelocity * 0.5f;
+      return doSeek(m_lastKnowTargetPos, maxVelocity * 0.5f);
+
+      break;
+
+   case WanderHunterState::pursuitState:
+
+      // While in pursuit, we look for target at each update
+      // If lost we go to seek, otherwise we pursuit
+
+      m_hostBody->GetWorld()->RayCast(&mrcc, m_hostBody->GetPosition(), target->GetPosition());
+
+      if (mrcc.m_targetIsHiding)
+      {
+         // Go to seek
+         m_wanderHunterState = WanderHunterState::seekState;
+
+         m_stateStartTime = us.time;
+
+         // logs::messageln("Seeking");
+
+         m_maxVelocity = maxVelocity * 0.5f;
+         return doSeek(m_lastKnowTargetPos, maxVelocity * 0.5f);
       }
       else
       {
-         if ((m_hostBody->GetPosition() - m_lastKnowTargetPos).Length() < 20.0f)
-         {
-            
-            logs::messageln("Wander");
+         // logs::messageln("Pursuit");
 
-            m_hunterIsWandering = true;
-            return doWander(maxVelocity * 0.2f);
-         }
-         else
-         {
-            logs::messageln("Seeking");
-
-            return doSeek(m_lastKnowTargetPos, maxVelocity * 0.7f);
-         }
+         m_lastKnowTargetPos = target->GetPosition();
+         m_maxVelocity = maxVelocity;
+         return doPursuit(target, maxVelocity);
       }
-   }
-   else
-   {
-      logs::messageln("Pursuit");
 
-      m_hunterIsWandering = false;
-      m_lastKnowTargetPos = target->GetPosition();
-      return doPursuit(target, maxVelocity);
+      break;
    }
 
    return b2Vec2(0.0f, 0.0f);
