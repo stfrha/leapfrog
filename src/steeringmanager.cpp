@@ -9,7 +9,8 @@ SteeringManager::SteeringManager(
    m_hostBody(hostBody),
    m_sceneActor(sceneActor),
    m_wanderAngle(0.0f),
-   m_steering(b2Vec2(0.0f, 0.0f))
+   m_steering(b2Vec2(0.0f, 0.0f)),
+   m_hunterIsWandering(true)
 {
 }
 
@@ -32,69 +33,91 @@ void SteeringManager::update(void)
    
    velocity += m_steering;
 
-   if (velocity.Length() > m_hostBody->GetMaxVelocity())
+   if (velocity.Length() > m_maxVelocity)
    {
       velocity.Normalize();
-      velocity *= m_hostBody->GetMaxVelocity();
+      velocity *= m_maxVelocity;
    }
 
    b2Vec2 velChange = velocity - m_hostBody->GetLinearVelocity();
    b2Vec2 impulse = m_hostBody->GetMass() * velChange;
    m_hostBody->m_body->ApplyLinearImpulse(impulse, m_hostBody->m_body->GetWorldCenter(), true);
-
 }
 
 
-void SteeringManager::seek(b2Vec2 target, float slowingRadius)
+void SteeringManager::seek(b2Vec2 target, float maxVelocity, float slowingRadius, float turnBooster)
 {
-	m_steering += doSeek(target, slowingRadius);
+   m_maxVelocity = maxVelocity;
+	m_steering += doSeek(target, maxVelocity, slowingRadius, turnBooster);
 }
 
-void SteeringManager::flee(b2Vec2 target)
+void SteeringManager::flee(b2Vec2 target, float maxVelocity)
 {
-	m_steering += doFlee(target);
+   m_maxVelocity = maxVelocity;
+   m_steering += doFlee(target, maxVelocity);
 }
 
-void SteeringManager::wander()
+void SteeringManager::wander(float maxVelocity)
 {
-	m_steering += doWander();
+   m_maxVelocity = maxVelocity;
+   m_steering += doWander(maxVelocity);
 }
 
-void SteeringManager::evade(b2Body* target)
+void SteeringManager::evade(b2Body* target, float maxVelocity)
 {
-	m_steering += doFlee(target->GetPosition());
+   m_maxVelocity = maxVelocity;
+   m_steering += doFlee(target->GetPosition(), maxVelocity);
 }
 
-void SteeringManager::pursuit(b2Body* target)
+void SteeringManager::pursuit(b2Body* target, float maxVelocity)
 {
-//	m_steering += doSeek(target->GetPosition());
-   m_steering += doPursuit(target);
+   m_maxVelocity = maxVelocity;
+   //	m_steering += doSeek(target->GetPosition());
+   m_steering += doPursuit(target, maxVelocity);
 }
 
-b2Vec2 SteeringManager::doSeek(b2Vec2 target, float slowingRadius)
+void SteeringManager::wanderHunt(b2Body* target, float maxVelocity)
+{
+   m_maxVelocity = maxVelocity;
+   m_steering += doWanderHunt(target, maxVelocity);
+}
+
+// doSeek, target is point to seek to, slowingRadius is the radius to target in which
+// the host will slow down. turnBooster is the amount the turning force (and speed)
+// is at off angles, 1 is no effect, 2 is enhanced, 4 is down right impossible to flee. 
+b2Vec2 SteeringManager::doSeek(
+   b2Vec2 target, 
+   float maxVelocity,
+   float slowingRadius,
+   float turnBooster)
 {
    b2Vec2 force;
    float distance = 0.0f;
    
    b2Vec2 desired = target - m_hostBody->GetPosition();
    distance = desired.Length();
+
+   b2Vec2 myVel = m_hostBody->GetPosition();
+   float angle = b2Dot(target, myVel) / target.Normalize() / myVel.Normalize();
+
    desired.Normalize();
    
    if (distance < slowingRadius)
    {
-      desired *= m_hostBody->GetMaxVelocity() * distance / slowingRadius;
+      desired *= maxVelocity * distance / slowingRadius;
    }
    else
    {
-      desired *= m_hostBody->GetMaxVelocity();
+      desired *= maxVelocity;
    }
 
-   force = desired - m_hostBody->GetLinearVelocity();
-   
+   force = (desired - m_hostBody->GetLinearVelocity());
+   force *= (angle * turnBooster + 1.0f);
+
    return force;   
 }
 
-b2Vec2 SteeringManager::doFlee(b2Vec2 target)
+b2Vec2 SteeringManager::doFlee(b2Vec2 target, float maxVelocity)
 {
    b2Vec2 force;
    float distance = 0.0f;
@@ -103,25 +126,30 @@ b2Vec2 SteeringManager::doFlee(b2Vec2 target)
    distance = desired.Length();
    desired.Normalize();
    
-   desired *= m_hostBody->GetMaxVelocity();
+   desired *= maxVelocity;
 
    force = desired - m_hostBody->GetLinearVelocity();
    
    return force;   
 }
 
-b2Vec2 SteeringManager::doWander()
+b2Vec2 SteeringManager::doWander(float maxVelocity)
 {
+   // Parameters yet to be trimmed
+   float circleDistance = 10.0f;
+   float circleRadius = 50.0f;
+   float angleChange = 0.4f;
+
    // Calculate the circle center
    b2Vec2 circleCenter;
    circleCenter = m_hostBody->GetLinearVelocity();
    circleCenter.Normalize();
-   circleCenter *= m_hostBody->GetCircleDistance();
+   circleCenter *= circleDistance;
 
    //
    // Calculate the displacement force
    b2Vec2 displacement(1.0f, 0.0f);
-   displacement *= m_hostBody->GetCircleRadius();
+   displacement *= circleRadius;
 
    // Randomly change the vector direction
    // by making it change its current angle
@@ -134,7 +162,7 @@ b2Vec2 SteeringManager::doWander()
    // won't have the same value in the
    // next game frame.
 
-   m_wanderAngle += static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / m_hostBody->GetAngleChange())) - m_hostBody->GetAngleChange() / 2.0f;
+   m_wanderAngle += static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / angleChange)) - angleChange / 2.0f;
    //
    // Finally calculate and return the wander force
    b2Vec2 wanderForce;
@@ -143,31 +171,31 @@ b2Vec2 SteeringManager::doWander()
    return wanderForce + doStayInScene();
 }
 
-b2Vec2 SteeringManager::doEvade(b2Body* target)
+b2Vec2 SteeringManager::doEvade(b2Body* target, float maxVelocity)
 {
    b2Vec2 distance = target->GetPosition() - m_hostBody->GetPosition();
    
-   float updatesAhead = distance.Length() / m_hostBody->GetMaxVelocity();
+   float updatesAhead = distance.Length() / maxVelocity;
    
    b2Vec2 futurePosition = updatesAhead * (target->GetPosition() + target->GetLinearVelocity());
-   return doFlee(futurePosition);
+   return doFlee(futurePosition, maxVelocity);
 }
 
-b2Vec2 SteeringManager::doPursuit(b2Body* target)
+b2Vec2 SteeringManager::doPursuit(b2Body* target, float maxVelocity)
 {
    b2Vec2 force;
    b2Vec2 distance;
    
    distance = target->GetPosition() - m_hostBody->GetPosition();
 
-   float updatesNeeded = distance.Length() / m_hostBody->GetMaxVelocity();
+   float updatesNeeded = distance.Length() / maxVelocity;
 
    b2Vec2 tv = target->GetLinearVelocity();
    tv *= updatesNeeded;
 
    b2Vec2 targetFuturePosition = target->GetPosition() + tv;
 
-   return doSeek(targetFuturePosition);
+   return doSeek(targetFuturePosition, maxVelocity, 0.0f, 2.0f);
 }
 
 b2Vec2 SteeringManager::doStayInScene(void)
@@ -246,7 +274,7 @@ b2Vec2 SteeringManager::doAvoidCollision(void)
    b2Vec2 pos = m_hostBody->GetPosition();
    b2Vec2 vel = m_hostBody->GetLinearVelocity();
 
-   float dynamicLength = vel.Length() / m_hostBody->GetMaxVelocity();
+   float dynamicLength = vel.Length() / m_maxVelocity;
 
    vel.Normalize();
 
@@ -269,10 +297,7 @@ b2Vec2 SteeringManager::doAvoidCollision(void)
 
       avoidance.Normalize();
 
-      avoidance *= 10.0f;
-
-      logs::messageln("Avoidance.x: %f, Avoidance.y: %f", avoidance.x, avoidance.y);
-
+      avoidance *= 500.0f;
    }
 
    return avoidance;
@@ -364,6 +389,76 @@ b2Body* SteeringManager::findMostThreatening(b2Vec2 pos, b2Vec2 ahead, b2Vec2 ah
 
 }
 
+
+// For the Raycast we need a callback class. Lets define it here
+class MyRaycastCallback : public b2RayCastCallback
+{
+public:
+   std::vector<b2Fixture*> m_fixtureList;
+   bool m_targetIsHiding;
+
+   float32 ReportFixture(b2Fixture* fixture, const b2Vec2& point,
+      const b2Vec2& normal, float32 fraction)
+   {
+      CollisionEntity* ce = (CollisionEntity*)fixture->GetUserData();
+      m_targetIsHiding = false;
+
+      if ((ce->getEntityType() == CET_ASTEROID) && (fraction < 1.0f))
+      {
+         m_targetIsHiding = true;
+         return 0.0f;
+      }
+
+      return 1.0f;
+   }
+
+};
+
+
+
+b2Vec2 SteeringManager::doWanderHunt(b2Body* target, float maxVelocity)
+{
+   MyRaycastCallback mrcc;
+
+   m_hostBody->m_body->GetWorld()->RayCast(&mrcc, m_hostBody->GetPosition(), target->GetPosition());
+
+   if (mrcc.m_targetIsHiding)
+   {
+      if (m_hunterIsWandering)
+      {
+         logs::messageln("Wander");
+
+         return doWander(maxVelocity * 0.2f);
+      }
+      else
+      {
+         if ((m_hostBody->GetPosition() - m_lastKnowTargetPos).Length() < 20.0f)
+         {
+            
+            logs::messageln("Wander");
+
+            m_hunterIsWandering = true;
+            return doWander(maxVelocity * 0.2f);
+         }
+         else
+         {
+            logs::messageln("Seeking");
+
+            return doSeek(m_lastKnowTargetPos, maxVelocity * 0.7f);
+         }
+      }
+   }
+   else
+   {
+      logs::messageln("Pursuit");
+
+      m_hunterIsWandering = false;
+      m_lastKnowTargetPos = target->GetPosition();
+      return doPursuit(target, maxVelocity);
+   }
+
+   return b2Vec2(0.0f, 0.0f);
+}
 
 
 

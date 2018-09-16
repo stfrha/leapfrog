@@ -7,8 +7,8 @@
 		<stateProperties
 			state="deepSpaceState"
 			file="leapfrog_deep_space.xml" 
-			posX="200.0"
-			posY="400.0" />
+			posX="300.0"
+			posY="250.0" />
 	</ChildCompoundObjectRef>
 </compoundObject>
 

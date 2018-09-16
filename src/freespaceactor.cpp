@@ -73,10 +73,14 @@ FreeSpaceActor::FreeSpaceActor(
          150.0f), RDE_LEFT);
    addChild(m_rightBoundary);
 
-   spHammer hammer = new Hammer(gameResources, this, m_world, Vector2(300.0f, 450.0f));
+   spHammer hammer = new Hammer(gameResources, this, m_world, Vector2(600.0f, 250.0f));
 
-   spAsteroid a1 = new Asteroid(gameResources, this, m_world, Vector2(200.0f, 451.0f), ASE_LARGE);
-   spAsteroid a2 = new Asteroid(gameResources, this, m_world, Vector2(150.0f, 452.0f), ASE_LARGE);
+   spAsteroid a1 = new Asteroid(gameResources, this, m_world, Vector2(500.0f, 230.0f), ASE_LARGE);
+   spAsteroid a2 = new Asteroid(gameResources, this, m_world, Vector2(480.0f, 240.0f), ASE_LARGE);
+   spAsteroid a3 = new Asteroid(gameResources, this, m_world, Vector2(500.0f, 250.0f), ASE_LARGE);
+   spAsteroid a4 = new Asteroid(gameResources, this, m_world, Vector2(480.0f, 260.0f), ASE_LARGE);
+   spAsteroid a5 = new Asteroid(gameResources, this, m_world, Vector2(500.0f, 270.0f), ASE_LARGE);
+   spAsteroid a6 = new Asteroid(gameResources, this, m_world, Vector2(480.0f, 280.0f), ASE_LARGE);
 
 }
 

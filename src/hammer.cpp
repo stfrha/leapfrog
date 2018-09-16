@@ -59,12 +59,7 @@ Hammer::Hammer(
 
    attachTo(m_sceneActor);
 
-   m_steeringBody = new SteeringBody(
-      m_body,
-      100.0f,
-      10.0f,
-      50.0f,
-      0.4f);
+   m_steeringBody = new SteeringBody(m_body);
 
    m_steeringManager = new SteeringManager(m_steeringBody, m_sceneActor);
    m_steeringManager->m_wanderAngle = MATH_PI;
@@ -93,23 +88,23 @@ Hammer::Hammer(
    //
 
 
-   m_aheadCircle = new Sprite();
-   m_aheadCircle->setResAnim(gameResources.getResAnim("circle"));
-   m_aheadCircle->setSize(40.0f, 40.0f);
-   m_aheadCircle->setPosition(PhysDispConvert::convert(m_steeringManager->m_debugAhead, 1.0f));
-   m_aheadCircle->setAnchor(0.5f, 0.5f);
-   m_aheadCircle->setTouchChildrenEnabled(false);
-   m_aheadCircle->setPriority(160);
-   m_aheadCircle->attachTo(m_sceneActor);
+   //m_aheadCircle = new Sprite();
+   //m_aheadCircle->setResAnim(gameResources.getResAnim("circle"));
+   //m_aheadCircle->setSize(40.0f, 40.0f);
+   //m_aheadCircle->setPosition(PhysDispConvert::convert(m_steeringManager->m_debugAhead, 1.0f));
+   //m_aheadCircle->setAnchor(0.5f, 0.5f);
+   //m_aheadCircle->setTouchChildrenEnabled(false);
+   //m_aheadCircle->setPriority(160);
+   //m_aheadCircle->attachTo(m_sceneActor);
 
-   m_ahead2Circle = new Sprite();
-   m_ahead2Circle->setResAnim(gameResources.getResAnim("circle"));
-   m_ahead2Circle->setSize(40.0f, 40.0f);
-   m_ahead2Circle->setPosition(PhysDispConvert::convert(m_steeringManager->m_debugAhead2, 1.0f));
-   m_ahead2Circle->setAnchor(0.5f, 0.5f);
-   m_ahead2Circle->setTouchChildrenEnabled(false);
-   m_ahead2Circle->setPriority(160);
-   m_ahead2Circle->attachTo(m_sceneActor);
+   //m_ahead2Circle = new Sprite();
+   //m_ahead2Circle->setResAnim(gameResources.getResAnim("circle"));
+   //m_ahead2Circle->setSize(40.0f, 40.0f);
+   //m_ahead2Circle->setPosition(PhysDispConvert::convert(m_steeringManager->m_debugAhead2, 1.0f));
+   //m_ahead2Circle->setAnchor(0.5f, 0.5f);
+   //m_ahead2Circle->setTouchChildrenEnabled(false);
+   //m_ahead2Circle->setPriority(160);
+   //m_ahead2Circle->attachTo(m_sceneActor);
 }
 
 CollisionEntityTypeEnum Hammer::getEntityType(void)
@@ -138,9 +133,11 @@ void Hammer::doUpdate(const oxygine::UpdateState& us)
 //   m_steeringManager->wander();
 
 //   m_steeringManager->seek(b2Vec2(100.0f, 450.0f));
+
    if (((FreeSpaceActor*)m_sceneActor)->m_leapfrogBody != NULL)
    {
-      m_steeringManager->pursuit(((FreeSpaceActor*)m_sceneActor)->m_leapfrogBody);
+      // m_steeringManager->pursuit(((FreeSpaceActor*)m_sceneActor)->m_leapfrogBody);
+      m_steeringManager->wanderHunt(((FreeSpaceActor*)m_sceneActor)->m_leapfrogBody, 100.0f);
    }
 
    m_steeringManager->update();
@@ -187,10 +184,10 @@ void Hammer::doUpdate(const oxygine::UpdateState& us)
    float impulse = m_body->GetInertia() * desiredAngularVelocity;// disregard time factor
    m_body->ApplyAngularImpulse(impulse, true);
 
-   m_aheadCircle->setPosition(PhysDispConvert::convert(m_steeringManager->m_debugAhead, 1.0f));
-   m_aheadCircle->setSize(m_steeringManager->m_debugRadius * 2.0f, m_steeringManager->m_debugRadius * 2.0f);
-   m_ahead2Circle->setPosition(PhysDispConvert::convert(m_steeringManager->m_debugAhead2, 1.0f));
-   m_ahead2Circle->setSize(m_steeringManager->m_debugRadius * 2.0f, m_steeringManager->m_debugRadius * 2.0f);
+   //m_aheadCircle->setPosition(PhysDispConvert::convert(m_steeringManager->m_debugAhead, 1.0f));
+   //m_aheadCircle->setSize(m_steeringManager->m_debugRadius * 2.0f, m_steeringManager->m_debugRadius * 2.0f);
+   //m_ahead2Circle->setPosition(PhysDispConvert::convert(m_steeringManager->m_debugAhead2, 1.0f));
+   //m_ahead2Circle->setSize(m_steeringManager->m_debugRadius * 2.0f, m_steeringManager->m_debugRadius * 2.0f);
 
 
    //switch (m_state)
