@@ -82,7 +82,7 @@ LeapFrog::LeapFrog(
 
    JointUserData* jd;
 
-
+   // Booster joint is not used, no need to remember it.
 	m_boostJoint = static_cast<b2WeldJoint*>(getJoint("boostJoint"));
    jd = new JointUserData(false);
    m_boostJoint->SetUserData(jd);
@@ -190,6 +190,7 @@ LeapFrog::LeapFrog(
       false);                          // Bouncy
 
    m_gun->attachTo(this);
+
 
    m_reentryFlameEmitterBooster = new ReentryFlameEmitter(
       gameResources,
