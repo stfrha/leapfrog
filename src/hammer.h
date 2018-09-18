@@ -8,6 +8,7 @@
 #include "collisionentity.h"
 #include "steeringmanager.h"
 #include "flameemitter.h"
+#include "gun.h"
 
 
 class SceneActor;
@@ -43,14 +44,14 @@ private:
 
    SceneActor* m_sceneActor;
 
-   oxygine::spSprite m_aheadCircle;
-   oxygine::spSprite m_ahead2Circle;
+   //oxygine::spSprite m_aheadCircle;
+   //oxygine::spSprite m_ahead2Circle;
 
 
    
 public:
    spFlameEmitter m_boosterFlame;
-
+   spGun m_gun;
 
 	Hammer(
       oxygine::Resources& gameResources, 

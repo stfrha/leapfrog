@@ -75,6 +75,21 @@ Hammer::Hammer(
 
    m_boosterFlame->startEmitter();
 
+   m_gun = new Gun(
+      gameResources,
+      m_sceneActor,
+      m_body,
+      b2Vec2(-10.0f, 0.0f),            // Origin
+      -MATH_PI,                        // Angle 
+      4.0f,                            // Intensity [bullets per second]
+      2000,                            // Lifetime [ms]
+      10000.0f,                        // Bullet speed
+      false);                          // Bouncy
+
+   m_gun->attachTo(this);
+
+
+
    m_steeringManager = new SteeringManager(m_body, m_sceneActor);
    m_steeringManager->m_wanderAngle = MATH_PI;
 
@@ -154,16 +169,25 @@ void Hammer::doUpdate(const oxygine::UpdateState& us)
       m_boosterFlame->setFlameScale(1.0f);
    }
 
-   if (us.time >= m_stateStartTime + 5000)
+   if (m_steeringManager->m_fireTrigger)
    {
-      float x = static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / 1000.0));
-      float y = static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / 500.0));
-
-      m_seekTarget = b2Vec2(x, y);
-
-
-      m_stateStartTime = us.time;
+      m_gun->startGun();
    }
+   else
+   {
+      m_gun->stopGun();
+   }
+      
+   //if (us.time >= m_stateStartTime + 5000)
+   //{
+   //   float x = static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / 1000.0));
+   //   float y = static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / 500.0));
+
+   //   m_seekTarget = b2Vec2(x, y);
+
+
+   //   m_stateStartTime = us.time;
+   //}
 
    float bodyAngle = m_body->GetAngle();
    b2Vec2 toTarget = m_body->GetLinearVelocity();

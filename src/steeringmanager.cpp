@@ -10,7 +10,8 @@ SteeringManager::SteeringManager(
    m_sceneActor(sceneActor),
    m_wanderAngle(0.0f),
    m_steering(b2Vec2(0.0f, 0.0f)),
-   m_wanderHunterState(WanderHunterState::wanderState)
+   m_wanderHunterState(WanderHunterState::wanderState),
+   m_fireTrigger(false)
 {
 }
 
@@ -106,10 +107,14 @@ b2Vec2 SteeringManager::doSeek(
    {
       float angle = acos(turnBoosterMag);
 
-      if (angle < 5.0f / 180.0f * MATH_PI)
+      if (angle < 2.0f / 180.0f * MATH_PI)
       {
-         // We now point in the direction of the, shot, if enabled
-         logs::message("Fire!");
+         // We now point in the direction of the target, shot, if enabled
+         m_fireTrigger = true;
+      }
+      else
+      {
+         m_fireTrigger = false;
       }
    }
 

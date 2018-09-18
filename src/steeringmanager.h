@@ -41,6 +41,7 @@ private:
 public:
    float m_wanderAngle;
    WanderHunterState m_wanderHunterState;
+   bool m_fireTrigger;
 
    b2Vec2 m_debugAhead;
    b2Vec2 m_debugAhead2;
