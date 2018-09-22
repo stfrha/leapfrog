@@ -1,0 +1,123 @@
+<?xml version="1.0"?>
+<compoundObject>
+   <system
+      type="objectFactory"
+      name="asteroidField1">
+      <stateProperties
+         state="default">
+         <properties
+            posX="343"
+            posY="32"
+				width="500"
+				height="200"
+				spawnInitial="20"
+				intensity="0.25"
+				lifeTime="60000"
+            body="notApplicable">
+            <spawnObject>
+               <childObject
+                  name="asteroid">
+                  <stateProperties
+                     state="default">
+                     <properties
+                        posX="0"
+                        posY="0"
+                        file="mk2_asteroid.xml" />
+                  </stateProperties>
+               </childObject>
+            </spawnObject>
+         </properties>
+      </stateProperties>
+   </system>
+   <childObject
+      name="leapfrog1">
+      <stateProperties
+         state="groundStart">
+         <proprties
+            posX="343"
+            posY="32" >
+            <compoundObject>
+               <behaviour
+                  type="leapfrog" />
+               <!-- parts and joints -->
+               <system
+                  type="gun"
+                  name="lfGun">
+                  <stateProperties
+                     state="default">
+                     <properties
+                        body="lfMainBody"
+                        emitterOriginX="22"
+                        emitterOriginY="0"
+                        angle="0"
+                        fireRate="30"
+                        lifeTime="2000"
+                        impulseMagnitude="10"
+                        bouncy="false" />
+                  </stateProperties>
+               </system>
+               <system
+                  type="flameEmitter"
+                  name="boosterFlame">
+                  <stateProperties
+                     state="default">
+                     <properties
+                        body="lfBooster"
+                        emitterOriginX="22"
+                        emitterOriginY="0"
+                        angle="0"
+                        emitterWidth="6"
+                        lifeTime="2000"
+                        impulseMagnitude="10"
+                        radius="20" />
+                  </stateProperties>
+               </system>
+               <system
+                  type="flameEmitter"
+                  name="leftSteeringFlame">
+                  <stateProperties
+                     state="default">
+                     <properties
+                        body="lfLeftSteering"
+                        emitterOriginX="22"
+                        emitterOriginY="0"
+                        angle="0"
+                        emitterWidth="6"
+                        lifeTime="2000"
+                        impulseMagnitude="10"
+                        radius="20" />
+                  </stateProperties>
+               </system>
+               <system
+                  type="flameEmitter"
+                  name="rightSteeringFlame">
+                  <stateProperties
+                     state="default">
+                     <properties
+                        body="lfRightSteering"
+                        emitterOriginX="22"
+                        emitterOriginY="0"
+                        angle="0"
+                        emitterWidth="6"
+                        lifeTime="2000"
+                        impulseMagnitude="10"
+                        radius="20" />
+                  </stateProperties>
+               </system>
+               <system
+                  type="shield"
+                  name="lfShield">
+                  <stateProperties
+                     state="default">
+                     <properties
+                        body="mainBody"
+                        bodyAnchorX="0"
+                        bodyAnchorY="1.0"
+                        radius="16" />
+                  </stateProperties>
+               </system>
+            </compoundObject>
+         </properties>
+      </stateProperties>
+   </childObject
+</compoundObject>

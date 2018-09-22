@@ -83,7 +83,7 @@ void Gun::doUpdate(const oxygine::UpdateState& us)
                false);
 
             // Attach to parent's parent which is the view actor
-            bullet->attachTo(getParent()->getParent());
+            bullet->attachTo(m_sceneActor);
 
             //if (m_freeSpaceActor != NULL)
             //{

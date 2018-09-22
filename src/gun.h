@@ -10,7 +10,7 @@ class SceneActor;
 
 DECLARE_SMART(Gun, spGun);
 
-class Gun : public oxygine::Actor
+class Gun /* : public oxygine::Actor*/
 {
 private:
 //   FreeSpaceActor * m_freeSpaceActor;

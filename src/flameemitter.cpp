@@ -6,23 +6,25 @@ using namespace oxygine;
 
 FlameEmitter::FlameEmitter(
    Resources& gameResources, 
-   b2Body* body, 
+   SceneActor* sceneActor,
+   b2Body* body,
    b2Vec2 emitterOrigin, 
    float angle, 
    float emitterWidth,
    int lifetime,
    float impulseMagnitude,
    float radius) :
-   m_emit(false),
+   m_gameResources(&gameResources),
+   m_sceneActor(sceneActor),
    m_emitterBody(body),
    m_emitterOrigin(emitterOrigin),
    m_emittAngle(angle),
    m_emitterWidth(emitterWidth),
-   m_scale(1.0f),
    m_lifetime(lifetime),
    m_impulseMagnitude(impulseMagnitude),
-   m_gameResources(&gameResources),
-   m_radius(radius)
+   m_radius(radius),
+   m_emit(false),
+   m_scale(1.0f)
 {
 
 }
@@ -89,6 +91,6 @@ void FlameEmitter::doUpdate(const oxygine::UpdateState& us)
          m_radius * m_scale);
 
       // Attach to parent's parent which is the view actor
-      flameParticle->attachTo(getParent()->getParent());
+      flameParticle->attachTo(m_sceneActor);
    }
 }

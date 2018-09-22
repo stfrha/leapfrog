@@ -4,10 +4,13 @@
 #include "Box2D/Box2D.h"
 #include "scales.h"
 #include "physdispconvert.h"
+#include "sceneactor.h"
 
 DECLARE_SMART(FlameEmitter, spFlameEmitter);
 
-class FlameEmitter : public oxygine::Actor
+class SceneActor;
+
+class FlameEmitter /*: public oxygine::Actor*/
 {
 private:
    oxygine::Resources* m_gameResources;
@@ -36,10 +39,14 @@ private:
 
    float m_scale;
 
+   SceneActor* m_sceneActor;
+
+
 
 public:
 	FlameEmitter(
-      oxygine::Resources& gameResources, 
+      oxygine::Resources& gameResources,
+      SceneActor* sceneActor,
       b2Body* body, 
       b2Vec2 emitterOrigin, 
       float angle, 

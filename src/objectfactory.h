@@ -30,7 +30,7 @@ public:
    }
 };
 
-class ObjectFactory : public CompoundObject
+class ObjectFactory : public oxygine::Actor
 {
 private:
    oxygine::Resources* m_gameResources;

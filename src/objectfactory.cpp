@@ -12,7 +12,6 @@ ObjectFactory::ObjectFactory(
    CompoundObject* parentObject,
    b2World* world,
    const xml_node& objectNode) :
-   CompoundObject(sceneParent),
    m_gameResources(&gameResources),
    m_world(world),
    m_sceneActor(sceneParent),
@@ -89,7 +88,9 @@ void ObjectFactory::spawnObjects(void)
          pos.x = static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (it->m_rightBottom.x  - it->m_leftTop.x))) + it->m_leftTop.x;
          pos.y = static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (it->m_rightBottom.y - it->m_leftTop.y))) + it->m_leftTop.y;
 
-         spCompoundObject co = CompoundObject::initCompoundObject(*m_gameResources, m_sceneActor, this, m_world, pos, m_coNode, string("default"));
+         spCompoundObject co = new CompoundObject(m_sceneActor);
+
+         co = co->initCompoundObject(*m_gameResources, m_sceneActor, m_sceneActor, m_world, pos, m_coNode, string("default"));
          
          co->attachTo(m_sceneActor);
 
