@@ -2,24 +2,51 @@
 
 #include "oxygine-framework.h"
 #include "Box2D/Box2D.h"
+#include "system.h"
+#include "collisionentity.h"
+
 #include "scales.h"
 #include "physdispconvert.h"
-#include "collisionentity.h"
 
 DECLARE_SMART(Shield, spShield);
 
-class Shield : public oxygine::Sprite, CollisionEntity
+class Shield : public System, CollisionEntity
 {
 private:
+   // Parameters from XML
+   b2Body * m_attachedBody;
+
+   // Seems that only the center of the attachedBody is used.
+   // Therefore we don't use origin now, lets see if this 
+   // can be corrected
+   // b2Vec2 m_attachedOrigin;
+   
+   float m_radius;
+
+   // Working member variable
    float m_angle;
 
+
+   void readShieldNode(const pugi::xml_node& objectNode);
+
 public:
+   // Members to access from other components
    b2Body * m_body;
+   b2RevoluteJoint* m_shieldJoint;
+
+
    oxygine::ResAnim* m_resAnim;
    
-   Shield(oxygine::Resources& gameResources, b2World* world, const oxygine::Vector2& pos);
+   Shield(
+      oxygine::Resources* gameResources,
+      SceneActor* sceneActor,
+      CompoundObject* parentObject,
+      b2World* world,
+      const pugi::xml_node& objectNode);
+   
 
    virtual CollisionEntityTypeEnum getEntityType(void);
+
    void setAngle(float angle);
    float getAngle(void);
    void shieldHit(b2Contact* contact, const b2ContactImpulse* impulse);

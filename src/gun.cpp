@@ -4,35 +4,41 @@
 #include "gamestatus.h"
 
 using namespace oxygine;
+using namespace pugi;
 
 Gun::Gun(
-   Resources& gameResources, 
+   Resources* gameResources,
    SceneActor* sceneActor,
-   b2Body* body,
-   b2Vec2 emitterOrigin,
-   float angle,
-   float fireRate,
-   int lifetime,
-   float impulseMagnitude,
-   bool bouncy) :
-   m_fire(false),
-//   m_freeSpaceActor(NULL),
-   m_emitterBody(body),
-   m_emitterOrigin(emitterOrigin),
-   m_emittAngle(angle),
-   m_interval(1.0f / fireRate * 1000.0f),
-   m_lifetime(lifetime),
-   m_impulseMagnitude(impulseMagnitude),
-   m_gameResources(&gameResources),
-   m_sceneActor(sceneActor)
+   CompoundObject* parentObject,
+   b2World* world,
+   const xml_node& objectNode) :
+   System(gameResources, sceneActor, world, parentObject),
+   m_fire(false)
+   //m_emitterBody(body),
+   //m_emitterOrigin(emitterOrigin),
+   //m_emittAngle(angle),
+   //m_interval(1.0f / fireRate * 1000.0f),
+   //m_lifetime(lifetime),
+   //m_impulseMagnitude(impulseMagnitude),
+   //m_gameResources(&gameResources),
+   //m_sceneActor(sceneActor)
 {
+   readGunNode(objectNode);
+   attachTo(sceneActor);
 }
 
-//void Gun::setBoundedWallsActor(FreeSpaceActor* actor)
-//{
-//   m_freeSpaceActor = actor;
-//}
-//
+void Gun::readGunNode(const xml_node& objectNode)
+{
+   m_emitterBody = m_parent->getBody(objectNode.attribute("body").as_string());
+
+   m_emitterOrigin.x = objectNode.attribute("emitterOriginX").as_float();
+   m_emitterOrigin.y = objectNode.attribute("emitterOriginY").as_float();
+   m_emittAngle = objectNode.attribute("angle").as_float();
+   m_lifetime = objectNode.attribute("lifeTime").as_int(); // [ms}
+   m_impulseMagnitude = objectNode.attribute("impulseMagnitude").as_float();
+   m_interval = 1.0f / objectNode.attribute("fireRate").as_float() * 1000.0f;
+   m_bouncy = objectNode.attribute("impulseMagnitude").as_bool();
+}
 
 void Gun::startGun(void)
 {

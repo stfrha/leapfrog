@@ -5,19 +5,15 @@
 #include "scales.h"
 #include "physdispconvert.h"
 
-class FreeSpaceActor;
 class SceneActor;
+class CompoundObject;
 
 DECLARE_SMART(Gun, spGun);
 
-class Gun /* : public oxygine::Actor*/
+class Gun : public System
 {
 private:
-//   FreeSpaceActor * m_freeSpaceActor;
-   oxygine::Resources* m_gameResources;
-
-   bool m_fire;
-
+   // Parameters from XML
 	b2Body * m_emitterBody;
 
    // The focus origo of the emitter and the center of the emitter line.
@@ -34,22 +30,23 @@ private:
 
    float m_impulseMagnitude;
 
+   bool m_bouncy;
+
+   // Working member variable
+   bool m_fire;
    int m_timeSinceLast;
 
-   SceneActor* m_sceneActor;
+
+   void readGunNode(const pugi::xml_node& objectNode);
+
 
 public:
 	Gun(
-      oxygine::Resources& gameResources, 
+      oxygine::Resources* gameResources,
       SceneActor* sceneActor,
-      b2Body* body,
-      b2Vec2 emitterOrigin, 
-      float angle, 
-      float fireRate,
-      int lifetime,
-      float impulseMagnitude,
-      bool bouncy
-   );
+      CompoundObject* parentObject,
+      b2World* world,
+      const pugi::xml_node& objectNode);
 
 //   void setBoundedWallsActor(FreeSpaceActor* actor);
 

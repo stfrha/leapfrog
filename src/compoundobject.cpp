@@ -2,22 +2,23 @@
 
 #include "Box2D/Box2D.h"
 
-// All objects that are derived from CompoundObject
+#include "compoundobject.h"
+
+#include "sceneactor.h"
+
+// All behaviours of CompoundObjects
 // and thus can be instansiated as children to one
 // CompoundObject
 #include "launchsite.h"
 #include "leapfrog.h"
+#include "asteroid.h"
 #include "landingpad.h"
-#include "asteroidfield.h"
 #include "planetactor.h"
 #include "orbitwindow.h"
-#include "objectfactory.h"
 #include "blastemitter.h"
+#include "system.h"
 
 #include "polygonvertices.h"
-
-#include "compoundobject.h"
-#include "sceneactor.h"
 
 using namespace oxygine;
 using namespace std;
@@ -141,20 +142,22 @@ CompoundObject* CompoundObject::readDefinitionXmlFile(
 }
 
 CompoundObject* CompoundObject::initCompoundObject(
-   oxygine::Resources& gameResources,
+   Resources& gameResources,
    SceneActor* sceneParent,
    CompoundObject* parentObject,
    b2World* world,
    const Vector2& pos,
-   pugi::xml_node& root,
+   xml_node& root,
    const string& initialState)
 {
+   // Look if there is a behaviour attached to the compound object
+   string behavStr = root.child("behaviour").attribute("type").as_string();
+
    // Decode the type string to create the correct type of object
    // but only store the pointer to the CompoundObject
    // Perhaps with some special cases
-   string type = root.attribute("type").as_string();
 
-   if (type == "leapfrog")
+   if (behavStr == "leapfrog")
    {
       LeapFrog* lf = new LeapFrog(
          gameResources,
@@ -166,7 +169,7 @@ CompoundObject* CompoundObject::initCompoundObject(
 
       return static_cast<CompoundObject*>(lf);
    }
-   else if (type == "launchSite")
+   else if (behavStr == "launchSite")
    {
       LaunchSite* ls = new LaunchSite(
          gameResources,
@@ -178,7 +181,7 @@ CompoundObject* CompoundObject::initCompoundObject(
 
       return static_cast<CompoundObject*>(ls);
    }
-   else if (type == "landingPad")
+   else if (behavStr == "landingPad")
    {
       LandingPad* lp = new LandingPad(
          gameResources,
@@ -190,7 +193,7 @@ CompoundObject* CompoundObject::initCompoundObject(
    
       return static_cast<CompoundObject*>(lp);
    }
-   else if (type == "asteroid")
+   else if (behavStr == "asteroid")
    {
       Asteroid* lp = new Asteroid(gameResources, (SceneActor*)sceneParent, world, pos, ASE_AUTO);
 
@@ -198,6 +201,8 @@ CompoundObject* CompoundObject::initCompoundObject(
    }
    else
    {
+      // If no behaviour was recognised, define the parts of the 
+      // compound objects
       initCompoundObjectParts(
          gameResources,
          sceneParent,
@@ -223,24 +228,31 @@ bool CompoundObject::initCompoundObjectParts(
    pugi::xml_node& root,
    const string& initialState)
 {
-
-   for (auto it = root.children("ChildCompoundObjectRef").begin();
-      it != root.children("ChildCompoundObjectRef").end();
+   for (auto it = root.children("childObject").begin();
+      it != root.children("childObject").end();
       ++it)
    {
       defineChildObject(gameResources, sceneParent, this, world, pos, *it, initialState);
    }
 
-   for (auto it = root.children("CompoundObject").begin();
-      it != root.children("CompoundObject").end();
-      ++it)
-   {
-      CompoundObject* co = CompoundObject::initCompoundObject(gameResources, sceneParent, this, world, pos, *it, initialState);
 
-      m_children.push_back(co);
+   //for (auto it = root.children("ChildCompoundObjectRef").begin();
+   //   it != root.children("ChildCompoundObjectRef").end();
+   //   ++it)
+   //{
+   //   defineChildObject(gameResources, sceneParent, this, world, pos, *it, initialState);
+   //}
 
-      co->setName(it->attribute("name").as_string());
-   }
+   //for (auto it = root.children("CompoundObject").begin();
+   //   it != root.children("CompoundObject").end();
+   //   ++it)
+   //{
+   //   CompoundObject* co = CompoundObject::initCompoundObject(gameResources, sceneParent, this, world, pos, *it, initialState);
+
+   //   m_children.push_back(co);
+
+   //   co->setName(it->attribute("name").as_string());
+   //}
 
    for (auto it = root.children("spriteBox").begin();
       it != root.children("spriteBox").end();
@@ -349,6 +361,28 @@ bool CompoundObject::initCompoundObjectParts(
       definePrismaticJoint(world, *it);
    }
 
+   // It is important that systems are iterated after all 
+   // bodies and joints since, during the initialisation of the system
+   // references to such objects are searchd for. 
+   for (auto it = root.children("system").begin();
+      it != root.children("system").end();
+      ++it)
+   {
+      string systemType = it->attribute("type").as_string();
+      string systemName = it->attribute("name").as_string();
+
+      xml_node stateNode;
+
+      if (getStateNode(*it, initialState, stateNode))
+      {
+         System* sys = System::initialiseSystemNode(&gameResources, m_sceneActor, world, this, systemType, systemName, stateNode);
+
+         // Is it really important to remember the systems here?
+         m_systems.push_back(sys);
+      }
+   }
+
+
    for (auto it = root.children("planetActor").begin();
       it != root.children("planetActor").end();
       ++it)
@@ -369,47 +403,27 @@ bool CompoundObject::initCompoundObjectParts(
       }
    }
 
-   for (auto it = root.children("asteroidField").begin();
-      it != root.children("asteroidField").end();
-      ++it)
-   {
-      xml_node stateNode;
+   // Asteroid fields are replaced by Object Factories
+   //for (auto it = root.children("asteroidField").begin();
+   //   it != root.children("asteroidField").end();
+   //   ++it)
+   //{
+   //   xml_node stateNode;
 
-      if (getStateNode(*it, initialState, stateNode))
-      {
-         AsteroidField* af = new AsteroidField(
-            gameResources,
-            sceneParent,
-            parentObject,
-            world,
-            stateNode.child("properties"));
+   //   if (getStateNode(*it, initialState, stateNode))
+   //   {
+   //      AsteroidField* af = new AsteroidField(
+   //         gameResources,
+   //         sceneParent,
+   //         parentObject,
+   //         world,
+   //         stateNode.child("properties"));
 
-         m_children.push_back(static_cast<CompoundObject*>(af));
+   //      m_children.push_back(static_cast<CompoundObject*>(af));
 
-         af->setName(it->attribute("name").as_string());
-      }
-   }
-
-   for (auto it = root.children("objectFactory").begin();
-      it != root.children("objectFactory").end();
-      ++it)
-   {
-      xml_node stateNode;
-
-      if (getStateNode(*it, initialState, stateNode))
-      {
-         ObjectFactory* af = new ObjectFactory(
-            gameResources,
-            sceneParent,
-            parentObject,
-            world,
-            stateNode.child("properties"));
-
-         m_children.push_back(static_cast<CompoundObject*>(af));
-
-         af->setName(it->attribute("name").as_string());
-      }
-   }
+   //      af->setName(it->attribute("name").as_string());
+   //   }
+   //}
 
    for (auto it = root.children("clippedWindow").begin();
       it != root.children("clippedWindow").end();
@@ -1680,53 +1694,76 @@ void CompoundObject::defineChildObject(
    xml_node& objectNode,
    const string& initialState)
 {
-   // Iterate the stateProperties of the node, looking for state attributes
-   // that matches the supplied initialState. If initialState is empty,
-   // the first statePropert� is used
-   xml_node* stateNode = NULL;
+   xml_node stateNode;
 
-   for (auto it = objectNode.children("stateProperties").begin(); it != objectNode.children("stateProperties").end(); ++it)
+   if (!getStateNode(objectNode, initialState, stateNode))
    {
-      if ((initialState == "") || (it->attribute("state").as_string() == initialState))
-      {
-         stateNode = &(*it);
-         break;
-      }
+      return;
    }
 
-   if (!stateNode)
+   xml_node propNode = stateNode.child("properties");
+
+   if (propNode.empty())
    {
       return;
    }
 
    Vector2 objPos = Vector2(
-      stateNode->attribute("posX").as_float(),
-      stateNode->attribute("posY").as_float());
+      propNode.attribute("posX").as_float(),
+      propNode.attribute("posY").as_float());
 
    objPos += pos;
 
-   string fileName = stateNode->attribute("file").as_string();
+   string fileName = propNode.attribute("file").as_string("notApplicable");
 
-   // Read the child XML file
-   CompoundObject* co = readDefinitionXmlFile(
-      gameResources, 
-      sceneParent, 
-      parentObject, 
-      world, 
-      objPos, 
-      fileName, 
-      initialState);
+   CompoundObject* co = NULL;
 
-   m_children.push_back(static_cast<CompoundObject*>(co));
+   if (fileName == "notApplicable")
+   {
+      xml_node coNode = propNode.child("compoundObject");
 
-   co->setName(objectNode.attribute("name").as_string());
+      if (coNode.empty())
+      {
+         return;
+      }
+
+      // Define child directly
+      co = initCompoundObject(
+         gameResources,
+         sceneParent,
+         parentObject,
+         world,
+         objPos,
+         coNode,
+         initialState);
+   }
+   else
+   {
+      // Define child file
+      // Read the child XML file
+      co = readDefinitionXmlFile(
+         gameResources,
+         sceneParent,
+         parentObject,
+         world,
+         objPos,
+         fileName,
+         initialState);
+   }
+
+   if (co)
+   {
+      m_children.push_back(static_cast<CompoundObject*>(co));
+
+      co->setName(objectNode.attribute("name").as_string());
+   }
 }
 
 bool CompoundObject::getStateNode(xml_node& objectNode, const string& initialState, xml_node& stateNode)
 {
    // Iterate the stateProperties of the node, looking for state attributes
    // that matches the supplied initialState. If initialState is empty,
-   // the first statePropert� is used
+   // the first stateProperty is used
 
    for (auto it = objectNode.children("stateProperties").begin(); it != objectNode.children("stateProperties").end(); ++it)
    {
@@ -2064,6 +2101,19 @@ b2Joint* CompoundObject::getJointImpl(const std::string& name)
       if ((*it)->m_name == name)
       {
          return (*it)->m_joint;
+      }
+   }
+
+   return NULL;
+}
+
+System* CompoundObject::getSystemImpl(const std::string& name)
+{
+   for (auto it = m_systems.begin(); it != m_systems.end(); ++it)
+   {
+      if ((*it)->getName() == name)
+      {
+         return (*it);
       }
    }
 

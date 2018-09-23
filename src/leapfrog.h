@@ -231,7 +231,7 @@ public:
    void fireGun(bool fire);
    void fireReentryFlames(bool fire);
    void reentrySetHeat(unsigned char heatAmount);   // 0 = off, 1 = coldest, 255 = hottest, most intense
-   void setBoundedWallsActor(FreeSpaceActor* actor);
+   // void setBoundedWallsActor(FreeSpaceActor* actor);
    void setHoldAngle(float angle);
    void releaseHoldAngle(void);
    void breakJoints(void);

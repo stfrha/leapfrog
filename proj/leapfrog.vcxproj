@@ -167,7 +167,6 @@
     <ClCompile Include="..\..\Box2D\Box2D\Box2D\Dynamics\Joints\b2WheelJoint.cpp" />
     <ClCompile Include="..\..\Box2D\Box2D\Box2D\Rope\b2Rope.cpp" />
     <ClCompile Include="..\src\asteroid.cpp" />
-    <ClCompile Include="..\src\asteroidfield.cpp" />
     <ClCompile Include="..\src\blastemitter.cpp" />
     <ClCompile Include="..\src\blastparticle.cpp" />
     <ClCompile Include="..\src\Box2DDebugDraw.cpp" />
@@ -209,6 +208,7 @@
     <ClCompile Include="..\src\softboundary.cpp" />
     <ClCompile Include="..\src\statusbar.cpp" />
     <ClCompile Include="..\src\steeringmanager.cpp" />
+    <ClCompile Include="..\src\system.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Box2D\Box2D\Box2D\Box2D.h" />
@@ -260,7 +260,6 @@
     <ClInclude Include="..\..\Box2D\Box2D\Box2D\Rope\b2Rope.h" />
     <ClInclude Include="..\src\actortodie.h" />
     <ClInclude Include="..\src\asteroid.h" />
-    <ClInclude Include="..\src\asteroidfield.h" />
     <ClInclude Include="..\src\blastemitter.h" />
     <ClInclude Include="..\src\blastparticle.h" />
     <ClInclude Include="..\src\bullet.h" />
@@ -311,6 +310,7 @@
     <ClInclude Include="..\src\statusbar.h" />
     <ClInclude Include="..\src\steeringinterface.h" />
     <ClInclude Include="..\src\steeringmanager.h" />
+    <ClInclude Include="..\src\system.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

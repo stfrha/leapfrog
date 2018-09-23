@@ -1,30 +1,52 @@
 #include "shield.h"
+#include "sceneactor.h"
+#include "compoundobject.h"
 
 #include "gamestatus.h"
 
 using namespace oxygine;
+using namespace pugi;
 
-Shield::Shield(Resources& gameResources, b2World* world, const Vector2& pos)
+class SceneActor;
+class CompoundObject;
+
+Shield::Shield(
+   Resources* gameResources,
+   SceneActor* sceneActor,
+   CompoundObject* parentObject,
+   b2World* world,
+   const xml_node& objectNode) :
+   System(gameResources, sceneActor,  world, parentObject)
 {
-   m_resAnim = gameResources.getResAnim("shield_exciter");
-   setAnimFrame(m_resAnim, 0, 0);
-   
+   readShieldNode(objectNode);
+
+   m_resAnim = m_gameResources->getResAnim("shield_exciter");
+
+   spSprite shSp = new Sprite();
+
+   shSp->setAnimFrame(m_resAnim, 0, 0);
+
    // Size need to be set like this since the tween animation will
    // screw up the size otherwise
-   setSize(512.0f, 256.0f);
-   setScale(16.0f / 512.0f);
-   setAlpha(0);
-   setAnchor(Vector2(0.5f, 1.0f));
-   setPriority(147);
+   shSp->setSize(512.0f, 256.0f);
+   shSp->setScale(m_radius / 512.0f);
+//   shSp->setScale(16.0f / 512.0f);
+   shSp->setAlpha(0);
+   shSp->setAnchor(Vector2(0.5f, 1.0f));
+   shSp->setPriority(147);
 
+   // Seems that only the center of the attachedBody is used.
+   // Therefore we don't use origin now, lets see if this 
+   // can be corrected
+   // b2Vec2 shieldPos = m_attachedBody->GetWorldPoint(m_attachedOrigin);
 
    b2BodyDef bodyDef;
    bodyDef.type = b2_dynamicBody;
-   bodyDef.position = PhysDispConvert::convert(pos / Scales::c_physToStageScale, 1.0);
+   bodyDef.position = m_attachedBody->GetPosition();
 
    m_body = world->CreateBody(&bodyDef);
 
-   setUserData(m_body);
+   shSp->setUserData(m_body);
 
    b2CircleShape shape;
    shape.m_radius = 8.0f;
@@ -38,10 +60,76 @@ Shield::Shield(Resources& gameResources, b2World* world, const Vector2& pos)
    fixtureDef.filter.maskBits = 33819;
 
    m_body->CreateFixture(&fixtureDef);
-   m_body->SetUserData(this);
+   m_body->SetUserData(&shSp);
 
    m_body->GetFixtureList()->SetUserData((CollisionEntity*)this);
+
+   attachTo(sceneActor);
+
+   b2RevoluteJointDef shieldJointDef;
+   shieldJointDef.bodyA = m_attachedBody;
+   shieldJointDef.bodyB = m_body;
+   shieldJointDef.localAnchorA.Set(0.0f, 1.0f);
+   shieldJointDef.localAnchorB.Set(0.0f, 0.0f);
+   shieldJointDef.collideConnected = false;
+   shieldJointDef.enableMotor = false;
+   m_shieldJoint = (b2RevoluteJoint*)m_world->CreateJoint(&shieldJointDef);
+
 }
+
+void Shield::readShieldNode(const xml_node& objectNode)
+{
+   m_attachedBody = m_parent->getBody(objectNode.attribute("body").as_string());
+
+   // Seems that only the center of the attachedBody is used.
+   // Therefore we don't use origin now, lets see if this 
+   // can be corrected
+   // m_attachedOrigin.x = objectNode.attribute("emitterOriginX").as_float();
+   // m_attachedOrigin.y = objectNode.attribute("emitterOriginY").as_float();
+
+   m_radius = objectNode.attribute("radius").as_float();
+}
+
+
+
+//(Resources& gameResources, b2World* world, const Vector2& pos)
+//{
+//   m_resAnim = gameResources.getResAnim("shield_exciter");
+//   setAnimFrame(m_resAnim, 0, 0);
+//   
+//   // Size need to be set like this since the tween animation will
+//   // screw up the size otherwise
+//   setSize(512.0f, 256.0f);
+//   setScale(16.0f / 512.0f);
+//   setAlpha(0);
+//   setAnchor(Vector2(0.5f, 1.0f));
+//   setPriority(147);
+//
+//
+//   b2BodyDef bodyDef;
+//   bodyDef.type = b2_dynamicBody;
+//   bodyDef.position = PhysDispConvert::convert(pos / Scales::c_physToStageScale, 1.0);
+//
+//   m_body = world->CreateBody(&bodyDef);
+//
+//   setUserData(m_body);
+//
+//   b2CircleShape shape;
+//   shape.m_radius = 8.0f;
+//
+//   b2FixtureDef fixtureDef;
+//   fixtureDef.shape = &shape;
+//   fixtureDef.density = 0.1f;
+//   fixtureDef.friction = 0.0f;
+//   fixtureDef.restitution = 0.3f;
+//   fixtureDef.filter.categoryBits = 16384;
+//   fixtureDef.filter.maskBits = 33819;
+//
+//   m_body->CreateFixture(&fixtureDef);
+//   m_body->SetUserData(this);
+//
+//   m_body->GetFixtureList()->SetUserData((CollisionEntity*)this);
+//}
 
 CollisionEntityTypeEnum Shield::getEntityType(void)
 {

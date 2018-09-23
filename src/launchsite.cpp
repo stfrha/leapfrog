@@ -45,44 +45,17 @@ LaunchSite::LaunchSite(
    m_rightSupportBoosterJoint = (b2WeldJoint*)getJoint("rightSupportBoosterJoint");
 
    // Add main engine particle system
-   m_boosterFlame = new FlameEmitter(
-      gameResources,
-      m_mainTankBody,
-      b2Vec2(0.0f, 28.0f),
-      90.0f * MATH_PI / 180.0f,
-      12.0f,                            // Emitter width
-      1000,                            // Lifetime [ms]
-      1500.0f,                          // Impulse magnitude
-      30.0f);                          // Radius
 
-   m_boosterFlame->attachTo(this);
+   m_boosterFlame = static_cast<FlameEmitter*>(getSystem("boosterFlame"));
+   // m_boosterFlame->attachTo(this);
 
    // Add right steering engine particle system
-   m_rightFlame = new FlameEmitter(
-      gameResources,
-      m_rightBoosterBody,
-      b2Vec2(0.0f, 19.0f),
-      90.0f * MATH_PI / 180.0f,
-      2.0f,                            // Width
-      1000,                             // Lifetime [ms]
-      1500.0f,                           // Impulse magnitude
-      20.0f);                           // Radius
-
-
-   m_rightFlame->attachTo(this);
+   m_rightFlame = static_cast<FlameEmitter*>(getSystem("rightFlame"));
+   // m_rightFlame->attachTo(this);
 
    // Add left steering engine particle system
-   m_leftFlame = new FlameEmitter(
-      gameResources,
-      m_leftBoosterBody,
-      b2Vec2(0.0f, 19.0f),             // Origin
-      90.0f * MATH_PI / 180.0f,                               // Angle 
-      2.0f,                            // Width
-      1000,                             // Lifetime [ms]
-      1500.0f,                           // Impulse magnitude
-      20.0f);                           // Radius
-
-   m_leftFlame->attachTo(this);
+   m_leftFlame = static_cast<FlameEmitter*>(getSystem("leftFlame"));
+   // m_leftFlame->attachTo(this);
 
    // Here we attach Launch Site object to tree so it gets updates etc.
    attachTo(sceneParent);

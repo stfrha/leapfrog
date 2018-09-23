@@ -105,3 +105,28 @@ b2Joint* CompoundInterface::getJoint(const std::string& name)
 
    return NULL;
 }
+
+System* CompoundInterface::getSystem(const std::string& name)
+{
+   string thisLevel;
+   string lowerLevels;
+
+   splitString(name, thisLevel, lowerLevels);
+
+   if (lowerLevels.empty())
+   {
+      return getSystemImpl(thisLevel);
+   }
+   else
+   {
+      CompoundObject* co = getObjectImpl(thisLevel);
+
+      if (co)
+      {
+         return co->getSystem(lowerLevels);
+      }
+   }
+
+   return NULL;
+}
+

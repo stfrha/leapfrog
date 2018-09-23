@@ -1,32 +1,45 @@
 #include "reentryflameparticle.h"
-
-#include "reentryflameemitter.h"
+#include "sceneactor.h"
+#include "compoundobject.h"
 
 using namespace oxygine;
+using namespace pugi;
 
 ReentryFlameEmitter::ReentryFlameEmitter(
-   Resources& gameResources, 
-   b2Body* body, 
-   b2Vec2 emitterLineStart,
-   b2Vec2 emitterLineEnd,
-   float angle,
-   float intensity,
-   int lifetime,
-   b2Vec2 maxSize) :
-   m_emit(false),
-   m_emitterBody(body),
-   m_emitterLineStart(emitterLineStart),
-   m_emitterLineEnd(emitterLineEnd),
-   m_emittAngle(angle),
-   m_intensity(intensity),
-   m_lifetime(lifetime),
-   m_maxSize(maxSize),
-   m_gameResources(&gameResources),
-   m_firstUpdate(true),
-   m_timeOfNextParticle(0)
+   Resources* gameResources,
+   SceneActor* sceneActor,
+   CompoundObject* parent,
+   b2World* world,
+   const xml_node& objectNode) :
+   System(
+      gameResources,
+      sceneActor,
+      world,
+      parent),
+   m_emit(false)
 {
-
+   readReentryFlameEmitterNode(objectNode);
+   attachTo(sceneActor);
 }
+
+void ReentryFlameEmitter::readReentryFlameEmitterNode(const xml_node& objectNode)
+{
+   m_emitterBody = m_parent->getBody(objectNode.attribute("body").as_string());
+
+   m_emitterLineStart.x = objectNode.attribute("emitterLineStartX").as_float();
+   m_emitterLineStart.y = objectNode.attribute("emitterLineStartY").as_float();
+   m_emitterLineEnd.x = objectNode.attribute("emitterLineEndX").as_float();
+   m_emitterLineEnd.y = objectNode.attribute("emitterLineEndY").as_float();
+   m_emittAngle = objectNode.attribute("angle").as_float();
+
+   m_intensity = objectNode.attribute("intensity").as_float();
+   m_lifetime = objectNode.attribute("lifeTime").as_int(); // [ms}
+
+   m_maxSize.x = objectNode.attribute("maxWidth").as_float();
+   m_maxSize.y = objectNode.attribute("maxHeight").as_float();
+}
+
+
 
 void ReentryFlameEmitter::startEmitter(void)
 {

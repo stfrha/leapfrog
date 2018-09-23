@@ -122,111 +122,34 @@ LeapFrog::LeapFrog(
    // Shield only exists in deep space but for simplicity it is always
    // there. In deep space it gets its normal size but is other 
    // environments it is turned very small
-   m_shield = new Shield(gameResources, world, pos);
-   m_shield->attachTo(sceneParent);
-   m_shield->setPriority(147);
 
+   m_shield = static_cast<Shield*>(getSystem("shield"));
 
-   b2RevoluteJointDef shieldJointDef;
-   shieldJointDef.bodyA = m_mainBody;
-   shieldJointDef.bodyB = m_shield->m_body;
-   shieldJointDef.localAnchorA.Set(0.0f, 1.0f);
-   shieldJointDef.localAnchorB.Set(0.0f, 0.0f);
-   shieldJointDef.collideConnected = false;
-   shieldJointDef.enableMotor = false;
-   m_shieldJoint = (b2RevoluteJoint*)m_world->CreateJoint(&shieldJointDef);
-   
-   //	m_shieldJoint = static_cast<b2RevoluteJoint*>(getJoint("boostJoint"));
+   if (m_shield)
+   {
+      m_shieldJoint = m_shield->m_shieldJoint;
+   }
 
-   // Add main engine particle system
-   m_boosterFlame = new FlameEmitter(
-      gameResources, 
-      m_boostBody,
-      b2Vec2(0.0f, 3.0f), 
-      90.0f * MATH_PI / 180.0f, 
-      4.0f,                            // Emitter width
-      250,                             // Lifetime [ms]
-      70.0f,                           // Impulse magnitude
-      10.0f);                          // Radius
+   m_boosterFlame = static_cast<FlameEmitter*>(getSystem("boosterFlame"));
+   //m_boosterFlame->attachTo(this);
+	
+   m_leftSteerFlame = static_cast<FlameEmitter*>(getSystem("leftSteeringFlame"));
+   // m_leftSteerFlame->attachTo(this);
 
-   m_boosterFlame->attachTo(this);
-	  
-   // Add right steering engine particle system
-   m_rightSteerFlame = new FlameEmitter(
-      gameResources,
-	   m_rightSteerBody,
-      b2Vec2(-1.0f, 0.0f),
-      MATH_PI,
-      1.0f,                            // Width
-      125,                             // Lifetime [ms]
-      35.0f,                           // Impulse magnitude
-      5.0f);                           // Radius
+   m_rightSteerFlame = static_cast<FlameEmitter*>(getSystem("rightSteeringFlame"));
+   // m_rightSteerFlame->attachTo(this);
 
+   m_gun = static_cast<Gun*>(getSystem("lfGun"));
+   // m_gun->attachTo(this);
 
-   m_rightSteerFlame->attachTo(this);
+   m_reentryFlameEmitterBooster = static_cast<ReentryFlameEmitter*>(getSystem("centerReentryFlame"));
+   // m_reentryFlameEmitterBooster->attachTo(this);
 
-   // Add left steering engine particle system
-   m_leftSteerFlame = new FlameEmitter(
-      gameResources,
-	   m_leftSteerBody,
-      b2Vec2(1.0f, 0.0f),             // Origin
-      0,                               // Angle 
-      1.0f,                            // Width
-      125,                             // Lifetime [ms]
-      35.0f,                           // Impulse magnitude
-      5.0f);                           // Radius
+   m_reentryFlameEmitterRightLeg = static_cast<ReentryFlameEmitter*>(getSystem("rightReentryFlame"));
+   // m_reentryFlameEmitterRightLeg->attachTo(this);
 
-   m_leftSteerFlame->attachTo(this);
-
-   m_gun = new Gun(
-      gameResources,
-      m_sceneActor,
-      m_mainBody,
-      b2Vec2(0.0f, -4.0f),             // Origin
-      -MATH_PI / 2.0f,                 // Angle 
-      4.0f,                            // Intensity [bullets per second]
-      2000,                            // Lifetime [ms]
-      10000.0f,                         // Bullet speed
-      false);                          // Bouncy
-
-   m_gun->attachTo(this);
-
-
-   m_reentryFlameEmitterBooster = new ReentryFlameEmitter(
-      gameResources,
-      m_boostBody,
-      b2Vec2(-2.0, 0.8f),
-      b2Vec2(2.0f, 0.8f),
-      MATH_PI / 2.0f,
-      4.0f,
-      500,
-      b2Vec2(0.1f, 5.0f));
-
-   m_reentryFlameEmitterBooster->attachTo(this);
-
-   m_reentryFlameEmitterRightLeg = new ReentryFlameEmitter(
-      gameResources,
-      m_boostBody,
-      b2Vec2(2.0, 1.7f),
-      b2Vec2(8.0f, 1.7f),
-      MATH_PI / 2.0f,
-      4.0f,
-      500,
-      b2Vec2(0.1f, 5.0f));
-
-   m_reentryFlameEmitterRightLeg->attachTo(this);
-
-   m_reentryFlameEmitterLeftLeg = new ReentryFlameEmitter(
-      gameResources,
-      m_boostBody,
-      b2Vec2(-8.0, 1.7f),
-      b2Vec2(-2.0f, 1.7f),
-      MATH_PI / 2.0f,
-      4.0f,
-      500,
-      b2Vec2(0.1f, 5.0f));
-
-   m_reentryFlameEmitterLeftLeg->attachTo(this);
+   m_reentryFlameEmitterLeftLeg = static_cast<ReentryFlameEmitter*>(getSystem("rightReentryFlame"));
+   // m_reentryFlameEmitterLeftLeg->attachTo(this);
 
    // Register all properties:
    m_properties.push_back(ObjectProperty(this, new LeapfrogExtSetModeEvent, 0, 0.0f)); // Mode
@@ -1180,11 +1103,11 @@ void LeapFrog::reentrySetHeat(unsigned char heatAmount)
    m_reentryFlameEmitterLeftLeg->setParameters(intensity, 500, b2Vec2(hSize, vSize));
 }
 
-void LeapFrog::setBoundedWallsActor(FreeSpaceActor* actor)
-{
-//   m_gun->setBoundedWallsActor(actor);
-}
-
+//void LeapFrog::setBoundedWallsActor(FreeSpaceActor* actor)
+//{
+////   m_gun->setBoundedWallsActor(actor);
+//}
+//
 
 const ModeAngles LeapFrog::c_resetModeAngles =
    ModeAngles(9.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f);

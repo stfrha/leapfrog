@@ -5,7 +5,7 @@
 #include "compoundinterface.h"
 #include "collisionentity.h"
 #include "objectproperty.h"
-
+#include "system.h"
 
 class NamedJoint
 {
@@ -161,6 +161,7 @@ public:
    // so it is safe to expose the list of properties here.
    std::vector<ObjectProperty> m_properties;
    std::vector<CompoundObject*> m_children;
+   std::vector<System*> m_systems;
 
    CompoundObject(SceneActor* sceneActor);
 
@@ -212,6 +213,7 @@ public:
    virtual CompoundObject* getObjectImpl(const std::string& name);
    virtual b2Body* getBodyImpl(const std::string& name);
    virtual b2Joint* getJointImpl(const std::string& name);
+   virtual System* getSystemImpl(const std::string& name);
 
   
    void extSetProperty(int propId, float value);

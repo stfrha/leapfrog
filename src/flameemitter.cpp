@@ -1,33 +1,42 @@
+#include "sceneactor.h"
+#include "compoundobject.h"
 #include "flameparticle.h"
-
 #include "flameemitter.h"
 
 using namespace oxygine;
+using namespace pugi;
 
 FlameEmitter::FlameEmitter(
-   Resources& gameResources, 
+   Resources* gameResources,
    SceneActor* sceneActor,
-   b2Body* body,
-   b2Vec2 emitterOrigin, 
-   float angle, 
-   float emitterWidth,
-   int lifetime,
-   float impulseMagnitude,
-   float radius) :
-   m_gameResources(&gameResources),
-   m_sceneActor(sceneActor),
-   m_emitterBody(body),
-   m_emitterOrigin(emitterOrigin),
-   m_emittAngle(angle),
-   m_emitterWidth(emitterWidth),
-   m_lifetime(lifetime),
-   m_impulseMagnitude(impulseMagnitude),
-   m_radius(radius),
+   CompoundObject* parent,
+   b2World* world,
+   const xml_node& objectNode)  :
+   System(
+      gameResources,
+      sceneActor,
+      world, 
+      parent),
    m_emit(false),
    m_scale(1.0f)
 {
-
+   readFlameEmitterNode(objectNode);
+   attachTo(sceneActor);
 }
+
+void FlameEmitter::readFlameEmitterNode(const xml_node& objectNode)
+{
+   m_emitterBody = m_parent->getBody(objectNode.attribute("body").as_string());
+
+   m_emitterOrigin.x = objectNode.attribute("emitterOriginX").as_float();
+   m_emitterOrigin.y = objectNode.attribute("emitterOriginY").as_float();
+   m_emittAngle = objectNode.attribute("angle").as_float();
+   m_emitterWidth = objectNode.attribute("emitterWidth").as_float();
+   m_radius = objectNode.attribute("radius").as_float();
+   m_lifetime = objectNode.attribute("lifeTime").as_int(); // [ms}
+   m_impulseMagnitude = objectNode.attribute("impulseMagnitude").as_float();
+}
+
 
 void FlameEmitter::startEmitter(void)
 {

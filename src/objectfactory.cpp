@@ -7,14 +7,12 @@ using namespace pugi;
 using namespace std;
 
 ObjectFactory::ObjectFactory(
-   Resources& gameResources,
+   Resources* gameResources,
    SceneActor* sceneParent,
    CompoundObject* parentObject,
    b2World* world,
    const xml_node& objectNode) :
-   m_gameResources(&gameResources),
-   m_world(world),
-   m_sceneActor(sceneParent),
+   System(gameResources, sceneParent, world, parentObject),
    m_timeSinceLast(0)
 {
    readObjectFactoryNode(objectNode);
@@ -34,13 +32,12 @@ void ObjectFactory::readObjectFactoryNode(const xml_node& objectNode)
    m_interval = 1.0f / objectNode.attribute("intensity").as_float() * 1000.0f;
    m_fieldLifetime = objectNode.attribute("lifeTime").as_int();
 
-   m_coNode = objectNode.child("CompoundObject");
+   m_attachedBody = m_parent->getBody(objectNode.attribute("body").as_string());
 
+   m_coNode = objectNode.child("spawnObject");
    m_coNodeHolder = new xml_document();
    m_coNodeHolder->append_copy(m_coNode);
-   m_coNode = m_coNodeHolder->child("CompoundObject");
-
-//   m_coFileName = objectNode.attribute("objectRef").as_string();
+   m_coNode = m_coNodeHolder->child("spawnObject");
 
    addObjectSpawnInstruction(ObjectSpawnInstruction(m_initialSpawn, m_leftTop, m_rightBottom ));
 
@@ -82,11 +79,20 @@ void ObjectFactory::spawnObjects(void)
    {
       for (int i = 0; i < it->m_num; i++)
       {
+         // If m_attachedBody is NULL, the position is absolute in scene-space
+
          // Randomise position within factory field
          Vector2 pos;
 
          pos.x = static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (it->m_rightBottom.x  - it->m_leftTop.x))) + it->m_leftTop.x;
          pos.y = static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (it->m_rightBottom.y - it->m_leftTop.y))) + it->m_leftTop.y;
+
+         // If there is a attached body, the position is relative to the body position.
+         if (m_attachedBody)
+         {
+            b2Vec2 originPos = m_attachedBody->GetWorldPoint(PhysDispConvert::convert(pos, 1.0f));
+            pos = PhysDispConvert::convert(originPos, 1.0f);
+         }
 
          spCompoundObject co = new CompoundObject(m_sceneActor);
 

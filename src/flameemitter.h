@@ -1,23 +1,19 @@
 #pragma once
 
-#include "oxygine-framework.h"
-#include "Box2D/Box2D.h"
+#include "system.h"
 #include "scales.h"
 #include "physdispconvert.h"
-#include "sceneactor.h"
 
 DECLARE_SMART(FlameEmitter, spFlameEmitter);
 
 class SceneActor;
+class CompoundObject;
 
-class FlameEmitter /*: public oxygine::Actor*/
+class FlameEmitter : public System
 {
 private:
-   oxygine::Resources* m_gameResources;
-
-   bool m_emit;
-
-	b2Body * m_emitterBody;
+   // Parameters from XML
+   b2Body * m_emitterBody;
 
    // The focus origo of the emitter and the center of the emitter line.
    // Expressed in local coordinates of the body (i.e. related to its focus point)
@@ -37,23 +33,22 @@ private:
 
    float m_radius;
 
+   // Working member variable
    float m_scale;
 
-   SceneActor* m_sceneActor;
+   bool m_emit;
 
 
+
+   void readFlameEmitterNode(const pugi::xml_node& objectNode);
 
 public:
 	FlameEmitter(
-      oxygine::Resources& gameResources,
+      oxygine::Resources* gameResources,
       SceneActor* sceneActor,
-      b2Body* body, 
-      b2Vec2 emitterOrigin, 
-      float angle, 
-      float emitterWidth,
-      int lifetime,
-      float impulseMagnitude,
-      float radius);
+      CompoundObject* parentObject,
+      b2World* world,
+      const pugi::xml_node& objectNode);
 	void startEmitter(void);
 	void stopEmitter(void);
    void setFlameScale(float scale);

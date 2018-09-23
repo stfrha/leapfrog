@@ -63,6 +63,16 @@ private:
    AsteroidStateEnum m_state;
    int m_num;
    float m_radius;
+
+   pugi::xml_document* m_smallCoNodeHolder;
+   pugi::xml_node m_smallCoNode;
+
+   pugi::xml_document* m_mediumCoNodeHolder;
+   pugi::xml_node m_mediumCoNode;
+
+   pugi::xml_document* m_bigCoNodeHolder;
+   pugi::xml_node m_bigCoNode;
+
    
    // Width or height of bitmap, wichever is smallest
    int m_bitmapPxSize;  

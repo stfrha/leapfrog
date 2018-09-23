@@ -267,9 +267,6 @@
     <ClCompile Include="..\src\launchsite.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\asteroidfield.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\src\landercontactlistener.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -310,6 +307,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\src\objectproperty.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\system.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -548,9 +548,6 @@
     <ClInclude Include="..\src\leapfrogevents.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\asteroidfield.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\src\landercontactlistener.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -612,6 +609,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\src\objectproperty.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\system.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

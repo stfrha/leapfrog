@@ -1,42 +1,90 @@
 <?xml version="1.0"?>
 <compoundObject>
    <behaviour
-      type="Asteroid"
-      size="auto">
-   <staticBox
-      name="bigAsteroid"
-      texture="lf_position"
-      posX="0"
-      posY="0"
-      angle="0"
-      zLevel="0"
-      collisionEntity="notApplicable"
-      collisionCategory="9"
-      collisionMask="65534"
-      width="20"
-      height="20" />
-   <staticBox
-      name="mediumAsteroid"
-      texture="lf_position"
-      posX="0"
-      posY="0"
-      angle="0"
-      zLevel="0"
-      collisionEntity="notApplicable"
-      collisionCategory="9"
-      collisionMask="65534"
-      width="10"
-      height="10" />
-   <staticBox
-      name="mediumAsteroid"
-      texture="lf_position"
-      posX="0"
-      posY="0"
-      angle="0"
-      zLevel="0"
-      collisionEntity="notApplicable"
-      collisionCategory="9"
-      collisionMask="65534"
-      width="5"
-      height="5" />
+      type="asteroid"
+      size="auto" />
+   <smallAsteroid>
+      <childObject
+         name="smallAsteroid">
+         <stateProperties
+            state="default">
+            <properties
+               posX="0"
+               posY="0" >
+               <compoundObject>
+                  <behaviour
+                     type="asteroid"
+                     size="small" >
+                  <staticBox
+                     name="smallAsteroid"
+                     texture="lf_position"
+                     posX="0"
+                     posY="0"
+                     angle="0"
+                     zLevel="0"
+                     collisionEntity="notApplicable"
+                     collisionCategory="9"
+                     collisionMask="65534"
+                     width="5"
+                     height="5" />
+               </compoundObject>
+         </stateProperties>
+      </childObject>
+   </smallAsteroid>
+   <meduimAsteroid>
+      <childObject
+         name="mediumAsteroid">
+         <stateProperties
+            state="default">
+            <properties
+               posX="0"
+               posY="0" >
+               <compoundObject>
+                  <behaviour
+                     type="asteroid"
+                     size="medium" >
+                  <staticBox
+                     name="mediumAsteroid"
+                     texture="lf_position"
+                     posX="0"
+                     posY="0"
+                     angle="0"
+                     zLevel="0"
+                     collisionEntity="notApplicable"
+                     collisionCategory="9"
+                     collisionMask="65534"
+                     width="5"
+                     height="5" />
+               </compoundObject>
+         </stateProperties>
+      </childObject>
+   </meduimAsteroid>
+   <bigAsteroid>
+      <childObject
+         name="bigAsteroid">
+         <stateProperties
+            state="default">
+            <properties
+               posX="0"
+               posY="0" >
+               <compoundObject>
+                  <behaviour
+                     type="asteroid"
+                     size="big" >
+                  <staticBox
+                     name="bigAsteroid"
+                     texture="lf_position"
+                     posX="0"
+                     posY="0"
+                     angle="0"
+                     zLevel="0"
+                     collisionEntity="notApplicable"
+                     collisionCategory="9"
+                     collisionMask="65534"
+                     width="5"
+                     height="5" />
+               </compoundObject>
+         </stateProperties>
+      </childObject>
+   </bigAsteroid>
 </compoundObject>

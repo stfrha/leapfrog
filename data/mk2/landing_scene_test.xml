@@ -1,5 +1,7 @@
 <?xml version="1.0"?>
 <compoundObject>
+	<behaviour
+		type="landingScene" />
    <system
       type="objectFactory"
       name="asteroidField1">
@@ -8,12 +10,12 @@
          <properties
             posX="343"
             posY="32"
-				width="500"
-				height="200"
-				spawnInitial="20"
-				intensity="0.25"
-				lifeTime="60000"
-            body="notApplicable">
+			width="500"
+			height="200"
+			spawnInitial="20"
+			intensity="0.25"
+			lifeTime="60000"
+         body="notApplicable">
             <spawnObject>
                <childObject
                   name="asteroid">
@@ -50,7 +52,7 @@
                         emitterOriginX="22"
                         emitterOriginY="0"
                         angle="0"
-                        fireRate="30"
+                        fireRate="4"
                         lifeTime="2000"
                         impulseMagnitude="10"
                         bouncy="false" />
@@ -102,6 +104,66 @@
                         lifeTime="2000"
                         impulseMagnitude="10"
                         radius="20" />
+                  </stateProperties>
+               </system>
+               <system
+                  type="reentryFlameEmitter"
+                  name="leftReentryFlame">
+                  <stateProperties
+                     state="default">
+                     <properties
+                        body="lfMainBooster"
+						emitterLineStartX="-8.0"
+						emitterLineStartY="1.7"
+						emitterLineEndX="-2.0"
+						emitterLineEndY="1.7"
+                        emitterOriginX="22"
+                        emitterOriginY="0"
+                        angle="1.57"
+                        intensity="4.0"
+                        lifeTime="500"
+                        maxWidth="0.1"
+                        maxHeight="5.0" />
+                  </stateProperties>
+               </system>
+               <system
+                  type="reentryFlameEmitter"
+                  name="centerReentryFlame">
+                  <stateProperties
+                     state="default">
+                     <properties
+                        body="lfMainBooster"
+						emitterLineStartX="-2.0"
+						emitterLineStartY="1.7"
+						emitterLineEndX="2.0"
+						emitterLineEndY="1.7"
+                        emitterOriginX="22"
+                        emitterOriginY="0"
+                        angle="1.57"
+                        intensity="4.0"
+                        lifeTime="500"
+                        maxWidth="0.1"
+                        maxHeight="5.0" />
+                  </stateProperties>
+               </system>
+               <system
+                  type="reentryFlameEmitter"
+                  name="rightReentryFlame">
+                  <stateProperties
+                     state="default">
+                     <properties
+                        body="lfMainBooster"
+						emitterLineStartX="2.0"
+						emitterLineStartY="1.7"
+						emitterLineEndX="8.0"
+						emitterLineEndY="1.7"
+                        emitterOriginX="22"
+                        emitterOriginY="0"
+                        angle="1.57"
+                        intensity="4.0"
+                        lifeTime="500"
+                        maxWidth="0.1"
+                        maxHeight="5.0" />
                   </stateProperties>
                </system>
                <system

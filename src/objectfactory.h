@@ -1,12 +1,8 @@
 #pragma once
 
-#include "oxygine-framework.h"
-#include "Box2D/Box2D.h"
-#include "compoundobject.h"
+#include "system.h"
 #include "scales.h"
 #include "physdispconvert.h"
-
-DECLARE_SMART(ObjectFactory, spObjectFactory);
 
 class ObjectSpawnInstruction
 {
@@ -30,36 +26,42 @@ public:
    }
 };
 
-class ObjectFactory : public oxygine::Actor
+DECLARE_SMART(ObjectFactory, spObjectFactory);
+
+class CompoundObject;
+class SceneActor;
+
+class ObjectFactory : public System
 {
 private:
-   oxygine::Resources* m_gameResources;
-   b2World* m_world;
-   SceneActor* m_sceneActor;
+   // Parameters from XML
+   b2Body * m_attachedBody;
+
    b2Vec2 m_leftTop;
    b2Vec2 m_rightBottom;
-
-   int m_initialSpawn;
 
    // Time between spawned asteroids
    float m_interval;
 
+   // The time, from the creation until the field stop spawning new asteroids
+   int m_fieldLifetime; // [ms}
+
+   int m_initialSpawn;
+
+   // Working member variable
    pugi::xml_document* m_coNodeHolder;
    pugi::xml_node m_coNode;
-
-   // The time, from the creation until the field stop spawning new asteroids
-	int m_fieldLifetime; // [ms}
-
    int m_timeSinceLast;
-
    std::vector<ObjectSpawnInstruction>  m_objectSpawnList;
-   
+
+
+
    void readObjectFactoryNode(const pugi::xml_node& objectNode);
    void spawnObjects(void);
    
 public:
    ObjectFactory(
-      oxygine::Resources& gameResources,
+      oxygine::Resources* gameResources,
       SceneActor* sceneParent,
       CompoundObject* parentObject,
       b2World* world,
