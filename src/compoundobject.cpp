@@ -56,67 +56,6 @@ CollisionEntityTypeEnum CompoundObject::getEntityType(void)
    return m_collisionType;
 }
 
-void CompoundObject::hitByBullet(b2Contact* contact)
-{
-   // Assume unshattered blast
-   int emitterLifetime = 150;
-   int particleLifetime = 500;
-   float particleDistance = 30.0f;
-   float particleSize = 0.75f;
-   float blastIntensity = 200.0f;
-   
-   // Take damage
-//   m_damage += 1;
-   
-   //if (m_damage >= 4)
-   //{
-      emitterLifetime = 250;
-      particleLifetime = 500;
-      particleDistance = 60.0f;
-      particleSize = 0.9f;
-      blastIntensity = 300.0f;
-   
-      m_sceneActor->addMeToDeathList(this);
-   //}
-   
-   b2WorldManifold m;
-   contact->GetWorldManifold(&m);
-   
-   if (contact->GetManifold()->pointCount > 0)
-   {
-      spBlastEmitter blast = new BlastEmitter(
-         m_sceneActor->getResources(),
-         PhysDispConvert::convert(m.points[0], 1.0f),
-         blastIntensity,                                     // Intensity, particles / sec
-         emitterLifetime,                                    // Emitter Lifetime
-         particleLifetime,                                   // Particle lifetime
-         particleDistance,                                   // Particle distance
-         particleSize);                                      // Particle spawn size
-      blast->attachTo(m_sceneActor);
-   }
-}
-
-//void CompoundObject::killActor(void)
-//{
-//   b2Body* myBody = (b2Body*)getUserData();
-//
-//   myBody->GetWorld()->DestroyBody(myBody);
-//
-//   this->detach();
-//}
-//
-//
-
-Sprite* CompoundObject::getSprite(void)
-{
-   return static_cast<Sprite*>(getFirstChild().get());
-}
-
-CompoundObject* CompoundObject::getParentObject(void)
-{
-   return m_parentObject;
-}
-
 CompoundObject* CompoundObject::readDefinitionXmlFile(
    Resources& gameResources,
    SceneActor* sceneParent,
@@ -235,25 +174,6 @@ bool CompoundObject::initCompoundObjectParts(
       defineChildObject(gameResources, sceneParent, this, world, pos, *it, initialState);
    }
 
-
-   //for (auto it = root.children("ChildCompoundObjectRef").begin();
-   //   it != root.children("ChildCompoundObjectRef").end();
-   //   ++it)
-   //{
-   //   defineChildObject(gameResources, sceneParent, this, world, pos, *it, initialState);
-   //}
-
-   //for (auto it = root.children("CompoundObject").begin();
-   //   it != root.children("CompoundObject").end();
-   //   ++it)
-   //{
-   //   CompoundObject* co = CompoundObject::initCompoundObject(gameResources, sceneParent, this, world, pos, *it, initialState);
-
-   //   m_children.push_back(co);
-
-   //   co->setName(it->attribute("name").as_string());
-   //}
-
    for (auto it = root.children("spriteBox").begin();
       it != root.children("spriteBox").end();
       ++it)
@@ -362,7 +282,7 @@ bool CompoundObject::initCompoundObjectParts(
    }
 
    // It is important that systems are iterated after all 
-   // bodies and joints since, during the initialisation of the system
+   // bodies and joints since, during the initialisation of the system,
    // references to such objects are searchd for. 
    for (auto it = root.children("system").begin();
       it != root.children("system").end();
@@ -1008,48 +928,7 @@ void CompoundObject::defineStaticPolygon(
             border->attachTo(object);
 
          }
-
-
-
-
-
-
-
-
-
-
-         //spPolygon border = new oxygine::Polygon();
-         //border->setResAnim(gameResources.getResAnim("grotto_border"));
-         //border->setAnchor(0.0f, 0.5f);
-
-         //vector<Vector2> lastVertices(4);
-         //lastVertices[0] = Vector2(0.0f, 0.0f);
-         //lastVertices[1] = Vector2(0.0f, 5.0f);
-         //lastVertices[2] = Vector2(distance, 5.0);
-         //lastVertices[3] = Vector2(distance, 0.0f);
-
-         //vector<VectorT3<int> > lastTriangles(2);
-
-         //lastTriangles[0] = VectorT3<int>(1, 2, 3);
-         //lastTriangles[1] = VectorT3<int>(1, 3, 4);
-
-         //vertexPCT2* lastVs = PolygonVertices::createTriangleVertices(
-         //   lastVertices,
-         //   lastTriangles,
-         //   Vector2(128.0f, 10.0f),
-         //   Vector2(0.0f, 0.0f));
-
-         //border->setVertices(lastVs, sizeof(vertexPCT2) *  lastTriangles.size() * 4, vertexPCT2::FORMAT, true);
-
-         //border->setAnchor(0.0f, 0.0f);
-         //border->setPosition(current - rotatedNormal * 2.0);
-         //border->setRotation(angle);
-
-         //border->attachTo(object);
-
       }
-
-
    }
 
 
@@ -1777,90 +1656,6 @@ bool CompoundObject::getStateNode(xml_node& objectNode, const string& initialSta
    return false;
 }
 
-//void CompoundObject::defineObjectSystem(
-//   Resources& gameResources,
-//   Actor* sceneParent,
-//   CompoundObject* parentObject,
-//   b2World* world,
-//   const Vector2& pos,
-//   xml_node& objectNode,
-//   string& initialState)
-//{
-//   // But there is a type of objects that are not to be handeled like this. They
-//   // are, for instance, particle systems or object factories. They are not compound 
-//   // objects really but could define shapes or CO as children (for instance can a 
-//   // object factory define a CO from a file as its spawning object). They are also 
-//   // defined by a set of object specific parameters (xml attributes). How to handle
-//   // these? Are they CO-children? Are they special behaviour elements (which require 
-//   // their own collections in CO or scenes.
-//   // They shall be defined as other CO with state properties since different states 
-//   // may require differnt settings. But they may not require a PosX, PosY and file
-//   // but other parameters
-//   // Let there be Compound Object Systems!!!
-//
-//   // Iterate the stateProperties of the node, looking for state attributes
-//   // that matches the supplied initialState. If initialState is empty,
-//   // the first statePropert� is used
-//   xml_node* stateNode = NULL;
-//
-//   for (auto it = objectNode.children("stateProperties").begin(); it != objectNode.children("stateProperties").end(); ++it)
-//   {
-//      if ((initialState == "") || (it->attribute("state").as_string() == initialState))
-//      {
-//         stateNode = &(*it);
-//         break;
-//      }
-//   }
-//
-//   if (!stateNode)
-//   {
-//      return;
-//   }
-//
-//   // Decode the type string to create the correct type of object
-//   // but only store the pointer to the CompoundObject
-//   // Perhaps with some special cases
-//   string type = objectNode.attribute("type").as_string();
-//
-//   if (type == "asteroidField")
-//   {
-//      AsteroidField* af = new AsteroidField(
-//         gameResources,
-//         sceneParent,
-//         parentObject,
-//         world,
-//         *stateNode);
-//
-//      m_children.push_back(static_cast<CompoundObject*>(af));
-//
-//      af->setName(objectNode.attribute("name").as_string());
-//   }
-//   else if (type == "planetActor")
-//   {
-//      PlanetActor* pa = new PlanetActor(
-//         gameResources,
-//         sceneParent,
-//         parentObject,
-//         *stateNode);
-//
-//      m_children.push_back(static_cast<CompoundObject*>(pa));
-//
-//      pa->setName(objectNode.attribute("name").as_string());
-//   }
-//   else if (type == "clippedWindow")
-//   {
-//      OrbitWindow* ow = new OrbitWindow(
-//         gameResources,
-//         sceneParent,
-//         parentObject,
-//         *stateNode,
-//         initialState);
-//
-//      m_children.push_back(static_cast<CompoundObject*>(ow));
-//
-//      ow->setName(objectNode.attribute("name").as_string());
-//   }
-//}
 
 void CompoundObject::defineWeldJoint(b2World* world, pugi::xml_node& jointNode)
 {
@@ -2015,38 +1810,6 @@ CompoundObject* CompoundObject::getObjectImpl(const std::string& name)
       }
    }
      
-   //for (auto it = m_boxedSprites.begin(); it != m_boxedSprites.end(); ++it)
-   //{
-   //   if (it->get()->getName() == name)
-   //   {
-   //      return (CompoundObject*)(it->get());
-   //   }
-   //}
-
-   //for (auto it = m_polygonSprites.begin(); it != m_polygonSprites.end(); ++it)
-   //{
-   //   if (it->get()->getName() == name)
-   //   {
-   //      return (CompoundObject*)(it->get());
-   //   }
-   //}
-
-   //for (auto it = m_staticPolygons.begin(); it != m_staticPolygons.end(); ++it)
-   //{
-   //   if (it->get()->getName() == name)
-   //   {
-   //      return (CompoundObject*)(it->get());
-   //   }
-   //}
-
-   //for (auto it = m_staticBoxes.begin(); it != m_staticBoxes.end(); ++it)
-   //{
-   //   if (it->get()->getName() == name)
-   //   {
-   //      return (CompoundObject*)(it->get());
-   //   }
-   //}
-
    return NULL;
 }
 
@@ -2058,38 +1821,6 @@ b2Body* CompoundObject::getBodyImpl(const std::string& name)
    {
       return (b2Body*)co->getUserData();
    }
-
-   //for (auto it = m_boxedSprites.begin(); it != m_boxedSprites.end(); ++it)
-   //{
-   //   if (it->get()->getName() == name)
-   //   {
-   //      return (b2Body*)it->get()->getUserData();
-   //   }
-   //}
-
-   //for (auto it = m_polygonSprites.begin(); it != m_polygonSprites.end(); ++it)
-   //{
-   //   if (it->get()->getName() == name)
-   //   {
-   //      return (b2Body*)it->get()->getUserData();
-   //   }
-   //}
-
-   //for (auto it = m_staticPolygons.begin(); it != m_staticPolygons.end(); ++it)
-   //{
-   //   if (it->get()->getName() == name)
-   //   {
-   //      return (b2Body*)it->get()->getUserData();
-   //   }
-   //}
-
-   //for (auto it = m_staticBoxes.begin(); it != m_staticBoxes.end(); ++it)
-   //{
-   //   if (it->get()->getName() == name)
-   //   {
-   //      return (b2Body*)it->get()->getUserData();
-   //   }
-   //}
 
    return NULL;
 }
@@ -2119,6 +1850,17 @@ System* CompoundObject::getSystemImpl(const std::string& name)
 
    return NULL;
 }
+
+Sprite* CompoundObject::getSprite(void)
+{
+   return static_cast<Sprite*>(getFirstChild().get());
+}
+
+CompoundObject* CompoundObject::getParentObject(void)
+{
+   return m_parentObject;
+}
+
 
 ObjectProperty* CompoundObject::getProp(int propId)
 {
@@ -2196,4 +1938,44 @@ void CompoundObject::unregisterDualPropEventTrigger(int propId, DualPropEventTri
    }
 }
 
+
+void CompoundObject::hitByBullet(b2Contact* contact)
+{
+   // Assume unshattered blast
+   int emitterLifetime = 150;
+   int particleLifetime = 500;
+   float particleDistance = 30.0f;
+   float particleSize = 0.75f;
+   float blastIntensity = 200.0f;
+
+   // Take damage
+   //   m_damage += 1;
+
+   //if (m_damage >= 4)
+   //{
+   emitterLifetime = 250;
+   particleLifetime = 500;
+   particleDistance = 60.0f;
+   particleSize = 0.9f;
+   blastIntensity = 300.0f;
+
+   m_sceneActor->addMeToDeathList(this);
+   //}
+
+   b2WorldManifold m;
+   contact->GetWorldManifold(&m);
+
+   if (contact->GetManifold()->pointCount > 0)
+   {
+      spBlastEmitter blast = new BlastEmitter(
+         m_sceneActor->getResources(),
+         PhysDispConvert::convert(m.points[0], 1.0f),
+         blastIntensity,                                     // Intensity, particles / sec
+         emitterLifetime,                                    // Emitter Lifetime
+         particleLifetime,                                   // Particle lifetime
+         particleDistance,                                   // Particle distance
+         particleSize);                                      // Particle spawn size
+      blast->attachTo(m_sceneActor);
+   }
+}
 

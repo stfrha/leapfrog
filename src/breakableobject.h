@@ -9,7 +9,6 @@
 //#include "actortodie.h"
 
 class SceneActor;
-class AsteroidField;
 
 enum AsteroidStateEnum
 {
@@ -24,20 +23,28 @@ class AsteroidSpawnInstruction
 public:
    int m_num;
    AsteroidStateEnum m_state;
+   pugi::xml_node* m_childNode;
    b2Vec2 m_leftTop;
    b2Vec2 m_rightBottom;
 
    AsteroidSpawnInstruction() :
       m_num(0),
       m_state(ASE_SMALL),
+      m_childNode(NULL),
       m_leftTop(b2Vec2(0.0f, 0.0f)),
       m_rightBottom(b2Vec2(0.0f, 0.0f))
    {
    }
 
-   AsteroidSpawnInstruction(int num, AsteroidStateEnum state, b2Vec2 leftTop, b2Vec2 rightBottom) :
+   AsteroidSpawnInstruction(
+      int num, 
+      AsteroidStateEnum state, 
+      pugi::xml_node* childNode, 
+      b2Vec2 leftTop, 
+      b2Vec2 rightBottom) :
       m_num(num),
       m_state(state),
+      m_childNode(childNode),
       m_leftTop(leftTop),
       m_rightBottom(rightBottom)
    {
@@ -88,7 +95,6 @@ private:
 
    std::vector<AsteroidSpawnInstruction>  m_asteroidSpawnList;
 
-   void readAsteroidNode(const xml_node& objectNode);
    void addAsteroidSpawnInstruction(const AsteroidSpawnInstruction& inst);
    void spawnAsteroids(void);
 
@@ -97,11 +103,8 @@ public:
       oxygine::Resources& gameResources, 
       SceneActor* sceneActor,
       b2World* world,
-      const oxygine::Vector2& pos,
-      const pugi::xml_node& root);
-
-   ~Asteroid();
-
+      const oxygine::Vector2& pos, 
+      AsteroidStateEnum state);
 
    virtual CollisionEntityTypeEnum getEntityType(void);
 

@@ -170,6 +170,7 @@
     <ClCompile Include="..\src\blastemitter.cpp" />
     <ClCompile Include="..\src\blastparticle.cpp" />
     <ClCompile Include="..\src\Box2DDebugDraw.cpp" />
+    <ClCompile Include="..\src\breakableobject.cpp" />
     <ClCompile Include="..\src\bullet.cpp" />
     <ClCompile Include="..\src\compoundinterface.cpp" />
     <ClCompile Include="..\src\compoundobject.cpp" />
@@ -262,6 +263,7 @@
     <ClInclude Include="..\src\asteroid.h" />
     <ClInclude Include="..\src\blastemitter.h" />
     <ClInclude Include="..\src\blastparticle.h" />
+    <ClInclude Include="..\src\breakableobject.h" />
     <ClInclude Include="..\src\bullet.h" />
     <ClInclude Include="..\src\collisionentity.h" />
     <ClInclude Include="..\src\compoundinterface.h" />

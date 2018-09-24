@@ -1,22 +1,22 @@
 
 #include "asteroid.h"
+#include "asteroidfield.h"
 
 #include "sceneactor.h"
 #include "freespaceactor.h"
 #include "blastemitter.h"
 
 
-using namespace std;
 using namespace oxygine;
-using namespace pugi;
 
 Asteroid::Asteroid(
    Resources& gameResources,
    SceneActor* sceneActor,
    b2World* world,
    const Vector2& pos,
-   const xml_node& root) :
+   AsteroidStateEnum state) :
    CompoundObject(sceneActor),
+   m_state(state),
    m_num(generateNum()),
    m_bitmapPxSize(512),
    m_asteroideMaxRadius(10.0f),
@@ -26,109 +26,95 @@ Asteroid::Asteroid(
    m_gameResource(&gameResources),
    m_world(world)
 {
+   m_poly = new oxygine::Polygon;
 
+   //ResAnim "tiled" has only single frame and uses own separate atlas texture
+   //it should have options trim=extend=false
+   //and atlas with option clamp2edge=false to allow tiling
+   /*
+   <atlas clamp2edge="false">
+   <image file="tiled.png" trim="false" extend="false"/>
+   </atlas>
+   */
 
+   m_poly->setResAnim(gameResources.getResAnim("crater_rock"));
 
+   if (m_state == ASE_AUTO)
+   {
+      float size = static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / 3.0f));
 
-   //----------------------------------------------------------------------
-   // Below is replaced by XML-defined Asteroids
-   //----------------------------------------------------------------------
+      if (size < 0.5f)
+      {
+         m_state = ASE_SMALL;
+      }
+      else if (size < 1.5f)
+      {
+         m_state = ASE_MIDDLE;
+      }
+      else
+      {
+         m_state = ASE_LARGE;
+      }
+   }
 
-//
-//   m_poly = new oxygine::Polygon;
-//
-//   //ResAnim "tiled" has only single frame and uses own separate atlas texture
-//   //it should have options trim=extend=false
-//   //and atlas with option clamp2edge=false to allow tiling
-//   /*
-//   <atlas clamp2edge="false">
-//   <image file="tiled.png" trim="false" extend="false"/>
-//   </atlas>
-//   */
-//
-//   m_poly->setResAnim(gameResources.getResAnim("crater_rock"));
-//
-//   if (m_state == ASE_AUTO)
-//   {
-//      float size = static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / 3.0f));
-//
-//      if (size < 0.5f)
-//      {
-//         m_state = ASE_SMALL;
-//      }
-//      else if (size < 1.5f)
-//      {
-//         m_state = ASE_MIDDLE;
-//      }
-//      else
-//      {
-//         m_state = ASE_LARGE;
-//      }
-//   }
-//
-//   m_radius = generateRadius();
-//
-//   setPriority(160);
-//
-//   Vector2*  v2vertices = new Vector2[m_num];
-//
-//   generateVertices(v2vertices);
-//
-//   createPolygon(v2vertices, m_num);
-//
-//   m_poly->setScale(1/m_bitmapScale);
-//
-//   float as = m_poly->getResAnim()->getAppliedScale();
-//
-//   setAnchor(Vector2(0.5f, 0.5f));
-//
-//   addChild(m_poly);
-//
-//   b2BodyDef bodyDef;
-//   bodyDef.type = b2_dynamicBody;
-//   bodyDef.position = PhysDispConvert::convert(pos, 1.0f);
-//
-//   b2Body* body = world->CreateBody(&bodyDef);
-//
-//   setUserData(body);
-//
-//   b2Vec2* b2vertices = new b2Vec2[m_num + 1];
-//
-//   // Polygon of a body shape is physical coordinates, i.e. in meters
-//   Vector2 tv;
-//
-//   for (int i = 0; i < m_num ; i++)
-//   {
-//      tv = v2vertices[m_num - i - 1];
-//      b2vertices[i] = PhysDispConvert::convert(tv, m_bitmapScale);
-//   }
-//
-//   tv = v2vertices[m_num - 1];
-//   b2vertices[m_num] = PhysDispConvert::convert(tv, m_bitmapScale);
-//
-//   b2PolygonShape polyShape;
-//
-//   polyShape.Set(b2vertices, m_num+1);
-//
-//   b2FixtureDef fixtureDef;
-//   fixtureDef.shape = &polyShape;
-//   fixtureDef.density = 5.0f;
-//   fixtureDef.friction = 1.3f;
-//   fixtureDef.filter.categoryBits = 8;
-//   fixtureDef.filter.maskBits = 64703;
-//   fixtureDef.userData = (CollisionEntity*)this;
-//
-//   body->CreateFixture(&fixtureDef);
-//   body->SetUserData(this);
-//
-////   body->GetFixtureList()->SetUserData((CollisionEntity*)this);
-//   body->ResetMassData();
+   m_radius = generateRadius();
 
-   //----------------------------------------------------------------------
-   // ...until here
-   //----------------------------------------------------------------------
+   setPriority(160);
 
+   Vector2*  v2vertices = new Vector2[m_num];
 
+   generateVertices(v2vertices);
+
+   createPolygon(v2vertices, m_num);
+
+   m_poly->setScale(1/m_bitmapScale);
+
+   float as = m_poly->getResAnim()->getAppliedScale();
+
+   setAnchor(Vector2(0.5f, 0.5f));
+
+   addChild(m_poly);
+
+   b2BodyDef bodyDef;
+   bodyDef.type = b2_dynamicBody;
+   bodyDef.position = PhysDispConvert::convert(pos, 1.0f);
+
+   b2Body* body = world->CreateBody(&bodyDef);
+
+   setUserData(body);
+
+   b2Vec2* b2vertices = new b2Vec2[m_num + 1];
+
+   // Polygon of a body shape is physical coordinates, i.e. in meters
+   Vector2 tv;
+
+   for (int i = 0; i < m_num ; i++)
+   {
+      tv = v2vertices[m_num - i - 1];
+      b2vertices[i] = PhysDispConvert::convert(tv, m_bitmapScale);
+   }
+
+   tv = v2vertices[m_num - 1];
+   b2vertices[m_num] = PhysDispConvert::convert(tv, m_bitmapScale);
+
+   b2PolygonShape polyShape;
+
+   polyShape.Set(b2vertices, m_num+1);
+
+   b2FixtureDef fixtureDef;
+   fixtureDef.shape = &polyShape;
+   fixtureDef.density = 5.0f;
+   fixtureDef.friction = 1.3f;
+   fixtureDef.filter.categoryBits = 8;
+   fixtureDef.filter.maskBits = 64703;
+   fixtureDef.userData = (CollisionEntity*)this;
+
+   body->CreateFixture(&fixtureDef);
+   body->SetUserData(this);
+
+//   body->GetFixtureList()->SetUserData((CollisionEntity*)this);
+
+   body->ResetMassData();
 
    // Randomise value between 0 and 2pi
    float angle = static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / 2.0f * MATH_PI));
@@ -152,8 +138,8 @@ Asteroid::Asteroid(
       break;
    case ASE_AUTO:
       maxImp = 10000.0f;
-      maxAng = 20000.0f;
-      break;
+           maxAng = 20000.0f;
+           break;
    }
 
    // Randomise value between 0 and maxImp
@@ -171,51 +157,6 @@ Asteroid::Asteroid(
 
    attachTo(m_sceneActor);
 }
-
-Asteroid::~Asteroid()
-{
-   delete m_smallCoNodeHolder;
-   delete m_mediumCoNodeHolder;
-   delete m_bigCoNodeHolder;
-}
-
-void Asteroid::readAsteroidNode(const xml_node& objectNode)
-{
-   m_smallCoNode = objectNode.child("smallAsteroid");
-   m_smallCoNodeHolder = new xml_document();
-   m_smallCoNodeHolder->append_copy(m_smallCoNode);
-   m_smallCoNode = m_smallCoNodeHolder->child("smallAsteroid");
-
-   m_mediumCoNode = objectNode.child("mediumAsteroid");
-   m_mediumCoNodeHolder = new xml_document();
-   m_mediumCoNodeHolder->append_copy(m_mediumCoNode);
-   m_mediumCoNode = m_mediumCoNodeHolder->child("mediumAsteroid");
-
-   m_bigCoNode = objectNode.child("bigAsteroid");
-   m_bigCoNodeHolder = new xml_document();
-   m_bigCoNodeHolder->append_copy(m_bigCoNode);
-   m_bigCoNode = m_bigCoNodeHolder->child("bigAsteroid");
-
-   string size = objectNode.child("behaviour").attribute("size").as_string();
-   if (size == "small")
-   {
-      m_state = ASE_SMALL;
-   }
-   else if (size == "medium")
-   {
-      m_state = ASE_MIDDLE;
-   }
-   else if (size == "big")
-   {
-      m_state = ASE_LARGE;
-   }
-   else
-   {
-      m_state = ASE_AUTO;
-   }
-
-}
-
 
 CollisionEntityTypeEnum Asteroid::getEntityType(void)
 {

@@ -67,6 +67,8 @@ public:
       b2World* world,
       const pugi::xml_node& objectNode);
 
+   ~ObjectFactory();
+
    void addObjectSpawnInstruction(const ObjectSpawnInstruction& inst);
 
    virtual CollisionEntityTypeEnum getEntityType(void);

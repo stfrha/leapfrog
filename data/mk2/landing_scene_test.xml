@@ -35,7 +35,7 @@
       name="leapfrog1">
       <stateProperties
          state="groundStart">
-         <proprties
+         <properties
             posX="343"
             posY="32" >
             <compoundObject>
@@ -113,10 +113,10 @@
                      state="default">
                      <properties
                         body="lfMainBooster"
-						emitterLineStartX="-8.0"
-						emitterLineStartY="1.7"
-						emitterLineEndX="-2.0"
-						emitterLineEndY="1.7"
+                        emitterLineStartX="-8.0"
+                        emitterLineStartY="1.7"
+                        emitterLineEndX="-2.0"
+                        emitterLineEndY="1.7"
                         emitterOriginX="22"
                         emitterOriginY="0"
                         angle="1.57"
@@ -133,10 +133,10 @@
                      state="default">
                      <properties
                         body="lfMainBooster"
-						emitterLineStartX="-2.0"
-						emitterLineStartY="1.7"
-						emitterLineEndX="2.0"
-						emitterLineEndY="1.7"
+                        emitterLineStartX="-2.0"
+                        emitterLineStartY="1.7"
+                        emitterLineEndX="2.0"
+                        emitterLineEndY="1.7"
                         emitterOriginX="22"
                         emitterOriginY="0"
                         angle="1.57"
@@ -153,10 +153,10 @@
                      state="default">
                      <properties
                         body="lfMainBooster"
-						emitterLineStartX="2.0"
-						emitterLineStartY="1.7"
-						emitterLineEndX="8.0"
-						emitterLineEndY="1.7"
+                        emitterLineStartX="2.0"
+                        emitterLineStartY="1.7"
+                        emitterLineEndX="8.0"
+                        emitterLineEndY="1.7"
                         emitterOriginX="22"
                         emitterOriginY="0"
                         angle="1.57"

@@ -20,6 +20,11 @@ ObjectFactory::ObjectFactory(
    spawnObjects();
 }
 
+ObjectFactory::~ObjectFactory()
+{
+   delete m_coNodeHolder;
+}
+
 void ObjectFactory::readObjectFactoryNode(const xml_node& objectNode)
 {
    float posX = objectNode.attribute("posX").as_float();

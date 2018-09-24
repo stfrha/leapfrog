@@ -1,9 +1,11 @@
 <?xml version="1.0"?>
 <compoundObject>
    <behaviour
-      type="asteroid"
+      type="breakableObject"
       size="auto" />
-   <smallAsteroid>
+   <breakableLevel
+      level="0"
+      distributionFactor="9" >
       <childObject
          name="smallAsteroid">
          <stateProperties
@@ -22,7 +24,7 @@
                      posY="0"
                      angle="0"
                      zLevel="0"
-                     collisionEntity="asteroid"
+                     collisionEntity="notApplicable"
                      collisionCategory="9"
                      collisionMask="65534"
                      width="5"
@@ -50,7 +52,7 @@
                      posY="0"
                      angle="0"
                      zLevel="0"
-                     collisionEntity="asteroid"
+                     collisionEntity="notApplicable"
                      collisionCategory="9"
                      collisionMask="65534"
                      width="5"
@@ -78,7 +80,7 @@
                      posY="0"
                      angle="0"
                      zLevel="0"
-                     collisionEntity="asteroid"
+                     collisionEntity="notApplicable"
                      collisionCategory="9"
                      collisionMask="65534"
                      width="5"
