@@ -1,6 +1,5 @@
 
-#include "asteroid.h"
-#include "asteroidfield.h"
+#include "breakableobject.h"
 
 #include "sceneactor.h"
 #include "freespaceactor.h"
@@ -9,172 +8,53 @@
 
 using namespace oxygine;
 
-Asteroid::Asteroid(
-   Resources& gameResources,
-   SceneActor* sceneActor,
+BreakableObject::BreakableObject(
+   oxygine::Resources& gameResources,
+   SceneActor* sceneParent,
+   CompoundObject* parentObject,
    b2World* world,
-   const Vector2& pos,
-   AsteroidStateEnum state) :
-   CompoundObject(sceneActor),
-   m_state(state),
-   m_num(generateNum()),
-   m_bitmapPxSize(512),
-   m_asteroideMaxRadius(10.0f),
-   m_bitmapScale(m_bitmapPxSize / 2 / m_asteroideMaxRadius),
+   const oxygine::Vector2& pos,
+   pugi::xml_node& root) :
+   CompoundObject(sceneParent),
    m_damage(0),
-   m_sceneActor(sceneActor),
+   m_sceneActor(sceneParent),
    m_gameResource(&gameResources),
    m_world(world)
 {
-   m_poly = new oxygine::Polygon;
+   m_spawnObjects.readSpawnObjectsNode(root);
 
-   //ResAnim "tiled" has only single frame and uses own separate atlas texture
-   //it should have options trim=extend=false
-   //and atlas with option clamp2edge=false to allow tiling
-   /*
-   <atlas clamp2edge="false">
-   <image file="tiled.png" trim="false" extend="false"/>
-   </atlas>
-   */
-
-   m_poly->setResAnim(gameResources.getResAnim("crater_rock"));
-
-   if (m_state == ASE_AUTO)
-   {
-      float size = static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / 3.0f));
-
-      if (size < 0.5f)
-      {
-         m_state = ASE_SMALL;
-      }
-      else if (size < 1.5f)
-      {
-         m_state = ASE_MIDDLE;
-      }
-      else
-      {
-         m_state = ASE_LARGE;
-      }
-   }
-
-   m_radius = generateRadius();
-
-   setPriority(160);
-
-   Vector2*  v2vertices = new Vector2[m_num];
-
-   generateVertices(v2vertices);
-
-   createPolygon(v2vertices, m_num);
-
-   m_poly->setScale(1/m_bitmapScale);
-
-   float as = m_poly->getResAnim()->getAppliedScale();
-
-   setAnchor(Vector2(0.5f, 0.5f));
-
-   addChild(m_poly);
-
-   b2BodyDef bodyDef;
-   bodyDef.type = b2_dynamicBody;
-   bodyDef.position = PhysDispConvert::convert(pos, 1.0f);
-
-   b2Body* body = world->CreateBody(&bodyDef);
-
-   setUserData(body);
-
-   b2Vec2* b2vertices = new b2Vec2[m_num + 1];
-
-   // Polygon of a body shape is physical coordinates, i.e. in meters
-   Vector2 tv;
-
-   for (int i = 0; i < m_num ; i++)
-   {
-      tv = v2vertices[m_num - i - 1];
-      b2vertices[i] = PhysDispConvert::convert(tv, m_bitmapScale);
-   }
-
-   tv = v2vertices[m_num - 1];
-   b2vertices[m_num] = PhysDispConvert::convert(tv, m_bitmapScale);
-
-   b2PolygonShape polyShape;
-
-   polyShape.Set(b2vertices, m_num+1);
-
-   b2FixtureDef fixtureDef;
-   fixtureDef.shape = &polyShape;
-   fixtureDef.density = 5.0f;
-   fixtureDef.friction = 1.3f;
-   fixtureDef.filter.categoryBits = 8;
-   fixtureDef.filter.maskBits = 64703;
-   fixtureDef.userData = (CollisionEntity*)this;
-
-   body->CreateFixture(&fixtureDef);
-   body->SetUserData(this);
-
-//   body->GetFixtureList()->SetUserData((CollisionEntity*)this);
-
-   body->ResetMassData();
-
-   // Randomise value between 0 and 2pi
-   float angle = static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / 2.0f * MATH_PI));
-
-   float maxImp = 1000.0f;
-   float maxAng = 1000.0f;
-
-   switch (m_state)
-   {
-   case ASE_SMALL:
-      maxImp = 2000.0f;
-      maxAng = 1000.0f;
-      break;
-   case ASE_MIDDLE:
-      maxImp = 5000.0f;
-      maxAng = 3000.0f;
-      break;
-   case ASE_LARGE:
-      maxImp = 10000.0f;
-      maxAng = 20000.0f;
-      break;
-   case ASE_AUTO:
-      maxImp = 10000.0f;
-           maxAng = 20000.0f;
-           break;
-   }
-
-   // Randomise value between 0 and maxImp
-   float magnitude = static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / maxImp));
-
-   b2Vec2 impulseForce = b2Vec2(magnitude * cos(angle), magnitude * sin(angle));
-
-//   body->ApplyLinearImpulseToCenter(impulseForce, true);
-
-   // Randomise value between 0 and maxAng
-   float angImpulse = static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / maxAng));
-
-
-//   body->ApplyAngularImpulse(angImpulse * 10.0f, true);
+   initCompoundObjectParts(
+      gameResources,
+      sceneParent,
+      parentObject,
+      world,
+      pos,
+      root,
+      "");
 
    attachTo(m_sceneActor);
 }
 
-CollisionEntityTypeEnum Asteroid::getEntityType(void)
+
+// Fortsätt här!!!
+
+CollisionEntityTypeEnum BreakableObject::getEntityType(void)
 {
-   return CET_ASTEROID;
+   return CET_BreakableObject;
 }
 
-void Asteroid::addAsteroidSpawnInstruction(const AsteroidSpawnInstruction& inst)
+void BreakableObject::addBreakableObjectSpawnInstruction(const BreakableObjectSpawnInstruction& inst)
 {
-   m_asteroidSpawnList.push_back(inst);
+   m_BreakableObjectSpawnList.push_back(inst);
 }
 
 
-//void Asteroid::killActor(void)
+//void BreakableObject::killActor(void)
 //{
-//   atDeathOfAsteroid();
+//   atDeathOfBreakableObject();
 //}
 //
-void Asteroid::hitByBullet(b2Contact* contact)
+void BreakableObject::hitByBullet(b2Contact* contact)
 {
    // Assume unshattered blast
    int emitterLifetime = 150;
@@ -202,7 +82,7 @@ void Asteroid::hitByBullet(b2Contact* contact)
    if ((m_state == ASE_MIDDLE) && (m_damage >= 2))
    {
       // Spawn three small
-      addAsteroidSpawnInstruction(AsteroidSpawnInstruction(3, ASE_SMALL, spawnLeftTop, spawnRightBottom));
+      addBreakableObjectSpawnInstruction(BreakableObjectSpawnInstruction(3, ASE_SMALL, spawnLeftTop, spawnRightBottom));
 
       shattered = true;
    }
@@ -210,7 +90,7 @@ void Asteroid::hitByBullet(b2Contact* contact)
    if ((m_state == ASE_LARGE) && (m_damage >= 4))
    {
       // Spawn three middle 
-      addAsteroidSpawnInstruction(AsteroidSpawnInstruction(3, ASE_MIDDLE, spawnLeftTop, spawnRightBottom));
+      addBreakableObjectSpawnInstruction(BreakableObjectSpawnInstruction(3, ASE_MIDDLE, spawnLeftTop, spawnRightBottom));
 
       shattered = true;
    }
@@ -241,7 +121,7 @@ void Asteroid::hitByBullet(b2Contact* contact)
    }
 }
 
-void Asteroid::hitShield(b2Contact* contact)
+void BreakableObject::hitShield(b2Contact* contact)
 {
    int emitterLifetime = 250;
    int particleLifetime = 350;
@@ -263,12 +143,12 @@ void Asteroid::hitShield(b2Contact* contact)
 }
 
 
-void Asteroid::hitByLepfrog(b2Contact* contact)
+void BreakableObject::hitByLepfrog(b2Contact* contact)
 {
    // Take damage like two bullets
 }
 
-float Asteroid::generateVertex(Vector2& v, int i, int num)
+float BreakableObject::generateVertex(Vector2& v, int i, int num)
 {
    float thetaNom = 2.0f * MATH_PI / num * i;
 
@@ -286,12 +166,12 @@ float Asteroid::generateVertex(Vector2& v, int i, int num)
    return theta;
 }
 
-float Asteroid::getRadius()
+float BreakableObject::getRadius()
 {
    return m_radius;
 }
 
-void Asteroid::generateVertices(Vector2* vertices)
+void BreakableObject::generateVertices(Vector2* vertices)
 {
    for (int i = 0; i < m_num; i++)
    {
@@ -299,7 +179,7 @@ void Asteroid::generateVertices(Vector2* vertices)
    }
 }
 
-vertexPCT2 Asteroid::initVertex(const Vector2& pos, unsigned int color)
+vertexPCT2 BreakableObject::initVertex(const Vector2& pos, unsigned int color)
 {
    vertexPCT2 v;
    v.color = color;
@@ -312,13 +192,13 @@ vertexPCT2 Asteroid::initVertex(const Vector2& pos, unsigned int color)
    return v;
 }
 
-vertexPCT2 Asteroid::getVertex(Vector2* v2vertices, int i)
+vertexPCT2 BreakableObject::getVertex(Vector2* v2vertices, int i)
 {
    Color c = Color::White;
    return initVertex(v2vertices[i], c.rgba());
 }
 
-vertexPCT2* Asteroid::createVertices(Vector2* v2vertices, int num)
+vertexPCT2* BreakableObject::createVertices(Vector2* v2vertices, int num)
 {
    int verticesCount = num * 4;
 
@@ -354,13 +234,13 @@ vertexPCT2* Asteroid::createVertices(Vector2* v2vertices, int num)
    return vertices;
 }
 
-void Asteroid::createPolygon(Vector2* v2vertices, int num)
+void BreakableObject::createPolygon(Vector2* v2vertices, int num)
 {
    vertexPCT2* vertices = createVertices(v2vertices, num);
    m_poly->setVertices(vertices, sizeof(vertexPCT2) * num * 4, vertexPCT2::FORMAT, true);
 }
 
-float Asteroid::generateRadius(void)
+float BreakableObject::generateRadius(void)
 {
    switch (m_state)
    {
@@ -377,7 +257,7 @@ float Asteroid::generateRadius(void)
    return 0;
 }
 
-int Asteroid::generateNum(void)
+int BreakableObject::generateNum(void)
 {
    switch (m_state)
    {
@@ -395,9 +275,9 @@ int Asteroid::generateNum(void)
 }
 
 
-// We want all asteroids to display the same scale
+// We want all BreakableObjects to display the same scale
 // The png file is 512 px wide and tall. Lets use it for the 
-// the biggest asteroids and scale them all the same
+// the biggest BreakableObjects and scale them all the same
 // Now, to make this work we need the following values for
 // a polygon radius:
 // Size           Sprite radius        Body radius [m]
@@ -409,12 +289,12 @@ int Asteroid::generateNum(void)
 // scale factor to apply a scale to the sprite to get the
 // sprite to the correct showing size.
 
-void Asteroid::doUpdate(const oxygine::UpdateState& us)
+void BreakableObject::doUpdate(const oxygine::UpdateState& us)
 {
-   spawnAsteroids();
+   spawnBreakableObjects();
 }
 
-void Asteroid::atDeathOfAsteroid(void)
+void BreakableObject::atDeathOfBreakableObject(void)
 {
    b2Body* myBody = (b2Body*)getUserData();
    
@@ -422,7 +302,7 @@ void Asteroid::atDeathOfAsteroid(void)
    
    this->detach();
 }
-//void Asteroid::atParticleDeath(oxygine::Event* event)
+//void BreakableObject::atParticleDeath(oxygine::Event* event)
 //{
 //   // Now I'm suppose to comit suicide. How to deregister me from actor and world?
 //   b2Body* myBody = (b2Body*)getUserData();
@@ -433,41 +313,41 @@ void Asteroid::atDeathOfAsteroid(void)
 //
 //}
 
-void Asteroid::spawnAsteroids(void)
+void BreakableObject::spawnBreakableObjects(void)
 {
-   if (m_asteroidSpawnList.size() > 0)
+   if (m_BreakableObjectSpawnList.size() > 0)
    {
       m_sceneActor->addMeToDeathList(this);
 
-      for (auto it = m_asteroidSpawnList.begin(); it != m_asteroidSpawnList.end(); ++it)
+      for (auto it = m_BreakableObjectSpawnList.begin(); it != m_BreakableObjectSpawnList.end(); ++it)
       {
          for (int i = 0; i < it->m_num; i++)
          {
-            // Randomise position within asteroid field
+            // Randomise position within BreakableObject field
             oxygine::Vector2 pos;
 
             pos.x = static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (it->m_rightBottom.x - it->m_leftTop.x))) + it->m_leftTop.x;
             pos.y = static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (it->m_rightBottom.y - it->m_leftTop.y))) + it->m_leftTop.y;
 
-            spAsteroid asteroid =
-               new Asteroid(
+            spBreakableObject BreakableObject =
+               new BreakableObject(
                   *m_gameResource,
                   m_sceneActor,
                   m_world,
                   pos,
                   it->m_state);
-            asteroid->attachTo(m_sceneActor);
+            BreakableObject->attachTo(m_sceneActor);
 
             if (m_sceneActor->getSceneType() == STE_FREE_SPACE)
             {
                FreeSpaceActor* spaceActor = (FreeSpaceActor*)m_sceneActor;
 
-               spaceActor->addBoundingBody((b2Body*)asteroid.get()->getUserData());
+               spaceActor->addBoundingBody((b2Body*)BreakableObject.get()->getUserData());
             }
          }
       }
 
-      m_asteroidSpawnList.clear();
+      m_BreakableObjectSpawnList.clear();
 
    }
 

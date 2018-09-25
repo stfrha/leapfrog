@@ -620,5 +620,8 @@
     <ClInclude Include="..\src\breakableobject.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="..\src\spawnobject.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

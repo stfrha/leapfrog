@@ -308,6 +308,7 @@
     <ClInclude Include="..\src\shield.h" />
     <ClInclude Include="..\src\smokeparticle.h" />
     <ClInclude Include="..\src\softboundary.h" />
+    <ClInclude Include="..\src\spawnobject.h" />
     <ClInclude Include="..\src\static.h" />
     <ClInclude Include="..\src\statusbar.h" />
     <ClInclude Include="..\src\steeringinterface.h" />
