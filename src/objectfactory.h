@@ -3,6 +3,7 @@
 #include "system.h"
 #include "scales.h"
 #include "physdispconvert.h"
+#include "spawnobject.h"
 
 class ObjectSpawnInstruction
 {
@@ -52,8 +53,8 @@ private:
    pugi::xml_document* m_coNodeHolder;
    pugi::xml_node m_coNode;
    int m_timeSinceLast;
-   std::vector<ObjectSpawnInstruction>  m_objectSpawnList;
-
+   SpawnObjectList m_spawnObjects;
+   int m_spawnCount;
 
 
    void readObjectFactoryNode(const pugi::xml_node& objectNode);
@@ -68,8 +69,6 @@ public:
       const pugi::xml_node& objectNode);
 
    ~ObjectFactory();
-
-   void addObjectSpawnInstruction(const ObjectSpawnInstruction& inst);
 
    virtual CollisionEntityTypeEnum getEntityType(void);
 

@@ -4,7 +4,6 @@
 #include "sceneactor.h"
 #include "softboundary.h"
 #include "freespacecontactlistener.h"
-#include "asteroid.h"
 
 
 DECLARE_SMART(FreeSpaceActor, spFreeSpaceActor);

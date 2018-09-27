@@ -1,6 +1,5 @@
 #include "freespacecontactlistener.h"
 #include "collisionentity.h"
-#include "asteroid.h"
 #include "bullet.h"
 #include "leapfrog.h"
 #include "shield.h"
@@ -18,7 +17,6 @@ void FreeSpaceContactListener::PostSolve(b2Contact* contact, const b2ContactImpu
    CollisionEntityTypeEnum eB = ((CollisionEntity *)contact->GetFixtureB()->GetUserData())->getEntityType();
 
    Shield* shield = NULL;
-   Asteroid* asteroid = NULL;
    LeapFrog* leapfrog = NULL;
    Bullet* bullet = NULL;
    Hammer* hammer = NULL;
@@ -33,15 +31,15 @@ void FreeSpaceContactListener::PostSolve(b2Contact* contact, const b2ContactImpu
       shield = (Shield*)contact->GetFixtureB()->GetBody()->GetUserData();
    }
 
-   if (eA == CET_ASTEROID)
-   {
-      asteroid = (Asteroid*)contact->GetFixtureA()->GetBody()->GetUserData();
-   }
+   //if (eA == CET_ASTEROID)
+   //{
+   //   asteroid = (Asteroid*)contact->GetFixtureA()->GetBody()->GetUserData();
+   //}
 
-   if (eB == CET_ASTEROID)
-   {
-      asteroid = (Asteroid*)contact->GetFixtureB()->GetBody()->GetUserData();
-   }
+   //if (eB == CET_ASTEROID)
+   //{
+   //   asteroid = (Asteroid*)contact->GetFixtureB()->GetBody()->GetUserData();
+   //}
 
    if (eA == CET_LEAPFROG)
    {
@@ -74,33 +72,33 @@ void FreeSpaceContactListener::PostSolve(b2Contact* contact, const b2ContactImpu
    }
 
 
-   if (asteroid && bullet)
-   {
-      // Bullet hit asteroid
-      bullet->hitAsteroid(contact);
-      asteroid->hitByBullet(contact);
-   }
+   //if (asteroid && bullet)
+   //{
+   //   // Bullet hit asteroid
+   //   bullet->hitAsteroid(contact);
+   //   asteroid->hitByBullet(contact);
+   //}
 
-   if (asteroid && shield)
-   {
-      // Asteroid hit shield
-      shield->shieldHit(contact, impulse);
-      asteroid->hitShield(contact);
-   }
+   //if (asteroid && shield)
+   //{
+   //   // Asteroid hit shield
+   //   shield->shieldHit(contact, impulse);
+   //   asteroid->hitShield(contact);
+   //}
 
-   // Gets here if shield no longer works
-   if (asteroid && leapfrog)
-   {
-      // Normally. body hits are prevented by shield
-      // but if it a hard hit body may get contact
-      // (from certain angles). In this case, if the 
-      // shield is still active, we do not damage
-      // leapfrog (by not calling hitAnything)
-      if (g_GameStatus.getShield() <= 0.0f)
-      {
-         leapfrog->hitAnything(contact, impulse);
-      }
-   }
+   //// Gets here if shield no longer works
+   //if (asteroid && leapfrog)
+   //{
+   //   // Normally. body hits are prevented by shield
+   //   // but if it a hard hit body may get contact
+   //   // (from certain angles). In this case, if the 
+   //   // shield is still active, we do not damage
+   //   // leapfrog (by not calling hitAnything)
+   //   if (g_GameStatus.getShield() <= 0.0f)
+   //   {
+   //      leapfrog->hitAnything(contact, impulse);
+   //   }
+   //}
 
    // Hammer hit anything
    if (hammer)

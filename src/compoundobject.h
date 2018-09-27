@@ -146,15 +146,6 @@ private:
 protected:
    CompoundObject * m_parentObject;
 
-   void defineChildObject(
-      oxygine::Resources& gameResources,
-      SceneActor* sceneParent,
-      CompoundObject* parentObject,
-      b2World* world,
-      const oxygine::Vector2& pos,
-      pugi::xml_node& objectNode,
-      const std::string& initialState);
-
 
 public:
    // Property values are protected within the ObjectProperty type
@@ -194,6 +185,15 @@ public:
 	  const std::string& initialState);
 
    bool initCompoundObjectParts(
+      oxygine::Resources& gameResources,
+      SceneActor* sceneParent,
+      CompoundObject* parentObject,
+      b2World* world,
+      const oxygine::Vector2& pos,
+      pugi::xml_node& objectNode,
+      const std::string& initialState);
+
+   CompoundObject* defineChildObject(
       oxygine::Resources& gameResources,
       SceneActor* sceneParent,
       CompoundObject* parentObject,

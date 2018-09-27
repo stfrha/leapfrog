@@ -166,7 +166,6 @@
     <ClCompile Include="..\..\Box2D\Box2D\Box2D\Dynamics\Joints\b2WeldJoint.cpp" />
     <ClCompile Include="..\..\Box2D\Box2D\Box2D\Dynamics\Joints\b2WheelJoint.cpp" />
     <ClCompile Include="..\..\Box2D\Box2D\Box2D\Rope\b2Rope.cpp" />
-    <ClCompile Include="..\src\asteroid.cpp" />
     <ClCompile Include="..\src\blastemitter.cpp" />
     <ClCompile Include="..\src\blastparticle.cpp" />
     <ClCompile Include="..\src\Box2DDebugDraw.cpp" />
@@ -260,7 +259,6 @@
     <ClInclude Include="..\..\Box2D\Box2D\Box2D\Dynamics\Joints\b2WheelJoint.h" />
     <ClInclude Include="..\..\Box2D\Box2D\Box2D\Rope\b2Rope.h" />
     <ClInclude Include="..\src\actortodie.h" />
-    <ClInclude Include="..\src\asteroid.h" />
     <ClInclude Include="..\src\blastemitter.h" />
     <ClInclude Include="..\src\blastparticle.h" />
     <ClInclude Include="..\src\breakableobject.h" />

@@ -24,7 +24,6 @@ BreakableObject::BreakableObject(
    m_spawnCount(0)
 {
    readBreakableObjectNode(root);
-
    m_spawnObjects.readSpawnObjectsNode(root);
 
    initCompoundObjectParts(

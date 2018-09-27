@@ -210,9 +210,6 @@
     <ClCompile Include="..\src\freespaceactor.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\asteroid.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\src\softboundary.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -480,9 +477,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\src\freespaceactor.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\asteroid.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\src\softboundary.h">

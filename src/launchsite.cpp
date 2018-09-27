@@ -16,7 +16,7 @@ LaunchSite::LaunchSite(
    b2World* world,
    const Vector2& pos,
    pugi::xml_node& root) :
-   CompoundObject(sceneParent),
+   CompoundObject(sceneParent, parentObject),
    m_gameResources(&gameResources),
    m_world(world),
    m_sceneParent(sceneParent),

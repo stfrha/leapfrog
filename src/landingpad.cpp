@@ -16,7 +16,7 @@ LandingPad::LandingPad(
    b2World* world,
    const Vector2& pos,
    pugi::xml_node& root) :
-   CompoundObject(sceneParent),
+   CompoundObject(sceneParent, parentObject),
    m_leftFootContact(false),
    m_rightFootContact(false)
 {

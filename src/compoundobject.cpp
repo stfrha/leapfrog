@@ -11,7 +11,7 @@
 // CompoundObject
 #include "launchsite.h"
 #include "leapfrog.h"
-#include "asteroid.h"
+#include "breakableobject.h"
 #include "landingpad.h"
 #include "planetactor.h"
 #include "orbitwindow.h"
@@ -152,11 +152,17 @@ CompoundObject* CompoundObject::initCompoundObject(
    
       return static_cast<CompoundObject*>(lp);
    }
-   else if (behavStr == "asteroid")
+   else if (behavStr == "breakIntoObject")
    {
-      Asteroid* lp = new Asteroid(gameResources, (SceneActor*)sceneParent, world, pos, ASE_AUTO);
+      BreakableObject* bo = new BreakableObject(
+         gameResources, 
+         sceneParent, 
+         this, 
+         world, 
+         pos, 
+         root);
 
-      return static_cast<CompoundObject*>(lp);
+      return static_cast<CompoundObject*>(bo);
    }
    else
    {
@@ -395,7 +401,7 @@ void CompoundObject::defineSpriteBox(
    const oxygine::Vector2& pos,
    pugi::xml_node& objectNode)
 {
-   CompoundObject* newCo = new CompoundObject(sceneParent);
+   CompoundObject* newCo = new CompoundObject(sceneParent, parentObject);
 
    newCo->setName(objectNode.attribute("name").as_string());
    newCo->setPriority(objectNode.attribute("zLevel").as_int());
@@ -428,7 +434,7 @@ void CompoundObject::defineSpritePolygon(
    const oxygine::Vector2& pos,
    pugi::xml_node& objectNode)
 {
-   CompoundObject* newCo = new CompoundObject(sceneParent);
+   CompoundObject* newCo = new CompoundObject(sceneParent, parentObject);
 
    newCo->setName(objectNode.attribute("name").as_string());
    newCo->setPriority(objectNode.attribute("zLevel").as_int());
@@ -487,7 +493,7 @@ void CompoundObject::defineStaticCircle(
    const oxygine::Vector2& pos,
    pugi::xml_node& objectNode)
 {
-   CompoundObject* newCo = new CompoundObject(sceneParent);
+   CompoundObject* newCo = new CompoundObject(sceneParent, parentObject);
 
    newCo->setName(objectNode.attribute("name").as_string());
    newCo->setPriority(objectNode.attribute("zLevel").as_int());
@@ -541,7 +547,7 @@ void CompoundObject::defineStaticBox(
    const Vector2& pos,
    xml_node& objectNode)
 {
-   CompoundObject* newCo = new CompoundObject(sceneParent);
+   CompoundObject* newCo = new CompoundObject(sceneParent, parentObject);
 
    newCo->setName(objectNode.attribute("name").as_string());
    newCo->setPriority(objectNode.attribute("zLevel").as_int());
@@ -596,7 +602,7 @@ void CompoundObject::defineStaticPolygon(
    const Vector2& pos, 
    xml_node& objectNode)
 {
-   CompoundObject* newCo = new CompoundObject(sceneParent);
+   CompoundObject* newCo = new CompoundObject(sceneParent, parentObject);
 
    newCo->setName(objectNode.attribute("name").as_string());
    newCo->setPriority(objectNode.attribute("zLevel").as_int());
@@ -1002,7 +1008,7 @@ void CompoundObject::defineStaticBoxedSpritePolygon(
    const Vector2& pos,
    xml_node& objectNode)
 {
-   CompoundObject* newCo = new CompoundObject(sceneParent);
+   CompoundObject* newCo = new CompoundObject(sceneParent, parentObject);
 
    newCo->setName(objectNode.attribute("name").as_string());
    newCo->setPriority(objectNode.attribute("zLevel").as_int());
@@ -1094,7 +1100,7 @@ void CompoundObject::defineDynamicCircle(
    const Vector2& pos,
    xml_node& objectNode)
 {
-   CompoundObject* newCo = new CompoundObject(sceneParent);
+   CompoundObject* newCo = new CompoundObject(sceneParent, parentObject);
 
    newCo->setName(objectNode.attribute("name").as_string());
    newCo->setPriority(objectNode.attribute("zLevel").as_int());
@@ -1149,7 +1155,7 @@ void CompoundObject::defineDynamicBox(
    const Vector2& pos, 
    xml_node& objectNode)
 {
-   CompoundObject* newCo = new CompoundObject(sceneParent);
+   CompoundObject* newCo = new CompoundObject(sceneParent, parentObject);
 
    newCo->setName(objectNode.attribute("name").as_string());
    newCo->setPriority(objectNode.attribute("zLevel").as_int());
@@ -1203,7 +1209,7 @@ void CompoundObject::defineDynamicPolygon(
    const Vector2& pos, 
    xml_node& objectNode)
 {
-   CompoundObject* newCo = new CompoundObject(sceneParent);
+   CompoundObject* newCo = new CompoundObject(sceneParent, parentObject);
 
    newCo->setName(objectNode.attribute("name").as_string());
    newCo->setPriority(objectNode.attribute("zLevel").as_int());
@@ -1305,7 +1311,7 @@ void CompoundObject::defineDynamicBoxedSpritePolygon(
    const Vector2& pos,
    xml_node& objectNode)
 {
-   CompoundObject* newCo = new CompoundObject(sceneParent);
+   CompoundObject* newCo = new CompoundObject(sceneParent, parentObject);
 
    newCo->setName(objectNode.attribute("name").as_string());
    newCo->setPriority(objectNode.attribute("zLevel").as_int());
@@ -1399,7 +1405,7 @@ void CompoundObject::defineRope(
    xml_node& jointNode)
 {
    // The whole rope is a CO, all segments attach to it.
-   CompoundObject* newCo = new CompoundObject(sceneParent);
+   CompoundObject* newCo = new CompoundObject(sceneParent, parentObject);
 
    newCo->setName(jointNode.attribute("name").as_string());
    newCo->setPriority(jointNode.attribute("zLevel").as_int());
@@ -1584,7 +1590,7 @@ void CompoundObject::defineRope(
    m_children.push_back(newCo);
 }
 
-void CompoundObject::defineChildObject(
+CompoundObject* CompoundObject::defineChildObject(
    Resources& gameResources, 
    SceneActor* sceneParent,
    CompoundObject* parentObject,
@@ -1597,14 +1603,14 @@ void CompoundObject::defineChildObject(
 
    if (!getStateNode(objectNode, initialState, stateNode))
    {
-      return;
+      return NULL;
    }
 
    xml_node propNode = stateNode.child("properties");
 
    if (propNode.empty())
    {
-      return;
+      return NULL;
    }
 
    Vector2 objPos = Vector2(
@@ -1623,7 +1629,7 @@ void CompoundObject::defineChildObject(
 
       if (coNode.empty())
       {
-         return;
+         return NULL;
       }
 
       // Define child directly
@@ -1654,8 +1660,12 @@ void CompoundObject::defineChildObject(
    {
       m_children.push_back(static_cast<CompoundObject*>(co));
 
+      co->attachTo(sceneParent);
+
       co->setName(objectNode.attribute("name").as_string());
    }
+
+   return co;
 }
 
 bool CompoundObject::getStateNode(xml_node& objectNode, const string& initialState, xml_node& stateNode)

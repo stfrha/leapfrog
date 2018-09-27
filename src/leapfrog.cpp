@@ -48,7 +48,7 @@ LeapFrog::LeapFrog(
 	b2World* world,
 	const oxygine::Vector2& pos,
    pugi::xml_node& root) :
-   CompoundObject(sceneParent),
+   CompoundObject(sceneParent, parentObject),
 	m_world(world),
    m_boostMagnuitude(0.0f),
    m_steerMagnitude(0.0f),

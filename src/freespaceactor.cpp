@@ -1,6 +1,5 @@
 #include <algorithm>
 
-#include "asteroidfield.h"
 #include "hammer.h"
 #include "deepspacesceneevents.h"
 

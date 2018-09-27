@@ -1,3 +1,4 @@
+#include "compoundobject.h"
 #include "freespaceactor.h"
 #include "asteroid.h"
 #include "objectfactory.h"
@@ -13,9 +14,11 @@ ObjectFactory::ObjectFactory(
    b2World* world,
    const xml_node& objectNode) :
    System(gameResources, sceneParent, world, parentObject),
-   m_timeSinceLast(0)
+   m_timeSinceLast(0),
+   m_spawnCount(0)
 {
    readObjectFactoryNode(objectNode);
+   m_spawnObjects.readSpawnObjectsNode(objectNode);
    attachTo(sceneParent);
    spawnObjects();
 }
@@ -44,8 +47,7 @@ void ObjectFactory::readObjectFactoryNode(const xml_node& objectNode)
    m_coNodeHolder->append_copy(m_coNode);
    m_coNode = m_coNodeHolder->child("spawnObject");
 
-   addObjectSpawnInstruction(ObjectSpawnInstruction(m_initialSpawn, m_leftTop, m_rightBottom ));
-
+   m_spawnCount = m_initialSpawn;
 }
 
 CollisionEntityTypeEnum ObjectFactory::getEntityType(void)
@@ -53,21 +55,13 @@ CollisionEntityTypeEnum ObjectFactory::getEntityType(void)
    return CET_NOT_APPLICABLE;
 }
 
-
-
-void ObjectFactory::addObjectSpawnInstruction(const ObjectSpawnInstruction& inst)
-{
-   m_objectSpawnList.push_back(inst);
-}
-
-
 void ObjectFactory::doUpdate(const oxygine::UpdateState& us)
 {
    m_timeSinceLast += us.dt;
 
    if (m_timeSinceLast >= m_interval)
    {
-      addObjectSpawnInstruction(ObjectSpawnInstruction(1, m_leftTop, m_rightBottom));
+      m_spawnCount++;
 
       m_timeSinceLast = 0;
    }
@@ -80,40 +74,29 @@ void ObjectFactory::doUpdate(const oxygine::UpdateState& us)
 
 void ObjectFactory::spawnObjects(void)
 {
-   for (auto it = m_objectSpawnList.begin(); it != m_objectSpawnList.end(); ++it)
+   for (int i = 0; i < m_spawnCount; i++)
    {
-      for (int i = 0; i < it->m_num; i++)
+      xml_node* spawnNode = m_spawnObjects.getSpawnObjectNode();
+
+      CompoundObject* co = m_parent->defineChildObject(
+         *m_gameResources,
+         m_sceneActor,
+         m_parent,
+         m_world,
+         PhysDispConvert::convert(m_parent->getCompoundObjectPosition(), 1.0f),
+         *spawnNode,
+         "");
+
+      if (m_sceneActor->getSceneType() == STE_FREE_SPACE)
       {
-         // If m_attachedBody is NULL, the position is absolute in scene-space
+         FreeSpaceActor* spaceActor = (FreeSpaceActor*)m_sceneActor;
 
-         // Randomise position within factory field
-         Vector2 pos;
-
-         pos.x = static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (it->m_rightBottom.x  - it->m_leftTop.x))) + it->m_leftTop.x;
-         pos.y = static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (it->m_rightBottom.y - it->m_leftTop.y))) + it->m_leftTop.y;
-
-         // If there is a attached body, the position is relative to the body position.
-         if (m_attachedBody)
-         {
-            b2Vec2 originPos = m_attachedBody->GetWorldPoint(PhysDispConvert::convert(pos, 1.0f));
-            pos = PhysDispConvert::convert(originPos, 1.0f);
-         }
-
-         spCompoundObject co = new CompoundObject(m_sceneActor);
-
-         co = co->initCompoundObject(*m_gameResources, m_sceneActor, m_sceneActor, m_world, pos, m_coNode, string("default"));
-         
-         co->attachTo(m_sceneActor);
-
-         if (m_sceneActor->getSceneType() == STE_FREE_SPACE)
-         {
-            FreeSpaceActor* spaceActor = (FreeSpaceActor*)m_sceneActor;
-
-            spaceActor->addBoundingBody((b2Body*)co.get()->getUserData());
-         }
+         spaceActor->addBoundingBody((b2Body*)co->getUserData());
       }
+
    }
 
-   m_objectSpawnList.clear();
-}
+   m_spawnCount = 0;
+
+
 
