@@ -31,15 +31,11 @@ class SceneActor;
 
 class CompoundObject : public oxygine::Actor, public CompoundInterface, public CollisionEntity
 {
-protected:
-
 private:
 
    SceneActor * m_sceneActor;
 
    std::vector<NamedJoint*> m_namedJoints;
-
-   CompoundObject* m_parentObject;
 
    CollisionEntityTypeEnum m_collisionType;
 
@@ -129,15 +125,6 @@ private:
       const oxygine::Vector2& pos,
       pugi::xml_node& objectNode);
 
-   void defineChildObject(
-      oxygine::Resources& gameResources, 
-      SceneActor* sceneParent,
-      CompoundObject* parentObject,
-      b2World* world,
-      const oxygine::Vector2& pos, 
-      pugi::xml_node& objectNode,
-      const std::string& initialState);
-
    void defineWeldJoint(
       b2World* world, 
       pugi::xml_node& weldJointNode);
@@ -156,6 +143,19 @@ private:
 
    bool getStateNode(pugi::xml_node& objectNode, const std::string& initialState, pugi::xml_node& stateNode);
 
+protected:
+   CompoundObject * m_parentObject;
+
+   void defineChildObject(
+      oxygine::Resources& gameResources,
+      SceneActor* sceneParent,
+      CompoundObject* parentObject,
+      b2World* world,
+      const oxygine::Vector2& pos,
+      pugi::xml_node& objectNode,
+      const std::string& initialState);
+
+
 public:
    // Property values are protected within the ObjectProperty type
    // so it is safe to expose the list of properties here.
@@ -163,7 +163,7 @@ public:
    std::vector<CompoundObject*> m_children;
    std::vector<System*> m_systems;
 
-   CompoundObject(SceneActor* sceneActor);
+   CompoundObject(SceneActor* sceneActor, CompoundObject* parentObject);
 
    ~CompoundObject();
 
@@ -204,10 +204,11 @@ public:
 
    virtual CollisionEntityTypeEnum getEntityType(void);
 
+   b2Vec2 getCompoundObjectPosition();
+
    void hitByBullet(b2Contact* contact);
 
    oxygine::Sprite* getSprite(void);
-   CompoundObject* getParentObject(void);
 
    // Should these three be protected since they are called by the base class?
    virtual CompoundObject* getObjectImpl(const std::string& name);

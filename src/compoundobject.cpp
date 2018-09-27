@@ -25,8 +25,9 @@ using namespace std;
 using namespace pugi;
 
 
-CompoundObject::CompoundObject(SceneActor* sceneActor) :
+CompoundObject::CompoundObject(SceneActor* sceneActor, CompoundObject* parentObject) :
    m_sceneActor(sceneActor),
+   m_parentObject(parentObject),
    m_collisionType(CET_NOT_APPLICABLE)
 { }
 
@@ -55,6 +56,25 @@ CollisionEntityTypeEnum CompoundObject::getEntityType(void)
 {
    return m_collisionType;
 }
+
+b2Vec2 CompoundObject::getCompoundObjectPosition()
+// Position of the CO is the position of any of its bodies
+// For multi-body object it is not known what body to use
+// so we use the first one we encounter
+{
+   for (auto it = m_children.begin(); it != m_children.end(); ++it)
+   {
+      b2Body* b = (b2Body*)(*it)->getUserData();
+
+      if (b != NULL)
+      {
+         return b->GetPosition();
+      }
+   }
+
+   return b2Vec2(0.0f, 0.0f);
+}
+
 
 CompoundObject* CompoundObject::readDefinitionXmlFile(
    Resources& gameResources,
@@ -1855,12 +1875,6 @@ Sprite* CompoundObject::getSprite(void)
 {
    return static_cast<Sprite*>(getFirstChild().get());
 }
-
-CompoundObject* CompoundObject::getParentObject(void)
-{
-   return m_parentObject;
-}
-
 
 ObjectProperty* CompoundObject::getProp(int propId)
 {

@@ -28,8 +28,15 @@ private:
    SceneActor* m_sceneActor;
    SpawnObjectList m_spawnObjects;
 
-   int   m_damage;
+   int m_breakAtDamage;
+   int m_numberOfSpawns;
 
+   int m_spawnCount;
+   int m_damage;
+
+
+   void readBreakableObjectNode(const pugi::xml_node& node);
+   void spawnBreakableObjects(void);
 
 public:
 	BreakableObject(
