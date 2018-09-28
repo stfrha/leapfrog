@@ -3,7 +3,7 @@
 using namespace oxygine;
 
 SceneActor::SceneActor(Resources& gameResources, float zoomScale) :
-   CompoundObject(this),
+   CompoundObject(this, NULL),
    m_gameResources(&gameResources),
    m_world(NULL),
    m_zoomScale(zoomScale),

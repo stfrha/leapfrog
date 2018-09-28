@@ -46,7 +46,7 @@ System* System::initialiseSystemNode(
    else if (systemType == "flameEmitter")
    {
       FlameEmitter* fe = new FlameEmitter(
-         gameresources,
+         gameResources,
          sceneActor,
          parent,
          world,
@@ -54,14 +54,48 @@ System* System::initialiseSystemNode(
 
       fe->setName(name);
 
+      return fe;
+
    }
    else if (systemType == "gun")
    {
+      Gun* g = new Gun(
+         gameResources,
+         sceneActor,
+         parent,
+         world,
+         node.child("properties"));
+
+      g->setName(name);
+
+      return g;
 
    }
    else if (systemType == "shield")
    {
+      Shield* sh = new Shield(
+         gameResources,
+         sceneActor,
+         parent,
+         world,
+         node.child("properties"));
 
+      sh->setName(name);
+
+      return sh;
+   }
+   else if (systemType == "reentryFlameEmitter")
+   {
+      ReentryFlameEmitter* rfe = new ReentryFlameEmitter(
+         gameResources,
+         sceneActor,
+         parent,
+         world,
+         node.child("properties"));
+
+      rfe->setName(name);
+
+      return rfe;
    }
 
    return NULL;

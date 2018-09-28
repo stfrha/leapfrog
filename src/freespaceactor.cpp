@@ -33,8 +33,6 @@ FreeSpaceActor::FreeSpaceActor(
    m_leapfrog = static_cast<LeapFrog*>(getObject("leapfrog1"));
    m_leapfrog->goToEnvironment(ENV_DEEP_SPACE);
 
-   m_leapfrog->setBoundedWallsActor(this);
-
    CompoundObject* co = m_leapfrog->getObject("lfMainBody");
    m_leapfrogBody = (b2Body*)co->getUserData();
 
@@ -72,14 +70,14 @@ FreeSpaceActor::FreeSpaceActor(
          150.0f), RDE_LEFT);
    addChild(m_rightBoundary);
 
-   spHammer hammer = new Hammer(gameResources, this, m_world, Vector2(600.0f, 250.0f));
+   //spHammer hammer = new Hammer(gameResources, this, m_world, Vector2(600.0f, 250.0f));
 
-   spAsteroid a1 = new Asteroid(gameResources, this, m_world, Vector2(500.0f, 230.0f), ASE_LARGE);
-   spAsteroid a2 = new Asteroid(gameResources, this, m_world, Vector2(480.0f, 240.0f), ASE_LARGE);
-   spAsteroid a3 = new Asteroid(gameResources, this, m_world, Vector2(500.0f, 250.0f), ASE_LARGE);
-   spAsteroid a4 = new Asteroid(gameResources, this, m_world, Vector2(480.0f, 260.0f), ASE_LARGE);
-   spAsteroid a5 = new Asteroid(gameResources, this, m_world, Vector2(500.0f, 270.0f), ASE_LARGE);
-   spAsteroid a6 = new Asteroid(gameResources, this, m_world, Vector2(480.0f, 280.0f), ASE_LARGE);
+   //spAsteroid a1 = new Asteroid(gameResources, this, m_world, Vector2(500.0f, 230.0f), ASE_LARGE);
+   //spAsteroid a2 = new Asteroid(gameResources, this, m_world, Vector2(480.0f, 240.0f), ASE_LARGE);
+   //spAsteroid a3 = new Asteroid(gameResources, this, m_world, Vector2(500.0f, 250.0f), ASE_LARGE);
+   //spAsteroid a4 = new Asteroid(gameResources, this, m_world, Vector2(480.0f, 260.0f), ASE_LARGE);
+   //spAsteroid a5 = new Asteroid(gameResources, this, m_world, Vector2(500.0f, 270.0f), ASE_LARGE);
+   //spAsteroid a6 = new Asteroid(gameResources, this, m_world, Vector2(480.0f, 280.0f), ASE_LARGE);
 
 }
 

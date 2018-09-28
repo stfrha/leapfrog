@@ -58,6 +58,11 @@ public:
 
    pugi::xml_node* getSpawnObjectNode(void)
    {
+      if (m_spawnObjects.size() == 0)
+      {
+         return NULL;
+      }
+
       // Randomise value between 0 and m_probabilitySum
       int r = rand() % m_probabilitySum;
 

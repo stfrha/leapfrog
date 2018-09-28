@@ -10,7 +10,7 @@ using namespace pugi;
 using namespace std;
 
 OrbitWindow::OrbitWindow() :
-   CompoundObject((SceneActor*)this)
+   CompoundObject((SceneActor*)this, NULL)
 {
 }
 
@@ -20,7 +20,7 @@ OrbitWindow::OrbitWindow(
    CompoundObject* parentObject,
    const xml_node& objectNode,
    const string& initialState) :
-   CompoundObject((SceneActor*)this)
+   CompoundObject((SceneActor*)this, parentObject)
 {
    InitiateOrbitWindow(
       gameResources,

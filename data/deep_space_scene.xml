@@ -1,14 +1,23 @@
 <?xml version="1.0"?>
 <compoundObject
 	type="deepSpaceScene" >
-	<ChildCompoundObjectRef 
-		name="leapfrog1"
-		type="leapfrog">
-		<stateProperties
-			state="deepSpaceState"
-			file="leapfrog_deep_space.xml" 
-			posX="300.0"
-			posY="250.0" />
-	</ChildCompoundObjectRef>
+   <childObject
+      name="asteroid1">
+      <stateProperties
+         state="default">
+         <properties
+            posX="500.0"
+            posY="250.0" 
+            file="large_asteroid.xml" >
+   </childObject>
+   <childObject
+      name="leapfrog1">
+      <stateProperties
+         state="default">
+         <properties
+            posX="300.0"
+            posY="250.0" 
+            file="leapfrog_deep_space.xml" >
+   </childObject>
 </compoundObject>
 

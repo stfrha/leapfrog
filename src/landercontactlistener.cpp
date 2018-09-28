@@ -5,7 +5,6 @@
 #include "leapfrog.h"
 #include "launchsite.h"
 #include "landingpad.h"
-#include "asteroid.h"
 #include "blastemitter.h"
 
 void LanderContactListener::InitContactListner(SceneActor* sceneActor)
@@ -57,7 +56,7 @@ void LanderContactListener::ContactHandler(b2Contact* contact, bool begin)
    Bullet* bullet = NULL;
    LaunchSite* launchSite = NULL;
    LandingPad* landingPad = NULL;
-   Asteroid* asteroid = NULL;
+//   Asteroid* asteroid = NULL;
    CompoundObject* destroyable = NULL;
 
    bool launchSiteLeftRest = false; // true means right leg rest
@@ -130,15 +129,15 @@ void LanderContactListener::ContactHandler(b2Contact* contact, bool begin)
       bullet = (Bullet*)contact->GetFixtureB()->GetBody()->GetUserData();
    }
 
-   if (eA == CET_ASTEROID)
-   {
-      asteroid = (Asteroid*)contact->GetFixtureA()->GetBody()->GetUserData();
-   }
+   //if (eA == CET_ASTEROID)
+   //{
+   //   asteroid = (Asteroid*)contact->GetFixtureA()->GetBody()->GetUserData();
+   //}
 
-   if (eB == CET_ASTEROID)
-   {
-      asteroid = (Asteroid*)contact->GetFixtureB()->GetBody()->GetUserData();
-   }
+   //if (eB == CET_ASTEROID)
+   //{
+   //   asteroid = (Asteroid*)contact->GetFixtureB()->GetBody()->GetUserData();
+   //}
 
    if (eA == CET_DESTROYABLE_OBJECT)
    {
@@ -187,12 +186,12 @@ void LanderContactListener::ContactHandler(b2Contact* contact, bool begin)
       }
    }
 
-   if (asteroid && bullet)
-   {
-      // Bullet hit asteroid
-      bullet->hitAsteroid(contact);
-      asteroid->hitByBullet(contact);
-   }
+   //if (asteroid && bullet)
+   //{
+   //   // Bullet hit asteroid
+   //   bullet->hitAsteroid(contact);
+   //   asteroid->hitByBullet(contact);
+   //}
 
    if (destroyable && bullet)
    {

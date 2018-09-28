@@ -204,6 +204,7 @@ public:
 
    virtual CollisionEntityTypeEnum getEntityType(void);
 
+   CompoundObject* getParentObject();
    b2Vec2 getCompoundObjectPosition();
 
    void hitByBullet(b2Contact* contact);

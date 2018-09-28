@@ -16,7 +16,7 @@
                file="medium_asteroid.xml" >
       </childObject>
    </spawnObject>
-   <spawnObject
+<!--   <spawnObject
       probabilityFactor="1" />
       <childObject
          name="fuel">
@@ -26,10 +26,9 @@
                posX="0"
                posY="0" >
                <compoundObject>
-                  <!-- Some  fuel object -->
                </compoundObject>
       </childObject>
-   </spawnObject>
+   </spawnObject> -->
    <dynamicCircle
       name="largeAsteroid"
       texture="asteroid_cutout"

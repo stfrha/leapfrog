@@ -13,7 +13,7 @@ Hammer::Hammer(
    SceneActor* sceneActor,
    b2World* world,
    const Vector2& pos) :
-   CompoundObject(sceneActor),
+   CompoundObject(sceneActor, NULL),
    m_gameResource(&gameResources),
    m_world(world),
    m_sceneActor(sceneActor),

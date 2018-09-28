@@ -147,7 +147,12 @@ void BreakableObject::spawnBreakableObjects(void)
    for (int i = 0; i < m_spawnCount; i++)
    {
       xml_node* spawnNode = m_spawnObjects.getSpawnObjectNode();
-      
+
+      if (spawnNode == NULL)
+      {
+         return;
+      }
+
       defineChildObject(
          *m_gameResource, 
          m_sceneActor, 

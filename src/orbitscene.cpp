@@ -16,7 +16,7 @@ OrbitScene::OrbitScene(
    Resources& gameResources,
    const std::string& fileName,
    const std::string& initialState) :
-   CompoundObject((SceneActor*)this),
+   CompoundObject((SceneActor*)this, NULL),
    m_state(enteringOrbit)
 {
    readDefinitionXmlFile(gameResources, (SceneActor*)this, NULL, NULL, Vector2(0.02f, 0.0f), fileName, initialState);

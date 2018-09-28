@@ -297,9 +297,6 @@
     <ClCompile Include="..\src\gamestatus.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\hammer.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\src\steeringmanager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>

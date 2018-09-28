@@ -1,6 +1,5 @@
 #include "compoundobject.h"
 #include "freespaceactor.h"
-#include "asteroid.h"
 #include "objectfactory.h"
 
 using namespace oxygine;
@@ -78,6 +77,11 @@ void ObjectFactory::spawnObjects(void)
    {
       xml_node* spawnNode = m_spawnObjects.getSpawnObjectNode();
 
+      if (spawnNode == NULL)
+      {
+         return;
+      }
+
       CompoundObject* co = m_parent->defineChildObject(
          *m_gameResources,
          m_sceneActor,
@@ -99,4 +103,4 @@ void ObjectFactory::spawnObjects(void)
    m_spawnCount = 0;
 
 
-
+}

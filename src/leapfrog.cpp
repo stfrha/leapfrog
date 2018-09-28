@@ -123,7 +123,7 @@ LeapFrog::LeapFrog(
    // there. In deep space it gets its normal size but is other 
    // environments it is turned very small
 
-   m_shield = static_cast<Shield*>(getSystem("shield"));
+   m_shield = static_cast<Shield*>(getSystem("lfShield"));
 
    if (m_shield)
    {

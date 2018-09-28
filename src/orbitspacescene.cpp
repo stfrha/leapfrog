@@ -1,6 +1,5 @@
 #include <algorithm>
 
-#include "asteroidfield.h"
 #include "orbitspacesceneevents.h"
 
 #include "orbitspacescene.h"

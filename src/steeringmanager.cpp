@@ -1,6 +1,6 @@
 #include "steeringmanager.h"
 #include "sceneactor.h"
-#include "asteroid.h"
+
 
 SteeringManager::SteeringManager(
    b2Body* hostBody,
@@ -360,8 +360,8 @@ b2Body* SteeringManager::findMostThreatening(b2Vec2 pos, b2Vec2 ahead, b2Vec2 ah
       if (ce->getEntityType() == CET_ASTEROID)
       {
          b2Vec2 asteroidPos = body->GetPosition();
-         Asteroid* asteroid = (Asteroid*) body->GetUserData();
-         float asteroidRadius = asteroid->getRadius();
+         //Asteroid* asteroid = (Asteroid*) body->GetUserData();
+         float asteroidRadius = body->GetFixtureList()->GetShape()->m_radius;
 
          // Project asteroid velocity to vector from Asteroid to hammer
          // to see how fast the asteroid approaches

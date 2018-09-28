@@ -103,7 +103,7 @@ void FreeSpaceContactListener::PostSolve(b2Contact* contact, const b2ContactImpu
    // Hammer hit anything
    if (hammer)
    {
-      hammer->hitByAnything(contact);
+      //hammer->hitByAnything(contact);
    }
 }
 

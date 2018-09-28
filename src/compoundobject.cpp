@@ -57,6 +57,12 @@ CollisionEntityTypeEnum CompoundObject::getEntityType(void)
    return m_collisionType;
 }
 
+
+CompoundObject* CompoundObject::getParentObject()
+{
+   return m_parentObject;
+}
+
 b2Vec2 CompoundObject::getCompoundObjectPosition()
 // Position of the CO is the position of any of its bodies
 // For multi-body object it is not known what body to use
@@ -1660,7 +1666,8 @@ CompoundObject* CompoundObject::defineChildObject(
    {
       m_children.push_back(static_cast<CompoundObject*>(co));
 
-      co->attachTo(sceneParent);
+      // CO is alreadu attached to scene parent in the behaviour file
+//      co->attachTo(sceneParent);
 
       co->setName(objectNode.attribute("name").as_string());
    }
@@ -1852,6 +1859,8 @@ b2Body* CompoundObject::getBodyImpl(const std::string& name)
       return (b2Body*)co->getUserData();
    }
 
+   logs::messageln("Did not find the body %s that was searched for", name.c_str());
+
    return NULL;
 }
 
@@ -1865,6 +1874,8 @@ b2Joint* CompoundObject::getJointImpl(const std::string& name)
       }
    }
 
+   logs::messageln("Did not find the joint %s that was searched for", name.c_str());
+
    return NULL;
 }
 
@@ -1877,6 +1888,8 @@ System* CompoundObject::getSystemImpl(const std::string& name)
          return (*it);
       }
    }
+
+   logs::messageln("Did not find the system %s that was searched for", name);
 
    return NULL;
 }
