@@ -39,7 +39,7 @@ public:
 
    ~SpawnObjectList()
    {
-      for (int i = 0; i < m_spawnObjects.size(); i++)
+      for (unsigned int  i = 0; i < m_spawnObjects.size(); i++)
       {
          delete m_spawnObjects[i];
       }
@@ -66,7 +66,7 @@ public:
       // Randomise value between 0 and m_probabilitySum
       int r = rand() % m_probabilitySum;
 
-      for (int i = 0; i < m_spawnObjects.size(); i++)
+      for (unsigned int i = 0; i < m_spawnObjects.size(); i++)
       {
          if (m_spawnObjects[i]->m_probabilityFactor <= r)
          {

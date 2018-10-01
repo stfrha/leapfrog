@@ -25,7 +25,7 @@ FreeSpaceActor::FreeSpaceActor(
 
    m_world->SetContactListener(&m_contactListener);
 
-   readDefinitionXmlFile(gameResources, this, NULL, m_world, Vector2(0.0f, 0.0f), fileName, initialState);
+   initCompoundObjectTop(gameResources, this, m_world, fileName, initialState);
 
    // Create background before the leapfrog
    generateBackground(gameResources);

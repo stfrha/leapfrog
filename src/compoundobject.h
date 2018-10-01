@@ -162,7 +162,6 @@ public:
 	   oxygine::Resources& gameResources,
       CompoundObject* parentObject,
 	   b2World* world,
-	   const oxygine::Vector2& pos,
 	   const std::string& defXmlFileName,
 	   const std::string& initialState);
 

@@ -66,8 +66,6 @@ LeapFrog::LeapFrog(
 {
 	initCompoundObjectParts(gameResources, sceneParent, parentObject, world, pos, root, string(""));
 
-   m_sceneActor = (SceneActor*) sceneParent;
-
    m_mainObject = getObject("lfMainBody");
    m_lfRightBigLeg = getObject("lfRightBigLeg");
    m_lfLeftBigLeg = getObject("lfLeftBigLeg");
@@ -201,48 +199,10 @@ void LeapFrog::setEnvPropHandler(oxygine::Event *ev)
    //goToEnvironment((int) value);
 }
 
-LeapFrog::~LeapFrog()
-{
-}
-
 oxygine::Actor* LeapFrog::getMainActor(void)
 {
    return m_mainObject;
 }
-
-//void LeapFrog::setPropertyImpl(int propId, float value)
-//{
-//   if (propId == propMode)
-//   {
-//      if ((value > -0.5) && (value < 0.5))
-//      {
-//         goToMode(LFM_RESET);
-//      }
-//      else if ((value > 0.5) && (value < 1.5))
-//      {
-//         goToMode(LFM_DEEP_SPACE);
-//      }
-//      else if ((value > 1.5) && (value < 2.5))
-//      {
-//         goToMode(LFM_LANDING);
-//      }
-//      else if ((value > 2.5) && (value < 3.5))
-//      {
-//         goToMode(LFM_ORBIT);
-//      }
-//      else if ((value > 3.5) && (value < 4.5))
-//      {
-//         goToMode(LFM_REENTRY);
-//      }
-//   }
-//}
-//
-
-//void LeapFrog::initLeapfrog(SceneActor* sceneActor)
-//{
-//	m_sceneActor = sceneActor;
-//}
-
 
 CollisionEntityTypeEnum LeapFrog::getEntityType(void)
 {

@@ -45,11 +45,10 @@ void CompoundObject::initCompoundObjectTop(
    oxygine::Resources& gameResources, 
    CompoundObject* parentObject,
    b2World* world,
-   const Vector2& pos, 
    const string& defXmlFileName,
    const string& initialState)
 {
-   readDefinitionXmlFile(gameResources, m_sceneActor, parentObject, world, pos, defXmlFileName, initialState);
+   readDefinitionXmlFile(gameResources, m_sceneActor, parentObject, world, Vector2(0.0f, 0.0f), defXmlFileName, initialState);
 }
 
 CollisionEntityTypeEnum CompoundObject::getEntityType(void)

@@ -4,6 +4,7 @@
       type="breakIntoObject"
       breakBulletDamage="6"
       numberOfSpawns="3" />
+<!--
    <spawnObject
       probabilityFactor="9" />
       <childObject
@@ -13,10 +14,13 @@
             <properties
                posX="0"
                posY="0" 
-               file="medium_asteroid.xml" >
+               file="medium_asteroid.xml" />
+      </stateProperties>
       </childObject>
    </spawnObject>
-<!--   <spawnObject
+-->
+<!--   
+   <spawnObject
       probabilityFactor="1" />
       <childObject
          name="fuel">
@@ -24,11 +28,13 @@
             state="default">
             <properties
                posX="0"
-               posY="0" >
+               posY="0" />
                <compoundObject>
                </compoundObject>
+         </stateProperties>
       </childObject>
-   </spawnObject> -->
+   </spawnObject> 
+-->
    <dynamicCircle
       name="largeAsteroid"
       texture="asteroid_cutout"

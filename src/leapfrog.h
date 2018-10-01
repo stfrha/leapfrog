@@ -165,26 +165,12 @@ private:
    b2RevoluteJoint* m_leftFootLegJoint;
    b2RevoluteJoint* m_shieldJoint;
 
-   ////  Weld joints are for locking arms and legs during
-   //// instant rotation, they are supposed to be removed
-   //// after the instant rotation
-   //b2WeldJoint* m_rightBigLegWeldJoint;
-   //b2WeldJoint* m_leftBigLegWeldJoint;
-   //b2WeldJoint* m_rightSmallLegWeldJoint;
-   //b2WeldJoint* m_leftSmallLegWeldJoint;
-   //b2WeldJoint* m_rightFootLegWeldJoint;
-   //b2WeldJoint* m_leftFootLegWeldJoint;
-   //b2WeldJoint* m_shieldWeldJoint;
-
-
    spGun m_gun;
 
    spBox2DDraw m_debugDraw;
    
 
    oxygine::Resources* m_gameResources;
-
-   SceneActor* m_sceneActor;
 
    void findDamage(b2Contact* contact, const b2ContactImpulse* impulse);
 
@@ -205,9 +191,6 @@ public:
 		b2World* world,
 		const oxygine::Vector2& pos,
       pugi::xml_node& root);
-	~LeapFrog();
-
-//	void initLeapfrog(SceneActor* sceneActor);
 
    virtual CollisionEntityTypeEnum getEntityType(void);
 
@@ -231,7 +214,6 @@ public:
    void fireGun(bool fire);
    void fireReentryFlames(bool fire);
    void reentrySetHeat(unsigned char heatAmount);   // 0 = off, 1 = coldest, 255 = hottest, most intense
-   // void setBoundedWallsActor(FreeSpaceActor* actor);
    void setHoldAngle(float angle);
    void releaseHoldAngle(void);
    void breakJoints(void);

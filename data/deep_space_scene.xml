@@ -8,7 +8,8 @@
          <properties
             posX="500.0"
             posY="250.0" 
-            file="large_asteroid.xml" >
+            file="large_asteroid.xml" />
+      </stateProperties>
    </childObject>
    <childObject
       name="leapfrog1">
@@ -17,7 +18,8 @@
          <properties
             posX="300.0"
             posY="250.0" 
-            file="leapfrog_deep_space.xml" >
+            file="leapfrog_deep_space.xml" />
+      </stateProperties>
    </childObject>
 </compoundObject>
 
