@@ -28,6 +28,7 @@ public:
 DECLARE_SMART(CompoundObject, spCompoundObject);
 
 class SceneActor;
+class FreeSpaceActor;
 
 class CompoundObject : public oxygine::Actor, public CompoundInterface, public CollisionEntity
 {
@@ -145,6 +146,8 @@ private:
 
 protected:
    CompoundObject * m_parentObject;
+
+   void setAllBodiesToBounding(FreeSpaceActor* actor);
 
 
 public:

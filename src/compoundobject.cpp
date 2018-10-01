@@ -5,6 +5,7 @@
 #include "compoundobject.h"
 
 #include "sceneactor.h"
+#include "freespaceactor.h"
 
 // All behaviours of CompoundObjects
 // and thus can be instansiated as children to one
@@ -157,7 +158,7 @@ CompoundObject* CompoundObject::initCompoundObject(
    
       return static_cast<CompoundObject*>(lp);
    }
-   else if (behavStr == "breakIntoObject")
+   else if (behavStr == "breakableObject")
    {
       BreakableObject* bo = new BreakableObject(
          gameResources, 
@@ -2015,3 +2016,18 @@ void CompoundObject::hitByBullet(b2Contact* contact)
    }
 }
 
+// Iterate all bodies (and bodies of children recursively)
+// And set all bodies to bounding bodies.
+
+void CompoundObject::setAllBodiesToBounding(FreeSpaceActor* actor)
+{
+   for (auto it = m_children.begin(); it != m_children.end(); ++it)
+   {
+      if ((*it)->getUserData() != NULL)
+      {
+         actor->addBoundingBody((b2Body*)(*it)->getUserData());
+      }
+
+      (*it)->setAllBodiesToBounding(actor);
+   }
+}

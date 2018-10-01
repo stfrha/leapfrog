@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <compoundObject>
    <behaviour
-      type="breakIntoObject"
+      type="breakableObject"
       breakBulletDamage="4"
       numberOfSpawns="3" />
    <spawnObject
@@ -36,7 +36,7 @@
       posX="0"
       posY="0"
       angle="0"
-      zLevel="0"
+      zLevel="160"
       collisionEntity="asteroid"
       collisionCategory="9"
       collisionMask="65534"

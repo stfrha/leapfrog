@@ -36,6 +36,14 @@ BreakableObject::BreakableObject(
       "");
 
    attachTo(m_sceneActor);
+
+   if (m_sceneActor->getSceneType() == STE_FREE_SPACE)
+   {
+      FreeSpaceActor* spaceActor = (FreeSpaceActor*)m_sceneActor;
+
+      setAllBodiesToBounding(spaceActor);
+   }
+
 }
 
 void BreakableObject::readBreakableObjectNode(const pugi::xml_node& node)
