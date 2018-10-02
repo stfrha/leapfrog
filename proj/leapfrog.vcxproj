@@ -275,6 +275,7 @@
     <ClInclude Include="..\src\gamestatusevents.h" />
     <ClInclude Include="..\src\gun.h" />
     <ClInclude Include="..\src\hammer.h" />
+    <ClInclude Include="..\src\killableinterface.h" />
     <ClInclude Include="..\src\landercontactlistener.h" />
     <ClInclude Include="..\src\landingactorevents.h" />
     <ClInclude Include="..\src\landingpad.h" />

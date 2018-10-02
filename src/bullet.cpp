@@ -79,7 +79,10 @@ void Bullet::hitAsteroid(b2Contact* contact)
 {
    if (m_sceneActor)
    {
-      m_sceneActor->addMeToDeathList((CompoundObject*)this);
+      // PArent (of actor) if lost if we do like this. 
+      // Either the KillableInterface is based on the
+      // Actor class or we must do something else
+      m_sceneActor->addMeToDeathList((KillableInterface*)this);
    }
 }
 
@@ -95,8 +98,18 @@ void Bullet::doUpdate(const oxygine::UpdateState& us)
    {
       if (m_sceneActor)
       {
-         m_sceneActor->addMeToDeathList((CompoundObject*)this);
+         m_sceneActor->addMeToDeathList((KillableInterface*)this);
       }
+   }
+}
+
+void Bullet::killAllChildBodies(void)
+{
+   b2Body* myBody = (b2Body*)getUserData();
+
+   if (myBody)
+   {
+      myBody->GetWorld()->DestroyBody(myBody);
    }
 }
 

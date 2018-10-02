@@ -59,7 +59,7 @@ void SceneActor::setPanorateMode(PanorateModeEnum mode)
    m_panorateMode = mode;
 }
 
-void SceneActor::addMeToDeathList(CompoundObject* actor)
+void SceneActor::addMeToDeathList(KillableInterface* actor)
 {
    if (std::find(m_deathList.begin(), m_deathList.end(), actor) != m_deathList.end())
    {
@@ -239,15 +239,13 @@ void SceneActor::sweepKillList(void)
 {
    for (auto it = m_deathList.begin(); it != m_deathList.end(); ++it)
    {
-      CompoundObject* a = (CompoundObject*)*it;
-      //a->killActor();
+      KillableInterface* ki = (KillableInterface*)*it;
 
-      b2Body* myBody = (b2Body*)a->getUserData();
+      ki->killAllChildBodies();
 
-      myBody->GetWorld()->DestroyBody(myBody);
+      CompoundObject* actor = (CompoundObject*)*it;
 
-      a->detach();
-
+      actor->detach();
    }
 
    m_deathList.clear();

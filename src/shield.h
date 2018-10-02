@@ -26,6 +26,7 @@ private:
    // Working member variable
    float m_angle;
 
+   oxygine::spSprite m_sprite;
 
    void readShieldNode(const pugi::xml_node& objectNode);
 

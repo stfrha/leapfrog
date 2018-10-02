@@ -6,6 +6,7 @@
 #include "launchsite.h"
 #include "scales.h"
 #include "physdispconvert.h"
+#include "killableinterface.h"
 
 enum PanorateModeEnum
 {
@@ -42,7 +43,7 @@ protected:
    float	m_physToStageScale;
    b2World * m_world;
    spLaunchSite m_launchSite;
-   std::vector<CompoundObject*> m_deathList;
+   std::vector<KillableInterface*> m_deathList;
    PanorateModeEnum m_panorateMode;
    bool m_externalControl;
    SceneTypeEnum m_sceneType;
@@ -68,7 +69,7 @@ public:
    void setLeapfrog(spLeapFrog lf);
    void setPanorateMode(PanorateModeEnum mode);
 
-   void addMeToDeathList(CompoundObject* actor);
+   void addMeToDeathList(KillableInterface* actor);
 
    void takeControlOfLeapfrog(bool control);
 

@@ -73,7 +73,7 @@ void BreakableObject::hitByBullet(b2Contact* contact)
 
    if (m_damage >= m_breakAtDamage)
    {
-      m_sceneActor->addMeToDeathList(this);
+      m_sceneActor->addMeToDeathList((KillableInterface*)this);
       shattered = true;
       m_spawnCount += m_numberOfSpawns;
    }

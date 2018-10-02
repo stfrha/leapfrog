@@ -35,30 +35,30 @@ void FreeSpaceContactListener::PostSolve(b2Contact* contact, const b2ContactImpu
 
    if (eA == CET_BREAKABLE_OBJECT)
    {
-      // Is it ok to assume that the parent of the body that was hit 
-      // is the actual breakable object or should I look upwards until I
-      // find the Breakable object? 
-      // TODO: For now, assume the first but work on a better solution later
-      breakable = (BreakableObject*)contact->GetFixtureA()->GetBody()->GetUserData();
+      CompoundObject* obj = (CompoundObject*)contact->GetFixtureA()->GetBody()->GetUserData();
+
+      breakable = (BreakableObject*)obj->getParentWithBehaviour(CompoundObject::BehaviourEnum::breakableObject);
    }
 
    if (eB == CET_BREAKABLE_OBJECT)
    {
-      // Is it ok to assume that the parent of the body that was hit 
-      // is the actual breakable object or should I look upwards until I
-      // find the Breakable object? 
-      // TODO: For now, assume the first but work on a better solution later
-      breakable = (BreakableObject*)contact->GetFixtureB()->GetBody()->GetUserData();
+      CompoundObject* obj = (CompoundObject*)contact->GetFixtureB()->GetBody()->GetUserData();
+
+      breakable = (BreakableObject*)obj->getParentWithBehaviour(CompoundObject::BehaviourEnum::breakableObject);
    }
 
    if (eA == CET_LEAPFROG)
    {
-      leapfrog = (LeapFrog*)contact->GetFixtureA()->GetBody()->GetUserData();
+      CompoundObject* obj = (CompoundObject*)contact->GetFixtureA()->GetBody()->GetUserData();
+
+      leapfrog = (LeapFrog*)obj->getParentWithBehaviour(CompoundObject::BehaviourEnum::leapfrog);
    }
 
    if (eB == CET_LEAPFROG)
    {
-      leapfrog = (LeapFrog*)contact->GetFixtureB()->GetBody()->GetUserData();
+      CompoundObject* obj = (CompoundObject*)contact->GetFixtureB()->GetBody()->GetUserData();
+
+      leapfrog = (LeapFrog*)obj->getParentWithBehaviour(CompoundObject::BehaviourEnum::leapfrog);
    }
 
    if (eA == CET_BULLET)
@@ -73,12 +73,16 @@ void FreeSpaceContactListener::PostSolve(b2Contact* contact, const b2ContactImpu
 
    if (eA == CET_HAMMER)
    {
-      hammer = (Hammer*)contact->GetFixtureA()->GetBody()->GetUserData();
+      CompoundObject* obj = (CompoundObject*)contact->GetFixtureA()->GetBody()->GetUserData();
+
+      hammer = (Hammer*)obj->getParentWithBehaviour(CompoundObject::BehaviourEnum::steerableObject);
    }
 
    if (eB == CET_HAMMER)
    {
-      hammer = (Hammer*)contact->GetFixtureB()->GetBody()->GetUserData();
+      CompoundObject* obj = (CompoundObject*)contact->GetFixtureB()->GetBody()->GetUserData();
+
+      hammer = (Hammer*)obj->getParentWithBehaviour(CompoundObject::BehaviourEnum::steerableObject);
    }
 
 

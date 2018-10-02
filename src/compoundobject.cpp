@@ -29,7 +29,8 @@ using namespace pugi;
 CompoundObject::CompoundObject(SceneActor* sceneActor, CompoundObject* parentObject) :
    m_sceneActor(sceneActor),
    m_parentObject(parentObject),
-   m_collisionType(CET_NOT_APPLICABLE)
+   m_collisionType(CET_NOT_APPLICABLE),
+   m_behaviourType(notApplicable)
 { }
 
 
@@ -62,6 +63,39 @@ CompoundObject* CompoundObject::getParentObject()
 {
    return m_parentObject;
 }
+
+CompoundObject* CompoundObject::getParentWithBehaviour(BehaviourEnum behav)
+{
+   if (m_behaviourType == behav)
+   {
+      return this;
+   }
+   else
+   {
+      if (m_parentObject)
+      {
+         return m_parentObject->getParentWithBehaviour(behav);
+      }
+   }
+
+   return NULL;
+}
+
+void CompoundObject::killAllChildBodies(void)
+{
+   b2Body* myBody = (b2Body*)getUserData();
+
+   if (myBody)
+   {
+      myBody->GetWorld()->DestroyBody(myBody);
+   }
+
+   for (auto it = m_children.begin(); it != m_children.end(); ++it)
+   {
+      (*it)->killAllChildBodies();
+   }
+}
+
 
 b2Vec2 CompoundObject::getCompoundObjectPosition()
 // Position of the CO is the position of any of its bodies
@@ -132,6 +166,8 @@ CompoundObject* CompoundObject::initCompoundObject(
          pos,
          root);
 
+      lf->m_behaviourType = BehaviourEnum::leapfrog;
+
       return static_cast<CompoundObject*>(lf);
    }
    else if (behavStr == "launchSite")
@@ -144,6 +180,8 @@ CompoundObject* CompoundObject::initCompoundObject(
          pos,
          root);
 
+      ls->m_behaviourType = BehaviourEnum::launchSite;
+
       return static_cast<CompoundObject*>(ls);
    }
    else if (behavStr == "landingPad")
@@ -155,7 +193,9 @@ CompoundObject* CompoundObject::initCompoundObject(
          world,
          pos,
          root);
-   
+
+      lp->m_behaviourType = BehaviourEnum::landingPad;
+
       return static_cast<CompoundObject*>(lp);
    }
    else if (behavStr == "breakableObject")
@@ -167,6 +207,8 @@ CompoundObject* CompoundObject::initCompoundObject(
          world, 
          pos, 
          root);
+
+      bo->m_behaviourType = BehaviourEnum::breakableObject;
 
       return static_cast<CompoundObject*>(bo);
    }
@@ -1996,7 +2038,7 @@ void CompoundObject::hitByBullet(b2Contact* contact)
    particleSize = 0.9f;
    blastIntensity = 300.0f;
 
-   m_sceneActor->addMeToDeathList(this);
+   m_sceneActor->addMeToDeathList((KillableInterface*)this);
    //}
 
    b2WorldManifold m;

@@ -22,18 +22,18 @@ Shield::Shield(
 
    m_resAnim = m_gameResources->getResAnim("shield_exciter");
 
-   spSprite shSp = new Sprite();
+   m_sprite = new Sprite();
 
-   shSp->setAnimFrame(m_resAnim, 0, 0);
+   m_sprite->setAnimFrame(m_resAnim, 0, 0);
 
    // Size need to be set like this since the tween animation will
    // screw up the size otherwise
-   shSp->setSize(512.0f, 256.0f);
-   shSp->setScale(m_radius / 512.0f);
+   m_sprite->setSize(512.0f, 256.0f);
+   m_sprite->setScale(m_radius / 512.0f);
 //   shSp->setScale(16.0f / 512.0f);
-   shSp->setAlpha(0);
-   shSp->setAnchor(Vector2(0.5f, 1.0f));
-   shSp->setPriority(147);
+   m_sprite->setAlpha(0);
+   m_sprite->setAnchor(Vector2(0.5f, 1.0f));
+   addChild(m_sprite);
 
    // Seems that only the center of the attachedBody is used.
    // Therefore we don't use origin now, lets see if this 
@@ -46,7 +46,7 @@ Shield::Shield(
 
    m_body = world->CreateBody(&bodyDef);
 
-   shSp->setUserData(m_body);
+   setUserData(m_body);
 
    b2CircleShape shape;
    shape.m_radius = 8.0f;
@@ -60,11 +60,12 @@ Shield::Shield(
    fixtureDef.filter.maskBits = 33819;
 
    m_body->CreateFixture(&fixtureDef);
-   m_body->SetUserData(&shSp);
+   m_body->SetUserData(this);
 
    m_body->GetFixtureList()->SetUserData((CollisionEntity*)this);
 
    attachTo(sceneActor);
+   setPriority(147);
 
    b2RevoluteJointDef shieldJointDef;
    shieldJointDef.bodyA = m_attachedBody;
@@ -160,9 +161,9 @@ void Shield::shieldHit(b2Contact* contact, const b2ContactImpulse* impulse)
       setAngle(angle);
    }
 
-   setAlpha(255);
-   spTween animTween = addTween(TweenAnim(m_resAnim), 500);
-   spTween alphaTween = addTween(Actor::TweenAlpha(64), 500);
+   m_sprite->setAlpha(255);
+   spTween animTween = m_sprite->addTween(TweenAnim(m_resAnim), 500);
+   spTween alphaTween = m_sprite->addTween(Actor::TweenAlpha(64), 500);
 
    animTween->setDoneCallback(CLOSURE(this, &Shield::atHitComplete));
 
@@ -199,5 +200,5 @@ void Shield::doUpdate(const oxygine::UpdateState& us)
 
 void Shield::atHitComplete(oxygine::Event* event)
 {
-   setAlpha(0);
+   m_sprite->setAlpha(0);
 }

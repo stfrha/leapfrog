@@ -3,6 +3,7 @@
 #include "oxygine-framework.h"
 #include "Box2D/Box2D.h"
 #include "compoundinterface.h"
+#include "killableinterface.h"
 #include "collisionentity.h"
 #include "objectproperty.h"
 #include "system.h"
@@ -30,8 +31,20 @@ DECLARE_SMART(CompoundObject, spCompoundObject);
 class SceneActor;
 class FreeSpaceActor;
 
-class CompoundObject : public oxygine::Actor, public CompoundInterface, public CollisionEntity
+class CompoundObject : public oxygine::Actor, public CompoundInterface, public KillableInterface, public CollisionEntity
 {
+public:
+   enum BehaviourEnum
+   {
+      notApplicable,
+      leapfrog,
+      launchSite,
+      landingPad,
+      breakableObject,
+      steerableObject
+   };
+
+
 private:
 
    SceneActor * m_sceneActor;
@@ -39,6 +52,7 @@ private:
    std::vector<NamedJoint*> m_namedJoints;
 
    CollisionEntityTypeEnum m_collisionType;
+   BehaviourEnum m_behaviourType;
 
    void defineSpriteBox(
       oxygine::Resources& gameResources,
@@ -207,6 +221,9 @@ public:
    virtual CollisionEntityTypeEnum getEntityType(void);
 
    CompoundObject* getParentObject();
+   CompoundObject* getParentWithBehaviour(BehaviourEnum behav);
+   virtual void killAllChildBodies(void);
+
    b2Vec2 getCompoundObjectPosition();
 
    void hitByBullet(b2Contact* contact);
