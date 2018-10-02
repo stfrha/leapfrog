@@ -18,9 +18,9 @@ enum CollisionEntityTypeEnum
    CET_LAUNCH_SITE_LEFT_FOOT_REST,
    CET_LAUNCH_SITE_RIGHT_FOOT_REST,
    CET_LANDING_PAD,
-   CET_DESTROYABLE_OBJECT,
    CET_HAMMER,
    CET_BREAKABLE_OBJECT,
+   CET_DESTROYABLE_OBJECT,
    CET_NOT_APPLICABLE
 };
 
@@ -45,7 +45,7 @@ public:
       else if (value == "launchSiteLeftFootRest") return CET_LAUNCH_SITE_LEFT_FOOT_REST;
       else if (value == "launchSiteRightFootRest") return CET_LAUNCH_SITE_RIGHT_FOOT_REST;
       else if (value == "landingPad") return CET_LANDING_PAD;
-      else if (value == "destroyableObject") return CET_DESTROYABLE_OBJECT;
+      else if (value == "breakableObject") return CET_BREAKABLE_OBJECT;
 
       return CET_NOT_APPLICABLE;
    }

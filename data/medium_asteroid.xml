@@ -16,6 +16,7 @@
                file="small_asteroid.xml" >
       </childObject>
    </spawnObject>
+<!--
    <spawnObject
       probabilityFactor="1" />
       <childObject
@@ -26,10 +27,10 @@
                posX="0"
                posY="0" >
                <compoundObject>
-                  <!-- Some  fuel object -->
                </compoundObject>
       </childObject>
    </spawnObject>
+-->
    <dynamicCircle
       name="mediumAsteroid"
       texture="asteroid_cutout"
@@ -37,7 +38,7 @@
       posY="0"
       angle="0"
       zLevel="160"
-      collisionEntity="asteroid"
+      collisionEntity="breakbleObject"
       collisionCategory="9"
       collisionMask="65534"
       radius="10" />

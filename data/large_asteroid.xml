@@ -42,7 +42,7 @@
       posY="0"
       angle="0"
       zLevel="160"
-      collisionEntity="asteroid"
+      collisionEntity="breakableObject"
       collisionCategory="9"
       collisionMask="65534"
       radius="20" />

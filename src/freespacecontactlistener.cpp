@@ -4,6 +4,7 @@
 #include "leapfrog.h"
 #include "shield.h"
 #include "hammer.h"
+#include "breakableobject.h"
 #include "gamestatus.h"
 
 
@@ -20,6 +21,7 @@ void FreeSpaceContactListener::PostSolve(b2Contact* contact, const b2ContactImpu
    LeapFrog* leapfrog = NULL;
    Bullet* bullet = NULL;
    Hammer* hammer = NULL;
+   BreakableObject* breakable = NULL;
 
    if (eA == CET_LF_SHIELD)
    {
@@ -31,15 +33,23 @@ void FreeSpaceContactListener::PostSolve(b2Contact* contact, const b2ContactImpu
       shield = (Shield*)contact->GetFixtureB()->GetBody()->GetUserData();
    }
 
-   //if (eA == CET_ASTEROID)
-   //{
-   //   asteroid = (Asteroid*)contact->GetFixtureA()->GetBody()->GetUserData();
-   //}
+   if (eA == CET_BREAKABLE_OBJECT)
+   {
+      // Is it ok to assume that the parent of the body that was hit 
+      // is the actual breakable object or should I look upwards until I
+      // find the Breakable object? 
+      // TODO: For now, assume the first but work on a better solution later
+      breakable = (BreakableObject*)contact->GetFixtureA()->GetBody()->GetUserData();
+   }
 
-   //if (eB == CET_ASTEROID)
-   //{
-   //   asteroid = (Asteroid*)contact->GetFixtureB()->GetBody()->GetUserData();
-   //}
+   if (eB == CET_BREAKABLE_OBJECT)
+   {
+      // Is it ok to assume that the parent of the body that was hit 
+      // is the actual breakable object or should I look upwards until I
+      // find the Breakable object? 
+      // TODO: For now, assume the first but work on a better solution later
+      breakable = (BreakableObject*)contact->GetFixtureB()->GetBody()->GetUserData();
+   }
 
    if (eA == CET_LEAPFROG)
    {
@@ -72,19 +82,19 @@ void FreeSpaceContactListener::PostSolve(b2Contact* contact, const b2ContactImpu
    }
 
 
-   //if (asteroid && bullet)
-   //{
-   //   // Bullet hit asteroid
-   //   bullet->hitAsteroid(contact);
-   //   asteroid->hitByBullet(contact);
-   //}
+   if (breakable && bullet)
+   {
+      // Bullet hit asteroid
+      bullet->hitAsteroid(contact);
+      breakable->hitByBullet(contact);
+   }
 
-   //if (asteroid && shield)
-   //{
-   //   // Asteroid hit shield
-   //   shield->shieldHit(contact, impulse);
-   //   asteroid->hitShield(contact);
-   //}
+   if (breakable && shield)
+   {
+      // Asteroid hit shield
+      shield->shieldHit(contact, impulse);
+      breakable->hitShield(contact);
+   }
 
    //// Gets here if shield no longer works
    //if (asteroid && leapfrog)
