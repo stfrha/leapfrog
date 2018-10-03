@@ -2,7 +2,6 @@
  
 #include "oxygine-framework.h"
 #include "Box2D/Box2D.h"
-#include "compoundinterface.h"
 #include "killableinterface.h"
 #include "collisionentity.h"
 #include "objectproperty.h"
@@ -31,7 +30,7 @@ DECLARE_SMART(CompoundObject, spCompoundObject);
 class SceneActor;
 class FreeSpaceActor;
 
-class CompoundObject : public oxygine::Actor, public CompoundInterface, public KillableInterface, public CollisionEntity
+class CompoundObject : public oxygine::Actor, public KillableInterface, public CollisionEntity
 {
 public:
    enum BehaviourEnum
@@ -68,6 +67,15 @@ private:
       const oxygine::Vector2& pos,
       pugi::xml_node& objectNode);
 
+   void defineCircle(
+      oxygine::Resources& gameResources,
+      SceneActor* sceneParent,
+      CompoundObject* parentObject,
+      b2World* world,
+      const oxygine::Vector2& pos,
+      pugi::xml_node& objectNode,
+      bool staticBody);
+
    void defineStaticCircle(
       oxygine::Resources& gameResources,
       SceneActor* sceneParent,
@@ -75,6 +83,15 @@ private:
       b2World* world,
       const oxygine::Vector2& pos,
       pugi::xml_node& objectNode);
+
+   void defineBox(
+      oxygine::Resources& gameResources,
+      SceneActor* sceneParent,
+      CompoundObject* parentObject,
+      b2World* world,
+      const oxygine::Vector2& pos,
+      pugi::xml_node& objectNode,
+      bool staticBody);
 
    void defineStaticBox(
       oxygine::Resources& gameResources, 
@@ -91,6 +108,15 @@ private:
       b2World* world,
       const oxygine::Vector2& pos, 
       pugi::xml_node& objectNode);
+
+   void defineBoxedSpritePolygon(
+      oxygine::Resources& gameResources,
+      SceneActor* sceneParent,
+      CompoundObject* parentObject,
+      b2World* world,
+      const oxygine::Vector2& pos,
+      pugi::xml_node& objectNode,
+      bool staticBody);
 
    void defineStaticBoxedSpritePolygon(
       oxygine::Resources& gameResources,
@@ -151,6 +177,13 @@ private:
    void definePrismaticJoint(
       b2World* world,
       pugi::xml_node& jointNode);
+
+   void splitString(const std::string& source, std::string& thisLevel, std::string& lowerLevels);
+   b2Body* getBodyImpl(const std::string& name);
+   oxygine::spActor getActorImpl(const std::string& name);
+   CompoundObject* getObjectImpl(const std::string& name);
+   b2Joint* getJointImpl(const std::string& name);
+   System* getSystemImpl(const std::string& name);
 
    ObjectProperty* getProp(int propId);
 
@@ -231,11 +264,10 @@ public:
    oxygine::Sprite* getSprite(void);
 
    // Should these three be protected since they are called by the base class?
-   virtual CompoundObject* getObjectImpl(const std::string& name);
-   virtual b2Body* getBodyImpl(const std::string& name);
-   virtual b2Joint* getJointImpl(const std::string& name);
-   virtual System* getSystemImpl(const std::string& name);
-
+   CompoundObject* getObject(const std::string& name);
+   b2Body* getBody(const std::string& name);
+   b2Joint* getJoint(const std::string& name);
+   System* getSystem(const std::string& name);
   
    void extSetProperty(int propId, float value);
    void setProperty(int propId, float value);

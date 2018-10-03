@@ -1,4 +1,5 @@
 #include "sceneactor.h"
+#include "bodyuserdata.h"
 
 using namespace oxygine;
 
@@ -169,7 +170,9 @@ void SceneActor::doUpdate(const UpdateState& us)
 	b2Body* body = m_world->GetBodyList();
 	while (body)
 	{
-		Actor* actor = (Actor*)body->GetUserData();
+      // GetUserData gives const, cant use static_cast here
+      BodyUserData* bud = (BodyUserData*)body->GetUserData();
+		Actor* actor = bud->m_actor.get();
 		b2Body* next = body->GetNext();
 		if (actor)
 		{
@@ -186,15 +189,6 @@ void SceneActor::doUpdate(const UpdateState& us)
          {
             actor->setRotation(((Shield*)actor)->getAngle());
          }
-
-			////remove fallen bodies
-			//if (actor->getY() > getHeight() + 50)
-			//{
-			//	body->SetUserData(0);
-			//	m_world->DestroyBody(body);
-
-			//	actor->detach();
-			//}
 		}
 
 		body = next;

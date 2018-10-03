@@ -285,9 +285,6 @@
     <ClCompile Include="..\src\objectfactory.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\compoundinterface.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\src\layout.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -615,6 +612,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\src\killableinterface.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\bodyuserdata.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

@@ -171,7 +171,6 @@
     <ClCompile Include="..\src\Box2DDebugDraw.cpp" />
     <ClCompile Include="..\src\breakableobject.cpp" />
     <ClCompile Include="..\src\bullet.cpp" />
-    <ClCompile Include="..\src\compoundinterface.cpp" />
     <ClCompile Include="..\src\compoundobject.cpp" />
     <ClCompile Include="..\src\flameemitter.cpp" />
     <ClCompile Include="..\src\flameparticle.cpp" />
@@ -260,6 +259,7 @@
     <ClInclude Include="..\src\actortodie.h" />
     <ClInclude Include="..\src\blastemitter.h" />
     <ClInclude Include="..\src\blastparticle.h" />
+    <ClInclude Include="..\src\bodyuserdata.h" />
     <ClInclude Include="..\src\breakableobject.h" />
     <ClInclude Include="..\src\bullet.h" />
     <ClInclude Include="..\src\collisionentity.h" />
