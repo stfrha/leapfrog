@@ -545,15 +545,15 @@ void CompoundObject::defineCircle(
    fixtureDef.filter.categoryBits = objectNode.attribute("collisionCategory").as_int();
    fixtureDef.filter.maskBits = objectNode.attribute("collisionMask").as_int();
 
-   spBodyUserData bud = new BodyUserData();
-   bud->m_actor = sprite;
+   BodyUserData* bud = new BodyUserData();
+   bud->m_actor = sprite.get();
    bud->m_collisionType = CollisionEntity::convert(objectNode.attribute("collisionEntity").as_string());
 
-   fixtureDef.userData = (CollisionEntity*)&bud->m_collisionType;
+   fixtureDef.userData = bud;
 
    body->CreateFixture(&fixtureDef);
 
-   body->SetUserData(bud.get());
+   body->SetUserData(bud);
    sprite->setUserData(body);
 }
 
@@ -612,15 +612,15 @@ void CompoundObject::defineBox(
    fixtureDef.filter.categoryBits = objectNode.attribute("collisionCategory").as_int();
    fixtureDef.filter.maskBits = objectNode.attribute("collisionMask").as_int();
 
-   spBodyUserData bud = new BodyUserData();
-   bud->m_actor = sprite;
+   BodyUserData* bud = new BodyUserData();
+   bud->m_actor = sprite.get();
    bud->m_collisionType = CollisionEntity::convert(objectNode.attribute("collisionEntity").as_string());
 
-   fixtureDef.userData = (CollisionEntity*)&bud->m_collisionType;
+   fixtureDef.userData = bud;
 
    body->CreateFixture(&fixtureDef);
 
-   body->SetUserData(bud.get());
+   body->SetUserData(bud);
    sprite->setUserData(body);
 }
 
@@ -649,8 +649,8 @@ void CompoundObject::defineStaticPolygon(
    sprite->setName(objectNode.attribute("name").as_string());
    sprite->setPriority(objectNode.attribute("zLevel").as_int());
 
-   b2Body* body;
-   b2Fixture* fixture;
+   b2Body* body = NULL;
+   b2Fixture* fixture = NULL;
    b2Vec2 bPos = PhysDispConvert::convert(pos, 1.0f) + b2Vec2(objectNode.attribute("posX").as_float(), objectNode.attribute("posY").as_float());
    
    vector<Vector2> vertices(distance(objectNode.child("vertices").children("vertex").begin(), objectNode.child("vertices").children("vertex").end()));
@@ -667,13 +667,12 @@ void CompoundObject::defineStaticPolygon(
    filter.maskBits = objectNode.attribute("collisionMask").as_int();
    fixture->SetFilterData(filter);
 
-   spBodyUserData bud = new BodyUserData();
-   bud->m_actor = sprite;
+   BodyUserData* bud = new BodyUserData();
+   bud->m_actor = sprite.get();
    bud->m_collisionType = CollisionEntity::convert(objectNode.attribute("collisionEntity").as_string());
 
-   fixture->SetUserData((CollisionEntity*)&bud->m_collisionType);
-
-   body->SetUserData(bud.get());
+   fixture->SetUserData(bud);
+   body->SetUserData(bud);
    sprite->setUserData(body);
 }
 
@@ -698,21 +697,23 @@ void CompoundObject::defineBoxedSpritePolygon(
    addChild(sprite);
 
    vector<Vector2> vertices(distance(objectNode.child("vertices").children("vertex").begin(), objectNode.child("vertices").children("vertex").end()));
-   b2Body* body;
-   b2Fixture* fixture;
+   b2Body* body = NULL;
+   b2Fixture* fixture = NULL;
    b2Vec2 bPos = PhysDispConvert::convert(pos, 1.0f) + b2Vec2(objectNode.attribute("posX").as_float(), objectNode.attribute("posY").as_float());
 
    PolygonVertices::readVertices(vertices, objectNode);
    PolygonVertices::createBodyPolygon(vertices, world, bPos, body, fixture, objectNode, staticBody);
 
-   spBodyUserData bud = new BodyUserData();
-   bud->m_actor = sprite;
+   BodyUserData* bud = new BodyUserData();
+   bud->m_actor = sprite.get();
    bud->m_collisionType = CollisionEntity::convert(objectNode.attribute("collisionEntity").as_string());
 
-   fixture->SetUserData((CollisionEntity*)&bud->m_collisionType);
+   fixture->SetUserData(bud);
 
-   body->SetUserData(bud.get());
+   body->SetUserData(bud);
    sprite->setUserData(body);
+
+   getBody()
 }
 
 void CompoundObject::defineStaticBoxedSpritePolygon(
@@ -765,8 +766,8 @@ void CompoundObject::defineDynamicPolygon(
    sprite->setTouchChildrenEnabled(false);
 
    vector<Vector2> vertices(distance(objectNode.child("vertices").children("vertex").begin(), objectNode.child("vertices").children("vertex").end()));
-   b2Body* body;
-   b2Fixture* fixture;
+   b2Body* body = NULL;
+   b2Fixture* fixture = NULL;
    b2Vec2 bPos = PhysDispConvert::convert(pos, 1.0f) + b2Vec2(objectNode.attribute("posX").as_float(), objectNode.attribute("posY").as_float());
 
    PolygonVertices::createSpritePolygon(sprite.get(), vertices, objectNode);
@@ -776,13 +777,12 @@ void CompoundObject::defineDynamicPolygon(
 
    addChild(sprite);
 
-   spBodyUserData bud = new BodyUserData();
-   bud->m_actor = sprite;
+   BodyUserData* bud = new BodyUserData();
+   bud->m_actor = sprite.get();
    bud->m_collisionType = CollisionEntity::convert(objectNode.attribute("collisionEntity").as_string());
 
-   fixture->SetUserData((CollisionEntity*)&bud->m_collisionType);
-
-   body->SetUserData(bud.get());
+   fixture->SetUserData(bud);
+   body->SetUserData(bud);
    sprite->setUserData(body);
 
 }
@@ -900,21 +900,21 @@ void CompoundObject::defineRope(
    b2PolygonShape boxShape;
    boxShape.SetAsBox(segmentLength, thickness);
 
+   BodyUserData* bud = new BodyUserData();
+   bud->m_actor = object.get();
+   bud->m_collisionType = collType;
+
    b2FixtureDef fixtureDef;
    fixtureDef.shape = &boxShape;
    fixtureDef.density = jointNode.attribute("density").as_float(1.0f);
    fixtureDef.friction = 1.0f;
    fixtureDef.filter.categoryBits = jointNode.attribute("collisionCategory").as_int();
    fixtureDef.filter.maskBits = jointNode.attribute("collisionMask").as_int();
-   fixtureDef.userData = (CollisionEntity*)newCo;
+   fixtureDef.userData = bud;
 
    firstSegBody->CreateFixture(&fixtureDef);
-
-   spBodyUserData bud = new BodyUserData();
-   bud->m_actor = object;
-   bud->m_collisionType = collType;
    
-   firstSegBody->SetUserData(&bud);
+   firstSegBody->SetUserData(bud);
    object->setUserData(firstSegBody);
 
    // Define joint between beginning fastening body and first segment
@@ -957,21 +957,22 @@ void CompoundObject::defineRope(
       b2PolygonShape boxShape;
       boxShape.SetAsBox(segmentLength, thickness);
 
+      BodyUserData* bud = new BodyUserData();
+      bud->m_actor = object.get();
+      bud->m_collisionType = collType;
+
       b2FixtureDef fixtureDef;
       fixtureDef.shape = &boxShape;
       fixtureDef.density = jointNode.attribute("density").as_float(1.0f);
       fixtureDef.friction = 1.0f;
       fixtureDef.filter.categoryBits = jointNode.attribute("collisionCategory").as_int();
       fixtureDef.filter.maskBits = jointNode.attribute("collisionMask").as_int();
-      fixtureDef.userData = (CollisionEntity*)newCo;
+      fixtureDef.userData = bud;
 
       segBody->CreateFixture(&fixtureDef);
 
-      spBodyUserData bud = new BodyUserData();
-      bud->m_actor = object;
-      bud->m_collisionType = collType;
 
-      segBody->SetUserData(&bud);
+      segBody->SetUserData(bud);
       object->setUserData(segBody);
 
       // Define joint between beginning fastening body and first segment

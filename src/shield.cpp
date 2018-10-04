@@ -1,6 +1,7 @@
 #include "shield.h"
 #include "sceneactor.h"
 #include "compoundobject.h"
+#include "bodyuserdata.h"
 
 #include "gamestatus.h"
 
@@ -59,10 +60,14 @@ Shield::Shield(
    fixtureDef.filter.categoryBits = 16384;
    fixtureDef.filter.maskBits = 33819;
 
-   m_body->CreateFixture(&fixtureDef);
-   m_body->SetUserData(this);
+   BodyUserData* bud = new BodyUserData();
+   bud->m_actor = this;
+   bud->m_collisionType = CET_LF_SHIELD;
 
-   m_body->GetFixtureList()->SetUserData((CollisionEntity*)this);
+   fixtureDef.userData = (CollisionEntity*)&bud->m_collisionType;
+
+   m_body->CreateFixture(&fixtureDef);
+   m_body->SetUserData(bud);
 
    attachTo(sceneActor);
    setPriority(147);

@@ -1,5 +1,6 @@
 #include "freespacecontactlistener.h"
 #include "collisionentity.h"
+#include "bodyuserdata.h"
 #include "bullet.h"
 #include "leapfrog.h"
 #include "shield.h"
@@ -14,8 +15,8 @@ void FreeSpaceContactListener::PreSolve(b2Contact* contact, const b2Manifold* ol
 
 void FreeSpaceContactListener::PostSolve(b2Contact* contact, const b2ContactImpulse* impulse)
 {
-   CollisionEntityTypeEnum eA = ((CollisionEntity *)contact->GetFixtureA()->GetUserData())->getEntityType();
-   CollisionEntityTypeEnum eB = ((CollisionEntity *)contact->GetFixtureB()->GetUserData())->getEntityType();
+   CollisionEntityTypeEnum eA = BodyUserData::getCollisionType(contact->GetFixtureA()->GetUserData());
+   CollisionEntityTypeEnum eB = BodyUserData::getCollisionType(contact->GetFixtureB()->GetUserData());
 
    Shield* shield = NULL;
    LeapFrog* leapfrog = NULL;
@@ -25,64 +26,52 @@ void FreeSpaceContactListener::PostSolve(b2Contact* contact, const b2ContactImpu
 
    if (eA == CET_LF_SHIELD)
    {
-      shield = (Shield*)contact->GetFixtureA()->GetBody()->GetUserData();
+      shield = BodyUserData::getParentObjectOfType<Shield*>(contact->GetFixtureA()->GetBody()->GetUserData());
    }
 
    if (eB == CET_LF_SHIELD)
    {
-      shield = (Shield*)contact->GetFixtureB()->GetBody()->GetUserData();
+      shield = BodyUserData::getParentObjectOfType<Shield*>(contact->GetFixtureB()->GetBody()->GetUserData());
    }
 
    if (eA == CET_BREAKABLE_OBJECT)
    {
-      CompoundObject* obj = (CompoundObject*)contact->GetFixtureA()->GetBody()->GetUserData();
-
-      breakable = (BreakableObject*)obj->getParentWithBehaviour(CompoundObject::BehaviourEnum::breakableObject);
+      breakable = BodyUserData::getParentObjectOfType<BreakableObject*>(contact->GetFixtureA()->GetBody()->GetUserData());
    }
 
    if (eB == CET_BREAKABLE_OBJECT)
    {
-      CompoundObject* obj = (CompoundObject*)contact->GetFixtureB()->GetBody()->GetUserData();
-
-      breakable = (BreakableObject*)obj->getParentWithBehaviour(CompoundObject::BehaviourEnum::breakableObject);
+      breakable = BodyUserData::getParentObjectOfType<BreakableObject*>(contact->GetFixtureB()->GetBody()->GetUserData());
    }
 
    if (eA == CET_LEAPFROG)
    {
-      CompoundObject* obj = (CompoundObject*)contact->GetFixtureA()->GetBody()->GetUserData();
-
-      leapfrog = (LeapFrog*)obj->getParentWithBehaviour(CompoundObject::BehaviourEnum::leapfrog);
+      leapfrog = BodyUserData::getParentObjectOfType<LeapFrog*>(contact->GetFixtureA()->GetBody()->GetUserData());
    }
 
    if (eB == CET_LEAPFROG)
    {
-      CompoundObject* obj = (CompoundObject*)contact->GetFixtureB()->GetBody()->GetUserData();
-
-      leapfrog = (LeapFrog*)obj->getParentWithBehaviour(CompoundObject::BehaviourEnum::leapfrog);
+      leapfrog = BodyUserData::getParentObjectOfType<LeapFrog*>(contact->GetFixtureB()->GetBody()->GetUserData());
    }
 
    if (eA == CET_BULLET)
    {
-      bullet = (Bullet*)contact->GetFixtureA()->GetBody()->GetUserData();
+      bullet = BodyUserData::getParentObjectOfType<Bullet*>(contact->GetFixtureA()->GetBody()->GetUserData());
    }
 
    if (eB == CET_BULLET)
    {
-      bullet = (Bullet*)contact->GetFixtureB()->GetBody()->GetUserData();
+      bullet = BodyUserData::getParentObjectOfType<Bullet*>(contact->GetFixtureB()->GetBody()->GetUserData());
    }
 
    if (eA == CET_HAMMER)
    {
-      CompoundObject* obj = (CompoundObject*)contact->GetFixtureA()->GetBody()->GetUserData();
-
-      hammer = (Hammer*)obj->getParentWithBehaviour(CompoundObject::BehaviourEnum::steerableObject);
+      hammer = BodyUserData::getParentObjectOfType<Hammer*>(contact->GetFixtureA()->GetBody()->GetUserData());
    }
 
    if (eB == CET_HAMMER)
    {
-      CompoundObject* obj = (CompoundObject*)contact->GetFixtureB()->GetBody()->GetUserData();
-
-      hammer = (Hammer*)obj->getParentWithBehaviour(CompoundObject::BehaviourEnum::steerableObject);
+      hammer = BodyUserData::getParentObjectOfType<Hammer*>(contact->GetFixtureB()->GetBody()->GetUserData());
    }
 
 

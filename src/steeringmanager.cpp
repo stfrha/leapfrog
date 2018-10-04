@@ -1,5 +1,6 @@
 #include "steeringmanager.h"
 #include "sceneactor.h"
+#include "bodyuserdata.h"
 
 
 SteeringManager::SteeringManager(
@@ -356,8 +357,7 @@ b2Body* SteeringManager::findMostThreatening(b2Vec2 pos, b2Vec2 ahead, b2Vec2 ah
    {
       // So far, only avoid asteroids
       // Get collision entity
-      CollisionEntity* ce = (CollisionEntity*)body->GetFixtureList()->GetUserData();
-      if (ce->getEntityType() == CET_ASTEROID)
+      if (BodyUserData::getCollisionType(body->GetFixtureList()->GetUserData()) == CET_ASTEROID)
       {
          b2Vec2 asteroidPos = body->GetPosition();
          //Asteroid* asteroid = (Asteroid*) body->GetUserData();
@@ -418,10 +418,10 @@ public:
    float32 ReportFixture(b2Fixture* fixture, const b2Vec2& point,
       const b2Vec2& normal, float32 fraction)
    {
-      CollisionEntity* ce = (CollisionEntity*)fixture->GetUserData();
+      CollisionEntityTypeEnum ce = BodyUserData::getCollisionType(fixture->GetUserData());
       m_targetIsHiding = false;
 
-      if ((ce->getEntityType() == CET_ASTEROID) && (fraction < 1.0f))
+      if ((ce == CET_ASTEROID) && (fraction < 1.0f))
       {
          m_targetIsHiding = true;
          return 0.0f;

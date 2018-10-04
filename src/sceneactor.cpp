@@ -172,7 +172,7 @@ void SceneActor::doUpdate(const UpdateState& us)
 	{
       // GetUserData gives const, cant use static_cast here
       BodyUserData* bud = (BodyUserData*)body->GetUserData();
-		Actor* actor = bud->m_actor.get();
+		Actor* actor = BodyUserData::getActor<Actor*>(body->GetUserData());
 		b2Body* next = body->GetNext();
 		if (actor)
 		{
