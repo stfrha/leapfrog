@@ -4,6 +4,7 @@
 #include "deepspacesceneevents.h"
 
 #include "freespaceactor.h"
+#include "bodyuserdata.h"
 
 
 using namespace oxygine;
@@ -31,10 +32,9 @@ FreeSpaceActor::FreeSpaceActor(
    generateBackground(gameResources);
 
    m_leapfrog = static_cast<LeapFrog*>(getObject("leapfrog1"));
-   m_leapfrog->goToEnvironment(ENV_DEEP_SPACE);
+   m_leapfrogBody = getBody("leapfrog1.lfMainBody");
 
-   CompoundObject* co = m_leapfrog->getObject("lfMainBody");
-   m_leapfrogBody = (b2Body*)co->getUserData();
+   m_leapfrog->goToEnvironment(ENV_DEEP_SPACE);
 
    addBoundingBody(m_leapfrogBody);
 

@@ -186,8 +186,8 @@ void PolygonVertices::createBodyPolygon(
    std::vector<oxygine::Vector2>& vertices,
    b2World* world,
    b2Vec2& pos,
-   b2Body* body,
-   b2Fixture* fixture,
+   b2Body** body,
+   b2Fixture** fixture,
    pugi::xml_node objectNode,
    bool staticBody)
 {
@@ -219,7 +219,7 @@ void PolygonVertices::createBodyPolygon(
    b2Vec2 bPos = pos + b2Vec2(objectNode.attribute("posX").as_float(), objectNode.attribute("posY").as_float());
    bodyDef.position = bPos;
    bodyDef.angle = objectNode.attribute("angle").as_float();
-   body = world->CreateBody(&bodyDef);
+   *body = world->CreateBody(&bodyDef);
 
    b2PolygonShape polyShape;
    polyShape.Set(b2vertices, num - 1);
@@ -227,15 +227,15 @@ void PolygonVertices::createBodyPolygon(
    b2FixtureDef fixtureDef;
    fixtureDef.shape = &polyShape;
 
-   fixture = body->CreateFixture(&fixtureDef);
+   *fixture = (*body)->CreateFixture(&fixtureDef);
 
    b2Filter filter;
    filter.categoryBits = objectNode.attribute("collisionCategory").as_int();
    filter.maskBits = objectNode.attribute("collisionMask").as_int();
-   fixture->SetFilterData(filter);
+   (*fixture)->SetFilterData(filter);
 
-   fixture->SetDensity(objectNode.attribute("density").as_float(1.0f));
-   fixture->SetFriction(objectNode.attribute("friction").as_float(1.0f));
+   (*fixture)->SetDensity(objectNode.attribute("density").as_float(1.0f));
+   (*fixture)->SetFriction(objectNode.attribute("friction").as_float(1.0f));
 
 }
 

@@ -57,8 +57,8 @@ public:
       std::vector<oxygine::Vector2>& vertices,
       b2World* world,
       b2Vec2& pos,
-      b2Body* body,
-      b2Fixture* fixture,
+      b2Body** body,
+      b2Fixture** fixture,
       pugi::xml_node objectNode,
       bool staticBody);
 

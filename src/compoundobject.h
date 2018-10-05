@@ -261,10 +261,11 @@ public:
 
    void hitByBullet(b2Contact* contact);
 
-   oxygine::Sprite* getSprite(void);
+   // oxygine::Sprite* getSprite(void);
 
    // Should these three be protected since they are called by the base class?
    CompoundObject* getObject(const std::string& name);
+   oxygine::spActor getActor(const std::string& name);
    b2Body* getBody(const std::string& name);
    b2Joint* getJoint(const std::string& name);
    System* getSystem(const std::string& name);

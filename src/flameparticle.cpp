@@ -1,5 +1,6 @@
 #include "flameparticle.h"
 #include "flamesmokeparticle.h"
+#include "bodyuserdata.h"
 
 using namespace oxygine;
 
@@ -44,10 +45,15 @@ FlameParticle::FlameParticle(
    fixtureDef.filter.categoryBits = 8192;
    fixtureDef.filter.maskBits = 56459;
 
-   body->CreateFixture(&fixtureDef);
-   body->SetUserData(this);
+   BodyUserData* bud = new BodyUserData();
+   bud->m_actor = this;
+   bud->m_collisionType = CET_FLAME_PARTICLE;
 
-   body->GetFixtureList()->SetUserData((CollisionEntity*)this);
+   fixtureDef.userData = bud;
+
+   body->CreateFixture(&fixtureDef);
+
+   body->SetUserData(bud);
 
    // Give particle the same speed as the emitter body
    body->SetLinearVelocity(vel);

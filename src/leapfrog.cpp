@@ -13,6 +13,8 @@
 
 #include "gamestatus.h"
 
+#include "bodyuserdata.h"
+
 using namespace oxygine;
 using namespace std;
 
@@ -66,14 +68,13 @@ LeapFrog::LeapFrog(
 {
 	initCompoundObjectParts(gameResources, sceneParent, parentObject, world, pos, root, string(""));
 
-   m_mainObject = getObject("lfMainBody");
-   m_lfRightBigLeg = getObject("lfRightBigLeg");
-   m_lfLeftBigLeg = getObject("lfLeftBigLeg");
-   m_mainBody = (b2Body*)m_mainObject->getUserData();
+   m_mainActor = getActor("lfMainBody");
+   m_lfRightBigLeg = static_cast<Sprite*>(getActor("lfRightBigLeg").get());
+   m_lfLeftBigLeg = static_cast<Sprite*>(getActor("lfLeftBigLeg").get());
+   m_mainBody = (b2Body*)m_mainActor->getUserData();
    m_rightBigLegBody = (b2Body*)m_lfRightBigLeg->getUserData();
    m_leftBigLegBody = (b2Body*)m_lfLeftBigLeg->getUserData();
 
-   m_mainBody = getBody("lfMainBody");
 	m_boostBody = getBody("lfBooster");
 	m_rightSteerBody = getBody("lfRightSteer");
 	m_leftSteerBody = getBody("lfLeftSteer");
@@ -201,7 +202,7 @@ void LeapFrog::setEnvPropHandler(oxygine::Event *ev)
 
 oxygine::Actor* LeapFrog::getMainActor(void)
 {
-   return m_mainObject;
+   return m_mainActor.get();
 }
 
 CollisionEntityTypeEnum LeapFrog::getEntityType(void)
@@ -1056,8 +1057,8 @@ void LeapFrog::reentrySetHeat(unsigned char heatAmount)
    float vSize = 5.0f + 25.0f / 255.0f * heatAmount;
    int white = 128 + heatAmount / 2;
 
-   m_lfRightBigLeg->getSprite()->setColor(255, white, white, 255);
-   m_lfLeftBigLeg->getSprite()->setColor(255, white, white, 255);
+   m_lfRightBigLeg->setColor(255, white, white, 255);
+   m_lfLeftBigLeg->setColor(255, white, white, 255);
    m_reentryFlameEmitterBooster->setParameters(intensity, 500, b2Vec2(hSize, vSize));
    m_reentryFlameEmitterRightLeg->setParameters(intensity, 500, b2Vec2(hSize, vSize));
    m_reentryFlameEmitterLeftLeg->setParameters(intensity, 500, b2Vec2(hSize, vSize));

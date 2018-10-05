@@ -702,7 +702,7 @@ void CompoundObject::defineBoxedSpritePolygon(
    b2Vec2 bPos = PhysDispConvert::convert(pos, 1.0f) + b2Vec2(objectNode.attribute("posX").as_float(), objectNode.attribute("posY").as_float());
 
    PolygonVertices::readVertices(vertices, objectNode);
-   PolygonVertices::createBodyPolygon(vertices, world, bPos, body, fixture, objectNode, staticBody);
+   PolygonVertices::createBodyPolygon(vertices, world, bPos, &body, &fixture, objectNode, staticBody);
 
    BodyUserData* bud = new BodyUserData();
    bud->m_actor = sprite.get();
@@ -712,8 +712,6 @@ void CompoundObject::defineBoxedSpritePolygon(
 
    body->SetUserData(bud);
    sprite->setUserData(body);
-
-   getBody()
 }
 
 void CompoundObject::defineStaticBoxedSpritePolygon(
@@ -771,7 +769,7 @@ void CompoundObject::defineDynamicPolygon(
    b2Vec2 bPos = PhysDispConvert::convert(pos, 1.0f) + b2Vec2(objectNode.attribute("posX").as_float(), objectNode.attribute("posY").as_float());
 
    PolygonVertices::createSpritePolygon(sprite.get(), vertices, objectNode);
-   PolygonVertices::createBodyPolygon(vertices, world, bPos, body, fixture, objectNode, false);
+   PolygonVertices::createBodyPolygon(vertices, world, bPos, &body, &fixture, objectNode, false);
 
    // Here I could probably generate borders to the sprite by calling PolygonVertices::createPolygonBorder
 
@@ -1288,6 +1286,30 @@ CompoundObject* CompoundObject::getObject(const std::string& name)
    return NULL;
 }
 
+oxygine::spActor CompoundObject::getActor(const std::string& name)
+{
+   string thisLevel;
+   string lowerLevels;
+
+   splitString(name, thisLevel, lowerLevels);
+
+   if (lowerLevels.empty())
+   {
+      return getActorImpl(thisLevel);
+   }
+   else
+   {
+      CompoundObject* co = getObjectImpl(thisLevel);
+
+      if (co)
+      {
+         return co->getActor(lowerLevels);
+      }
+   }
+
+   return NULL;
+}
+
 /*
 Used to find pointers to b2Bodies as Actor::children of this compound object.
 name string can be hierarcical like so: nameGrandPareent.nameParent.nameChild
@@ -1447,10 +1469,10 @@ System* CompoundObject::getSystemImpl(const std::string& name)
    return NULL;
 }
 
-Sprite* CompoundObject::getSprite(void)
-{
-   return static_cast<Sprite*>(getFirstChild().get());
-}
+//Sprite* CompoundObject::getSprite(void)
+//{
+//   return static_cast<Sprite*>(getFirstChild().get());
+//}
 
 ObjectProperty* CompoundObject::getProp(int propId)
 {

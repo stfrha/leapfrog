@@ -150,9 +150,9 @@ private:
 	b2Body* m_rightSteerBody;
 	b2Body* m_leftSteerBody;
 
-   CompoundObject* m_mainObject;
-   CompoundObject* m_lfRightBigLeg;
-	CompoundObject* m_lfLeftBigLeg;
+   oxygine::spActor m_mainActor;
+   oxygine::Sprite* m_lfRightBigLeg;
+   oxygine::Sprite* m_lfLeftBigLeg;
 
    b2WeldJoint* m_boostJoint;
    b2WeldJoint* m_rightSteerJoint;
