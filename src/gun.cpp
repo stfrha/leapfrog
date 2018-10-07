@@ -91,11 +91,6 @@ void Gun::doUpdate(const oxygine::UpdateState& us)
             // Attach to parent's parent which is the view actor
             bullet->attachTo(m_sceneActor);
 
-            //if (m_freeSpaceActor != NULL)
-            //{
-            //   m_freeSpaceActor->addBoundingBody((b2Body*)bullet.get()->getUserData());
-            //}
-
             m_timeSinceLast = 0;
 
             g_GameStatus.deltaShots(-1);

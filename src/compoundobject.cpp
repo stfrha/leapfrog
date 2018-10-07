@@ -21,6 +21,7 @@
 
 #include "polygonvertices.h"
 #include "bodyuserdata.h"
+#include "actoruserdata.h"
 
 using namespace oxygine;
 using namespace std;
@@ -95,7 +96,7 @@ void CompoundObject::killAllChildBodies(void)
    {
       // getUserData gives a const pointer and static_cast cant handle that
       // so we use a c-type cast
-      b2Body* b = (b2Body*)child->getUserData();
+      b2Body* b = ActorUserData::getBody(child->getUserData());
 
       if (b)
       {
@@ -120,7 +121,7 @@ b2Vec2 CompoundObject::getCompoundObjectPosition()
 {
    for (auto it = m_children.begin(); it != m_children.end(); ++it)
    {
-      b2Body* b = (b2Body*)(*it)->getUserData();
+      b2Body* b = ActorUserData::getBody((*it)->getUserData());
 
       if (b != NULL)
       {
@@ -476,7 +477,8 @@ void CompoundObject::defineSpriteBox(
    Vector2 newPos(pos.x + objectNode.attribute("posX").as_float(), pos.y + objectNode.attribute("posY").as_float());
    sprite->setPosition(newPos);
    sprite->setRotation(objectNode.attribute("angle").as_float());
-   addChild(sprite);
+   sprite->attachTo(sceneParent);
+   m_shapes.push_back(sprite.get());
 }
 
 void CompoundObject::defineSpritePolygon(
@@ -499,7 +501,8 @@ void CompoundObject::defineSpritePolygon(
 
    PolygonVertices::createSpritePolygon(sprite.get(), vertices, objectNode);
 
-   addChild(sprite);
+   sprite->attachTo(sceneParent);
+   m_shapes.push_back(sprite.get());
 }
 
 void CompoundObject::defineCircle(
@@ -519,7 +522,8 @@ void CompoundObject::defineCircle(
    sprite->setSize(objectNode.attribute("radius").as_float() * 2.0f, objectNode.attribute("radius").as_float() * 2.0f);
    sprite->setAnchor(0.5f, 0.5f);
    sprite->setTouchChildrenEnabled(false);
-   addChild(sprite);
+   sprite->attachTo(sceneParent);
+   m_shapes.push_back(sprite.get());
 
    b2BodyDef bodyDef;
    if (staticBody)
@@ -554,7 +558,12 @@ void CompoundObject::defineCircle(
    body->CreateFixture(&fixtureDef);
 
    body->SetUserData(bud);
-   sprite->setUserData(body);
+
+   ActorUserData* aud = new ActorUserData();
+   aud->m_body = body;
+   aud->m_parentCo = this;
+
+   sprite->setUserData(aud);
 }
 
 void CompoundObject::defineStaticCircle(
@@ -586,7 +595,8 @@ void CompoundObject::defineBox(
    sprite->setSize(objectNode.attribute("width").as_float(), objectNode.attribute("height").as_float());
    sprite->setAnchor(0.5f, 0.5f);
    sprite->setTouchChildrenEnabled(false);
-   addChild(sprite);
+   sprite->attachTo(sceneParent);
+   m_shapes.push_back(sprite.get());
 
    b2BodyDef bodyDef;
    if (staticBody)
@@ -621,7 +631,12 @@ void CompoundObject::defineBox(
    body->CreateFixture(&fixtureDef);
 
    body->SetUserData(bud);
-   sprite->setUserData(body);
+
+   ActorUserData* aud = new ActorUserData();
+   aud->m_body = body;
+   aud->m_parentCo = this;
+
+   sprite->setUserData(aud);
 }
 
 void CompoundObject::defineStaticBox(
@@ -660,7 +675,8 @@ void CompoundObject::defineStaticPolygon(
       vertices, world, bPos, body, fixture, objectNode);
    PolygonVertices::createPolygonBorders(sprite.get(), gameResources, vertices, objectNode);
    
-   addChild(sprite);
+   sprite->attachTo(sceneParent);
+   m_shapes.push_back(sprite.get());
 
    b2Filter filter;
    filter.categoryBits = objectNode.attribute("collisionCategory").as_int();
@@ -673,7 +689,12 @@ void CompoundObject::defineStaticPolygon(
 
    fixture->SetUserData(bud);
    body->SetUserData(bud);
-   sprite->setUserData(body);
+
+   ActorUserData* aud = new ActorUserData();
+   aud->m_body = body;
+   aud->m_parentCo = this;
+
+   sprite->setUserData(aud);
 }
 
 void CompoundObject::defineBoxedSpritePolygon(
@@ -694,7 +715,8 @@ void CompoundObject::defineBoxedSpritePolygon(
    sprite->setSize(objectNode.attribute("width").as_float(), objectNode.attribute("height").as_float());
    sprite->setAnchor(0.5f, 0.5f);
    sprite->setTouchChildrenEnabled(false);
-   addChild(sprite);
+   sprite->attachTo(sceneParent);
+   m_shapes.push_back(sprite.get());
 
    vector<Vector2> vertices(distance(objectNode.child("vertices").children("vertex").begin(), objectNode.child("vertices").children("vertex").end()));
    b2Body* body = NULL;
@@ -711,7 +733,12 @@ void CompoundObject::defineBoxedSpritePolygon(
    fixture->SetUserData(bud);
 
    body->SetUserData(bud);
-   sprite->setUserData(body);
+
+   ActorUserData* aud = new ActorUserData();
+   aud->m_body = body;
+   aud->m_parentCo = this;
+
+   sprite->setUserData(aud);
 }
 
 void CompoundObject::defineStaticBoxedSpritePolygon(
@@ -773,7 +800,8 @@ void CompoundObject::defineDynamicPolygon(
 
    // Here I could probably generate borders to the sprite by calling PolygonVertices::createPolygonBorder
 
-   addChild(sprite);
+   sprite->attachTo(sceneParent);
+   m_shapes.push_back(sprite.get());
 
    BodyUserData* bud = new BodyUserData();
    bud->m_actor = sprite.get();
@@ -781,7 +809,12 @@ void CompoundObject::defineDynamicPolygon(
 
    fixture->SetUserData(bud);
    body->SetUserData(bud);
-   sprite->setUserData(body);
+
+   ActorUserData* aud = new ActorUserData();
+   aud->m_body = body;
+   aud->m_parentCo = this;
+
+   sprite->setUserData(aud);
 
 }
 
@@ -882,7 +915,7 @@ void CompoundObject::defineRope(
    b2Vec2 segmentPos = startPos + segmentLength * 0.5f * ropeDirection;
    object->setPosition(PhysDispConvert::convert(segmentPos, 1.0f));
    object->setRotation(ropeAngle);
-   object->attachTo(newCo);
+   object->attachTo(sceneParent);
 
    // Define body of first segment
    b2BodyDef bodyDef;
@@ -913,7 +946,12 @@ void CompoundObject::defineRope(
    firstSegBody->CreateFixture(&fixtureDef);
    
    firstSegBody->SetUserData(bud);
-   object->setUserData(firstSegBody);
+
+   ActorUserData* aud = new ActorUserData();
+   aud->m_body = firstSegBody;
+   aud->m_parentCo = this;
+
+   object->setUserData(aud);
 
    // Define joint between beginning fastening body and first segment
    jointDef.bodyA = bodyA;
@@ -939,7 +977,7 @@ void CompoundObject::defineRope(
       b2Vec2 segmentPos = startPos + segmentLength * (0.5f + i) * ropeDirection;
       object->setPosition(PhysDispConvert::convert(segmentPos, 1.0f));
       object->setRotation(ropeAngle);
-      object->attachTo(newCo);
+      object->attachTo(sceneParent);
 
       // Define body of segment i
       b2BodyDef bodyDef;
@@ -968,10 +1006,13 @@ void CompoundObject::defineRope(
       fixtureDef.userData = bud;
 
       segBody->CreateFixture(&fixtureDef);
-
-
       segBody->SetUserData(bud);
-      object->setUserData(segBody);
+
+      ActorUserData* aud = new ActorUserData();
+      aud->m_body = segBody;
+      aud->m_parentCo = this;
+
+      object->setUserData(aud);
 
       // Define joint between beginning fastening body and first segment
       jointDef.bodyA = ropeBodies[i-1];
@@ -1286,7 +1327,7 @@ CompoundObject* CompoundObject::getObject(const std::string& name)
    return NULL;
 }
 
-oxygine::spActor CompoundObject::getActor(const std::string& name)
+oxygine::Actor* CompoundObject::getActor(const std::string& name)
 {
    string thisLevel;
    string lowerLevels;
@@ -1401,22 +1442,15 @@ CompoundObject* CompoundObject::getObjectImpl(const std::string& name)
    return NULL;
 }
 
-oxygine::spActor CompoundObject::getActorImpl(const std::string& name)
+oxygine::Actor* CompoundObject::getActorImpl(const std::string& name)
 {
-   spActor child;
-
-   child = getFirstChild();
-
-   do
+   for (auto it = m_shapes.begin(); it != m_shapes.end(); ++it)
    {
-      if (child->getName() == name)
+      if ((*it)->getName() == name)
       {
-         return child;
+         return (*it);
       }
-
-      child = child->getNextSibling();
-
-   } while (child);
+   }
 
    logs::messageln("Did not find the actor %s that was searched for", name.c_str());
 
@@ -1431,7 +1465,7 @@ b2Body* CompoundObject::getBodyImpl(const std::string& name)
    {
       // getUserData gives a const pointer and static_cast cant handle that
       // so we use a c-type cast
-      return (b2Body*)child->getUserData();
+      return (b2Body*)ActorUserData::getBody(child->getUserData());
    }
 
    logs::messageln("Did not find the body %s that was searched for", name.c_str());
@@ -1598,9 +1632,11 @@ void CompoundObject::setAllBodiesToBounding(FreeSpaceActor* actor)
 {
    for (auto it = m_children.begin(); it != m_children.end(); ++it)
    {
-      if ((*it)->getUserData() != NULL)
+      b2Body* b = ActorUserData::getBody((*it)->getUserData());
+
+      if ( b != NULL)
       {
-         actor->addBoundingBody((b2Body*)(*it)->getUserData());
+         actor->addBoundingBody(b);
       }
 
       (*it)->setAllBodiesToBounding(actor);

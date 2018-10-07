@@ -3,6 +3,7 @@
 #include "orbitspacesceneevents.h"
 
 #include "orbitspacescene.h"
+#include "actoruserdata.h"
 
 
 using namespace oxygine;
@@ -38,7 +39,7 @@ OrbitSpaceScene::OrbitSpaceScene(
    takeControlOfLeapfrog(true);
 
    CompoundObject* co = m_leapfrog->getObject("lfMainBody");
-   m_leapfrogBody = (b2Body*)co->getUserData();
+   m_leapfrogBody = ActorUserData::getBody(co->getUserData());
 
    spSprite background = new Sprite();
    background->setResAnim(gameResources.getResAnim(backgroundTexture));

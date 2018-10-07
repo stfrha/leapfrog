@@ -48,7 +48,12 @@ private:
 
    SceneActor * m_sceneActor;
 
+   // Lists for searching for objects defined for the CompoundObject
+   // Note:
+   // Shapes (sprites and bodies) are attached to scene parent but linked
+   // to 
    std::vector<NamedJoint*> m_namedJoints;
+   std::vector<oxygine::Actor*> m_shapes;
 
    CollisionEntityTypeEnum m_collisionType;
    BehaviourEnum m_behaviourType;
@@ -180,7 +185,7 @@ private:
 
    void splitString(const std::string& source, std::string& thisLevel, std::string& lowerLevels);
    b2Body* getBodyImpl(const std::string& name);
-   oxygine::spActor getActorImpl(const std::string& name);
+   oxygine::Actor* getActorImpl(const std::string& name);
    CompoundObject* getObjectImpl(const std::string& name);
    b2Joint* getJointImpl(const std::string& name);
    System* getSystemImpl(const std::string& name);
@@ -265,7 +270,7 @@ public:
 
    // Should these three be protected since they are called by the base class?
    CompoundObject* getObject(const std::string& name);
-   oxygine::spActor getActor(const std::string& name);
+   oxygine::Actor* getActor(const std::string& name);
    b2Body* getBody(const std::string& name);
    b2Joint* getJoint(const std::string& name);
    System* getSystem(const std::string& name);

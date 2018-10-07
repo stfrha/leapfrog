@@ -14,6 +14,7 @@
 #include "gamestatus.h"
 
 #include "bodyuserdata.h"
+#include "actoruserdata.h"
 
 using namespace oxygine;
 using namespace std;
@@ -69,11 +70,11 @@ LeapFrog::LeapFrog(
 	initCompoundObjectParts(gameResources, sceneParent, parentObject, world, pos, root, string(""));
 
    m_mainActor = getActor("lfMainBody");
-   m_lfRightBigLeg = static_cast<Sprite*>(getActor("lfRightBigLeg").get());
-   m_lfLeftBigLeg = static_cast<Sprite*>(getActor("lfLeftBigLeg").get());
-   m_mainBody = (b2Body*)m_mainActor->getUserData();
-   m_rightBigLegBody = (b2Body*)m_lfRightBigLeg->getUserData();
-   m_leftBigLegBody = (b2Body*)m_lfLeftBigLeg->getUserData();
+   m_lfRightBigLeg = static_cast<Sprite*>(getActor("lfRightBigLeg"));
+   m_lfLeftBigLeg = static_cast<Sprite*>(getActor("lfLeftBigLeg"));
+   m_mainBody = ActorUserData::getBody(m_mainActor->getUserData());
+   m_rightBigLegBody = ActorUserData::getBody(m_lfRightBigLeg->getUserData());
+   m_leftBigLegBody = ActorUserData::getBody(m_lfLeftBigLeg->getUserData());
 
 	m_boostBody = getBody("lfBooster");
 	m_rightSteerBody = getBody("lfRightSteer");

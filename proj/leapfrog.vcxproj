@@ -256,7 +256,7 @@
     <ClInclude Include="..\..\Box2D\Box2D\Box2D\Dynamics\Joints\b2WeldJoint.h" />
     <ClInclude Include="..\..\Box2D\Box2D\Box2D\Dynamics\Joints\b2WheelJoint.h" />
     <ClInclude Include="..\..\Box2D\Box2D\Box2D\Rope\b2Rope.h" />
-    <ClInclude Include="..\src\actortodie.h" />
+    <ClInclude Include="..\src\actoruserdata.h" />
     <ClInclude Include="..\src\blastemitter.h" />
     <ClInclude Include="..\src\blastparticle.h" />
     <ClInclude Include="..\src\bodyuserdata.h" />

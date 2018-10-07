@@ -1,6 +1,7 @@
 #include "compoundobject.h"
 #include "freespaceactor.h"
 #include "objectfactory.h"
+#include "actoruserdata.h"
 
 using namespace oxygine;
 using namespace pugi;
@@ -93,9 +94,9 @@ void ObjectFactory::spawnObjects(void)
 
       if (m_sceneActor->getSceneType() == STE_FREE_SPACE)
       {
-         FreeSpaceActor* spaceActor = (FreeSpaceActor*)m_sceneActor;
+         FreeSpaceActor* spaceActor = static_cast<FreeSpaceActor*>(m_sceneActor);
 
-         spaceActor->addBoundingBody((b2Body*)co->getUserData());
+         spaceActor->addBoundingBody(ActorUserData::getBody(co->getUserData()));
       }
 
    }
