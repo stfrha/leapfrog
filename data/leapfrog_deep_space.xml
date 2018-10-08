@@ -606,7 +606,9 @@
             body="lfMainBody"
             bodyAnchorX="0"
             bodyAnchorY="1.0"
-            radius="16" />
+            radius="16" 
+            zLevel="147"
+            />
       </stateProperties>
    </system>
 </compoundObject>

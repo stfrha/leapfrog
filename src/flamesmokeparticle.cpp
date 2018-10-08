@@ -1,5 +1,7 @@
 #include "flamesmokeparticle.h"
 #include "smokeparticle.h"
+#include "actoruserdata.h"
+#include "bodyuserdata.h"
 
 using namespace oxygine;
 
@@ -31,7 +33,11 @@ FlameSmokeParticle::FlameSmokeParticle(
 
    m_body = world->CreateBody(&bodyDef);
 
-   setUserData(m_body);
+   ActorUserData* aud = new ActorUserData();
+   aud->m_body = m_body;
+   aud->m_parentCo = NULL;
+
+   setUserData(aud);
 
    b2CircleShape shape;
    shape.m_radius = 0.5f;
@@ -44,8 +50,14 @@ FlameSmokeParticle::FlameSmokeParticle(
    fixtureDef.filter.categoryBits = 8192;
    fixtureDef.filter.maskBits = 56459;
 
+   BodyUserData* bud = new BodyUserData();
+   bud->m_actor = this;
+   bud->m_collisionType = CET_FLAME_PARTICLE;
+
+   fixtureDef.userData = bud;
+
    m_body->CreateFixture(&fixtureDef);
-   m_body->SetUserData(this);
+   m_body->SetUserData(bud);
 
    m_body->GetFixtureList()->SetUserData((CollisionEntity*)this);
 
@@ -91,7 +103,7 @@ void FlameSmokeParticle::doUpdate(const UpdateState& us)
 void FlameSmokeParticle::atParticleDeath(Event* event)
 {
    // Now I'm suppose to comit suicide. How to deregister me from actor and world?
-   b2Body* myBody = (b2Body*)getUserData();
+   b2Body* myBody = ActorUserData::getBody(getUserData());
 
    myBody->GetWorld()->DestroyBody(myBody);
 

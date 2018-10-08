@@ -2,7 +2,7 @@
 #include "launchsite.h"
 #include "leapfrog.h"
 #include "sceneactor.h"
-
+#include "actoruserdata.h"
 #include "launchsiteevents.h"
 
 using namespace oxygine;
@@ -75,6 +75,14 @@ LaunchSite::LaunchSite(
    //{
    //   logs::messageln("Grabber limit disabled");
    //}
+
+   // This CompoundObject is also an actor who normally has
+   // a userData that points to its parent. However, the parent
+   // of a CompoundObject is pointed by its m_parentObject 
+   // member. The userData for this object should thus
+   // be empty (=NULL)
+   setUserData(NULL);
+
 }
 
 CollisionEntityTypeEnum LaunchSite::getEntityType(void)

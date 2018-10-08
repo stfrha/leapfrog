@@ -4,7 +4,6 @@
       type="breakableObject"
       breakBulletDamage="6"
       numberOfSpawns="3" />
-<!--
    <spawnObject
       probabilityFactor="9" />
       <childObject
@@ -18,7 +17,6 @@
       </stateProperties>
       </childObject>
    </spawnObject>
--->
 <!--   
    <spawnObject
       probabilityFactor="1" />

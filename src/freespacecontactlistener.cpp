@@ -89,19 +89,19 @@ void FreeSpaceContactListener::PostSolve(b2Contact* contact, const b2ContactImpu
       breakable->hitShield(contact);
    }
 
-   //// Gets here if shield no longer works
-   //if (asteroid && leapfrog)
-   //{
-   //   // Normally. body hits are prevented by shield
-   //   // but if it a hard hit body may get contact
-   //   // (from certain angles). In this case, if the 
-   //   // shield is still active, we do not damage
-   //   // leapfrog (by not calling hitAnything)
-   //   if (g_GameStatus.getShield() <= 0.0f)
-   //   {
-   //      leapfrog->hitAnything(contact, impulse);
-   //   }
-   //}
+   // Gets here if shield no longer works
+   if (breakable && leapfrog)
+   {
+      // Normally. body hits are prevented by shield
+      // but if it a hard hit body may get contact
+      // (from certain angles). In this case, if the 
+      // shield is still active, we do not damage
+      // leapfrog (by not calling hitAnything)
+      if (g_GameStatus.getShield() <= 0.0f)
+      {
+         leapfrog->hitAnything(contact, impulse);
+      }
+   }
 
    // Hammer hit anything
    if (hammer)

@@ -28,12 +28,38 @@ public:
 
    static b2Body* getBody(const void* userData)
    {
-      return static_cast<b2Body*>(static_cast<const ActorUserData*>(userData)->m_body);
+      const ActorUserData* ud = static_cast<const ActorUserData*>(userData);
+
+      if (ud)
+      {
+         return static_cast<b2Body*>(static_cast<const ActorUserData*>(userData)->m_body);
+      }
+
+      return NULL;
    }
 
    static CompoundObject* getParentObject(void* userData)
    {
-      return static_cast<CompoundObject*>(static_cast<ActorUserData*>(userData)->m_parentCo);
+      if (userData)
+      {
+         ActorUserData* a = static_cast<ActorUserData*>(userData);
+
+         return static_cast<CompoundObject*>(static_cast<ActorUserData*>(userData)->m_parentCo);
+      }
+
+      return NULL;
+   }
+
+   static CompoundObject* getParentObject(const void* userData)
+   {
+      if (userData)
+      {
+         const ActorUserData* a = static_cast<const ActorUserData*>(userData);
+
+         return static_cast<CompoundObject*>(static_cast<const ActorUserData*>(userData)->m_parentCo);
+      }
+
+      return NULL;
    }
 
 };

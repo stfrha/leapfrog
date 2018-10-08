@@ -37,6 +37,7 @@ private:
 
    void readBreakableObjectNode(const pugi::xml_node& node);
    void spawnBreakableObjects(void);
+   void addShapesToDeathList(void);
 
 public:
 	BreakableObject(

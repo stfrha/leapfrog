@@ -5,6 +5,8 @@
 
 #include "gamestatus.h"
 
+#include "actoruserdata.h"
+
 using namespace oxygine;
 using namespace std;
 
@@ -21,6 +23,14 @@ LandingPad::LandingPad(
    m_rightFootContact(false)
 {
 	initCompoundObjectParts(gameResources, sceneParent, parentObject, world, pos, root, string(""));
+
+   // This CompoundObject is also an actor who normally has
+   // a userData that points to its parent. However, the parent
+   // of a CompoundObject is pointed by its m_parentObject 
+   // member. The userData for this object should thus
+   // be empty (=NULL)
+   setUserData(NULL);
+
 }
 
 CollisionEntityTypeEnum LandingPad::getEntityType(void)

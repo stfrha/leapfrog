@@ -70,7 +70,7 @@ Shield::Shield(
    m_body->SetUserData(bud);
 
    attachTo(sceneActor);
-   setPriority(147);
+   setPriority(objectNode.attribute("zLevel").as_int());
 
    b2RevoluteJointDef shieldJointDef;
    shieldJointDef.bodyA = m_attachedBody;

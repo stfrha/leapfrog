@@ -164,6 +164,13 @@ LeapFrog::LeapFrog(
    // Here we attach Leapfrog object to tree so it gets updates etc.
    attachTo(sceneParent);
    setWeakJoints();
+
+   // This CompoundObject is also an actor who normally has
+   // a userData that points to its parent. However, the parent
+   // of a CompoundObject is pointed by its m_parentObject 
+   // member. The userData for this object should thus
+   // be empty (=NULL)
+   setUserData(NULL);
 }
 
 void LeapFrog::setModePropHandler(oxygine::Event *ev)
@@ -196,9 +203,9 @@ void LeapFrog::setModePropHandler(oxygine::Event *ev)
 
 void LeapFrog::setEnvPropHandler(oxygine::Event *ev)
 {
-   //float value = m_properties[propMode].getProperty();
+   float value = m_properties[propMode].getProperty();
 
-   //goToEnvironment((int) value);
+   goToEnvironment(static_cast<EnvironmentEnum>((int)value));
 }
 
 oxygine::Actor* LeapFrog::getMainActor(void)
@@ -752,18 +759,18 @@ void LeapFrog::holdAngleReached(void)
 }
 
 
-void LeapFrog::fireMainBooster(bool fire, bool flamesOnly)
-// Will be called each doUpdate when fire is pressed
+void LeapFrog::fireMainBooster(bool burn, bool flamesOnly)
+// Will be called each doUpdate when burn is pressed
 {
    // Handle booster flame particles
 
    if ((m_environment == ENV_GROUND) && (g_GameStatus.getFuel() <= 0.0f))
    {
-      // No fire here
+      // No burn here
    }
    else
    {
-      if (fire)
+      if (burn)
       {
          if (m_boostFireLastUpdate == false)
          {
@@ -807,11 +814,13 @@ void LeapFrog::fireMainBooster(bool fire, bool flamesOnly)
 
          // We start damping when booster is released
          // and remove damping when it is fired
-         if (fire)
+         if (burn)
          {
             if (m_boostFireLastUpdate == false)
             {
                // Turn damping off
+
+               // TODO: Should this not be zero?
                m_mainBody->SetLinearDamping(1.0f);
             }
          }
@@ -824,12 +833,12 @@ void LeapFrog::fireMainBooster(bool fire, bool flamesOnly)
             }
          }
 
-         if (fire)
+         if (burn)
          {
             // Increment force with m_boostInc until more than
             // m_boostMaxMagnitude and remain this max magnitude
             // force until speed is more than 90 of max speed, 
-            // drop force then. Then, when no boost fire, 
+            // drop force then. Then, when no boost burn, 
             // break with a negative force linear with speed
             // making it regulate itself to stand-still
             //if (vel < m_maxVelocity * 0.95f)
@@ -860,7 +869,7 @@ void LeapFrog::fireMainBooster(bool fire, bool flamesOnly)
       }
       else if (m_environment == ENV_GROUND)
       {
-         if (fire && (g_GameStatus.getFuel() > 0.0f))
+         if (burn && (g_GameStatus.getFuel() > 0.0f))
          {
             m_boostMagnuitude += m_boostInc;
             if (m_boostMagnuitude > m_boostMaxMagnitude)
@@ -877,7 +886,7 @@ void LeapFrog::fireMainBooster(bool fire, bool flamesOnly)
       }
    }
 
-   if (fire)
+   if (burn)
    {
       m_boostFireLastUpdate = true;
    }

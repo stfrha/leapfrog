@@ -12,7 +12,8 @@ GameStatus::GameStatus()
    // some non-volatile memory. But how?!?!
    m_leapFrogShots = 100;
    m_leapFrogFuel = 100.0f;
-   m_leapFrogShield = 100.0f;
+//   m_leapFrogShield = 100.0f;
+   m_leapFrogShield = 0.0f;
    m_leapFrogDamage = 100.0f;
    m_credits = 248;
    m_statusEventOriginator = NULL;

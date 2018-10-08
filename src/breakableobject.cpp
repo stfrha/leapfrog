@@ -4,6 +4,7 @@
 #include "sceneactor.h"
 #include "freespaceactor.h"
 #include "blastemitter.h"
+#include "actoruserdata.h"
 
 
 using namespace oxygine;
@@ -36,6 +37,13 @@ BreakableObject::BreakableObject(
       "");
 
    attachTo(m_sceneActor);
+
+   // This CompoundObject is also an actor who normally has
+   // a userData that points to its parent. However, the parent
+   // of a CompoundObject is pointed by its m_parentObject 
+   // member. The userData for this object should thus
+   // be empty (=NULL)
+   setUserData(NULL);
 
    if (m_sceneActor->getSceneType() == STE_FREE_SPACE)
    {
@@ -73,9 +81,12 @@ void BreakableObject::hitByBullet(b2Contact* contact)
 
    if (m_damage >= m_breakAtDamage)
    {
-      m_sceneActor->addMeToDeathList((KillableInterface*)this);
+      addShapesToDeathList();
       shattered = true;
+
       m_spawnCount += m_numberOfSpawns;
+      spawnBreakableObjects();
+
    }
 
    b2Vec2 pos = getCompoundObjectPosition();
@@ -135,16 +146,26 @@ void BreakableObject::hitByLepfrog(b2Contact* contact)
 
 void BreakableObject::doUpdate(const oxygine::UpdateState& us)
 {
-   if (m_spawnCount > 0)
+   //if (m_spawnCount > 0)
+   //{
+   //   spawnBreakableObjects();
+   //}
+}
+
+void BreakableObject::addShapesToDeathList(void)
+{
+   for (auto it = m_shapes.begin(); it != m_shapes.end(); ++it)
    {
-      spawnBreakableObjects();
+      m_sceneActor->addMeToDeathList(*it);
    }
+   
+   m_sceneActor->addMeToDeathList(this);
 }
 
 void BreakableObject::atDeathOfBreakableObject(void)
 {
-   b2Body* myBody = (b2Body*)getUserData();
-   
+   b2Body* myBody = ActorUserData::getBody(getUserData());
+
    myBody->GetWorld()->DestroyBody(myBody);
    
    this->detach();

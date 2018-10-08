@@ -53,7 +53,6 @@ private:
    // Shapes (sprites and bodies) are attached to scene parent but linked
    // to 
    std::vector<NamedJoint*> m_namedJoints;
-   std::vector<oxygine::Actor*> m_shapes;
 
    CollisionEntityTypeEnum m_collisionType;
    BehaviourEnum m_behaviourType;
@@ -198,6 +197,7 @@ private:
 
 protected:
    CompoundObject * m_parentObject;
+   std::vector<oxygine::Actor*> m_shapes;
 
    void setAllBodiesToBounding(FreeSpaceActor* actor);
 

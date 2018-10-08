@@ -28,6 +28,20 @@ SceneActor::SceneActor(Resources& gameResources, float zoomScale) :
 	m_world = new b2World(b2Vec2(0.0f, 0.0f));
 
 	setScale(m_stageToViewPortScale);
+
+   // The sceneActor is also an actor whos has two parents
+   // One is the actor.parent which is the NULL.
+   // The other is the m_parentObject which is the CompoundObject
+   // parent, which also is NULL.
+   // It is assumed that all actor's user data holds the actor.parent
+   // and thus, below we create a ActorUserData wich points to NULL.
+   // actor.parent (sceneParent)
+   ActorUserData* aud = new ActorUserData();
+   aud->m_body = NULL;
+   aud->m_parentCo = NULL;
+
+   setUserData(aud);
+
 }
 
 SceneActor::~SceneActor()
@@ -60,7 +74,7 @@ void SceneActor::setPanorateMode(PanorateModeEnum mode)
    m_panorateMode = mode;
 }
 
-void SceneActor::addMeToDeathList(KillableInterface* actor)
+void SceneActor::addMeToDeathList(Actor* actor)
 {
    if (std::find(m_deathList.begin(), m_deathList.end(), actor) != m_deathList.end())
    {
@@ -171,7 +185,6 @@ void SceneActor::doUpdate(const UpdateState& us)
 	while (body)
 	{
       // GetUserData gives const, cant use static_cast here
-      BodyUserData* bud = (BodyUserData*)body->GetUserData();
 		Actor* actor = BodyUserData::getActor<Actor*>(body->GetUserData());
 		b2Body* next = body->GetNext();
 		if (actor)
@@ -233,11 +246,15 @@ void SceneActor::sweepKillList(void)
 {
    for (auto it = m_deathList.begin(); it != m_deathList.end(); ++it)
    {
-      KillableInterface* ki = (KillableInterface*)*it;
+      Actor* actor = *it;
 
-      ki->killAllChildBodies();
+      b2Body* myBody = ActorUserData::getBody(actor->getUserData());
 
-      CompoundObject* actor = (CompoundObject*)*it;
+      if (myBody)
+      {
+         myBody->GetWorld()->DestroyBody(myBody);
+
+      }
 
       actor->detach();
    }

@@ -32,7 +32,8 @@ FreeSpaceActor::FreeSpaceActor(
    generateBackground(gameResources);
 
    m_leapfrog = static_cast<LeapFrog*>(getObject("leapfrog1"));
-   m_leapfrogBody = getBody("leapfrog1.lfMainBody");
+   m_leapfrogBody = m_leapfrog->getBody("lfMainBody");
+//   m_leapfrogBody = getBody("leapfrog1.lfMainBody");
 
    m_leapfrog->goToEnvironment(ENV_DEEP_SPACE);
 

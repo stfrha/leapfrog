@@ -1,6 +1,9 @@
 #include "bullet.h"
 
 #include "sceneactor.h"
+#include "actoruserdata.h"
+#include "bodyuserdata.h"
+#include "actoruserdata.h"
 
 using namespace oxygine;
 
@@ -34,8 +37,6 @@ Bullet::Bullet(
 
    b2Body* body = world->CreateBody(&bodyDef);
 
-   setUserData(body);
-
    b2CircleShape shape;
    shape.m_radius = 0.5f;
 
@@ -47,12 +48,23 @@ Bullet::Bullet(
    fixtureDef.filter.categoryBits = 4;
    fixtureDef.filter.maskBits = 65215;
 
+   BodyUserData* bud = new BodyUserData();
+   bud->m_actor = this;
+   bud->m_collisionType = CET_BULLET;
+
+   fixtureDef.userData = bud;
 
    body->CreateFixture(&fixtureDef);
-   body->SetUserData(this);
 
-   body->GetFixtureList()->SetUserData((CollisionEntity*)this);
-   
+   body->SetUserData(bud);
+
+   ActorUserData* aud = new ActorUserData();
+   aud->m_body = body;
+   aud->m_parentCo = NULL;
+
+   setUserData(aud);
+
+
    b2Vec2 vel = b2Vec2(impulseMagnitude * cos(angle), impulseMagnitude * sin(angle));
 
 //   vel += craftSpeed;
@@ -82,7 +94,7 @@ void Bullet::hitAsteroid(b2Contact* contact)
       // PArent (of actor) if lost if we do like this. 
       // Either the KillableInterface is based on the
       // Actor class or we must do something else
-      m_sceneActor->addMeToDeathList((KillableInterface*)this);
+      m_sceneActor->addMeToDeathList(this);
    }
 }
 
@@ -98,24 +110,25 @@ void Bullet::doUpdate(const oxygine::UpdateState& us)
    {
       if (m_sceneActor)
       {
-         m_sceneActor->addMeToDeathList((KillableInterface*)this);
+         m_sceneActor->addMeToDeathList(this);
       }
    }
 }
 
 void Bullet::killAllChildBodies(void)
 {
-   b2Body* myBody = (b2Body*)getUserData();
+   b2Body* myBody = ActorUserData::getBody(getUserData());
 
    if (myBody)
    {
       myBody->GetWorld()->DestroyBody(myBody);
+
    }
 }
 
 void Bullet::atBulletDeath(void)
 {
-   b2Body* myBody = (b2Body*)getUserData();
+   b2Body* myBody = ActorUserData::getBody(getUserData());
 
    myBody->GetWorld()->DestroyBody(myBody);
 

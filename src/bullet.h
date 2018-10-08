@@ -35,11 +35,17 @@ public:
       int m_lifetime,
       bool bouncy);
 
+   // I need at least one virtual member to make the 
+   // the class work with dynamic_cast
+   virtual ~Bullet()
+   {}
+
    CollisionEntityTypeEnum getEntityType(void);
 
    //virtual void killActor(void);
 
    void hitAsteroid(b2Contact* contact);
+
    virtual void killAllChildBodies(void);
 
 

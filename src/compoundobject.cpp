@@ -85,7 +85,7 @@ CompoundObject* CompoundObject::getParentWithBehaviour(BehaviourEnum behav)
 
 void CompoundObject::killAllChildBodies(void)
 {
-   b2Body* myBody = (b2Body*)getUserData();
+   b2Body* myBody = ActorUserData::getBody(getUserData());
 
    spActor child;
 
@@ -544,8 +544,8 @@ void CompoundObject::defineCircle(
 
    b2FixtureDef fixtureDef;
    fixtureDef.shape = &circleShape;
-   fixtureDef.density = 5.0f;
-   fixtureDef.friction = 1.3f;
+   fixtureDef.density = objectNode.attribute("density").as_float(1.0f);
+   fixtureDef.friction = objectNode.attribute("friction").as_float(1.0f);
    fixtureDef.filter.categoryBits = objectNode.attribute("collisionCategory").as_int();
    fixtureDef.filter.maskBits = objectNode.attribute("collisionMask").as_int();
 
@@ -558,6 +558,8 @@ void CompoundObject::defineCircle(
    body->CreateFixture(&fixtureDef);
 
    body->SetUserData(bud);
+
+   body->ResetMassData();
 
    ActorUserData* aud = new ActorUserData();
    aud->m_body = body;
@@ -617,8 +619,8 @@ void CompoundObject::defineBox(
 
    b2FixtureDef fixtureDef;
    fixtureDef.shape = &boxShape;
-   fixtureDef.density = 5.0f;
-   fixtureDef.friction = 1.3f;
+   fixtureDef.density = objectNode.attribute("density").as_float(1.0f);
+   fixtureDef.friction = objectNode.attribute("friction").as_float(1.0f);
    fixtureDef.filter.categoryBits = objectNode.attribute("collisionCategory").as_int();
    fixtureDef.filter.maskBits = objectNode.attribute("collisionMask").as_int();
 
@@ -631,6 +633,8 @@ void CompoundObject::defineBox(
    body->CreateFixture(&fixtureDef);
 
    body->SetUserData(bud);
+
+   body->ResetMassData();
 
    ActorUserData* aud = new ActorUserData();
    aud->m_body = body;
@@ -690,6 +694,8 @@ void CompoundObject::defineStaticPolygon(
    fixture->SetUserData(bud);
    body->SetUserData(bud);
 
+   body->ResetMassData();
+
    ActorUserData* aud = new ActorUserData();
    aud->m_body = body;
    aud->m_parentCo = this;
@@ -733,6 +739,8 @@ void CompoundObject::defineBoxedSpritePolygon(
    fixture->SetUserData(bud);
 
    body->SetUserData(bud);
+
+   body->ResetMassData();
 
    ActorUserData* aud = new ActorUserData();
    aud->m_body = body;
@@ -809,6 +817,8 @@ void CompoundObject::defineDynamicPolygon(
 
    fixture->SetUserData(bud);
    body->SetUserData(bud);
+
+   body->ResetMassData();
 
    ActorUserData* aud = new ActorUserData();
    aud->m_body = body;
@@ -1605,7 +1615,7 @@ void CompoundObject::hitByBullet(b2Contact* contact)
    particleSize = 0.9f;
    blastIntensity = 300.0f;
 
-   m_sceneActor->addMeToDeathList((KillableInterface*)this);
+   m_sceneActor->addMeToDeathList(this);
    //}
 
    b2WorldManifold m;
@@ -1630,7 +1640,7 @@ void CompoundObject::hitByBullet(b2Contact* contact)
 
 void CompoundObject::setAllBodiesToBounding(FreeSpaceActor* actor)
 {
-   for (auto it = m_children.begin(); it != m_children.end(); ++it)
+   for (auto it = m_shapes.begin(); it != m_shapes.end(); ++it)
    {
       b2Body* b = ActorUserData::getBody((*it)->getUserData());
 
@@ -1638,7 +1648,10 @@ void CompoundObject::setAllBodiesToBounding(FreeSpaceActor* actor)
       {
          actor->addBoundingBody(b);
       }
+   }
 
+   for (auto it = m_children.begin(); it != m_children.end(); ++it)
+   {
       (*it)->setAllBodiesToBounding(actor);
    }
 }
