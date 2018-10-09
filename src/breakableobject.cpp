@@ -89,8 +89,6 @@ void BreakableObject::hitByBullet(b2Contact* contact)
 
    }
 
-   b2Vec2 pos = getCompoundObjectPosition();
-
    if (shattered)
    {
       emitterLifetime = 250;
@@ -177,7 +175,7 @@ void BreakableObject::spawnBreakableObjects(void)
 {
    m_sceneActor->addObjectToSpawnList(
       m_numberOfSpawns,
-      PhysDispConvert::convert(getCompoundObjectPosition(), 1.0f),
+      getCompoundObjectPosition(),
       Vector2(2.0f, 2.0f),
       m_spawnObjects);
 }

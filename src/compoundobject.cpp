@@ -114,22 +114,23 @@ void CompoundObject::killAllChildBodies(void)
 }
 
 
-b2Vec2 CompoundObject::getCompoundObjectPosition()
+ Vector2 CompoundObject::getCompoundObjectPosition()
 // Position of the CO is the position of any of its bodies
 // For multi-body object it is not known what body to use
 // so we use the first one we encounter
 {
-   for (auto it = m_children.begin(); it != m_children.end(); ++it)
-   {
-      b2Body* b = ActorUserData::getBody((*it)->getUserData());
+    Vector2 posSum = Vector2(0.0f, 0.0f);
+    int numberOfPos = 0;
 
-      if (b != NULL)
-      {
-         return b->GetPosition();
-      }
+   for (auto it = m_shapes.begin(); it != m_shapes.end(); ++it)
+   {
+      posSum += (*it)->getPosition();
+      numberOfPos++;
    }
 
-   return b2Vec2(0.0f, 0.0f);
+   Vector2 avgPos = posSum / numberOfPos;
+
+   return avgPos;
 }
 
 

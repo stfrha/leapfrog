@@ -262,7 +262,7 @@ public:
    CompoundObject* getParentWithBehaviour(BehaviourEnum behav);
    virtual void killAllChildBodies(void);
 
-   b2Vec2 getCompoundObjectPosition();
+   oxygine::Vector2 getCompoundObjectPosition();
 
    void hitByBullet(b2Contact* contact);
 
