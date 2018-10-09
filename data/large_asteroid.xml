@@ -5,7 +5,7 @@
       breakBulletDamage="6"
       numberOfSpawns="3" />
    <spawnObject
-      probabilityFactor="9" />
+      probabilityFactor="9">
       <childObject
          name="mediumAsteroid">
          <stateProperties
@@ -14,7 +14,7 @@
                posX="0"
                posY="0" 
                file="medium_asteroid.xml" />
-      </stateProperties>
+         </stateProperties>
       </childObject>
    </spawnObject>
 <!--   
@@ -43,5 +43,7 @@
       collisionEntity="breakableObject"
       collisionCategory="9"
       collisionMask="65534"
-      radius="20" />
+      radius="20" 
+      density="5"
+      friction="1" />
 </compoundObject>

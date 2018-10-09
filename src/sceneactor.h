@@ -7,6 +7,7 @@
 #include "scales.h"
 #include "physdispconvert.h"
 #include "killableinterface.h"
+#include "spawnobject.h"
 
 enum PanorateModeEnum
 {
@@ -44,6 +45,7 @@ protected:
    b2World * m_world;
    spLaunchSite m_launchSite;
    std::vector<Actor*> m_deathList;
+   std::vector<spSpawnInstruction> m_spawnInstructions;
    PanorateModeEnum m_panorateMode;
    bool m_externalControl;
    SceneTypeEnum m_sceneType;
@@ -70,6 +72,11 @@ public:
    void setPanorateMode(PanorateModeEnum mode);
 
    void addMeToDeathList(Actor* actor);
+   void addObjectToSpawnList(
+      int numOfSpawns,
+      oxygine::Vector2 leftTop,
+      oxygine::Vector2 widthHeight,
+      spSpawnObjectList spawnSource);
 
    void takeControlOfLeapfrog(bool control);
 
@@ -79,5 +86,6 @@ protected:
 	void doUpdate(const UpdateState& us);
 
    void sweepKillList(void);
+   void sweepSpawnList(void);
 
 };

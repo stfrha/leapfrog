@@ -10,71 +10,52 @@
 // and when commanded to spawn, one of the SpawnObjects are choosed acc. to the 
 // probability factor
 
-class SpawnObject
+DECLARE_SMART(SpawnObject, spSpawnObject);
+
+class SpawnObject : public oxygine::ref_counter
 {
 public:
    int m_probabilityFactor;
    pugi::xml_node m_node;
    pugi::xml_document m_nodeDocHolder;
-
-   SpawnObject(int probabilityFactor, const pugi::xml_node& node) :
-      m_probabilityFactor(probabilityFactor)
-   {
-      pugi::xml_node tempNode = node.child("spawnObject");
-      m_nodeDocHolder.append_copy(tempNode);
-      m_node = m_nodeDocHolder.child("spawnObject");
-   }
+   
+   SpawnObject(int probabilityFactor, const pugi::xml_node& node);
 };
 
 
-class SpawnObjectList
+
+DECLARE_SMART(SpawnObjectList, spSpawnObjectList);
+
+class SpawnObjectList : public oxygine::ref_counter
 {
 public:
    int m_probabilitySum;
-   std::vector<SpawnObject*> m_spawnObjects;
+   std::vector<spSpawnObject> m_spawnObjects;
 
-   SpawnObjectList() :
-      m_probabilitySum(0)
-   {   }
+   SpawnObjectList();
 
-   ~SpawnObjectList()
-   {
-      for (unsigned int  i = 0; i < m_spawnObjects.size(); i++)
-      {
-         delete m_spawnObjects[i];
-      }
-   }
+   void readSpawnObjectsNode(const pugi::xml_node& node);
+   pugi::xml_node* getSpawnObjectNode(void);
 
-   void readSpawnObjectsNode(const pugi::xml_node& node)
-   {
-      for (auto it = node.children("spawnObject").begin(); it != node.children("spawnObject").end(); ++it)
-      {
-         int probFactor = it->attribute("probabilityFactor").as_int();
-         SpawnObject* so = new SpawnObject(probFactor, (*it));
-         m_probabilitySum += probFactor;
-         m_spawnObjects.push_back(so);
-      }
-   }
-
-   pugi::xml_node* getSpawnObjectNode(void)
-   {
-      if (m_spawnObjects.size() == 0)
-      {
-         return NULL;
-      }
-
-      // Randomise value between 0 and m_probabilitySum
-      int r = rand() % m_probabilitySum;
-
-      for (unsigned int i = 0; i < m_spawnObjects.size(); i++)
-      {
-         if (m_spawnObjects[i]->m_probabilityFactor <= r)
-         {
-            return &m_spawnObjects[i]->m_node;
-         }
-      }
-
-      return &m_spawnObjects[m_spawnObjects.size() - 1]->m_node;
-   }
 };
 
+
+
+DECLARE_SMART(SpawnInstruction, spSpawnInstruction);
+
+class SpawnInstruction : public oxygine::ref_counter
+{
+public:
+   int m_numOfSpawns;
+   oxygine::Vector2 m_leftTop;
+   oxygine::Vector2 m_widthHeight;
+   spSpawnObjectList m_spawnSource;
+
+   SpawnInstruction(
+      int numOfSpawns, 
+      oxygine::Vector2 leftTop, 
+      oxygine::Vector2 widthHeight, 
+      spSpawnObjectList spawnSource);
+
+
+};

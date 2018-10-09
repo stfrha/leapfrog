@@ -18,7 +18,7 @@ ObjectFactory::ObjectFactory(
    m_spawnCount(0)
 {
    readObjectFactoryNode(objectNode);
-   m_spawnObjects.readSpawnObjectsNode(objectNode);
+ //  m_spawnObjects.readSpawnObjectsNode(objectNode);
    attachTo(sceneParent);
    spawnObjects();
 }
@@ -74,34 +74,34 @@ void ObjectFactory::doUpdate(const oxygine::UpdateState& us)
 
 void ObjectFactory::spawnObjects(void)
 {
-   for (int i = 0; i < m_spawnCount; i++)
-   {
-      xml_node* spawnNode = m_spawnObjects.getSpawnObjectNode();
+   //for (int i = 0; i < m_spawnCount; i++)
+   //{
+   //   xml_node* spawnNode = m_spawnObjects.getSpawnObjectNode();
 
-      if (spawnNode == NULL)
-      {
-         return;
-      }
+   //   if (spawnNode == NULL)
+   //   {
+   //      return;
+   //   }
 
-      CompoundObject* co = m_parent->defineChildObject(
-         *m_gameResources,
-         m_sceneActor,
-         m_parent,
-         m_world,
-         PhysDispConvert::convert(m_parent->getCompoundObjectPosition(), 1.0f),
-         *spawnNode,
-         "");
+   //   CompoundObject* co = m_parent->defineChildObject(
+   //      *m_gameResources,
+   //      m_sceneActor,
+   //      m_parent,
+   //      m_world,
+   //      PhysDispConvert::convert(m_parent->getCompoundObjectPosition(), 1.0f),
+   //      *spawnNode,
+   //      "");
 
-      if (m_sceneActor->getSceneType() == STE_FREE_SPACE)
-      {
-         FreeSpaceActor* spaceActor = static_cast<FreeSpaceActor*>(m_sceneActor);
+   //   if (m_sceneActor->getSceneType() == STE_FREE_SPACE)
+   //   {
+   //      FreeSpaceActor* spaceActor = static_cast<FreeSpaceActor*>(m_sceneActor);
 
-         spaceActor->addBoundingBody(ActorUserData::getBody(co->getUserData()));
-      }
+   //      spaceActor->addBoundingBody(ActorUserData::getBody(co->getUserData()));
+   //   }
 
-   }
+   //}
 
-   m_spawnCount = 0;
+   //m_spawnCount = 0;
 
 
 }

@@ -53,7 +53,7 @@ private:
    pugi::xml_document* m_coNodeHolder;
    pugi::xml_node m_coNode;
    int m_timeSinceLast;
-   SpawnObjectList m_spawnObjects;
+   //SpawnObjectList m_spawnObjects;
    int m_spawnCount;
 
 

@@ -26,12 +26,11 @@ private:
    oxygine::Resources* m_gameResource;
    b2World* m_world;
    SceneActor* m_sceneActor;
-   SpawnObjectList m_spawnObjects;
+   spSpawnObjectList m_spawnObjects;
 
    int m_breakAtDamage;
    int m_numberOfSpawns;
 
-   int m_spawnCount;
    int m_damage;
 
 

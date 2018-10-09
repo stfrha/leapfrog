@@ -21,11 +21,12 @@ BreakableObject::BreakableObject(
    m_gameResource(&gameResources),
    m_sceneActor(sceneParent),
    m_world(world),
-   m_damage(0),
-   m_spawnCount(0)
+   m_damage(0)
 {
    readBreakableObjectNode(root);
-   m_spawnObjects.readSpawnObjectsNode(root);
+   m_spawnObjects = new SpawnObjectList();
+     
+   m_spawnObjects->readSpawnObjectsNode(root);
 
    initCompoundObjectParts(
       gameResources,
@@ -84,7 +85,6 @@ void BreakableObject::hitByBullet(b2Contact* contact)
       addShapesToDeathList();
       shattered = true;
 
-      m_spawnCount += m_numberOfSpawns;
       spawnBreakableObjects();
 
    }
@@ -152,6 +152,8 @@ void BreakableObject::doUpdate(const oxygine::UpdateState& us)
    //}
 }
 
+
+// TODO: Should be called addMeToDeathList, also move to base class CompoundObject
 void BreakableObject::addShapesToDeathList(void)
 {
    for (auto it = m_shapes.begin(); it != m_shapes.end(); ++it)
@@ -173,25 +175,9 @@ void BreakableObject::atDeathOfBreakableObject(void)
 
 void BreakableObject::spawnBreakableObjects(void)
 {
-   for (int i = 0; i < m_spawnCount; i++)
-   {
-      xml_node* spawnNode = m_spawnObjects.getSpawnObjectNode();
-
-      if (spawnNode == NULL)
-      {
-         return;
-      }
-
-      defineChildObject(
-         *m_gameResource, 
-         m_sceneActor, 
-         m_parentObject, 
-         m_world, 
-         PhysDispConvert::convert(getCompoundObjectPosition(), 1.0f), 
-         *spawnNode, 
-         "");
-
-   }
-
-   m_spawnCount = 0;
+   m_sceneActor->addObjectToSpawnList(
+      m_numberOfSpawns,
+      PhysDispConvert::convert(getCompoundObjectPosition(), 1.0f),
+      Vector2(2.0f, 2.0f),
+      m_spawnObjects);
 }

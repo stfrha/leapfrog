@@ -86,6 +86,16 @@ void SceneActor::addMeToDeathList(Actor* actor)
    }
 }
 
+void SceneActor::addObjectToSpawnList(
+   int numOfSpawns,
+   oxygine::Vector2 topLeft,
+   oxygine::Vector2 widthHeight,
+   spSpawnObjectList spawnSource)
+{
+   spSpawnInstruction spi = new SpawnInstruction(numOfSpawns, topLeft, widthHeight, spawnSource);
+   m_spawnInstructions.push_back(spi);
+}
+
 void SceneActor::takeControlOfLeapfrog(bool control)
 {
    m_externalControl = control;
@@ -98,6 +108,9 @@ void SceneActor::doUpdate(const UpdateState& us)
 
    // Kill all actors registrated for death
    sweepKillList();
+
+   // Spawn all actors registred for birth
+   sweepSpawnList();
 
 	const Uint8* data = SDL_GetKeyboardState(0);
 	
@@ -262,4 +275,35 @@ void SceneActor::sweepKillList(void)
    m_deathList.clear();
 }
 
+void SceneActor::sweepSpawnList(void)
+{
+   for (auto it = m_spawnInstructions.begin(); it != m_spawnInstructions.end(); ++it)
+   {
+      for (int i = 0; i < (*it)->m_numOfSpawns; i++)
+      {
+         pugi::xml_node* spawnNode = (*it)->m_spawnSource->getSpawnObjectNode();
 
+         if (*spawnNode == NULL)
+         {
+            return;
+         }
+
+         // TODO: randomise a position within topLeft and widthHeight
+         float posX = static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (*it)->m_widthHeight.x)) + (*it)->m_leftTop.x;
+         float posY = static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (*it)->m_widthHeight.y)) + (*it)->m_leftTop.y;
+
+
+         defineChildObject(
+            *m_gameResources,
+            this,
+            this,
+            m_world,
+            Vector2(posX, posY),
+            *spawnNode,
+            "");
+
+      }
+   }
+
+   m_spawnInstructions.clear();
+}
