@@ -41,7 +41,6 @@ public:
       const std::string& fileName,
       const std::string& initialState);
 
-   virtual CollisionEntityTypeEnum getEntityType(void);
 
    void addBoundingBody(b2Body* body);
    void removeBoundingBody(b2Body* body);

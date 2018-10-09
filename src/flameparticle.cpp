@@ -52,7 +52,7 @@ FlameParticle::FlameParticle(
 
    BodyUserData* bud = new BodyUserData();
    bud->m_actor = this;
-   bud->m_collisionType = CET_FLAME_PARTICLE;
+   bud->m_collisionType = CollisionEntity::flameParticle;
 
    fixtureDef.userData = bud;
 
@@ -66,11 +66,6 @@ FlameParticle::FlameParticle(
    body->ApplyLinearImpulse(impulseForce, b2Vec2(0.5, 0.5), true);
 
    m_body = body;
-}
-
-CollisionEntityTypeEnum FlameParticle::getEntityType(void)
-{
-   return CET_FLAME_PARTICLE;
 }
 
 void FlameParticle::doUpdate(const oxygine::UpdateState& us)

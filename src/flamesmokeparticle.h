@@ -26,8 +26,6 @@ public:
       int m_lifetime, 
       float radius);          // start Radius, will get scaled up and thinned (alpha) down
 
-   virtual CollisionEntityTypeEnum getEntityType(void);
-
 protected:
 	void doUpdate(const oxygine::UpdateState& us);
    void atParticleDeath(oxygine::Event* event);

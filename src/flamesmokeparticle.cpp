@@ -52,7 +52,7 @@ FlameSmokeParticle::FlameSmokeParticle(
 
    BodyUserData* bud = new BodyUserData();
    bud->m_actor = this;
-   bud->m_collisionType = CET_FLAME_PARTICLE;
+   bud->m_collisionType = CollisionEntity::flameParticle;
 
    fixtureDef.userData = bud;
 
@@ -82,11 +82,6 @@ FlameSmokeParticle::FlameSmokeParticle(
    m_antiGravForce = -20.0f * world->GetGravity();
 
    m_body->ApplyForce(m_antiGravForce, b2Vec2(0.5, 0.5), true);
-}
-
-CollisionEntityTypeEnum FlameSmokeParticle::getEntityType(void)
-{
-   return CET_FLAME_PARTICLE;
 }
 
 void FlameSmokeParticle::doUpdate(const UpdateState& us)

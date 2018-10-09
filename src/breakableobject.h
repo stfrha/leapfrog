@@ -47,7 +47,7 @@ public:
       const oxygine::Vector2& pos,
       pugi::xml_node& root);
 
-   virtual CollisionEntityTypeEnum getEntityType(void);
+
 
    void hitByBullet(b2Contact* contact); 
    void hitShield(b2Contact* contact);     // Returns true if BreakableObject was shattered

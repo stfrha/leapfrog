@@ -5,13 +5,12 @@
 #include "scales.h"
 #include "physdispconvert.h"
 #include "collisionentity.h"
-#include "killableinterface.h"
 
 class SceneActor;
 
 DECLARE_SMART(Bullet, spBullet);
 
-class Bullet : public oxygine::ColorRectSprite, CollisionEntity, KillableInterface
+class Bullet : public oxygine::ColorRectSprite, CollisionEntity
 {
 private:
    int m_deathTime;
@@ -40,13 +39,12 @@ public:
    virtual ~Bullet()
    {}
 
-   CollisionEntityTypeEnum getEntityType(void);
 
    //virtual void killActor(void);
 
    void hitAsteroid(b2Contact* contact);
 
-   virtual void killAllChildBodies(void);
+   void killAllChildBodies(void);
 
 
 

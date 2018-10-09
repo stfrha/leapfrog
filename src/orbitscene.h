@@ -42,8 +42,6 @@ public:
       const std::string& fileName,
       const std::string& initialState);
 
-   virtual CollisionEntityTypeEnum getEntityType(void);
-
 protected:
    void doUpdate(const oxygine::UpdateState &us);
 

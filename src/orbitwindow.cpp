@@ -82,11 +82,6 @@ void OrbitWindow::InitiateOrbitWindow(
    attachTo(sceneParent);
 }
 
-CollisionEntityTypeEnum OrbitWindow::getEntityType(void)
-{
-   return CET_NOT_APPLICABLE;
-}
-
 void OrbitWindow::doUpdate(const oxygine::UpdateState &us)
 {
 }

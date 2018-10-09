@@ -71,11 +71,6 @@ OrbitScene::OrbitScene(
 
 }
 
-CollisionEntityTypeEnum OrbitScene::getEntityType(void)
-{
-   return CET_NOT_APPLICABLE;
-}
-
 void OrbitScene::doUpdate(const oxygine::UpdateState &us)
 {
    const Uint8* data = SDL_GetKeyboardState(0);

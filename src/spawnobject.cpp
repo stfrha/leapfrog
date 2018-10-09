@@ -33,13 +33,17 @@ pugi::xml_node* SpawnObjectList::getSpawnObjectNode(void)
 
    // Randomise value between 0 and m_probabilitySum
    int r = rand() % m_probabilitySum;
+   int partSum = 0;
 
    for (unsigned int i = 0; i < m_spawnObjects.size(); i++)
    {
-      if (m_spawnObjects[i]->m_probabilityFactor <= r)
+      int prob = m_spawnObjects[i]->m_probabilityFactor;
+
+      if ((r >= partSum) && (r < prob + partSum))
       {
          return &m_spawnObjects[i]->m_node;
       }
+      partSum += prob;
    }
 
    return &m_spawnObjects[m_spawnObjects.size() - 1]->m_node;

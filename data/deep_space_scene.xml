@@ -22,5 +22,120 @@
             file="leapfrog_deep_space.xml" />
       </stateProperties>
    </childObject>
+   <childObject
+      name="hammer1">
+      <stateProperties
+         state="default">
+         <properties
+            posX="700.0"
+            posY="250.0" >
+            <compoundObject>
+               <behaviour
+                  type="steerableObject" />
+               <dynamicBox
+                  name="mainBody"
+                  texture="hammer"
+                  posX="0"
+                  posY="0"
+                  width="24" 
+                  height="12.6"
+                  angle="0"
+                  zLevel="160"
+                  collisionEntity="steerableObject"
+                  collisionCategory="16"
+                  collisionMask="56495"
+                  density="1"
+                  friction="1" />
+               <system
+                  type="flameEmitter"
+                  name="boosterFlame">
+                  <stateProperties
+                     state="default">
+                     <properties
+                        body="mainBody"
+                        emitterOriginX="12"
+                        emitterOriginY="0"
+                        angle="0"
+                        emitterWidth="4"
+                        lifeTime="500"
+                        impulseMagnitude="90"
+                        radius="10" />
+                  </stateProperties>
+               </system>
+               <system
+                  type="gun"
+                  name="gun">
+                  <stateProperties
+                     state="default">
+                     <properties
+                        body="mainBody"
+                        emitterOriginX="-10"
+                        emitterOriginY="0"
+                        angle="-3.1415"
+                        fireRate="4"
+                        lifeTime="2000"
+                        impulseMagnitude="10000"
+                        bouncy="false" />
+                  </stateProperties>
+               </system>
+            </compoundObject>
+         </properties>
+      </stateProperties>
+   </childObject>
+   <system
+      type="objectFactory"
+      name="asteroidField">
+      <stateProperties
+         state="default">
+         <properties
+            posX="200.0"
+            posY="125.0"
+            width="200"
+            height="100"
+            spawnInitial="10"
+            intensity="0"
+            lifeTime="60000">
+            <spawnObject
+               probabilityFactor="1">
+               <childObject
+                  name="largeAsteroid">
+                  <stateProperties
+                     state="default">
+                     <properties
+                        posX="0"
+                        posY="0" 
+                        file="large_asteroid.xml" />
+                  </stateProperties>
+               </childObject>
+            </spawnObject>
+            <spawnObject
+               probabilityFactor="1">
+               <childObject
+                  name="mediumAsteroid">
+                  <stateProperties
+                     state="default">
+                     <properties
+                        posX="0"
+                        posY="0" 
+                        file="medium_asteroid.xml" />
+                  </stateProperties>
+               </childObject>
+            </spawnObject>
+            <spawnObject
+               probabilityFactor="1">
+               <childObject
+                  name="smallAsteroid">
+                  <stateProperties
+                     state="default">
+                     <properties
+                        posX="0"
+                        posY="0" 
+                        file="small_asteroid.xml" />
+                  </stateProperties>
+               </childObject>
+            </spawnObject>
+         </properties>
+      </stateProperties>
+   </system>
 </compoundObject>
 

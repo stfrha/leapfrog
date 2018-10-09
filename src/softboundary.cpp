@@ -1,4 +1,4 @@
-#include "SoftBoundary.h"
+#include "softboundary.h"
 #include "physdispconvert.h"
 #include "scales.h"
 
@@ -28,16 +28,16 @@ SoftBoundary::SoftBoundary(
    // Rotate sprite acc to position
    switch (m_repelDir)
    {
-   case RDE_UP:
+   case up:
       setRotation(0.0f);
       break;
-   case RDE_DOWN:
+   case down:
       setRotation(MATH_PI);
       break;
-   case RDE_LEFT:
+   case left:
       setRotation(-MATH_PI / 2.0f);
       break;
-   case RDE_RIGHT:
+   case right:
       setRotation(MATH_PI / 2.0f);
       break;
    }
@@ -47,17 +47,17 @@ float SoftBoundary::determineThreshold(const RectF& rc)
 {
    float threshold = 0.0f;
 
-   if (m_repelDir == RDE_UP)
+   if (m_repelDir == up)
    {
       threshold = rc.getY() - rc.getHeight() / 2;
    }
 
-   if (m_repelDir == RDE_DOWN)
+   if (m_repelDir == down)
    {
       threshold = rc.getY() + rc.getHeight() / 2;
    }
 
-   if (m_repelDir == RDE_RIGHT)
+   if (m_repelDir == right)
    {
       // Note that we rotate the boundaries (to get the correct
       // orientation of the bitmap) so what would be width here
@@ -65,7 +65,7 @@ float SoftBoundary::determineThreshold(const RectF& rc)
       threshold = rc.getX() + rc.getHeight() / 2;
    }
 
-   if (m_repelDir == RDE_LEFT)
+   if (m_repelDir == left)
    {
       // Note that we rotate the boundaries (to get the correct
       // orientation of the bitmap) so what would be width here
@@ -83,7 +83,7 @@ void SoftBoundary::testForRepel(b2Body* body)
    b2Vec2 forceVector;
 
    // Test if body should be handled:
-   if (m_repelDir == RDE_UP)
+   if (m_repelDir == up)
    {
       if (body->GetPosition().y > m_threshold)
       {
@@ -97,7 +97,7 @@ void SoftBoundary::testForRepel(b2Body* body)
       }
    }
 
-   if (m_repelDir == RDE_DOWN)
+   if (m_repelDir == down)
    {
       if (body->GetPosition().y < m_threshold)
       {
@@ -111,7 +111,7 @@ void SoftBoundary::testForRepel(b2Body* body)
       }
    }
 
-   if (m_repelDir == RDE_RIGHT)
+   if (m_repelDir == right)
    {
       if (body->GetPosition().x < m_threshold)
       {
@@ -125,7 +125,7 @@ void SoftBoundary::testForRepel(b2Body* body)
       }
    }
 
-   if (m_repelDir == RDE_LEFT)
+   if (m_repelDir == left)
    {
       if (body->GetPosition().x > m_threshold)
       {
@@ -144,7 +144,7 @@ void SoftBoundary::testForRepel(b2Body* body)
 bool SoftBoundary::isInside(b2Body* body)
 {
    // Test if body should be handled:
-   if (m_repelDir == RDE_UP)
+   if (m_repelDir == up)
    {
       if (body->GetPosition().y > m_threshold)
       {
@@ -152,7 +152,7 @@ bool SoftBoundary::isInside(b2Body* body)
       }
    }
 
-   if (m_repelDir == RDE_DOWN)
+   if (m_repelDir == down)
    {
       if (body->GetPosition().y < m_threshold)
       {
@@ -160,7 +160,7 @@ bool SoftBoundary::isInside(b2Body* body)
       }
    }
 
-   if (m_repelDir == RDE_RIGHT)
+   if (m_repelDir == right)
    {
       if (body->GetPosition().x < m_threshold)
       {
@@ -168,7 +168,7 @@ bool SoftBoundary::isInside(b2Body* body)
       }
    }
 
-   if (m_repelDir == RDE_LEFT)
+   if (m_repelDir == left)
    {
       if (body->GetPosition().x > m_threshold)
       {

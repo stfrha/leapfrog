@@ -34,8 +34,6 @@ public:
       const std::string& spaceSceneFile,
       const std::string& state);
 
-   virtual CollisionEntityTypeEnum getEntityType(void);
-
 protected:
    void doUpdate(const oxygine::UpdateState &us);
    void generateBackground(Resources& gameResources);

@@ -179,6 +179,7 @@
     <ClCompile Include="..\src\freespacecontactlistener.cpp" />
     <ClCompile Include="..\src\gamestatus.cpp" />
     <ClCompile Include="..\src\gun.cpp" />
+    <ClCompile Include="..\src\steerableobject.cpp" />
     <ClCompile Include="..\src\landercontactlistener.cpp" />
     <ClCompile Include="..\src\landingpad.cpp" />
     <ClCompile Include="..\src\launchsite.cpp" />
@@ -264,7 +265,6 @@
     <ClInclude Include="..\src\breakableobject.h" />
     <ClInclude Include="..\src\bullet.h" />
     <ClInclude Include="..\src\collisionentity.h" />
-    <ClInclude Include="..\src\compoundinterface.h" />
     <ClInclude Include="..\src\compoundobject.h" />
     <ClInclude Include="..\src\deepspacesceneevents.h" />
     <ClInclude Include="..\src\flameemitter.h" />
@@ -275,8 +275,7 @@
     <ClInclude Include="..\src\gamestatus.h" />
     <ClInclude Include="..\src\gamestatusevents.h" />
     <ClInclude Include="..\src\gun.h" />
-    <ClInclude Include="..\src\hammer.h" />
-    <ClInclude Include="..\src\killableinterface.h" />
+    <ClInclude Include="..\src\steerableobject.h" />
     <ClInclude Include="..\src\landercontactlistener.h" />
     <ClInclude Include="..\src\landingactorevents.h" />
     <ClInclude Include="..\src\landingpad.h" />

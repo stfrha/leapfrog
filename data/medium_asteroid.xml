@@ -42,7 +42,7 @@
       collisionEntity="breakableObject"
       collisionCategory="9"
       collisionMask="65534"
-      radius="15"
+      radius="10"
       density="5"
       friction="1" />
 </compoundObject>

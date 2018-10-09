@@ -122,7 +122,7 @@ public:
       const oxygine::Vector2& pos,
       pugi::xml_node& root);
 
-   virtual CollisionEntityTypeEnum getEntityType(void);
+
 
    void leapfrogFootTouch(b2Contact* contact, bool leftFoot);
    void leapfrogFootLift(b2Contact* contact, bool leftFoot);

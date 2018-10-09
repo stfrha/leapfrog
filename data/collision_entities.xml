@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <collisionEntities>
-	<collisionEntity id="0" name="leapfrog" />
-	<collisionEntity id="1" name="bullet" />
-	<collisionEntity id="2" name="asteroid" />
+	<collisionEntity id="0" name="notApplicable" />
+	<collisionEntity id="1" name="leapfrog" />
+	<collisionEntity id="2" name="bullet" />
 	<collisionEntity id="3" name="flameParticle" />
 	<collisionEntity id="4" name="lfBigLeg" />
 	<collisionEntity id="5" name="lfSmallLeg" />
@@ -14,5 +14,7 @@
 	<collisionEntity id="11" name="launchSiteLeftFootRest" />
 	<collisionEntity id="12" name="launchSiteRightFootRest" />
 	<collisionEntity id="13" name="landingPad" />
-	<collisionEntity id="14" name="notApplicable" />
+	<collisionEntity id="14" name="breakableObject" />
+	<collisionEntity id="15" name="destroyableObject" />
+	<collisionEntity id="16" name="steerableObject" />
 </collisionEntities>     

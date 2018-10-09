@@ -14,9 +14,9 @@
 class SceneActor;
 class AsteroidField;
 
-DECLARE_SMART(Hammer, spHammer);
+DECLARE_SMART(SteerableObject, spSteerableObject);
 
-class Hammer : public CompoundObject
+class SteerableObject : public CompoundObject
 {
 public:
    enum launchState
@@ -53,17 +53,20 @@ public:
    spFlameEmitter m_boosterFlame;
    spGun m_gun;
 
-	Hammer(
+	SteerableObject(
       oxygine::Resources& gameResources, 
       SceneActor* sceneActor,
+      CompoundObject* parentObject,
       b2World* world,
-      const oxygine::Vector2& pos);
+      const oxygine::Vector2& pos,
+      pugi::xml_node& root);
 
-   virtual CollisionEntityTypeEnum getEntityType(void);
+
+
 
    void hitByAnything(b2Contact* contact);
    void hitByBullet(b2Contact* contact); 
-   void hitShield(b2Contact* contact);     // Returns true if hammer was shattered
+   void hitShield(b2Contact* contact);     // Returns true if SteerableObject was shattered
    void hitByLepfrog(b2Contact* contact);
 
 protected:

@@ -35,6 +35,4 @@ private:
 public:
 	LandingActor(oxygine::Resources& gameResources, const std::string& fileName, const std::string& initialState);
 
-   virtual CollisionEntityTypeEnum getEntityType(void);
-
 };

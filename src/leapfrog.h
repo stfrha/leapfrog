@@ -192,8 +192,6 @@ public:
 		const oxygine::Vector2& pos,
       pugi::xml_node& root);
 
-   virtual CollisionEntityTypeEnum getEntityType(void);
-
 
 
    void hitByAsteroid(b2Contact* contact);

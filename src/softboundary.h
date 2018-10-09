@@ -5,19 +5,20 @@
 
 DECLARE_SMART(SoftBoundary, spSoftBoundary);
 
-enum RepelDirectionEnum
-{
-   RDE_UP,
-   RDE_DOWN,
-   RDE_RIGHT,
-   RDE_LEFT
-};
-
 // The SoftBoundary, though imposing forces on other bodies are not
 // bodies themselfs. 
 
 class SoftBoundary : public oxygine::Box9Sprite
 {
+public:
+   enum RepelDirectionEnum
+   {
+      up,
+      down,
+      right,
+      left
+   };
+
 private:
    RepelDirectionEnum m_repelDir;
    

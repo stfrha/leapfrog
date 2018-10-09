@@ -45,9 +45,6 @@ public:
       b2World* world,
       const pugi::xml_node& objectNode);
    
-
-   virtual CollisionEntityTypeEnum getEntityType(void);
-
    void setAngle(float angle);
    float getAngle(void);
    void shieldHit(b2Contact* contact, const b2ContactImpulse* impulse);

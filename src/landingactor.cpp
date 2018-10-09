@@ -44,11 +44,6 @@ LandingActor::LandingActor(
 
 }
 
-CollisionEntityTypeEnum LandingActor::getEntityType(void)
-{
-   return CET_NOT_APPLICABLE;
-}
-
 void LandingActor::modeReachedListener(Event *ev)
 {
    LeapfrogModeReachedEvent* event = static_cast<LeapfrogModeReachedEvent*>(ev);

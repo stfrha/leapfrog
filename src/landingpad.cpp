@@ -33,11 +33,6 @@ LandingPad::LandingPad(
 
 }
 
-CollisionEntityTypeEnum LandingPad::getEntityType(void)
-{
-   return CET_NOT_APPLICABLE;
-}
-
 void LandingPad::leapfrogFootTouch(b2Contact* contact, bool leftFoot)
 {
    if (leftFoot)

@@ -55,11 +55,6 @@ OrbitSpaceScene::OrbitSpaceScene(
 
 }
 
-CollisionEntityTypeEnum OrbitSpaceScene::getEntityType(void)
-{
-   return CET_NOT_APPLICABLE;
-}
-
 void OrbitSpaceScene::doUpdate(const oxygine::UpdateState &us)
 {
    SceneActor::doUpdate(us);

@@ -62,7 +62,7 @@ Shield::Shield(
 
    BodyUserData* bud = new BodyUserData();
    bud->m_actor = this;
-   bud->m_collisionType = CET_LF_SHIELD;
+   bud->m_collisionType = CollisionEntity::lfShield;
 
    fixtureDef.userData = (CollisionEntity*)&bud->m_collisionType;
 
@@ -136,11 +136,6 @@ void Shield::readShieldNode(const xml_node& objectNode)
 //
 //   m_body->GetFixtureList()->SetUserData((CollisionEntity*)this);
 //}
-
-CollisionEntityTypeEnum Shield::getEntityType(void)
-{
-   return CET_LF_SHIELD;
-}
 
 void Shield::setAngle(float angle)
 {

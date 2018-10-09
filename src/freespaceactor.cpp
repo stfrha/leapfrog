@@ -1,6 +1,6 @@
 #include <algorithm>
 
-#include "hammer.h"
+#include "steerableobject.h"
 #include "deepspacesceneevents.h"
 
 #include "freespaceactor.h"
@@ -44,7 +44,7 @@ FreeSpaceActor::FreeSpaceActor(
          m_sceneWidth / 2.0f, 
          m_sceneHeight + 75.0f, 
          m_sceneWidth + 300.0f,
-         150.0f), RDE_UP);
+         150.0f), SoftBoundary::up);
    addChild(m_lowerBoundary);
 
    m_topBoundary = new SoftBoundary(gameResources, m_world, 
@@ -52,7 +52,7 @@ FreeSpaceActor::FreeSpaceActor(
          m_sceneWidth / 2.0f,
          -75.0f, 
          m_sceneWidth + 300.0f,
-         150.0f), RDE_DOWN);
+         150.0f), SoftBoundary::down);
    addChild(m_topBoundary);
 
    m_leftBoundary = new SoftBoundary(gameResources, m_world, 
@@ -60,7 +60,7 @@ FreeSpaceActor::FreeSpaceActor(
          -75.0f, 
          m_sceneHeight / 2.0f, 
          m_sceneHeight + 300.0f,
-         150.0f), RDE_RIGHT);
+         150.0f), SoftBoundary::right);
    addChild(m_leftBoundary);
 
    m_rightBoundary = new SoftBoundary(gameResources, m_world, 
@@ -68,7 +68,7 @@ FreeSpaceActor::FreeSpaceActor(
          m_sceneWidth + 75.0f, 
          m_sceneHeight / 2.0f,
          m_sceneHeight + 300.0f,
-         150.0f), RDE_LEFT);
+         150.0f), SoftBoundary::left);
    addChild(m_rightBoundary);
 
    //spHammer hammer = new Hammer(gameResources, this, m_world, Vector2(600.0f, 250.0f));
@@ -80,11 +80,6 @@ FreeSpaceActor::FreeSpaceActor(
    //spAsteroid a5 = new Asteroid(gameResources, this, m_world, Vector2(500.0f, 270.0f), ASE_LARGE);
    //spAsteroid a6 = new Asteroid(gameResources, this, m_world, Vector2(480.0f, 280.0f), ASE_LARGE);
 
-}
-
-CollisionEntityTypeEnum FreeSpaceActor::getEntityType(void)
-{
-   return CET_NOT_APPLICABLE;
 }
 
 void FreeSpaceActor::addBoundingBody(b2Body* body)

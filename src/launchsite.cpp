@@ -85,11 +85,6 @@ LaunchSite::LaunchSite(
 
 }
 
-CollisionEntityTypeEnum LaunchSite::getEntityType(void)
-{
-   return CET_NOT_APPLICABLE;
-}
-
 void LaunchSite::doUpdate(const UpdateState &us)
 {
    switch (m_state)

@@ -100,15 +100,24 @@ b2Vec2 SteeringManager::doSeek(
    b2Vec2 desired = target - m_hostBody->GetPosition();
    distance = desired.Length();
 
-   b2Vec2 myVel = m_hostBody->GetPosition();
+   b2Vec2 myVel = m_hostBody->GetLinearVelocity();
    
-   float turnBoosterMag = b2Dot(target, myVel) / target.Normalize() / myVel.Normalize();
+   // The turning booster force is a little extra hump
+   // for turning when the velocity (and thus direction of travel)
+   // is way off the target. The bigger the off-angle the bigger 
+   // the boost. turnBoosterMag should be the angle between current 
+   // travel and the desired direction. The angle is found using the
+   // dot product.
+   float dotProd = b2Dot(desired, myVel) / desired.Normalize() / myVel.Normalize();
+   
+   if (dotProd > 1.0f) dotProd = 1.0f;
+   else if (dotProd < -1.0f) dotProd = -1.0f;
+   
+   float turnBoosterMagAngle = acos(dotProd);
 
    if (enableFire)
    {
-      float angle = acos(turnBoosterMag);
-
-      if (angle < 2.0f / 180.0f * MATH_PI)
+      if (turnBoosterMagAngle < 5.0f / 180.0f * MATH_PI)
       {
          // We now point in the direction of the target, shot, if enabled
          m_fireTrigger = true;
@@ -130,8 +139,15 @@ b2Vec2 SteeringManager::doSeek(
       desired *= maxVelocity;
    }
 
+   // Lets put a ceiling in the turnBooster so it does not get
+   // unnatural turning
+   if (turnBoosterMagAngle > 1.57f)
+   {
+      turnBoosterMagAngle = 1.57f;
+   }
+
    force = (desired - m_hostBody->GetLinearVelocity());
-   force *= (turnBoosterMag * turnBooster + 1.0f);
+   force *= (turnBoosterMagAngle * turnBooster + 1.0f);
 
    return force;   
 }
@@ -357,7 +373,7 @@ b2Body* SteeringManager::findMostThreatening(b2Vec2 pos, b2Vec2 ahead, b2Vec2 ah
    {
       // So far, only avoid asteroids
       // Get collision entity
-      if (BodyUserData::getCollisionType(body->GetFixtureList()->GetUserData()) == CET_ASTEROID)
+      if (BodyUserData::getCollisionType(body->GetFixtureList()->GetUserData()) == CollisionEntity::breakableObject)
       {
          b2Vec2 asteroidPos = body->GetPosition();
          //Asteroid* asteroid = (Asteroid*) body->GetUserData();
@@ -418,10 +434,10 @@ public:
    float32 ReportFixture(b2Fixture* fixture, const b2Vec2& point,
       const b2Vec2& normal, float32 fraction)
    {
-      CollisionEntityTypeEnum ce = BodyUserData::getCollisionType(fixture->GetUserData());
+      CollisionEntity::CollisionEntityTypeEnum ce = BodyUserData::getCollisionType(fixture->GetUserData());
       m_targetIsHiding = false;
 
-      if ((ce == CET_ASTEROID) && (fraction < 1.0f))
+      if ((ce == CollisionEntity::breakableObject) && (fraction < 1.0f))
       {
          m_targetIsHiding = true;
          return 0.0f;

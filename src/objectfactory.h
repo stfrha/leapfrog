@@ -5,28 +5,6 @@
 #include "physdispconvert.h"
 #include "spawnobject.h"
 
-class ObjectSpawnInstruction
-{
-public:
-   int m_num;
-   b2Vec2 m_leftTop;
-   b2Vec2 m_rightBottom;
-
-   ObjectSpawnInstruction() :
-      m_num(0),
-      m_leftTop(b2Vec2(0.0f, 0.0f)),
-      m_rightBottom(b2Vec2(0.0f, 0.0f))
-   {
-   }
-
-   ObjectSpawnInstruction(int num, b2Vec2 leftTop, b2Vec2 rightBottom) :
-      m_num(num),
-      m_leftTop(leftTop),
-      m_rightBottom(rightBottom)
-   {
-   }
-};
-
 DECLARE_SMART(ObjectFactory, spObjectFactory);
 
 class CompoundObject;
@@ -38,8 +16,8 @@ private:
    // Parameters from XML
    b2Body * m_attachedBody;
 
-   b2Vec2 m_leftTop;
-   b2Vec2 m_rightBottom;
+   oxygine::Vector2 m_leftTop;
+   oxygine::Vector2 m_widthHeight;
 
    // Time between spawned asteroids
    float m_interval;
@@ -53,12 +31,10 @@ private:
    pugi::xml_document* m_coNodeHolder;
    pugi::xml_node m_coNode;
    int m_timeSinceLast;
-   //SpawnObjectList m_spawnObjects;
-   int m_spawnCount;
-
+   spSpawnObjectList m_spawnObjects;
 
    void readObjectFactoryNode(const pugi::xml_node& objectNode);
-   void spawnObjects(void);
+   void spawnObjects(int num);
    
 public:
    ObjectFactory(
@@ -69,9 +45,6 @@ public:
       const pugi::xml_node& objectNode);
 
    ~ObjectFactory();
-
-   virtual CollisionEntityTypeEnum getEntityType(void);
-
 
 protected:
 	void doUpdate(const oxygine::UpdateState& us);

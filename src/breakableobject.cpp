@@ -58,12 +58,7 @@ BreakableObject::BreakableObject(
 void BreakableObject::readBreakableObjectNode(const pugi::xml_node& node)
 {
    m_breakAtDamage = node.child("behaviour").attribute("breakBulletDamage").as_int(0);
-   m_numberOfSpawns = node.child("behaviour").attribute("numberOfSpawns").as_int(0);;
-}
-
-CollisionEntityTypeEnum BreakableObject::getEntityType(void)
-{
-   return CET_BREAKABLE_OBJECT;
+   m_numberOfSpawns = node.child("behaviour").attribute("numberOfSpawns").as_int(0);
 }
 
 void BreakableObject::hitByBullet(b2Contact* contact)

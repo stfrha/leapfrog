@@ -67,7 +67,7 @@ void FlameEmitter::setParameters(
 
 void FlameEmitter::doUpdate(const oxygine::UpdateState& us)
 {
-   // FOr now, emit one particle every update if m_emit is true
+   // For now, emit one particle every update if m_emit is true
    if (m_emit)
    {
 //      b2Vec2 originPos = m_emitterBody->GetPosition() + m_emitterBody->GetWorldPoint(m_emitterOrigin);

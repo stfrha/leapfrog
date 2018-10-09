@@ -213,11 +213,6 @@ oxygine::Actor* LeapFrog::getMainActor(void)
    return m_mainActor.get();
 }
 
-CollisionEntityTypeEnum LeapFrog::getEntityType(void)
-{
-   return CET_LEAPFROG;
-}
-
 void LeapFrog::hitByAsteroid(b2Contact* contact)
 {
    // Damage to LeapFrog!

@@ -2,7 +2,6 @@
  
 #include "oxygine-framework.h"
 #include "Box2D/Box2D.h"
-#include "killableinterface.h"
 #include "collisionentity.h"
 #include "objectproperty.h"
 #include "system.h"
@@ -30,7 +29,7 @@ DECLARE_SMART(CompoundObject, spCompoundObject);
 class SceneActor;
 class FreeSpaceActor;
 
-class CompoundObject : public oxygine::Actor, public KillableInterface, public CollisionEntity
+class CompoundObject : public oxygine::Actor, public CollisionEntity
 {
 public:
    enum BehaviourEnum
@@ -256,11 +255,11 @@ public:
       pugi::xml_node& objectNode,
       const std::string& initialState);
 
-   virtual CollisionEntityTypeEnum getEntityType(void);
+
 
    CompoundObject* getParentObject();
    CompoundObject* getParentWithBehaviour(BehaviourEnum behav);
-   virtual void killAllChildBodies(void);
+   void killAllChildBodies(void);
 
    oxygine::Vector2 getCompoundObjectPosition();
 

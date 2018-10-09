@@ -309,6 +309,9 @@
     <ClCompile Include="..\src\spawnobject.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\steerableobject.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Box2D\Box2D\Box2D\Collision\Shapes\b2ChainShape.h">
@@ -533,9 +536,6 @@
     <ClInclude Include="..\src\launchsite.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\compoundinterface.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\src\leapfrogevents.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -590,9 +590,6 @@
     <ClInclude Include="..\src\gamestatusevents.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\hammer.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\src\steeringmanager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -611,13 +608,13 @@
     <ClInclude Include="..\src\spawnobject.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\killableinterface.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\src\bodyuserdata.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\src\actoruserdata.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\steerableobject.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

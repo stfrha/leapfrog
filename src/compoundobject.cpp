@@ -13,6 +13,7 @@
 #include "launchsite.h"
 #include "leapfrog.h"
 #include "breakableobject.h"
+#include "steerableobject.h"
 #include "landingpad.h"
 #include "planetactor.h"
 #include "orbitwindow.h"
@@ -31,7 +32,7 @@ using namespace pugi;
 CompoundObject::CompoundObject(SceneActor* sceneActor, CompoundObject* parentObject) :
    m_sceneActor(sceneActor),
    m_parentObject(parentObject),
-   m_collisionType(CET_NOT_APPLICABLE),
+   m_collisionType(CollisionEntity::notApplicable),
    m_behaviourType(notApplicable)
 { }
 
@@ -54,12 +55,6 @@ void CompoundObject::initCompoundObjectTop(
 {
    readDefinitionXmlFile(gameResources, m_sceneActor, parentObject, world, Vector2(0.0f, 0.0f), defXmlFileName, initialState);
 }
-
-CollisionEntityTypeEnum CompoundObject::getEntityType(void)
-{
-   return m_collisionType;
-}
-
 
 CompoundObject* CompoundObject::getParentObject()
 {
@@ -94,8 +89,6 @@ void CompoundObject::killAllChildBodies(void)
    // Kill all Actor::children
    do
    {
-      // getUserData gives a const pointer and static_cast cant handle that
-      // so we use a c-type cast
       b2Body* b = ActorUserData::getBody(child->getUserData());
 
       if (b)
@@ -230,6 +223,20 @@ CompoundObject* CompoundObject::initCompoundObject(
 
       return static_cast<CompoundObject*>(bo);
    }
+   else if (behavStr == "steerableObject")
+   {
+      SteerableObject* so = new SteerableObject(
+         gameResources,
+         sceneParent,
+         this,
+         world,
+         pos,
+         root);
+
+      so->m_behaviourType = BehaviourEnum::steerableObject;
+
+      return static_cast<CompoundObject*>(so);
+   }
    else
    {
       // If no behaviour was recognised, define the parts of the 
@@ -259,78 +266,88 @@ bool CompoundObject::initCompoundObjectParts(
    pugi::xml_node& root,
    const string& initialState)
 {
-   for (auto it = root.children("childObject").begin();
-      it != root.children("childObject").end();
+   // When defining childObjects that read from other XML-document
+   // we somehow loose the pointer in this file,
+   // Therefor we must do the trick of save the root-node
+   // to a new xml-document in memory and go back to it later.
+
+   xml_document* nodeDocHolder = new xml_document();
+
+   nodeDocHolder->append_copy(root);
+   xml_node savedNode = nodeDocHolder->child("compoundObject");
+   
+   for (auto it = savedNode.children("childObject").begin();
+      it != savedNode.children("childObject").end();
       ++it)
    {
       defineChildObject(gameResources, sceneParent, this, world, pos, *it, initialState);
    }
 
-   for (auto it = root.children("spriteBox").begin();
-      it != root.children("spriteBox").end();
+   for (auto it = savedNode.children("spriteBox").begin();
+      it != savedNode.children("spriteBox").end();
       ++it)
    {
       // define a object
       defineSpriteBox(gameResources, sceneParent, this, pos, *it);
    }
 
-   for (auto it = root.children("spritePolygon").begin();
-      it != root.children("spritePolygon").end();
+   for (auto it = savedNode.children("spritePolygon").begin();
+      it != savedNode.children("spritePolygon").end();
       ++it)
    {
       // define a object
       defineSpritePolygon(gameResources, sceneParent, this, pos, *it);
    }
 
-   for (auto it = root.children("staticCircle").begin();
-      it != root.children("staticCircle").end();
+   for (auto it = savedNode.children("staticCircle").begin();
+      it != savedNode.children("staticCircle").end();
       ++it)
    {
       // define a object
       defineStaticCircle(gameResources, sceneParent, this, world, pos, *it);
    }
 
-   for (auto it = root.children("staticBox").begin();
-      it != root.children("staticBox").end();
+   for (auto it = savedNode.children("staticBox").begin();
+      it != savedNode.children("staticBox").end();
       ++it)
    {
       // define a object
       defineStaticBox(gameResources, sceneParent, this, world, pos, *it);
    }
 
-   for (auto it = root.children("staticPolygon").begin();
-      it != root.children("staticPolygon").end();
+   for (auto it = savedNode.children("staticPolygon").begin();
+      it != savedNode.children("staticPolygon").end();
       ++it)
    {
       // define a object
       defineStaticPolygon(gameResources, sceneParent, this, world, pos, *it);
    }
 
-   for (auto it = root.children("staticBoxedSpritePolygonBody").begin();
-      it != root.children("staticBoxedSpritePolygon").end();
+   for (auto it = savedNode.children("staticBoxedSpritePolygonBody").begin();
+      it != savedNode.children("staticBoxedSpritePolygon").end();
       ++it)
    {
       defineStaticBoxedSpritePolygon(gameResources, sceneParent, this, world, pos, *it);
    }
 
-   for (auto it = root.children("dynamicCircle").begin();
-      it != root.children("dynamicCircle").end();
+   for (auto it = savedNode.children("dynamicCircle").begin();
+      it != savedNode.children("dynamicCircle").end();
       ++it)
    {
       // define a box object
       defineDynamicCircle(gameResources, sceneParent, this, world, pos, *it);
    }
 
-   for (auto it = root.children("dynamicBox").begin();
-      it != root.children("dynamicBox").end();
+   for (auto it = savedNode.children("dynamicBox").begin();
+      it != savedNode.children("dynamicBox").end();
       ++it)
    {
       // define a box object
       defineDynamicBox(gameResources, sceneParent, this, world, pos, *it);
    }
 
-   for (auto it = root.children("dynamicPolygon").begin();
-      it != root.children("dynamicPolygon").end();
+   for (auto it = savedNode.children("dynamicPolygon").begin();
+      it != savedNode.children("dynamicPolygon").end();
       ++it)
    {
       // define a polygon object
@@ -338,36 +355,36 @@ bool CompoundObject::initCompoundObjectParts(
       defineDynamicPolygon(gameResources, sceneParent, this, world, pos, *it);
    }
 
-   for (auto it = root.children("dynamicBoxedSpritePolygonBody").begin();
-      it != root.children("dynamicBoxedSpritePolygonBody").end();
+   for (auto it = savedNode.children("dynamicBoxedSpritePolygonBody").begin();
+      it != savedNode.children("dynamicBoxedSpritePolygonBody").end();
       ++it)
    {
       defineDynamicBoxedSpritePolygon(gameResources, sceneParent, this, world, pos, *it);
    }
 
-   for (auto it = root.children("rope").begin();
-      it != root.children("rope").end();
+   for (auto it = savedNode.children("rope").begin();
+      it != savedNode.children("rope").end();
       ++it)
    {
       defineRope(gameResources, sceneParent, this, world, pos, *it);
    }
 
-   for (auto it = root.children("weldJoint").begin();
-      it != root.children("weldJoint").end();
+   for (auto it = savedNode.children("weldJoint").begin();
+      it != savedNode.children("weldJoint").end();
       ++it)
    {
       defineWeldJoint(world, *it);
    }
 
-   for (auto it = root.children("revoluteJoint").begin();
-      it != root.children("revoluteJoint").end();
+   for (auto it = savedNode.children("revoluteJoint").begin();
+      it != savedNode.children("revoluteJoint").end();
       ++it)
    {
       defineRevoluteJoint(world, *it);
    }
 
-   for (auto it = root.children("prismaticJoint").begin();
-      it != root.children("prismaticJoint").end();
+   for (auto it = savedNode.children("prismaticJoint").begin();
+      it != savedNode.children("prismaticJoint").end();
       ++it)
    {
       definePrismaticJoint(world, *it);
@@ -376,8 +393,8 @@ bool CompoundObject::initCompoundObjectParts(
    // It is important that systems are iterated after all 
    // bodies and joints since, during the initialisation of the system,
    // references to such objects are searchd for. 
-   for (auto it = root.children("system").begin();
-      it != root.children("system").end();
+   for (auto it = savedNode.children("system").begin();
+      it != savedNode.children("system").end();
       ++it)
    {
       string systemType = it->attribute("type").as_string();
@@ -395,8 +412,8 @@ bool CompoundObject::initCompoundObjectParts(
    }
 
 
-   for (auto it = root.children("planetActor").begin();
-      it != root.children("planetActor").end();
+   for (auto it = savedNode.children("planetActor").begin();
+      it != savedNode.children("planetActor").end();
       ++it)
    {
       xml_node stateNode;
@@ -416,8 +433,8 @@ bool CompoundObject::initCompoundObjectParts(
    }
 
    // Asteroid fields are replaced by Object Factories
-   //for (auto it = root.children("asteroidField").begin();
-   //   it != root.children("asteroidField").end();
+   //for (auto it = savedNode.children("asteroidField").begin();
+   //   it != savedNode.children("asteroidField").end();
    //   ++it)
    //{
    //   xml_node stateNode;
@@ -437,8 +454,8 @@ bool CompoundObject::initCompoundObjectParts(
    //   }
    //}
 
-   for (auto it = root.children("clippedWindow").begin();
-      it != root.children("clippedWindow").end();
+   for (auto it = savedNode.children("clippedWindow").begin();
+      it != savedNode.children("clippedWindow").end();
       ++it)
    {
       xml_node stateNode;

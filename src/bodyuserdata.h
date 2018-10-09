@@ -19,7 +19,7 @@ DECLARE_SMART(BodyUserData, spBodyUserData);
 class BodyUserData
 {
 public:
-   CollisionEntityTypeEnum m_collisionType;
+   CollisionEntity::CollisionEntityTypeEnum m_collisionType;
    oxygine::Actor* m_actor;
 
    template<class T>
@@ -28,7 +28,7 @@ public:
       return static_cast<T>(static_cast<BodyUserData*>(userData)->m_actor);
    }
 
-   static CollisionEntityTypeEnum getCollisionType(void* userData)
+   static CollisionEntity::CollisionEntityTypeEnum getCollisionType(void* userData)
    {
       return static_cast<BodyUserData*>(userData)->m_collisionType;
    }

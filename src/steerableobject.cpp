@@ -1,19 +1,23 @@
 
-#include "hammer.h"
+#include "steerableobject.h"
 
 #include "sceneactor.h"
 #include "freespaceactor.h"
 #include "blastemitter.h"
+#include "actoruserdata.h"
 
-
+using namespace std;
 using namespace oxygine;
+using namespace pugi;
 
-Hammer::Hammer(
-   Resources& gameResources,
+SteerableObject::SteerableObject(
+   oxygine::Resources& gameResources,
    SceneActor* sceneActor,
+   CompoundObject* parentObject,
    b2World* world,
-   const Vector2& pos) :
-   CompoundObject(sceneActor, NULL),
+   const oxygine::Vector2& pos,
+   pugi::xml_node& root) :
+   CompoundObject(sceneActor, parentObject),
    m_gameResource(&gameResources),
    m_world(world),
    m_sceneActor(sceneActor),
@@ -23,126 +27,48 @@ Hammer::Hammer(
 {
    Vector2 oSize = Vector2(24.0f, 12.6f);
 
-   float maxImp = 100000.0f;
-   float maxAng = 100000.0f;
+   initCompoundObjectParts(gameResources, sceneActor, parentObject, world, pos, root, string(""));
 
-   spSprite sprite = new Sprite();
+   m_body = getBody("mainBody");
 
-   sprite->setResAnim(gameResources.getResAnim("hammer"));
-   sprite->setSize(oSize);
-   sprite->setTouchChildrenEnabled(false);
-   sprite->attachTo(this);
-   sprite->setAnchor(0.5f, 0.5f);
+   if (m_sceneActor->getSceneType() == STE_FREE_SPACE)
+   {
+      FreeSpaceActor* spaceActor = (FreeSpaceActor*)m_sceneActor;
 
+      spaceActor->addBoundingBody(m_body);
+   }
 
-   setPriority(160);
-
-   b2BodyDef bodyDef;
-   bodyDef.type = b2_dynamicBody;
-   bodyDef.position = PhysDispConvert::convert(pos, 1.0f);
-   m_body = world->CreateBody(&bodyDef);
-
-   b2PolygonShape boxShape;
-   boxShape.SetAsBox(oSize.x / 2.0f, oSize.y / 2.0f);
-
-   b2FixtureDef fixtureDef;
-   fixtureDef.shape = &boxShape;
-   fixtureDef.density = 1.0f;
-   fixtureDef.friction = 1.0f;
-   fixtureDef.filter.categoryBits = 16;
-   fixtureDef.filter.maskBits = 56511;
-   fixtureDef.userData = (CollisionEntity*)this;
-
-   m_body->CreateFixture(&fixtureDef);
-   m_body->SetUserData(this);
-   setUserData(m_body);
-
-   attachTo(m_sceneActor);
 
    // Add main engine particle system
-   m_boosterFlame = new FlameEmitter(
-      gameResources,
-      m_body,
-      b2Vec2(12.0f, 0.0f),
-      /*90.0f * MATH_PI / 180.0f,*/
-      0.0f,                            // Angle
-      4.0f,                            // Emitter width
-      500,                             // Lifetime [ms]
-      90.0f,                           // Impulse magnitude
-      10.0f);                          // Radius
-
-   m_boosterFlame->attachTo(this);
+   m_boosterFlame = static_cast<FlameEmitter*>(getSystem("boosterFlame"));
 
    m_boosterFlame->startEmitter();
 
-   m_gun = new Gun(
-      gameResources,
-      m_sceneActor,
-      m_body,
-      b2Vec2(-10.0f, 0.0f),            // Origin
-      -MATH_PI,                        // Angle 
-      4.0f,                            // Intensity [bullets per second]
-      2000,                            // Lifetime [ms]
-      10000.0f,                        // Bullet speed
-      false);                          // Bouncy
+   m_gun = static_cast<Gun*>(getSystem("gun"));
 
-   m_gun->attachTo(this);
-
-
+   attachTo(m_sceneActor);
 
    m_steeringManager = new SteeringManager(m_body, m_sceneActor);
    m_steeringManager->m_wanderAngle = MATH_PI;
-
-
-   //float x = static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / 1000.0));
-   //float y = static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / 500.0));
-
-   //m_seekTarget = b2Vec2(x, y);
-   
-
-
-   //m_aheadCircle = new Sprite();
-   //m_aheadCircle->setResAnim(gameResources.getResAnim("circle"));
-   //m_aheadCircle->setSize(40.0f, 40.0f);
-   //m_aheadCircle->setPosition(PhysDispConvert::convert(m_steeringManager->m_debugAhead, 1.0f));
-   //m_aheadCircle->setAnchor(0.5f, 0.5f);
-   //m_aheadCircle->setTouchChildrenEnabled(false);
-   //m_aheadCircle->setPriority(160);
-   //m_aheadCircle->attachTo(m_sceneActor);
-
-   //m_ahead2Circle = new Sprite();
-   //m_ahead2Circle->setResAnim(gameResources.getResAnim("circle"));
-   //m_ahead2Circle->setSize(40.0f, 40.0f);
-   //m_ahead2Circle->setPosition(PhysDispConvert::convert(m_steeringManager->m_debugAhead2, 1.0f));
-   //m_ahead2Circle->setAnchor(0.5f, 0.5f);
-   //m_ahead2Circle->setTouchChildrenEnabled(false);
-   //m_ahead2Circle->setPriority(160);
-   //m_ahead2Circle->attachTo(m_sceneActor);
-
 }
 
-CollisionEntityTypeEnum Hammer::getEntityType(void)
-{
-   return CET_HAMMER;
-}
-
-void Hammer::hitByBullet(b2Contact* contact)
+void SteerableObject::hitByBullet(b2Contact* contact)
 {
 }
 
-void Hammer::hitShield(b2Contact* contact)
+void SteerableObject::hitShield(b2Contact* contact)
 {
 }
 
 
-void Hammer::hitByLepfrog(b2Contact* contact)
+void SteerableObject::hitByLepfrog(b2Contact* contact)
 {
    // Take damage like two bullets
 }
 
 
 
-void Hammer::doUpdate(const oxygine::UpdateState& us)
+void SteerableObject::doUpdate(const oxygine::UpdateState& us)
 {
 //   m_steeringManager->wander();
 
@@ -293,7 +219,7 @@ void Hammer::doUpdate(const oxygine::UpdateState& us)
    //}
 }
 
-void Hammer::hitByAnything(b2Contact* contact)
+void SteerableObject::hitByAnything(b2Contact* contact)
 {
    m_slowTurningAfterHit = true;
    // logs::messageln("Turning slow...");

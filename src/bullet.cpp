@@ -50,7 +50,7 @@ Bullet::Bullet(
 
    BodyUserData* bud = new BodyUserData();
    bud->m_actor = this;
-   bud->m_collisionType = CET_BULLET;
+   bud->m_collisionType = CollisionEntity::bullet;
 
    fixtureDef.userData = bud;
 
@@ -75,11 +75,6 @@ Bullet::Bullet(
 
 }
 
-CollisionEntityTypeEnum Bullet::getEntityType(void)
-{
-   return CET_BULLET;
-}
-
 //void Bullet::killActor(void)
 //{
 //   atBulletDeath();
@@ -91,9 +86,6 @@ void Bullet::hitAsteroid(b2Contact* contact)
 {
    if (m_sceneActor)
    {
-      // PArent (of actor) if lost if we do like this. 
-      // Either the KillableInterface is based on the
-      // Actor class or we must do something else
       m_sceneActor->addMeToDeathList(this);
    }
 }

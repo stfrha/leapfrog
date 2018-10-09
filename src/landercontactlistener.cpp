@@ -18,17 +18,17 @@ void LanderContactListener::PostSolve(b2Contact* contact, const b2ContactImpulse
 {
    // We only check for Main body hits here since this is called more often than the
    //
-   CollisionEntityTypeEnum eA = BodyUserData::getCollisionType(contact->GetFixtureA()->GetUserData());
-   CollisionEntityTypeEnum eB = BodyUserData::getCollisionType(contact->GetFixtureB()->GetUserData());
+   CollisionEntity::CollisionEntityTypeEnum eA = BodyUserData::getCollisionType(contact->GetFixtureA()->GetUserData());
+   CollisionEntity::CollisionEntityTypeEnum eB = BodyUserData::getCollisionType(contact->GetFixtureB()->GetUserData());
 
    LeapFrog* leapfrog = NULL;
 
-   if (eA == CET_LEAPFROG)
+   if (eA == CollisionEntity::leapfrog)
    {
       leapfrog = BodyUserData::getParentObjectOfType<LeapFrog*>(contact->GetFixtureA()->GetBody()->GetUserData());
    }
 
-   if (eB == CET_LEAPFROG)
+   if (eB == CollisionEntity::leapfrog)
    {
       leapfrog = BodyUserData::getParentObjectOfType<LeapFrog*>(contact->GetFixtureB()->GetBody()->GetUserData());
    }
@@ -49,8 +49,8 @@ void LanderContactListener::PostSolve(b2Contact* contact, const b2ContactImpulse
 
 void LanderContactListener::ContactHandler(b2Contact* contact, bool begin)
 {
-   CollisionEntityTypeEnum eA = BodyUserData::getCollisionType(contact->GetFixtureA()->GetUserData());
-   CollisionEntityTypeEnum eB = BodyUserData::getCollisionType(contact->GetFixtureB()->GetUserData());
+   CollisionEntity::CollisionEntityTypeEnum eA = BodyUserData::getCollisionType(contact->GetFixtureA()->GetUserData());
+   CollisionEntity::CollisionEntityTypeEnum eB = BodyUserData::getCollisionType(contact->GetFixtureB()->GetUserData());
 
    LeapFrog* leapfrog = NULL;
    Bullet* bullet = NULL;
@@ -63,56 +63,56 @@ void LanderContactListener::ContactHandler(b2Contact* contact, bool begin)
    bool launchSiteLeftRest = false; // true means right leg rest
    bool leapfrogLeftFoot = false; // true means right foot
 
-   if (eA == CET_LAUNCH_SITE_LEFT_FOOT_REST)
+   if (eA == CollisionEntity::lsLeftFootRest)
    {
       launchSite = BodyUserData::getParentObjectOfType<LaunchSite*>(contact->GetFixtureA()->GetBody()->GetUserData());
 
       launchSiteLeftRest = true;
    }
 
-   if (eB == CET_LAUNCH_SITE_LEFT_FOOT_REST)
+   if (eB == CollisionEntity::lsLeftFootRest)
    {
       launchSite = BodyUserData::getParentObjectOfType<LaunchSite*>(contact->GetFixtureB()->GetBody()->GetUserData());
 
       launchSiteLeftRest = true;
    }
 
-   if (eA == CET_LAUNCH_SITE_RIGHT_FOOT_REST)
+   if (eA == CollisionEntity::lsRightFootRest)
    {
       launchSite = BodyUserData::getParentObjectOfType<LaunchSite*>(contact->GetFixtureA()->GetBody()->GetUserData());
 
       launchSiteLeftRest = false;
    }
 
-   if (eB == CET_LAUNCH_SITE_RIGHT_FOOT_REST)
+   if (eB == CollisionEntity::lsRightFootRest)
    {
       launchSite = BodyUserData::getParentObjectOfType<LaunchSite*>(contact->GetFixtureB()->GetBody()->GetUserData());
 
       launchSiteLeftRest = false;
    }
 
-   if (eA == CET_LF_LEFT_FOOT)
+   if (eA == CollisionEntity::lfLeftFoot)
    {
       leapfrog = BodyUserData::getParentObjectOfType<LeapFrog*>(contact->GetFixtureA()->GetBody()->GetUserData());
 
       leapfrogLeftFoot = true;
    }
 
-   if (eB == CET_LF_LEFT_FOOT)
+   if (eB == CollisionEntity::lfLeftFoot)
    {
       leapfrog = BodyUserData::getParentObjectOfType<LeapFrog*>(contact->GetFixtureB()->GetBody()->GetUserData());
 
       leapfrogLeftFoot = true;
    }
 
-   if (eA == CET_LF_RIGHT_FOOT)
+   if (eA == CollisionEntity::lfRightFoot)
    {
       leapfrog = BodyUserData::getParentObjectOfType<LeapFrog*>(contact->GetFixtureA()->GetBody()->GetUserData());
 
       leapfrogLeftFoot = false;
    }
 
-   if (eB == CET_LF_RIGHT_FOOT)
+   if (eB == CollisionEntity::lfRightFoot)
    {
       leapfrog = BodyUserData::getParentObjectOfType<LeapFrog*>(contact->GetFixtureB()->GetBody()->GetUserData());
 
@@ -120,42 +120,42 @@ void LanderContactListener::ContactHandler(b2Contact* contact, bool begin)
    }
 
 
-   if (eA == CET_BULLET)
+   if (eA == CollisionEntity::bullet)
    {
       bullet = BodyUserData::getParentObjectOfType<Bullet*>(contact->GetFixtureA()->GetBody()->GetUserData());
    }
 
-   if (eB == CET_BULLET)
+   if (eB == CollisionEntity::bullet)
    {
       bullet = BodyUserData::getParentObjectOfType<Bullet*>(contact->GetFixtureB()->GetBody()->GetUserData());
    }
 
-   if (eA == CET_BREAKABLE_OBJECT)
+   if (eA == CollisionEntity::breakableObject)
    {
       breakable = BodyUserData::getParentObjectOfType<BreakableObject*>(contact->GetFixtureA()->GetBody()->GetUserData());
    }
 
-   if (eB == CET_BREAKABLE_OBJECT)
+   if (eB == CollisionEntity::breakableObject)
    {
       breakable = BodyUserData::getParentObjectOfType<BreakableObject*>(contact->GetFixtureB()->GetBody()->GetUserData());
    }
 
-   if (eA == CET_DESTROYABLE_OBJECT)
+   if (eA == CollisionEntity::destroyableObject)
    {
       destroyable = BodyUserData::getParentObjectOfType<CompoundObject*>(contact->GetFixtureA()->GetBody()->GetUserData());
    }
 
-   if (eB == CET_DESTROYABLE_OBJECT)
+   if (eB == CollisionEntity::destroyableObject)
    {
       destroyable = BodyUserData::getParentObjectOfType<CompoundObject*>(contact->GetFixtureB()->GetBody()->GetUserData());
    }
 
-   if (eA == CET_LANDING_PAD)
+   if (eA == CollisionEntity::landingPad)
    {
       landingPad = BodyUserData::getParentObjectOfType<LandingPad*>(contact->GetFixtureA()->GetBody()->GetUserData());
    }
 
-   if (eB == CET_LANDING_PAD)
+   if (eB == CollisionEntity::landingPad)
    {
       landingPad = BodyUserData::getParentObjectOfType<LandingPad*>(contact->GetFixtureB()->GetBody()->GetUserData());
    }

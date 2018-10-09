@@ -25,7 +25,6 @@ public:
       b2Vec2 m_impulseForce, 
       float radius);
 
-   virtual CollisionEntityTypeEnum getEntityType(void);
 
 protected:
 	void doUpdate(const oxygine::UpdateState& us);

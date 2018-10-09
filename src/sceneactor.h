@@ -6,7 +6,6 @@
 #include "launchsite.h"
 #include "scales.h"
 #include "physdispconvert.h"
-#include "killableinterface.h"
 #include "spawnobject.h"
 
 enum PanorateModeEnum
