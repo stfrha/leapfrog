@@ -120,9 +120,8 @@ public:
       CompoundObject* parentObject,
       b2World* world,
       const oxygine::Vector2& pos,
-      pugi::xml_node& root);
-
-
+      pugi::xml_node& root,
+      int groupIndex);
 
    void leapfrogFootTouch(b2Contact* contact, bool leftFoot);
    void leapfrogFootLift(b2Contact* contact, bool leftFoot);

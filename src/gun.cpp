@@ -11,8 +11,10 @@ Gun::Gun(
    SceneActor* sceneActor,
    CompoundObject* parentObject,
    b2World* world,
-   const xml_node& objectNode) :
+   const xml_node& objectNode,
+   int groupIndex) :
    System(gameResources, sceneActor, world, parentObject),
+   m_groupIndex(groupIndex),
    m_fire(false)
    //m_emitterBody(body),
    //m_emitterOrigin(emitterOrigin),
@@ -86,7 +88,8 @@ void Gun::doUpdate(const oxygine::UpdateState& us)
                m_impulseMagnitude,
                craftSpeed,
                m_lifetime,
-               false);
+               false,
+               m_groupIndex);
 
             // Attach to parent's parent which is the view actor
             bullet->attachTo(m_sceneActor);

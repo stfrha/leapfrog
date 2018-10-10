@@ -22,6 +22,8 @@ private:
    bool m_firstUpdate;
    int m_lifetime;
 
+   int m_groupIndex;
+
 public:
    Bullet(
       oxygine::Resources& gameResources,
@@ -32,7 +34,8 @@ public:
       float impulseMagnitude,
       b2Vec2& craftSpeed,
       int m_lifetime,
-      bool bouncy);
+      bool bouncy,
+      int groupIndex);
 
    // I need at least one virtual member to make the 
    // the class work with dynamic_cast
@@ -42,13 +45,10 @@ public:
 
    //virtual void killActor(void);
 
-   void hitAsteroid(b2Contact* contact);
-
-   void killAllChildBodies(void);
+   void bulletHit(b2Contact* contact);
 
 
 
 protected:
 	void doUpdate(const oxygine::UpdateState& us);
-   void atBulletDeath(void);
 };

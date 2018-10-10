@@ -189,7 +189,8 @@ void PolygonVertices::createBodyPolygon(
    b2Body** body,
    b2Fixture** fixture,
    pugi::xml_node objectNode,
-   bool staticBody)
+   bool staticBody,
+   int groupIndex)
 {
    int num = vertices.size() + 1;
 
@@ -230,8 +231,9 @@ void PolygonVertices::createBodyPolygon(
    *fixture = (*body)->CreateFixture(&fixtureDef);
 
    b2Filter filter;
-   filter.categoryBits = objectNode.attribute("collisionCategory").as_int();
-   filter.maskBits = objectNode.attribute("collisionMask").as_int();
+   //filter.categoryBits = objectNode.attribute("collisionCategory").as_int();
+   //filter.maskBits = objectNode.attribute("collisionMask").as_int();
+   filter.groupIndex = -groupIndex;
    (*fixture)->SetFilterData(filter);
 
    (*fixture)->SetDensity(objectNode.attribute("density").as_float(1.0f));

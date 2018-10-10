@@ -23,7 +23,8 @@ public:
       const b2Vec2& vel, 
       int m_lifetime, 
       b2Vec2 m_impulseForce, 
-      float radius);
+      float radius,
+      int groupIndex);
 
 
 protected:

@@ -10,7 +10,6 @@
 #include "flameemitter.h"
 #include "gun.h"
 
-
 class SceneActor;
 class AsteroidField;
 
@@ -48,6 +47,8 @@ private:
    //oxygine::spSprite m_ahead2Circle;
 
 
+   void collisionBlast(b2Contact* contact, bool small = true);
+   void evaluateDamage(void);
    
 public:
    spFlameEmitter m_boosterFlame;
@@ -59,15 +60,11 @@ public:
       CompoundObject* parentObject,
       b2World* world,
       const oxygine::Vector2& pos,
-      pugi::xml_node& root);
+      pugi::xml_node& root,
+      int groupIndex);
 
-
-
-
-   void hitByAnything(b2Contact* contact);
-   void hitByBullet(b2Contact* contact); 
-   void hitShield(b2Contact* contact);     // Returns true if SteerableObject was shattered
-   void hitByLepfrog(b2Contact* contact);
+   void hitImpulse(b2Contact* contact, const b2ContactImpulse* impulse);
+   void hitByBullet(b2Contact* contact, float bulletEqvDamage);
 
 protected:
 	void doUpdate(const oxygine::UpdateState& us);

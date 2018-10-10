@@ -27,7 +27,8 @@ System* System::initialiseSystemNode(
    CompoundObject* parent, 
    string systemType, 
    string name, 
-   const xml_node& node)
+   const xml_node& node,
+   int groupIndex)
 {
    if (systemType == "objectFactory")
    {
@@ -50,7 +51,8 @@ System* System::initialiseSystemNode(
          sceneActor,
          parent,
          world,
-         node.child("properties"));
+         node.child("properties"),
+         groupIndex);
 
       fe->setName(name);
 
@@ -64,7 +66,8 @@ System* System::initialiseSystemNode(
          sceneActor,
          parent,
          world,
-         node.child("properties"));
+         node.child("properties"),
+         groupIndex);
 
       g->setName(name);
 
@@ -78,7 +81,8 @@ System* System::initialiseSystemNode(
          sceneActor,
          parent,
          world,
-         node.child("properties"));
+         node.child("properties"),
+         groupIndex);
 
       sh->setName(name);
 

@@ -16,7 +16,8 @@ BreakableObject::BreakableObject(
    CompoundObject* parentObject,
    b2World* world,
    const Vector2& pos,
-   xml_node& root) :
+   xml_node& root,
+   int groupIndex) :
    CompoundObject(sceneParent, parentObject),
    m_gameResource(&gameResources),
    m_sceneActor(sceneParent),
@@ -35,7 +36,8 @@ BreakableObject::BreakableObject(
       world,
       pos,
       root,
-      "");
+      "",
+      groupIndex);
 
    attachTo(m_sceneActor);
 
@@ -61,30 +63,17 @@ void BreakableObject::readBreakableObjectNode(const pugi::xml_node& node)
    m_numberOfSpawns = node.child("behaviour").attribute("numberOfSpawns").as_int(0);
 }
 
-void BreakableObject::hitByBullet(b2Contact* contact)
+void BreakableObject::collisionBlast(b2Contact* contact, bool small)
+// Sparks blastemitter, small is default, can also be big
 {
-   // Assume unshattered blast
+   // Assume small blast
    int emitterLifetime = 150;
    int particleLifetime = 500;
    float particleDistance = 30.0f;
    float particleSize = 0.75f;
    float blastIntensity = 200.0f;
 
-   bool shattered = false;
-
-   // Take damage
-   m_damage += 1;
-
-   if (m_damage >= m_breakAtDamage)
-   {
-      addShapesToDeathList();
-      shattered = true;
-
-      spawnBreakableObjects();
-
-   }
-
-   if (shattered)
+   if (!small)
    {
       emitterLifetime = 250;
       particleLifetime = 500;
@@ -110,31 +99,24 @@ void BreakableObject::hitByBullet(b2Contact* contact)
    }
 }
 
-void BreakableObject::hitShield(b2Contact* contact)
+void BreakableObject::damageCollision(b2Contact* contact, float bulletEqvDamage)
+// Create blast emitter and check for breaking
 {
-   int emitterLifetime = 250;
-   int particleLifetime = 350;
-   float particleDistance = 40.0f;
-   float particleSize = 0.9f;
+   bool shattered = false;
 
-   b2WorldManifold m;
-   contact->GetWorldManifold(&m);
+   // Take damage
+   m_damage += (int)(25.0f * bulletEqvDamage);
 
-   spBlastEmitter blast = new BlastEmitter(
-      m_sceneActor->getResources(),
-      PhysDispConvert::convert(m.points[0], 1.0f),
-      150.0f,                                             // Intensity, particles / sec
-      emitterLifetime,                                    // Emitter Lifetime
-      particleLifetime,                                   // Particle lifetime
-      particleDistance,                                   // Particle distance
-      particleSize);                                      // Particle spawn size
-   blast->attachTo(m_sceneActor);
-}
+   if (m_damage >= m_breakAtDamage)
+   {
+      addShapesToDeathList();
 
+      spawnBreakableObjects();
 
-void BreakableObject::hitByLepfrog(b2Contact* contact)
-{
-   // Take damage like two bullets
+      collisionBlast(contact, false);
+   }
+
+   collisionBlast(contact, true);
 }
 
 void BreakableObject::doUpdate(const oxygine::UpdateState& us)

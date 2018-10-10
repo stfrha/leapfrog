@@ -37,7 +37,7 @@ private:
    float m_scale;
 
    bool m_emit;
-
+   int m_groupIndex;
 
 
    void readFlameEmitterNode(const pugi::xml_node& objectNode);
@@ -48,7 +48,8 @@ public:
       SceneActor* sceneActor,
       CompoundObject* parentObject,
       b2World* world,
-      const pugi::xml_node& objectNode);
+      const pugi::xml_node& objectNode,
+      int groupIndex);
 	void startEmitter(void);
 	void stopEmitter(void);
    void setFlameScale(float scale);

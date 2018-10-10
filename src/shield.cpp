@@ -16,7 +16,8 @@ Shield::Shield(
    SceneActor* sceneActor,
    CompoundObject* parentObject,
    b2World* world,
-   const xml_node& objectNode) :
+   const xml_node& objectNode,
+   int groupIndex) :
    System(gameResources, sceneActor,  world, parentObject)
 {
    readShieldNode(objectNode);
@@ -57,8 +58,9 @@ Shield::Shield(
    fixtureDef.density = 0.1f;
    fixtureDef.friction = 0.0f;
    fixtureDef.restitution = 0.3f;
-   fixtureDef.filter.categoryBits = 16384;
-   fixtureDef.filter.maskBits = 33819;
+   //fixtureDef.filter.categoryBits = 16384;
+   //fixtureDef.filter.maskBits = 33819;
+   fixtureDef.filter.groupIndex = -groupIndex;
 
    BodyUserData* bud = new BodyUserData();
    bud->m_actor = this;
@@ -147,7 +149,8 @@ float Shield::getAngle(void)
    return m_angle;
 }
 
-void Shield::shieldHit(b2Contact* contact, const b2ContactImpulse* impulse)
+
+void Shield::shieldHit(b2Contact* contact)
 {
    b2WorldManifold m;
    contact->GetWorldManifold(&m);
@@ -166,9 +169,24 @@ void Shield::shieldHit(b2Contact* contact, const b2ContactImpulse* impulse)
    spTween alphaTween = m_sprite->addTween(Actor::TweenAlpha(64), 500);
 
    animTween->setDoneCallback(CLOSURE(this, &Shield::atHitComplete));
+}
 
+void Shield::evaluatShieldDamage(void)
+{
+   if (g_GameStatus.getShield() <= 0.0f)
+   {
+      // Remove shield from collisions... only, this  didn't work
+      //b2Filter filt;
+      //filt.groupIndex = -filt.groupIndex;
 
+      //b2Fixture* bf = m_body->GetFixtureList();
+      //bf->SetFilterData(filt);
+   }
+}
 
+void Shield::shieldHitImpulse(b2Contact* contact, const b2ContactImpulse* impulse)
+{
+   shieldHit(contact);
 
    float normalImpulses = 0.0f;
 
@@ -179,20 +197,17 @@ void Shield::shieldHit(b2Contact* contact, const b2ContactImpulse* impulse)
 
    g_GameStatus.deltaShield(-normalImpulses / 1000.0f);
 
-   if (g_GameStatus.getShield() <= 0.0f)
-   {
-      // Remove shield from collisions
-      b2Filter filt;
-      filt.categoryBits = 0;
-      filt.maskBits = 65535;
-
-      b2Fixture* bf = m_body->GetFixtureList();
-      bf->SetFilterData(filt);
-   }
-
-
+   evaluatShieldDamage();
 }
 
+void Shield::shieldHitByBullet(b2Contact* contact, float bulletEqvDamage)
+{
+   shieldHit(contact);
+
+   g_GameStatus.deltaShield(-25.0f);
+
+   evaluatShieldDamage();
+}
 
 void Shield::doUpdate(const oxygine::UpdateState& us)
 {

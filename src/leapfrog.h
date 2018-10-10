@@ -172,7 +172,8 @@ private:
 
    oxygine::Resources* m_gameResources;
 
-   void findDamage(b2Contact* contact, const b2ContactImpulse* impulse);
+   void collisionBlast(b2Contact* contact, bool small = true);
+   void evaluateLepfrogDamage(void);
 
 public:
 
@@ -190,12 +191,13 @@ public:
       CompoundObject* parentObject,
 		b2World* world,
 		const oxygine::Vector2& pos,
-      pugi::xml_node& root);
+      pugi::xml_node& root,
+      int groupIndex);
 
 
+   void hitImpulse(b2Contact* contact, const b2ContactImpulse* impulse);
+   void hitByBullet(b2Contact* contact, float bulletEqvDamage);
 
-   void hitByAsteroid(b2Contact* contact);
-   void hitAnything(b2Contact* contact, const b2ContactImpulse* impulse);
 
    oxygine::Actor* getMainActor(void);
 

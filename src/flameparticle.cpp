@@ -12,7 +12,8 @@ FlameParticle::FlameParticle(
    const b2Vec2& vel,
    int lifetime,
    b2Vec2 impulseForce,
-   float radius) :
+   float radius,
+   int groupIndex) :
    m_gameResources(&gameResources),
    m_world(world)
 {
@@ -47,8 +48,9 @@ FlameParticle::FlameParticle(
    fixtureDef.density = 3.0f;
    fixtureDef.friction = 0.3f;
    fixtureDef.restitution = 0.5f;
-   fixtureDef.filter.categoryBits = 8192;
-   fixtureDef.filter.maskBits = 56459;
+   //fixtureDef.filter.categoryBits = 8192;
+   //fixtureDef.filter.maskBits = 56459;
+   fixtureDef.filter.groupIndex = -groupIndex;
 
    BodyUserData* bud = new BodyUserData();
    bud->m_actor = this;

@@ -1,5 +1,6 @@
 <?xml version="1.0"?>
-<compoundObject>
+<compoundObject
+   needsGroupIndex="false" >
    <behaviour
       type="breakableObject"
       breakBulletDamage="6"

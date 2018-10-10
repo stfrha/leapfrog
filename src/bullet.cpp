@@ -16,8 +16,10 @@ Bullet::Bullet(
    float impulseMagnitude,
    b2Vec2& craftSpeed,
    int lifetime,
-   bool bouncy) : 
+   bool bouncy,
+   int groupIndex) :
    m_sceneActor(sceneActor),
+   m_groupIndex(groupIndex),
    m_firstUpdate(true),
    m_lifetime(lifetime)
 {
@@ -25,11 +27,6 @@ Bullet::Bullet(
    setPosition(PhysDispConvert::convert(pos, 1.0f));
    setAnchor(Vector2(0.5f, 0.5f));
    setPriority(163);
-
-   //spTween tranpTween = addTween(Actor::TweenAlpha(0), lifetime);
-   //spTween scaleTween = addTween(Actor::TweenScale(0.25, 0.25), lifetime);
-
-   //scaleTween->setDoneCallback(CLOSURE(this, &Bullet::atBulletDeath));
 
    b2BodyDef bodyDef;
    bodyDef.type = b2_dynamicBody;
@@ -45,8 +42,9 @@ Bullet::Bullet(
    fixtureDef.density = 3.0f;
    fixtureDef.friction = 0.3f;
    fixtureDef.restitution = 0.5f;
-   fixtureDef.filter.categoryBits = 4;
-   fixtureDef.filter.maskBits = 65215;
+   //fixtureDef.filter.categoryBits = 4;
+   //fixtureDef.filter.maskBits = 65215;
+   fixtureDef.filter.groupIndex = -groupIndex;
 
    BodyUserData* bud = new BodyUserData();
    bud->m_actor = this;
@@ -75,14 +73,7 @@ Bullet::Bullet(
 
 }
 
-//void Bullet::killActor(void)
-//{
-//   atBulletDeath();
-//}
-
-
-
-void Bullet::hitAsteroid(b2Contact* contact)
+void Bullet::bulletHit(b2Contact* contact)
 {
    if (m_sceneActor)
    {
@@ -107,22 +98,3 @@ void Bullet::doUpdate(const oxygine::UpdateState& us)
    }
 }
 
-void Bullet::killAllChildBodies(void)
-{
-   b2Body* myBody = ActorUserData::getBody(getUserData());
-
-   if (myBody)
-   {
-      myBody->GetWorld()->DestroyBody(myBody);
-
-   }
-}
-
-void Bullet::atBulletDeath(void)
-{
-   b2Body* myBody = ActorUserData::getBody(getUserData());
-
-   myBody->GetWorld()->DestroyBody(myBody);
-
-   this->detach();
-}

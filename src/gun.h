@@ -35,6 +35,7 @@ private:
    // Working member variable
    bool m_fire;
    int m_timeSinceLast;
+   int m_groupIndex;
 
 
    void readGunNode(const pugi::xml_node& objectNode);
@@ -46,7 +47,8 @@ public:
       SceneActor* sceneActor,
       CompoundObject* parentObject,
       b2World* world,
-      const pugi::xml_node& objectNode);
+      const pugi::xml_node& objectNode,
+      int groupIndex);
 
 //   void setBoundedWallsActor(FreeSpaceActor* actor);
 

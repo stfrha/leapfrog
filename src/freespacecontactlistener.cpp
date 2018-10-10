@@ -18,20 +18,38 @@ void FreeSpaceContactListener::PostSolve(b2Contact* contact, const b2ContactImpu
    CollisionEntity::CollisionEntityTypeEnum eA = BodyUserData::getCollisionType(contact->GetFixtureA()->GetUserData());
    CollisionEntity::CollisionEntityTypeEnum eB = BodyUserData::getCollisionType(contact->GetFixtureB()->GetUserData());
 
-   Shield* shield = NULL;
+   Shield* shield1 = NULL;
+   Shield* shield2 = NULL;
    LeapFrog* leapfrog = NULL;
    Bullet* bullet = NULL;
    SteerableObject* steerableObject = NULL;
    BreakableObject* breakable = NULL;
+   bool flameParticle = false;
 
    if (eA == CollisionEntity::lfShield)
    {
-      shield = BodyUserData::getParentObjectOfType<Shield*>(contact->GetFixtureA()->GetBody()->GetUserData());
+      Shield* tmpShield = BodyUserData::getParentObjectOfType<Shield*>(contact->GetFixtureA()->GetBody()->GetUserData());
+      if (!shield1)
+      {
+         shield1 = tmpShield;
+      }
+      else
+      {
+         shield2 = tmpShield;
+      }
    }
 
    if (eB == CollisionEntity::lfShield)
    {
-      shield = BodyUserData::getParentObjectOfType<Shield*>(contact->GetFixtureB()->GetBody()->GetUserData());
+      Shield* tmpShield = BodyUserData::getParentObjectOfType<Shield*>(contact->GetFixtureB()->GetBody()->GetUserData());
+      if (!shield1)
+      {
+         shield1 = tmpShield;
+      }
+      else
+      {
+         shield2 = tmpShield;
+      }
    }
 
    if (eA == CollisionEntity::breakableObject)
@@ -64,49 +82,103 @@ void FreeSpaceContactListener::PostSolve(b2Contact* contact, const b2ContactImpu
       bullet = BodyUserData::getParentObjectOfType<Bullet*>(contact->GetFixtureB()->GetBody()->GetUserData());
    }
 
-   //if (eA == CET_HAMMER)
-   //{
-   //   hammer = BodyUserData::getParentObjectOfType<Hammer*>(contact->GetFixtureA()->GetBody()->GetUserData());
-   //}
-
-   //if (eB == CET_HAMMER)
-   //{
-   //   hammer = BodyUserData::getParentObjectOfType<Hammer*>(contact->GetFixtureB()->GetBody()->GetUserData());
-   //}
-
-
-   if (breakable && bullet)
+   if (eA == CollisionEntity::steerableObject)
    {
-      // Bullet hit asteroid
-      bullet->hitAsteroid(contact);
-      breakable->hitByBullet(contact);
+      steerableObject = BodyUserData::getParentObjectOfType<SteerableObject*>(contact->GetFixtureA()->GetBody()->GetUserData());
    }
 
-   if (breakable && shield)
+   if (eB == CollisionEntity::steerableObject)
    {
-      // Asteroid hit shield
-      shield->shieldHit(contact, impulse);
-      breakable->hitShield(contact);
+      steerableObject = BodyUserData::getParentObjectOfType<SteerableObject*>(contact->GetFixtureB()->GetBody()->GetUserData());
    }
 
-   // Gets here if shield no longer works
-   if (breakable && leapfrog)
+   if ((eA == CollisionEntity::flameParticle) || (eB == CollisionEntity::flameParticle))
+   {
+      flameParticle = true;      
+   }
+
+   if (eB == CollisionEntity::steerableObject)
+   {
+      steerableObject = BodyUserData::getParentObjectOfType<SteerableObject*>(contact->GetFixtureB()->GetBody()->GetUserData());
+   }
+
+   if (bullet)
+   {
+      // Bullet hit anything, remove it
+      bullet->bulletHit(contact);
+   }
+   
+   if (breakable)
+   {
+      if (bullet)
+      {
+         breakable->damageCollision(contact, 1.0f);
+      }
+      else if (flameParticle)
+      {
+         breakable->damageCollision(contact, 0.04f);
+      }
+      else
+      {
+         breakable->collisionBlast(contact, true);
+      }
+   }
+
+   if (shield1)
+   {
+      if (bullet)
+      {
+         shield1->shieldHitByBullet(contact, 1.0f);
+      }
+      else
+      {
+         shield1->shieldHitImpulse(contact, impulse);
+      }
+   }
+
+   if (shield2)
+   {
+      if (bullet)
+      {
+         shield2->shieldHitByBullet(contact, 1.0f);
+      }
+      else
+      {
+         shield2->shieldHitImpulse(contact, impulse);
+      }
+   }
+
+   if (leapfrog)
    {
       // Normally. body hits are prevented by shield
       // but if it a hard hit body may get contact
       // (from certain angles). In this case, if the 
       // shield is still active, we do not damage
-      // leapfrog (by not calling hitAnything)
+      // leapfrog 
       if (g_GameStatus.getShield() <= 0.0f)
       {
-         leapfrog->hitAnything(contact, impulse);
+         if (bullet)
+         {
+            leapfrog->hitByBullet(contact, 1.0f);
+         }
+         else
+         {
+            leapfrog->hitImpulse(contact, impulse);
+         }
       }
    }
 
    // Hammer hit anything
    if (steerableObject)
    {
-      //hammer->hitByAnything(contact);
+      if (bullet)
+      {
+         steerableObject->hitByBullet(contact, 1.0f);
+      }
+      else
+      {
+         steerableObject->hitImpulse(contact, impulse);
+      }
    }
 }
 

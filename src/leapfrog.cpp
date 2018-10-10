@@ -16,6 +16,8 @@
 #include "bodyuserdata.h"
 #include "actoruserdata.h"
 
+#include "blastemitter.h"
+
 using namespace oxygine;
 using namespace std;
 
@@ -50,8 +52,10 @@ LeapFrog::LeapFrog(
    CompoundObject* parentObject,
 	b2World* world,
 	const oxygine::Vector2& pos,
-   pugi::xml_node& root) :
+   pugi::xml_node& root,
+   int groupIndex) :
    CompoundObject(sceneParent, parentObject),
+
 	m_world(world),
    m_boostMagnuitude(0.0f),
    m_steerMagnitude(0.0f),
@@ -67,7 +71,7 @@ LeapFrog::LeapFrog(
    m_wantedAngle(0.0f),
    m_modeInTransit(false)
 {
-	initCompoundObjectParts(gameResources, sceneParent, parentObject, world, pos, root, string(""));
+	initCompoundObjectParts(gameResources, sceneParent, parentObject, world, pos, root, string(""), groupIndex);
 
    m_mainActor = getActor("lfMainBody");
    m_lfRightBigLeg = static_cast<Sprite*>(getActor("lfRightBigLeg"));
@@ -211,23 +215,6 @@ void LeapFrog::setEnvPropHandler(oxygine::Event *ev)
 oxygine::Actor* LeapFrog::getMainActor(void)
 {
    return m_mainActor.get();
-}
-
-void LeapFrog::hitByAsteroid(b2Contact* contact)
-{
-   // Damage to LeapFrog!
-}
-
-void LeapFrog::hitAnything(b2Contact* contact, const b2ContactImpulse* impulse)
-{
-   float normalImpulses = 0.0f;
-
-   for (int i = 0; i < impulse->count; i++)
-   {
-      normalImpulses += impulse->normalImpulses[i];
-   }
-
-   g_GameStatus.deltaDamage(-normalImpulses / 100.0f);
 }
 
 void LeapFrog::doUpdate(const UpdateState &us)
@@ -1137,4 +1124,70 @@ void LeapFrog::dumpParts(void)
    dumpPart("Left Steer Booster:", m_leftSteerBody, m_mainBody);
 }
 
+void LeapFrog::collisionBlast(b2Contact* contact, bool small)
+// Sparks blastemitter, small is default, can also be big
+{
+   // Assume small blast
+   int emitterLifetime = 150;
+   int particleLifetime = 500;
+   float particleDistance = 30.0f;
+   float particleSize = 0.75f;
+   float blastIntensity = 200.0f;
 
+   if (!small)
+   {
+      emitterLifetime = 250;
+      particleLifetime = 500;
+      particleDistance = 60.0f;
+      particleSize = 0.9f;
+      blastIntensity = 300.0f;
+   }
+
+   b2WorldManifold m;
+   contact->GetWorldManifold(&m);
+
+   if (contact->GetManifold()->pointCount > 0)
+   {
+      spBlastEmitter blast = new BlastEmitter(
+         m_sceneActor->getResources(),
+         PhysDispConvert::convert(m.points[0], 1.0f),
+         blastIntensity,                                     // Intensity, particles / sec
+         emitterLifetime,                                    // Emitter Lifetime
+         particleLifetime,                                   // Particle lifetime
+         particleDistance,                                   // Particle distance
+         particleSize);                                      // Particle spawn size
+      blast->attachTo(m_sceneActor);
+   }
+}
+
+void LeapFrog::evaluateLepfrogDamage(void)
+{
+   // TODO: Evaluate game over
+
+}
+
+void LeapFrog::hitImpulse(b2Contact* contact, const b2ContactImpulse* impulse)
+{
+   collisionBlast(contact, true);
+
+   float normalImpulses = 0.0f;
+
+   for (int i = 0; i < impulse->count; i++)
+   {
+      normalImpulses += impulse->normalImpulses[i];
+   }
+
+   g_GameStatus.deltaDamage(-normalImpulses / 100.0f);
+
+   evaluateLepfrogDamage();
+
+}
+
+void LeapFrog::hitByBullet(b2Contact* contact, float bulletEqvDamage)
+{
+   collisionBlast(contact, true);
+
+   g_GameStatus.deltaDamage(-25.0f);
+
+   evaluateLepfrogDamage();
+}

@@ -17,12 +17,13 @@ LandingPad::LandingPad(
    CompoundObject* parentObject,
    b2World* world,
    const Vector2& pos,
-   pugi::xml_node& root) :
+   pugi::xml_node& root,
+   int groupIndex) :
    CompoundObject(sceneParent, parentObject),
    m_leftFootContact(false),
    m_rightFootContact(false)
 {
-	initCompoundObjectParts(gameResources, sceneParent, parentObject, world, pos, root, string(""));
+	initCompoundObjectParts(gameResources, sceneParent, parentObject, world, pos, root, string(""), groupIndex);
 
    // This CompoundObject is also an actor who normally has
    // a userData that points to its parent. However, the parent

@@ -36,7 +36,7 @@ void LanderContactListener::PostSolve(b2Contact* contact, const b2ContactImpulse
 
    if (leapfrog)
    {
-      leapfrog->hitAnything(contact, impulse);
+      leapfrog->hitImpulse(contact, impulse);
    }
 }
 
@@ -188,14 +188,14 @@ void LanderContactListener::ContactHandler(b2Contact* contact, bool begin)
    if (breakable && bullet)
    {
       // Bullet hit asteroid
-      bullet->hitAsteroid(contact);
+      bullet->bulletHit(contact);
       breakable->hitByBullet(contact);
    }
 
    if (destroyable && bullet)
    {
       // Bullet hit asteroid
-      bullet->hitAsteroid(contact);
+      bullet->bulletHit(contact);
       destroyable->hitByBullet(contact);
    }
 }

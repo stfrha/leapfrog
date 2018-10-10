@@ -45,13 +45,13 @@ public:
       CompoundObject* parentObject,
       b2World* world,
       const oxygine::Vector2& pos,
-      pugi::xml_node& root);
+      pugi::xml_node& root,
+      int groupIndex);
 
 
 
-   void hitByBullet(b2Contact* contact); 
-   void hitShield(b2Contact* contact);     // Returns true if BreakableObject was shattered
-   void hitByLepfrog(b2Contact* contact);
+   void collisionBlast(b2Contact* contact, bool small = true);
+   void damageCollision(b2Contact* contact, float bulletEqvDamage);
 
 protected:
 	void doUpdate(const oxygine::UpdateState& us);

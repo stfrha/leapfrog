@@ -11,12 +11,14 @@ FlameEmitter::FlameEmitter(
    SceneActor* sceneActor,
    CompoundObject* parent,
    b2World* world,
-   const xml_node& objectNode)  :
+   const xml_node& objectNode,
+   int groupIndex)  :
    System(
       gameResources,
       sceneActor,
       world, 
       parent),
+   m_groupIndex(groupIndex),
    m_emit(false),
    m_scale(1.0f)
 {
@@ -97,7 +99,8 @@ void FlameEmitter::doUpdate(const oxygine::UpdateState& us)
          m_emitterBody->GetLinearVelocity(),
          (int)((float)m_lifetime * m_scale), 
          m_scale * impulse,
-         m_radius * m_scale);
+         m_radius * m_scale,
+         m_groupIndex);
 
       // Attach to parent's parent which is the view actor
       flameParticle->attachTo(m_sceneActor);

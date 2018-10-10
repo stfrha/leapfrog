@@ -29,7 +29,8 @@
          <properties
             posX="700.0"
             posY="250.0" >
-            <compoundObject>
+            <compoundObject
+               needsGroupIndex="true" >
                <behaviour
                   type="steerableObject" />
                <dynamicBox

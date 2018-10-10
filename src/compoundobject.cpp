@@ -24,6 +24,7 @@
 #include "bodyuserdata.h"
 #include "actoruserdata.h"
 
+#include "groupindexsource.h"
 using namespace oxygine;
 using namespace std;
 using namespace pugi;
@@ -160,6 +161,15 @@ CompoundObject* CompoundObject::initCompoundObject(
    xml_node& root,
    const string& initialState)
 {
+   // Check if this object needs a groupIndex for collisions
+   bool needsGroupIndex = root.attribute("needsGroupIndex").as_bool(false);
+   int groupIndex = 0;
+
+   if (needsGroupIndex)
+   {
+      groupIndex = g_GroupIndexSource.getNewGroupIndex();
+   }
+
    // Look if there is a behaviour attached to the compound object
    string behavStr = root.child("behaviour").attribute("type").as_string();
 
@@ -175,7 +185,8 @@ CompoundObject* CompoundObject::initCompoundObject(
          parentObject,
          world,
          pos,
-         root);
+         root,
+         groupIndex);
 
       lf->m_behaviourType = BehaviourEnum::leapfrog;
 
@@ -189,7 +200,8 @@ CompoundObject* CompoundObject::initCompoundObject(
          parentObject,
          world,
          pos,
-         root);
+         root,
+         groupIndex);
 
       ls->m_behaviourType = BehaviourEnum::launchSite;
 
@@ -203,7 +215,8 @@ CompoundObject* CompoundObject::initCompoundObject(
          parentObject,
          world,
          pos,
-         root);
+         root,
+         groupIndex);
 
       lp->m_behaviourType = BehaviourEnum::landingPad;
 
@@ -217,7 +230,8 @@ CompoundObject* CompoundObject::initCompoundObject(
          this, 
          world, 
          pos, 
-         root);
+         root,
+         groupIndex);
 
       bo->m_behaviourType = BehaviourEnum::breakableObject;
 
@@ -231,7 +245,8 @@ CompoundObject* CompoundObject::initCompoundObject(
          this,
          world,
          pos,
-         root);
+         root,
+         groupIndex);
 
       so->m_behaviourType = BehaviourEnum::steerableObject;
 
@@ -248,7 +263,8 @@ CompoundObject* CompoundObject::initCompoundObject(
          world,
          pos,
          root,
-         string(""));
+         string(""),
+         groupIndex);
 
       return this;
    }
@@ -264,7 +280,8 @@ bool CompoundObject::initCompoundObjectParts(
    b2World* world,
    const Vector2& pos,
    pugi::xml_node& root,
-   const string& initialState)
+   const string& initialState,
+   int groupIndex)
 {
    // When defining childObjects that read from other XML-document
    // we somehow loose the pointer in this file,
@@ -304,7 +321,7 @@ bool CompoundObject::initCompoundObjectParts(
       ++it)
    {
       // define a object
-      defineStaticCircle(gameResources, sceneParent, this, world, pos, *it);
+      defineStaticCircle(gameResources, sceneParent, this, world, pos, *it, groupIndex);
    }
 
    for (auto it = savedNode.children("staticBox").begin();
@@ -312,7 +329,7 @@ bool CompoundObject::initCompoundObjectParts(
       ++it)
    {
       // define a object
-      defineStaticBox(gameResources, sceneParent, this, world, pos, *it);
+      defineStaticBox(gameResources, sceneParent, this, world, pos, *it, groupIndex);
    }
 
    for (auto it = savedNode.children("staticPolygon").begin();
@@ -320,14 +337,14 @@ bool CompoundObject::initCompoundObjectParts(
       ++it)
    {
       // define a object
-      defineStaticPolygon(gameResources, sceneParent, this, world, pos, *it);
+      defineStaticPolygon(gameResources, sceneParent, this, world, pos, *it, groupIndex);
    }
 
    for (auto it = savedNode.children("staticBoxedSpritePolygonBody").begin();
       it != savedNode.children("staticBoxedSpritePolygon").end();
       ++it)
    {
-      defineStaticBoxedSpritePolygon(gameResources, sceneParent, this, world, pos, *it);
+      defineStaticBoxedSpritePolygon(gameResources, sceneParent, this, world, pos, *it, groupIndex);
    }
 
    for (auto it = savedNode.children("dynamicCircle").begin();
@@ -335,7 +352,7 @@ bool CompoundObject::initCompoundObjectParts(
       ++it)
    {
       // define a box object
-      defineDynamicCircle(gameResources, sceneParent, this, world, pos, *it);
+      defineDynamicCircle(gameResources, sceneParent, this, world, pos, *it, groupIndex);
    }
 
    for (auto it = savedNode.children("dynamicBox").begin();
@@ -343,7 +360,7 @@ bool CompoundObject::initCompoundObjectParts(
       ++it)
    {
       // define a box object
-      defineDynamicBox(gameResources, sceneParent, this, world, pos, *it);
+      defineDynamicBox(gameResources, sceneParent, this, world, pos, *it, groupIndex);
    }
 
    for (auto it = savedNode.children("dynamicPolygon").begin();
@@ -352,14 +369,14 @@ bool CompoundObject::initCompoundObjectParts(
    {
       // define a polygon object
       string a = (*it).attribute("name").as_string();
-      defineDynamicPolygon(gameResources, sceneParent, this, world, pos, *it);
+      defineDynamicPolygon(gameResources, sceneParent, this, world, pos, *it, groupIndex);
    }
 
    for (auto it = savedNode.children("dynamicBoxedSpritePolygonBody").begin();
       it != savedNode.children("dynamicBoxedSpritePolygonBody").end();
       ++it)
    {
-      defineDynamicBoxedSpritePolygon(gameResources, sceneParent, this, world, pos, *it);
+      defineDynamicBoxedSpritePolygon(gameResources, sceneParent, this, world, pos, *it, groupIndex);
    }
 
    for (auto it = savedNode.children("rope").begin();
@@ -404,7 +421,7 @@ bool CompoundObject::initCompoundObjectParts(
 
       if (getStateNode(*it, initialState, stateNode))
       {
-         System* sys = System::initialiseSystemNode(&gameResources, m_sceneActor, world, this, systemType, systemName, stateNode);
+         System* sys = System::initialiseSystemNode(&gameResources, m_sceneActor, world, this, systemType, systemName, stateNode, groupIndex);
 
          // Is it really important to remember the systems here?
          m_systems.push_back(sys);
@@ -530,6 +547,7 @@ void CompoundObject::defineCircle(
    b2World* world,
    const oxygine::Vector2& pos,
    pugi::xml_node& objectNode,
+   int groupIndex,
    bool staticBody)
 {
    // Define sprite
@@ -564,8 +582,9 @@ void CompoundObject::defineCircle(
    fixtureDef.shape = &circleShape;
    fixtureDef.density = objectNode.attribute("density").as_float(1.0f);
    fixtureDef.friction = objectNode.attribute("friction").as_float(1.0f);
-   fixtureDef.filter.categoryBits = objectNode.attribute("collisionCategory").as_int();
-   fixtureDef.filter.maskBits = objectNode.attribute("collisionMask").as_int();
+   //fixtureDef.filter.categoryBits = objectNode.attribute("collisionCategory").as_int();
+   //fixtureDef.filter.maskBits = objectNode.attribute("collisionMask").as_int();
+   fixtureDef.filter.groupIndex = -groupIndex;
 
    BodyUserData* bud = new BodyUserData();
    bud->m_actor = sprite.get();
@@ -592,9 +611,10 @@ void CompoundObject::defineStaticCircle(
    CompoundObject* parentObject,
    b2World* world,
    const oxygine::Vector2& pos,
-   pugi::xml_node& objectNode)
+   pugi::xml_node& objectNode,
+   int groupIndex)
 {
-   defineCircle(gameResources, sceneParent, parentObject, world, pos, objectNode, true);
+   defineCircle(gameResources, sceneParent, parentObject, world, pos, objectNode, groupIndex, true);
 }
 
 void CompoundObject::defineBox(
@@ -604,6 +624,7 @@ void CompoundObject::defineBox(
    b2World* world,
    const Vector2& pos,
    xml_node& objectNode,
+   int groupIndex,
    bool staticBody)
 {
 
@@ -639,8 +660,9 @@ void CompoundObject::defineBox(
    fixtureDef.shape = &boxShape;
    fixtureDef.density = objectNode.attribute("density").as_float(1.0f);
    fixtureDef.friction = objectNode.attribute("friction").as_float(1.0f);
-   fixtureDef.filter.categoryBits = objectNode.attribute("collisionCategory").as_int();
-   fixtureDef.filter.maskBits = objectNode.attribute("collisionMask").as_int();
+   fixtureDef.filter.groupIndex = -groupIndex;
+   //fixtureDef.filter.categoryBits = objectNode.attribute("collisionCategory").as_int();
+   //fixtureDef.filter.maskBits = objectNode.attribute("collisionMask").as_int();
 
    BodyUserData* bud = new BodyUserData();
    bud->m_actor = sprite.get();
@@ -667,9 +689,10 @@ void CompoundObject::defineStaticBox(
    CompoundObject* parentObject,
    b2World* world,
    const Vector2& pos,
-   xml_node& objectNode)
+   xml_node& objectNode,
+   int groupIndex)
 {
-   defineBox(gameResources, sceneParent, parentObject, world, pos, objectNode, true);
+   defineBox(gameResources, sceneParent, parentObject, world, pos, objectNode, groupIndex, true);
 }
 
 
@@ -679,7 +702,8 @@ void CompoundObject::defineStaticPolygon(
    CompoundObject* parentObject,
    b2World* world,
    const Vector2& pos, 
-   xml_node& objectNode)
+   xml_node& objectNode,
+   int groupIndex)
 {
    spPolygon sprite = new oxygine::Polygon();
    sprite->setResAnim(gameResources.getResAnim(objectNode.attribute("texture").as_string()));
@@ -701,8 +725,9 @@ void CompoundObject::defineStaticPolygon(
    m_shapes.push_back(sprite.get());
 
    b2Filter filter;
-   filter.categoryBits = objectNode.attribute("collisionCategory").as_int();
-   filter.maskBits = objectNode.attribute("collisionMask").as_int();
+   //filter.categoryBits = objectNode.attribute("collisionCategory").as_int();
+   //filter.maskBits = objectNode.attribute("collisionMask").as_int();
+   filter.groupIndex = -groupIndex;
    fixture->SetFilterData(filter);
 
    BodyUserData* bud = new BodyUserData();
@@ -728,6 +753,7 @@ void CompoundObject::defineBoxedSpritePolygon(
    b2World* world,
    const Vector2& pos,
    xml_node& objectNode,
+   int groupIndex,
    bool staticBody)
 {
    // Define sprite, which is a polygon, in this case
@@ -748,7 +774,7 @@ void CompoundObject::defineBoxedSpritePolygon(
    b2Vec2 bPos = PhysDispConvert::convert(pos, 1.0f) + b2Vec2(objectNode.attribute("posX").as_float(), objectNode.attribute("posY").as_float());
 
    PolygonVertices::readVertices(vertices, objectNode);
-   PolygonVertices::createBodyPolygon(vertices, world, bPos, &body, &fixture, objectNode, staticBody);
+   PolygonVertices::createBodyPolygon(vertices, world, bPos, &body, &fixture, objectNode, staticBody, groupIndex);
 
    BodyUserData* bud = new BodyUserData();
    bud->m_actor = sprite.get();
@@ -773,9 +799,10 @@ void CompoundObject::defineStaticBoxedSpritePolygon(
    CompoundObject* parentObject,
    b2World* world,
    const Vector2& pos,
-   xml_node& objectNode)
+   xml_node& objectNode,
+   int groupIndex)
 {
-   defineBoxedSpritePolygon(gameResources, sceneParent, parentObject, world, pos, objectNode, true);
+   defineBoxedSpritePolygon(gameResources, sceneParent, parentObject, world, pos, objectNode, groupIndex, true);
 }
 
 void CompoundObject::defineDynamicCircle(
@@ -784,9 +811,10 @@ void CompoundObject::defineDynamicCircle(
    CompoundObject* parentObject,
    b2World* world,
    const Vector2& pos,
-   xml_node& objectNode)
+   xml_node& objectNode,
+   int groupIndex)
 {
-   defineCircle(gameResources, sceneParent, parentObject, world, pos, objectNode, false);
+   defineCircle(gameResources, sceneParent, parentObject, world, pos, objectNode, groupIndex, false);
 }
 
 void CompoundObject::defineDynamicBox(
@@ -795,9 +823,10 @@ void CompoundObject::defineDynamicBox(
    CompoundObject* parentObject,
    b2World* world,
    const Vector2& pos, 
-   xml_node& objectNode)
+   xml_node& objectNode,
+   int groupIndex)
 {
-   defineBox(gameResources, sceneParent, parentObject, world, pos, objectNode, false);
+   defineBox(gameResources, sceneParent, parentObject, world, pos, objectNode, groupIndex, false);
 }
 
 void CompoundObject::defineDynamicPolygon(
@@ -806,7 +835,8 @@ void CompoundObject::defineDynamicPolygon(
    CompoundObject* parentObject,
    b2World* world,
    const Vector2& pos, 
-   xml_node& objectNode)
+   xml_node& objectNode,
+   int groupIndex)
 {
    // Define sprite, which is a polygon, in this case
 
@@ -822,7 +852,7 @@ void CompoundObject::defineDynamicPolygon(
    b2Vec2 bPos = PhysDispConvert::convert(pos, 1.0f) + b2Vec2(objectNode.attribute("posX").as_float(), objectNode.attribute("posY").as_float());
 
    PolygonVertices::createSpritePolygon(sprite.get(), vertices, objectNode);
-   PolygonVertices::createBodyPolygon(vertices, world, bPos, &body, &fixture, objectNode, false);
+   PolygonVertices::createBodyPolygon(vertices, world, bPos, &body, &fixture, objectNode, false, groupIndex);
 
    // Here I could probably generate borders to the sprite by calling PolygonVertices::createPolygonBorder
 
@@ -852,9 +882,10 @@ void CompoundObject::defineDynamicBoxedSpritePolygon(
    CompoundObject* parentObject,
    b2World* world,
    const Vector2& pos,
-   xml_node& objectNode)
+   xml_node& objectNode,
+   int groupIndex)
 {
-   defineBoxedSpritePolygon(gameResources, sceneParent, parentObject, world, pos, objectNode, false);
+   defineBoxedSpritePolygon(gameResources, sceneParent, parentObject, world, pos, objectNode, groupIndex, false);
 }
 
 void CompoundObject::defineRope(
@@ -967,8 +998,8 @@ void CompoundObject::defineRope(
    fixtureDef.shape = &boxShape;
    fixtureDef.density = jointNode.attribute("density").as_float(1.0f);
    fixtureDef.friction = 1.0f;
-   fixtureDef.filter.categoryBits = jointNode.attribute("collisionCategory").as_int();
-   fixtureDef.filter.maskBits = jointNode.attribute("collisionMask").as_int();
+   //fixtureDef.filter.categoryBits = jointNode.attribute("collisionCategory").as_int();
+   //fixtureDef.filter.maskBits = jointNode.attribute("collisionMask").as_int();
    fixtureDef.userData = bud;
 
    firstSegBody->CreateFixture(&fixtureDef);
@@ -1029,8 +1060,8 @@ void CompoundObject::defineRope(
       fixtureDef.shape = &boxShape;
       fixtureDef.density = jointNode.attribute("density").as_float(1.0f);
       fixtureDef.friction = 1.0f;
-      fixtureDef.filter.categoryBits = jointNode.attribute("collisionCategory").as_int();
-      fixtureDef.filter.maskBits = jointNode.attribute("collisionMask").as_int();
+      //fixtureDef.filter.categoryBits = jointNode.attribute("collisionCategory").as_int();
+      //fixtureDef.filter.maskBits = jointNode.attribute("collisionMask").as_int();
       fixtureDef.userData = bud;
 
       segBody->CreateFixture(&fixtureDef);

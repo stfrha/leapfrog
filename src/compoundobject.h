@@ -44,9 +44,6 @@ public:
 
 
 private:
-
-   SceneActor * m_sceneActor;
-
    // Lists for searching for objects defined for the CompoundObject
    // Note:
    // Shapes (sprites and bodies) are attached to scene parent but linked
@@ -77,6 +74,7 @@ private:
       b2World* world,
       const oxygine::Vector2& pos,
       pugi::xml_node& objectNode,
+      int groupIndex,
       bool staticBody);
 
    void defineStaticCircle(
@@ -85,7 +83,8 @@ private:
       CompoundObject* parentObject,
       b2World* world,
       const oxygine::Vector2& pos,
-      pugi::xml_node& objectNode);
+      pugi::xml_node& objectNode,
+      int groupIndex);
 
    void defineBox(
       oxygine::Resources& gameResources,
@@ -94,6 +93,7 @@ private:
       b2World* world,
       const oxygine::Vector2& pos,
       pugi::xml_node& objectNode,
+      int groupIndex,
       bool staticBody);
 
    void defineStaticBox(
@@ -102,7 +102,8 @@ private:
       CompoundObject* parentObject,
       b2World* world,
       const oxygine::Vector2& pos, 
-      pugi::xml_node& objectNode);
+      pugi::xml_node& objectNode,
+      int groupIndex);
 
    void defineStaticPolygon(
       oxygine::Resources& gameResources, 
@@ -110,7 +111,8 @@ private:
       CompoundObject* parentObject,
       b2World* world,
       const oxygine::Vector2& pos, 
-      pugi::xml_node& objectNode);
+      pugi::xml_node& objectNode,
+      int groupIndex);
 
    void defineBoxedSpritePolygon(
       oxygine::Resources& gameResources,
@@ -119,6 +121,7 @@ private:
       b2World* world,
       const oxygine::Vector2& pos,
       pugi::xml_node& objectNode,
+      int groupIndex,
       bool staticBody);
 
    void defineStaticBoxedSpritePolygon(
@@ -127,7 +130,8 @@ private:
       CompoundObject* parentObject,
       b2World* world,
       const oxygine::Vector2& pos,
-      pugi::xml_node& objectNode);
+      pugi::xml_node& objectNode,
+      int groupIndex);
 
    void defineDynamicCircle(
       oxygine::Resources& gameResources,
@@ -135,7 +139,8 @@ private:
       CompoundObject* parentObject,
       b2World* world,
       const oxygine::Vector2& pos,
-      pugi::xml_node& objectNode);
+      pugi::xml_node& objectNode,
+      int groupIndex);
 
    void defineDynamicBox(
       oxygine::Resources& gameResources, 
@@ -143,7 +148,8 @@ private:
       CompoundObject* parentObject,
       b2World* world,
       const oxygine::Vector2& pos, 
-      pugi::xml_node& objectNode);
+      pugi::xml_node& objectNode,
+      int groupIndex);
 
    void defineDynamicPolygon(
       oxygine::Resources& gameResources, 
@@ -151,7 +157,8 @@ private:
       CompoundObject* parentObject,
       b2World* world,
       const oxygine::Vector2& pos, 
-      pugi::xml_node& objectNode);
+      pugi::xml_node& objectNode,
+      int groupIndex);
 
    void defineDynamicBoxedSpritePolygon(
       oxygine::Resources& gameResources,
@@ -159,7 +166,8 @@ private:
       CompoundObject* parentObject,
       b2World* world,
       const oxygine::Vector2& pos,
-      pugi::xml_node& objectNode);
+      pugi::xml_node& objectNode,
+      int groupIndex);
 
    void defineRope(
       oxygine::Resources& gameResources,
@@ -195,6 +203,7 @@ private:
    bool getStateNode(pugi::xml_node& objectNode, const std::string& initialState, pugi::xml_node& stateNode);
 
 protected:
+   SceneActor * m_sceneActor;
    CompoundObject * m_parentObject;
    std::vector<oxygine::Actor*> m_shapes;
 
@@ -244,7 +253,8 @@ public:
       b2World* world,
       const oxygine::Vector2& pos,
       pugi::xml_node& objectNode,
-      const std::string& initialState);
+      const std::string& initialState,
+      int groupIndex);
 
    CompoundObject* defineChildObject(
       oxygine::Resources& gameResources,

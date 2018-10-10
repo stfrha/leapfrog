@@ -60,7 +60,8 @@ public:
       b2Body** body,
       b2Fixture** fixture,
       pugi::xml_node objectNode,
-      bool staticBody);
+      bool staticBody,
+      int groupIndex);
 
 
    static void createPolygonBorders(

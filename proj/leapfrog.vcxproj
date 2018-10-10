@@ -178,6 +178,7 @@
     <ClCompile Include="..\src\freespaceactor.cpp" />
     <ClCompile Include="..\src\freespacecontactlistener.cpp" />
     <ClCompile Include="..\src\gamestatus.cpp" />
+    <ClCompile Include="..\src\groupindexsource.cpp" />
     <ClCompile Include="..\src\gun.cpp" />
     <ClCompile Include="..\src\steerableobject.cpp" />
     <ClCompile Include="..\src\landercontactlistener.cpp" />
@@ -274,6 +275,7 @@
     <ClInclude Include="..\src\freespacecontactlistener.h" />
     <ClInclude Include="..\src\gamestatus.h" />
     <ClInclude Include="..\src\gamestatusevents.h" />
+    <ClInclude Include="..\src\groupindexsource.h" />
     <ClInclude Include="..\src\gun.h" />
     <ClInclude Include="..\src\steerableobject.h" />
     <ClInclude Include="..\src\landercontactlistener.h" />

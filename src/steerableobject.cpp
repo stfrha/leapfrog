@@ -6,6 +6,7 @@
 #include "blastemitter.h"
 #include "actoruserdata.h"
 
+
 using namespace std;
 using namespace oxygine;
 using namespace pugi;
@@ -16,7 +17,8 @@ SteerableObject::SteerableObject(
    CompoundObject* parentObject,
    b2World* world,
    const oxygine::Vector2& pos,
-   pugi::xml_node& root) :
+   pugi::xml_node& root,
+   int groupIndex) :
    CompoundObject(sceneActor, parentObject),
    m_gameResource(&gameResources),
    m_world(world),
@@ -27,7 +29,7 @@ SteerableObject::SteerableObject(
 {
    Vector2 oSize = Vector2(24.0f, 12.6f);
 
-   initCompoundObjectParts(gameResources, sceneActor, parentObject, world, pos, root, string(""));
+   initCompoundObjectParts(gameResources, sceneActor, parentObject, world, pos, root, string(""), groupIndex);
 
    m_body = getBody("mainBody");
 
@@ -51,21 +53,6 @@ SteerableObject::SteerableObject(
    m_steeringManager = new SteeringManager(m_body, m_sceneActor);
    m_steeringManager->m_wanderAngle = MATH_PI;
 }
-
-void SteerableObject::hitByBullet(b2Contact* contact)
-{
-}
-
-void SteerableObject::hitShield(b2Contact* contact)
-{
-}
-
-
-void SteerableObject::hitByLepfrog(b2Contact* contact)
-{
-   // Take damage like two bullets
-}
-
 
 
 void SteerableObject::doUpdate(const oxygine::UpdateState& us)
@@ -219,9 +206,71 @@ void SteerableObject::doUpdate(const oxygine::UpdateState& us)
    //}
 }
 
-void SteerableObject::hitByAnything(b2Contact* contact)
-{
-   m_slowTurningAfterHit = true;
-   // logs::messageln("Turning slow...");
 
+
+void SteerableObject::collisionBlast(b2Contact* contact, bool small)
+// Sparks blastemitter, small is default, can also be big
+{
+   // Assume small blast
+   int emitterLifetime = 150;
+   int particleLifetime = 500;
+   float particleDistance = 30.0f;
+   float particleSize = 0.75f;
+   float blastIntensity = 200.0f;
+
+   if (!small)
+   {
+      emitterLifetime = 250;
+      particleLifetime = 500;
+      particleDistance = 60.0f;
+      particleSize = 0.9f;
+      blastIntensity = 300.0f;
+   }
+
+   b2WorldManifold m;
+   contact->GetWorldManifold(&m);
+
+   if (contact->GetManifold()->pointCount > 0)
+   {
+      spBlastEmitter blast = new BlastEmitter(
+         m_sceneActor->getResources(),
+         PhysDispConvert::convert(m.points[0], 1.0f),
+         blastIntensity,                                     // Intensity, particles / sec
+         emitterLifetime,                                    // Emitter Lifetime
+         particleLifetime,                                   // Particle lifetime
+         particleDistance,                                   // Particle distance
+         particleSize);                                      // Particle spawn size
+      blast->attachTo(m_sceneActor);
+   }
+}
+
+void SteerableObject::evaluateDamage(void)
+{
+
+}
+
+
+void SteerableObject::hitImpulse(b2Contact* contact, const b2ContactImpulse* impulse)
+{
+   collisionBlast(contact, true);
+
+   float normalImpulses = 0.0f;
+
+   for (int i = 0; i < impulse->count; i++)
+   {
+      normalImpulses += impulse->normalImpulses[i];
+   }
+
+   //g_GameStatus.deltaDamage(-normalImpulses / 100.0f);
+
+   evaluateDamage();
+}
+
+void SteerableObject::hitByBullet(b2Contact* contact, float bulletEqvDamage)
+{
+   collisionBlast(contact, true);
+
+   //g_GameStatus.deltaDamage(-25.0f);
+
+   evaluateDamage();
 }

@@ -39,6 +39,7 @@ public:
       CompoundObject* parent,
       std::string systemType,
       std::string name,
-      const pugi::xml_node& node);
+      const pugi::xml_node& node,
+      int groupIndex);
 
 };

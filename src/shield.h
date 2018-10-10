@@ -29,6 +29,8 @@ private:
    oxygine::spSprite m_sprite;
 
    void readShieldNode(const pugi::xml_node& objectNode);
+   void shieldHit(b2Contact* contact);
+   void evaluatShieldDamage(void);
 
 public:
    // Members to access from other components
@@ -43,11 +45,14 @@ public:
       SceneActor* sceneActor,
       CompoundObject* parentObject,
       b2World* world,
-      const pugi::xml_node& objectNode);
+      const pugi::xml_node& objectNode,
+      int groupIndex);
    
    void setAngle(float angle);
    float getAngle(void);
-   void shieldHit(b2Contact* contact, const b2ContactImpulse* impulse);
+
+   void shieldHitImpulse(b2Contact* contact, const b2ContactImpulse* impulse);
+   void shieldHitByBullet(b2Contact* contact, float bulletEqvDamage);
 
 protected:
 	void doUpdate(const oxygine::UpdateState& us);
