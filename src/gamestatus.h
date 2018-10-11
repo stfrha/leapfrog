@@ -2,17 +2,17 @@
 
 #include "oxygine-framework.h"
 
+DECLARE_SMART(GameStatus, spGameStatus)
+
 // Needs to be an actor to send events
-class GameStatus
+class GameStatus : public oxygine::ref_counter
 {
-
-
 private:
-   int m_leapFrogShots;
-   float m_leapFrogShield;
-   float m_leapFrogFuel;
+   int m_ammo;
+   float m_shield;
+   float m_fuel;
    int m_credits;
-   float m_leapFrogDamage;
+   float m_damage;
 
    // originators are used to dispatch events (since this global object is bad for being an actor)
    // and because (I presume) event goes down and back up a hiearchy branch which may differ
@@ -40,5 +40,3 @@ public:
    void deltaDamage(float damage);
 
 };
-
-extern GameStatus g_GameStatus;

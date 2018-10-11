@@ -5,6 +5,7 @@
 #include "collisionentity.h"
 #include "objectproperty.h"
 #include "system.h"
+#include "gamestatus.h"
 
 class NamedJoint
 {
@@ -216,6 +217,7 @@ public:
    std::vector<ObjectProperty> m_properties;
    std::vector<CompoundObject*> m_children;
    std::vector<System*> m_systems;
+   spGameStatus m_gameStatus;
 
    CompoundObject(SceneActor* sceneActor, CompoundObject* parentObject);
 
@@ -265,6 +267,7 @@ public:
       pugi::xml_node& objectNode,
       const std::string& initialState);
 
+   void initGameStatus(spGameStatus status);
 
 
    CompoundObject* getParentObject();
@@ -274,8 +277,7 @@ public:
    oxygine::Vector2 getCompoundObjectPosition();
 
    void hitByBullet(b2Contact* contact);
-
-   // oxygine::Sprite* getSprite(void);
+   void addMeToDeathList(void);
 
    // Should these three be protected since they are called by the base class?
    CompoundObject* getObject(const std::string& name);

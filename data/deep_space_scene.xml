@@ -32,7 +32,12 @@
             <compoundObject
                needsGroupIndex="true" >
                <behaviour
-                  type="steerableObject" />
+                  type="steerableObject" 
+                  steeringState="wanderHunt"
+                  targetBody="leapfrog1.lfMainBody"
+                  initialAngle="3.1415"
+                  seekPointX="0.0"
+                  seekPointY="0.0" />
                <dynamicBox
                   name="mainBody"
                   texture="hammer"
@@ -79,6 +84,20 @@
                         bouncy="false" />
                   </stateProperties>
                </system>
+               <system
+                  type="shield"
+                  name="hammerShield">
+                  <stateProperties
+                     state="default">
+                     <properties
+                        body="mainBody"
+                        bodyAnchorX="0"
+                        bodyAnchorY="1.0"
+                        radius="32" 
+                        zLevel="147"
+                        />
+                  </stateProperties>
+               </system>
             </compoundObject>
          </properties>
       </stateProperties>
@@ -91,8 +110,8 @@
          <properties
             posX="200.0"
             posY="125.0"
-            width="200"
-            height="100"
+            width="700"
+            height="300"
             spawnInitial="10"
             intensity="0"
             lifeTime="60000">

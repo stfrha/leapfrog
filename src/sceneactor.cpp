@@ -207,13 +207,16 @@ void SceneActor::doUpdate(const UpdateState& us)
 
          // The sheild direction should not be set here, it
          // will change angle at collisions
-         if (actor != static_cast<Actor*>(m_leapfrog->m_shield.get()))
+
+         CollisionEntityTypeEnum ce = BodyUserData::getCollisionType(body->GetUserData());
+
+         if (ce == CollisionEntityTypeEnum::shield)
          {
-            actor->setRotation(body->GetAngle());
+            actor->setRotation(static_cast<Shield*>(actor)->getAngle());
          }
          else
          {
-            actor->setRotation(static_cast<Shield*>(actor)->getAngle());
+            actor->setRotation(body->GetAngle());
          }
 		}
 

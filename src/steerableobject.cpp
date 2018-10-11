@@ -23,13 +23,13 @@ SteerableObject::SteerableObject(
    m_gameResource(&gameResources),
    m_world(world),
    m_sceneActor(sceneActor),
-   m_damage(0),
-   m_state(start),
+   m_state(fix),
+   m_initialAngle(0.0f),
    m_slowTurningAfterHit(false)
 {
-   Vector2 oSize = Vector2(24.0f, 12.6f);
-
    initCompoundObjectParts(gameResources, sceneActor, parentObject, world, pos, root, string(""), groupIndex);
+
+   readSteerableObjectNode(root);
 
    m_body = getBody("mainBody");
 
@@ -39,7 +39,6 @@ SteerableObject::SteerableObject(
 
       spaceActor->addBoundingBody(m_body);
    }
-
 
    // Add main engine particle system
    m_boosterFlame = static_cast<FlameEmitter*>(getSystem("boosterFlame"));
@@ -51,24 +50,49 @@ SteerableObject::SteerableObject(
    attachTo(m_sceneActor);
 
    m_steeringManager = new SteeringManager(m_body, m_sceneActor);
-   m_steeringManager->m_wanderAngle = MATH_PI;
+   m_steeringManager->m_wanderAngle = m_initialAngle;
 }
 
+void SteerableObject::readSteerableObjectNode(pugi::xml_node root)
+{
+   xml_node node = root.child("behaviour");
+   m_targetBody = m_sceneActor->getBody(node.attribute("targetBody").as_string());
+   
+   string st = node.attribute("steeringState").as_string();
+
+   if (st == "wander") m_state = wander;
+   else if (st == "seek") m_state = seek;
+   else if (st == "pursuit") m_state = pursuit;
+   else if (st == "flee") m_state = flee;
+   else if (st == "wanderHunt") m_state = wanderHunt;
+   else m_state = fix;
+
+   m_initialAngle = node.attribute("initialAngle").as_float(0.0f);
+   m_seekPoint.x = node.attribute("seekTargetX").as_float(0.0f);
+   m_seekPoint.y = node.attribute("seekTargetY").as_float(0.0f);
+}
 
 void SteerableObject::doUpdate(const oxygine::UpdateState& us)
 {
-//   m_steeringManager->wander();
-
-//   m_steeringManager->seek(b2Vec2(100.0f, 450.0f));
-
-   if (((FreeSpaceActor*)m_sceneActor)->m_leapfrogBody != NULL)
+   switch (m_state)
    {
-      // m_steeringManager->pursuit(((FreeSpaceActor*)m_sceneActor)->m_leapfrogBody);
-      m_steeringManager->wanderHunt(us, ((FreeSpaceActor*)m_sceneActor)->m_leapfrogBody, 50.0f);
+   case fix:
+      break;
+   case wanderHunt:
+      m_steeringManager->wanderHunt(us, m_targetBody, 50.0f);
+      m_steeringManager->update();
+      break;
+   case seek:
+      m_steeringManager->seek(m_seekPoint, 25.0f);
+      m_steeringManager->update();
+      break;
+   case wander:
+      m_steeringManager->wander(10.0f);
+      m_steeringManager->update();
+      break;
    }
 
-   m_steeringManager->update();
-
+   // TODO: change flame states to more general speed 
    if (m_steeringManager->m_wanderHunterState == SteeringManager::WanderHunterState::wanderState)
    {
       m_boosterFlame->setFlameScale(0.2f);
@@ -91,17 +115,6 @@ void SteerableObject::doUpdate(const oxygine::UpdateState& us)
       m_gun->stopGun();
    }
       
-   //if (us.time >= m_stateStartTime + 5000)
-   //{
-   //   float x = static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / 1000.0));
-   //   float y = static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / 500.0));
-
-   //   m_seekTarget = b2Vec2(x, y);
-
-
-   //   m_stateStartTime = us.time;
-   //}
-
    float bodyAngle = m_body->GetAngle();
    b2Vec2 toTarget = m_body->GetLinearVelocity();
    float desiredAngle = atan2f(-toTarget.x, toTarget.y) - MATH_PI / 2.0f;
@@ -139,72 +152,7 @@ void SteerableObject::doUpdate(const oxygine::UpdateState& us)
    //m_ahead2Circle->setPosition(PhysDispConvert::convert(m_steeringManager->m_debugAhead2, 1.0f));
    //m_ahead2Circle->setSize(m_steeringManager->m_debugRadius * 2.0f, m_steeringManager->m_debugRadius * 2.0f);
 
-
-   //switch (m_state)
-   //{
-   //case start:
-   //   m_stateStartTime = us.time;
-   //   m_state = goRight;
-
-   //   break;
-   //case goRight:
-   //   if (us.time >= m_stateStartTime + 5000)
-   //   {
-   //      // Start going up
-   //      b2Vec2 vel = m_body->GetLinearVelocity();
-   //      b2Vec2 desiredVel = b2Vec2(0.0f, -15.0f);   // Set to 5 m/s
-   //      b2Vec2 velChange = desiredVel - vel;
-   //      b2Vec2 impulse = m_body->GetMass() * velChange;
-   //      m_body->ApplyLinearImpulse(impulse, m_body->GetWorldCenter(), true);
-
-   //      m_stateStartTime = us.time;
-   //      m_state = goUp;
-   //   }
-   //   break;
-   //case goUp:
-   //   if (us.time >= m_stateStartTime + 5000)
-   //   {
-   //      // Start going left
-   //      b2Vec2 vel = m_body->GetLinearVelocity();
-   //      b2Vec2 desiredVel = b2Vec2(-15.0f, 0.0f);   // Set to 5 m/s
-   //      b2Vec2 velChange = desiredVel - vel;
-   //      b2Vec2 impulse = m_body->GetMass() * velChange;
-   //      m_body->ApplyLinearImpulse(impulse, m_body->GetWorldCenter(), true);
-
-   //      m_stateStartTime = us.time;
-   //      m_state = goLeft;
-   //   }
-   //   break;
-   //case goLeft:
-   //   if (us.time >= m_stateStartTime + 5000)
-   //   {
-   //      // Start going down
-   //      b2Vec2 vel = m_body->GetLinearVelocity();
-   //      b2Vec2 desiredVel = b2Vec2(0.0f, 15.0f);   // Set to 5 m/s
-   //      b2Vec2 velChange = desiredVel - vel;
-   //      b2Vec2 impulse = m_body->GetMass() * velChange;
-   //      m_body->ApplyLinearImpulse(impulse, m_body->GetWorldCenter(), true);
-
-   //      m_stateStartTime = us.time;
-   //      m_state = goDown;
-   //   }
-   //   break;
-   //case goDown:
-   //   if (us.time >= m_stateStartTime + 5000)
-   //   {
-   //      // Start going right
-   //      b2Vec2 vel = m_body->GetLinearVelocity();
-   //      b2Vec2 desiredVel = b2Vec2(15.0f, 0);   // Set to 5 m/s
-   //      b2Vec2 velChange = desiredVel - vel;
-   //      b2Vec2 impulse = m_body->GetMass() * velChange;
-   //      m_body->ApplyLinearImpulse(impulse, m_body->GetWorldCenter(), true);
-
-   //      m_stateStartTime = us.time;
-   //      m_state = goRight;
-   //   }
-   //   break;
-   //}
-}
+ }
 
 
 
@@ -246,7 +194,13 @@ void SteerableObject::collisionBlast(b2Contact* contact, bool small)
 
 void SteerableObject::evaluateDamage(void)
 {
-
+   if (m_gameStatus)
+   {
+      if (m_gameStatus->getDamage() > 100.0f)
+      {
+         addMeToDeathList();
+      }
+   }
 }
 
 
@@ -261,7 +215,7 @@ void SteerableObject::hitImpulse(b2Contact* contact, const b2ContactImpulse* imp
       normalImpulses += impulse->normalImpulses[i];
    }
 
-   //g_GameStatus.deltaDamage(-normalImpulses / 100.0f);
+   if (m_gameStatus) m_gameStatus->deltaDamage(normalImpulses / 100.0f);
 
    evaluateDamage();
 }
@@ -270,7 +224,7 @@ void SteerableObject::hitByBullet(b2Contact* contact, float bulletEqvDamage)
 {
    collisionBlast(contact, true);
 
-   //g_GameStatus.deltaDamage(-25.0f);
+   if (m_gameStatus) m_gameStatus->deltaDamage(25.0f);
 
    evaluateDamage();
 }

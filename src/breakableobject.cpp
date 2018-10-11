@@ -105,11 +105,11 @@ void BreakableObject::damageCollision(b2Contact* contact, float bulletEqvDamage)
    bool shattered = false;
 
    // Take damage
-   m_damage += (int)(25.0f * bulletEqvDamage);
+   m_gameStatus->deltaDamage(25.0f * bulletEqvDamage);
 
-   if (m_damage >= m_breakAtDamage)
+   if (m_gameStatus->getDamage() >= m_breakAtDamage)
    {
-      addShapesToDeathList();
+      addMeToDeathList();
 
       spawnBreakableObjects();
 
@@ -127,26 +127,6 @@ void BreakableObject::doUpdate(const oxygine::UpdateState& us)
    //}
 }
 
-
-// TODO: Should be called addMeToDeathList, also move to base class CompoundObject
-void BreakableObject::addShapesToDeathList(void)
-{
-   for (auto it = m_shapes.begin(); it != m_shapes.end(); ++it)
-   {
-      m_sceneActor->addMeToDeathList(*it);
-   }
-   
-   m_sceneActor->addMeToDeathList(this);
-}
-
-void BreakableObject::atDeathOfBreakableObject(void)
-{
-   b2Body* myBody = ActorUserData::getBody(getUserData());
-
-   myBody->GetWorld()->DestroyBody(myBody);
-   
-   this->detach();
-}
 
 void BreakableObject::spawnBreakableObjects(void)
 {

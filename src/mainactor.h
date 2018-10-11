@@ -5,6 +5,7 @@
 #include "freespaceactor.h"
 #include "orbitscene.h"
 #include "sceneactor.h"
+#include "gamestatus.h"
 
 //DECLARE_SMART is helper, it does forward declaration and declares intrusive_ptr typedef for your class
 DECLARE_SMART(MainActor, spMainActor)
@@ -27,6 +28,8 @@ private:
    oxygine::Rect m_fireButtonRect;
    oxygine::Rect m_zoomInButtonRect;
    oxygine::Rect m_zoomOutButtonRect;
+
+   spGameStatus m_gameStatus;
 
    void transitToDeepSpaceListner(oxygine::Event *ev);
    void fadeFromLanding(void);

@@ -4,7 +4,7 @@
 #include "sceneactor.h"
 #include "softboundary.h"
 #include "freespacecontactlistener.h"
-
+#include "gamestatus.h"
 
 DECLARE_SMART(FreeSpaceActor, spFreeSpaceActor);
 
@@ -38,6 +38,7 @@ public:
 
    FreeSpaceActor(
       oxygine::Resources& gameResources,
+      spGameStatus gameStatus,
       const std::string& fileName,
       const std::string& initialState);
 

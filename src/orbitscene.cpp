@@ -14,6 +14,7 @@ using namespace oxygine;
 
 OrbitScene::OrbitScene(
    Resources& gameResources,
+   spGameStatus gameStatus,
    const std::string& fileName,
    const std::string& initialState) :
    CompoundObject((SceneActor*)this, NULL),
@@ -66,6 +67,8 @@ OrbitScene::OrbitScene(
    m_space = static_cast<OrbitSpaceScene*>(orbWin->getObject("spaceScene"));
 
    m_leapfrog = static_cast<LeapFrog*>(orbWin->getObject("spaceScene.leapfrog1"));
+
+   m_leapfrog->initGameStatus(gameStatus);
 
    m_space->addEventListener(OrbitSpaceOrbitEstablished::EVENT, CLOSURE(this, &OrbitScene::orbitEstablishedHandler));
 

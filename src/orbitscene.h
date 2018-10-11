@@ -3,6 +3,7 @@
 #include "Box2D/Box2D.h"
 #include "compoundobject.h"
 #include "orbitsceneevents.h"
+#include "gamestatus.h"
 
 class OrbitSpaceScene;
 class PlanetActor;
@@ -39,6 +40,7 @@ private:
 public:
 	OrbitScene(
       oxygine::Resources& gameResources,
+      spGameStatus gameStatus,
       const std::string& fileName,
       const std::string& initialState);
 

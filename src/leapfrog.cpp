@@ -746,7 +746,7 @@ void LeapFrog::fireMainBooster(bool burn, bool flamesOnly)
 {
    // Handle booster flame particles
 
-   if ((m_environment == ENV_GROUND) && (g_GameStatus.getFuel() <= 0.0f))
+   if ((m_environment == ENV_GROUND) && (m_gameStatus->getFuel() <= 0.0f))
    {
       // No burn here
    }
@@ -771,7 +771,7 @@ void LeapFrog::fireMainBooster(bool burn, bool flamesOnly)
    }
 
    //// Below override any booster settings on ground if no fuel
-   //if ((m_environment == ENV_GROUND) && (g_GameStatus.getFuel() <= 0.0f))
+   //if ((m_environment == ENV_GROUND) && (m_gameStatus->getFuel() <= 0.0f))
    //{
    //   // Turn emitter off here, will be turned off each update that 
    //   // the booster is pressed with no fule, in land
@@ -851,14 +851,14 @@ void LeapFrog::fireMainBooster(bool burn, bool flamesOnly)
       }
       else if (m_environment == ENV_GROUND)
       {
-         if (burn && (g_GameStatus.getFuel() > 0.0f))
+         if (burn && (m_gameStatus->getFuel() > 0.0f))
          {
             m_boostMagnuitude += m_boostInc;
             if (m_boostMagnuitude > m_boostMaxMagnitude)
             {
                m_boostMagnuitude = m_boostMaxMagnitude;
-               g_GameStatus.deltaFuel(-m_boostMagnuitude / 240000.0f);
-               //g_GameStatus.deltaFuel(-m_boostMagnuitude / 30000.0f);
+               m_gameStatus->deltaFuel(-m_boostMagnuitude / 240000.0f);
+               //m_gameStatus->deltaFuel(-m_boostMagnuitude / 30000.0f);
             }
          }
          else
@@ -883,7 +883,7 @@ void LeapFrog::fireSteeringBooster(int dir)
 {
    // Handle booster flame particles
 
-   if ((m_environment == ENV_GROUND) && (g_GameStatus.getFuel() <= 0.0f))
+   if ((m_environment == ENV_GROUND) && (m_gameStatus->getFuel() <= 0.0f))
    {
       // No fire here
    }
@@ -919,7 +919,7 @@ void LeapFrog::fireSteeringBooster(int dir)
 
    //if (m_environment == ENV_GROUND)
    //{
-   //   if (g_GameStatus.getFuel() == 0.0f)
+   //   if (m_gameStatus->getFuel() == 0.0f)
    //   {
    //      // Turn emitter off here, will be turned off each update that 
    //      // the booster is pressed with no fule, in land
@@ -959,13 +959,13 @@ void LeapFrog::fireSteeringBooster(int dir)
    }
    else if (m_environment == ENV_GROUND)
    {
-      if (g_GameStatus.getFuel() > 0.0f)
+      if (m_gameStatus->getFuel() > 0.0f)
       {
-         if ((dir == -1) && (g_GameStatus.getFuel() > 0.0f))
+         if ((dir == -1) && (m_gameStatus->getFuel() > 0.0f))
          {
             m_steerMagnitude = -m_steerMaxMagnitude;
          }
-         else if ((dir == 1) && (g_GameStatus.getFuel() > 0.0f))
+         else if ((dir == 1) && (m_gameStatus->getFuel() > 0.0f))
          {
             m_steerMagnitude = m_steerMaxMagnitude;
          }
@@ -1177,7 +1177,7 @@ void LeapFrog::hitImpulse(b2Contact* contact, const b2ContactImpulse* impulse)
       normalImpulses += impulse->normalImpulses[i];
    }
 
-   g_GameStatus.deltaDamage(-normalImpulses / 100.0f);
+   m_gameStatus->deltaDamage(normalImpulses / 100.0f);
 
    evaluateLepfrogDamage();
 
@@ -1187,7 +1187,7 @@ void LeapFrog::hitByBullet(b2Contact* contact, float bulletEqvDamage)
 {
    collisionBlast(contact, true);
 
-   g_GameStatus.deltaDamage(-25.0f);
+   m_gameStatus->deltaDamage(25.0f);
 
    evaluateLepfrogDamage();
 }

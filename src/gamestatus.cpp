@@ -3,17 +3,14 @@
 
 using namespace oxygine;
 
-// Instansiate global class
-GameStatus g_GameStatus;
-
 GameStatus::GameStatus()
 {
    // This should probably be read from a file or 
    // some non-volatile memory. But how?!?!
-   m_leapFrogShots = 100;
-   m_leapFrogFuel = 100.0f;
-   m_leapFrogShield = 100.0f;
-   m_leapFrogDamage = 100.0f;
+   m_ammo = 100;
+   m_fuel = 100.0f;
+   m_shield = 100.0f;
+   m_damage = 0.0f;
    m_credits = 248;
    m_statusEventOriginator = NULL;
 }
@@ -25,26 +22,27 @@ void GameStatus::initGameStatus(Actor* statusEventOriginator)
 
 int GameStatus::getShots(void)
 {
-   return m_leapFrogShots;
+   return m_ammo;
 }
 
 void  GameStatus::deltaShots(int shots)
 {
-   m_leapFrogShots += shots;
+   m_ammo += shots;
 
-   StatusChangedEvent event(GameStatusTypeEnum::shots, m_leapFrogShots, 100.0f);
+   if (m_ammo < 0)
+   {
+      m_ammo = 0;
+   }
+
    
    if (m_statusEventOriginator)
    {
+      StatusChangedEvent event(GameStatusTypeEnum::shots, m_ammo, 100.0f);
       m_statusEventOriginator->dispatchEvent(&event);
-   }
 
-   if (m_leapFrogShots <= 0.0f)
-   {
-      StatusResourceDepletedEvent event(GameStatusTypeEnum::shots);
-
-      if (m_statusEventOriginator)
+      if (m_ammo <= 0.0f)
       {
+         StatusResourceDepletedEvent event(GameStatusTypeEnum::shots);
          m_statusEventOriginator->dispatchEvent(&event);
       }
    }
@@ -52,26 +50,27 @@ void  GameStatus::deltaShots(int shots)
 
 float GameStatus::getShield(void)
 {
-   return m_leapFrogShield;
+   return m_shield;
 }
 
 void GameStatus::deltaShield(float shield)
 {
-   m_leapFrogShield += shield;
+   m_shield += shield;
 
-   StatusChangedEvent event(GameStatusTypeEnum::shield, m_leapFrogShield, 100.0f);
+   if (m_shield < 0.0f)
+   {
+      m_shield = 0.0f;
+   }
+
 
    if (m_statusEventOriginator)
    {
+      StatusChangedEvent event(GameStatusTypeEnum::shield, m_shield, 100.0f);
       m_statusEventOriginator->dispatchEvent(&event);
-   }
 
-   if (m_leapFrogShield <= 0.0f)
-   {
-      StatusResourceDepletedEvent event(GameStatusTypeEnum::shield);
-
-      if (m_statusEventOriginator)
+      if (m_shield <= 0.0f)
       {
+         StatusResourceDepletedEvent event(GameStatusTypeEnum::shield);
          m_statusEventOriginator->dispatchEvent(&event);
       }
    }
@@ -79,26 +78,27 @@ void GameStatus::deltaShield(float shield)
 
 float GameStatus::getFuel(void)
 {
-   return m_leapFrogFuel;
+   return m_fuel;
 }
 
 void GameStatus::deltaFuel(float fuel)
 {
-   m_leapFrogFuel += fuel;
+   m_fuel += fuel;
 
-   StatusChangedEvent event(GameStatusTypeEnum::fuel, m_leapFrogFuel, 100.0f);
+   if (m_fuel < 0.0f)
+   {
+      m_fuel = 0.0f;
+   }
+
 
    if (m_statusEventOriginator)
    {
+      StatusChangedEvent event(GameStatusTypeEnum::fuel, m_fuel, 100.0f);
       m_statusEventOriginator->dispatchEvent(&event);
-   }
 
-   if (m_leapFrogFuel <= 0.0f)
-   {
-      StatusResourceDepletedEvent event(GameStatusTypeEnum::fuel);
-
-      if (m_statusEventOriginator)
+      if (m_fuel <= 0.0f)
       {
+         StatusResourceDepletedEvent event(GameStatusTypeEnum::fuel);
          m_statusEventOriginator->dispatchEvent(&event);
       }
    }
@@ -113,19 +113,14 @@ void  GameStatus::deltaCredits(int credits)
 {
    m_credits += credits;
 
-   StatusChangedEvent event(GameStatusTypeEnum::credits, m_credits, 100.0f);
-
    if (m_statusEventOriginator)
    {
+      StatusChangedEvent event(GameStatusTypeEnum::credits, m_credits, 100.0f);
       m_statusEventOriginator->dispatchEvent(&event);
-   }
 
-   if (m_credits <= 0.0f)
-   {
-      StatusResourceDepletedEvent event(GameStatusTypeEnum::credits);
-
-      if (m_statusEventOriginator)
+      if (m_credits <= 0.0f)
       {
+         StatusResourceDepletedEvent event(GameStatusTypeEnum::credits);
          m_statusEventOriginator->dispatchEvent(&event);
       }
    }
@@ -133,26 +128,27 @@ void  GameStatus::deltaCredits(int credits)
 
 float GameStatus::getDamage(void)
 {
-   return m_leapFrogDamage;
+   return m_damage;
 }
 
-void GameStatus::deltaDamage(float Damage)
+void GameStatus::deltaDamage(float deltaDamage)
 {
-   m_leapFrogDamage += Damage;
+   m_damage += deltaDamage;
 
-   StatusChangedEvent event(GameStatusTypeEnum::damage, m_leapFrogDamage, 100.0f);
+   if (m_damage < 0.0f)
+   {
+      m_damage = 0.0f;
+   }
+
 
    if (m_statusEventOriginator)
    {
+      StatusChangedEvent event(GameStatusTypeEnum::damage, m_damage, 100.0f);
       m_statusEventOriginator->dispatchEvent(&event);
-   }
 
-   if (m_leapFrogDamage <= 0.0f)
-   {
-      StatusResourceDepletedEvent event(GameStatusTypeEnum::damage);
-
-      if (m_statusEventOriginator)
+      if (m_damage <= 0.0f)
       {
+         StatusResourceDepletedEvent event(GameStatusTypeEnum::damage);
          m_statusEventOriginator->dispatchEvent(&event);
       }
    }

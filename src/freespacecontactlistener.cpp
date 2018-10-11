@@ -26,7 +26,7 @@ void FreeSpaceContactListener::PostSolve(b2Contact* contact, const b2ContactImpu
    BreakableObject* breakable = NULL;
    bool flameParticle = false;
 
-   if (eA == CollisionEntity::lfShield)
+   if (eA == CollisionEntity::shield)
    {
       Shield* tmpShield = BodyUserData::getParentObjectOfType<Shield*>(contact->GetFixtureA()->GetBody()->GetUserData());
       if (!shield1)
@@ -39,7 +39,7 @@ void FreeSpaceContactListener::PostSolve(b2Contact* contact, const b2ContactImpu
       }
    }
 
-   if (eB == CollisionEntity::lfShield)
+   if (eB == CollisionEntity::shield)
    {
       Shield* tmpShield = BodyUserData::getParentObjectOfType<Shield*>(contact->GetFixtureB()->GetBody()->GetUserData());
       if (!shield1)
@@ -116,11 +116,7 @@ void FreeSpaceContactListener::PostSolve(b2Contact* contact, const b2ContactImpu
       }
       else if (flameParticle)
       {
-         breakable->damageCollision(contact, 0.04f);
-      }
-      else
-      {
-         breakable->collisionBlast(contact, true);
+         breakable->damageCollision(contact, 0.02f);
       }
    }
 
@@ -155,7 +151,7 @@ void FreeSpaceContactListener::PostSolve(b2Contact* contact, const b2ContactImpu
       // (from certain angles). In this case, if the 
       // shield is still active, we do not damage
       // leapfrog 
-      if (g_GameStatus.getShield() <= 0.0f)
+      if (leapfrog->m_gameStatus->getShield() <= 0.0f)
       {
          if (bullet)
          {

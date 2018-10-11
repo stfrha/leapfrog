@@ -19,10 +19,15 @@ using namespace std;
 MainActor::MainActor()
 {
    g_Layout.initLayout();
-   g_GameStatus.initGameStatus(this);
-
+   
 	//load xml file with resources definition
 	m_gameResources.loadXML("res.xml");
+
+   m_gameStatus = new GameStatus();
+
+   // Here the game status should probably be read from file
+
+   m_gameStatus->initGameStatus(this);
 
 	setSize(getStage()->getSize());
 
@@ -77,10 +82,9 @@ void MainActor::startScene(SceneTypeEnum scene)
       //window->setPosition(50.0f, 50.0f);
       //addChild(window);
 
-      spLandingActor landingActor = new LandingActor(m_gameResources, string("landing_scene.xml"), string("landingState"));
+      spLandingActor landingActor = new LandingActor(m_gameResources, m_gameStatus, string("landing_scene.xml"), string("landingState"));
       window->addChild(landingActor);
       landingActor->addEventListener(LandingActorTranstToDeepSpaceEvent::EVENT, CLOSURE(this, &MainActor::transitToDeepSpaceListner));
-
       m_sceneObject = static_cast<SceneActor*>(landingActor.get());
 
    }
@@ -92,7 +96,7 @@ void MainActor::startScene(SceneTypeEnum scene)
       //window->setPosition(50.0f, 50.0f);
       //addChild(window);
 
-      spFreeSpaceActor freeSpaceActor = new FreeSpaceActor(m_gameResources, string("deep_space_scene.xml"), string("deepSpaceState"));
+      spFreeSpaceActor freeSpaceActor = new FreeSpaceActor(m_gameResources, m_gameStatus, string("deep_space_scene.xml"), string("deepSpaceState"));
       window->addChild(freeSpaceActor);
       freeSpaceActor->addEventListener(DeepSpaceSceneTranstToOrbitEvent::EVENT, CLOSURE(this, &MainActor::transitToOrbitListner));
 
@@ -107,7 +111,7 @@ void MainActor::startScene(SceneTypeEnum scene)
       //window->setPosition(50.0f, 50.0f);
       //addChild(window);
 
-      spOrbitScene reentryActor = new OrbitScene(m_gameResources, string("orbit_scene.xml"), string("deepSpaceState"));
+      spOrbitScene reentryActor = new OrbitScene(m_gameResources, m_gameStatus, string("orbit_scene.xml"), string("deepSpaceState"));
       window->addChild(reentryActor);
       reentryActor->addEventListener(OrbitSceneLandingComplete::EVENT, CLOSURE(this, &MainActor::landingCompleteListner));
 
@@ -121,7 +125,7 @@ void MainActor::startScene(SceneTypeEnum scene)
       Vector2(g_Layout.getXFromRight(1), g_Layout.getYFromTop(2)),
       Vector2(g_Layout.getButtonWidth() * 2.0f, g_Layout.getButtonWidth() / 2.0f),
       100.0f,
-      g_GameStatus.getShots(),
+      m_gameStatus->getShots(),
       "Ammo:",
       GameStatusTypeEnum::shots);
 
@@ -132,7 +136,7 @@ void MainActor::startScene(SceneTypeEnum scene)
       Vector2(g_Layout.getXFromRight(1), g_Layout.getYFromTop(2) + g_Layout.getButtonWidth() / 2.0f + 2.0f),
       Vector2(g_Layout.getButtonWidth() * 2.0f, g_Layout.getButtonWidth() / 2.0f),
       100.0f,
-      g_GameStatus.getFuel(),
+      m_gameStatus->getFuel(),
       "Fuel:",
       GameStatusTypeEnum::fuel);
 
@@ -143,7 +147,7 @@ void MainActor::startScene(SceneTypeEnum scene)
       Vector2(g_Layout.getXFromRight(1), g_Layout.getYFromTop(2) + g_Layout.getButtonWidth() / 2.0f * 2.0f + 2.0f),
       Vector2(g_Layout.getButtonWidth() * 2.0f, g_Layout.getButtonWidth() / 2.0f),
       100.0f,
-      g_GameStatus.getShield(),
+      m_gameStatus->getShield(),
       "Shield:",
       GameStatusTypeEnum::shield);
 
@@ -154,7 +158,7 @@ void MainActor::startScene(SceneTypeEnum scene)
       Vector2(g_Layout.getXFromRight(1), g_Layout.getYFromTop(2) + g_Layout.getButtonWidth() / 2.0f * 3.0f + 2.0f),
       Vector2(g_Layout.getButtonWidth() * 2.0f, g_Layout.getButtonWidth() / 2.0f),
       100.0f,
-      g_GameStatus.getDamage(),
+      m_gameStatus->getDamage(),
       "Damage:",
       GameStatusTypeEnum::damage);
 

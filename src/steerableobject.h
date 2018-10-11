@@ -27,26 +27,34 @@ public:
       goDown
    };
 
+   enum SteeringStateEnum
+   {
+      wander,
+      seek,
+      pursuit,
+      flee,
+      wanderHunt,
+      fix
+   };
+
 
 private:
    oxygine::Resources* m_gameResource;
    b2World* m_world;
    b2Body* m_body;
-
-   launchState m_state;
    bool m_slowTurningAfterHit;
    oxygine::timeMS m_stateStartTime;
    SteeringManager* m_steeringManager;
-   b2Vec2 m_seekTarget;
 
-   int   m_damage;
+   SteeringStateEnum m_state;
+   b2Vec2 m_seekPoint;
+   b2Body* m_targetBody;
+   float m_initialAngle;
 
    SceneActor* m_sceneActor;
 
-   //oxygine::spSprite m_aheadCircle;
-   //oxygine::spSprite m_ahead2Circle;
 
-
+   void readSteerableObjectNode(pugi::xml_node root);
    void collisionBlast(b2Contact* contact, bool small = true);
    void evaluateDamage(void);
    

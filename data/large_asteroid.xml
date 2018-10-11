@@ -3,7 +3,7 @@
    needsGroupIndex="false" >
    <behaviour
       type="breakableObject"
-      breakBulletDamage="6"
+      breakBulletDamage="100"
       numberOfSpawns="3" />
    <spawnObject
       probabilityFactor="9">

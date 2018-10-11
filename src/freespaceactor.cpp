@@ -11,6 +11,7 @@ using namespace oxygine;
 
 FreeSpaceActor::FreeSpaceActor(
    Resources& gameResources,
+   spGameStatus gameStatus,
    const std::string& fileName,
    const std::string& initialState) :
 	SceneActor(gameResources, 0.4f),
@@ -32,6 +33,9 @@ FreeSpaceActor::FreeSpaceActor(
    generateBackground(gameResources);
 
    m_leapfrog = static_cast<LeapFrog*>(getObject("leapfrog1"));
+
+   m_leapfrog->initGameStatus(gameStatus);
+
    m_leapfrogBody = m_leapfrog->getBody("lfMainBody");
 //   m_leapfrogBody = getBody("leapfrog1.lfMainBody");
 

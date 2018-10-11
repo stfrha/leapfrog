@@ -11,6 +11,7 @@ using namespace std;
 
 LandingActor::LandingActor(
    Resources& gameResources,
+   spGameStatus gameStatus,
    const string& fileName,
    const string& initialState) :
    SceneActor(gameResources, 0.4f)
@@ -29,6 +30,9 @@ LandingActor::LandingActor(
    readDefinitionXmlFile(gameResources, this, NULL, m_world, Vector2(0.0f, 0.0f), fileName, initialState);
 
    m_leapfrog = static_cast<LeapFrog*>(getObject("leapfrog1"));
+
+   m_leapfrog->initGameStatus(gameStatus);
+
    m_leapfrog->goToEnvironment(ENV_GROUND);
 
    m_leapfrog->addEventListener(LeapfrogModeReachedEvent::EVENT, CLOSURE(this, &LandingActor::modeReachedListener));

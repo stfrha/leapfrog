@@ -18,9 +18,9 @@ public:
       lfLeftFoot,
       lfRightFoot,
       lfSteerBooster,
-      lfShield,
       lsLeftFootRest,
       lsRightFootRest,
+      shield,
       landingPad,
       breakableObject,
       destroyableObject,
@@ -38,7 +38,7 @@ public:
       else if (value == "lfLeftFoot") return CollisionEntity::lfLeftFoot;
       else if (value == "lfRightFoot") return CollisionEntity::lfRightFoot;
       else if (value == "lfSteerBooster") return CollisionEntity::lfSteerBooster;
-      else if (value == "lfShield") return CollisionEntity::lfShield;
+      else if (value == "shield") return CollisionEntity::shield;
       else if (value == "launchSiteLeftFootRest") return CollisionEntity::lsLeftFootRest;
       else if (value == "launchSiteRightFootRest") return CollisionEntity::lsRightFootRest;
       else if (value == "landingPad") return CollisionEntity::landingPad;

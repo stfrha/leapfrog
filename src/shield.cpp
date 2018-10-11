@@ -48,10 +48,15 @@ Shield::Shield(
 
    m_body = world->CreateBody(&bodyDef);
 
-   setUserData(m_body);
+   ActorUserData* aud = new ActorUserData();
+   aud->m_body = m_body;
+   aud->m_parentCo = parentObject;
+
+   setUserData(aud);
 
    b2CircleShape shape;
-   shape.m_radius = 8.0f;
+   shape.m_radius = m_radius/2.0f;
+//   shape.m_radius = 8.0f;
 
    b2FixtureDef fixtureDef;
    fixtureDef.shape = &shape;
@@ -64,7 +69,7 @@ Shield::Shield(
 
    BodyUserData* bud = new BodyUserData();
    bud->m_actor = this;
-   bud->m_collisionType = CollisionEntity::lfShield;
+   bud->m_collisionType = CollisionEntity::shield;
 
    fixtureDef.userData = (CollisionEntity*)&bud->m_collisionType;
 
@@ -173,14 +178,14 @@ void Shield::shieldHit(b2Contact* contact)
 
 void Shield::evaluatShieldDamage(void)
 {
-   if (g_GameStatus.getShield() <= 0.0f)
+   if (m_parent->m_gameStatus->getShield() <= 0.0f)
    {
       // Remove shield from collisions... only, this  didn't work
-      //b2Filter filt;
-      //filt.groupIndex = -filt.groupIndex;
-
-      //b2Fixture* bf = m_body->GetFixtureList();
-      //bf->SetFilterData(filt);
+      b2Filter filt;
+      filt.groupIndex = -filt.groupIndex;
+      filt.categoryBits = 0;
+      b2Fixture* bf = m_body->GetFixtureList();
+      bf->SetFilterData(filt);
    }
 }
 
@@ -195,16 +200,17 @@ void Shield::shieldHitImpulse(b2Contact* contact, const b2ContactImpulse* impuls
       normalImpulses += impulse->normalImpulses[i];
    }
 
-   g_GameStatus.deltaShield(-normalImpulses / 1000.0f);
+   m_parent->m_gameStatus->deltaShield(-normalImpulses / 1000.0f);
 
    evaluatShieldDamage();
 }
 
 void Shield::shieldHitByBullet(b2Contact* contact, float bulletEqvDamage)
 {
+
    shieldHit(contact);
 
-   g_GameStatus.deltaShield(-25.0f);
+   m_parent->m_gameStatus->deltaShield(-25.0f);
 
    evaluatShieldDamage();
 }

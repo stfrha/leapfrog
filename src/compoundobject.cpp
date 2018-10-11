@@ -190,6 +190,8 @@ CompoundObject* CompoundObject::initCompoundObject(
 
       lf->m_behaviourType = BehaviourEnum::leapfrog;
 
+      // Leapfrog game status is set by the SceneActor (or a class derived thereof)
+
       return static_cast<CompoundObject*>(lf);
    }
    else if (behavStr == "launchSite")
@@ -234,6 +236,7 @@ CompoundObject* CompoundObject::initCompoundObject(
          groupIndex);
 
       bo->m_behaviourType = BehaviourEnum::breakableObject;
+      bo->initGameStatus(new GameStatus());
 
       return static_cast<CompoundObject*>(bo);
    }
@@ -249,6 +252,7 @@ CompoundObject* CompoundObject::initCompoundObject(
          groupIndex);
 
       so->m_behaviourType = BehaviourEnum::steerableObject;
+      so->initGameStatus(new GameStatus());
 
       return static_cast<CompoundObject*>(so);
    }
@@ -272,6 +276,10 @@ CompoundObject* CompoundObject::initCompoundObject(
    return NULL;
 }
 
+void CompoundObject::initGameStatus(spGameStatus status)
+{
+   m_gameStatus = status;
+}
 
 bool CompoundObject::initCompoundObjectParts(
    oxygine::Resources& gameResources,
@@ -1641,6 +1649,21 @@ void CompoundObject::unregisterDualPropEventTrigger(int propId, DualPropEventTri
    {
       return p->unregisterDualPropEventTrigger(trigger);
    }
+}
+
+void CompoundObject::addMeToDeathList(void)
+{
+   for (auto it = m_shapes.begin(); it != m_shapes.end(); ++it)
+   {
+      m_sceneActor->addMeToDeathList(*it);
+   }
+
+   for (auto it = m_systems.begin(); it != m_systems.end(); ++it)
+   {
+      m_sceneActor->addMeToDeathList(*it);
+   }
+
+   m_sceneActor->addMeToDeathList(this);
 }
 
 

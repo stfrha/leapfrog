@@ -4,6 +4,7 @@
 #include "sceneactor.h"
 #include "landercontactlistener.h"
 #include "landingactorevents.h"
+#include "gamestatus.h"
 
 DECLARE_SMART(LandingActor, spLandingActor);
 
@@ -33,6 +34,10 @@ private:
 
 
 public:
-	LandingActor(oxygine::Resources& gameResources, const std::string& fileName, const std::string& initialState);
+	LandingActor(
+      oxygine::Resources& gameResources, 
+      spGameStatus gameStatus,
+      const std::string& fileName,
+      const std::string& initialState);
 
 };

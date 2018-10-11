@@ -3,7 +3,7 @@
    needsGroupIndex="false" >
    <behaviour
       type="breakableObject"
-      breakBulletDamage="1"
+      breakBulletDamage="20"
       numberOfSpawns="0" />
    <dynamicCircle
       name="smallAsteroid"
