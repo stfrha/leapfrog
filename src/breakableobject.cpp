@@ -68,15 +68,15 @@ void BreakableObject::collisionBlast(b2Contact* contact, bool small)
 {
    // Assume small blast
    int emitterLifetime = 150;
-   int particleLifetime = 500;
+   int particleLifetime = 700;
    float particleDistance = 30.0f;
    float particleSize = 0.75f;
-   float blastIntensity = 200.0f;
+   float blastIntensity = 100.0f;
 
    if (!small)
    {
       emitterLifetime = 250;
-      particleLifetime = 500;
+      particleLifetime = 900;
       particleDistance = 60.0f;
       particleSize = 0.9f;
       blastIntensity = 300.0f;
@@ -115,8 +115,10 @@ void BreakableObject::damageCollision(b2Contact* contact, float bulletEqvDamage)
 
       collisionBlast(contact, false);
    }
-
-   collisionBlast(contact, true);
+   else
+   {
+      collisionBlast(contact, true);
+   }
 }
 
 void BreakableObject::doUpdate(const oxygine::UpdateState& us)
