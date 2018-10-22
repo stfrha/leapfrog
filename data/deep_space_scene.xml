@@ -2,6 +2,7 @@
 <compoundObject
    name="deepSpaceScene"
 	type="deepSpaceScene" >
+<!--
    <childObject
       name="asteroid1">
       <stateProperties
@@ -12,13 +13,14 @@
             file="large_asteroid.xml" />
       </stateProperties>
    </childObject>
+-->
    <childObject
       name="leapfrog1">
       <stateProperties
          state="default">
          <properties
-            posX="300.0"
-            posY="250.0" 
+            posX="650.0"
+            posY="300.0" 
             file="leapfrog_deep_space.xml" />
       </stateProperties>
    </childObject>
@@ -33,11 +35,11 @@
                needsGroupIndex="true" >
                <behaviour
                   type="steerableObject" 
-                  steeringState="wanderHunt"
+                  steeringState="seek"
                   targetBody="leapfrog1.lfMainBody"
                   initialAngle="3.1415"
-                  seekPointX="0.0"
-                  seekPointY="0.0" />
+                  seekTargetX="200.0"
+                  seekTargetY="200.0" />
                <dynamicBox
                   name="mainBody"
                   texture="hammer"
@@ -45,7 +47,7 @@
                   posY="0"
                   width="24" 
                   height="12.6"
-                  angle="0"
+                  angle="3.1415"
                   zLevel="160"
                   collisionEntity="steerableObject"
                   collisionCategory="16"
@@ -102,6 +104,7 @@
          </properties>
       </stateProperties>
    </childObject>
+<!--   
    <system
       type="objectFactory"
       name="asteroidField">
@@ -157,5 +160,6 @@
          </properties>
       </stateProperties>
    </system>
+-->
 </compoundObject>
 

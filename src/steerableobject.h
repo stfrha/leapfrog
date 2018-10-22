@@ -57,6 +57,10 @@ private:
    void readSteerableObjectNode(pugi::xml_node root);
    void collisionBlast(b2Contact* contact, bool small = true);
    void evaluateDamage(void);
+   void executeSteeringForce(b2Vec2 steeringForce);
+
+   void firstTryForces(b2Vec2 steeringForce);
+   void turnBoosterForce(b2Vec2 steeringForce);
    
 public:
    spFlameEmitter m_boosterFlame;

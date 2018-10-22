@@ -10,78 +10,82 @@ SteeringManager::SteeringManager(
    m_hostBody(hostBody),
    m_sceneActor(sceneActor),
    m_wanderAngle(0.0f),
-   m_steering(b2Vec2(0.0f, 0.0f)),
    m_wanderHunterState(WanderHunterState::wanderState),
    m_fireTrigger(false)
 {
 }
 
-void SteeringManager::update(void)
-{
-   // Always do asteroids collision avoidance
-   m_steering += doAvoidCollision();
+//void SteeringManager::update(void)
+//{
+//   // Always do asteroids collision avoidance
+//   m_steering += doAvoidCollision();
+//
+//   b2Vec2 velocity = m_hostBody->GetLinearVelocity();
+//
+//   if (m_steering.Length() > /*Max force*/ 1000.0f)
+//   {
+//      m_steering.Normalize();
+//      m_steering *= 1000.0f;
+//   }
+//
+//   float invMass = 1 / m_hostBody->GetMass();
+//
+//   m_steering = invMass * m_steering;
+//   
+//   velocity += m_steering;
+//
+//   if (velocity.Length() > m_maxVelocity)
+//   {
+//      velocity.Normalize();
+//      velocity *= m_maxVelocity;
+//   }
+//
+//   b2Vec2 velChange = velocity - m_hostBody->GetLinearVelocity();
+//   b2Vec2 impulse = m_hostBody->GetMass() * velChange;
+//   m_hostBody->ApplyLinearImpulse(impulse, m_hostBody->GetWorldCenter(), true);
+//}
 
-   b2Vec2 velocity = m_hostBody->GetLinearVelocity();
 
-   if (m_steering.Length() > /*Max force*/ 1000.0f)
-   {
-      m_steering.Normalize();
-      m_steering *= 1000.0f;
-   }
-
-   float invMass = 1 / m_hostBody->GetMass();
-
-   m_steering = invMass * m_steering;
-   
-   velocity += m_steering;
-
-   if (velocity.Length() > m_maxVelocity)
-   {
-      velocity.Normalize();
-      velocity *= m_maxVelocity;
-   }
-
-   b2Vec2 velChange = velocity - m_hostBody->GetLinearVelocity();
-   b2Vec2 impulse = m_hostBody->GetMass() * velChange;
-   m_hostBody->ApplyLinearImpulse(impulse, m_hostBody->GetWorldCenter(), true);
-}
-
-
-void SteeringManager::seek(b2Vec2 target, float maxVelocity, float slowingRadius, float turnBooster)
-{
-   m_maxVelocity = maxVelocity;
-	m_steering += doSeek(target, maxVelocity, slowingRadius, turnBooster);
-}
-
-void SteeringManager::flee(b2Vec2 target, float maxVelocity)
+b2Vec2 SteeringManager::seek(b2Vec2 target, float maxVelocity, float slowingRadius, float turnBooster)
 {
    m_maxVelocity = maxVelocity;
-   m_steering += doFlee(target, maxVelocity);
+	return doSeek(target, maxVelocity, slowingRadius, turnBooster);
 }
 
-void SteeringManager::wander(float maxVelocity)
+b2Vec2 SteeringManager::flee(b2Vec2 target, float maxVelocity)
 {
    m_maxVelocity = maxVelocity;
-   m_steering += doWander(maxVelocity);
+   return  doFlee(target, maxVelocity);
 }
 
-void SteeringManager::evade(b2Body* target, float maxVelocity)
+b2Vec2 SteeringManager::wander(float maxVelocity)
 {
    m_maxVelocity = maxVelocity;
-   m_steering += doFlee(target->GetPosition(), maxVelocity);
+   return doWander(maxVelocity);
 }
 
-void SteeringManager::pursuit(b2Body* target, float maxVelocity)
+b2Vec2 SteeringManager::evade(b2Body* target, float maxVelocity)
+{
+   m_maxVelocity = maxVelocity;
+   return  doFlee(target->GetPosition(), maxVelocity);
+}
+
+b2Vec2 SteeringManager::pursuit(b2Body* target, float maxVelocity)
 {
    m_maxVelocity = maxVelocity;
    //	m_steering += doSeek(target->GetPosition());
-   m_steering += doPursuit(target, maxVelocity);
+   return  doPursuit(target, maxVelocity);
 }
 
-void SteeringManager::wanderHunt(const UpdateState& us, b2Body* target, float maxVelocity)
+b2Vec2 SteeringManager::wanderHunt(const UpdateState& us, b2Body* target, float maxVelocity)
 {
    m_maxVelocity = maxVelocity;
-   m_steering += doWanderHunt(us, target, maxVelocity);
+   return doWanderHunt(us, target, maxVelocity);
+}
+
+b2Vec2 SteeringManager::avoidCollision(void)
+{
+   return doAvoidCollision();
 }
 
 // doSeek, target is point to seek to, slowingRadius is the radius to target in which
@@ -100,32 +104,33 @@ b2Vec2 SteeringManager::doSeek(
    b2Vec2 desired = target - m_hostBody->GetPosition();
    distance = desired.Length();
 
-   b2Vec2 myVel = m_hostBody->GetLinearVelocity();
+   //// We want the turnBoosterMagAngle 
+   //b2Vec2 myVel = m_hostBody->GetLinearVelocity();
    
-   // The turning booster force is a little extra hump
-   // for turning when the velocity (and thus direction of travel)
-   // is way off the target. The bigger the off-angle the bigger 
-   // the boost. turnBoosterMag should be the angle between current 
-   // travel and the desired direction. The angle is found using the
-   // dot product.
-   float dotProd = b2Dot(desired, myVel) / desired.Normalize() / myVel.Normalize();
-   
-   if (dotProd > 1.0f) dotProd = 1.0f;
-   else if (dotProd < -1.0f) dotProd = -1.0f;
-   
-   float turnBoosterMagAngle = acos(dotProd);
+   //// The turning booster force is a little extra hump
+   //// for turning when the velocity (and thus direction of travel)
+   //// is way off the target. The bigger the off-angle the bigger 
+   //// the boost. turnBoosterMag should be the angle between current 
+   //// travel and the desired direction. The angle is found using the
+   //// dot product.
+   //float dotProd = b2Dot(desired, myVel) / desired.Normalize() / myVel.Normalize();
+   //
+   //if (dotProd > 1.0f) dotProd = 1.0f;
+   //else if (dotProd < -1.0f) dotProd = -1.0f;
+   //
+   //float turnBoosterMagAngle = acos(dotProd);
 
    if (enableFire)
    {
-      if (turnBoosterMagAngle < 5.0f / 180.0f * MATH_PI)
-      {
-         // We now point in the direction of the target, shot, if enabled
-         m_fireTrigger = true;
-      }
-      else
-      {
-         m_fireTrigger = false;
-      }
+      //if (turnBoosterMagAngle < 5.0f / 180.0f * MATH_PI)
+      //{
+      //   // We now point in the direction of the target, shot, if enabled
+      //   m_fireTrigger = true;
+      //}
+      //else
+      //{
+      //   m_fireTrigger = false;
+      //}
    }
 
    desired.Normalize();
@@ -139,15 +144,16 @@ b2Vec2 SteeringManager::doSeek(
       desired *= maxVelocity;
    }
 
-   // Lets put a ceiling in the turnBooster so it does not get
-   // unnatural turning
-   if (turnBoosterMagAngle > 1.57f)
-   {
-      turnBoosterMagAngle = 1.57f;
-   }
+   //// Lets put a ceiling in the turnBooster so it does not get
+   //// unnatural turning
+   //if (turnBoosterMagAngle > 1.57f)
+   //{
+   //   turnBoosterMagAngle = 1.57f;
+   //}
 
    force = (desired - m_hostBody->GetLinearVelocity());
-   force *= (turnBoosterMagAngle * turnBooster + 1.0f);
+
+//   force *= (turnBoosterMagAngle * turnBooster + 1.0f);
 
    return force;   
 }
@@ -566,15 +572,3 @@ b2Vec2 SteeringManager::doWanderHunt(const UpdateState& us, b2Body* target, floa
    return b2Vec2(0.0f, 0.0f);
 }
 
-
-
-
-b2Vec2 SteeringManager::getSteering()
-{
-   return m_steering;
-}
-
-void SteeringManager::reset(void)
-{
-   m_steering = b2Vec2(0.0f, 0.0f);
-}

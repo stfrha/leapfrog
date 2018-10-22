@@ -19,7 +19,7 @@ public:
 private:
 	b2Body* m_hostBody;
 
-	b2Vec2 m_steering;
+	//b2Vec2 m_steering;
    SceneActor* m_sceneActor;
 
    b2Vec2 m_lastKnowTargetPos;
@@ -49,17 +49,13 @@ public:
 
    SteeringManager(b2Body* host, SceneActor* sceneActor);
 
-   void update( void );
-	
-	void reset( void );
-	
-	void seek(b2Vec2 target, float maxVelocity, float slowingRadius = 0.0f, float turnBooster = 1.0f);
-	void flee(b2Vec2 target, float maxVelocity);
-	void wander(float maxVelocity);
-   void evade(b2Body* target, float maxVelocity);
-	void pursuit(b2Body* target, float maxVelocity);
-   void wanderHunt(const oxygine::UpdateState& us, b2Body* target, float maxVelocity);
-
-   b2Vec2 getSteering();
-
+   //void update( void );
+		
+	b2Vec2 seek(b2Vec2 target, float maxVelocity, float slowingRadius = 0.0f, float turnBooster = 1.0f);
+	b2Vec2 flee(b2Vec2 target, float maxVelocity);
+	b2Vec2 wander(float maxVelocity);
+   b2Vec2 evade(b2Body* target, float maxVelocity);
+	b2Vec2 pursuit(b2Body* target, float maxVelocity);
+   b2Vec2 wanderHunt(const oxygine::UpdateState& us, b2Body* target, float maxVelocity);
+   b2Vec2 avoidCollision(void);
 };
