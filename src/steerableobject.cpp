@@ -24,7 +24,10 @@ SteerableObject::SteerableObject(
    m_world(world),
    m_sceneActor(sceneActor),
    m_state(fix),
-   m_initialAngle(0.0f),
+   m_bodyToBoosterAngle(0.0f),
+   m_maxBoosterForce(0.0f),
+   m_maxSpeed(0.0f),
+   m_maxRotateSpeed(0.0f),
    m_slowTurningAfterHit(false)
 {
    initCompoundObjectParts(gameResources, sceneActor, parentObject, world, pos, root, string(""), groupIndex);
@@ -50,7 +53,7 @@ SteerableObject::SteerableObject(
    attachTo(m_sceneActor);
 
    m_steeringManager = new SteeringManager(m_body, m_sceneActor);
-   m_steeringManager->m_wanderAngle = m_initialAngle;
+   m_steeringManager->m_wanderAngle = m_bodyToBoosterAngle;
 }
 
 void SteerableObject::readSteerableObjectNode(pugi::xml_node root)
@@ -67,9 +70,14 @@ void SteerableObject::readSteerableObjectNode(pugi::xml_node root)
    else if (st == "wanderHunt") m_state = wanderHunt;
    else m_state = fix;
 
-   m_initialAngle = node.attribute("initialAngle").as_float(0.0f);
+   m_bodyToBoosterAngle = node.attribute("bodyToBoosterAngle").as_float(0.0f);
    m_seekPoint.x = node.attribute("seekTargetX").as_float(0.0f);
    m_seekPoint.y = node.attribute("seekTargetY").as_float(0.0f);
+
+   m_maxBoosterForce = node.attribute("maxBoosterForce").as_float(0.0f);
+   m_maxSpeed = node.attribute("maxSpeed").as_float(0.0f);
+   m_maxRotateSpeed = node.attribute("degPerSecMaxRotateSpeed").as_float(0.0f) / 180.0f * MATH_PI;
+
 }
 
 void SteerableObject::doUpdate(const oxygine::UpdateState& us)
@@ -81,13 +89,13 @@ void SteerableObject::doUpdate(const oxygine::UpdateState& us)
    case fix:
       break;
    case wanderHunt:
-      steeringForce = m_steeringManager->wanderHunt(us, m_targetBody, 50.0f);
+      steeringForce = m_steeringManager->wanderHunt(us, m_targetBody, m_maxSpeed);
       break;
    case seek:
-      steeringForce = m_steeringManager->seek(m_seekPoint, 25.0f);
+      steeringForce = m_steeringManager->seek(m_seekPoint, m_maxSpeed);
       break;
    case wander:
-      steeringForce = m_steeringManager->wander(10.0f);
+      steeringForce = m_steeringManager->wander(m_maxSpeed);
       break;
    }
 
@@ -207,12 +215,17 @@ void SteerableObject::turnBoosterForce(b2Vec2 steeringForce)
    // If the ship is stationary, the velocity is zero then there is no directon
    // which cause undefined (and probably erratic) behaviour
    // Thus we can not use vectors for the angle calculations. We need angles
-   float objectAngle = m_body->GetAngle();
 
-   while (objectAngle > MATH_PI) objectAngle -= 2.0f * MATH_PI;
-   while (objectAngle < -MATH_PI) objectAngle += 2.0f * MATH_PI;
+   // thrustAngle is the direction of the booster push which may not
+   // necessary be the body direction. 
+   float bodyAngle = m_body->GetAngle();
+   float thrustAngle = bodyAngle - m_bodyToBoosterAngle;
+   float degAngle = thrustAngle / MATH_PI * 180.0f;
 
-   b2Vec2 objectDirection = b2Vec2(cos(objectAngle),-sin(objectAngle));
+   while (thrustAngle > MATH_PI) thrustAngle -= 2.0f * MATH_PI;
+   while (thrustAngle < -MATH_PI) thrustAngle += 2.0f * MATH_PI;
+
+   b2Vec2 objectDirection = b2Vec2(cos(thrustAngle),sin(thrustAngle));
 
    float objectSpeed = m_body->GetLinearVelocity().Length();
 
@@ -224,27 +237,28 @@ void SteerableObject::turnBoosterForce(b2Vec2 steeringForce)
    {
       projectedForce = 0.0f;
    }
-   else if (projectedForce > /* maxBoosterForce */ 10000.0f)
+   else if (projectedForce > m_maxBoosterForce)
    {
-      projectedForce = /* maxBoosterForce */ 10000.0f;
+      projectedForce = m_maxBoosterForce;
    }
 
 
    b2Vec2 boostForce = projectedForce * objectDirection;
 
 
-   // Find the angular force to turn the ship in the direction of
+   // Find the angular force to turn the ship in the direction 
+   // to get the desired velocity change
    b2Vec2 toTarget = steeringForce;
-   float desiredAngle = atan2f(-toTarget.x, toTarget.y) - /* Is this the initiatial angle?*/MATH_PI / 2.0f;
+   float desiredAngle = atan2f(toTarget.y, toTarget.x);
 
 //   float nextAngle = bodyAngle + m_body->GetAngularVelocity() / 60.0f;
-   float nextAngle = objectAngle + m_body->GetAngularVelocity() / 3.0f;
+   float nextAngle = thrustAngle + m_body->GetAngularVelocity() / 3.0f;
    float totalRotation = desiredAngle - nextAngle;
    while (totalRotation < -MATH_PI) totalRotation += 2.0f * MATH_PI;
    while (totalRotation >  MATH_PI) totalRotation -= 2.0f * MATH_PI;
 
    float desiredAngularVelocity = totalRotation * 60;
-   float change = 3.0f / 180.0f * MATH_PI;
+   float change = m_maxRotateSpeed;
    desiredAngularVelocity = min(change, max(-change, desiredAngularVelocity));
    float angImpulse = m_body->GetInertia() * desiredAngularVelocity;// disregard time factor
 
@@ -254,12 +268,16 @@ void SteerableObject::turnBoosterForce(b2Vec2 steeringForce)
    m_body->ApplyLinearImpulseToCenter(boostForce, true);
    m_body->ApplyAngularImpulse(angImpulse, true);
 
-   logs::messageln("objectAngle: %f, desiredAngle: %f, X: %f, Y: %f, ang: %f", 
-      objectAngle / MATH_PI * 180.0f, 
-      desiredAngle / MATH_PI * 180.0f,
-      boostForce.x,
-      boostForce.y, 
-      angImpulse);
+   //logs::messageln("thrustAngle: %f, desiredAngle: %f, X: %f, Y: %f, ang: %f", 
+   //   thrustAngle / MATH_PI * 180.0f, 
+   //   desiredAngle / MATH_PI * 180.0f,
+   //   //boostForce.x,
+   //   //boostForce.y, 
+   //   //steeringForce.x,
+   //   //steeringForce.y,
+   //   m_body->GetPosition().x,
+   //   m_body->GetPosition().y,
+   //   angImpulse);
 
 
 

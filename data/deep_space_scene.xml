@@ -37,9 +37,12 @@
                   type="steerableObject" 
                   steeringState="seek"
                   targetBody="leapfrog1.lfMainBody"
-                  initialAngle="3.1415"
+                  bodyToBoosterAngle="3.1415"
                   seekTargetX="200.0"
-                  seekTargetY="200.0" />
+                  seekTargetY="100.0"
+                  maxBoosterForce="100000.0"
+                  maxSpeed="50.0"
+                  degPerSecMaxRotateSpeed="3.0" />
                <dynamicBox
                   name="mainBody"
                   texture="hammer"

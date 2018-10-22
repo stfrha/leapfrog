@@ -49,7 +49,10 @@ private:
    SteeringStateEnum m_state;
    b2Vec2 m_seekPoint;
    b2Body* m_targetBody;
-   float m_initialAngle;
+   float m_bodyToBoosterAngle;
+   float m_maxBoosterForce;
+   float m_maxSpeed;
+   float m_maxRotateSpeed;
 
    SceneActor* m_sceneActor;
 
