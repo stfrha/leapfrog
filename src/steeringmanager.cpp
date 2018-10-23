@@ -98,7 +98,7 @@ b2Vec2 SteeringManager::doSeek(
    float slowingRadius,
    float turnBooster)
 {
-   b2Vec2 force;
+   b2Vec2 velChange;
    float distance = 0.0f;
    
    b2Vec2 desired = target - m_hostBody->GetPosition();
@@ -107,7 +107,7 @@ b2Vec2 SteeringManager::doSeek(
    //// We want the turnBoosterMagAngle 
    //b2Vec2 myVel = m_hostBody->GetLinearVelocity();
    
-   //// The turning booster force is a little extra hump
+   //// The turning booster velChange is a little extra hump
    //// for turning when the velocity (and thus direction of travel)
    //// is way off the target. The bigger the off-angle the bigger 
    //// the boost. turnBoosterMag should be the angle between current 
@@ -151,11 +151,17 @@ b2Vec2 SteeringManager::doSeek(
    //   turnBoosterMagAngle = 1.57f;
    //}
 
-   force = (desired - m_hostBody->GetLinearVelocity());
+   velChange = (desired - m_hostBody->GetLinearVelocity());
 
-//   force *= (turnBoosterMagAngle * turnBooster + 1.0f);
+//   velChange *= (turnBoosterMagAngle * turnBooster + 1.0f);
 
-   return force;   
+   logs::messageln("speed: %f, velocityChange.X: %f",
+      m_hostBody->GetLinearVelocity().Length(),
+      velChange.x);
+
+
+
+   return velChange;   
 }
 
 b2Vec2 SteeringManager::doFlee(b2Vec2 target, float maxVelocity)

@@ -17,6 +17,13 @@ FlameParticle::FlameParticle(
    m_gameResources(&gameResources),
    m_world(world)
 {
+   // If lifetime is zero, for instance if scale is zero,
+   // We do not create any body
+   if (lifetime == 0)
+   {
+      return;
+   }
+
    setResAnim(gameResources.getResAnim("flame_particle"));
    setSize(radius, radius);
    setPosition(PhysDispConvert::convert(pos, 1.0f));

@@ -27,6 +27,9 @@ private:
    oxygine::timeMS m_stateStartTime;
    float m_maxVelocity;
 
+   // 30 steps should be 0.5 s
+   b2Vec2 m_velChangeFilter[30];
+
    b2Vec2 doSeek(b2Vec2 target, float maxVelocity, bool enableFire = false, float slowingRadius = 0.0f, float turnBooster = 1.0f);
 	b2Vec2 doFlee(b2Vec2 target, float maxVelocity);
 	b2Vec2 doWander(float maxVelocity);

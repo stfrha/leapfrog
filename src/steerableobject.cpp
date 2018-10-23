@@ -28,6 +28,8 @@ SteerableObject::SteerableObject(
    m_maxBoosterForce(0.0f),
    m_maxSpeed(0.0f),
    m_maxRotateSpeed(0.0f),
+   m_linearDamping(1.0f),
+   m_boosterScale(0.0f),
    m_slowTurningAfterHit(false)
 {
    initCompoundObjectParts(gameResources, sceneActor, parentObject, world, pos, root, string(""), groupIndex);
@@ -54,6 +56,8 @@ SteerableObject::SteerableObject(
 
    m_steeringManager = new SteeringManager(m_body, m_sceneActor);
    m_steeringManager->m_wanderAngle = m_bodyToBoosterAngle;
+
+   m_body->SetLinearDamping(m_linearDamping);
 }
 
 void SteerableObject::readSteerableObjectNode(pugi::xml_node root)
@@ -77,45 +81,51 @@ void SteerableObject::readSteerableObjectNode(pugi::xml_node root)
    m_maxBoosterForce = node.attribute("maxBoosterForce").as_float(0.0f);
    m_maxSpeed = node.attribute("maxSpeed").as_float(0.0f);
    m_maxRotateSpeed = node.attribute("degPerSecMaxRotateSpeed").as_float(0.0f) / 180.0f * MATH_PI;
-
+   m_linearDamping = node.attribute("linearDamping").as_float(0.0f);
 }
 
 void SteerableObject::doUpdate(const oxygine::UpdateState& us)
 {
-   b2Vec2 steeringForce = b2Vec2(0.0f, 0.0f);
+   b2Vec2 steeringVelChange = b2Vec2(0.0f, 0.0f);
 
    switch (m_state)
    {
    case fix:
       break;
    case wanderHunt:
-      steeringForce = m_steeringManager->wanderHunt(us, m_targetBody, m_maxSpeed);
+      steeringVelChange = m_steeringManager->wanderHunt(us, m_targetBody, m_maxSpeed);
       break;
    case seek:
-      steeringForce = m_steeringManager->seek(m_seekPoint, m_maxSpeed);
+      steeringVelChange = m_steeringManager->seek(m_seekPoint, m_maxSpeed);
+      break;
+   case pursuit:
+      steeringVelChange = m_steeringManager->pursuit(m_targetBody, m_maxSpeed);
       break;
    case wander:
-      steeringForce = m_steeringManager->wander(m_maxSpeed);
+      steeringVelChange = m_steeringManager->wander(m_maxSpeed);
       break;
    }
 
-   steeringForce += m_steeringManager->avoidCollision();
+   steeringVelChange += m_steeringManager->avoidCollision();
 
-   executeSteeringForce(steeringForce);
+   executeSteeringForce(steeringVelChange);
+
+   m_boosterFlame->setFlameScale(m_boosterScale);
+
 
    // TODO: change flame states to more general speed 
-   if (m_steeringManager->m_wanderHunterState == SteeringManager::WanderHunterState::wanderState)
-   {
-      m_boosterFlame->setFlameScale(0.2f);
-   }
-   else if (m_steeringManager->m_wanderHunterState == SteeringManager::WanderHunterState::seekState)
-   {
-      m_boosterFlame->setFlameScale(0.5f);
-   }
-   else
-   {
-      m_boosterFlame->setFlameScale(1.0f);
-   }
+   //if (m_steeringManager->m_wanderHunterState == SteeringManager::WanderHunterState::wanderState)
+   //{
+   //   m_boosterFlame->setFlameScale(0.2f);
+   //}
+   //else if (m_steeringManager->m_wanderHunterState == SteeringManager::WanderHunterState::seekState)
+   //{
+   //   m_boosterFlame->setFlameScale(0.5f);
+   //}
+   //else
+   //{
+   //   m_boosterFlame->setFlameScale(1.0f);
+   //}
 
    if (m_steeringManager->m_fireTrigger)
    {
@@ -129,30 +139,30 @@ void SteerableObject::doUpdate(const oxygine::UpdateState& us)
 
  }
 
-void SteerableObject::executeSteeringForce(b2Vec2 steeringForce)
+void SteerableObject::executeSteeringForce(b2Vec2 steeringVelChange)
 {
    // This method is used to convert the steering force
    // into actual forces on the object body. This can 
    // be according to different viehcle models.
    // Each model is called from here
-   turnBoosterForce(steeringForce);
+   turnBoosterForce(steeringVelChange);
 }
 
-void SteerableObject::firstTryForces(b2Vec2 steeringForce)
+void SteerableObject::firstTryForces(b2Vec2 steeringVelChange)
 {
    b2Vec2 velocity = m_body->GetLinearVelocity();
    
-   if (steeringForce.Length() > /*Max force*/ 1000.0f)
+   if (steeringVelChange.Length() > /*Max force*/ 1000.0f)
    {
-      steeringForce.Normalize();
-      steeringForce *= 1000.0f;
+      steeringVelChange.Normalize();
+      steeringVelChange *= 1000.0f;
    }
    
    float invMass = 1 / m_body->GetMass();
    
-   steeringForce = invMass * steeringForce;
+   steeringVelChange = invMass * steeringVelChange;
       
-   velocity += steeringForce;
+   velocity += steeringVelChange;
    
    if (velocity.Length() > 20.0f /*m_maxVelocity*/)
    {
@@ -192,7 +202,7 @@ void SteerableObject::firstTryForces(b2Vec2 steeringForce)
 
 }
 
-void SteerableObject::turnBoosterForce(b2Vec2 steeringForce)
+void SteerableObject::turnBoosterForce(b2Vec2 steeringVelChange)
 {
    // In this model, the booster can only supply linear push in its pointing direction 
    // which is quite real. The ship need to turn in the direction of the 
@@ -229,8 +239,8 @@ void SteerableObject::turnBoosterForce(b2Vec2 steeringForce)
 
    float objectSpeed = m_body->GetLinearVelocity().Length();
 
-   // Project steeringForce onto objectDirection
-   float projectedForce = b2Dot(steeringForce, objectDirection);
+   // Project steeringVelChange onto objectDirection
+   float projectedForce = m_body->GetMass() * b2Dot(steeringVelChange, objectDirection);
    
    // In this model, booster can not be reversed, Ship must turn
    if (projectedForce < 0.0f)
@@ -242,13 +252,14 @@ void SteerableObject::turnBoosterForce(b2Vec2 steeringForce)
       projectedForce = m_maxBoosterForce;
    }
 
-
+   m_boosterScale = projectedForce / m_maxBoosterForce;
+   
    b2Vec2 boostForce = projectedForce * objectDirection;
 
 
    // Find the angular force to turn the ship in the direction 
    // to get the desired velocity change
-   b2Vec2 toTarget = steeringForce;
+   b2Vec2 toTarget = steeringVelChange;
    float desiredAngle = atan2f(toTarget.y, toTarget.x);
 
 //   float nextAngle = bodyAngle + m_body->GetAngularVelocity() / 60.0f;
@@ -268,13 +279,14 @@ void SteerableObject::turnBoosterForce(b2Vec2 steeringForce)
    m_body->ApplyLinearImpulseToCenter(boostForce, true);
    m_body->ApplyAngularImpulse(angImpulse, true);
 
+
    //logs::messageln("thrustAngle: %f, desiredAngle: %f, X: %f, Y: %f, ang: %f", 
    //   thrustAngle / MATH_PI * 180.0f, 
    //   desiredAngle / MATH_PI * 180.0f,
    //   //boostForce.x,
    //   //boostForce.y, 
-   //   //steeringForce.x,
-   //   //steeringForce.y,
+   //   //steeringVelChange.x,
+   //   //steeringVelChange.y,
    //   m_body->GetPosition().x,
    //   m_body->GetPosition().y,
    //   angImpulse);
