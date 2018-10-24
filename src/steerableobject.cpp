@@ -239,23 +239,37 @@ void SteerableObject::turnBoosterForce(b2Vec2 steeringVelChange)
 
    float objectSpeed = m_body->GetLinearVelocity().Length();
 
-   // Project steeringVelChange onto objectDirection
-   float projectedForce = m_body->GetMass() * b2Dot(steeringVelChange, objectDirection);
-   
-   // In this model, booster can not be reversed, Ship must turn
-   if (projectedForce < 0.0f)
-   {
-      projectedForce = 0.0f;
-   }
-   else if (projectedForce > m_maxBoosterForce)
-   {
-      projectedForce = m_maxBoosterForce;
-   }
+   float steeringSpeedChange = steeringVelChange.Length();
 
-   m_boosterScale = projectedForce / m_maxBoosterForce;
-   
-   b2Vec2 boostForce = projectedForce * objectDirection;
+   // Get angle between desired velocity change and the body direction
+   float boostAngle = acos(b2Dot(steeringVelChange, objectDirection) / steeringSpeedChange);
 
+   b2Vec2 boostForce = b2Vec2(0.0f, 0.0f);
+
+   float boostCone = 45.0f / 180.0f * MATH_PI;
+
+   // Only boost if we are pointing in, roughly, the right direction
+   if (boostAngle < boostCone)
+   {
+      // Scale the force so that we get max when we point directly 
+      // in the velocity change and zero at the boundary angle
+      float projectedForce = m_body->GetMass() * (1.0f - boostAngle / boostCone) * steeringSpeedChange;
+    
+      // In this model, booster can not be reversed, Ship must turn
+      if (projectedForce < 0.0f)
+      {
+         projectedForce = 0.0f;
+      }
+      else if (projectedForce > m_maxBoosterForce)
+      {
+         projectedForce = m_maxBoosterForce;
+      }
+
+      m_boosterScale = projectedForce / m_maxBoosterForce;
+
+      boostForce = projectedForce * objectDirection;
+   }
+   
 
    // Find the angular force to turn the ship in the direction 
    // to get the desired velocity change

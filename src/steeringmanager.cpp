@@ -151,13 +151,26 @@ b2Vec2 SteeringManager::doSeek(
    //   turnBoosterMagAngle = 1.57f;
    //}
 
+
+
+   // Sometimes, the booster push makes the object go ahead of
+   // the maxVelocity which make the object try to turn to break
+   // making it dance forward. Lets try to inhibit this behaviour.
+   // We can not remove all velocity changes that are in the opposite
+   // direction, it is needed to abruptly be able to change direction.
+   // But if the desired velocity and the body velocity is, roughly,
+   // in the same direction and the body speed is higher than the 
+   // desired, we can set velChange to 0 and allow the linear
+   // damping to slow the craft down gradually. 
+   
    velChange = (desired - m_hostBody->GetLinearVelocity());
+
 
 //   velChange *= (turnBoosterMagAngle * turnBooster + 1.0f);
 
-   logs::messageln("speed: %f, velocityChange.X: %f",
-      m_hostBody->GetLinearVelocity().Length(),
-      velChange.x);
+   //logs::messageln("speed: %f, velocityChange.X: %f",
+   //   m_hostBody->GetLinearVelocity().Length(),
+   //   velChange.x);
 
 
 

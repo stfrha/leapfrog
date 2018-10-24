@@ -38,9 +38,9 @@
                   steeringState="pursuit"
                   targetBody="leapfrog1.lfMainBody"
                   bodyToBoosterAngle="3.1415"
-                  seekTargetX="-200.0"
+                  seekTargetX="100.0"
                   seekTargetY="100.0"
-                  maxBoosterForce="1000.0"
+                  maxBoosterForce="1500.0"
                   maxSpeed="60.0"
                   degPerSecMaxRotateSpeed="3.0"
                   linearDamping="1.0" />
