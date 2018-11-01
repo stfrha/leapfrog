@@ -246,7 +246,7 @@ void SteerableObject::turnBoosterForce(b2Vec2 steeringVelChange)
 
    b2Vec2 boostForce = b2Vec2(0.0f, 0.0f);
 
-   float boostCone = 45.0f / 180.0f * MATH_PI;
+   float boostCone = 22.0f / 180.0f * MATH_PI;
 
    // Only boost if we are pointing in, roughly, the right direction
    if (boostAngle < boostCone)

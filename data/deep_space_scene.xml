@@ -2,7 +2,6 @@
 <compoundObject
    name="deepSpaceScene"
 	type="deepSpaceScene" >
-<!--
    <childObject
       name="asteroid1">
       <stateProperties
@@ -13,14 +12,13 @@
             file="large_asteroid.xml" />
       </stateProperties>
    </childObject>
--->
    <childObject
       name="leapfrog1">
       <stateProperties
          state="default">
          <properties
-            posX="650.0"
-            posY="300.0" 
+            posX="250.0"
+            posY="250.0" 
             file="leapfrog_deep_space.xml" />
       </stateProperties>
    </childObject>
@@ -40,8 +38,8 @@
                   bodyToBoosterAngle="3.1415"
                   seekTargetX="100.0"
                   seekTargetY="100.0"
-                  maxBoosterForce="1500.0"
-                  maxSpeed="60.0"
+                  maxBoosterForce="700.0"
+                  maxSpeed="40.0"
                   degPerSecMaxRotateSpeed="3.0"
                   linearDamping="1.0" />
                <dynamicBox
