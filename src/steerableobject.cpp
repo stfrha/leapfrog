@@ -243,6 +243,7 @@ void SteerableObject::turnBoosterForce(b2Vec2 steeringVelChange)
 
    // Get angle between desired velocity change and the body direction
    float boostAngle = acos(b2Dot(steeringVelChange, objectDirection) / steeringSpeedChange);
+   float degBoosAngle = boostAngle / MATH_PI * 180.0f;
 
    b2Vec2 boostForce = b2Vec2(0.0f, 0.0f);
 

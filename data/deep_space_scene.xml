@@ -8,7 +8,7 @@
          state="default">
          <properties
             posX="500.0"
-            posY="250.0" 
+            posY="240.0" 
             file="large_asteroid.xml" />
       </stateProperties>
    </childObject>

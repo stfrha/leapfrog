@@ -33,6 +33,7 @@ FreeSpaceActor::FreeSpaceActor(
    generateBackground(gameResources);
 
    m_leapfrog = static_cast<LeapFrog*>(getObject("leapfrog1"));
+   setPanorateObject(getObject("hammer1"));
 
    m_leapfrog->initGameStatus(gameStatus);
 

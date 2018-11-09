@@ -20,7 +20,8 @@ SceneActor::SceneActor(Resources& gameResources, float zoomScale) :
    m_zoomInPressed(false),
    m_zoomOutPressed(false),
    m_sceneWidth(1000.0f),
-   m_sceneHeight(500.0f)
+   m_sceneHeight(500.0f),
+   m_panObject(NULL)
 {
 	Point size = Point(m_sceneWidth, m_sceneHeight);
 	setSize(size);
@@ -72,6 +73,11 @@ Resources* SceneActor::getResources(void)
 void SceneActor::setPanorateMode(PanorateModeEnum mode)
 {
    m_panorateMode = mode;
+}
+
+void SceneActor::setPanorateObject(CompoundObject* co)
+{
+   m_panObject = co;
 }
 
 void SceneActor::addMeToDeathList(Actor* actor)
@@ -229,7 +235,16 @@ void SceneActor::doUpdate(const UpdateState& us)
 	Point vpSize = core::getDisplaySize();
 
 	// Frog position in stage coordinates
-	Vector2 frogPos = m_leapfrog->getMainActor()->getPosition();
+   Vector2 panPos(0.0f, 0.0f);
+
+   if (m_panObject)
+   {
+      panPos = m_panObject->getCompoundObjectPosition();
+   }
+   else
+   {
+      panPos = m_leapfrog->getMainActor()->getPosition();
+   }
 
    Vector2 wantedVpPos = Vector2(0.0f, 0.0f);
    
@@ -252,7 +267,7 @@ void SceneActor::doUpdate(const UpdateState& us)
    
    if (m_panorateMode != PME_FIX)
    {
-      Vector2 stagePos = wantedVpPos - frogPos * m_stageToViewPortScale;
+      Vector2 stagePos = wantedVpPos - panPos * m_stageToViewPortScale;
 
       setPosition(stagePos);
    }

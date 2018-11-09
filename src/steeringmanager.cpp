@@ -307,9 +307,9 @@ b2Vec2 SteeringManager::doStayInScene(void)
       b2Vec2 vel = m_hostBody->GetLinearVelocity();
       float velMag = vel.Length();
 
-      velMag = velMag - velMag * edgeDist / forceDist;
+velMag = velMag - velMag * edgeDist / forceDist;
 
-      force += b2Vec2(velMag, 0.0f);
+force += b2Vec2(velMag, 0.0f);
    }
 
    // Do right
@@ -330,6 +330,133 @@ b2Vec2 SteeringManager::doStayInScene(void)
 }
 
 b2Vec2 SteeringManager::doAvoidCollision(void)
+{
+   return doAvoidCollision2();
+}
+
+b2Vec2 SteeringManager::globalToLocalConversion(
+   b2Vec2 ownGlobalPos,
+   float cosAngle,
+   float sinAngle,
+   b2Vec2 targetGlobalPos)
+{
+   // Lets use this link: https://gamedev.stackexchange.com/questions/79765/how-do-i-convert-from-the-global-coordinate-space-to-a-local-space
+
+   b2Vec2 localPos;
+
+   localPos.x = (targetGlobalPos.x - ownGlobalPos.x) * cosAngle + (targetGlobalPos.y - ownGlobalPos.y) * sinAngle;
+
+   // Since we have negative y-axis this is negative compared to the links answer
+   localPos.y = -(targetGlobalPos.x - ownGlobalPos.x) * sinAngle + (targetGlobalPos.y - ownGlobalPos.y) * cosAngle;
+
+   return localPos;
+}
+
+b2Vec2 SteeringManager::localToGlobalConversion(
+   b2Vec2 ownGlobalPos,
+   float cosAngle,
+   float sinAngle,
+   b2Vec2 targetLocalPos)
+{
+   // Lets use this link: https://gamedev.stackexchange.com/questions/79765/how-do-i-convert-from-the-global-coordinate-space-to-a-local-space
+
+   b2Vec2 globalPos;
+
+   globalPos.x = targetLocalPos.x * cosAngle - targetLocalPos.y * sinAngle + ownGlobalPos.x;
+
+   // Since we have negative y-axis this is negative compared to the links answer
+   globalPos.y = targetLocalPos.x * sinAngle + targetLocalPos.y * cosAngle + ownGlobalPos.y;
+
+   return globalPos;
+}
+
+b2Vec2 SteeringManager::doAvoidCollision2(void)
+{
+   // Project all close enough obstacles to a coordinate
+   // system of the velocity direction.
+   b2Vec2 vel = m_hostBody->GetLinearVelocity();
+
+   // If we stand still, like at the beginning, there is 
+   // no need to avoid obstacles, we simply return
+   // a null-vector.
+   if (vel.Length() < 0.0001)
+   {
+      return b2Vec2(0.0f, 0.0f);
+   }
+
+   b2Vec2 pos = m_hostBody->GetPosition();
+
+   // Now find the angle of the velocity, we need it to all 
+   // global-to-local transformations. 
+   float angle = atan2(vel.y, vel.x);
+   float degAngle = angle / MATH_PI * 180.0f;
+
+   float cosAngle = cos(angle);
+   float sinAngle = sin(angle);
+
+   float mostThreatViolation = 0.0;
+   float mostThreatDistance = FLT_MAX;
+   float mostThreatDirection = 0.0f;
+
+   // Assess to all obstacles
+   b2Body* body = m_hostBody->GetWorld()->GetBodyList();
+   while (body)
+   {
+      // So far, only avoid asteroids
+      // Get collision entity
+      if (BodyUserData::getCollisionType(body->GetFixtureList()->GetUserData()) == CollisionEntity::breakableObject)
+      {
+         b2Vec2 asteroidPos = body->GetPosition();
+
+         // Ignore all that are beyond the avoidance distance
+         if ((asteroidPos - pos).Length() < 200.0f)
+         {
+            //Asteroid* asteroid = (Asteroid*) body->GetUserData();
+            float asteroidRadius = body->GetFixtureList()->GetShape()->m_radius;
+
+            b2Vec2 localPos = globalToLocalConversion(pos, cosAngle, sinAngle, asteroidPos);
+
+            // Ignore all that are behind the object
+            if (localPos.x > 0.0f)
+            {
+               // Check if the obstacle is within the path corridor
+               float violation = asteroidRadius - fabs(localPos.y) + /* hammer radius*/ 40.0f;
+
+               if (violation > 0.0f)
+               {
+                  if (localPos.x < mostThreatDistance)
+                  {
+                     mostThreatDistance = localPos.x;
+
+                     if (localPos.y > 0)
+                     {
+                        mostThreatViolation = -violation;
+                     }
+                     else
+                     {
+                        mostThreatViolation = violation;
+                     }
+                  }
+               }
+            }
+         }
+      }
+
+      b2Body* next = body->GetNext();
+      body = next;
+   }
+
+   if (mostThreatDistance > /*very high*/ 200000.0f)
+   {
+      return b2Vec2(0.0f, 0.0f);
+   }
+
+   b2Vec2 avoidance = localToGlobalConversion(pos, cosAngle, sinAngle, b2Vec2(0.0f, mostThreatViolation)) - pos;
+
+   return avoidance;
+}
+
+b2Vec2 SteeringManager::doAvoidCollision1(void)
 {
    b2Vec2 pos = m_hostBody->GetPosition();
    b2Vec2 vel = m_hostBody->GetLinearVelocity();
@@ -357,7 +484,7 @@ b2Vec2 SteeringManager::doAvoidCollision(void)
 
       avoidance.Normalize();
 
-      avoidance *= 500.0f;
+      avoidance *= 50000.0f;
    }
 
    return avoidance;

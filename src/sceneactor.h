@@ -36,6 +36,9 @@ public:
       fadeOut
    };
 
+private:
+   CompoundObject * m_panObject;
+
 protected:
    oxygine::Resources * m_gameResources;
    float	m_zoomScale;
@@ -69,6 +72,7 @@ public:
 
    void setLeapfrog(spLeapFrog lf);
    void setPanorateMode(PanorateModeEnum mode);
+   void setPanorateObject(CompoundObject* co);
 
    void addMeToDeathList(Actor* actor);
    void addObjectToSpawnList(
