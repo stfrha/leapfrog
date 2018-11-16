@@ -36,9 +36,9 @@ private:
    b2Vec2 doEvade(b2Body* target, float maxVelocity);
 	b2Vec2 doPursuit(b2Body* target, float maxVelocity);
    b2Vec2 doStayInScene(void);
-   b2Vec2 doAvoidCollision(void);
-   b2Vec2 doAvoidCollision1(void);
-   b2Vec2 doAvoidCollision2(void);
+   b2Vec2 doAvoidCollision(b2Vec2 wantedVelChange);
+   b2Vec2 doAvoidCollision1(b2Vec2 wantedVelChange);
+   b2Vec2 doAvoidCollision2(b2Vec2 wantedVelChange);
    b2Body* findMostThreatening(b2Vec2 pos, b2Vec2 ahead, b2Vec2 ahead2);
    b2Vec2 globalToLocalConversion(b2Vec2 ownGlobalPos, float cosAngle, float sinAngle, b2Vec2 targetGlobalPos);
    b2Vec2 localToGlobalConversion(b2Vec2 ownGlobalPos, float cosAngle, float sinAngle, b2Vec2 targetLocalPos);
@@ -64,5 +64,5 @@ public:
    b2Vec2 evade(b2Body* target, float maxVelocity);
 	b2Vec2 pursuit(b2Body* target, float maxVelocity);
    b2Vec2 wanderHunt(const oxygine::UpdateState& us, b2Body* target, float maxVelocity);
-   b2Vec2 avoidCollision(void);
+   b2Vec2 avoidCollision(b2Vec2 wantedVelChange);
 };

@@ -106,7 +106,7 @@ void SteerableObject::doUpdate(const oxygine::UpdateState& us)
       break;
    }
 
-   steeringVelChange += m_steeringManager->avoidCollision();
+   steeringVelChange += m_steeringManager->avoidCollision(steeringVelChange);
 
    executeSteeringForce(steeringVelChange);
 

@@ -83,9 +83,9 @@ b2Vec2 SteeringManager::wanderHunt(const UpdateState& us, b2Body* target, float 
    return doWanderHunt(us, target, maxVelocity);
 }
 
-b2Vec2 SteeringManager::avoidCollision(void)
+b2Vec2 SteeringManager::avoidCollision(b2Vec2 wantedVelChange)
 {
-   return doAvoidCollision();
+   return doAvoidCollision(wantedVelChange);
 }
 
 // doSeek, target is point to seek to, slowingRadius is the radius to target in which
@@ -329,9 +329,9 @@ force += b2Vec2(velMag, 0.0f);
    return force;
 }
 
-b2Vec2 SteeringManager::doAvoidCollision(void)
+b2Vec2 SteeringManager::doAvoidCollision(b2Vec2 wantedVelChange)
 {
-   return doAvoidCollision2();
+   return doAvoidCollision2(wantedVelChange);
 }
 
 b2Vec2 SteeringManager::globalToLocalConversion(
@@ -370,25 +370,22 @@ b2Vec2 SteeringManager::localToGlobalConversion(
    return globalPos;
 }
 
-b2Vec2 SteeringManager::doAvoidCollision2(void)
+b2Vec2 SteeringManager::doAvoidCollision2(b2Vec2 wantedVelChange)
 {
-   // Project all close enough obstacles to a coordinate
-   // system of the velocity direction.
-   b2Vec2 vel = m_hostBody->GetLinearVelocity();
-
    // If we stand still, like at the beginning, there is 
    // no need to avoid obstacles, we simply return
    // a null-vector.
-   if (vel.Length() < 0.0001)
+   if (m_hostBody->GetLinearVelocity().Length() < 0.0001)
    {
       return b2Vec2(0.0f, 0.0f);
    }
 
    b2Vec2 pos = m_hostBody->GetPosition();
 
+
    // Now find the angle of the velocity, we need it to all 
    // global-to-local transformations. 
-   float angle = atan2(vel.y, vel.x);
+   float angle = atan2(wantedVelChange.y, wantedVelChange.x);
    float degAngle = angle / MATH_PI * 180.0f;
 
    float cosAngle = cos(angle);
@@ -456,7 +453,7 @@ b2Vec2 SteeringManager::doAvoidCollision2(void)
    return avoidance;
 }
 
-b2Vec2 SteeringManager::doAvoidCollision1(void)
+b2Vec2 SteeringManager::doAvoidCollision1(b2Vec2 wantedVelChange)
 {
    b2Vec2 pos = m_hostBody->GetPosition();
    b2Vec2 vel = m_hostBody->GetLinearVelocity();

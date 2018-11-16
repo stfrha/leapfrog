@@ -41,7 +41,7 @@
                   maxBoosterForce="700.0"
                   maxSpeed="40.0"
                   degPerSecMaxRotateSpeed="3.0"
-                  linearDamping="1.0" />
+                  linearDamping="0.2" />
                <dynamicBox
                   name="mainBody"
                   texture="hammer"
