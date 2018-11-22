@@ -122,6 +122,11 @@ void CompoundObject::killAllChildBodies(void)
       numberOfPos++;
    }
 
+   if (numberOfPos == 0)
+   {
+      return Vector2(0.0f, 0.0f);
+   }
+
    Vector2 avgPos = posSum / numberOfPos;
 
    return avgPos;

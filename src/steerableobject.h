@@ -67,7 +67,8 @@ private:
 
    void firstTryForces(b2Vec2 steeringForce);
    void turnBoosterForce(b2Vec2 steeringForce);
-   
+   void directiveForce(b2Vec2 steeringVelChange);
+
 public:
    spFlameEmitter m_boosterFlame;
    spGun m_gun;

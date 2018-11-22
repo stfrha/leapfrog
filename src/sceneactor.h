@@ -37,7 +37,7 @@ public:
    };
 
 private:
-   CompoundObject * m_panObject;
+   spCompoundObject m_panObject;
 
 protected:
    oxygine::Resources * m_gameResources;

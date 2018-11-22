@@ -145,7 +145,9 @@ void SteerableObject::executeSteeringForce(b2Vec2 steeringVelChange)
    // into actual forces on the object body. This can 
    // be according to different viehcle models.
    // Each model is called from here
-   turnBoosterForce(steeringVelChange);
+//   firstTryForces(steeringVelChange);
+//   turnBoosterForce(steeringVelChange);
+   directiveForce(steeringVelChange);
 }
 
 void SteerableObject::firstTryForces(b2Vec2 steeringVelChange)
@@ -310,6 +312,21 @@ void SteerableObject::turnBoosterForce(b2Vec2 steeringVelChange)
 
 }
 
+void SteerableObject::directiveForce(b2Vec2 steeringVelChange)
+{
+   // In this model, the booster applies linear force in the direction of
+   // the steering velocity change. It then use torque force to try to angle the 
+   // object to point in the same direction. The turn will be a little late but
+   // maybe not in a totally bad way. 
+   // The angular force is the force needed to turn the ship to the force direction 
+   // in N steps. (N is TBD) taking into account the current angle and the 
+   // angle inertia. The resulting angular force is truncated to the maximum 
+   // angular force of the ship.
+
+   b2Vec2 impulse = m_body->GetMass() * steeringVelChange;
+   m_body->ApplyLinearImpulse(impulse, m_body->GetWorldCenter(), true);
+
+}
 
 
 
