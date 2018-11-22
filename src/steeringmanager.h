@@ -25,7 +25,16 @@ private:
    b2Vec2 m_lastKnowTargetPos;
    bool m_targetIsHiding;
    oxygine::timeMS m_stateStartTime;
-   float m_maxVelocity;
+
+   // The m_desiredVelocity is the velocity that push the 
+   // object closer to its target. Detours because of 
+   // collision avoidance is not included. The desiredVelocity
+   // must be cleared at the beginning of each update. It will be
+   // added to by any steering operation that moves towards the 
+   // target (wander, seek, pursuit...). It is used by the 
+   // collision avoidance to determine if the path towards the target
+   // is blocked
+   b2Vec2 m_desiredVelocity;
 
    // 30 steps should be 0.5 s
    b2Vec2 m_velChangeFilter[30];
@@ -36,9 +45,10 @@ private:
    b2Vec2 doEvade(b2Body* target, float maxVelocity);
 	b2Vec2 doPursuit(b2Body* target, float maxVelocity);
    b2Vec2 doStayInScene(void);
-   b2Vec2 doAvoidCollision(b2Vec2 wantedVelChange);
-   b2Vec2 doAvoidCollision1(b2Vec2 wantedVelChange);
-   b2Vec2 doAvoidCollision2(b2Vec2 wantedVelChange);
+   b2Vec2 doAvoidCollision(float maxVelocity);
+   b2Vec2 doAvoidCollision1(float maxVelocity);
+   b2Vec2 doAvoidCollision2(float maxVelocity);
+   bool doEvaluateGunFire(b2Body* target);
    b2Body* findMostThreatening(b2Vec2 pos, b2Vec2 ahead, b2Vec2 ahead2);
    b2Vec2 globalToLocalConversion(b2Vec2 ownGlobalPos, float cosAngle, float sinAngle, b2Vec2 targetGlobalPos);
    b2Vec2 localToGlobalConversion(b2Vec2 ownGlobalPos, float cosAngle, float sinAngle, b2Vec2 targetLocalPos);
@@ -64,5 +74,6 @@ public:
    b2Vec2 evade(b2Body* target, float maxVelocity);
 	b2Vec2 pursuit(b2Body* target, float maxVelocity);
    b2Vec2 wanderHunt(const oxygine::UpdateState& us, b2Body* target, float maxVelocity);
-   b2Vec2 avoidCollision(b2Vec2 wantedVelChange);
+   b2Vec2 avoidCollision(float maxVelocity);
+   bool evaluateGunFire(b2Body* target);
 };

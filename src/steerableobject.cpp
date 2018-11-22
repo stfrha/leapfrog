@@ -106,28 +106,13 @@ void SteerableObject::doUpdate(const oxygine::UpdateState& us)
       break;
    }
 
-   steeringVelChange += m_steeringManager->avoidCollision(steeringVelChange);
+   steeringVelChange += m_steeringManager->avoidCollision(m_maxSpeed);
 
    executeSteeringForce(steeringVelChange);
 
    m_boosterFlame->setFlameScale(m_boosterScale);
 
-
-   // TODO: change flame states to more general speed 
-   //if (m_steeringManager->m_wanderHunterState == SteeringManager::WanderHunterState::wanderState)
-   //{
-   //   m_boosterFlame->setFlameScale(0.2f);
-   //}
-   //else if (m_steeringManager->m_wanderHunterState == SteeringManager::WanderHunterState::seekState)
-   //{
-   //   m_boosterFlame->setFlameScale(0.5f);
-   //}
-   //else
-   //{
-   //   m_boosterFlame->setFlameScale(1.0f);
-   //}
-
-   if (m_steeringManager->m_fireTrigger)
+   if (m_steeringManager->evaluateGunFire(m_targetBody))
    {
       m_gun->startGun();
    }
@@ -135,8 +120,6 @@ void SteerableObject::doUpdate(const oxygine::UpdateState& us)
    {
       m_gun->stopGun();
    }
-
-
  }
 
 void SteerableObject::executeSteeringForce(b2Vec2 steeringVelChange)
@@ -324,7 +307,45 @@ void SteerableObject::directiveForce(b2Vec2 steeringVelChange)
    // angular force of the ship.
 
    b2Vec2 impulse = m_body->GetMass() * steeringVelChange;
+
+   float boostMag = impulse.Length();
+
+   if (boostMag > m_maxBoosterForce)
+   {
+      impulse.Normalize();
+      impulse *= m_maxBoosterForce;
+      m_boosterScale = 1.0f;
+   }
+   else
+   {
+      m_boosterScale = boostMag / m_maxBoosterForce;
+   }
+
+
+
+
+   // Find the angular force to turn the ship in the direction 
+   // to get the desired velocity change
+   b2Vec2 toTarget = steeringVelChange;
+   float desiredAngle = atan2f(toTarget.y, toTarget.x);
+
+   float bodyAngle = m_body->GetAngle();
+   float thrustAngle = bodyAngle - m_bodyToBoosterAngle;
+
+   //   float nextAngle = bodyAngle + m_body->GetAngularVelocity() / 60.0f;
+   float nextAngle = thrustAngle + m_body->GetAngularVelocity() / 3.0f;
+   float totalRotation = desiredAngle - nextAngle;
+   while (totalRotation < -MATH_PI) totalRotation += 2.0f * MATH_PI;
+   while (totalRotation >  MATH_PI) totalRotation -= 2.0f * MATH_PI;
+
+   float desiredAngularVelocity = totalRotation * 60;
+   float change = m_maxRotateSpeed;
+   desiredAngularVelocity = min(change, max(-change, desiredAngularVelocity));
+   float angImpulse = m_body->GetInertia() * desiredAngularVelocity;// disregard time factor
+
+   // Apply the forces
    m_body->ApplyLinearImpulse(impulse, m_body->GetWorldCenter(), true);
+   m_body->ApplyAngularImpulse(angImpulse, true);
 
 }
 

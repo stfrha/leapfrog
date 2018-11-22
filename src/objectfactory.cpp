@@ -77,7 +77,9 @@ void ObjectFactory::spawnObjects(int num)
    
    if (m_attachedBody)
    {
-      pos = PhysDispConvert::convert(m_attachedBody->GetPosition(), 1.0f) + m_leftTop;
+      // Position is relative to the body angle, so it must be rotated accordingly.
+      // Find angle of body, rotate the local pos with this angle, and use that position
+      pos = PhysDispConvert::convert(m_attachedBody->GetWorldPoint(PhysDispConvert::convert(m_leftTop, 1.0f)), 1.0f);
    }
    else
    {
