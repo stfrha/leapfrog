@@ -64,6 +64,7 @@ private:
    void collisionBlast(b2Contact* contact, bool small = true);
    void evaluateDamage(void);
    void executeSteeringForce(b2Vec2 steeringForce);
+   bool evaluateGunFire(b2Body* target);
 
    void firstTryForces(b2Vec2 steeringForce);
    void turnBoosterForce(b2Vec2 steeringForce);

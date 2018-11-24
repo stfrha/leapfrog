@@ -69,5 +69,18 @@ public:
       oxygine::Resources& gameResources,
       std::vector<oxygine::Vector2>& vertices,
       pugi::xml_node objectNode);
+
+   static b2Vec2 globalToLocalConversion(
+      b2Vec2 ownGlobalPos, 
+      float cosAngle, 
+      float sinAngle, 
+      b2Vec2 targetGlobalPos);
+   
+   static b2Vec2 localToGlobalConversion(
+      b2Vec2 ownGlobalPos, 
+      float cosAngle, 
+      float sinAngle, 
+      b2Vec2 targetLocalPos);
+
 };
 

@@ -1,7 +1,7 @@
 #include "steeringmanager.h"
 #include "sceneactor.h"
 #include "bodyuserdata.h"
-
+#include "polygonvertices.h"
 
 SteeringManager::SteeringManager(
    b2Body* hostBody,
@@ -50,11 +50,6 @@ b2Vec2 SteeringManager::wanderHunt(const UpdateState& us, b2Body* target, float 
 b2Vec2 SteeringManager::avoidCollision(float maxVelocity)
 {
    return doAvoidCollision(maxVelocity);
-}
-
-bool SteeringManager::evaluateGunFire(b2Body* target)
-{
-   return doEvaluateGunFire(target);
 }
 
 // doSeek, target is point to seek to, slowingRadius is the radius to target in which
@@ -166,8 +161,8 @@ b2Vec2 SteeringManager::doFlee(b2Vec2 target, float maxVelocity)
 b2Vec2 SteeringManager::doWander(float maxVelocity)
 {
    // Parameters yet to be trimmed
-   float circleDistance = 10.0f;
-   float circleRadius = 50.0f;
+   float circleDistance = 50.0f;
+   float circleRadius = 8.0f;
    float angleChange = 0.4f;
 
    // Calculate the circle center
@@ -196,6 +191,14 @@ b2Vec2 SteeringManager::doWander(float maxVelocity)
    //
    // Finally calculate and return the wander force
    m_desiredVelocity = circleCenter + displacement;
+
+   // Scale down so that the desired velocity is not 
+   // faster than the max velocity
+   if (m_desiredVelocity.Length() > maxVelocity)
+   {
+      m_desiredVelocity.Normalize();
+      m_desiredVelocity *= maxVelocity;
+   }
 
    m_desiredVelocity += doStayInScene();
  
@@ -309,42 +312,6 @@ b2Vec2 SteeringManager::doAvoidCollision(float maxVelocity)
    return doAvoidCollision2(maxVelocity);
 }
 
-b2Vec2 SteeringManager::globalToLocalConversion(
-   b2Vec2 ownGlobalPos,
-   float cosAngle,
-   float sinAngle,
-   b2Vec2 targetGlobalPos)
-{
-   // Lets use this link: https://gamedev.stackexchange.com/questions/79765/how-do-i-convert-from-the-global-coordinate-space-to-a-local-space
-
-   b2Vec2 localPos;
-
-   localPos.x = (targetGlobalPos.x - ownGlobalPos.x) * cosAngle + (targetGlobalPos.y - ownGlobalPos.y) * sinAngle;
-
-   // Since we have negative y-axis this is negative compared to the links answer
-   localPos.y = -(targetGlobalPos.x - ownGlobalPos.x) * sinAngle + (targetGlobalPos.y - ownGlobalPos.y) * cosAngle;
-
-   return localPos;
-}
-
-b2Vec2 SteeringManager::localToGlobalConversion(
-   b2Vec2 ownGlobalPos,
-   float cosAngle,
-   float sinAngle,
-   b2Vec2 targetLocalPos)
-{
-   // Lets use this link: https://gamedev.stackexchange.com/questions/79765/how-do-i-convert-from-the-global-coordinate-space-to-a-local-space
-
-   b2Vec2 globalPos;
-
-   globalPos.x = targetLocalPos.x * cosAngle - targetLocalPos.y * sinAngle + ownGlobalPos.x;
-
-   // Since we have negative y-axis this is negative compared to the links answer
-   globalPos.y = targetLocalPos.x * sinAngle + targetLocalPos.y * cosAngle + ownGlobalPos.y;
-
-   return globalPos;
-}
-
 b2Vec2 SteeringManager::doAvoidCollision2(float maxVelocity)
 {
    // If we stand still, like at the beginning, there is 
@@ -386,7 +353,8 @@ b2Vec2 SteeringManager::doAvoidCollision2(float maxVelocity)
             //Asteroid* asteroid = (Asteroid*) body->GetUserData();
             float asteroidRadius = body->GetFixtureList()->GetShape()->m_radius;
 
-            b2Vec2 localPos = globalToLocalConversion(pos, cosAngle, sinAngle, asteroidPos);
+            b2Vec2 localPos = PolygonVertices::globalToLocalConversion(pos, cosAngle, sinAngle, asteroidPos);
+            //b2Vec2 localPos = m_hostBody->GetLocalPoint(asteroidPos);
 
             // Ignore all that are behind the object
             if (localPos.x > 0.0f)
@@ -423,7 +391,8 @@ b2Vec2 SteeringManager::doAvoidCollision2(float maxVelocity)
       return b2Vec2(0.0f, 0.0f);
    }
 
-   b2Vec2 avoidance = localToGlobalConversion(pos, cosAngle, sinAngle, b2Vec2(0.0f, mostThreatViolation)) - pos;
+   //b2Vec2 avoidance= m_hostBody->GetWorldPoint(b2Vec2(0.0f, mostThreatViolation)) - pos;
+   b2Vec2 avoidance = PolygonVertices::localToGlobalConversion(pos, cosAngle, sinAngle, b2Vec2(0.0f, mostThreatViolation)) - pos;
 
    return avoidance;
 }
@@ -522,35 +491,6 @@ b2Body* SteeringManager::findMostThreatening(b2Vec2 pos, b2Vec2 ahead, b2Vec2 ah
 
 }
 
-bool SteeringManager::doEvaluateGunFire(b2Body* target)
-{
-   // Rotate target to local coordinate system 
-   float angle = m_hostBody->GetAngle();
-   float cosAngle = cos(angle);
-   float sinAngle = sin(angle);
-
-   b2Vec2 force;
-   b2Vec2 distance;
-
-   distance = target->GetPosition() - m_hostBody->GetPosition();
-
-   float updatesNeeded = distance.Length() / 35.0f;
-
-   b2Vec2 tv = target->GetLinearVelocity();
-   tv *= updatesNeeded;
-
-   b2Vec2 targetFuturePosition = target->GetPosition() + tv;
-
-   b2Vec2 localPos = globalToLocalConversion(m_hostBody->GetPosition(), cosAngle, sinAngle, targetFuturePosition);
-
-   if (fabs(localPos.y) < 2.0f)
-   {
-      return true;
-   }
-
-   return false;
-}
-
 
 // For the Raycast we need a callback class. Lets define it here
 class MyRaycastCallback : public b2RayCastCallback
@@ -609,7 +549,7 @@ b2Vec2 SteeringManager::doWanderHunt(const UpdateState& us, b2Body* target, floa
 
       logs::messageln("Wander");
 
-      return doWander(maxVelocity * 0.2f);
+      return doWander(maxVelocity * 0.1f);
       
       break;
 
@@ -646,12 +586,12 @@ b2Vec2 SteeringManager::doWanderHunt(const UpdateState& us, b2Body* target, floa
 
          logs::messageln("Wander");
 
-         return doWander(maxVelocity * 0.2f);
+         return doWander(maxVelocity * 0.1f);
       }
 
       logs::messageln("Seeking");
 
-      return doSeek(m_lastKnowTargetPos, maxVelocity * 0.5f);
+      return doSeek(m_lastKnowTargetPos, maxVelocity * 0.2f);
 
       break;
 
@@ -671,7 +611,7 @@ b2Vec2 SteeringManager::doWanderHunt(const UpdateState& us, b2Body* target, floa
 
          logs::messageln("Seeking");
 
-         return doSeek(m_lastKnowTargetPos, maxVelocity * 0.5f);
+         return doSeek(m_lastKnowTargetPos, maxVelocity * 0.2f);
       }
       else
       {

@@ -5,7 +5,7 @@
 #include "freespaceactor.h"
 #include "blastemitter.h"
 #include "actoruserdata.h"
-
+#include "polygonvertices.h"
 
 using namespace std;
 using namespace oxygine;
@@ -112,7 +112,7 @@ void SteerableObject::doUpdate(const oxygine::UpdateState& us)
 
    m_boosterFlame->setFlameScale(m_boosterScale);
 
-   if (m_steeringManager->evaluateGunFire(m_targetBody))
+   if (evaluateGunFire(m_targetBody))
    {
       m_gun->startGun();
    }
@@ -425,3 +425,33 @@ void SteerableObject::hitByBullet(b2Contact* contact, float bulletEqvDamage)
 
    evaluateDamage();
 }
+
+bool SteerableObject::evaluateGunFire(b2Body* target)
+{
+   // Rotate target to local coordinate system 
+   float angle = m_body->GetAngle();
+   float cosAngle = cos(angle);
+   float sinAngle = sin(angle);
+
+   b2Vec2 force;
+   b2Vec2 distance;
+
+   distance = target->GetPosition() - m_body->GetPosition();
+
+   float updatesNeeded = distance.Length() / 35.0f;
+
+   b2Vec2 tv = target->GetLinearVelocity();
+   tv *= updatesNeeded;
+
+   b2Vec2 targetFuturePosition = target->GetPosition() + tv;
+
+   b2Vec2 localPos = PolygonVertices::globalToLocalConversion(m_body->GetPosition(), cosAngle, sinAngle, targetFuturePosition);
+
+   if (fabs(localPos.y) < 2.0f)
+   {
+      return true;
+   }
+
+   return false;
+}
+

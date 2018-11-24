@@ -585,3 +585,40 @@ void PolygonVertices::createPolygonBorders(
       }
    }
 }
+
+b2Vec2 PolygonVertices::globalToLocalConversion(
+   b2Vec2 ownGlobalPos,
+   float cosAngle,
+   float sinAngle,
+   b2Vec2 targetGlobalPos)
+{
+   // Lets use this link: https://gamedev.stackexchange.com/questions/79765/how-do-i-convert-from-the-global-coordinate-space-to-a-local-space
+
+   b2Vec2 localPos;
+
+   localPos.x = (targetGlobalPos.x - ownGlobalPos.x) * cosAngle + (targetGlobalPos.y - ownGlobalPos.y) * sinAngle;
+
+   // Since we have negative y-axis this is negative compared to the links answer
+   localPos.y = -(targetGlobalPos.x - ownGlobalPos.x) * sinAngle + (targetGlobalPos.y - ownGlobalPos.y) * cosAngle;
+
+   return localPos;
+}
+
+b2Vec2 PolygonVertices::localToGlobalConversion(
+   b2Vec2 ownGlobalPos,
+   float cosAngle,
+   float sinAngle,
+   b2Vec2 targetLocalPos)
+{
+   // Lets use this link: https://gamedev.stackexchange.com/questions/79765/how-do-i-convert-from-the-global-coordinate-space-to-a-local-space
+
+   b2Vec2 globalPos;
+
+   globalPos.x = targetLocalPos.x * cosAngle - targetLocalPos.y * sinAngle + ownGlobalPos.x;
+
+   // Since we have negative y-axis this is negative compared to the links answer
+   globalPos.y = targetLocalPos.x * sinAngle + targetLocalPos.y * cosAngle + ownGlobalPos.y;
+
+   return globalPos;
+}
+

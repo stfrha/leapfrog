@@ -48,10 +48,7 @@ private:
    b2Vec2 doAvoidCollision(float maxVelocity);
    b2Vec2 doAvoidCollision1(float maxVelocity);
    b2Vec2 doAvoidCollision2(float maxVelocity);
-   bool doEvaluateGunFire(b2Body* target);
    b2Body* findMostThreatening(b2Vec2 pos, b2Vec2 ahead, b2Vec2 ahead2);
-   b2Vec2 globalToLocalConversion(b2Vec2 ownGlobalPos, float cosAngle, float sinAngle, b2Vec2 targetGlobalPos);
-   b2Vec2 localToGlobalConversion(b2Vec2 ownGlobalPos, float cosAngle, float sinAngle, b2Vec2 targetLocalPos);
 
    b2Vec2 doWanderHunt(const oxygine::UpdateState& us, b2Body* target, float maxVelocity);
 	
@@ -75,5 +72,4 @@ public:
 	b2Vec2 pursuit(b2Body* target, float maxVelocity);
    b2Vec2 wanderHunt(const oxygine::UpdateState& us, b2Body* target, float maxVelocity);
    b2Vec2 avoidCollision(float maxVelocity);
-   bool evaluateGunFire(b2Body* target);
 };
