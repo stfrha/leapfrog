@@ -22,6 +22,7 @@
             file="leapfrog_deep_space.xml" />
       </stateProperties>
    </childObject>
+<!--
    <childObject
       name="mineLayer">
       <stateProperties
@@ -163,6 +164,7 @@
          </properties>
       </stateProperties>
    </childObject>
+-->
    <childObject
       name="hammer1">
       <stateProperties

@@ -162,7 +162,7 @@ b2Vec2 SteeringManager::doWander(float maxVelocity)
 {
    // Parameters yet to be trimmed
    float circleDistance = 50.0f;
-   float circleRadius = 8.0f;
+   float circleRadius = 1.0f;
    float angleChange = 0.4f;
 
    // Calculate the circle center
@@ -173,21 +173,25 @@ b2Vec2 SteeringManager::doWander(float maxVelocity)
 
    //
    // Calculate the displacement force
-   b2Vec2 displacement(1.0f, 0.0f);
-   displacement *= circleRadius;
-
    // Randomly change the vector direction
    // by making it change its current angle
-   float len = displacement.Length();
-   displacement.x = cos(m_wanderAngle) * len;
-   displacement.y = sin(m_wanderAngle) * len;
+   b2Vec2 displacement(0.0f, 0.0f);
+
+   displacement.x = cos(m_wanderAngle) * circleRadius;
+   displacement.y = sin(m_wanderAngle) * circleRadius;
 
    //
    // Change wanderAngle just a bit, so it
    // won't have the same value in the
    // next game frame.
 
+   float degOldWanderAngle = m_wanderAngle / MATH_PI * 180.0f;
    m_wanderAngle += static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / angleChange)) - angleChange / 2.0f;
+   float degNewWanderAngle = m_wanderAngle / MATH_PI * 180.0f;
+   float diff = degNewWanderAngle - degOldWanderAngle;
+
+
+
    //
    // Finally calculate and return the wander force
    m_desiredVelocity = circleCenter + displacement;
@@ -360,7 +364,7 @@ b2Vec2 SteeringManager::doAvoidCollision2(float maxVelocity)
             if (localPos.x > 0.0f)
             {
                // Check if the obstacle is within the path corridor
-               float violation = asteroidRadius - fabs(localPos.y) + /* hammer radius*/ 40.0f;
+               float violation = asteroidRadius - fabs(localPos.y) + /* hammer radius*/ 30.0f;
 
                if (violation > 0.0f)
                {
@@ -521,6 +525,9 @@ public:
 b2Vec2 SteeringManager::doWanderHunt(const UpdateState& us, b2Body* target, float maxVelocity)
 {
    MyRaycastCallback mrcc;
+   float pursuitVel = maxVelocity;
+   float seekVel = maxVelocity * 0.7f;
+   float wanderVel = maxVelocity * 0.5f;
 
    switch (m_wanderHunterState)
    {
@@ -543,13 +550,13 @@ b2Vec2 SteeringManager::doWanderHunt(const UpdateState& us, b2Body* target, floa
             logs::messageln("Pursuit");
 
             m_lastKnowTargetPos = target->GetPosition();
-            return doPursuit(target, maxVelocity);
+            return doPursuit(target, pursuitVel);
          }
       }
 
       logs::messageln("Wander");
 
-      return doWander(maxVelocity * 0.1f);
+      return doWander(wanderVel);
       
       break;
 
@@ -574,7 +581,7 @@ b2Vec2 SteeringManager::doWanderHunt(const UpdateState& us, b2Body* target, floa
             logs::messageln("Pursuit");
 
             m_lastKnowTargetPos = target->GetPosition();
-            return doPursuit(target, maxVelocity);
+            return doPursuit(target, pursuitVel);
          }
       }
 
@@ -586,12 +593,12 @@ b2Vec2 SteeringManager::doWanderHunt(const UpdateState& us, b2Body* target, floa
 
          logs::messageln("Wander");
 
-         return doWander(maxVelocity * 0.1f);
+         return doWander(wanderVel);
       }
 
       logs::messageln("Seeking");
 
-      return doSeek(m_lastKnowTargetPos, maxVelocity * 0.2f);
+      return doSeek(m_lastKnowTargetPos, seekVel);
 
       break;
 
@@ -611,14 +618,14 @@ b2Vec2 SteeringManager::doWanderHunt(const UpdateState& us, b2Body* target, floa
 
          logs::messageln("Seeking");
 
-         return doSeek(m_lastKnowTargetPos, maxVelocity * 0.2f);
+         return doSeek(m_lastKnowTargetPos, seekVel);
       }
       else
       {
          logs::messageln("Pursuit");
 
          m_lastKnowTargetPos = target->GetPosition();
-         return doPursuit(target, maxVelocity);
+         return doPursuit(target, pursuitVel);
       }
 
       break;
