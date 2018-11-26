@@ -224,7 +224,6 @@ b2Vec2 SteeringManager::doEvade(b2Body* target, float maxVelocity)
 
 b2Vec2 SteeringManager::doPursuit(b2Body* target, float maxVelocity)
 {
-   b2Vec2 force;
    b2Vec2 distance;
    
    distance = target->GetPosition() - m_hostBody->GetPosition();

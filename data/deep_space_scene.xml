@@ -225,7 +225,7 @@
                         emitterOriginX="-10"
                         emitterOriginY="0"
                         angle="-3.1415"
-                        fireRate="4"
+                        fireRate="6"
                         lifeTime="2000"
                         impulseMagnitude="10000"
                         bouncy="false" />
@@ -249,7 +249,6 @@
          </properties>
       </stateProperties>
    </childObject>
-<!--
    <system
       type="objectFactory"
       name="asteroidField">
@@ -305,6 +304,5 @@
          </properties>
       </stateProperties>
    </system>
--->
 </compoundObject>
 

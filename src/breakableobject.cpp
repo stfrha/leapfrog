@@ -55,6 +55,39 @@ BreakableObject::BreakableObject(
       setAllBodiesToBounding(spaceActor);
    }
 
+   // Give body a little nudge and pinch
+   if (m_shapes.size() > 0)
+   {
+      b2Body* myBody = ActorUserData::getBody(m_shapes[0]->getUserData());
+
+      if (myBody)
+      {
+
+         // Find magnitude of nudge and pinch by evaluating
+         // the mass of the body
+
+         float mass = myBody->GetMass();
+
+         float maxImp = mass * 8.0f;
+         float maxAng = mass * 6.0f;
+
+         // Randomise value between 0 and 2pi
+         float angle = static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / 2.0f * MATH_PI));
+
+
+         // Randomise value between 0 and maxImp
+         float magnitude = static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / maxImp));
+
+         b2Vec2 impulseForce = b2Vec2(magnitude * cos(angle), magnitude * sin(angle));
+
+         myBody->ApplyLinearImpulseToCenter(impulseForce, true);
+
+         // Randomise value between 0 and maxAng
+         float angImpulse = static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / maxAng));
+
+         myBody->ApplyAngularImpulse(angImpulse * 10.0f, true);
+      }
+   }
 }
 
 void BreakableObject::readBreakableObjectNode(const pugi::xml_node& node)

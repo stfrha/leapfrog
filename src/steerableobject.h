@@ -37,6 +37,12 @@ public:
       fix
    };
 
+   enum AimStateEnum
+   {
+      noAim,
+      aim,
+      shoot
+   };
 
 private:
    oxygine::Resources* m_gameResource;
@@ -45,6 +51,9 @@ private:
    bool m_slowTurningAfterHit;
    oxygine::timeMS m_stateStartTime;
    SteeringManager* m_steeringManager;
+   AimStateEnum m_aimState;
+   oxygine::timeMS m_aimStateStartTime;
+
 
    SteeringStateEnum m_state;
    b2Vec2 m_seekPoint;
@@ -63,12 +72,11 @@ private:
    void readSteerableObjectNode(pugi::xml_node root);
    void collisionBlast(b2Contact* contact, bool small = true);
    void evaluateDamage(void);
-   void executeSteeringForce(b2Vec2 steeringForce);
-   bool evaluateGunFire(b2Body* target);
+   void executeSteeringForce(b2Vec2 steeringForce, const oxygine::UpdateState& us, bool isAvoiding);
 
    void firstTryForces(b2Vec2 steeringForce);
    void turnBoosterForce(b2Vec2 steeringForce);
-   void directiveForce(b2Vec2 steeringVelChange);
+   void directiveForce(b2Vec2 steeringVelChange, bool aim);
 
 public:
    spFlameEmitter m_boosterFlame;

@@ -30,7 +30,8 @@ SteerableObject::SteerableObject(
    m_maxRotateSpeed(0.0f),
    m_linearDamping(1.0f),
    m_boosterScale(0.0f),
-   m_slowTurningAfterHit(false)
+   m_slowTurningAfterHit(false),
+   m_aimState(noAim)
 {
    initCompoundObjectParts(gameResources, sceneActor, parentObject, world, pos, root, string(""), groupIndex);
 
@@ -86,7 +87,7 @@ void SteerableObject::readSteerableObjectNode(pugi::xml_node root)
 
 void SteerableObject::doUpdate(const oxygine::UpdateState& us)
 {
-   b2Vec2 steeringVelChange = b2Vec2(0.0f, 0.0f);
+   b2Vec2 steeringVelChange(0.0f, 0.0f);
 
    switch (m_state)
    {
@@ -106,31 +107,90 @@ void SteerableObject::doUpdate(const oxygine::UpdateState& us)
       break;
    }
 
-   steeringVelChange += m_steeringManager->avoidCollision(m_maxSpeed);
+   b2Vec2 avoidanceVelChange = m_steeringManager->avoidCollision(m_maxSpeed);
 
-   executeSteeringForce(steeringVelChange);
+   steeringVelChange += avoidanceVelChange;
+      
+   executeSteeringForce(steeringVelChange, us, (avoidanceVelChange.Length() > 0.00001f) ) ;
 
    m_boosterFlame->setFlameScale(m_boosterScale);
 
-   if (evaluateGunFire(m_targetBody))
-   {
-      m_gun->startGun();
-   }
-   else
-   {
-      m_gun->stopGun();
-   }
  }
 
-void SteerableObject::executeSteeringForce(b2Vec2 steeringVelChange)
+void SteerableObject::executeSteeringForce(b2Vec2 steeringVelChange, const UpdateState& us, bool isAvoiding)
 {
    // This method is used to convert the steering force
    // into actual forces on the object body. This can 
-   // be according to different viehcle models.
+   // be according to different vehicle models.
    // Each model is called from here
 //   firstTryForces(steeringVelChange);
 //   turnBoosterForce(steeringVelChange);
-   directiveForce(steeringVelChange);
+
+   // This also handle periodically turning
+   // to aim gun at target. We need a state machine
+   // that swaps between direction of velocity
+   // and direction of target. 
+   // There should also be some extra requirements on
+   // the turning. 
+   // 1. Only aim if there are no obstacles!
+   // 2. Only aim in pursuit mode
+   // 3. Only aim when in gun range (400 m)
+
+   switch (m_aimState)
+   {
+   case noAim:
+      // We go to aiming every 2 s 
+      if (us.time >= m_aimStateStartTime + 2000)
+      {
+         logs::messageln("Aim");
+
+         m_aimState = aim;
+         m_aimStateStartTime = us.time;
+      }
+      break;
+   case aim:
+      // We allow 0.5 s to aim
+      if (us.time >= m_aimStateStartTime + 500)
+      {
+         logs::messageln("Shoot");
+
+         m_aimState = shoot;
+         m_aimStateStartTime = us.time;
+         m_gun->startGun();
+      }
+
+      if (isAvoiding ||
+         (m_steeringManager->m_wanderHunterState != SteeringManager::WanderHunterState::pursuitState) ||
+         ((m_targetBody->GetPosition() - m_body->GetPosition()).Length() > /* bullet range*/ 400.0f))
+      {
+         m_aimState = noAim;
+         m_aimStateStartTime = us.time;
+         m_gun->stopGun();
+      }
+      break;
+   case shoot:
+      // 0.5 s shot burst
+      if (us.time >= m_aimStateStartTime + 500)
+      {
+         logs::messageln("Stop shoot");
+
+         m_aimState = noAim;
+         m_aimStateStartTime = us.time;
+         m_gun->stopGun();
+      }
+
+      if (isAvoiding ||
+         (m_steeringManager->m_wanderHunterState != SteeringManager::WanderHunterState::pursuitState) ||
+         ((m_targetBody->GetPosition() - m_body->GetPosition()).Length() > /* bullet range*/ 400.0f))
+      {
+         m_aimState = noAim;
+         m_aimStateStartTime = us.time;
+         m_gun->stopGun();
+      }
+      break;
+   }
+
+   directiveForce(steeringVelChange, m_aimState != noAim);
 }
 
 void SteerableObject::firstTryForces(b2Vec2 steeringVelChange)
@@ -295,7 +355,7 @@ void SteerableObject::turnBoosterForce(b2Vec2 steeringVelChange)
 
 }
 
-void SteerableObject::directiveForce(b2Vec2 steeringVelChange)
+void SteerableObject::directiveForce(b2Vec2 steeringVelChange, bool aim)
 {
    // In this model, the booster applies linear force in the direction of
    // the steering velocity change. It then use torque force to try to angle the 
@@ -326,7 +386,33 @@ void SteerableObject::directiveForce(b2Vec2 steeringVelChange)
 
    // Find the angular force to turn the ship in the direction 
    // to get the desired velocity change
-   b2Vec2 toTarget = steeringVelChange;
+
+   // If the gun is being aimed, the target is the target body position
+   // but if gun is not being aimed, the target is the steering 
+   // velocity change as determined by the previous steering
+   // behaviours
+   b2Vec2 toTarget(0.0f, 0.0f);
+
+   if (aim)
+   {
+      // toTarget = m_targetBody->GetPosition() - m_body->GetPosition();
+      
+      b2Vec2 distance;
+
+      distance = m_targetBody->GetPosition() - m_body->GetPosition();
+
+      float updatesNeeded = distance.Length() / /* bullet speed?? */ 200.0f ;
+
+      b2Vec2 tv = m_targetBody->GetLinearVelocity();
+      tv *= updatesNeeded;
+
+      toTarget = m_targetBody->GetPosition() + tv - m_body->GetPosition();
+   }
+   else
+   {
+      toTarget = steeringVelChange;
+   }
+
    float desiredAngle = atan2f(toTarget.y, toTarget.x);
 
    float bodyAngle = m_body->GetAngle();
@@ -424,34 +510,5 @@ void SteerableObject::hitByBullet(b2Contact* contact, float bulletEqvDamage)
    if (m_gameStatus) m_gameStatus->deltaDamage(25.0f);
 
    evaluateDamage();
-}
-
-bool SteerableObject::evaluateGunFire(b2Body* target)
-{
-   // Rotate target to local coordinate system 
-   float angle = m_body->GetAngle();
-   float cosAngle = cos(angle);
-   float sinAngle = sin(angle);
-
-   b2Vec2 force;
-   b2Vec2 distance;
-
-   distance = target->GetPosition() - m_body->GetPosition();
-
-   float updatesNeeded = distance.Length() / 35.0f;
-
-   b2Vec2 tv = target->GetLinearVelocity();
-   tv *= updatesNeeded;
-
-   b2Vec2 targetFuturePosition = target->GetPosition() + tv;
-
-   b2Vec2 localPos = PolygonVertices::globalToLocalConversion(m_body->GetPosition(), cosAngle, sinAngle, targetFuturePosition);
-
-   if (fabs(localPos.y) < 2.0f)
-   {
-      return true;
-   }
-
-   return false;
 }
 
