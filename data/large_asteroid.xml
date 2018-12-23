@@ -2,22 +2,24 @@
 <compoundObject
    needsGroupIndex="false" >
    <behaviour
-      type="breakableObject"
-      breakBulletDamage="100"
-      numberOfSpawns="3" />
-   <spawnObject
-      probabilityFactor="9">
-      <childObject
-         name="mediumAsteroid">
-         <stateProperties
-            state="default">
-            <properties
-               posX="0"
-               posY="0" 
-               file="medium_asteroid.xml" />
-         </stateProperties>
-      </childObject>
-   </spawnObject>
+      type="breakableObject">
+      <properties
+         breakBulletDamage="100"
+         numberOfSpawns="3" />
+         <spawnObject
+            probabilityFactor="9">
+            <childObject
+               name="mediumAsteroid">
+               <stateProperties
+                  state="default">
+                  <properties
+                     posX="0"
+                     posY="0" 
+                     file="medium_asteroid.xml" />
+               </stateProperties>
+            </childObject>
+         </spawnObject>
+   </behaviour>
 <!--   
    <spawnObject
       probabilityFactor="1" />

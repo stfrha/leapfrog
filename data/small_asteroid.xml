@@ -2,9 +2,11 @@
 <compoundObject
    needsGroupIndex="false" >
    <behaviour
-      type="breakableObject"
-      breakBulletDamage="20"
-      numberOfSpawns="0" />
+      type="breakableObject">
+      <properties
+         breakBulletDamage="20"
+         numberOfSpawns="0" />
+   </behaviour>
    <dynamicCircle
       name="smallAsteroid"
       texture="asteroid_cutout"

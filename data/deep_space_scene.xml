@@ -1,7 +1,5 @@
 <?xml version="1.0"?>
-<compoundObject
-   name="deepSpaceScene"
-	type="deepSpaceScene" >
+<compoundObject>
    <childObject
       name="asteroid1">
       <stateProperties
@@ -33,16 +31,18 @@
             <compoundObject
                needsGroupIndex="true" >
                <behaviour
-                  type="steerableObject" 
-                  steeringState="wander"
-                  targetBody="leapfrog1.lfMainBody"
-                  bodyToBoosterAngle="3.1415"
-                  seekTargetX="100.0"
-                  seekTargetY="100.0"
-                  maxBoosterForce="700.0"
-                  maxSpeed="25.0"
-                  degPerSecMaxRotateSpeed="20.0"
-                  linearDamping="0.5" />
+                  type="steerableObject">
+                  <properties
+                     steeringState="wander"
+                     targetBody="leapfrog1.lfMainBody"
+                     bodyToBoosterAngle="3.1415"
+                     seekTargetX="100.0"
+                     seekTargetY="100.0"
+                     maxBoosterForce="700.0"
+                     maxSpeed="25.0"
+                     degPerSecMaxRotateSpeed="20.0"
+                     linearDamping="0.5" />
+               </behaviour>
                <dynamicBox
                   name="mainBody"
                   texture="hammer"
@@ -175,16 +175,18 @@
             <compoundObject
                needsGroupIndex="true" >
                <behaviour
-                  type="steerableObject" 
-                  steeringState="wanderHunt"
-                  targetBody="leapfrog1.lfMainBody"
-                  bodyToBoosterAngle="3.1415"
-                  seekTargetX="100.0"
-                  seekTargetY="100.0"
-                  maxBoosterForce="700.0"
-                  maxSpeed="35.0"
-                  degPerSecMaxRotateSpeed="30.0"
-                  linearDamping="0.5" />
+                  type="steerableObject" >
+                  <properties
+                     steeringState="wanderHunt"
+                     targetBody="leapfrog1.lfMainBody"
+                     bodyToBoosterAngle="3.1415"
+                     seekTargetX="100.0"
+                     seekTargetY="100.0"
+                     maxBoosterForce="700.0"
+                     maxSpeed="35.0"
+                     degPerSecMaxRotateSpeed="30.0"
+                     linearDamping="0.5" />
+               </behaviour>
                <dynamicBox
                   name="mainBody"
                   texture="hammer"

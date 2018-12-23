@@ -24,7 +24,7 @@ BreakableObject::BreakableObject(
    m_world(world),
    m_damage(0)
 {
-   readBreakableObjectNode(root);
+   readBreakableObjectNode(root.child("behaviour").child("properties"));
    m_spawnObjects = new SpawnObjectList();
      
    m_spawnObjects->readSpawnObjectsNode(root);
@@ -92,8 +92,8 @@ BreakableObject::BreakableObject(
 
 void BreakableObject::readBreakableObjectNode(const pugi::xml_node& node)
 {
-   m_breakAtDamage = node.child("behaviour").attribute("breakBulletDamage").as_int(0);
-   m_numberOfSpawns = node.child("behaviour").attribute("numberOfSpawns").as_int(0);
+   m_breakAtDamage = node.attribute("breakBulletDamage").as_int(0);
+   m_numberOfSpawns = node.attribute("numberOfSpawns").as_int(0);
 }
 
 void BreakableObject::collisionBlast(b2Contact* contact, bool small)

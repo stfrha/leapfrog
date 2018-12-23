@@ -35,7 +35,7 @@ SteerableObject::SteerableObject(
 {
    initCompoundObjectParts(gameResources, sceneActor, parentObject, world, pos, root, string(""), groupIndex);
 
-   readSteerableObjectNode(root);
+   readSteerableObjectNode(root.child("behvaiour").child("properties"));
 
    m_body = getBody("mainBody");
 
@@ -61,9 +61,8 @@ SteerableObject::SteerableObject(
    m_body->SetLinearDamping(m_linearDamping);
 }
 
-void SteerableObject::readSteerableObjectNode(pugi::xml_node root)
+void SteerableObject::readSteerableObjectNode(pugi::xml_node node)
 {
-   xml_node node = root.child("behaviour");
    m_targetBody = m_sceneActor->getBody(node.attribute("targetBody").as_string());
    
    string st = node.attribute("steeringState").as_string();
