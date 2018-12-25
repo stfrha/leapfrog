@@ -430,15 +430,21 @@ bool CompoundObject::initCompoundObjectParts(
       string systemType = it->attribute("type").as_string();
       string systemName = it->attribute("name").as_string();
 
-      xml_node stateNode;
+      System* sys = System::initialiseSystemNode(&gameResources, m_sceneActor, world, this, systemType, systemName, *it, groupIndex);
 
-      if (getStateNode(*it, initialState, stateNode))
-      {
-         System* sys = System::initialiseSystemNode(&gameResources, m_sceneActor, world, this, systemType, systemName, stateNode, groupIndex);
+      // Is it really important to remember the systems here?
+      m_systems.push_back(sys);
 
-         // Is it really important to remember the systems here?
-         m_systems.push_back(sys);
-      }
+
+      //xml_node stateNode;
+
+      //if (getStateNode(*it, initialState, stateNode))
+      //{
+      //   System* sys = System::initialiseSystemNode(&gameResources, m_sceneActor, world, this, systemType, systemName, stateNode, groupIndex);
+
+      //   // Is it really important to remember the systems here?
+      //   m_systems.push_back(sys);
+      //}
    }
 
 
