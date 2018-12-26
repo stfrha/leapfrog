@@ -477,7 +477,7 @@
    <system
       type="gun"
       name="lfGun">
-      <properties
+      <gunProperties
          body="lfMainBody"
          emitterOriginX="0"
          emitterOriginY="-4"
@@ -490,7 +490,7 @@
    <system
       type="flameEmitter"
       name="boosterFlame">
-      <properties
+      <flameEmitterProperties
          body="lfBooster"
          emitterOriginX="0"
          emitterOriginY="3"
@@ -503,7 +503,7 @@
    <system
       type="flameEmitter"
       name="leftSteeringFlame">
-      <properties
+      <flameEmitterProperties
          body="lfLeftSteer"
          emitterOriginX="1"
          emitterOriginY="0"
@@ -516,7 +516,7 @@
    <system
       type="flameEmitter"
       name="rightSteeringFlame">
-      <properties
+      <flameEmitterProperties
          body="lfRightSteer"
          emitterOriginX="-1"
          emitterOriginY="0"
@@ -529,7 +529,7 @@
    <system
       type="reentryFlameEmitter"
       name="leftReentryFlame">
-      <properties
+      <reentryFlameEmitterProperties
          body="lfBooster"
          emitterLineStartX="-8.0"
          emitterLineStartY="1.7"
@@ -546,7 +546,7 @@
    <system
       type="reentryFlameEmitter"
       name="centerReentryFlame">
-      <properties
+      <reentryFlameEmitterProperties
          body="lfBooster"
          emitterLineStartX="-2.0"
          emitterLineStartY="1.7"
@@ -563,7 +563,7 @@
    <system
       type="reentryFlameEmitter"
       name="rightReentryFlame">
-      <properties
+      <reentryFlameEmitterProperties
          body="lfBooster"
          emitterLineStartX="2.0"
          emitterLineStartY="1.7"
@@ -580,7 +580,7 @@
    <system
       type="shield"
       name="lfShield">
-      <properties
+      <shieldProperties
          body="lfMainBody"
          bodyAnchorX="0"
          bodyAnchorY="1.0"

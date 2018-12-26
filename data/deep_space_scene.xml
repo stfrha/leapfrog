@@ -32,7 +32,7 @@
                needsGroupIndex="true" >
                <behaviour
                   type="steerableObject">
-                  <properties
+                  <steerableObjectProperties
                      steeringState="wander"
                      targetBody="leapfrog1.lfMainBody"
                      bodyToBoosterAngle="3.1415"
@@ -60,7 +60,7 @@
                <system
                   type="flameEmitter"
                   name="boosterFlame">
-                  <properties
+                  <flameEmitterProperties
                      body="mainBody"
                      emitterOriginX="12"
                      emitterOriginY="0"
@@ -73,7 +73,7 @@
                <system
                   type="gun"
                   name="gun">
-                  <properties
+                  <gunProperties
                      body="mainBody"
                      emitterOriginX="-10"
                      emitterOriginY="0"
@@ -86,7 +86,7 @@
                <system
                   type="shield"
                   name="hammerShield">
-                  <properties
+                  <shieldProperties
                      body="mainBody"
                      bodyAnchorX="0"
                      bodyAnchorY="1.0"
@@ -97,7 +97,7 @@
                <system
                   type="objectFactory"
                   name="mineField">
-                  <properties
+                  <objectFactoryProperties
                      body="mainBody"
                      posX="40.0"
                      posY="0.0"
@@ -164,7 +164,7 @@
                needsGroupIndex="true" >
                <behaviour
                   type="steerableObject" >
-                  <properties
+                  <steerableObjectProperties
                      steeringState="wanderHunt"
                      targetBody="leapfrog1.lfMainBody"
                      bodyToBoosterAngle="3.1415"
@@ -192,7 +192,7 @@
                <system
                   type="flameEmitter"
                   name="boosterFlame">
-                  <properties
+                  <flameEmitterProperties
                      body="mainBody"
                      emitterOriginX="12"
                      emitterOriginY="0"
@@ -205,7 +205,7 @@
                <system
                   type="gun"
                   name="gun">
-                  <properties
+                  <gunProperties
                      body="mainBody"
                      emitterOriginX="-10"
                      emitterOriginY="0"
@@ -218,7 +218,7 @@
                <system
                   type="shield"
                   name="hammerShield">
-                  <properties
+                  <shieldProperties
                      body="mainBody"
                      bodyAnchorX="0"
                      bodyAnchorY="1.0"
@@ -233,7 +233,7 @@
    <system
       type="objectFactory"
       name="asteroidField">
-      <properties
+      <objectFactoryProperties
          posX="200.0"
          posY="125.0"
          width="700"

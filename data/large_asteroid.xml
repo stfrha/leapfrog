@@ -3,7 +3,7 @@
    needsGroupIndex="false" >
    <behaviour
       type="breakableObject">
-      <properties
+      <breakableObjectProperties
          breakBulletDamage="100"
          numberOfSpawns="3" />
          <spawnObject
