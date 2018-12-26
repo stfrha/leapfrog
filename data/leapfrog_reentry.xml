@@ -476,137 +476,113 @@
    <system
       type="gun"
       name="lfGun">
-      <stateProperties
-         state="default">
-         <properties
-            body="lfMainBody"
-            emitterOriginX="0"
-            emitterOriginY="-4"
-            angle="-1.57"
-            fireRate="4"
-            lifeTime="2000"
-            impulseMagnitude="10000"
-            bouncy="false" />
-      </stateProperties>
+      <gunProperties
+         body="lfMainBody"
+         emitterOriginX="0"
+         emitterOriginY="-4"
+         angle="-1.57"
+         fireRate="4"
+         lifeTime="2000"
+         impulseMagnitude="10000"
+         bouncy="false" />
    </system>
    <system
       type="flameEmitter"
       name="boosterFlame">
-      <stateProperties
-         state="default">
-         <properties
-            body="lfBooster"
-            emitterOriginX="0"
-            emitterOriginY="3"
-            angle="1.57"
-            emitterWidth="4"
-            lifeTime="250"
-            impulseMagnitude="70"
-            radius="10" />
-      </stateProperties>
+      <flameEmitterProperties
+         body="lfBooster"
+         emitterOriginX="0"
+         emitterOriginY="3"
+         angle="1.57"
+         emitterWidth="4"
+         lifeTime="250"
+         impulseMagnitude="70"
+         radius="10" />
    </system>
    <system
       type="flameEmitter"
       name="leftSteeringFlame">
-      <stateProperties
-         state="default">
-         <properties
-            body="lfLeftSteer"
-            emitterOriginX="1"
-            emitterOriginY="0"
-            angle="0"
-            emitterWidth="1"
-            lifeTime="125"
-            impulseMagnitude="35"
-            radius="5" />
-      </stateProperties>
+      <flameEmitterProperties
+         body="lfLeftSteer"
+         emitterOriginX="1"
+         emitterOriginY="0"
+         angle="0"
+         emitterWidth="1"
+         lifeTime="125"
+         impulseMagnitude="35"
+         radius="5" />
    </system>
    <system
       type="flameEmitter"
       name="rightSteeringFlame">
-      <stateProperties
-         state="default">
-         <properties
-            body="lfRightSteer"
-            emitterOriginX="-1"
-            emitterOriginY="0"
-            angle="3.1416"
-            emitterWidth="1"
-            lifeTime="125"
-            impulseMagnitude="35"
-            radius="5" />
-      </stateProperties>
+      <flameEmitterProperties
+         body="lfRightSteer"
+         emitterOriginX="-1"
+         emitterOriginY="0"
+         angle="3.1416"
+         emitterWidth="1"
+         lifeTime="125"
+         impulseMagnitude="35"
+         radius="5" />
    </system>
    <system
       type="reentryFlameEmitter"
       name="leftReentryFlame">
-      <stateProperties
-         state="default">
-         <properties
-            body="lfBooster"
-            emitterLineStartX="-8.0"
-            emitterLineStartY="1.7"
-            emitterLineEndX="-2.0"
-            emitterLineEndY="1.7"
-            emitterOriginX="22"
-            emitterOriginY="0"
-            angle="1.57"
-            intensity="4.0"
-            lifeTime="500"
-            maxWidth="0.1"
-            maxHeight="5.0" />
-      </stateProperties>
+      <reentryFlameEmitterProperties
+         body="lfBooster"
+         emitterLineStartX="-8.0"
+         emitterLineStartY="1.7"
+         emitterLineEndX="-2.0"
+         emitterLineEndY="1.7"
+         emitterOriginX="22"
+         emitterOriginY="0"
+         angle="1.57"
+         intensity="4.0"
+         lifeTime="500"
+         maxWidth="0.1"
+         maxHeight="5.0" />
    </system>
    <system
       type="reentryFlameEmitter"
       name="centerReentryFlame">
-      <stateProperties
-         state="default">
-         <properties
-            body="lfBooster"
-            emitterLineStartX="-2.0"
-            emitterLineStartY="1.7"
-            emitterLineEndX="2.0"
-            emitterLineEndY="1.7"
-            emitterOriginX="22"
-            emitterOriginY="0"
-            angle="1.57"
-            intensity="4.0"
-            lifeTime="500"
-            maxWidth="0.1"
-            maxHeight="5.0" />
-      </stateProperties>
+      <reentryFlameEmitterProperties
+         body="lfBooster"
+         emitterLineStartX="-2.0"
+         emitterLineStartY="1.7"
+         emitterLineEndX="2.0"
+         emitterLineEndY="1.7"
+         emitterOriginX="22"
+         emitterOriginY="0"
+         angle="1.57"
+         intensity="4.0"
+         lifeTime="500"
+         maxWidth="0.1"
+         maxHeight="5.0" />
    </system>
    <system
       type="reentryFlameEmitter"
       name="rightReentryFlame">
-      <stateProperties
-         state="default">
-         <properties
-            body="lfBooster"
-            emitterLineStartX="2.0"
-            emitterLineStartY="1.7"
-            emitterLineEndX="8.0"
-            emitterLineEndY="1.7"
-            emitterOriginX="22"
-            emitterOriginY="0"
-            angle="1.57"
-            intensity="4.0"
-            lifeTime="500"
-            maxWidth="0.1"
-            maxHeight="5.0" />
-      </stateProperties>
+      <reentryFlameEmitterProperties
+         body="lfBooster"
+         emitterLineStartX="2.0"
+         emitterLineStartY="1.7"
+         emitterLineEndX="8.0"
+         emitterLineEndY="1.7"
+         emitterOriginX="22"
+         emitterOriginY="0"
+         angle="1.57"
+         intensity="4.0"
+         lifeTime="500"
+         maxWidth="0.1"
+         maxHeight="5.0" />
    </system>
    <system
       type="shield"
       name="lfShield">
-      <stateProperties
-         state="default">
-         <properties
-            body="lfMainBody"
-            bodyAnchorX="0"
-            bodyAnchorY="1.0"
-            radius="16" />
-      </stateProperties>
+      <shieldProperties
+         body="lfMainBody"
+         bodyAnchorX="0"
+         bodyAnchorY="1.0"
+         radius="16" />
    </system>
 </compoundObject>

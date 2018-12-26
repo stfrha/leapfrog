@@ -1,6 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<compoundObject
-  type="launchSite">
+<compoundObject>
+   <behaviour
+      type="launchSite" />
   <staticBox
     name="leftTower"
     texture="ls_tower"

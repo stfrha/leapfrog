@@ -146,7 +146,7 @@
                            </stateProperties>
                         </childObject>
                      </spawnObject>
-                  </properties>
+                  </objectFactoryProperties>
                </system>
             </compoundObject>
          </properties>
@@ -280,7 +280,7 @@
                </stateProperties>
             </childObject>
          </spawnObject>
-      </properties>
+      </objectFactoryProperties>
    </system>
 </compoundObject>
 
