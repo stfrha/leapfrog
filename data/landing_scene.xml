@@ -1,5 +1,10 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <compoundObject>
+   <states>
+      <state>default</state>
+      <state>groundState</state>
+      <state>landingState</state>
+   </states>
    <staticBox
       name="springDestroyable"
       texture="lf_position"
@@ -983,11 +988,18 @@
    <childObject
       name="leapfrog1">
       <stateProperties
-         state="default">
+         state="landingState">
          <properties
             posX="237.00628536522629"
             posY="220" 
             file="leapfrog_reentry.xml" />
+      </stateProperties>
+      <stateProperties
+         state="groundState">
+         <properties
+            posX="237.00628536522629"
+            posY="220" 
+            file="leapfrog_landing.xml" />
       </stateProperties>
    </childObject>
 </compoundObject>
