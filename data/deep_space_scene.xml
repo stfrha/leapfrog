@@ -1,5 +1,8 @@
 <?xml version="1.0"?>
 <compoundObject>
+   <states>
+      <state>default</state>
+   </states>
    <childObject
       name="asteroid1">
       <stateProperties

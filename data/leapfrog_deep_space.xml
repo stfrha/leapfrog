@@ -1,6 +1,9 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <compoundObject
    needsGroupIndex="true" >
+   <states>
+      <state>default</state>
+   </states>
    <behaviour
       type="leapfrog" />
   <dynamicBox
