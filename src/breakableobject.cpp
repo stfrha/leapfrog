@@ -24,7 +24,7 @@ BreakableObject::BreakableObject(
    m_world(world),
    m_damage(0)
 {
-   readBreakableObjectNode(root.child("behaviour").child("properties"));
+   readBreakableObjectNode(root.child("behaviour").child("breakableObjectProperties"));
    m_spawnObjects = new SpawnObjectList();
      
    m_spawnObjects->readSpawnObjectsNode(root);

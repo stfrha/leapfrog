@@ -35,7 +35,7 @@ SteerableObject::SteerableObject(
 {
    initCompoundObjectParts(gameResources, sceneActor, parentObject, world, pos, root, string(""), groupIndex);
 
-   readSteerableObjectNode(root.child("behvaiour").child("properties"));
+   readSteerableObjectNode(root.child("behaviour").child("steerableObjectProperties"));
 
    m_body = getBody("mainBody");
 

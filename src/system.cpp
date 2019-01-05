@@ -38,7 +38,7 @@ System* System::initialiseSystemNode(
          sceneActor,
          parent,
          world,
-         node.child("properties"));
+         node.child("objectFactoryProperties"));
 
       of->setName(name);
 
@@ -51,7 +51,7 @@ System* System::initialiseSystemNode(
          sceneActor,
          parent,
          world,
-         node.child("properties"),
+         node.child("flameEmitterProperties"),
          groupIndex);
 
       fe->setName(name);
@@ -66,7 +66,7 @@ System* System::initialiseSystemNode(
          sceneActor,
          parent,
          world,
-         node.child("properties"),
+         node.child("gunProperties"),
          groupIndex);
 
       g->setName(name);
@@ -81,7 +81,7 @@ System* System::initialiseSystemNode(
          sceneActor,
          parent,
          world,
-         node.child("properties"),
+         node.child("shieldProperties"),
          groupIndex);
 
       sh->setName(name);
@@ -95,7 +95,7 @@ System* System::initialiseSystemNode(
          sceneActor,
          parent,
          world,
-         node.child("properties"));
+         node.child("reentryFlameEmitterProperties"));
 
       rfe->setName(name);
 
