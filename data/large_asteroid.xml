@@ -8,7 +8,7 @@
       type="breakableObject">
       <breakableObjectProperties
          breakBulletDamage="100"
-         numberOfSpawns="3" />
+         numberOfSpawns="3">
          <spawnObject
             probabilityFactor="9">
             <childObject
@@ -22,6 +22,7 @@
                </stateProperties>
             </childObject>
          </spawnObject>
+      </breakableObjectProperties>
    </behaviour>
 <!--   
    <spawnObject
