@@ -1,8 +1,14 @@
 <?xml version="1.0"?>
 <compoundObject>
-   <states>
-      <state>default</state>
-   </states>
+   <behaviour
+      type="scene">
+      <sceneProperties
+         sceneType="space">
+        <states>
+          <state>default</state>
+        </states>
+      </sceneProperties>
+   </behaviour>
    <childObject
       name="asteroid1">
       <stateProperties
@@ -165,9 +171,6 @@
             posY="250.0" >
             <compoundObject
                needsGroupIndex="true" >
-               <states>
-                  <state>default</state>
-               </states>
                <behaviour
                   type="steerableObject" >
                   <steerableObjectProperties

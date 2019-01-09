@@ -1,7 +1,16 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <compoundObject>
-  <behaviour
-    type="notApplicable" />
+   <behaviour
+      type="scene">
+      <sceneProperties
+         sceneType="ground">
+        <states>
+          <state>default</state>
+          <state>groundState</state>
+          <state>landingState</state>
+        </states>
+      </sceneProperties>
+   </behaviour>
   <staticBox
     name="springDestroyable"
     texture="lf_position"
@@ -958,9 +967,4 @@
         posY="121.19325468177033" />
     </stateProperties>
   </childObject>
-  <states>
-    <state>default</state>
-    <state>groundState</state>
-    <state>landingState</state>
-  </states>
 </compoundObject>

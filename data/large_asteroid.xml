@@ -1,9 +1,6 @@
 <?xml version="1.0"?>
 <compoundObject
    needsGroupIndex="false" >
-   <states>
-      <state>default</state>
-   </states>
    <behaviour
       type="breakableObject">
       <breakableObjectProperties
