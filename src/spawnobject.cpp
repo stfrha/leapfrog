@@ -47,8 +47,6 @@ pugi::xml_node* SpawnObjectList::getSpawnObjectNode(void)
    }
 
    return &m_spawnObjects[m_spawnObjects.size() - 1]->m_node;
-
-   return NULL;
 }
 
 

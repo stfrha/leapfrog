@@ -27,7 +27,7 @@ BreakableObject::BreakableObject(
    readBreakableObjectNode(root.child("behaviour").child("breakableObjectProperties"));
    m_spawnObjects = new SpawnObjectList();
      
-   m_spawnObjects->readSpawnObjectsNode(root);
+   m_spawnObjects->readSpawnObjectsNode(root.child("behaviour").child("breakableObjectProperties"));
 
    initCompoundObjectParts(
       gameResources,

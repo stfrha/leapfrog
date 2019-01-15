@@ -738,6 +738,7 @@ void CompoundObject::defineStaticPolygon(
    PolygonVertices::createSpritePolygon(sprite.get(), vertices, objectNode);
    PolygonVertices::createChainBodyPolygon(
       vertices, world, bPos, body, fixture, objectNode);
+
    PolygonVertices::createPolygonBorders(sprite.get(), gameResources, vertices, objectNode);
    
    sprite->attachTo(sceneParent);

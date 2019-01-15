@@ -301,7 +301,7 @@ void SceneActor::sweepSpawnList(void)
       {
          pugi::xml_node* spawnNode = (*it)->m_spawnSource->getSpawnObjectNode();
 
-         if (*spawnNode == NULL)
+         if (spawnNode == NULL)
          {
             return;
          }

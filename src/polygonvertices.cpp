@@ -245,8 +245,8 @@ void PolygonVertices::createChainBodyPolygon(
    std::vector<oxygine::Vector2>& vertices,
    b2World* world,
    b2Vec2& pos,
-   b2Body* body,
-   b2Fixture* fixture, 
+   b2Body*& body,
+   b2Fixture*& fixture, 
    pugi::xml_node objectNode)
 {
    int num = vertices.size() + 1;
@@ -267,7 +267,7 @@ void PolygonVertices::createChainBodyPolygon(
 
    b2BodyDef bodyDef;
    bodyDef.type = b2_staticBody;
-   b2Vec2 bPos = pos + b2Vec2(objectNode.attribute("posX").as_float(), objectNode.attribute("posY").as_float());
+   b2Vec2 bPos = pos;
    bodyDef.position = bPos;
    body = world->CreateBody(&bodyDef);
 
