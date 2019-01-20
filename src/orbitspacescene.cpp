@@ -15,7 +15,7 @@ OrbitSpaceScene::OrbitSpaceScene(
    const string& backgroundTexture,
    const string& fileName,
    const string& initialState) :
-	SceneActor(gameResources, zoomScale),
+	SceneActor(gameResources, NULL, zoomScale),
    m_state(enteringOrbit),
    m_stateStartTime(0)
 {

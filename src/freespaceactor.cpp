@@ -8,13 +8,16 @@
 
 
 using namespace oxygine;
+using namespace std;
+using namespace pugi;
 
 FreeSpaceActor::FreeSpaceActor(
    Resources& gameResources,
-   spGameStatus gameStatus,
-   const std::string& fileName,
-   const std::string& initialState) :
-	SceneActor(gameResources, 0.4f),
+   b2World* world,
+   xml_node& root,
+   const string& initialState,
+   int groupIndex) :
+   SceneActor(gameResources, world, 0.4f),
    m_inOrbitField(false),
    m_state(insertBurn),
    m_stateChangeTime(0)
@@ -27,7 +30,7 @@ FreeSpaceActor::FreeSpaceActor(
 
    m_world->SetContactListener(&m_contactListener);
 
-   initCompoundObjectTop(gameResources, this, m_world, fileName, initialState);
+   initCompoundObjectParts(gameResources, this, NULL, world, Vector2(0.0f, 0.0f), root, initialState, groupIndex);
 
    // Create background before the leapfrog
    generateBackground(gameResources);
@@ -35,14 +38,16 @@ FreeSpaceActor::FreeSpaceActor(
    m_leapfrog = static_cast<LeapFrog*>(getObject("leapfrog1"));
 //   setPanorateObject(getObject("hammer1"));
 
-   m_leapfrog->initGameStatus(gameStatus);
 
-   m_leapfrogBody = m_leapfrog->getBody("lfMainBody");
-//   m_leapfrogBody = getBody("leapfrog1.lfMainBody");
+   if (m_leapfrog != NULL)
+   {
+      m_leapfrogBody = m_leapfrog->getBody("lfMainBody");
+      //   m_leapfrogBody = getBody("leapfrog1.lfMainBody");
 
-   m_leapfrog->goToEnvironment(ENV_DEEP_SPACE);
+      m_leapfrog->goToEnvironment(ENV_DEEP_SPACE);
 
-   addBoundingBody(m_leapfrogBody);
+      addBoundingBody(m_leapfrogBody);
+   }
 
    m_lowerBoundary = new SoftBoundary(gameResources, m_world, 
       RectF(
@@ -75,15 +80,6 @@ FreeSpaceActor::FreeSpaceActor(
          m_sceneHeight + 300.0f,
          150.0f), SoftBoundary::left);
    addChild(m_rightBoundary);
-
-   //spHammer hammer = new Hammer(gameResources, this, m_world, Vector2(600.0f, 250.0f));
-
-   //spAsteroid a1 = new Asteroid(gameResources, this, m_world, Vector2(500.0f, 230.0f), ASE_LARGE);
-   //spAsteroid a2 = new Asteroid(gameResources, this, m_world, Vector2(480.0f, 240.0f), ASE_LARGE);
-   //spAsteroid a3 = new Asteroid(gameResources, this, m_world, Vector2(500.0f, 250.0f), ASE_LARGE);
-   //spAsteroid a4 = new Asteroid(gameResources, this, m_world, Vector2(480.0f, 260.0f), ASE_LARGE);
-   //spAsteroid a5 = new Asteroid(gameResources, this, m_world, Vector2(500.0f, 270.0f), ASE_LARGE);
-   //spAsteroid a6 = new Asteroid(gameResources, this, m_world, Vector2(480.0f, 280.0f), ASE_LARGE);
 
 }
 

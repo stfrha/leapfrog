@@ -17,7 +17,6 @@
 #include "landingpad.h"
 #include "planetactor.h"
 #include "orbitwindow.h"
-#include "blastemitter.h"
 #include "system.h"
 
 #include "polygonvertices.h"
@@ -45,16 +44,6 @@ CompoundObject::~CompoundObject()
 	//m_staticPolygons.clear();
 	m_namedJoints.clear();
 	m_children.clear();
-}
-
-void CompoundObject::initCompoundObjectTop(
-   oxygine::Resources& gameResources, 
-   CompoundObject* parentObject,
-   b2World* world,
-   const string& defXmlFileName,
-   const string& initialState)
-{
-   readDefinitionXmlFile(gameResources, m_sceneActor, parentObject, world, Vector2(0.0f, 0.0f), defXmlFileName, initialState);
 }
 
 CompoundObject* CompoundObject::getParentObject()
@@ -107,6 +96,10 @@ void CompoundObject::killAllChildBodies(void)
    }
 }
 
+void CompoundObject::removeShape(Actor* removeMe)
+{
+   m_shapes.erase(std::remove(m_shapes.begin(), m_shapes.end(), removeMe), m_shapes.end());
+}
 
  Vector2 CompoundObject::getCompoundObjectPosition()
 // Position of the CO is the position of any of its bodies
@@ -133,7 +126,24 @@ void CompoundObject::killAllChildBodies(void)
 }
 
 
-CompoundObject* CompoundObject::readDefinitionXmlFile(
+ CompoundObject* CompoundObject::initCompoundObjectTop(
+    oxygine::Resources& gameResources,
+    SceneActor* sceneParent,
+    CompoundObject* parentObject,
+    b2World* world,
+    const string& defXmlFileName,
+    const string& initialState)
+ {
+    return readDefinitionXmlFile(gameResources, sceneParent, parentObject, world, Vector2(0.0f, 0.0f), defXmlFileName, initialState);
+ }
+
+ CompoundObject* CompoundObject::readDefinitionXmlFile(
+   // TODO: This method should not be executed on an existing CO
+   // because if the CO has a behaviour one of the behaviour classes
+   // that inherits from CO should be created. Therefore this method
+   // should return the created object.
+   // It reads the file into a buffer and then calls initCompoundObject
+   // which does the rest of the job. 
    Resources& gameResources,
    SceneActor* sceneParent,
    CompoundObject* parentObject,
@@ -142,8 +152,6 @@ CompoundObject* CompoundObject::readDefinitionXmlFile(
    const string& fileName,
    const string& initialState)
 {
-   m_parentObject = parentObject;
-
    ox::file::buffer bf;
    ox::file::read(fileName.c_str(), bf);
 
@@ -158,6 +166,11 @@ CompoundObject* CompoundObject::readDefinitionXmlFile(
 }
 
 CompoundObject* CompoundObject::initCompoundObject(
+   // This method creates a new CO and fills it according to the supplied
+   // XML node. The created CO is returned.
+   // If the CO has a behaviour a behaviour class (which inherits from Compound Object)
+   // is created and returned (cast as a CO)
+   // Since this method is not called on an existing object it must be static.
    Resources& gameResources,
    SceneActor* sceneParent,
    CompoundObject* parentObject,
@@ -182,7 +195,21 @@ CompoundObject* CompoundObject::initCompoundObject(
    // but only store the pointer to the CompoundObject
    // Perhaps with some special cases
 
-   if (behavStr == "leapfrog")
+
+   if (behavStr == "scene")
+   {
+      SceneActor* sa = SceneActor::defineScene(
+         gameResources,
+         parentObject,
+         world,
+         root,
+         groupIndex);
+
+      sa->m_behaviourType = BehaviourEnum::scene;
+
+      return static_cast<CompoundObject*>(sa);
+   }
+   else if (behavStr == "leapfrog")
    {
       LeapFrog* lf = new LeapFrog(
          gameResources,
@@ -194,8 +221,6 @@ CompoundObject* CompoundObject::initCompoundObject(
          groupIndex);
 
       lf->m_behaviourType = BehaviourEnum::leapfrog;
-
-      // Leapfrog game status is set by the SceneActor (or a class derived thereof)
 
       return static_cast<CompoundObject*>(lf);
    }
@@ -234,7 +259,7 @@ CompoundObject* CompoundObject::initCompoundObject(
       BreakableObject* bo = new BreakableObject(
          gameResources, 
          sceneParent, 
-         this, 
+         parentObject,
          world, 
          pos, 
          root,
@@ -250,7 +275,7 @@ CompoundObject* CompoundObject::initCompoundObject(
       SteerableObject* so = new SteerableObject(
          gameResources,
          sceneParent,
-         this,
+         parentObject,
          world,
          pos,
          root,
@@ -263,9 +288,10 @@ CompoundObject* CompoundObject::initCompoundObject(
    }
    else
    {
-      // If no behaviour was recognised, define the parts of the 
-      // compound objects
-      initCompoundObjectParts(
+      // If no behaviour was recognised, this CO is without behaviour.
+      // Lets create it and then fill in its parts.
+      CompoundObject* co = new CompoundObject(sceneParent, parentObject);
+      co->initCompoundObjectParts(
          gameResources,
          sceneParent,
          parentObject,
@@ -275,7 +301,7 @@ CompoundObject* CompoundObject::initCompoundObject(
          string(""),
          groupIndex);
 
-      return this;
+      return co;
    }
 
    return NULL;
@@ -513,6 +539,46 @@ bool CompoundObject::initCompoundObjectParts(
    return true;
 }
 
+void CompoundObject::doCommonShapeDefinitions(
+   Resources& gameResources,
+   spSprite& sprite,
+   Vector2 pos,
+   xml_node& objectNode)
+{
+   sprite->setResAnim(gameResources.getResAnim(objectNode.attribute("texture").as_string()));
+   sprite->setName(objectNode.attribute("name").as_string());
+   sprite->setPriority(objectNode.attribute("zLevel").as_int());
+   sprite->setTouchChildrenEnabled(false);
+}
+
+void CompoundObject::doCollisionDefinitions(
+   b2Fixture*& fixture,
+   xml_node& objectNode,
+   int groupIndex)
+{
+   b2Filter filter;
+   filter.categoryBits = objectNode.attribute("collisionCategory").as_int();
+   filter.maskBits = objectNode.attribute("collisionMask").as_int();
+   bool collideWithinGroup = objectNode.attribute("collideWithGroup").as_bool(false);
+   if (collideWithinGroup)
+   {
+      filter.groupIndex = groupIndex;
+   }
+   else
+   {
+      filter.groupIndex = -groupIndex;
+   }
+   fixture->SetFilterData(filter);
+}
+
+void CompoundObject::doPhysicalDefinitions(
+   b2Fixture*& fixture,
+   xml_node& objectNode)
+{
+   fixture->SetDensity(objectNode.attribute("density").as_float(1.0f));
+   fixture->SetFriction(objectNode.attribute("friction").as_float(1.0f));
+}
+
 void CompoundObject::defineSpriteBox(
    oxygine::Resources& gameResources,
    SceneActor* sceneParent,
@@ -522,15 +588,12 @@ void CompoundObject::defineSpriteBox(
 {
    // Define sprite
    spSprite sprite = new Sprite();
-   sprite->setResAnim(gameResources.getResAnim(objectNode.attribute("texture").as_string()));
-   sprite->setName(objectNode.attribute("name").as_string());
-   sprite->setPriority(objectNode.attribute("zLevel").as_int());
-   sprite->setSize(objectNode.attribute("width").as_float(), objectNode.attribute("height").as_float());
-   sprite->setAnchor(0.5f, 0.5f);
-   sprite->setTouchChildrenEnabled(false);
+   doCommonShapeDefinitions(gameResources, sprite, pos, objectNode);
    Vector2 newPos(pos.x + objectNode.attribute("posX").as_float(), pos.y + objectNode.attribute("posY").as_float());
    sprite->setPosition(newPos);
+   sprite->setSize(objectNode.attribute("width").as_float(), objectNode.attribute("height").as_float());
    sprite->setRotation(objectNode.attribute("angle").as_float());
+   sprite->setAnchor(0.5f, 0.5f);
    sprite->attachTo(sceneParent);
    m_shapes.push_back(sprite.get());
 }
@@ -544,12 +607,12 @@ void CompoundObject::defineSpritePolygon(
 {
    // Define sprite, which is a polygon, in this case
    spPolygon sprite = new oxygine::Polygon();
-   sprite->setResAnim(gameResources.getResAnim(objectNode.attribute("texture").as_string()));
-   sprite->setName(objectNode.attribute("name").as_string());
-   sprite->setPriority(objectNode.attribute("zLevel").as_int());
-   sprite->setTouchChildrenEnabled(false);
+
+   doCommonShapeDefinitions(gameResources, static_cast<spSprite>(sprite), pos, objectNode);
 
    // TODO: What about rotation?
+
+   // TODO: And what about position?
    
    vector<Vector2> vertices(distance(objectNode.child("vertices").children("vertex").begin(), objectNode.child("vertices").children("vertex").end()));
 
@@ -571,12 +634,9 @@ void CompoundObject::defineCircle(
 {
    // Define sprite
    spSprite sprite = new Sprite();
-   sprite->setResAnim(gameResources.getResAnim(objectNode.attribute("texture").as_string()));
-   sprite->setName(objectNode.attribute("name").as_string());
-   sprite->setPriority(objectNode.attribute("zLevel").as_int());
+   doCommonShapeDefinitions(gameResources, sprite, pos, objectNode);
    sprite->setSize(objectNode.attribute("radius").as_float() * 2.0f, objectNode.attribute("radius").as_float() * 2.0f);
    sprite->setAnchor(0.5f, 0.5f);
-   sprite->setTouchChildrenEnabled(false);
    sprite->attachTo(sceneParent);
    m_shapes.push_back(sprite.get());
 
@@ -599,11 +659,6 @@ void CompoundObject::defineCircle(
 
    b2FixtureDef fixtureDef;
    fixtureDef.shape = &circleShape;
-   fixtureDef.density = objectNode.attribute("density").as_float(1.0f);
-   fixtureDef.friction = objectNode.attribute("friction").as_float(1.0f);
-   //fixtureDef.filter.categoryBits = objectNode.attribute("collisionCategory").as_int();
-   //fixtureDef.filter.maskBits = objectNode.attribute("collisionMask").as_int();
-   fixtureDef.filter.groupIndex = -groupIndex;
 
    BodyUserData* bud = new BodyUserData();
    bud->m_actor = sprite.get();
@@ -611,7 +666,14 @@ void CompoundObject::defineCircle(
 
    fixtureDef.userData = bud;
 
-   body->CreateFixture(&fixtureDef);
+   b2Fixture* fixture = body->CreateFixture(&fixtureDef);
+
+   doCollisionDefinitions(fixture, objectNode, groupIndex);
+   
+   if (!staticBody)
+   {
+      doPhysicalDefinitions(fixture, objectNode);
+   }
 
    body->SetUserData(bud);
 
@@ -649,12 +711,10 @@ void CompoundObject::defineBox(
 
    // Define sprite
    spSprite sprite = new Sprite();
-   sprite->setResAnim(gameResources.getResAnim(objectNode.attribute("texture").as_string()));
-   sprite->setName(objectNode.attribute("name").as_string());
-   sprite->setPriority(objectNode.attribute("zLevel").as_int());
+   doCommonShapeDefinitions(gameResources, sprite, pos, objectNode);
+
    sprite->setSize(objectNode.attribute("width").as_float(), objectNode.attribute("height").as_float());
    sprite->setAnchor(0.5f, 0.5f);
-   sprite->setTouchChildrenEnabled(false);
    sprite->attachTo(sceneParent);
    m_shapes.push_back(sprite.get());
 
@@ -677,11 +737,6 @@ void CompoundObject::defineBox(
 
    b2FixtureDef fixtureDef;
    fixtureDef.shape = &boxShape;
-   fixtureDef.density = objectNode.attribute("density").as_float(1.0f);
-   fixtureDef.friction = objectNode.attribute("friction").as_float(1.0f);
-   fixtureDef.filter.groupIndex = -groupIndex;
-   //fixtureDef.filter.categoryBits = objectNode.attribute("collisionCategory").as_int();
-   //fixtureDef.filter.maskBits = objectNode.attribute("collisionMask").as_int();
 
    BodyUserData* bud = new BodyUserData();
    bud->m_actor = sprite.get();
@@ -689,7 +744,14 @@ void CompoundObject::defineBox(
 
    fixtureDef.userData = bud;
 
-   body->CreateFixture(&fixtureDef);
+   b2Fixture* fixture = body->CreateFixture(&fixtureDef);
+
+   doCollisionDefinitions(fixture, objectNode, groupIndex);
+
+   if (!staticBody)
+   {
+      doPhysicalDefinitions(fixture, objectNode);
+   }
 
    body->SetUserData(bud);
 
@@ -725,9 +787,8 @@ void CompoundObject::defineStaticPolygon(
    int groupIndex)
 {
    spPolygon sprite = new oxygine::Polygon();
-   sprite->setResAnim(gameResources.getResAnim(objectNode.attribute("texture").as_string()));
-   sprite->setName(objectNode.attribute("name").as_string());
-   sprite->setPriority(objectNode.attribute("zLevel").as_int());
+
+   doCommonShapeDefinitions(gameResources, static_cast<spSprite>(sprite), pos, objectNode);
 
    b2Body* body = NULL;
    b2Fixture* fixture = NULL;
@@ -744,11 +805,7 @@ void CompoundObject::defineStaticPolygon(
    sprite->attachTo(sceneParent);
    m_shapes.push_back(sprite.get());
 
-   b2Filter filter;
-   //filter.categoryBits = objectNode.attribute("collisionCategory").as_int();
-   //filter.maskBits = objectNode.attribute("collisionMask").as_int();
-   filter.groupIndex = -groupIndex;
-   fixture->SetFilterData(filter);
+   doCollisionDefinitions(fixture, objectNode, groupIndex);
 
    BodyUserData* bud = new BodyUserData();
    bud->m_actor = sprite.get();
@@ -779,19 +836,18 @@ void CompoundObject::defineBoxedSpritePolygon(
    // Define sprite, which is a polygon, in this case
 
    spSprite sprite = new Sprite();
-   sprite->setResAnim(gameResources.getResAnim(objectNode.attribute("texture").as_string()));
-   sprite->setName(objectNode.attribute("name").as_string());
-   sprite->setPriority(objectNode.attribute("zLevel").as_int());
+   doCommonShapeDefinitions(gameResources, sprite, pos, objectNode);
+
    sprite->setSize(objectNode.attribute("width").as_float(), objectNode.attribute("height").as_float());
    sprite->setAnchor(0.5f, 0.5f);
-   sprite->setTouchChildrenEnabled(false);
    sprite->attachTo(sceneParent);
    m_shapes.push_back(sprite.get());
 
    vector<Vector2> vertices(distance(objectNode.child("vertices").children("vertex").begin(), objectNode.child("vertices").children("vertex").end()));
    b2Body* body = NULL;
    b2Fixture* fixture = NULL;
-   b2Vec2 bPos = PhysDispConvert::convert(pos, 1.0f) + b2Vec2(objectNode.attribute("posX").as_float(), objectNode.attribute("posY").as_float());
+   b2Vec2 delta = b2Vec2(objectNode.attribute("posX").as_float(), objectNode.attribute("posY").as_float());
+   b2Vec2 bPos = PhysDispConvert::convert(pos, 1.0f) + delta;
 
    PolygonVertices::readVertices(vertices, objectNode);
    PolygonVertices::createBodyPolygon(vertices, world, bPos, &body, &fixture, objectNode, staticBody, groupIndex);
@@ -800,8 +856,14 @@ void CompoundObject::defineBoxedSpritePolygon(
    bud->m_actor = sprite.get();
    bud->m_collisionType = CollisionEntity::convert(objectNode.attribute("collisionEntity").as_string());
 
-   fixture->SetUserData(bud);
+   doCollisionDefinitions(fixture, objectNode, groupIndex);
 
+   if (!staticBody)
+   {
+      doPhysicalDefinitions(fixture, objectNode);
+   }
+
+   fixture->SetUserData(bud);
    body->SetUserData(bud);
 
    body->ResetMassData();
@@ -861,10 +923,7 @@ void CompoundObject::defineDynamicPolygon(
    // Define sprite, which is a polygon, in this case
 
    spPolygon sprite = new oxygine::Polygon();
-   sprite->setResAnim(gameResources.getResAnim(objectNode.attribute("texture").as_string()));
-   sprite->setName(objectNode.attribute("name").as_string());
-   sprite->setPriority(objectNode.attribute("zLevel").as_int());
-   sprite->setTouchChildrenEnabled(false);
+   doCommonShapeDefinitions(gameResources, static_cast<spSprite>(sprite), pos, objectNode);
 
    vector<Vector2> vertices(distance(objectNode.child("vertices").children("vertex").begin(), objectNode.child("vertices").children("vertex").end()));
    b2Body* body = NULL;
@@ -882,6 +941,10 @@ void CompoundObject::defineDynamicPolygon(
    BodyUserData* bud = new BodyUserData();
    bud->m_actor = sprite.get();
    bud->m_collisionType = CollisionEntity::convert(objectNode.attribute("collisionEntity").as_string());
+
+   doCollisionDefinitions(fixture, objectNode, groupIndex);
+
+   doPhysicalDefinitions(fixture, objectNode);
 
    fixture->SetUserData(bud);
    body->SetUserData(bud);
@@ -1168,7 +1231,7 @@ CompoundObject* CompoundObject::defineChildObject(
          return NULL;
       }
 
-      // Define child directly
+      // Create and define child by spreading the node tree 
       co = initCompoundObject(
          gameResources,
          sceneParent,
@@ -1180,8 +1243,7 @@ CompoundObject* CompoundObject::defineChildObject(
    }
    else
    {
-      // Define child file
-      // Read the child XML file
+      // Create and define the child by reading the file
       co = readDefinitionXmlFile(
          gameResources,
          sceneParent,
@@ -1196,7 +1258,7 @@ CompoundObject* CompoundObject::defineChildObject(
    {
       m_children.push_back(static_cast<CompoundObject*>(co));
 
-      // CO is alreadu attached to scene parent in the behaviour file
+      // CO is already attached to scene parent in the behaviour file
 //      co->attachTo(sceneParent);
 
       co->setName(objectNode.attribute("name").as_string());
@@ -1209,11 +1271,22 @@ bool CompoundObject::getStateNode(xml_node& objectNode, const string& initialSta
 {
    // Iterate the stateProperties of the node, looking for state attributes
    // that matches the supplied initialState. If initialState is empty,
-   // the first stateProperty is used
+   // the first stateProperty is used. If no match, look again but this 
+   // time, return if a stateProperty with state: "default" exists
 
    for (auto it = objectNode.children("stateProperties").begin(); it != objectNode.children("stateProperties").end(); ++it)
    {
       if ((initialState == "") || (it->attribute("state").as_string() == initialState))
+      {
+         stateNode = *it;
+         return true;
+      }
+   }
+
+   for (auto it = objectNode.children("stateProperties").begin(); it != objectNode.children("stateProperties").end(); ++it)
+   {
+      string s = it->attribute("state").as_string();
+      if (s == "default")
       {
          stateNode = *it;
          return true;
@@ -1506,8 +1579,6 @@ System* CompoundObject::getSystem(const std::string& name)
    return NULL;
 }
 
-
-
 CompoundObject* CompoundObject::getObjectImpl(const std::string& name)
 {
    for (auto it = m_children.begin(); it != m_children.end(); ++it)
@@ -1681,42 +1752,7 @@ void CompoundObject::addMeToDeathList(void)
 
 void CompoundObject::hitByBullet(b2Contact* contact)
 {
-   // Assume unshattered blast
-   int emitterLifetime = 150;
-   int particleLifetime = 500;
-   float particleDistance = 30.0f;
-   float particleSize = 0.75f;
-   float blastIntensity = 200.0f;
-
-   // Take damage
-   //   m_damage += 1;
-
-   //if (m_damage >= 4)
-   //{
-   emitterLifetime = 250;
-   particleLifetime = 500;
-   particleDistance = 60.0f;
-   particleSize = 0.9f;
-   blastIntensity = 300.0f;
-
    m_sceneActor->addMeToDeathList(this);
-   //}
-
-   b2WorldManifold m;
-   contact->GetWorldManifold(&m);
-
-   if (contact->GetManifold()->pointCount > 0)
-   {
-      spBlastEmitter blast = new BlastEmitter(
-         m_sceneActor->getResources(),
-         PhysDispConvert::convert(m.points[0], 1.0f),
-         blastIntensity,                                     // Intensity, particles / sec
-         emitterLifetime,                                    // Emitter Lifetime
-         particleLifetime,                                   // Particle lifetime
-         particleDistance,                                   // Particle distance
-         particleSize);                                      // Particle spawn size
-      blast->attachTo(m_sceneActor);
-   }
 }
 
 // Iterate all bodies (and bodies of children recursively)

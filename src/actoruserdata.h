@@ -50,6 +50,7 @@ public:
       return NULL;
    }
 
+   // TODO: If I have the method below, can I not remove the method above?
    static CompoundObject* getParentObject(const void* userData)
    {
       if (userData)

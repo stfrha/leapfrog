@@ -4,6 +4,7 @@
 #include "actoruserdata.h"
 #include "bodyuserdata.h"
 #include "actoruserdata.h"
+#include "blastemitter.h"
 
 using namespace oxygine;
 
@@ -42,8 +43,8 @@ Bullet::Bullet(
    fixtureDef.density = 3.0f;
    fixtureDef.friction = 0.3f;
    fixtureDef.restitution = 0.5f;
-   //fixtureDef.filter.categoryBits = 4;
-   //fixtureDef.filter.maskBits = 65215;
+   fixtureDef.filter.categoryBits = 4;
+   fixtureDef.filter.maskBits = 65215;
    fixtureDef.filter.groupIndex = -groupIndex;
 
    BodyUserData* bud = new BodyUserData();
@@ -79,7 +80,41 @@ void Bullet::bulletHit(b2Contact* contact)
    {
       m_sceneActor->addMeToDeathList(this);
    }
+
+   int emitterLifetime = 150;
+   int particleLifetime = 500;
+   float particleDistance = 30.0f;
+   float particleSize = 0.75f;
+   float blastIntensity = 200.0f;
+
+   // Take damage
+   //   m_damage += 1;
+
+   //if (m_damage >= 4)
+   //{
+   emitterLifetime = 250;
+   particleLifetime = 500;
+   particleDistance = 60.0f;
+   particleSize = 0.9f;
+   blastIntensity = 300.0f;
+
+   b2WorldManifold m;
+   contact->GetWorldManifold(&m);
+
+   if (contact->GetManifold()->pointCount > 0)
+   {
+      spBlastEmitter blast = new BlastEmitter(
+         m_sceneActor->getResources(),
+         PhysDispConvert::convert(m.points[0], 1.0f),
+         blastIntensity,                                     // Intensity, particles / sec
+         emitterLifetime,                                    // Emitter Lifetime
+         particleLifetime,                                   // Particle lifetime
+         particleDistance,                                   // Particle distance
+         particleSize);                                      // Particle spawn size
+      blast->attachTo(m_sceneActor);
+   }
 }
+
 
 void Bullet::doUpdate(const oxygine::UpdateState& us)
 {

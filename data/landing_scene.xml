@@ -175,7 +175,33 @@
     textureMeterHeight="200"
     textureOffsetMeterX="0"
     textureOffsetMeterY="0">
-    <vertices>
+    <border
+      leftGroundAngle="-45"
+      rightGroundAngle="45"
+      leftCeilingAngle="-135"
+      rightCeilingAngle="135">
+      <groundBorder
+         texture="grotto_border"
+         horisontalMeterOffset="2"
+         textureMeterWidth="128"
+         textureMeterHeight="10" />
+      <ceilingBorder
+         texture="notDefined"
+         horisontalMeterOffset="2"
+         textureMeterWidth="128"
+         textureMeterHeight="10" />
+      <leftWallBorder
+         texture="notDefined"
+         horisontalMeterOffset="2"
+         textureMeterWidth="128"
+         textureMeterHeight="10" />
+      <rightWallBorder
+         texture="notDefined"
+         horisontalMeterOffset="2"
+         textureMeterWidth="128"
+         textureMeterHeight="10" />
+      </border>
+      <vertices>
       <vertex
         id="1"
         x="0"
@@ -445,6 +471,32 @@
     textureMeterHeight="200"
     textureOffsetMeterX="0"
     textureOffsetMeterY="0">
+      <border
+         leftGroundAngle="-45"
+         rightGroundAngle="45"
+         leftCeilingAngle="-135"
+         rightCeilingAngle="135">
+      <groundBorder
+         texture="grotto_border"
+         horisontalMeterOffset="2"
+         textureMeterWidth="128"
+         textureMeterHeight="10" />
+      <ceilingBorder
+         texture="notDefined"
+         horisontalMeterOffset="2"
+         textureMeterWidth="128"
+         textureMeterHeight="10" />
+      <leftWallBorder
+         texture="notDefined"
+         horisontalMeterOffset="2"
+         textureMeterWidth="128"
+         textureMeterHeight="10" />
+      <rightWallBorder
+         texture="notDefined"
+         horisontalMeterOffset="2"
+         textureMeterWidth="128"
+         textureMeterHeight="10" />
+      </border>
     <vertices>
       <vertex
         id="1"
@@ -956,8 +1008,8 @@
       state="landingState">
       <properties
         file="leapfrog_reentry.xml"
-        posX="318.41681784794338"
-        posY="25.580807031033913" />
+        posX="70"
+        posY="138" />
     </stateProperties>
     <stateProperties
       state="groundState">

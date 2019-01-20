@@ -217,7 +217,8 @@ void PolygonVertices::createBodyPolygon(
    {
       bodyDef.type = b2_dynamicBody;
    }
-   b2Vec2 bPos = pos + b2Vec2(objectNode.attribute("posX").as_float(), objectNode.attribute("posY").as_float());
+   b2Vec2 delta = b2Vec2(objectNode.attribute("posX").as_float(), objectNode.attribute("posY").as_float());
+   b2Vec2 bPos = pos /*+ delta*/;
    bodyDef.position = bPos;
    bodyDef.angle = objectNode.attribute("angle").as_float();
    *body = world->CreateBody(&bodyDef);
@@ -229,15 +230,6 @@ void PolygonVertices::createBodyPolygon(
    fixtureDef.shape = &polyShape;
 
    *fixture = (*body)->CreateFixture(&fixtureDef);
-
-   b2Filter filter;
-   //filter.categoryBits = objectNode.attribute("collisionCategory").as_int();
-   //filter.maskBits = objectNode.attribute("collisionMask").as_int();
-   filter.groupIndex = -groupIndex;
-   (*fixture)->SetFilterData(filter);
-
-   (*fixture)->SetDensity(objectNode.attribute("density").as_float(1.0f));
-   (*fixture)->SetFriction(objectNode.attribute("friction").as_float(1.0f));
 
 }
 

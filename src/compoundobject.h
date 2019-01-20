@@ -36,6 +36,7 @@ public:
    enum BehaviourEnum
    {
       notApplicable,
+      scene,
       leapfrog,
       launchSite,
       landingPad,
@@ -53,6 +54,21 @@ private:
 
    CollisionEntityTypeEnum m_collisionType;
    BehaviourEnum m_behaviourType;
+
+   void doCommonShapeDefinitions(
+      oxygine::Resources& gameResources,
+      oxygine::spSprite& sprite,
+      oxygine::Vector2 pos,
+      pugi::xml_node& objectNode);
+
+   void doCollisionDefinitions(
+      b2Fixture*& fixture,
+      pugi::xml_node& objectNode,
+      int groupIndex);
+
+   void doPhysicalDefinitions(
+      b2Fixture*& fixture,
+      pugi::xml_node& objectNode);
 
    void defineSpriteBox(
       oxygine::Resources& gameResources,
@@ -223,30 +239,39 @@ public:
 
    ~CompoundObject();
 
-   void initCompoundObjectTop(
+
+
+// Static, public methods used to create new CO (or behaviour decendant of CO)
+
+   static CompoundObject* initCompoundObjectTop(
 	   oxygine::Resources& gameResources,
+      SceneActor* sceneParent,
       CompoundObject* parentObject,
 	   b2World* world,
 	   const std::string& defXmlFileName,
 	   const std::string& initialState);
 
-   CompoundObject* readDefinitionXmlFile(
+   static CompoundObject* readDefinitionXmlFile(
       oxygine::Resources& gameResources,
       SceneActor* sceneParent,
       CompoundObject* parentObject,
       b2World* world,
       const oxygine::Vector2& pos,
-	  const std::string& fileName,
-	  const std::string& initialState);
+      const std::string& fileName,
+      const std::string& initialState);
 
-   CompoundObject* initCompoundObject(
+   static CompoundObject* initCompoundObject(
       oxygine::Resources& gameResources,
       SceneActor* sceneParent,
       CompoundObject* parentObject,
       b2World* world,
       const oxygine::Vector2& pos,
       pugi::xml_node& objectNode,
-	  const std::string& initialState);
+      const std::string& initialState);
+
+
+
+   // Normal, non-static, public methods of an instance of a CO
 
    bool initCompoundObjectParts(
       oxygine::Resources& gameResources,
@@ -273,6 +298,7 @@ public:
    CompoundObject* getParentObject();
    CompoundObject* getParentWithBehaviour(BehaviourEnum behav);
    void killAllChildBodies(void);
+   void removeShape(oxygine::Actor* removeMe);
 
    oxygine::Vector2 getCompoundObjectPosition();
 

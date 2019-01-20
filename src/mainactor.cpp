@@ -16,7 +16,8 @@
 using namespace oxygine;
 using namespace std;
 
-MainActor::MainActor()
+MainActor::MainActor() :
+   m_world(NULL)
 {
    g_Layout.initLayout();
    
@@ -57,6 +58,15 @@ void MainActor::startScene(SceneTypeEnum scene)
    // Clean up current scene
    spActor actor = getFirstChild();
 
+   if (m_world != NULL)
+   {
+      delete m_world;
+   }
+
+   // Gravity resets to zero. The Scene behaviour must set the gravity
+   // by itself
+   m_world = new b2World(b2Vec2(0.0f, 0.0f));
+
    while (actor)
    {
       spActor next = actor->getNextSibling();
@@ -73,50 +83,108 @@ void MainActor::startScene(SceneTypeEnum scene)
    window->setPosition(0.0f, 0.0f);
    addChild(window);
 
+   //// Start selected scene
+   //if (scene == STE_LANDING)
+   //{ 
+   //   //spClipRectActor window = new ClipRectActor();
+
+   //   //window->setSize(getStage()->getSize() - Vector2(100, 100));
+   //   //window->setPosition(50.0f, 50.0f);
+   //   //addChild(window);
+
+   //   //spLandingActor landingActor = new LandingActor(m_gameResources, m_gameStatus, string("landing_scene.xml"), string("landingState"));
+   //   
+   //   spLandingActor landingActor = static_cast<LandingActor*>(CompoundObject::readDefinitionXmlFile(
+   //      m_gameResources, 
+   //      NULL, 
+   //      NULL, 
+   //      m_world, 
+   //      Vector2(0.0f, 0.0f), 
+   //      string("landing_scene.xml"), 
+   //      string("landingState")));
+   //   
+   //   window->addChild(landingActor);
+   //   landingActor->addEventListener(LandingActorTranstToDeepSpaceEvent::EVENT, CLOSURE(this, &MainActor::transitToDeepSpaceListner));
+   //   m_sceneObject = static_cast<SceneActor*>(landingActor.get());
+
+   //}
+   //else if (scene == STE_FREE_SPACE)
+   //{
+   //   //spClipRectActor window = new ClipRectActor();
+
+   //   //window->setSize(getStage()->getSize() - Vector2(100, 100));
+   //   //window->setPosition(50.0f, 50.0f);
+   //   //addChild(window);
+
+   //   spFreeSpaceActor freeSpaceActor = new FreeSpaceActor(m_gameResources, m_gameStatus, string("deep_space_scene.xml"), string("deepSpaceState"));
+   //   window->addChild(freeSpaceActor);
+   //   freeSpaceActor->addEventListener(DeepSpaceSceneTranstToOrbitEvent::EVENT, CLOSURE(this, &MainActor::transitToOrbitListner));
+
+   //   m_sceneObject = static_cast<SceneActor*>(freeSpaceActor.get());
+
+   //}
+   //else if (scene == STE_ORBIT)
+   //{
+   //   //spClipRectActor window = new ClipRectActor();
+
+   //   //window->setSize(getStage()->getSize() - Vector2(100, 100));
+   //   //window->setPosition(50.0f, 50.0f);
+   //   //addChild(window);
+
+   //   spOrbitScene reentryActor = new OrbitScene(m_gameResources, m_gameStatus, string("orbit_scene.xml"), string("deepSpaceState"));
+   //   window->addChild(reentryActor);
+   //   reentryActor->addEventListener(OrbitSceneLandingComplete::EVENT, CLOSURE(this, &MainActor::landingCompleteListner));
+
+   //   m_sceneObject = (SceneActor*)reentryActor->m_space;
+   //}
+
+   string fileName;
+   string initialState;
+
    // Start selected scene
    if (scene == STE_LANDING)
    { 
-      //spClipRectActor window = new ClipRectActor();
-
-      //window->setSize(getStage()->getSize() - Vector2(100, 100));
-      //window->setPosition(50.0f, 50.0f);
-      //addChild(window);
-
-      spLandingActor landingActor = new LandingActor(m_gameResources, m_gameStatus, string("landing_scene.xml"), string("landingState"));
-      window->addChild(landingActor);
-      landingActor->addEventListener(LandingActorTranstToDeepSpaceEvent::EVENT, CLOSURE(this, &MainActor::transitToDeepSpaceListner));
-      m_sceneObject = static_cast<SceneActor*>(landingActor.get());
-
+      fileName = "landing_scene.xml";
+      initialState = "landingState";
    }
    else if (scene == STE_FREE_SPACE)
    {
-      //spClipRectActor window = new ClipRectActor();
-
-      //window->setSize(getStage()->getSize() - Vector2(100, 100));
-      //window->setPosition(50.0f, 50.0f);
-      //addChild(window);
-
-      spFreeSpaceActor freeSpaceActor = new FreeSpaceActor(m_gameResources, m_gameStatus, string("deep_space_scene.xml"), string("deepSpaceState"));
-      window->addChild(freeSpaceActor);
-      freeSpaceActor->addEventListener(DeepSpaceSceneTranstToOrbitEvent::EVENT, CLOSURE(this, &MainActor::transitToOrbitListner));
-
-      m_sceneObject = static_cast<SceneActor*>(freeSpaceActor.get());
-
+      fileName = "deep_space_scene.xml";
+      initialState = "deepSpaceState";
    }
    else if (scene == STE_ORBIT)
    {
-      //spClipRectActor window = new ClipRectActor();
-
-      //window->setSize(getStage()->getSize() - Vector2(100, 100));
-      //window->setPosition(50.0f, 50.0f);
-      //addChild(window);
-
-      spOrbitScene reentryActor = new OrbitScene(m_gameResources, m_gameStatus, string("orbit_scene.xml"), string("deepSpaceState"));
-      window->addChild(reentryActor);
-      reentryActor->addEventListener(OrbitSceneLandingComplete::EVENT, CLOSURE(this, &MainActor::landingCompleteListner));
-
-      m_sceneObject = (SceneActor*)reentryActor->m_space;
+      fileName = "orbit_scene.xml";
+      initialState = "deepSpaceState";
    }
+
+   spSceneActor sceneObj = static_cast<SceneActor*>(CompoundObject::readDefinitionXmlFile(
+      m_gameResources,
+      NULL,
+      NULL,
+      m_world,
+      Vector2(0.0f, 0.0f),
+      fileName,
+      initialState));
+
+   if (sceneObj == NULL)
+   {
+      return;
+   }
+   
+   window->addChild(sceneObj);
+   sceneObj->addEventListener(LandingActorTranstToDeepSpaceEvent::EVENT, CLOSURE(this, &MainActor::transitToDeepSpaceListner));
+   sceneObj->addEventListener(DeepSpaceSceneTranstToOrbitEvent::EVENT, CLOSURE(this, &MainActor::transitToOrbitListner));
+   m_sceneObject = sceneObj.get();
+
+   // Init game status in leapfrog object
+   CompoundObject* leapfrog = m_sceneObject->getObject("leapfrog1");
+
+   if (leapfrog != NULL)
+   {
+      leapfrog->initGameStatus(m_gameStatus);
+   }
+
 
    spStatusBar shotsBar = new StatusBar(
       m_gameResources,
@@ -172,11 +240,11 @@ void MainActor::startScene(SceneTypeEnum scene)
 
    createButtonOverlay();
 
-   m_debugDraw = new Box2DDraw;
-   m_debugDraw->SetFlags(b2Draw::e_shapeBit | b2Draw::e_jointBit | b2Draw::e_pairBit | b2Draw::e_centerOfMassBit);
-   m_debugDraw->attachTo(m_sceneObject);
-   m_debugDraw->setWorld(Scales::c_physToStageScale, m_sceneObject->GetWorld());
-   m_debugDraw->setPriority(2550);
+   //m_debugDraw = new Box2DDraw;
+   //m_debugDraw->SetFlags(b2Draw::e_shapeBit | b2Draw::e_jointBit | b2Draw::e_pairBit | b2Draw::e_centerOfMassBit);
+   //m_debugDraw->attachTo(m_sceneObject);
+   //m_debugDraw->setWorld(Scales::c_physToStageScale, m_sceneObject->GetWorld());
+   //m_debugDraw->setPriority(2550);
 }
 
 float MainActor::getProperty(std::string object, int propId)

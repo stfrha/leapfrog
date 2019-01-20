@@ -18,6 +18,8 @@ private:
 	//It is important on mobile devices with limited memory and you would load/unload them
 	oxygine::Resources m_gameResources;
 
+   b2World* m_world;
+
    spBox2DDraw m_debugDraw;
 
    SceneActor* m_sceneObject;

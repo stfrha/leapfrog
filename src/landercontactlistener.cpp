@@ -16,12 +16,16 @@ void LanderContactListener::InitContactListner(SceneActor* sceneActor)
 
 void LanderContactListener::PostSolve(b2Contact* contact, const b2ContactImpulse* impulse)
 {
-   // We only check for Main body hits here since this is called more often than the
-   //
    CollisionEntity::CollisionEntityTypeEnum eA = BodyUserData::getCollisionType(contact->GetFixtureA()->GetUserData());
    CollisionEntity::CollisionEntityTypeEnum eB = BodyUserData::getCollisionType(contact->GetFixtureB()->GetUserData());
 
    LeapFrog* leapfrog = NULL;
+   Bullet* bullet = NULL;
+   LaunchSite* launchSite = NULL;
+   LandingPad* landingPad = NULL;
+   CompoundObject* destroyableCO = NULL;
+   Actor* destroyableActor = NULL;
+   BreakableObject* breakable = NULL;
 
    if (eA == CollisionEntity::leapfrog)
    {
@@ -33,6 +37,59 @@ void LanderContactListener::PostSolve(b2Contact* contact, const b2ContactImpulse
       leapfrog = BodyUserData::getParentObjectOfType<LeapFrog*>(contact->GetFixtureB()->GetBody()->GetUserData());
    }
 
+   if (eA == CollisionEntity::bullet)
+   {
+      bullet = BodyUserData::getParentObjectOfType<Bullet*>(contact->GetFixtureA()->GetBody()->GetUserData());
+   }
+
+   if (eB == CollisionEntity::bullet)
+   {
+      bullet = BodyUserData::getParentObjectOfType<Bullet*>(contact->GetFixtureB()->GetBody()->GetUserData());
+   }
+
+   if (eA == CollisionEntity::breakableObject)
+   {
+      breakable = BodyUserData::getParentObjectOfType<BreakableObject*>(contact->GetFixtureA()->GetBody()->GetUserData());
+   }
+
+   if (eB == CollisionEntity::breakableObject)
+   {
+      breakable = BodyUserData::getParentObjectOfType<BreakableObject*>(contact->GetFixtureB()->GetBody()->GetUserData());
+   }
+
+   // For destroyable, we want to kill the body that was hit, no the entire 
+   // CompoundObject that it was a child to. However, we want also to remove 
+   // the body (i.e. the shape) from the CompoundObject, so we still need the 
+   // CO
+   if (eA == CollisionEntity::destroyableObject)
+   {
+      destroyableActor = BodyUserData::getActor<Actor*>(contact->GetFixtureA()->GetBody()->GetUserData());
+      destroyableCO = BodyUserData::getParentObjectOfType<CompoundObject*>(contact->GetFixtureA()->GetBody()->GetUserData());
+   }
+
+   if (eB == CollisionEntity::destroyableObject)
+   {
+      destroyableActor = BodyUserData::getActor<Actor*>(contact->GetFixtureB()->GetBody()->GetUserData());
+      destroyableCO = BodyUserData::getParentObjectOfType<CompoundObject*>(contact->GetFixtureB()->GetBody()->GetUserData());
+   }
+
+   if (bullet)
+   {
+      // Bullet hit something
+      bullet->bulletHit(contact);
+
+      if (breakable && bullet)
+      {
+         // Bullet hit breakable
+         breakable->damageCollision(contact, 1.0f);
+      }
+
+      if (destroyableActor && bullet)
+      {
+         destroyableCO->removeShape(destroyableActor);
+         m_sceneActor->addMeToDeathList(destroyableActor);
+      }
+   }
 
    if (leapfrog)
    {
@@ -40,25 +97,14 @@ void LanderContactListener::PostSolve(b2Contact* contact, const b2ContactImpulse
    }
 }
 
-
-
-
-
-
-
-
-void LanderContactListener::ContactHandler(b2Contact* contact, bool begin)
+void LanderContactListener::LeapfrogFeetContactHandler(b2Contact* contact, bool begin)
 {
    CollisionEntity::CollisionEntityTypeEnum eA = BodyUserData::getCollisionType(contact->GetFixtureA()->GetUserData());
    CollisionEntity::CollisionEntityTypeEnum eB = BodyUserData::getCollisionType(contact->GetFixtureB()->GetUserData());
 
    LeapFrog* leapfrog = NULL;
-   Bullet* bullet = NULL;
    LaunchSite* launchSite = NULL;
    LandingPad* landingPad = NULL;
-//   Asteroid* asteroid = NULL;
-   CompoundObject* destroyable = NULL;
-   BreakableObject* breakable = NULL;
 
    bool launchSiteLeftRest = false; // true means right leg rest
    bool leapfrogLeftFoot = false; // true means right foot
@@ -119,37 +165,6 @@ void LanderContactListener::ContactHandler(b2Contact* contact, bool begin)
       leapfrogLeftFoot = false;
    }
 
-
-   if (eA == CollisionEntity::bullet)
-   {
-      bullet = BodyUserData::getParentObjectOfType<Bullet*>(contact->GetFixtureA()->GetBody()->GetUserData());
-   }
-
-   if (eB == CollisionEntity::bullet)
-   {
-      bullet = BodyUserData::getParentObjectOfType<Bullet*>(contact->GetFixtureB()->GetBody()->GetUserData());
-   }
-
-   if (eA == CollisionEntity::breakableObject)
-   {
-      breakable = BodyUserData::getParentObjectOfType<BreakableObject*>(contact->GetFixtureA()->GetBody()->GetUserData());
-   }
-
-   if (eB == CollisionEntity::breakableObject)
-   {
-      breakable = BodyUserData::getParentObjectOfType<BreakableObject*>(contact->GetFixtureB()->GetBody()->GetUserData());
-   }
-
-   if (eA == CollisionEntity::destroyableObject)
-   {
-      destroyable = BodyUserData::getParentObjectOfType<CompoundObject*>(contact->GetFixtureA()->GetBody()->GetUserData());
-   }
-
-   if (eB == CollisionEntity::destroyableObject)
-   {
-      destroyable = BodyUserData::getParentObjectOfType<CompoundObject*>(contact->GetFixtureB()->GetBody()->GetUserData());
-   }
-
    if (eA == CollisionEntity::landingPad)
    {
       landingPad = BodyUserData::getParentObjectOfType<LandingPad*>(contact->GetFixtureA()->GetBody()->GetUserData());
@@ -159,7 +174,6 @@ void LanderContactListener::ContactHandler(b2Contact* contact, bool begin)
    {
       landingPad = BodyUserData::getParentObjectOfType<LandingPad*>(contact->GetFixtureB()->GetBody()->GetUserData());
    }
-
 
    if (launchSite && leapfrog && (leapfrogLeftFoot == launchSiteLeftRest))
    {
@@ -185,29 +199,16 @@ void LanderContactListener::ContactHandler(b2Contact* contact, bool begin)
       }
    }
 
-   if (breakable && bullet)
-   {
-      // Bullet hit asteroid
-      bullet->bulletHit(contact);
-      breakable->hitByBullet(contact);
-   }
-
-   if (destroyable && bullet)
-   {
-      // Bullet hit asteroid
-      bullet->bulletHit(contact);
-      destroyable->hitByBullet(contact);
-   }
 }
 
 void LanderContactListener::BeginContact(b2Contact* contact)
 {
-   ContactHandler(contact, true);
+   LeapfrogFeetContactHandler(contact, true);
 }
 
 void LanderContactListener::EndContact(b2Contact* contact)
 {
-   ContactHandler(contact, false);
+   LeapfrogFeetContactHandler(contact, false);
 }
 
 //void LanderContactListener::KillDestroyable(b2Contact* contact, oxygine::Actor* actor)

@@ -1,12 +1,45 @@
 #include "sceneactor.h"
+#include "landingactor.h"
+#include "freespaceactor.h"
+#include "orbitscene.h"
 #include "bodyuserdata.h"
 
 using namespace oxygine;
+using namespace std;
+using namespace pugi;
 
-SceneActor::SceneActor(Resources& gameResources, float zoomScale) :
+
+SceneActor* SceneActor::defineScene(
+   Resources& gameResources,
+   CompoundObject* parentObject,
+   b2World* world,
+   pugi::xml_node& root,
+   int groupIndex)
+{
+   string sceneTypeStr = root.child("behaviour").child("sceneProperties").attribute("sceneType").as_string();
+
+   if (sceneTypeStr == "ground")
+   {
+      LandingActor* landingScene = new LandingActor(gameResources, world, root, string("landingState"), groupIndex);
+
+      return static_cast<SceneActor*>(landingScene);
+
+   }
+   else if (sceneTypeStr == "space")
+   {
+      FreeSpaceActor* spaceScene = new FreeSpaceActor(gameResources, world, root, string("deepSpaceState"), groupIndex);
+
+      return static_cast<SceneActor*>(spaceScene);
+   }
+
+   return NULL;
+}
+
+
+SceneActor::SceneActor(Resources& gameResources, b2World* world, float zoomScale) :
    CompoundObject(this, NULL),
    m_gameResources(&gameResources),
-   m_world(NULL),
+   m_world(world),
    m_zoomScale(zoomScale),
    m_stageToViewPortScale(m_zoomScale * Scales::c_stageToViewPortScale),
    m_physToStageScale(1.0f),
@@ -26,7 +59,7 @@ SceneActor::SceneActor(Resources& gameResources, float zoomScale) :
 	Point size = Point(m_sceneWidth, m_sceneHeight);
 	setSize(size);
 
-	m_world = new b2World(b2Vec2(0.0f, 0.0f));
+	//m_world = new b2World(b2Vec2(0.0f, 0.0f));
 
 	setScale(m_stageToViewPortScale);
 

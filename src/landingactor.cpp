@@ -8,13 +8,15 @@
 
 using namespace oxygine;
 using namespace std;
+using namespace pugi;
 
 LandingActor::LandingActor(
    Resources& gameResources,
-   spGameStatus gameStatus,
-   const string& fileName,
-   const string& initialState) :
-   SceneActor(gameResources, 0.4f)
+   b2World* world,
+   xml_node& root,
+   const string& initialState,
+   int groupIndex) :
+   SceneActor(gameResources, world, 0.4f)
 {
    m_contactListener.InitContactListner(this);
 
@@ -27,24 +29,29 @@ LandingActor::LandingActor(
 
    m_world->SetContactListener(&m_contactListener);
 
-   readDefinitionXmlFile(gameResources, this, NULL, m_world, Vector2(0.0f, 0.0f), fileName, initialState);
+   initCompoundObjectParts(gameResources, this, NULL, world, Vector2(0.0f, 0.0f), root, initialState, groupIndex);
 
    m_leapfrog = static_cast<LeapFrog*>(getObject("leapfrog1"));
 
-   m_leapfrog->initGameStatus(gameStatus);
+   if (m_leapfrog != NULL)
+   {
+      m_leapfrog->goToEnvironment(ENV_GROUND);
 
-   m_leapfrog->goToEnvironment(ENV_GROUND);
+      m_leapfrog->addEventListener(LeapfrogModeReachedEvent::EVENT, CLOSURE(this, &LandingActor::modeReachedListener));
 
-   m_leapfrog->addEventListener(LeapfrogModeReachedEvent::EVENT, CLOSURE(this, &LandingActor::modeReachedListener));
+      // m_leapfrog->addEventListener(ObjectPropertyTriggeredEvent::EVENT, CLOSURE(this, &LandingActor::handlePropertyTriggeredEvent));
+      // m_leapfrog->m_properties[LeapFrog::propXPos].registerPropertyEventTrigger(1, PropertyEventTrigger::insideRange, 1200.0f, 10000.0f);
 
-   // m_leapfrog->addEventListener(ObjectPropertyTriggeredEvent::EVENT, CLOSURE(this, &LandingActor::handlePropertyTriggeredEvent));
-   // m_leapfrog->m_properties[LeapFrog::propXPos].registerPropertyEventTrigger(1, PropertyEventTrigger::insideRange, 1200.0f, 10000.0f);
-
-   m_leapfrog->goToMode(LFM_LANDING);
+      m_leapfrog->goToMode(LFM_LANDING);
+   }
 
    m_launchSite = static_cast<LaunchSite*>(getObject("launchSite1"));
-   m_launchSite->addEventListener(LaunchSiteLeapfrogLandedEvent::EVENT, CLOSURE(this, &LandingActor::leapfrogLandedOnLaunchSiteHandler));
-   m_launchSite->addEventListener(LaunchSequenceCompleteEvent::EVENT, CLOSURE(this, &LandingActor::transitToDeepSpace));
+
+   if (m_launchSite != NULL)
+   {
+      m_launchSite->addEventListener(LaunchSiteLeapfrogLandedEvent::EVENT, CLOSURE(this, &LandingActor::leapfrogLandedOnLaunchSiteHandler));
+      m_launchSite->addEventListener(LaunchSequenceCompleteEvent::EVENT, CLOSURE(this, &LandingActor::transitToDeepSpace));
+   }
 
 }
 

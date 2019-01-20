@@ -4,7 +4,6 @@
 #include "sceneactor.h"
 #include "softboundary.h"
 #include "freespacecontactlistener.h"
-#include "gamestatus.h"
 
 DECLARE_SMART(FreeSpaceActor, spFreeSpaceActor);
 
@@ -37,18 +36,17 @@ public:
    b2Body * m_leapfrogBody;
 
    FreeSpaceActor(
-      oxygine::Resources& gameResources,
-      spGameStatus gameStatus,
-      const std::string& fileName,
-      const std::string& initialState);
+      Resources& gameResources,
+      b2World* world,
+      pugi::xml_node& root,
+      const std::string& initialState,
+      int groupIndex);
 
 
    void addBoundingBody(b2Body* body);
    void removeBoundingBody(b2Body* body);
    void testForBoundaryRepel(void);
    bool isInsideOrbitField(b2Body* body);
-
-
 
 protected:
    void doUpdate(const oxygine::UpdateState &us);

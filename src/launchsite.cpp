@@ -38,7 +38,7 @@ LaunchSite::LaunchSite(
    m_rightHolderTrolleyJoint = (b2RevoluteJoint*)getJoint("rightHolderJoint");
    m_grabberJoint = (b2PrismaticJoint*)getJoint("grabberSpringJoint");
    m_grabberBody = getBody("grabber");
-   m_tankObject = getObject("mainTank");
+   m_tankActor = getActor("mainTank");
    m_mainTankBody = getBody("mainTank");
    m_leftBoosterBody = getBody("leftSupportBooster");
    m_rightBoosterBody = getBody("rightSupportBooster");
@@ -362,7 +362,7 @@ void LaunchSite::showCountdownNumber(int n)
    sprintf(text, "%d", n);
    t->setText(text);
 
-   Vector2 p = m_tankObject->getPosition();
+   Vector2 p = m_tankActor->getPosition();
 
    t->setPosition(p - Vector2(6.0f, 15.0f));
 

@@ -1,5 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<compoundObject>
+<compoundObject
+   needsGroupIndex="false" >
    <behaviour
       type="launchSite" />
   <staticBox
@@ -51,15 +52,15 @@
     width="28.5"
     height="72.94" />
   <staticPolygon
-    name="noName"
+    name="foundation"
     texture="concrete"
     posX="0.0039647195628731424"
     posY="0.21647875613143697"
     angle="0"
     zLevel="0"
     collisionEntity="notApplicable"
-    collisionCategory="1"
-    collisionMask="65534"
+    collisionCategory="32"
+    collisionMask="61439"
     textureMeterWidth="150"
     textureMeterHeight="105"
     textureOffsetMeterX="0"
@@ -628,4 +629,44 @@
     lowerLimit="0"
     upperLimit="12.2"
     maxMotorForce="0" />
+   <system
+      type="flameEmitter"
+      name="boosterFlame">
+      <flameEmitterProperties
+         body="mainTank"
+         emitterOriginX="0"
+         emitterOriginY="28"
+         angle="1.57"
+         emitterWidth="12"
+         lifeTime="1000"
+         impulseMagnitude="1500"
+         radius="30" />
+   </system>
+   <system
+      type="flameEmitter"
+      name="rightFlame">
+      <flameEmitterProperties
+         body="rightSupportBooster"
+         emitterOriginX="0"
+         emitterOriginY="19"
+         angle="1.57"
+         emitterWidth="2"
+         lifeTime="1000"
+         impulseMagnitude="1500"
+         radius="20" />
+   </system>
+   <system
+      type="flameEmitter"
+      name="leftFlame">
+      <flameEmitterProperties
+         body="leftSupportBooster"
+         emitterOriginX="0"
+         emitterOriginY="19"
+         angle="1.57"
+         emitterWidth="2"
+         lifeTime="1000"
+         impulseMagnitude="1500"
+         radius="20" />
+   </system>
+
 </compoundObject>

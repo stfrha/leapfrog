@@ -94,7 +94,7 @@ private:
    b2RevoluteJoint* m_grabLeapfrogJoint1;
    b2RevoluteJoint* m_grabLeapfrogJoint2;
 
-   CompoundObject* m_tankObject;
+   oxygine::Actor* m_tankActor;
 
    b2Body*  m_mainTankBody;
    b2Body*  m_leftBoosterBody;

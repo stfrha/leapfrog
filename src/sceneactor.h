@@ -53,8 +53,15 @@ protected:
    SceneTypeEnum m_sceneType;
 
 public:
-	SceneActor(oxygine::Resources& gameResources, float zoomScale);
+	SceneActor(oxygine::Resources& gameResources, b2World* world, float zoomScale);
    ~SceneActor();
+
+   static SceneActor* defineScene(
+      Resources& gameResources,
+      CompoundObject* parentObject,
+      b2World* world,
+      pugi::xml_node& root,
+      int groupIndex);
 
    float m_sceneWidth;
    float m_sceneHeight;
