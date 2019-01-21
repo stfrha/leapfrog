@@ -378,14 +378,6 @@ void PolygonVertices::createPolygonBorders(
             float textMeterHeight;
             string texture;
 
-            // angle is the amount to rotate the texture. This should be between 
-            // -pi/2 and pi/2 for ground and above 3*pi/2 or below -3*pi/2 for ceiling.
-            // compAngle is -PI away, i.e. Ground should have compAngle from pi/2 to 3pi/2
-            // But why does it not work with angle (non-comp)?
-            // compAngle goes from -pi to pi which means that angle goes from
-            // 0 to 2*pi. This is the problem. We would like to change so that
-            // angle goes from -pi to pi. I.e. If angle > pi, angle = angle - 2 * pi
-
             // Select border data by the angle and the angle limits
             if ((compAngle <= groundRightAngle) && (compAngle > groundLeftAngle))
             {
