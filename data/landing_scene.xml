@@ -1,16 +1,16 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <compoundObject>
-   <behaviour
-      type="scene">
-      <sceneProperties
-         sceneType="ground">
-        <states>
-          <state>default</state>
-          <state>groundState</state>
-          <state>landingState</state>
-        </states>
-      </sceneProperties>
-   </behaviour>
+  <behaviour
+    type="scene">
+    <sceneProperties
+      sceneType="ground">
+      <states>
+        <state>default</state>
+        <state>groundState</state>
+        <state>landingState</state>
+      </states>
+    </sceneProperties>
+  </behaviour>
   <staticBox
     name="springDestroyable"
     texture="lf_position"
@@ -70,6 +70,32 @@
         v2="2"
         v3="1" />
     </triangles>
+    <border
+      leftGroundAngle="0"
+      rightGroundAngle="0"
+      leftCeilingAngle="0"
+      rightCeilingAngle="0">
+      <groundBorder
+        texture="notDefined"
+        horisontalMeterOffset="0"
+        textureMeterWidth="0"
+        textureMeterHeight="0" />
+      <ceilingBorder
+        texture="notDefined"
+        horisontalMeterOffset="0"
+        textureMeterWidth="0"
+        textureMeterHeight="0" />
+      <leftWallBorder
+        texture="notDefined"
+        horisontalMeterOffset="0"
+        textureMeterWidth="0"
+        textureMeterHeight="0" />
+      <rightWallBorder
+        texture="notDefined"
+        horisontalMeterOffset="0"
+        textureMeterWidth="0"
+        textureMeterHeight="0" />
+    </border>
   </staticPolygon>
   <staticPolygon
     name="counterClockwise"
@@ -115,6 +141,32 @@
         v2="3"
         v3="4" />
     </triangles>
+    <border
+      leftGroundAngle="0"
+      rightGroundAngle="0"
+      leftCeilingAngle="0"
+      rightCeilingAngle="0">
+      <groundBorder
+        texture="notDefined"
+        horisontalMeterOffset="0"
+        textureMeterWidth="0"
+        textureMeterHeight="0" />
+      <ceilingBorder
+        texture="notDefined"
+        horisontalMeterOffset="0"
+        textureMeterWidth="0"
+        textureMeterHeight="0" />
+      <leftWallBorder
+        texture="notDefined"
+        horisontalMeterOffset="0"
+        textureMeterWidth="0"
+        textureMeterHeight="0" />
+      <rightWallBorder
+        texture="notDefined"
+        horisontalMeterOffset="0"
+        textureMeterWidth="0"
+        textureMeterHeight="0" />
+    </border>
   </staticPolygon>
   <staticPolygon
     name="clockwise"
@@ -160,6 +212,32 @@
         v2="2"
         v3="1" />
     </triangles>
+    <border
+      leftGroundAngle="0"
+      rightGroundAngle="0"
+      leftCeilingAngle="0"
+      rightCeilingAngle="0">
+      <groundBorder
+        texture="notDefined"
+        horisontalMeterOffset="0"
+        textureMeterWidth="0"
+        textureMeterHeight="0" />
+      <ceilingBorder
+        texture="notDefined"
+        horisontalMeterOffset="0"
+        textureMeterWidth="0"
+        textureMeterHeight="0" />
+      <leftWallBorder
+        texture="notDefined"
+        horisontalMeterOffset="0"
+        textureMeterWidth="0"
+        textureMeterHeight="0" />
+      <rightWallBorder
+        texture="notDefined"
+        horisontalMeterOffset="0"
+        textureMeterWidth="0"
+        textureMeterHeight="0" />
+    </border>
   </staticPolygon>
   <staticPolygon
     name="grotto2"
@@ -175,33 +253,7 @@
     textureMeterHeight="200"
     textureOffsetMeterX="0"
     textureOffsetMeterY="0">
-    <border
-      leftGroundAngle="-45"
-      rightGroundAngle="45"
-      leftCeilingAngle="-135"
-      rightCeilingAngle="135">
-      <groundBorder
-         texture="grotto_border"
-         horisontalMeterOffset="2"
-         textureMeterWidth="128"
-         textureMeterHeight="10" />
-      <ceilingBorder
-         texture="notDefined"
-         horisontalMeterOffset="2"
-         textureMeterWidth="128"
-         textureMeterHeight="10" />
-      <leftWallBorder
-         texture="notDefined"
-         horisontalMeterOffset="2"
-         textureMeterWidth="128"
-         textureMeterHeight="10" />
-      <rightWallBorder
-         texture="notDefined"
-         horisontalMeterOffset="2"
-         textureMeterWidth="128"
-         textureMeterHeight="10" />
-      </border>
-      <vertices>
+    <vertices>
       <vertex
         id="1"
         x="0"
@@ -456,6 +508,32 @@
         v2="28"
         v3="29" />
     </triangles>
+    <border
+      leftGroundAngle="-45"
+      rightGroundAngle="45"
+      leftCeilingAngle="-135"
+      rightCeilingAngle="135">
+      <groundBorder
+        texture="grotto_border"
+        horisontalMeterOffset="2"
+        textureMeterWidth="128"
+        textureMeterHeight="10" />
+      <ceilingBorder
+        texture="notDefined"
+        horisontalMeterOffset="2"
+        textureMeterWidth="128"
+        textureMeterHeight="10" />
+      <leftWallBorder
+        texture="notDefined"
+        horisontalMeterOffset="2"
+        textureMeterWidth="128"
+        textureMeterHeight="10" />
+      <rightWallBorder
+        texture="notDefined"
+        horisontalMeterOffset="2"
+        textureMeterWidth="128"
+        textureMeterHeight="10" />
+    </border>
   </staticPolygon>
   <staticPolygon
     name="grotto"
@@ -471,32 +549,6 @@
     textureMeterHeight="200"
     textureOffsetMeterX="0"
     textureOffsetMeterY="0">
-      <border
-         leftGroundAngle="-45"
-         rightGroundAngle="45"
-         leftCeilingAngle="-135"
-         rightCeilingAngle="135">
-      <groundBorder
-         texture="grotto_border"
-         horisontalMeterOffset="2"
-         textureMeterWidth="128"
-         textureMeterHeight="10" />
-      <ceilingBorder
-         texture="notDefined"
-         horisontalMeterOffset="2"
-         textureMeterWidth="128"
-         textureMeterHeight="10" />
-      <leftWallBorder
-         texture="notDefined"
-         horisontalMeterOffset="2"
-         textureMeterWidth="128"
-         textureMeterHeight="10" />
-      <rightWallBorder
-         texture="notDefined"
-         horisontalMeterOffset="2"
-         textureMeterWidth="128"
-         textureMeterHeight="10" />
-      </border>
     <vertices>
       <vertex
         id="1"
@@ -608,6 +660,32 @@
         v2="12"
         v3="13" />
     </triangles>
+    <border
+      leftGroundAngle="-45"
+      rightGroundAngle="45"
+      leftCeilingAngle="-135"
+      rightCeilingAngle="135">
+      <groundBorder
+        texture="grotto_border"
+        horisontalMeterOffset="2"
+        textureMeterWidth="128"
+        textureMeterHeight="10" />
+      <ceilingBorder
+        texture="notDefined"
+        horisontalMeterOffset="2"
+        textureMeterWidth="128"
+        textureMeterHeight="10" />
+      <leftWallBorder
+        texture="notDefined"
+        horisontalMeterOffset="2"
+        textureMeterWidth="128"
+        textureMeterHeight="10" />
+      <rightWallBorder
+        texture="notDefined"
+        horisontalMeterOffset="2"
+        textureMeterWidth="128"
+        textureMeterHeight="10" />
+    </border>
   </staticPolygon>
   <staticPolygon
     name="craterGrotto"
@@ -815,6 +893,32 @@
         v2="21"
         v3="22" />
     </triangles>
+    <border
+      leftGroundAngle="0"
+      rightGroundAngle="0"
+      leftCeilingAngle="0"
+      rightCeilingAngle="0">
+      <groundBorder
+        texture="notDefined"
+        horisontalMeterOffset="0"
+        textureMeterWidth="0"
+        textureMeterHeight="0" />
+      <ceilingBorder
+        texture="notDefined"
+        horisontalMeterOffset="0"
+        textureMeterWidth="0"
+        textureMeterHeight="0" />
+      <leftWallBorder
+        texture="notDefined"
+        horisontalMeterOffset="0"
+        textureMeterWidth="0"
+        textureMeterHeight="0" />
+      <rightWallBorder
+        texture="notDefined"
+        horisontalMeterOffset="0"
+        textureMeterWidth="0"
+        textureMeterHeight="0" />
+    </border>
   </staticPolygon>
   <dynamicBox
     name="plank"
@@ -1009,7 +1113,7 @@
       <properties
         file="leapfrog_reentry.xml"
         posX="70"
-        posY="138" />
+        posY="75.733034202529012" />
     </stateProperties>
     <stateProperties
       state="groundState">
