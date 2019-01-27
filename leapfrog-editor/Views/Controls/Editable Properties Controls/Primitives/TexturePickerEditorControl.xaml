@@ -1,0 +1,65 @@
+﻿<UserControl x:Class="LeapfrogEditor.TexturePickerEditorControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:LeapfrogEditor"
+             x:Name="root"
+             mc:Ignorable="d" 
+             d:DesignHeight="15" d:DesignWidth="200">
+   <UserControl.Resources>
+      <local:TexturePathValueConverter x:Key="TexturePathValueConverter" />
+   </UserControl.Resources>
+    <Grid>
+      <Grid.ColumnDefinitions>
+         <ColumnDefinition Width="75" />
+         <ColumnDefinition Width="100" />
+         <ColumnDefinition Width="25" />
+      </Grid.ColumnDefinitions>
+      <TextBlock Grid.Column="0"
+         VerticalAlignment="Center"
+         FontSize="10"
+         Text="{Binding Headline, ElementName=root}" 
+          />
+      <TextBox Grid.Column="1"       
+         VerticalAlignment="Center"
+         IsReadOnly="True"
+         FontSize="10" 
+         Height="15"
+         Text="{Binding MyValue, ElementName=root}"
+      />
+      <ToggleButton Name="button" Grid.Column="2" Margin="1" Height="13" FontSize="8" Content="..." >
+         <!--<ToggleButton.Template>
+            <ControlTemplate TargetType="ToggleButton">
+               <TextBlock >...</TextBlock>
+            </ControlTemplate>
+         </ToggleButton.Template>-->
+      </ToggleButton>
+      <Popup IsOpen="{Binding IsChecked, ElementName=button}" StaysOpen="False">
+         <Border Width="200" Height="158" Background="LightYellow">
+            <ScrollViewer>
+               <ListView 
+                  ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                  ItemsSource="{Binding DataContext.Textures, RelativeSource={RelativeSource AncestorType={x:Type Window}}}"
+                  SelectionMode="Single"
+                  SelectedItem="{Binding MyValue, ElementName=root}"
+               >
+                  <ListView.ItemTemplate>
+                     <DataTemplate>
+                        <Image Width="45" Height="45" Stretch="Uniform" 
+                           Source="{Binding Converter={StaticResource TexturePathValueConverter}}"
+                           />
+                     </DataTemplate>
+                  </ListView.ItemTemplate>
+                  <ListView.ItemsPanel>
+                     <ItemsPanelTemplate>
+                        <WrapPanel>
+                        </WrapPanel>
+                     </ItemsPanelTemplate>
+                  </ListView.ItemsPanel>
+               </ListView>
+            </ScrollViewer>
+         </Border>
+      </Popup>
+   </Grid>
+</UserControl>

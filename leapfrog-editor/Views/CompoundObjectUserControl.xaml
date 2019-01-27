@@ -1,0 +1,1338 @@
+﻿<UserControl x:Class="LeapfrogEditor.CompoundObjectUserControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:LeapfrogEditor"
+             xmlns:ZoomAndPan="clr-namespace:ZoomAndPan;assembly=ZoomAndPan"
+             mc:Ignorable="d" 
+             x:Name="root"
+             d:DesignHeight="1000" d:DesignWidth="1000">
+   <UserControl.Resources>
+      <local:MultiRotatedVertexValueConverter x:Key="MultiRotatedVertexValueConverter" />
+      <local:PreviousMultiRotatedVertexValueConverter x:Key="PreviousMultiRotatedVertexValueConverter" />
+      <local:PreviousMultiRotatedTriangleVertexValueConverter x:Key="PreviousMultiRotatedTriangleVertexValueConverter" />
+      <local:MultiRotatedPointValueConverter x:Key="MultiRotatedPointValueConverter" />
+      <local:PreviousMultiRotatedPointValueConverter x:Key="PreviousMultiRotatedPointValueConverter" />
+      <local:MultiRotatedJointValueConverter x:Key="MultiRotatedJointValueConverter" />
+      <local:ConditionalRotatedJointValueConverter x:Key="ConditionalRotatedJointValueConverter" />
+      <local:EllipseCenterValueConverter x:Key="EllipseCenterValueConverter" />
+      <local:TextureCircleValueConverter x:Key="TextureCircleValueConverter" />
+      <local:TexturePathValueConverter x:Key="TexturePathValueConverter" />
+      <local:TextureRectValueConverter x:Key="TextureRectValueConverter" />
+      <local:TextureRectMultiValueConverter x:Key="TextureRectMultiValueConverter" />
+      <local:BoolToVisibilityValueConverter x:Key="BoolToVisibilityValueConverter" />
+      <local:RadToDegValueConverter x:Key="RadToDegValueConverter" />
+      <local:NegRadToDegValueConverter x:Key="NegRadToDegValueConverter" />
+      <local:ZoomThicknessValueConverter x:Key="ZoomThicknessValueConverter" />
+      <local:ZoomHandleSizeValueConverter x:Key="ZoomHandleSizeValueConverter" />
+      <local:ZoomHandleTranslateValueConverter x:Key="ZoomHandleTranslateValueConverter" />
+      <local:PointCollectionValueConverter x:Key="PointCollectionValueConverter" />
+      <local:TwiceDoubleValueConverter x:Key="TwiceDoubleValueConverter" />
+      <local:NegativeHalfValueConverter x:Key="NegativeHalfValueConverter" />
+      <local:NegativeValueConverter x:Key="NegativeValueConverter" />
+      <local:DebugDummyConverter x:Key="DebugDummyConverter" />
+      <DataTemplate DataType="{x:Type local:WeldJointViewModel}">
+         <Canvas>
+            <Line
+               StrokeThickness="{Binding ContentScale, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type ZoomAndPan:ZoomAndPanControl}}, Converter={StaticResource ZoomThicknessValueConverter}}"
+               Stroke="DarkGreen"
+               >
+               <Line.X1>
+                  <MultiBinding Converter="{StaticResource MultiRotatedJointValueConverter}" ConverterParameter="x">
+                     <Binding Path="AAnchorX" />
+                     <Binding Path="AAnchorY" />
+                     <Binding Path="AShapeObject"/>
+                  </MultiBinding>
+               </Line.X1>
+               <Line.Y1>
+                  <MultiBinding Converter="{StaticResource MultiRotatedJointValueConverter}" ConverterParameter="y">
+                     <Binding Path="AAnchorX" />
+                     <Binding Path="AAnchorY" />
+                     <Binding Path="AShapeObject"/>
+                  </MultiBinding>
+               </Line.Y1>
+               <Line.X2>
+                  <MultiBinding Converter="{StaticResource MultiRotatedJointValueConverter}" ConverterParameter="x">
+                     <Binding Path="BAnchorX" />
+                     <Binding Path="BAnchorY" />
+                     <Binding Path="BShapeObject"/>
+                  </MultiBinding>
+               </Line.X2>
+               <Line.Y2>
+                  <MultiBinding Converter="{StaticResource MultiRotatedJointValueConverter}" ConverterParameter="y">
+                     <Binding Path="BAnchorX" />
+                     <Binding Path="BAnchorY" />
+                     <Binding Path="BShapeObject"/>
+                  </MultiBinding>
+               </Line.Y2>
+            </Line>
+            <Rectangle
+               Width="{Binding ContentScale, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type ZoomAndPan:ZoomAndPanControl}}, Converter={StaticResource ZoomHandleSizeValueConverter}}"
+               Height="{Binding ContentScale, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type ZoomAndPan:ZoomAndPanControl}}, Converter={StaticResource ZoomHandleSizeValueConverter}}"
+               StrokeThickness="{Binding ContentScale, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type ZoomAndPan:ZoomAndPanControl}}, Converter={StaticResource ZoomThicknessValueConverter}}"
+               Fill="DarkGreen"
+               MouseDown="AnchorA_MouseDown"
+					MouseUp="AnchorA_MouseUp"
+					MouseMove="AnchorA_MouseMove" 
+               >
+               <Canvas.Left>
+                  <MultiBinding Converter="{StaticResource MultiRotatedJointValueConverter}" ConverterParameter="x">
+                     <Binding Path="AAnchorX" />
+                     <Binding Path="AAnchorY" />
+                     <Binding Path="AShapeObject"/>
+                  </MultiBinding>
+               </Canvas.Left>
+               <Canvas.Top>
+                  <MultiBinding Converter="{StaticResource MultiRotatedJointValueConverter}" ConverterParameter="y">
+                     <Binding Path="AAnchorX" />
+                     <Binding Path="AAnchorY" />
+                     <Binding Path="AShapeObject"/>
+                  </MultiBinding>
+               </Canvas.Top>
+               <Rectangle.RenderTransform>
+                  <TranslateTransform 
+                     X="{Binding ContentScale, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type ZoomAndPan:ZoomAndPanControl}}, Converter={StaticResource ZoomHandleTranslateValueConverter}}"
+                     Y="{Binding ContentScale, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type ZoomAndPan:ZoomAndPanControl}}, Converter={StaticResource ZoomHandleTranslateValueConverter}}"
+                  />
+               </Rectangle.RenderTransform>
+               <Rectangle.Style>
+                  <Style TargetType="{x:Type Rectangle}" >
+                     <Setter Property="Stroke" Value="DarkGreen"/>
+                     <Style.Triggers>
+                        <DataTrigger Binding="{Binding IsSelected}" Value="True">
+                           <Setter Property="Stroke" Value="LightGreen" />
+                        </DataTrigger>
+                     </Style.Triggers>
+                  </Style>
+               </Rectangle.Style>
+            </Rectangle>
+            <Rectangle
+               Width="{Binding ContentScale, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type ZoomAndPan:ZoomAndPanControl}}, Converter={StaticResource ZoomHandleSizeValueConverter}}"
+               Height="{Binding ContentScale, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type ZoomAndPan:ZoomAndPanControl}}, Converter={StaticResource ZoomHandleSizeValueConverter}}"
+               StrokeThickness="{Binding ContentScale, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type ZoomAndPan:ZoomAndPanControl}}, Converter={StaticResource ZoomThicknessValueConverter}}"
+               Fill="DarkGreen"
+               MouseDown="AnchorB_MouseDown"
+					MouseUp="AnchorB_MouseUp"
+					MouseMove="AnchorB_MouseMove" 
+               >
+               <Canvas.Left>
+                  <MultiBinding Converter="{StaticResource MultiRotatedJointValueConverter}" ConverterParameter="x">
+                     <Binding Path="BAnchorX" />
+                     <Binding Path="BAnchorY" />
+                     <Binding Path="BShapeObject"/>
+                  </MultiBinding>
+               </Canvas.Left>
+               <Canvas.Top>
+                  <MultiBinding Converter="{StaticResource MultiRotatedJointValueConverter}" ConverterParameter="y">
+                     <Binding Path="BAnchorX" />
+                     <Binding Path="BAnchorY" />
+                     <Binding Path="BShapeObject"/>
+                  </MultiBinding>
+               </Canvas.Top>
+               <Rectangle.RenderTransform>
+                  <TranslateTransform 
+                     X="{Binding ContentScale, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type ZoomAndPan:ZoomAndPanControl}}, Converter={StaticResource ZoomHandleTranslateValueConverter}}"
+                     Y="{Binding ContentScale, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type ZoomAndPan:ZoomAndPanControl}}, Converter={StaticResource ZoomHandleTranslateValueConverter}}"
+                  />
+               </Rectangle.RenderTransform>
+               <Rectangle.Style>
+                  <Style TargetType="{x:Type Rectangle}" >
+                     <Setter Property="Stroke" Value="DarkGreen"/>
+                     <Style.Triggers>
+                        <DataTrigger Binding="{Binding IsSelected}" Value="True">
+                           <Setter Property="Stroke" Value="LightGreen" />
+                        </DataTrigger>
+                     </Style.Triggers>
+                  </Style>
+               </Rectangle.Style>
+            </Rectangle>
+         </Canvas>
+      </DataTemplate>
+      <DataTemplate DataType="{x:Type local:RevoluteJointViewModel}">
+         <Canvas>
+            <Line
+               StrokeThickness="{Binding ContentScale, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type ZoomAndPan:ZoomAndPanControl}}, Converter={StaticResource ZoomThicknessValueConverter}}"
+               Stroke="DarkGreen"
+               >
+               <Line.X1>
+                  <MultiBinding Converter="{StaticResource MultiRotatedJointValueConverter}" ConverterParameter="x">
+                     <Binding Path="AAnchorX" />
+                     <Binding Path="AAnchorY" />
+                     <Binding Path="AShapeObject"/>
+                  </MultiBinding>
+               </Line.X1>
+               <Line.Y1>
+                  <MultiBinding Converter="{StaticResource MultiRotatedJointValueConverter}" ConverterParameter="y">
+                     <Binding Path="AAnchorX" />
+                     <Binding Path="AAnchorY" />
+                     <Binding Path="AShapeObject"/>
+                  </MultiBinding>
+               </Line.Y1>
+               <Line.X2>
+                  <MultiBinding Converter="{StaticResource MultiRotatedJointValueConverter}" ConverterParameter="x">
+                     <Binding Path="BAnchorX" />
+                     <Binding Path="BAnchorY" />
+                     <Binding Path="BShapeObject"/>
+                  </MultiBinding>
+               </Line.X2>
+               <Line.Y2>
+                  <MultiBinding Converter="{StaticResource MultiRotatedJointValueConverter}" ConverterParameter="y">
+                     <Binding Path="BAnchorX" />
+                     <Binding Path="BAnchorY" />
+                     <Binding Path="BShapeObject"/>
+                  </MultiBinding>
+               </Line.Y2>
+            </Line>
+            <Ellipse
+               Width="{Binding ContentScale, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type ZoomAndPan:ZoomAndPanControl}}, Converter={StaticResource ZoomHandleSizeValueConverter}}"
+               Height="{Binding ContentScale, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type ZoomAndPan:ZoomAndPanControl}}, Converter={StaticResource ZoomHandleSizeValueConverter}}"
+               StrokeThickness="{Binding ContentScale, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type ZoomAndPan:ZoomAndPanControl}}, Converter={StaticResource ZoomThicknessValueConverter}}"
+               Fill="DarkGreen"
+               MouseDown="AnchorA_MouseDown"
+					MouseUp="AnchorA_MouseUp"
+					MouseMove="AnchorA_MouseMove" 
+               >
+               <Canvas.Left>
+                  <MultiBinding Converter="{StaticResource MultiRotatedJointValueConverter}" ConverterParameter="x">
+                     <Binding Path="AAnchorX" />
+                     <Binding Path="AAnchorY" />
+                     <Binding Path="AShapeObject"/>
+                  </MultiBinding>
+               </Canvas.Left>
+               <Canvas.Top>
+                  <MultiBinding Converter="{StaticResource MultiRotatedJointValueConverter}" ConverterParameter="y">
+                     <Binding Path="AAnchorX" />
+                     <Binding Path="AAnchorY" />
+                     <Binding Path="AShapeObject"/>
+                  </MultiBinding>
+               </Canvas.Top>
+               <Ellipse.Style>
+                  <Style TargetType="{x:Type Ellipse}" >
+                     <Setter Property="Stroke" Value="DarkGreen"/>
+                     <Style.Triggers>
+                        <DataTrigger Binding="{Binding IsSelected}" Value="True">
+                           <Setter Property="Stroke" Value="LightGreen" />
+                        </DataTrigger>
+                     </Style.Triggers>
+                  </Style>
+               </Ellipse.Style>
+               <Ellipse.RenderTransform>
+                  <TranslateTransform 
+                     X="{Binding ContentScale, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type ZoomAndPan:ZoomAndPanControl}}, Converter={StaticResource ZoomHandleTranslateValueConverter}}"
+                     Y="{Binding ContentScale, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type ZoomAndPan:ZoomAndPanControl}}, Converter={StaticResource ZoomHandleTranslateValueConverter}}"
+                  />
+               </Ellipse.RenderTransform>
+            </Ellipse>
+            <Ellipse
+               Width="{Binding ContentScale, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type ZoomAndPan:ZoomAndPanControl}}, Converter={StaticResource ZoomHandleSizeValueConverter}}"
+               Height="{Binding ContentScale, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type ZoomAndPan:ZoomAndPanControl}}, Converter={StaticResource ZoomHandleSizeValueConverter}}"
+               StrokeThickness="{Binding ContentScale, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type ZoomAndPan:ZoomAndPanControl}}, Converter={StaticResource ZoomThicknessValueConverter}}"
+               Fill="DarkGreen"
+               MouseDown="AnchorB_MouseDown"
+					MouseUp="AnchorB_MouseUp"
+					MouseMove="AnchorB_MouseMove" 
+               >
+               <Canvas.Left>
+                  <MultiBinding Converter="{StaticResource MultiRotatedJointValueConverter}" ConverterParameter="x">
+                     <Binding Path="BAnchorX" />
+                     <Binding Path="BAnchorY" />
+                     <Binding Path="BShapeObject"/>
+                  </MultiBinding>
+               </Canvas.Left>
+               <Canvas.Top>
+                  <MultiBinding Converter="{StaticResource MultiRotatedJointValueConverter}" ConverterParameter="y">
+                     <Binding Path="BAnchorX" />
+                     <Binding Path="BAnchorY" />
+                     <Binding Path="BShapeObject"/>
+                  </MultiBinding>
+               </Canvas.Top>
+               <Ellipse.Style>
+                  <Style TargetType="{x:Type Ellipse}" >
+                     <Setter Property="Stroke" Value="DarkGreen"/>
+                     <Style.Triggers>
+                        <DataTrigger Binding="{Binding IsSelected}" Value="True">
+                           <Setter Property="Stroke" Value="LightGreen" />
+                        </DataTrigger>
+                     </Style.Triggers>
+                  </Style>
+               </Ellipse.Style>
+               <Ellipse.RenderTransform>
+                  <TranslateTransform 
+                     X="{Binding ContentScale, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type ZoomAndPan:ZoomAndPanControl}}, Converter={StaticResource ZoomHandleTranslateValueConverter}}"
+                     Y="{Binding ContentScale, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type ZoomAndPan:ZoomAndPanControl}}, Converter={StaticResource ZoomHandleTranslateValueConverter}}"
+                  />
+               </Ellipse.RenderTransform>
+            </Ellipse>
+         </Canvas>
+      </DataTemplate>
+      <DataTemplate DataType="{x:Type local:PrismaticJointViewModel}">
+         <Canvas>
+            <Line
+               StrokeThickness="{Binding ContentScale, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type ZoomAndPan:ZoomAndPanControl}}, Converter={StaticResource ZoomThicknessValueConverter}}"
+               Stroke="DarkGreen"
+               >
+               <Line.X1>
+                  <MultiBinding Converter="{StaticResource MultiRotatedJointValueConverter}" ConverterParameter="x">
+                     <Binding Path="AAnchorX" />
+                     <Binding Path="AAnchorY" />
+                     <Binding Path="AShapeObject"/>
+                  </MultiBinding>
+               </Line.X1>
+               <Line.Y1>
+                  <MultiBinding Converter="{StaticResource MultiRotatedJointValueConverter}" ConverterParameter="y">
+                     <Binding Path="AAnchorX" />
+                     <Binding Path="AAnchorY" />
+                     <Binding Path="AShapeObject"/>
+                  </MultiBinding>
+               </Line.Y1>
+               <Line.X2>
+                  <MultiBinding Converter="{StaticResource MultiRotatedJointValueConverter}" ConverterParameter="x">
+                     <Binding Path="BAnchorX" />
+                     <Binding Path="BAnchorY" />
+                     <Binding Path="BShapeObject"/>
+                  </MultiBinding>
+               </Line.X2>
+               <Line.Y2>
+                  <MultiBinding Converter="{StaticResource MultiRotatedJointValueConverter}" ConverterParameter="y">
+                     <Binding Path="BAnchorX" />
+                     <Binding Path="BAnchorY" />
+                     <Binding Path="BShapeObject"/>
+                  </MultiBinding>
+               </Line.Y2>
+            </Line>
+            <!-- Below is upper and lower limit lines-->
+            <Line
+               StrokeThickness="{Binding ContentScale, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type ZoomAndPan:ZoomAndPanControl}}, Converter={StaticResource ZoomThicknessValueConverter}}"
+               Stroke="DarkGreen"
+               >
+               <Line.X1>
+                  <MultiBinding Converter="{StaticResource MultiRotatedJointValueConverter}" ConverterParameter="x">
+                     <Binding Path="UpperLimitPosX" />
+                     <Binding Path="UpperLimitPosY" />
+                     <Binding Path="AShapeObject"/>
+                  </MultiBinding>
+               </Line.X1>
+               <Line.Y1>
+                  <MultiBinding Converter="{StaticResource MultiRotatedJointValueConverter}" ConverterParameter="y">
+                     <Binding Path="UpperLimitPosX" />
+                     <Binding Path="UpperLimitPosY" />
+                     <Binding Path="AShapeObject"/>
+                  </MultiBinding>
+               </Line.Y1>
+               <Line.X2>
+                  <MultiBinding Converter="{StaticResource MultiRotatedJointValueConverter}" ConverterParameter="x">
+                     <Binding Path="LowerLimitPosX" />
+                     <Binding Path="LowerLimitPosY" />
+                     <Binding Path="AShapeObject"/>
+                  </MultiBinding>
+               </Line.X2>
+               <Line.Y2>
+                  <MultiBinding Converter="{StaticResource MultiRotatedJointValueConverter}" ConverterParameter="y">
+                     <Binding Path="LowerLimitPosX" />
+                     <Binding Path="LowerLimitPosY" />
+                     <Binding Path="AShapeObject"/>
+                  </MultiBinding>
+               </Line.Y2>
+            </Line>
+            <!-- Below is upper limit triangle -->
+            <local:TriangleShape
+               Size="{Binding ContentScale, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type ZoomAndPan:ZoomAndPanControl}}, Converter={StaticResource ZoomHandleSizeValueConverter}}"
+               StrokeThickness="{Binding ContentScale, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type ZoomAndPan:ZoomAndPanControl}}, Converter={StaticResource ZoomThicknessValueConverter}}"
+               Stroke="DarkGreen"
+               Fill="White"
+               MouseDown="UpperLimit_MouseDown"
+					MouseUp="UpperLimit_MouseUp"
+					MouseMove="UpperLimit_MouseMove" 
+               >
+               <Canvas.Left>
+                  <MultiBinding Converter="{StaticResource MultiRotatedJointValueConverter}" ConverterParameter="x">
+                     <Binding Path="UpperLimitPosX" />
+                     <Binding Path="UpperLimitPosY" />
+                     <Binding Path="AShapeObject"/>
+                  </MultiBinding>
+               </Canvas.Left>
+               <Canvas.Top>
+                  <MultiBinding Converter="{StaticResource MultiRotatedJointValueConverter}" ConverterParameter="y">
+                     <Binding Path="UpperLimitPosX" />
+                     <Binding Path="UpperLimitPosY" />
+                     <Binding Path="AShapeObject"/>
+                  </MultiBinding>
+               </Canvas.Top>
+               <local:TriangleShape.RenderTransform>
+                  <TranslateTransform 
+                     X="{Binding ContentScale, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type ZoomAndPan:ZoomAndPanControl}}, Converter={StaticResource ZoomHandleTranslateValueConverter}}"
+                     Y="{Binding ContentScale, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type ZoomAndPan:ZoomAndPanControl}}, Converter={StaticResource ZoomHandleTranslateValueConverter}}"
+                  />
+               </local:TriangleShape.RenderTransform>
+            </local:TriangleShape>
+            <!-- Below is lower limit triangle -->
+            <local:TriangleShape
+               Size="{Binding ContentScale, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type ZoomAndPan:ZoomAndPanControl}}, Converter={StaticResource ZoomHandleSizeValueConverter}}"
+               StrokeThickness="{Binding ContentScale, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type ZoomAndPan:ZoomAndPanControl}}, Converter={StaticResource ZoomThicknessValueConverter}}"
+               Stroke="DarkGreen"
+               Fill="Gray"
+               MouseDown="LowerLimit_MouseDown"
+					MouseUp="LowerLimit_MouseUp"
+					MouseMove="LowerLimit_MouseMove" 
+               >
+               <Canvas.Left>
+                  <MultiBinding Converter="{StaticResource MultiRotatedJointValueConverter}" ConverterParameter="x">
+                     <Binding Path="LowerLimitPosX" />
+                     <Binding Path="LowerLimitPosY" />
+                     <Binding Path="AShapeObject"/>
+                  </MultiBinding>
+               </Canvas.Left>
+               <Canvas.Top>
+                  <MultiBinding Converter="{StaticResource MultiRotatedJointValueConverter}" ConverterParameter="y">
+                     <Binding Path="LowerLimitPosX" />
+                     <Binding Path="LowerLimitPosY" />
+                     <Binding Path="AShapeObject"/>
+                  </MultiBinding>
+               </Canvas.Top>
+               <local:TriangleShape.RenderTransform>
+                  <TranslateTransform 
+                     X="{Binding ContentScale, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type ZoomAndPan:ZoomAndPanControl}}, Converter={StaticResource ZoomHandleTranslateValueConverter}}"
+                     Y="{Binding ContentScale, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type ZoomAndPan:ZoomAndPanControl}}, Converter={StaticResource ZoomHandleTranslateValueConverter}}"
+                  />
+               </local:TriangleShape.RenderTransform>
+            </local:TriangleShape>
+            <local:TriangleShape
+               Size="{Binding ContentScale, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type ZoomAndPan:ZoomAndPanControl}}, Converter={StaticResource ZoomHandleSizeValueConverter}}"
+               StrokeThickness="{Binding ContentScale, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type ZoomAndPan:ZoomAndPanControl}}, Converter={StaticResource ZoomThicknessValueConverter}}"
+               Fill="DarkGreen"
+               MouseDown="AnchorA_MouseDown"
+					MouseUp="AnchorA_MouseUp"
+					MouseMove="AnchorA_MouseMove" 
+               >
+               <Canvas.Left>
+                  <MultiBinding Converter="{StaticResource MultiRotatedJointValueConverter}" ConverterParameter="x">
+                     <Binding Path="AAnchorX" />
+                     <Binding Path="AAnchorY" />
+                     <Binding Path="AShapeObject"/>
+                  </MultiBinding>
+               </Canvas.Left>
+               <Canvas.Top>
+                  <MultiBinding Converter="{StaticResource MultiRotatedJointValueConverter}" ConverterParameter="y">
+                     <Binding Path="AAnchorX" />
+                     <Binding Path="AAnchorY" />
+                     <Binding Path="AShapeObject"/>
+                  </MultiBinding>
+               </Canvas.Top>
+               <local:TriangleShape.Style>
+                  <Style TargetType="{x:Type Shape}" >
+                     <Setter Property="Stroke" Value="DarkGreen"/>
+                     <Style.Triggers>
+                        <DataTrigger Binding="{Binding IsSelected}" Value="True">
+                           <Setter Property="Stroke" Value="LightGreen" />
+                        </DataTrigger>
+                     </Style.Triggers>
+                  </Style>
+               </local:TriangleShape.Style>
+               <local:TriangleShape.RenderTransform>
+                  <TranslateTransform 
+                     X="{Binding ContentScale, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type ZoomAndPan:ZoomAndPanControl}}, Converter={StaticResource ZoomHandleTranslateValueConverter}}"
+                     Y="{Binding ContentScale, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type ZoomAndPan:ZoomAndPanControl}}, Converter={StaticResource ZoomHandleTranslateValueConverter}}"
+                  />
+               </local:TriangleShape.RenderTransform>
+            </local:TriangleShape>
+            <local:TriangleShape
+               Size="{Binding ContentScale, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type ZoomAndPan:ZoomAndPanControl}}, Converter={StaticResource ZoomHandleSizeValueConverter}}"
+               StrokeThickness="{Binding ContentScale, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type ZoomAndPan:ZoomAndPanControl}}, Converter={StaticResource ZoomThicknessValueConverter}}"
+               Fill="DarkGreen"
+               MouseDown="AnchorB_MouseDown"
+					MouseUp="AnchorB_MouseUp"
+					MouseMove="AnchorB_MouseMove" 
+               >
+               <Canvas.Left>
+                  <MultiBinding Converter="{StaticResource MultiRotatedJointValueConverter}" ConverterParameter="x">
+                     <Binding Path="BAnchorX" />
+                     <Binding Path="BAnchorY" />
+                     <Binding Path="BShapeObject"/>
+                  </MultiBinding>
+               </Canvas.Left>
+               <Canvas.Top>
+                  <MultiBinding Converter="{StaticResource MultiRotatedJointValueConverter}" ConverterParameter="y">
+                     <Binding Path="BAnchorX" />
+                     <Binding Path="BAnchorY" />
+                     <Binding Path="BShapeObject"/>
+                  </MultiBinding>
+               </Canvas.Top>
+               <local:TriangleShape.Style>
+                  <Style TargetType="{x:Type Shape}" >
+                     <Setter Property="Stroke" Value="DarkGreen"/>
+                     <Style.Triggers>
+                        <DataTrigger Binding="{Binding IsSelected}" Value="True">
+                           <Setter Property="Stroke" Value="LightGreen" />
+                        </DataTrigger>
+                     </Style.Triggers>
+                  </Style>
+               </local:TriangleShape.Style>
+               <local:TriangleShape.RenderTransform>
+                  <TranslateTransform 
+                     X="{Binding ContentScale, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type ZoomAndPan:ZoomAndPanControl}}, Converter={StaticResource ZoomHandleTranslateValueConverter}}"
+                     Y="{Binding ContentScale, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type ZoomAndPan:ZoomAndPanControl}}, Converter={StaticResource ZoomHandleTranslateValueConverter}}"
+                  />
+               </local:TriangleShape.RenderTransform>
+            </local:TriangleShape>
+         </Canvas>
+      </DataTemplate>
+      <DataTemplate DataType="{x:Type local:TriangleViewModel}">
+         <!-- Below is the lines between the vertices of all triangles of the polygon. The lines are
+         drawn between the vertices of the triangles and they are rotated acc to the angle-->
+         <ItemsControl 
+            ItemsSource="{Binding PointVms}" 
+            Visibility="{Binding ShowTriangles, ElementName=root, Converter={StaticResource BoolToVisibilityValueConverter}}"
+            >
+            <ItemsControl.ItemsPanel>
+               <ItemsPanelTemplate>
+                  <Canvas/>
+               </ItemsPanelTemplate>
+            </ItemsControl.ItemsPanel>
+            <ItemsControl.ItemTemplate>
+               <DataTemplate>
+                  <Canvas>
+                     <Line
+                        StrokeThickness="{Binding ContentScale, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type ZoomAndPan:ZoomAndPanControl}}, Converter={StaticResource ZoomThicknessValueConverter}}"
+                        Stroke="Red"
+                        MouseDown="ShapeBorder_MouseDown"
+			               MouseUp="ShapeBorder_MouseUp"
+			               MouseMove="ShapeBorder_MouseMove"
+                        Cursor="ScrollAll"
+                        KeyDown="LineCursorKeyDown"
+                        KeyUp="LineCursorKeyUp"
+                        >
+                        <Line.X1>
+                           <MultiBinding Converter="{StaticResource MultiRotatedVertexValueConverter}" ConverterParameter="x">
+                              <Binding Path="PosX" />
+                              <Binding />
+                           </MultiBinding>
+                        </Line.X1>
+                        <Line.Y1>
+                           <MultiBinding Converter="{StaticResource MultiRotatedVertexValueConverter}" ConverterParameter="y">
+                              <Binding Path="PosY" />
+                              <Binding />
+                           </MultiBinding>
+                        </Line.Y1>
+                        <Line.X2>
+                           <MultiBinding Converter="{StaticResource PreviousMultiRotatedTriangleVertexValueConverter}" ConverterParameter="x">
+                              <Binding Path="PosX" />
+                              <Binding />
+                              <Binding Path="DataContext" RelativeSource="{RelativeSource AncestorType=ItemsControl}"/>
+                           </MultiBinding>
+                        </Line.X2>
+                        <Line.Y2>
+                           <MultiBinding Converter="{StaticResource PreviousMultiRotatedTriangleVertexValueConverter}" ConverterParameter="y">
+                              <Binding Path="PosY" />
+                              <Binding />
+                              <Binding Path="DataContext" RelativeSource="{RelativeSource AncestorType=ItemsControl}"/>
+                           </MultiBinding>
+                        </Line.Y2>
+                     </Line>
+                  </Canvas>
+               </DataTemplate>
+            </ItemsControl.ItemTemplate>
+         </ItemsControl>
+      </DataTemplate>
+      <DataTemplate DataType="{x:Type local:RopeViewModel}">
+         <Canvas>
+            <Line
+               StrokeThickness="{Binding ContentScale, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type ZoomAndPan:ZoomAndPanControl}}, Converter={StaticResource ZoomThicknessValueConverter}}"
+               Stroke="DarkBlue"
+               >
+               <Line.X1>
+                  <MultiBinding Converter="{StaticResource MultiRotatedJointValueConverter}" ConverterParameter="x">
+                     <Binding Path="AAnchorX" />
+                     <Binding Path="AAnchorY" />
+                     <Binding Path="AShapeObject"/>
+                  </MultiBinding>
+               </Line.X1>
+               <Line.Y1>
+                  <MultiBinding Converter="{StaticResource MultiRotatedJointValueConverter}" ConverterParameter="y">
+                     <Binding Path="AAnchorX" />
+                     <Binding Path="AAnchorY" />
+                     <Binding Path="AShapeObject"/>
+                  </MultiBinding>
+               </Line.Y1>
+               <Line.X2>
+                  <MultiBinding Converter="{StaticResource ConditionalRotatedJointValueConverter}" ConverterParameter="x">
+                     <Binding Path="BAnchorX" />
+                     <Binding Path="BAnchorY" />
+                     <Binding Path="BShapeObject"/>
+                     <Binding Path="AAnchorX" />
+                     <Binding Path="AAnchorY" />
+                     <Binding Path="AShapeObject"/>
+                     <Binding Path="Length"/>
+                  </MultiBinding>
+               </Line.X2>
+               <Line.Y2>
+                  <MultiBinding Converter="{StaticResource ConditionalRotatedJointValueConverter}" ConverterParameter="y">
+                     <Binding Path="BAnchorX" />
+                     <Binding Path="BAnchorY" />
+                     <Binding Path="BShapeObject"/>
+                     <Binding Path="AAnchorX" />
+                     <Binding Path="AAnchorY" />
+                     <Binding Path="AShapeObject"/>
+                     <Binding Path="Length"/>
+                  </MultiBinding>
+               </Line.Y2>
+            </Line>
+            <Ellipse
+               Width="{Binding ContentScale, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type ZoomAndPan:ZoomAndPanControl}}, Converter={StaticResource ZoomHandleSizeValueConverter}}"
+               Height="{Binding ContentScale, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type ZoomAndPan:ZoomAndPanControl}}, Converter={StaticResource ZoomHandleSizeValueConverter}}"
+               StrokeThickness="{Binding ContentScale, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type ZoomAndPan:ZoomAndPanControl}}, Converter={StaticResource ZoomThicknessValueConverter}}"
+               Fill="DarkBlue"
+               MouseDown="AnchorA_MouseDown"
+					MouseUp="AnchorA_MouseUp"
+					MouseMove="AnchorA_MouseMove" 
+               >
+               <Canvas.Left>
+                  <MultiBinding Converter="{StaticResource MultiRotatedJointValueConverter}" ConverterParameter="x">
+                     <Binding Path="AAnchorX" />
+                     <Binding Path="AAnchorY" />
+                     <Binding Path="AShapeObject"/>
+                  </MultiBinding>
+               </Canvas.Left>
+               <Canvas.Top>
+                  <MultiBinding Converter="{StaticResource MultiRotatedJointValueConverter}" ConverterParameter="y">
+                     <Binding Path="AAnchorX" />
+                     <Binding Path="AAnchorY" />
+                     <Binding Path="AShapeObject"/>
+                  </MultiBinding>
+               </Canvas.Top>
+               <Ellipse.Style>
+                  <Style TargetType="{x:Type Ellipse}" >
+                     <Setter Property="Stroke" Value="DarkBlue"/>
+                     <Style.Triggers>
+                        <DataTrigger Binding="{Binding IsSelected}" Value="True">
+                           <Setter Property="Stroke" Value="LightBlue" />
+                        </DataTrigger>
+                     </Style.Triggers>
+                  </Style>
+               </Ellipse.Style>
+               <Ellipse.RenderTransform>
+                  <TranslateTransform 
+                     X="{Binding ContentScale, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type ZoomAndPan:ZoomAndPanControl}}, Converter={StaticResource ZoomHandleTranslateValueConverter}}"
+                     Y="{Binding ContentScale, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type ZoomAndPan:ZoomAndPanControl}}, Converter={StaticResource ZoomHandleTranslateValueConverter}}"
+                  />
+               </Ellipse.RenderTransform>
+            </Ellipse>
+            <Ellipse
+               Visibility="{Binding ShapeBExists, Converter={ StaticResource BoolToVisibilityValueConverter}}"
+               Width="{Binding ContentScale, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type ZoomAndPan:ZoomAndPanControl}}, Converter={StaticResource ZoomHandleSizeValueConverter}}"
+               Height="{Binding ContentScale, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type ZoomAndPan:ZoomAndPanControl}}, Converter={StaticResource ZoomHandleSizeValueConverter}}"
+               StrokeThickness="{Binding ContentScale, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type ZoomAndPan:ZoomAndPanControl}}, Converter={StaticResource ZoomThicknessValueConverter}}"
+               Fill="DarkBlue"
+               MouseDown="AnchorB_MouseDown"
+					MouseUp="AnchorB_MouseUp"
+					MouseMove="AnchorB_MouseMove" 
+               >
+               <Canvas.Left>
+                  <MultiBinding Converter="{StaticResource ConditionalRotatedJointValueConverter}" ConverterParameter="x">
+                     <Binding Path="BAnchorX" />
+                     <Binding Path="BAnchorY" />
+                     <Binding Path="BShapeObject"/>
+                     <Binding Path="AAnchorX" />
+                     <Binding Path="AAnchorY" />
+                     <Binding Path="AShapeObject"/>
+                     <Binding Path="Length"/>
+                  </MultiBinding>
+               </Canvas.Left>
+               <Canvas.Top>
+                  <MultiBinding Converter="{StaticResource ConditionalRotatedJointValueConverter}" ConverterParameter="y">
+                     <Binding Path="BAnchorX" />
+                     <Binding Path="BAnchorY" />
+                     <Binding Path="BShapeObject"/>
+                     <Binding Path="AAnchorX" />
+                     <Binding Path="AAnchorY" />
+                     <Binding Path="AShapeObject"/>
+                     <Binding Path="Length"/>
+                  </MultiBinding>
+               </Canvas.Top>
+               <Ellipse.Style>
+                  <Style TargetType="{x:Type Ellipse}" >
+                     <Setter Property="Stroke" Value="DarkBlue"/>
+                     <Style.Triggers>
+                        <DataTrigger Binding="{Binding IsSelected}" Value="True">
+                           <Setter Property="Stroke" Value="LightBlue" />
+                        </DataTrigger>
+                     </Style.Triggers>
+                  </Style>
+               </Ellipse.Style>
+               <Ellipse.RenderTransform>
+                  <TranslateTransform 
+                     X="{Binding ContentScale, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type ZoomAndPan:ZoomAndPanControl}}, Converter={StaticResource ZoomHandleTranslateValueConverter}}"
+                     Y="{Binding ContentScale, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type ZoomAndPan:ZoomAndPanControl}}, Converter={StaticResource ZoomHandleTranslateValueConverter}}"
+                  />
+               </Ellipse.RenderTransform>
+            </Ellipse>
+         </Canvas>
+      </DataTemplate>
+      <DataTemplate 
+         DataType="{x:Type local:LfScalableTexturePolygonViewModel}">
+         <Grid>
+            <Polygon 
+               x:Name="stpvm"
+               StrokeThickness="0"
+               Points="{Binding Points}"
+				   MouseDown="Shape_MouseDown"
+				   MouseUp="Shape_MouseUp"
+               >
+               <Polygon.Fill>
+                  <ImageBrush
+                     ViewportUnits="Absolute"
+                     TileMode="Tile"
+                     Stretch="None"
+                     AlignmentX="Center"
+                     AlignmentY="Center" 
+                     ImageSource="{Binding Texture, Converter={StaticResource TexturePathValueConverter}}" >
+                     <ImageBrush.Viewport>
+                        <MultiBinding Converter="{StaticResource TextureRectMultiValueConverter}" >
+                           <Binding Path="TextureOffsetX" />
+                           <Binding Path="TextureOffsetY" />
+                           <Binding Path="TextureWidth" />
+                           <Binding Path="TextureHeight" />
+                        </MultiBinding>
+                     </ImageBrush.Viewport>
+                  </ImageBrush>
+               </Polygon.Fill>
+               <Polygon.RenderTransform>
+                  <TransformGroup>
+                     <RotateTransform x:Name="d1"
+                        Angle="{Binding Angle, Converter={StaticResource NegRadToDegValueConverter}}"
+                        CenterX="0"
+                        CenterY="0"
+                     />
+                  </TransformGroup>
+               </Polygon.RenderTransform>
+            </Polygon>
+            <!-- Below is the lines between the vertices of each triangles of the polygon. The lines are
+            drawn between the vertices of the triangles and they are rotated acc to the angle-->
+            <ItemsControl ItemsSource="{Binding Triangles}">
+               <ItemsControl.ItemsPanel>
+                  <ItemsPanelTemplate>
+                     <Canvas/>
+                  </ItemsPanelTemplate>
+               </ItemsControl.ItemsPanel>
+            </ItemsControl>
+            <!-- Below is the lines between the vertices of the polygon. The lines are
+            drawn between the vertices of the polygon and they are rotated acc to the angle-->
+            <ItemsControl 
+               Visibility="{Binding IsSelected, Converter={StaticResource BoolToVisibilityValueConverter}}"
+               ItemsSource="{Binding PointVms}" >
+               <ItemsControl.ItemsPanel>
+                  <ItemsPanelTemplate>
+                     <Canvas/>
+                  </ItemsPanelTemplate>
+               </ItemsControl.ItemsPanel>
+               <ItemsControl.ItemTemplate>
+                  <DataTemplate>
+                     <Canvas>
+                        <Line
+                           StrokeThickness="{Binding ContentScale, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type ZoomAndPan:ZoomAndPanControl}}, Converter={StaticResource ZoomThicknessValueConverter}}"
+                           Stroke="DarkBlue"
+                           MouseDown="PolygonBorder_MouseDown"
+			                  MouseUp="PolygonBorder_MouseUp"
+			                  MouseMove="PolygonBorder_MouseMove"
+                           Cursor="ScrollAll"
+                           KeyDown="LineCursorKeyDown"
+                           KeyUp="LineCursorKeyUp"
+                           >
+                           <Line.X1>
+                              <MultiBinding Converter="{StaticResource MultiRotatedVertexValueConverter}" ConverterParameter="x">
+                                 <Binding Path="PosX" />
+                                 <Binding />
+                              </MultiBinding>
+                           </Line.X1>
+                           <Line.Y1>
+                              <MultiBinding Converter="{StaticResource MultiRotatedVertexValueConverter}" ConverterParameter="y">
+                                 <Binding Path="PosY" />
+                                 <Binding />
+                              </MultiBinding>
+                           </Line.Y1>
+                           <Line.X2>
+                              <MultiBinding Converter="{StaticResource PreviousMultiRotatedVertexValueConverter}" ConverterParameter="x">
+                                 <Binding Path="PosX" />
+                                 <Binding />
+                              </MultiBinding>
+                           </Line.X2>
+                           <Line.Y2>
+                              <MultiBinding Converter="{StaticResource PreviousMultiRotatedVertexValueConverter}" ConverterParameter="y">
+                                 <Binding Path="PosY" />
+                                 <Binding />
+                              </MultiBinding>
+                           </Line.Y2>
+                        </Line>
+                     </Canvas>
+                  </DataTemplate>
+               </ItemsControl.ItemTemplate>
+            </ItemsControl>
+            <!-- Below square handles of each vertex of the polygon. They should be placed
+            with rotating vertices (using a ValueConverter) and when dragged the dragging vector
+            should be re-rotated to local coordinates. -->
+            <ItemsControl ItemsSource="{Binding PointVms}"
+               Visibility="{Binding IsSelected, Converter={StaticResource BoolToVisibilityValueConverter}}"
+                          >
+               <ItemsControl.ItemsPanel>
+                  <ItemsPanelTemplate>
+                     <Canvas/>
+                  </ItemsPanelTemplate>
+               </ItemsControl.ItemsPanel>
+               <ItemsControl.ItemContainerStyle>
+                  <Style TargetType="ContentPresenter">
+                     <Setter Property="Canvas.Left">
+                        <Setter.Value>
+                           <MultiBinding Converter="{StaticResource MultiRotatedVertexValueConverter}" ConverterParameter="x">
+                              <Binding Path="PosX" />
+                              <Binding />
+                           </MultiBinding>
+                        </Setter.Value>
+                     </Setter>
+                     <Setter Property="Canvas.Top">
+                        <Setter.Value>
+                           <MultiBinding Converter="{StaticResource MultiRotatedVertexValueConverter}" ConverterParameter="y">
+                              <Binding Path="PosY" />
+                              <Binding />
+                           </MultiBinding>
+                        </Setter.Value>
+                     </Setter>
+                  </Style>
+               </ItemsControl.ItemContainerStyle>
+               <ItemsControl.ItemTemplate>
+                  <DataTemplate>
+                     <Canvas>
+                        <Rectangle
+                           Width="{Binding ContentScale, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type ZoomAndPan:ZoomAndPanControl}}, Converter={StaticResource ZoomHandleSizeValueConverter}}"
+                           Height="{Binding ContentScale, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type ZoomAndPan:ZoomAndPanControl}}, Converter={StaticResource ZoomHandleSizeValueConverter}}"
+                           Stroke="Black"
+                           StrokeThickness="{Binding ContentScale, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type ZoomAndPan:ZoomAndPanControl}}, Converter={StaticResource ZoomThicknessValueConverter}}"
+                           MouseDown="DragablePoint_MouseDown"
+					            MouseUp="DragablePoint_MouseUp"
+					            MouseMove="DragablePoint_MouseMove" 
+                           Cursor="ScrollAll"
+                           >
+                           <Rectangle.Style>
+                              <Style TargetType="{x:Type Rectangle}" >
+                                 <Setter Property="Fill" Value="White"/>
+                                 <Style.Triggers>
+                                    <DataTrigger Binding="{Binding IsSelected}" Value="True">
+                                       <Setter Property="Fill" Value="Gray" />
+                                    </DataTrigger>
+                                 </Style.Triggers>
+                              </Style>
+                           </Rectangle.Style>
+                           <Rectangle.RenderTransform>
+                              <TranslateTransform 
+                                 X="{Binding ContentScale, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type ZoomAndPan:ZoomAndPanControl}}, Converter={StaticResource ZoomHandleTranslateValueConverter}}"
+                                 Y="{Binding ContentScale, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type ZoomAndPan:ZoomAndPanControl}}, Converter={StaticResource ZoomHandleTranslateValueConverter}}"
+                              />
+                           </Rectangle.RenderTransform>
+                           <Rectangle.ToolTip>
+                              <StackPanel>
+                                 <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="ID:" />
+                                    <TextBlock Text="{Binding Id}" />
+                                 </StackPanel>
+                                 <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="Posx:" />
+                                    <TextBlock Text="{Binding PosX}" />
+                                 </StackPanel>
+                                 <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="PosY:" />
+                                    <TextBlock Text="{Binding PosY}" />
+                                 </StackPanel>
+                              </StackPanel>
+                           </Rectangle.ToolTip>
+                        </Rectangle>
+                     </Canvas>
+                  </DataTemplate>
+               </ItemsControl.ItemTemplate>
+            </ItemsControl>
+         </Grid>
+      </DataTemplate>
+
+      <DataTemplate DataType="{x:Type local:LfStaticBoxedSpritePolygonViewModel}">
+         <Canvas>
+            <!-- The Image is the Box texture of shape. This is translated so
+            the center of the image is placed at the position of the shape. It
+            is rotated (render transform) according to the angle of the shape. -->
+            <Image
+               Width="{Binding Width}"
+               Height="{Binding Height}"
+               Source="{Binding Texture, Converter={StaticResource TexturePathValueConverter}}" 
+				   MouseDown="Shape_MouseDown"
+				   MouseUp="Shape_MouseUp"
+               RenderTransformOrigin="0, 0"
+               >
+               <Image.RenderTransform >
+                  <TransformGroup>
+                     <TranslateTransform x:Name="d2"
+                        X="{Binding Width, Converter={StaticResource NegativeHalfValueConverter}}" 
+                        Y="{Binding Height, Converter={StaticResource NegativeHalfValueConverter}}" 
+                     />
+                     <RotateTransform x:Name="d1"
+                        Angle="{Binding Angle, Converter={StaticResource NegRadToDegValueConverter}}"
+                     />
+                  </TransformGroup>
+               </Image.RenderTransform>
+            </Image>
+            <!-- Below is the lines between the vertices of each triangles of the polygon. The lines are
+            drawn between the vertices of the triangles and they are rotated acc to the angle-->
+            <ItemsControl ItemsSource="{Binding Triangles}">
+               <ItemsControl.ItemsPanel>
+                  <ItemsPanelTemplate>
+                     <Canvas/>
+                  </ItemsPanelTemplate>
+               </ItemsControl.ItemsPanel>
+            </ItemsControl>
+            <!-- Below is the lines between the vertices of the polygon. The lines are
+            drawn between the vertices of the polygon and they are rotated acc to the angle-->
+            <ItemsControl 
+               Visibility="{Binding IsSelected, Converter={StaticResource BoolToVisibilityValueConverter}}"
+               ItemsSource="{Binding PointVms}" 
+               >
+               <ItemsControl.ItemsPanel>
+                  <ItemsPanelTemplate>
+                     <Canvas/>
+                  </ItemsPanelTemplate>
+               </ItemsControl.ItemsPanel>
+               <ItemsControl.ItemTemplate>
+                  <DataTemplate>
+                     <Grid>
+                        <Line
+                           StrokeThickness="{Binding ContentScale, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type ZoomAndPan:ZoomAndPanControl}}, Converter={StaticResource ZoomThicknessValueConverter}}"
+                           Stroke="DarkBlue"
+                           MouseDown="PolygonBorder_MouseDown"
+			                  MouseUp="PolygonBorder_MouseUp"
+			                  MouseMove="PolygonBorder_MouseMove"
+                           Cursor="ScrollAll"
+                           >
+                           <Line.X1>
+                              <MultiBinding Converter="{StaticResource MultiRotatedVertexValueConverter}" ConverterParameter="x">
+                                 <Binding Path="PosX" />
+                                 <Binding />
+                              </MultiBinding>
+                           </Line.X1>
+                           <Line.Y1>
+                              <MultiBinding Converter="{StaticResource MultiRotatedVertexValueConverter}" ConverterParameter="y">
+                                 <Binding Path="PosY" />
+                                 <Binding />
+                              </MultiBinding>
+                           </Line.Y1>
+                           <Line.X2>
+                              <MultiBinding Converter="{StaticResource PreviousMultiRotatedVertexValueConverter}" ConverterParameter="x">
+                                 <Binding Path="PosX" />
+                                 <Binding />
+                              </MultiBinding>
+                           </Line.X2>
+                           <Line.Y2>
+                              <MultiBinding Converter="{StaticResource PreviousMultiRotatedVertexValueConverter}" ConverterParameter="y">
+                                 <Binding Path="PosY" />
+                                 <Binding />
+                              </MultiBinding>
+                           </Line.Y2>
+                        </Line>
+                     </Grid>
+                  </DataTemplate>
+               </ItemsControl.ItemTemplate>
+            </ItemsControl>
+            <!-- Below square handles of each vertex of the polygon. They should be placed
+            with rotating vertices (using a ValueConverter) and when dragged the dragging vector
+            should be re-rotated to local coordinates. -->
+            <ItemsControl ItemsSource="{Binding PointVms}"
+               Visibility="{Binding IsSelected, Converter={StaticResource BoolToVisibilityValueConverter}}"
+               >
+               <ItemsControl.ItemsPanel>
+                  <ItemsPanelTemplate>
+                     <Canvas/>
+                  </ItemsPanelTemplate>
+               </ItemsControl.ItemsPanel>
+               <ItemsControl.ItemContainerStyle>
+                  <Style TargetType="ContentPresenter">
+                     <Setter Property="Canvas.Left">
+                        <Setter.Value>
+                           <MultiBinding Converter="{StaticResource MultiRotatedVertexValueConverter}" ConverterParameter="x">
+                              <Binding Path="PosX" />
+                              <Binding />
+                           </MultiBinding>
+                        </Setter.Value>
+                     </Setter>
+                     <Setter Property="Canvas.Top">
+                        <Setter.Value>
+                           <MultiBinding Converter="{StaticResource MultiRotatedVertexValueConverter}" ConverterParameter="y">
+                              <Binding Path="PosY" />
+                              <Binding />
+                           </MultiBinding>
+                        </Setter.Value>
+                     </Setter>
+                  </Style>
+               </ItemsControl.ItemContainerStyle>
+               <ItemsControl.ItemTemplate>
+                  <DataTemplate>
+                     <Grid>
+                        <Rectangle
+                           Width="{Binding ContentScale, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type ZoomAndPan:ZoomAndPanControl}}, Converter={StaticResource ZoomHandleSizeValueConverter}}"
+                           Height="{Binding ContentScale, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type ZoomAndPan:ZoomAndPanControl}}, Converter={StaticResource ZoomHandleSizeValueConverter}}"
+							      Stroke="Black"
+                           StrokeThickness="{Binding ContentScale, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type ZoomAndPan:ZoomAndPanControl}}, Converter={StaticResource ZoomThicknessValueConverter}}"
+                           MouseDown="DragablePoint_MouseDown"
+					            MouseUp="DragablePoint_MouseUp"
+					            MouseMove="DragablePoint_MouseMove" 
+                           Cursor="ScrollAll"
+                           >
+                           <Rectangle.Style>
+                              <Style TargetType="{x:Type Rectangle}" >
+                                 <Setter Property="Fill" Value="White"/>
+                                 <Style.Triggers>
+                                    <DataTrigger Binding="{Binding IsSelected}" Value="True">
+                                       <Setter Property="Fill" Value="Gray" />
+                                    </DataTrigger>
+                                 </Style.Triggers>
+                              </Style>
+                           </Rectangle.Style>
+                           <Rectangle.RenderTransform>
+                              <TranslateTransform  
+                                 X="{Binding ContentScale, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type ZoomAndPan:ZoomAndPanControl}}, Converter={StaticResource ZoomHandleTranslateValueConverter}}"
+                                 Y="{Binding ContentScale, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type ZoomAndPan:ZoomAndPanControl}}, Converter={StaticResource ZoomHandleTranslateValueConverter}}"
+                              />
+                           </Rectangle.RenderTransform>
+                        </Rectangle>
+                     </Grid>
+                  </DataTemplate>
+               </ItemsControl.ItemTemplate>
+            </ItemsControl>
+         </Canvas>
+      </DataTemplate>
+      <DataTemplate DataType="{x:Type local:LfStaticBoxViewModel}">
+         <Canvas>
+            <Image
+               Width="{Binding Width}"
+               Height="{Binding Height}"
+               Source="{Binding Texture, Converter={StaticResource TexturePathValueConverter}}"
+				   MouseDown="Shape_MouseDown"
+				   MouseUp="Shape_MouseUp"
+               Stretch="Fill"
+               >
+               <Image.RenderTransform >
+                  <TransformGroup>
+                     <TranslateTransform x:Name="d2"
+                        X="{Binding Width, Converter={StaticResource NegativeHalfValueConverter}}" 
+                        Y="{Binding Height, Converter={StaticResource NegativeHalfValueConverter}}" 
+                     />
+                     <RotateTransform x:Name="d1"
+                        Angle="{Binding Angle, Converter={StaticResource NegRadToDegValueConverter}}"
+                     />
+                  </TransformGroup>
+               </Image.RenderTransform>
+            </Image>
+            <!-- Below is the lines between the vertices of the polygon. The lines are
+            drawn between the vertices of the polygon and they are rotated acc to the angle-->
+            <ItemsControl 
+               Visibility="{Binding IsSelected, Converter={StaticResource BoolToVisibilityValueConverter}}"
+               ItemsSource="{Binding PointVms}" 
+               >
+               <ItemsControl.ItemsPanel>
+                  <ItemsPanelTemplate>
+                     <Canvas/>
+                  </ItemsPanelTemplate>
+               </ItemsControl.ItemsPanel>
+               <ItemsControl.ItemTemplate>
+                  <DataTemplate>
+                     <Canvas>
+                        <Line
+                           StrokeThickness="{Binding ContentScale, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type ZoomAndPan:ZoomAndPanControl}}, Converter={StaticResource ZoomThicknessValueConverter}}"
+                           Stroke="DarkBlue"
+                           MouseDown="ShapeBorder_MouseDown"
+			                  MouseUp="ShapeBorder_MouseUp"
+			                  MouseMove="ShapeBorder_MouseMove"
+                           Cursor="ScrollAll"
+                           >
+                           <Line.X1>
+                              <MultiBinding Converter="{StaticResource MultiRotatedPointValueConverter}" ConverterParameter="x">
+                                 <Binding Path="PosX" />
+                                 <Binding />
+                              </MultiBinding>
+                           </Line.X1>
+                           <Line.Y1>
+                              <MultiBinding Converter="{StaticResource MultiRotatedPointValueConverter}" ConverterParameter="y">
+                                 <Binding Path="PosY" />
+                                 <Binding />
+                              </MultiBinding>
+                           </Line.Y1>
+                           <Line.X2>
+                              <MultiBinding Converter="{StaticResource PreviousMultiRotatedPointValueConverter}" ConverterParameter="x">
+                                 <Binding Path="PosX" />
+                                 <Binding />
+                              </MultiBinding>
+                           </Line.X2>
+                           <Line.Y2>
+                              <MultiBinding Converter="{StaticResource PreviousMultiRotatedPointValueConverter}" ConverterParameter="y">
+                                 <Binding Path="PosY" />
+                                 <Binding />
+                              </MultiBinding>
+                           </Line.Y2>
+                        </Line>
+                     </Canvas>
+                  </DataTemplate>
+               </ItemsControl.ItemTemplate>
+            </ItemsControl>
+         </Canvas>
+      </DataTemplate>
+      <DataTemplate DataType="{x:Type local:LfSpriteBoxViewModel}">
+         <Canvas>
+            <Image
+               Width="{Binding Width}"
+               Height="{Binding Height}"
+               Source="{Binding Texture, Converter={StaticResource TexturePathValueConverter}}"
+				   MouseDown="Shape_MouseDown"
+				   MouseUp="Shape_MouseUp"
+               Stretch="Fill"
+               >
+               <Image.RenderTransform >
+                  <TransformGroup>
+                     <TranslateTransform x:Name="d2"
+                        X="{Binding Width, Converter={StaticResource NegativeHalfValueConverter}}" 
+                        Y="{Binding Height, Converter={StaticResource NegativeHalfValueConverter}}" 
+                     />
+                     <RotateTransform x:Name="d1"
+                        Angle="{Binding Angle, Converter={StaticResource NegRadToDegValueConverter}}"
+                     />
+                  </TransformGroup>
+               </Image.RenderTransform>
+            </Image>
+            <!-- Below is the lines between the vertices of the polygon. The lines are
+            drawn between the vertices of the polygon and they are rotated acc to the angle-->
+            <ItemsControl 
+               Visibility="{Binding IsSelected, Converter={StaticResource BoolToVisibilityValueConverter}}"
+               ItemsSource="{Binding PointVms}" 
+               >
+               <ItemsControl.ItemsPanel>
+                  <ItemsPanelTemplate>
+                     <Canvas/>
+                  </ItemsPanelTemplate>
+               </ItemsControl.ItemsPanel>
+               <ItemsControl.ItemTemplate>
+                  <DataTemplate>
+                     <Canvas>
+                        <Line
+                           StrokeThickness="{Binding ContentScale, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type ZoomAndPan:ZoomAndPanControl}}, Converter={StaticResource ZoomThicknessValueConverter}}"
+                           Stroke="DarkBlue"
+                           MouseDown="ShapeBorder_MouseDown"
+			                  MouseUp="ShapeBorder_MouseUp"
+			                  MouseMove="ShapeBorder_MouseMove"
+                           Cursor="ScrollAll"
+                           >
+                           <Line.X1>
+                              <MultiBinding Converter="{StaticResource MultiRotatedPointValueConverter}" ConverterParameter="x">
+                                 <Binding Path="PosX" />
+                                 <Binding />
+                              </MultiBinding>
+                           </Line.X1>
+                           <Line.Y1>
+                              <MultiBinding Converter="{StaticResource MultiRotatedPointValueConverter}" ConverterParameter="y">
+                                 <Binding Path="PosY" />
+                                 <Binding />
+                              </MultiBinding>
+                           </Line.Y1>
+                           <Line.X2>
+                              <MultiBinding Converter="{StaticResource PreviousMultiRotatedPointValueConverter}" ConverterParameter="x">
+                                 <Binding Path="PosX" />
+                                 <Binding />
+                              </MultiBinding>
+                           </Line.X2>
+                           <Line.Y2>
+                              <MultiBinding Converter="{StaticResource PreviousMultiRotatedPointValueConverter}" ConverterParameter="y">
+                                 <Binding Path="PosY" />
+                                 <Binding />
+                              </MultiBinding>
+                           </Line.Y2>
+                        </Line>
+                     </Canvas>
+                  </DataTemplate>
+               </ItemsControl.ItemTemplate>
+            </ItemsControl>
+         </Canvas>
+      </DataTemplate>
+      <DataTemplate DataType="{x:Type local:LfStaticCircleViewModel}">
+         <Canvas>
+            <Image
+               Width="{Binding Radius, Converter={StaticResource TwiceDoubleValueConverter}}"
+               Height="{Binding Radius, Converter={StaticResource TwiceDoubleValueConverter}}"
+               Source="{Binding Texture, Converter={StaticResource TexturePathValueConverter}}"
+				   MouseDown="Shape_MouseDown"
+				   MouseUp="Shape_MouseUp"
+               RenderTransformOrigin="0, 0"
+               >
+               <Image.RenderTransform >
+                  <TransformGroup>
+                     <TranslateTransform x:Name="d2"
+                        X="{Binding Radius, Converter={StaticResource NegativeValueConverter}}" 
+                        Y="{Binding Radius, Converter={StaticResource NegativeValueConverter}}" 
+                     />
+                     <RotateTransform x:Name="d1"
+                        Angle="{Binding Angle, Converter={StaticResource NegRadToDegValueConverter}}"
+                     />
+                  </TransformGroup>
+               </Image.RenderTransform>
+            </Image>
+            <Ellipse
+               Visibility="{Binding IsSelected, Converter={StaticResource BoolToVisibilityValueConverter}}"
+               Canvas.Left="{Binding Radius, Converter={StaticResource EllipseCenterValueConverter}}"
+               Canvas.Top="{Binding Radius, Converter={StaticResource EllipseCenterValueConverter}}"
+               Width="{Binding Radius, Converter={StaticResource TwiceDoubleValueConverter}}"
+               Height="{Binding Radius, Converter={StaticResource TwiceDoubleValueConverter}}"
+               StrokeThickness="{Binding ContentScale, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type ZoomAndPan:ZoomAndPanControl}}, Converter={StaticResource ZoomThicknessValueConverter}}"
+               Stroke="DarkBlue"
+               MouseDown="EllipseBorder_MouseDown"
+			      MouseUp="EllipseBorder_MouseUp"
+			      MouseMove="EllipseBorder_MouseMove"
+               Cursor="ScrollAll"
+               >
+            </Ellipse>
+         </Canvas>
+      </DataTemplate>
+      <DataTemplate DataType="{x:Type local:ObjectFactoryViewModel}">
+         <Canvas>
+            <Rectangle
+               Width="{Binding Width}"
+               Height="{Binding Height}"
+               Fill="Thistle"
+				   MouseDown="Shape_MouseDown"
+				   MouseUp="Shape_MouseUp"
+               Stretch="Fill"
+               >
+               <Rectangle.RenderTransform >
+                  <TransformGroup>
+                     <TranslateTransform x:Name="d2"
+                        X="{Binding Width, Converter={StaticResource NegativeHalfValueConverter}}" 
+                        Y="{Binding Height, Converter={StaticResource NegativeHalfValueConverter}}" 
+                     />
+                     <RotateTransform x:Name="d1"
+                        Angle="{Binding Angle, Converter={StaticResource NegRadToDegValueConverter}}"
+                     />
+                  </TransformGroup>
+               </Rectangle.RenderTransform>
+            </Rectangle>
+            <StackPanel               
+               Canvas.Left="-50" Canvas.Top="-25">
+               <TextBlock 
+                  IsHitTestVisible="False"
+                  Text="Object Factory" 
+                  TextAlignment="Left"
+                  FontSize="15"
+                  />
+               <TextBlock 
+                  IsHitTestVisible="False"
+                  Text="{Binding Name}" 
+                  TextAlignment="Left"
+                  FontSize="15"
+                  />
+            </StackPanel>
+            <!-- Below is the lines between the vertices of the polygon. The lines are
+            drawn between the vertices of the polygon and they are rotated acc to the angle-->
+            <ItemsControl 
+               Visibility="{Binding IsSelected, Converter={StaticResource BoolToVisibilityValueConverter}}"
+               ItemsSource="{Binding PointVms}" 
+               >
+               <ItemsControl.ItemsPanel>
+                  <ItemsPanelTemplate>
+                     <Canvas/>
+                  </ItemsPanelTemplate>
+               </ItemsControl.ItemsPanel>
+               <ItemsControl.ItemTemplate>
+                  <DataTemplate>
+                     <Canvas>
+                        <Line
+                           StrokeThickness="{Binding ContentScale, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type ZoomAndPan:ZoomAndPanControl}}, Converter={StaticResource ZoomThicknessValueConverter}}"
+                           Stroke="DarkBlue"
+                           MouseDown="ShapeBorder_MouseDown"
+			                  MouseUp="ShapeBorder_MouseUp"
+			                  MouseMove="ShapeBorder_MouseMove"
+                           Cursor="ScrollAll"
+                           >
+                           <Line.X1>
+                              <MultiBinding Converter="{StaticResource MultiRotatedPointValueConverter}" ConverterParameter="x">
+                                 <Binding Path="PosX" />
+                                 <Binding />
+                              </MultiBinding>
+                           </Line.X1>
+                           <Line.Y1>
+                              <MultiBinding Converter="{StaticResource MultiRotatedPointValueConverter}" ConverterParameter="y">
+                                 <Binding Path="PosY" />
+                                 <Binding />
+                              </MultiBinding>
+                           </Line.Y1>
+                           <Line.X2>
+                              <MultiBinding Converter="{StaticResource PreviousMultiRotatedPointValueConverter}" ConverterParameter="x">
+                                 <Binding Path="PosX" />
+                                 <Binding />
+                              </MultiBinding>
+                           </Line.X2>
+                           <Line.Y2>
+                              <MultiBinding Converter="{StaticResource PreviousMultiRotatedPointValueConverter}" ConverterParameter="y">
+                                 <Binding Path="PosY" />
+                                 <Binding />
+                              </MultiBinding>
+                           </Line.Y2>
+                        </Line>
+                     </Canvas>
+                  </DataTemplate>
+               </ItemsControl.ItemTemplate>
+            </ItemsControl>
+         </Canvas>
+      </DataTemplate>
+   </UserControl.Resources>
+   <Canvas
+      x:Name="content" 
+      >
+      <ItemsControl ItemsSource="{Binding Shapes}">
+         <ItemsControl.ItemsPanel>
+            <ItemsPanelTemplate>
+               <Canvas/>
+            </ItemsPanelTemplate>
+         </ItemsControl.ItemsPanel>
+         <ItemsControl.ItemContainerStyle>
+            <Style TargetType="ContentPresenter">
+               <Setter Property="Canvas.Left" Value="{Binding PosX}"/>
+               <Setter Property="Canvas.Top" Value="{Binding PosY}"/>
+            </Style>
+         </ItemsControl.ItemContainerStyle>
+      </ItemsControl>
+      <ItemsControl ItemsSource="{Binding Joints}"
+         Visibility="{Binding ShowJoints, ElementName=root, Converter={StaticResource BoolToVisibilityValueConverter}}"
+         >
+         <ItemsControl.ItemsPanel>
+            <ItemsPanelTemplate>
+               <Canvas/>
+            </ItemsPanelTemplate>
+         </ItemsControl.ItemsPanel>
+      </ItemsControl>
+      <ItemsControl ItemsSource="{Binding ChildObjects}">
+         <ItemsControl.ItemsPanel>
+            <ItemsPanelTemplate>
+               <Canvas/>
+            </ItemsPanelTemplate>
+         </ItemsControl.ItemsPanel>
+         <ItemsControl.ItemContainerStyle>
+            <Style TargetType="ContentPresenter">
+               <Setter Property="Canvas.Left" Value="{Binding PosX}"/>
+               <Setter Property="Canvas.Top" Value="{Binding PosY}"/>
+            </Style>
+         </ItemsControl.ItemContainerStyle>
+      </ItemsControl>
+      <Rectangle 
+         Visibility="{Binding IsSelected, Converter={StaticResource BoolToVisibilityValueConverter}}"
+         Canvas.Left="{Binding BoundingBox.Left}"
+         Canvas.Top="{Binding BoundingBox.Top}" 
+         Width="{Binding BoundingBox.Width}"
+         Height="{Binding BoundingBox.Height}"
+         StrokeThickness="{Binding ContentScale, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type ZoomAndPan:ZoomAndPanControl}}, Converter={StaticResource ZoomThicknessValueConverter}}"
+         Stroke="DarkBlue"
+         MouseDown="CompoundObject_MouseDown"
+			MouseUp="CompoundObject_MouseUp"
+			MouseMove="CompoundObject_MouseMove"
+         Cursor="ScrollAll"
+         />
+   </Canvas>
+            
+</UserControl>

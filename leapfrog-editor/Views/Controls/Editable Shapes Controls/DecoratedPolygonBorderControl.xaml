@@ -1,0 +1,279 @@
+﻿<UserControl x:Class="LeapfrogEditor.DecoratedPolygonBorderControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:LeapfrogEditor"
+             xmlns:ZoomAndPan="clr-namespace:ZoomAndPan;assembly=ZoomAndPan"
+             x:Name="root"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800">
+   <UserControl.Resources>
+      <local:TexturePathValueConverter x:Key="TexturePathValueConverter" />
+      <local:TextureRectMultiValueConverter x:Key="TextureRectMultiValueConverter" />
+      <local:NegRadToDegValueConverter x:Key="NegRadToDegValueConverter" />
+      <local:BoolToVisibilityValueConverter x:Key="BoolToVisibilityValueConverter" />
+      <local:ZoomThicknessValueConverter x:Key="ZoomThicknessValueConverter" />
+      <local:ZoomHandleSizeValueConverter x:Key="ZoomHandleSizeValueConverter" />
+      <local:ZoomHandleTranslateValueConverter x:Key="ZoomHandleTranslateValueConverter" />
+      <local:MultiRotatedVertexValueConverter x:Key="MultiRotatedVertexValueConverter" />
+      <local:PreviousMultiRotatedVertexValueConverter x:Key="PreviousMultiRotatedVertexValueConverter" />
+      <local:TextureBorderWidthMultiConverter x:Key="TextureBorderWidthMultiConverter" />
+      <local:TextureBorderOffsetMultiConverter x:Key="TextureBorderOffsetMultiConverter" />
+      <local:TextureBorderAngleMultiConverter x:Key="TextureBorderAngleMultiConverter" />
+      <local:TextureBorderTexturePathMultiConverter x:Key="TextureBorderTexturePathMultiConverter" />
+      <local:TextureBorderVisibilityMultiConverter x:Key="TextureBorderVisibilityMultiConverter" />
+      <local:TextureBorderHeightMultiConverter x:Key="TextureBorderHeightMultiConverter" />
+      <local:TextureBorderRectMultiValueConverter x:Key="TextureBorderRectMultiValueConverter" />
+   </UserControl.Resources>
+   <Grid>
+      <!-- Below is the borders of the polygon. I.e. the border decorations used in the game -->
+      <ItemsControl 
+         ItemsSource="{Binding PointVms}" >
+         <ItemsControl.ItemsPanel>
+            <ItemsPanelTemplate>
+               <Canvas/>
+            </ItemsPanelTemplate>
+         </ItemsControl.ItemsPanel>
+         <ItemsControl.ItemContainerStyle>
+            <Style TargetType="ContentPresenter">
+               <Setter Property="Canvas.Left">
+                  <Setter.Value>
+                     <MultiBinding Converter="{StaticResource MultiRotatedVertexValueConverter}" ConverterParameter="x">
+                        <Binding Path="PosX" />
+                        <Binding />
+                     </MultiBinding>
+                  </Setter.Value>
+               </Setter>
+               <Setter Property="Canvas.Top">
+                  <Setter.Value>
+                     <MultiBinding Converter="{StaticResource MultiRotatedVertexValueConverter}" ConverterParameter="y">
+                        <Binding Path="PosY" />
+                        <Binding />
+                     </MultiBinding>
+                  </Setter.Value>
+               </Setter>
+            </Style>
+         </ItemsControl.ItemContainerStyle>
+         <ItemsControl.ItemTemplate>
+            <DataTemplate>
+               <Rectangle>
+                  <Rectangle.Height>
+                     <MultiBinding Converter="{StaticResource TextureBorderHeightMultiConverter}" >
+                        <Binding Path="PosX" />
+                        <Binding Path="PosY" />
+                        <Binding />
+                     </MultiBinding>
+                  </Rectangle.Height>
+                  <Rectangle.Width>
+                     <MultiBinding Converter="{StaticResource TextureBorderWidthMultiConverter}" >
+                        <Binding Path="PosX" />
+                        <Binding Path="PosY" />
+                        <Binding />
+                     </MultiBinding>
+                  </Rectangle.Width>
+                  <Rectangle.Visibility>
+                     <MultiBinding Converter="{StaticResource TextureBorderVisibilityMultiConverter}" >
+                        <Binding Path="PosX" />
+                        <Binding Path="PosY" />
+                        <Binding />
+                     </MultiBinding>
+                  </Rectangle.Visibility>
+                  <Rectangle.Fill>
+                     <ImageBrush
+                        ViewportUnits="Absolute"
+                        TileMode="Tile"
+                        Stretch="Uniform"
+                        AlignmentX="Left"
+                        AlignmentY="Top">
+                        <ImageBrush.ImageSource>
+                           <MultiBinding Converter="{StaticResource TextureBorderTexturePathMultiConverter}" >
+                              <Binding Path="PosX" />
+                              <Binding Path="PosY" />
+                              <Binding />
+                           </MultiBinding>
+                        </ImageBrush.ImageSource>
+                        <ImageBrush.Viewport>
+                           <MultiBinding Converter="{StaticResource TextureBorderRectMultiValueConverter}" >
+                              <Binding Path="PosX" />
+                              <Binding Path="PosY" />
+                              <Binding />
+                           </MultiBinding>
+                        </ImageBrush.Viewport>
+                     </ImageBrush>
+                  </Rectangle.Fill>
+                  <Rectangle.RenderTransform >
+                     <TransformGroup>
+                        <TranslateTransform x:Name="d2">
+                           <TranslateTransform.X>
+                              <MultiBinding Converter="{StaticResource TextureBorderOffsetMultiConverter}" ConverterParameter="x">
+                                 <Binding Path="PosX" />
+                                 <Binding Path="PosY" />
+                                 <Binding />
+                              </MultiBinding>
+                           </TranslateTransform.X>
+                           <TranslateTransform.Y>
+                              <MultiBinding Converter="{StaticResource TextureBorderOffsetMultiConverter}" ConverterParameter="y">
+                                 <Binding Path="PosY" />
+                                 <Binding Path="PosY" />
+                                 <Binding />
+                              </MultiBinding>
+                           </TranslateTransform.Y>
+                        </TranslateTransform>
+                        <RotateTransform x:Name="d1">
+                           <RotateTransform.Angle>
+                              <MultiBinding Converter="{StaticResource TextureBorderAngleMultiConverter}" >
+                                 <Binding Path="PosX" />
+                                 <Binding Path="PosY" />
+                                 <Binding />
+                              </MultiBinding>
+                           </RotateTransform.Angle>
+                        </RotateTransform>
+                     </TransformGroup>
+                  </Rectangle.RenderTransform>
+               </Rectangle>
+            </DataTemplate>
+         </ItemsControl.ItemTemplate>
+      </ItemsControl>
+      <!-- Below is the lines between the vertices of each triangles of the polygon. The lines are
+            drawn between the vertices of the triangles and they are rotated acc to the angle-->
+      <ItemsControl ItemsSource="{Binding Triangles}">
+         <ItemsControl.ItemsPanel>
+            <ItemsPanelTemplate>
+               <Canvas/>
+            </ItemsPanelTemplate>
+         </ItemsControl.ItemsPanel>
+         <ItemsControl.ItemTemplate>
+            <DataTemplate DataType="{x:Type local:TriangleViewModel}">
+               <ItemsControl 
+                  ItemsSource="{Binding PointVms}" 
+                  Visibility="{Binding ShowTriangles, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type local:CompoundObjectUserControl}}, Converter={StaticResource BoolToVisibilityValueConverter}}" >
+                  <ItemsControl.ItemsPanel>
+                     <ItemsPanelTemplate>
+                        <Canvas/>
+                     </ItemsPanelTemplate>
+                  </ItemsControl.ItemsPanel>
+                  <ItemsControl.ItemTemplate>
+                     <DataTemplate DataType="{x:Type local:LfDragablePointViewModel}">
+                        <local:TrianglesControl />
+                     </DataTemplate>
+                  </ItemsControl.ItemTemplate>
+               </ItemsControl>
+            </DataTemplate>
+         </ItemsControl.ItemTemplate>
+      </ItemsControl>
+      <!-- Below is the lines between the vertices of the polygon. The lines are
+            drawn between the vertices of the polygon and they are rotated acc to the angle-->
+      <ItemsControl 
+               Visibility="{Binding IsSelected, Converter={StaticResource BoolToVisibilityValueConverter}}"
+               ItemsSource="{Binding PointVms}" >
+         <ItemsControl.ItemsPanel>
+            <ItemsPanelTemplate>
+               <Canvas/>
+            </ItemsPanelTemplate>
+         </ItemsControl.ItemsPanel>
+         <ItemsControl.ItemTemplate>
+            <DataTemplate>
+               <Grid>
+                  <Line
+                     StrokeThickness="{Binding ContentScale, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type ZoomAndPan:ZoomAndPanControl}}, Converter={StaticResource ZoomThicknessValueConverter}}"
+                     Stroke="DarkBlue"
+                     MouseDown="PolygonBorder_MouseDown"
+			            MouseUp="PolygonBorder_MouseUp"
+			            MouseMove="PolygonBorder_MouseMove"
+                     Cursor="ScrollAll"    >
+                     <Line.X1>
+                        <MultiBinding Converter="{StaticResource MultiRotatedVertexValueConverter}" ConverterParameter="x">
+                           <Binding Path="PosX" />
+                           <Binding />
+                        </MultiBinding>
+                     </Line.X1>
+                     <Line.Y1>
+                        <MultiBinding Converter="{StaticResource MultiRotatedVertexValueConverter}" ConverterParameter="y">
+                           <Binding Path="PosY" />
+                           <Binding />
+                        </MultiBinding>
+                     </Line.Y1>
+                     <Line.X2>
+                        <MultiBinding Converter="{StaticResource PreviousMultiRotatedVertexValueConverter}" ConverterParameter="x">
+                           <Binding Path="PosX" />
+                           <Binding />
+                        </MultiBinding>
+                     </Line.X2>
+                     <Line.Y2>
+                        <MultiBinding Converter="{StaticResource PreviousMultiRotatedVertexValueConverter}" ConverterParameter="y">
+                           <Binding Path="PosY" />
+                           <Binding />
+                        </MultiBinding>
+                     </Line.Y2>
+                  </Line>
+               </Grid>
+            </DataTemplate>
+         </ItemsControl.ItemTemplate>
+      </ItemsControl>
+      <!-- Below square handles of each vertex of the polygon. They should be placed
+            with rotating vertices (using a ValueConverter) and when dragged the dragging vector
+            should be re-rotated to local coordinates. -->
+      <ItemsControl ItemsSource="{Binding PointVms}"
+               Visibility="{Binding IsSelected, Converter={StaticResource BoolToVisibilityValueConverter}}"
+                          >
+         <ItemsControl.ItemsPanel>
+            <ItemsPanelTemplate>
+               <Canvas/>
+            </ItemsPanelTemplate>
+         </ItemsControl.ItemsPanel>
+         <ItemsControl.ItemContainerStyle>
+            <Style TargetType="ContentPresenter">
+               <Setter Property="Canvas.Left">
+                  <Setter.Value>
+                     <MultiBinding Converter="{StaticResource MultiRotatedVertexValueConverter}" ConverterParameter="x">
+                        <Binding Path="PosX" />
+                        <Binding />
+                     </MultiBinding>
+                  </Setter.Value>
+               </Setter>
+               <Setter Property="Canvas.Top">
+                  <Setter.Value>
+                     <MultiBinding Converter="{StaticResource MultiRotatedVertexValueConverter}" ConverterParameter="y">
+                        <Binding Path="PosY" />
+                        <Binding />
+                     </MultiBinding>
+                  </Setter.Value>
+               </Setter>
+            </Style>
+         </ItemsControl.ItemContainerStyle>
+         <ItemsControl.ItemTemplate>
+            <DataTemplate>
+               <Grid>
+                  <Rectangle
+                        Width="{Binding ContentScale, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type ZoomAndPan:ZoomAndPanControl}}, Converter={StaticResource ZoomHandleSizeValueConverter}}"
+                        Height="{Binding ContentScale, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type ZoomAndPan:ZoomAndPanControl}}, Converter={StaticResource ZoomHandleSizeValueConverter}}"
+                        Stroke="Black"
+                        StrokeThickness="{Binding ContentScale, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type ZoomAndPan:ZoomAndPanControl}}, Converter={StaticResource ZoomThicknessValueConverter}}"
+                        MouseDown="DragablePoint_MouseDown"
+					         MouseUp="DragablePoint_MouseUp"
+					         MouseMove="DragablePoint_MouseMove" 
+                        Cursor="ScrollAll" >
+                     <Rectangle.Style>
+                        <Style TargetType="{x:Type Rectangle}" >
+                           <Setter Property="Fill" Value="White"/>
+                           <Style.Triggers>
+                              <DataTrigger Binding="{Binding IsSelected}" Value="True">
+                                 <Setter Property="Fill" Value="Gray" />
+                              </DataTrigger>
+                           </Style.Triggers>
+                        </Style>
+                     </Rectangle.Style>
+                     <Rectangle.RenderTransform>
+                        <TranslateTransform 
+                           X="{Binding ContentScale, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type ZoomAndPan:ZoomAndPanControl}}, Converter={StaticResource ZoomHandleTranslateValueConverter}}"
+                           Y="{Binding ContentScale, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type ZoomAndPan:ZoomAndPanControl}}, Converter={StaticResource ZoomHandleTranslateValueConverter}}"
+                           />
+                     </Rectangle.RenderTransform>
+                  </Rectangle>
+               </Grid>
+            </DataTemplate>
+         </ItemsControl.ItemTemplate>
+      </ItemsControl>
+   </Grid>
+</UserControl>

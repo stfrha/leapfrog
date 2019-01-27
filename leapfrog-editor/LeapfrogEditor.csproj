@@ -1,0 +1,521 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{091EEA6F-34DF-4181-9544-721A6D94EE78}</ProjectGuid>
+    <OutputType>WinExe</OutputType>
+    <RootNamespace>LeapfrogEditor</RootNamespace>
+    <AssemblyName>LeapfrogEditor</AssemblyName>
+    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <ProjectTypeGuids>{60dc8134-eba5-43b8-bcc9-bb4bc16c2548};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+    <WarningLevel>4</WarningLevel>
+    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Xaml">
+      <RequiredTargetFramework>4.0</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="WindowsBase" />
+    <Reference Include="PresentationCore" />
+    <Reference Include="PresentationFramework" />
+  </ItemGroup>
+  <ItemGroup>
+    <ApplicationDefinition Include="App.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </ApplicationDefinition>
+    <Compile Include="Models\Behaviours\BreakableObjectProperties.cs" />
+    <Compile Include="Models\Behaviours\CoBehaviour.cs" />
+    <Compile Include="Models\Behaviours\SceneProperties.cs" />
+    <Compile Include="Models\Behaviours\SteerableObjectProperties.cs" />
+    <Compile Include="Models\ChildObject.cs" />
+    <Compile Include="Models\Shape and bodies\BorderTexture.cs" />
+    <Compile Include="Models\Shape and bodies\PolygonBorder.cs" />
+    <Compile Include="Models\Systems\CoSystem.cs" />
+    <Compile Include="Models\Systems\FlameEmitterProperties.cs" />
+    <Compile Include="Models\SpawnObject.cs" />
+    <Compile Include="Models\Systems\ShieldProperties.cs" />
+    <Compile Include="Models\Systems\GunProperties.cs" />
+    <Compile Include="ValueConverters\MatchingStateVisibilityConverter.cs" />
+    <Compile Include="ValueConverters\TextureBorderValueConverters.cs" />
+    <Compile Include="ValueConverters\StatePropertiesHeadlineConverter.cs" />
+    <Compile Include="ViewModels\Behvaiours\BehaviourViewModelBase.cs" />
+    <Compile Include="ViewModels\Behvaiours\CoBehaviourViewModel.cs" />
+    <Compile Include="ViewModels\Behvaiours\StateBehaviourCollectionViewModel.cs" />
+    <Compile Include="ViewModels\Behvaiours\ScenePropertiesViewModel.cs" />
+    <Compile Include="ViewModels\Behvaiours\SteerableObjectPropertiesViewModel.cs" />
+    <Compile Include="ViewModels\Behvaiours\BreakableObjectPropertiesViewModel.cs" />
+    <Compile Include="ViewModels\Behvaiours\StateViewModel.cs" />
+    <Compile Include="ViewModels\Child Objects\ChildObjectViewModel.cs" />
+    <Compile Include="ViewModels\Child Objects\ChildCOViewModel.cs" />
+    <Compile Include="ViewModels\FileCOViewModel.cs" />
+    <Compile Include="ViewModels\DataBindingProxy.cs" />
+    <Compile Include="ViewModels\Interfaces\IParentVmInterface.cs" />
+    <Compile Include="ViewModels\Joints\StateJointCollectionViewModel.cs" />
+    <Compile Include="ViewModels\Shape and bodies\BorderTextureViewModel.cs" />
+    <Compile Include="ViewModels\Shape and bodies\StateShapeCollectionViewModel.cs" />
+    <Compile Include="ViewModels\Child Objects\SpawnObjectViewModel.cs" />
+    <Compile Include="ViewModels\StateCollectionViewModelBase.cs" />
+    <Compile Include="ViewModels\Child Objects\StateChildCollectionViewModel.cs" />
+    <Compile Include="ViewModels\Systems\StateSystemCollectionViewModel.cs" />
+    <Compile Include="ViewModels\Systems\SystemViewModelBase.cs" />
+    <Compile Include="ViewModels\Systems\CoSystemViewModel.cs" />
+    <Compile Include="ViewModels\Systems\ShieldPropertiesViewModel.cs" />
+    <Compile Include="ViewModels\Systems\GunPropertiesViewModel.cs" />
+    <Compile Include="ViewModels\Systems\FlameEmitterPropertiesViewModel.cs" />
+    <Compile Include="ViewModels\TreeViewViewModel.cs" />
+    <Compile Include="Views\Controls\ChildCOObjectUserControl.xaml.cs">
+      <DependentUpon>ChildCOObjectUserControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Controls\Editable Properties Controls\Behaviour Properties Control\ScenePropEditor.xaml.cs">
+      <DependentUpon>ScenePropEditor.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Controls\Editable Properties Controls\Behaviour Properties Control\SteerableBehaviourPropEditor.xaml.cs">
+      <DependentUpon>SteerableBehaviourPropEditor.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Controls\Editable Properties Controls\Behaviour Properties Control\BreakabkeBehaviourPropEditor.xaml.cs">
+      <DependentUpon>BreakabkeBehaviourPropEditor.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Controls\Editable Properties Controls\ChildObjectStatePropEditor.xaml.cs">
+      <DependentUpon>ChildObjectStatePropEditor.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Controls\Editable Properties Controls\ChildObjectPropEditor.xaml.cs">
+      <DependentUpon>ChildObjectPropEditor.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Controls\Editable Properties Controls\Primitives\StringListSelectionEditorControl.xaml.cs">
+      <DependentUpon>StringListSelectionEditorControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Controls\Editable Properties Controls\Shape Properties Controls\TextureBorderPropEditor.xaml.cs">
+      <DependentUpon>TextureBorderPropEditor.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Controls\Editable Properties Controls\SpawnObjectPropEditor.xaml.cs">
+      <DependentUpon>SpawnObjectPropEditor.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Controls\Editable Properties Controls\Shape Properties Controls\StaticPolygonPropEditor.xaml.cs">
+      <DependentUpon>StaticPolygonPropEditor.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Controls\Editable Properties Controls\Shape Properties Controls\SpritePolygonPropEditor.xaml.cs">
+      <DependentUpon>SpritePolygonPropEditor.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Controls\Editable Properties Controls\Shape Properties Controls\SpriteBoxPropEditor.xaml.cs">
+      <DependentUpon>SpriteBoxPropEditor.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Controls\Editable Properties Controls\CompoundObjectPropEditor.xaml.cs">
+      <DependentUpon>CompoundObjectPropEditor.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Models\Joints\Rope.cs" />
+    <Compile Include="Models\TO BE REMOVED\ObjectFactoryRef.cs" />
+    <Compile Include="Models\Systems\ObjectFactoryProperties.cs" />
+    <Compile Include="Models\CollisionEntity.cs" />
+    <Compile Include="Models\Scenes\LandingSite.cs" />
+    <Compile Include="Models\ClippedWindowProperties.cs" />
+    <Compile Include="Models\Scenes\PlanetActorProperties.cs" />
+    <Compile Include="Models\ClippedWindowRef.cs" />
+    <Compile Include="Models\Scenes\PlanetActorRef.cs" />
+    <Compile Include="Models\Joints\RevoluteJoint.cs" />
+    <Compile Include="Models\TStateProperties.cs" />
+    <Compile Include="Models\ZLevelItem.cs" />
+    <Compile Include="Models\CollisionEntities.cs" />
+    <Compile Include="Models\ZLevels.cs" />
+    <Compile Include="Utilities\ParentalFinder.cs" />
+    <Compile Include="Views\Controls\Editable Properties Controls\System Properties Control\SystemPropertiesEditor.xaml.cs">
+      <DependentUpon>SystemPropertiesEditor.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Controls\Editable Properties Controls\System Properties Control\GunSystemPropEditor.xaml.cs">
+      <DependentUpon>GunSystemPropEditor.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Controls\Editable Shapes Controls\BoxedSpritePolygonControl.xaml.cs">
+      <DependentUpon>BoxedSpritePolygonControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Controls\Editable Shapes Controls\LabeledBoxControl.xaml.cs">
+      <DependentUpon>LabeledBoxControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Controls\Editable Shapes Controls\DecoratedPolygonBorderControl.xaml.cs">
+      <DependentUpon>DecoratedPolygonBorderControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Controls\Editable Shapes Controls\PolygonBorderControl.xaml.cs">
+      <DependentUpon>PolygonBorderControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Controls\Editable Shapes Controls\PrismaticJointControl.xaml.cs">
+      <DependentUpon>PrismaticJointControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Controls\Editable Shapes Controls\RevoluteJointControl.xaml.cs">
+      <DependentUpon>RevoluteJointControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Controls\Editable Shapes Controls\RopeControl.xaml.cs">
+      <DependentUpon>RopeControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Controls\Editable Shapes Controls\TrianglesControl.xaml.cs">
+      <DependentUpon>TrianglesControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Controls\Editable Shapes Controls\WeldJointControl.xaml.cs">
+      <DependentUpon>WeldJointControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Controls\Editable Shapes Controls\ScalableTexturePolygonControl.xaml.cs">
+      <DependentUpon>ScalableTexturePolygonControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Controls\Editable Shapes Controls\RotatableCircleControl.xaml.cs">
+      <DependentUpon>RotatableCircleControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Controls\Editable Shapes Controls\RotatableBoxControl.xaml.cs">
+      <DependentUpon>RotatableBoxControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Utilities\CenteredCanvas.cs" />
+    <Compile Include="ValueConverters\BitValueConverter.cs" />
+    <Compile Include="ViewModels\Joints\RopeViewModel.cs" />
+    <Compile Include="ViewModels\Systems\ObjectFactoryPropertiesViewModel.cs" />
+    <Compile Include="ViewModels\Joints\MotorizedJointViewModel.cs" />
+    <Compile Include="Views\Controls\Editable Properties Controls\Primitives\BoolEditorControl.xaml.cs">
+      <DependentUpon>BoolEditorControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Controls\Editable Properties Controls\Primitives\TexturePickerEditorControl.xaml.cs">
+      <DependentUpon>TexturePickerEditorControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Controls\Editable Properties Controls\Primitives\HeightEditorControl.xaml.cs">
+      <DependentUpon>HeightEditorControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Controls\Editable Properties Controls\Primitives\CoStateEditorControl.xaml.cs">
+      <DependentUpon>CoStateEditorControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Controls\Editable Properties Controls\Primitives\WidthEditorControl.xaml.cs">
+      <DependentUpon>WidthEditorControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Controls\Editable Properties Controls\Primitives\CollisionEntityEditorControl.xaml.cs">
+      <DependentUpon>CollisionEntityEditorControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Controls\Editable Properties Controls\Primitives\CollisionCategoryEditorControl.xaml.cs">
+      <DependentUpon>CollisionCategoryEditorControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Controls\Editable Properties Controls\Primitives\ZLevelEditorControl.xaml.cs">
+      <DependentUpon>ZLevelEditorControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Controls\Editable Properties Controls\Primitives\IntEditorControl.xaml.cs">
+      <DependentUpon>IntEditorControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Controls\Editable Properties Controls\Primitives\HeadlineControl.xaml.cs">
+      <DependentUpon>HeadlineControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Controls\Editable Properties Controls\Primitives\StringEditorControl.xaml.cs">
+      <DependentUpon>StringEditorControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Controls\PropertiesEditor.xaml.cs">
+      <DependentUpon>PropertiesEditor.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Controls\Editable Properties Controls\Primitives\DoubleEditorControl.xaml.cs">
+      <DependentUpon>DoubleEditorControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Models\CompoundObject.cs" />
+    <Compile Include="Models\LfDragablePoint.cs" />
+    <Compile Include="Models\Shape and bodies\LfDynamicCircle.cs" />
+    <Compile Include="Models\Shape and bodies\LfDynamicBoxedSpritePolygon.cs" />
+    <Compile Include="Models\Shape and bodies\LfDynamicPolygon.cs" />
+    <Compile Include="Models\Shape and bodies\LfPolygon.cs" />
+    <Compile Include="Models\Shape and bodies\LfDynamicBox.cs" />
+    <Compile Include="Models\Joints\PrismaticJoint.cs" />
+    <Compile Include="Models\Joints\MotorizedJoint.cs" />
+    <Compile Include="Models\Joints\WeldJoint.cs" />
+    <Compile Include="Models\Shape and bodies\LfSpriteBox.cs" />
+    <Compile Include="Models\Shape and bodies\LfStaticCircle.cs" />
+    <Compile Include="Models\Shape and bodies\LfStaticBoxedSpritePolygon.cs" />
+    <Compile Include="Models\Shape and bodies\LfSpritePolygon.cs" />
+    <Compile Include="Models\ChildObjectStateProperties.cs" />
+    <Compile Include="Models\Shape and bodies\LfScalableTexturePolygon.cs" />
+    <Compile Include="Models\Shape and bodies\LfShape.cs" />
+    <Compile Include="Models\Shape and bodies\LfStaticBox.cs" />
+    <Compile Include="Models\Shape and bodies\LfStaticPolygon.cs" />
+    <Compile Include="Models\Triangle.cs" />
+    <Compile Include="MouseHandlingMode.cs" />
+    <Compile Include="ScaleToPercentConverter.cs" />
+    <Compile Include="Utilities\BoundingBoxRect.cs" />
+    <Compile Include="ValueConverters\EllipseCenterValueConverter.cs" />
+    <Compile Include="ValueConverters\TwiceDoubleValueConverter.cs" />
+    <Compile Include="ValueConverters\PointCollectionValueConverters.cs" />
+    <Compile Include="ValueConverters\RotatedVertexValueConverters.cs" />
+    <Compile Include="ValueConverters\TextureOffsetValueConverters.cs" />
+    <Compile Include="ValueConverters\RadToDegValueConverter.cs" />
+    <Compile Include="ValueConverters\DebugDummyConverter.cs" />
+    <Compile Include="ValueConverters\BoolToVisibilityValueConverter.cs" />
+    <Compile Include="ValueConverters\ZoomHandleTranslateValueConverter.cs" />
+    <Compile Include="ValueConverters\ZoomHandleSizeValueConverter.cs" />
+    <Compile Include="ValueConverters\ZoomThicknessValueConverter.cs" />
+    <Compile Include="ValueConverters\TextureRectValueConverter.cs" />
+    <Compile Include="ValueConverters\TexturePathValueConverter.cs" />
+    <Compile Include="ViewModels\CompoundObjectViewModel.cs" />
+    <Compile Include="ViewModels\Interfaces\ICircleInterface.cs" />
+    <Compile Include="ViewModels\Interfaces\IBoxPointsInterface.cs" />
+    <Compile Include="ViewModels\Interfaces\IMainVmInterface.cs" />
+    <Compile Include="ViewModels\Interfaces\IWidthHeightInterface.cs" />
+    <Compile Include="ViewModels\Shape and bodies\LfPointViewModel.cs" />
+    <Compile Include="ViewModels\Shape and bodies\LfDragablePointViewModel.cs" />
+    <Compile Include="ViewModels\Shape and bodies\LfDynamicBoxedSpritePolygonViewModel.cs" />
+    <Compile Include="ViewModels\Shape and bodies\LfDynamicCircleViewModel.cs" />
+    <Compile Include="ViewModels\Shape and bodies\LfDynamicPolygonViewModel.cs" />
+    <Compile Include="ViewModels\Shape and bodies\LfPolygonViewModel.cs" />
+    <Compile Include="ViewModels\Shape and bodies\LfDynamicBoxViewModel.cs" />
+    <Compile Include="ViewModels\Shape and bodies\LfScalableTexturePolygonViewModel.cs" />
+    <Compile Include="ViewModels\Joints\PrismaticJointViewModel.cs" />
+    <Compile Include="ViewModels\Joints\RevoluteJointViewModel.cs" />
+    <Compile Include="ViewModels\Joints\WeldJointViewModel.cs" />
+    <Compile Include="ViewModels\Shape and bodies\LfStaticBoxedSpritePolygonViewModel.cs" />
+    <Compile Include="ViewModels\Shape and bodies\LfSpriteBoxViewModel.cs" />
+    <Compile Include="ViewModels\Shape and bodies\LfStaticCircleViewModel.cs" />
+    <Compile Include="ViewModels\Shape and bodies\LfSpritePolygonViewModel.cs" />
+    <Compile Include="ViewModels\Interfaces\IPositionInterface.cs" />
+    <Compile Include="ViewModels\MainViewModel.cs" />
+    <Compile Include="ViewModels\Shape and bodies\LfShapeViewModel.cs" />
+    <Compile Include="ViewModels\Shape and bodies\LfStaticBoxViewModel.cs" />
+    <Compile Include="ViewModels\Shape and bodies\LfStaticPolygonViewModel.cs" />
+    <Compile Include="ViewModels\Shape and bodies\TriangleViewModel.cs" />
+    <Compile Include="ViewModels\ViewModelBase.cs" />
+    <Compile Include="Views\Controls\CompoundObjectUserControl.xaml.cs">
+      <DependentUpon>CompoundObjectUserControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Controls\Editable Shapes Controls\TriangleShape.cs" />
+    <Page Include="Views\Controls\ChildCOObjectUserControl.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\Controls\Editable Properties Controls\Behaviour Properties Control\ScenePropEditor.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\Controls\Editable Properties Controls\Behaviour Properties Control\SteerableBehaviourPropEditor.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\Controls\Editable Properties Controls\Behaviour Properties Control\BreakabkeBehaviourPropEditor.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\Controls\Editable Properties Controls\ChildObjectStatePropEditor.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\Controls\Editable Properties Controls\ChildObjectPropEditor.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\Controls\Editable Properties Controls\Primitives\StringListSelectionEditorControl.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\Controls\Editable Properties Controls\Shape Properties Controls\TextureBorderPropEditor.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\Controls\Editable Properties Controls\SpawnObjectPropEditor.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\Controls\Editable Properties Controls\Shape Properties Controls\StaticPolygonPropEditor.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\Controls\Editable Properties Controls\Shape Properties Controls\SpritePolygonPropEditor.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\Controls\Editable Properties Controls\Shape Properties Controls\SpriteBoxPropEditor.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\Controls\Editable Properties Controls\CompoundObjectPropEditor.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\Controls\Editable Properties Controls\System Properties Control\SystemPropertiesEditor.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\Controls\Editable Properties Controls\System Properties Control\GunSystemPropEditor.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\Controls\Editable Shapes Controls\BoxedSpritePolygonControl.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\Controls\Editable Shapes Controls\LabeledBoxControl.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\Controls\Editable Shapes Controls\DecoratedPolygonBorderControl.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\Controls\Editable Shapes Controls\PolygonBorderControl.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\Controls\Editable Shapes Controls\PrismaticJointControl.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\Controls\Editable Shapes Controls\RevoluteJointControl.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\Controls\Editable Shapes Controls\RopeControl.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\Controls\Editable Shapes Controls\TrianglesControl.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\Controls\Editable Shapes Controls\WeldJointControl.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\Controls\Editable Shapes Controls\ScalableTexturePolygonControl.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\Controls\Editable Shapes Controls\RotatableCircleControl.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\Controls\Editable Shapes Controls\RotatableBoxControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\Controls\Editable Properties Controls\Primitives\BoolEditorControl.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\Controls\Editable Properties Controls\Primitives\TexturePickerEditorControl.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\Controls\Editable Properties Controls\Primitives\HeightEditorControl.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\Controls\Editable Properties Controls\Primitives\CoStateEditorControl.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\Controls\Editable Properties Controls\Primitives\WidthEditorControl.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\Controls\Editable Properties Controls\Primitives\CollisionEntityEditorControl.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\Controls\Editable Properties Controls\Primitives\CollisionCategoryEditorControl.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\Controls\Editable Properties Controls\Primitives\ZLevelEditorControl.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\Controls\Editable Properties Controls\Primitives\IntEditorControl.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\Controls\Editable Properties Controls\Primitives\HeadlineControl.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\Controls\Editable Properties Controls\Primitives\StringEditorControl.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\Controls\PropertiesEditor.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\Controls\Editable Properties Controls\Primitives\DoubleEditorControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="MainWindow.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Compile Include="App.xaml.cs">
+      <DependentUpon>App.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="MainWindow.xaml.cs">
+      <DependentUpon>MainWindow.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Page Include="Views\Controls\CompoundObjectUserControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Properties\AssemblyInfo.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+    <Compile Include="Properties\Settings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Settings.settings</DependentUpon>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+    </Compile>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <None Include="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="App.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\AdvancedZoomAndPanSample\ZoomAndPan\ZoomAndPan.csproj">
+      <Project>{468adede-6f5e-40c0-99c9-c6dac4fac934}</Project>
+      <Name>ZoomAndPan</Name>
+    </ProjectReference>
+    <ProjectReference Include="PolygonTriangulation_src\GeometryUtility\GeometryUtility.csproj">
+      <Project>{fd47d6ac-8238-4975-91c8-51e88326f27f}</Project>
+      <Name>GeometryUtility</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="ViewModels\Scenes\" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+</Project>

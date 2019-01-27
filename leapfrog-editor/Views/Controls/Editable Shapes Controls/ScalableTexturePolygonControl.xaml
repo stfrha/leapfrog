@@ -1,0 +1,69 @@
+﻿<UserControl x:Class="LeapfrogEditor.ScalableTexturePolygonControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:LeapfrogEditor"
+             xmlns:ZoomAndPan="clr-namespace:ZoomAndPan;assembly=ZoomAndPan"
+             x:Name="root"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800">
+   <UserControl.Resources>
+      <local:TexturePathValueConverter x:Key="TexturePathValueConverter" />
+      <local:TextureRectMultiValueConverter x:Key="TextureRectMultiValueConverter" />
+      <local:NegRadToDegValueConverter x:Key="NegRadToDegValueConverter" />
+      <local:BoolToVisibilityValueConverter x:Key="BoolToVisibilityValueConverter" />
+      <local:ZoomThicknessValueConverter x:Key="ZoomThicknessValueConverter" />
+      <local:ZoomHandleSizeValueConverter x:Key="ZoomHandleSizeValueConverter" />
+      <local:ZoomHandleTranslateValueConverter x:Key="ZoomHandleTranslateValueConverter" />
+      <local:MultiRotatedVertexValueConverter x:Key="MultiRotatedVertexValueConverter" />
+      <local:PreviousMultiRotatedVertexValueConverter x:Key="PreviousMultiRotatedVertexValueConverter" />
+   </UserControl.Resources>
+   <Grid>
+      <Polygon 
+               x:Name="stpvm"
+               StrokeThickness="0"
+               Points="{Binding Points}"
+				   MouseDown="Shape_MouseDown"
+				   MouseUp="Shape_MouseUp">
+         <Polygon.Fill>
+            <ImageBrush
+                     ViewportUnits="Absolute"
+                     TileMode="Tile"
+                     Stretch="Uniform"
+                     AlignmentX="Center"
+                     AlignmentY="Center" 
+                     ImageSource="{Binding Texture, Converter={StaticResource TexturePathValueConverter}}" >
+               <ImageBrush.Viewport>
+                  <MultiBinding Converter="{StaticResource TextureRectMultiValueConverter}" >
+                     <Binding Path="TextureOffsetX" />
+                     <Binding Path="TextureOffsetY" />
+                     <Binding Path="TextureWidth" />
+                     <Binding Path="TextureHeight" />
+                  </MultiBinding>
+               </ImageBrush.Viewport>
+            </ImageBrush>
+         </Polygon.Fill>
+         <Polygon.RenderTransform>
+            <TransformGroup>
+               <RotateTransform x:Name="d1"
+                        Angle="{Binding Angle, Converter={StaticResource NegRadToDegValueConverter}}"
+                        CenterX="0"
+                        CenterY="0"
+                     />
+            </TransformGroup>
+         </Polygon.RenderTransform>
+      </Polygon>
+      <ContentControl
+         Content="{Binding}">
+         <ContentControl.Resources>
+            <DataTemplate DataType="{x:Type local:LfStaticPolygonViewModel}">
+               <local:DecoratedPolygonBorderControl />
+            </DataTemplate>
+            <DataTemplate DataType="{x:Type local:LfDynamicPolygonViewModel}">
+               <local:PolygonBorderControl />
+            </DataTemplate>
+         </ContentControl.Resources>
+      </ContentControl>
+   </Grid>
+</UserControl>

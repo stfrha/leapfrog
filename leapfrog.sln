@@ -9,7 +9,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AdvancedZoomAndPanSample", 
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GeometryUtility", "..\LeapfrogEditor\PolygonTriangulation_src\GeometryUtility\GeometryUtility.csproj", "{FD47D6AC-8238-4975-91C8-51E88326F27F}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "leapfrog", "proj\leapfrog.vcxproj", "{2B4D7491-A4F8-4606-B0E3-2A1FCE3C46C4}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "leapfrog", "leapfrog-game\proj\leapfrog.vcxproj", "{2B4D7491-A4F8-4606-B0E3-2A1FCE3C46C4}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LeapfrogEditor", "..\LeapfrogEditor\LeapfrogEditor.csproj", "{091EEA6F-34DF-4181-9544-721A6D94EE78}"
 EndProject

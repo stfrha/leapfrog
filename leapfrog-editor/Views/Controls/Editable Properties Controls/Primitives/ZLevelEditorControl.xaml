@@ -1,0 +1,46 @@
+﻿<UserControl x:Class="LeapfrogEditor.ZLevelEditorControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:LeapfrogEditor"
+             x:Name="root"
+             mc:Ignorable="d" 
+             d:DesignHeight="15" d:DesignWidth="200">
+    <Grid>
+      <Grid.ColumnDefinitions>
+         <ColumnDefinition Width="75" />
+         <ColumnDefinition Width="100" />
+         <ColumnDefinition Width="25" />
+      </Grid.ColumnDefinitions>
+      <TextBlock Grid.Column="0"
+         VerticalAlignment="Center"
+         FontSize="10"
+         Text="{Binding Headline, ElementName=root}" 
+          />
+      <TextBox Grid.Column="1"       
+         VerticalAlignment="Center"
+         FontSize="10" 
+         Height="15"
+         Text="{Binding MyValue, ElementName=root}"
+      />
+      <ToggleButton Name="button" Grid.Column="2" Margin="1" Height="13" FontSize="8" Content="..." >
+         <!--<ToggleButton.Template>
+            <ControlTemplate TargetType="ToggleButton">
+               <TextBlock >...</TextBlock>
+            </ControlTemplate>
+         </ToggleButton.Template>-->
+      </ToggleButton>
+      <Popup IsOpen="{Binding IsChecked, ElementName=button}" StaysOpen="False">
+         <Border Background="LightYellow">
+            <DataGrid Width="150" Height="200" FontSize="10"
+               ItemsSource="{Binding DataContext.MyZLevels.Levels, RelativeSource={RelativeSource AncestorType={x:Type Window}}}"
+               AutoGenerateColumns="True"
+               SelectionMode="Single"
+               SelectionUnit="FullRow"
+               SelectedIndex="{Binding MyValue, ElementName=root}">
+            </DataGrid>
+         </Border>
+      </Popup>
+   </Grid>
+</UserControl>

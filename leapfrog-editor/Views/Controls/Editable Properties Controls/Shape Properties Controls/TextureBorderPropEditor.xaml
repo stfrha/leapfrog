@@ -1,0 +1,18 @@
+﻿<UserControl x:Class="LeapfrogEditor.TextureBorderPropEditor"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             x:Name="root"
+             xmlns:local="clr-namespace:LeapfrogEditor"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800">
+   <Expander Header="{Binding Headline, ElementName=root}">
+      <StackPanel>
+         <local:TexturePickerEditorControl Headline="Texture" MyValue="{Binding TextureBorder.Texture, ElementName=root, Mode=TwoWay}" />
+         <local:DoubleEditorControl Headline="Horis Offset" MyValue="{Binding TextureBorder.HorisontalOffset, ElementName=root, Mode=TwoWay}" />
+         <local:DoubleEditorControl Headline="Texture Width" MyValue="{Binding TextureBorder.TextureWidth, ElementName=root, Mode=TwoWay}" />
+         <local:DoubleEditorControl Headline="Texture Height" MyValue="{Binding TextureBorder.TextureHeight, ElementName=root, Mode=TwoWay}" />
+      </StackPanel>
+   </Expander>
+</UserControl>

@@ -1,0 +1,135 @@
+﻿<UserControl x:Class="LeapfrogEditor.ChildCOObjectUserControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:LeapfrogEditor"
+             xmlns:ZoomAndPan="clr-namespace:ZoomAndPan;assembly=ZoomAndPan"
+             mc:Ignorable="d" 
+             x:Name="root"
+             d:DesignHeight="1000" d:DesignWidth="1000">
+   <UserControl.Resources>
+      <local:BindingProxy x:Key="DataContextProxy" 
+         Data="{Binding DataContext, RelativeSource={RelativeSource FindAncestor, AncestorType=Window}}" />
+      <local:ZoomThicknessValueConverter x:Key="ZoomThicknessValueConverter" />
+      <local:BoolToVisibilityValueConverter x:Key="BoolToVisibilityValueConverter" />
+      <local:MatchingStateVisibilityConverter x:Key="MatchingStateVisibilityConverter" />
+      <DataTemplate DataType="{x:Type local:WeldJointViewModel}">
+         <local:WeldJointControl />
+      </DataTemplate>
+      <DataTemplate DataType="{x:Type local:RevoluteJointViewModel}">
+         <local:RevoluteJointControl />
+      </DataTemplate>
+      <DataTemplate DataType="{x:Type local:PrismaticJointViewModel}">
+         <local:PrismaticJointControl />
+      </DataTemplate>
+      <DataTemplate DataType="{x:Type local:RopeViewModel}">
+         <local:RopeControl />
+      </DataTemplate>
+      <DataTemplate DataType="{x:Type local:LfScalableTexturePolygonViewModel}">
+         <local:ScalableTexturePolygonControl>
+         </local:ScalableTexturePolygonControl>
+      </DataTemplate>
+      <DataTemplate DataType="{x:Type local:LfStaticBoxedSpritePolygonViewModel}">
+         <local:BoxedSpritePolygonControl />
+      </DataTemplate>
+      <DataTemplate DataType="{x:Type local:LfStaticBoxViewModel}">
+         <local:RotatableBoxControl />
+      </DataTemplate>
+      <DataTemplate DataType="{x:Type local:LfSpriteBoxViewModel}">
+         <local:RotatableBoxControl />
+      </DataTemplate>
+      <DataTemplate DataType="{x:Type local:LfStaticCircleViewModel}">
+         <local:RotatableCircleControl />
+      </DataTemplate>
+      <DataTemplate DataType="{x:Type local:ChildObjectViewModel}">
+         <ItemsControl ItemsSource="{Binding StateProperties}">
+            <ItemsControl.ItemsPanel>
+               <ItemsPanelTemplate>
+                  <Canvas/>
+               </ItemsPanelTemplate>
+            </ItemsControl.ItemsPanel>
+            <ItemsControl.ItemContainerStyle>
+               <Style TargetType="ContentPresenter">
+                  <Setter Property="Canvas.Left" Value="{Binding PosX}"/>
+                  <Setter Property="Canvas.Top" Value="{Binding PosY}"/>
+               </Style>
+            </ItemsControl.ItemContainerStyle>
+            <ItemsControl.ContextMenu>
+               <ContextMenu>
+                  <Separator />
+                  <MenuItem Header="Delete" 
+                                 CommandParameter="{Binding}"
+                                 Command="{Binding Path=Data.DeleteThisObject, Source={StaticResource DataContextProxy}}" />
+               </ContextMenu>
+            </ItemsControl.ContextMenu>
+         </ItemsControl>
+      </DataTemplate>
+      <DataTemplate DataType="{x:Type local:ChildCOViewModel}">
+         <local:ChildCOObjectUserControl>
+            <local:ChildCOObjectUserControl.Visibility>
+               <MultiBinding Converter="{StaticResource MatchingStateVisibilityConverter}" >
+                  <Binding Path="ObjectState" />
+                  <Binding Path="DispState" />
+               </MultiBinding>
+            </local:ChildCOObjectUserControl.Visibility>
+            <local:ChildCOObjectUserControl.ContextMenu>
+               <ContextMenu>
+                  <Separator />
+                  <MenuItem Header="Delete" 
+                                 CommandParameter="{Binding}"
+                                 Command="{Binding Path=Data.DeleteThisObject, Source={StaticResource DataContextProxy}}" />
+               </ContextMenu>
+            </local:ChildCOObjectUserControl.ContextMenu>
+         </local:ChildCOObjectUserControl>
+      </DataTemplate>
+      <!--
+      <DataTemplate DataType="{x:Type local:ObjectFactoryViewModel}">
+         <local:LabeledBoxControl />
+      </DataTemplate>
+      -->
+   </UserControl.Resources>
+   <Canvas x:Name="myCoUserControl" >
+      <ItemsControl ItemsSource="{Binding StateShapes.Shapes}">
+         <ItemsControl.ItemsPanel>
+            <ItemsPanelTemplate>
+               <Canvas/>
+            </ItemsPanelTemplate>
+         </ItemsControl.ItemsPanel>
+         <ItemsControl.ItemContainerStyle>
+            <Style TargetType="ContentPresenter">
+               <Setter Property="Canvas.Left" Value="{Binding PosX}"/>
+               <Setter Property="Canvas.Top" Value="{Binding PosY}"/>
+            </Style>
+         </ItemsControl.ItemContainerStyle>
+      </ItemsControl>
+      <ItemsControl ItemsSource="{Binding StateJoints.Joints}"
+         Visibility="{Binding ShowJoints, ElementName=root, Converter={StaticResource BoolToVisibilityValueConverter}}" >
+         <ItemsControl.ItemsPanel>
+            <ItemsPanelTemplate>
+               <Canvas/>
+            </ItemsPanelTemplate>
+         </ItemsControl.ItemsPanel>
+      </ItemsControl>
+      <ItemsControl ItemsSource="{Binding ChildObjectsWithStates.Children}">
+         <ItemsControl.ItemsPanel>
+            <ItemsPanelTemplate>
+               <Canvas/>
+            </ItemsPanelTemplate>
+         </ItemsControl.ItemsPanel>
+      </ItemsControl>
+      <Rectangle 
+         Visibility="{Binding IsSelected, Converter={StaticResource BoolToVisibilityValueConverter}}"
+         Canvas.Left="{Binding BoundingBox.Left}"
+         Canvas.Top="{Binding BoundingBox.Top}" 
+         Width="{Binding BoundingBox.Width}"
+         Height="{Binding BoundingBox.Height}"
+         StrokeThickness="{Binding ContentScale, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type ZoomAndPan:ZoomAndPanControl}}, Converter={StaticResource ZoomThicknessValueConverter}}"
+         Stroke="DarkBlue"
+         MouseDown="CompoundObject_MouseDown"
+			MouseUp="CompoundObject_MouseUp"
+			MouseMove="CompoundObject_MouseMove"
+         Cursor="ScrollAll" />
+   </Canvas>
+            
+</UserControl>

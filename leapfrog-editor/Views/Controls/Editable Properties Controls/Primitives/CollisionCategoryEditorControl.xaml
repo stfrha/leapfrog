@@ -1,0 +1,114 @@
+﻿<UserControl x:Class="LeapfrogEditor.CollisionCategoryEditorControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:LeapfrogEditor"
+             x:Name="root"
+             mc:Ignorable="d" 
+             d:DesignHeight="15" d:DesignWidth="200">
+   <UserControl.Resources>
+      <local:BitValueConverter x:Key="BitValueConverter" />
+   </UserControl.Resources>
+   <Grid>
+      <Grid.ColumnDefinitions>
+         <ColumnDefinition Width="75" />
+         <ColumnDefinition Width="100" />
+         <ColumnDefinition Width="25" />
+      </Grid.ColumnDefinitions>
+      <TextBlock Grid.Column="0"
+         VerticalAlignment="Center"
+         FontSize="10"
+         Text="{Binding Headline, ElementName=root}" 
+          />
+      <TextBox Grid.Column="1"       
+         VerticalAlignment="Center"
+         FontSize="10" 
+         Height="15"
+         Text="{Binding MyValue, ElementName=root}"
+      />
+      <ToggleButton Name="button" Grid.Column="2" Margin="1" Height="13" FontSize="8" Content="..." >
+         <!--<ToggleButton.Template>
+            <ControlTemplate TargetType="ToggleButton">
+               <TextBlock >...</TextBlock>
+            </ControlTemplate>
+         </ToggleButton.Template>-->
+      </ToggleButton>
+      <Popup IsOpen="{Binding IsChecked, ElementName=button}" StaysOpen="False">
+         <Border Background="LightYellow">
+            <Grid>
+               <Grid.RowDefinitions>
+                  <RowDefinition Height="17" />
+                  <RowDefinition Height="17" />
+                  <RowDefinition Height="17" />
+                  <RowDefinition Height="17" />
+                  <RowDefinition Height="17" />
+                  <RowDefinition Height="17" />
+                  <RowDefinition Height="17" />
+                  <RowDefinition Height="17" />
+                  <RowDefinition Height="17" />
+                  <RowDefinition Height="17" />
+                  <RowDefinition Height="17" />
+                  <RowDefinition Height="17" />
+                  <RowDefinition Height="17" />
+                  <RowDefinition Height="17" />
+                  <RowDefinition Height="17" />
+                  <RowDefinition Height="17" />
+               </Grid.RowDefinitions>
+               <Grid.ColumnDefinitions>
+                  <ColumnDefinition Width="205" />
+                  <ColumnDefinition Width="15" />
+               </Grid.ColumnDefinitions>
+               <TextBlock Grid.Row="0" Grid.Column="0" Margin="4,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Left" Text="Default" FontSize="10" />
+               <CheckBox Grid.Row="1" Grid.Column="1" 
+                  IsChecked="{Binding MyValue, ElementName=root, Converter={StaticResource BitValueConverter}, ConverterParameter=1 }"/>
+               <TextBlock Grid.Row="1" Grid.Column="0" Margin="4,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Left" Text="-" FontSize="10" />
+               <CheckBox Grid.Row="2" Grid.Column="1" 
+                  IsChecked="{Binding MyValue, ElementName=root, Converter={StaticResource BitValueConverter}, ConverterParameter=2 }"/>
+               <TextBlock Grid.Row="2" Grid.Column="0" Margin="4,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Left" Text="Leapfrog parts, body and bullets" FontSize="10" />
+               <CheckBox Grid.Row="3" Grid.Column="1" 
+                  IsChecked="{Binding MyValue, ElementName=root, Converter={StaticResource BitValueConverter}, ConverterParameter=3 }"/>
+               <TextBlock Grid.Row="3" Grid.Column="0" Margin="4,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Left" Text="Dead bodies (asteroids etc)" FontSize="10" />
+               <CheckBox Grid.Row="4" Grid.Column="1" 
+                  IsChecked="{Binding MyValue, ElementName=root, Converter={StaticResource BitValueConverter}, ConverterParameter=4 }"/>
+               <TextBlock Grid.Row="4" Grid.Column="0" Margin="4,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Left" Text="Enemy ships, turrets, missiles and bullets" FontSize="10" />
+               <CheckBox Grid.Row="5" Grid.Column="1" 
+                  IsChecked="{Binding MyValue, ElementName=root, Converter={StaticResource BitValueConverter}, ConverterParameter=5 }"/>
+               <TextBlock Grid.Row="5" Grid.Column="0" Margin="4,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Left" Text="Structures colliding with ships" FontSize="10" />
+               <CheckBox Grid.Row="6" Grid.Column="1" 
+                  IsChecked="{Binding MyValue, ElementName=root, Converter={StaticResource BitValueConverter}, ConverterParameter=6 }"/>
+               <TextBlock Grid.Row="6" Grid.Column="0" Margin="4,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Left" Text="Structures invisable to ships" FontSize="10" />
+               <CheckBox Grid.Row="7" Grid.Column="1" 
+                  IsChecked="{Binding MyValue, ElementName=root, Converter={StaticResource BitValueConverter}, ConverterParameter=7 }"/>
+               <TextBlock Grid.Row="7" Grid.Column="0" Margin="4,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Left" Text="Firendly ships and bullets" FontSize="10" />
+                <CheckBox Grid.Row="8" Grid.Column="1" 
+                  IsChecked="{Binding MyValue, ElementName=root, Converter={StaticResource BitValueConverter}, ConverterParameter=8 }"/>
+               <TextBlock Grid.Row="8" Grid.Column="0" Margin="4,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Left" Text="Unharmful force fields" FontSize="10" />
+               <CheckBox Grid.Row="9" Grid.Column="1" 
+                  IsChecked="{Binding MyValue, ElementName=root, Converter={StaticResource BitValueConverter}, ConverterParameter=9 }"/>
+               <TextBlock Grid.Row="9" Grid.Column="0" Margin="4,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Left" Text="Harmful force fields" FontSize="10" />
+               <CheckBox Grid.Row="10" Grid.Column="1" 
+                  IsChecked="{Binding MyValue, ElementName=root, Converter={StaticResource BitValueConverter}, ConverterParameter=10 }"/>
+               <TextBlock Grid.Row="10" Grid.Column="0" Margin="4,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Left" Text="Loose dynamic objects (physical boxes etc)" FontSize="10" />
+               <CheckBox Grid.Row="11" Grid.Column="1" 
+                  IsChecked="{Binding MyValue, ElementName=root, Converter={StaticResource BitValueConverter}, ConverterParameter=11 }"/>
+               <TextBlock Grid.Row="11" Grid.Column="0" Margin="4,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Left" Text="Static and undestructable objects" FontSize="10" />
+               <CheckBox Grid.Row="12" Grid.Column="1" 
+                  IsChecked="{Binding MyValue, ElementName=root, Converter={StaticResource BitValueConverter}, ConverterParameter=12 }"/>
+               <TextBlock Grid.Row="12" Grid.Column="0" Margin="4,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Left" Text="Objects temporarilly attached to structures" FontSize="10" />
+               <CheckBox Grid.Row="13" Grid.Column="1" 
+                  IsChecked="{Binding MyValue, ElementName=root, Converter={StaticResource BitValueConverter}, ConverterParameter=13 }"/>
+               <TextBlock Grid.Row="13" Grid.Column="0" Margin="4,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Left" Text="Flame and smoke particles" FontSize="10" />
+               <CheckBox Grid.Row="14" Grid.Column="1" 
+                  IsChecked="{Binding MyValue, ElementName=root, Converter={StaticResource BitValueConverter}, ConverterParameter=14 }"/>
+               <TextBlock Grid.Row="14" Grid.Column="0" Margin="4,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Left" Text="Leapfrog shield" FontSize="10" />
+               <CheckBox Grid.Row="15" Grid.Column="1" 
+                  IsChecked="{Binding MyValue, ElementName=root, Converter={StaticResource BitValueConverter}, ConverterParameter=15 }"/>
+               <TextBlock Grid.Row="15" Grid.Column="0" Margin="4,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Left" Text="-" FontSize="10" />
+               <CheckBox Grid.Row="0" Grid.Column="1" 
+                  IsChecked="{Binding MyValue, ElementName=root, Converter={StaticResource BitValueConverter}, ConverterParameter=16 }"/>
+            </Grid>
+         </Border>
+      </Popup>
+   </Grid>
+</UserControl>
