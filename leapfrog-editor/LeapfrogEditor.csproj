@@ -506,13 +506,13 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\AdvancedZoomAndPanSample\AdvancedZoomAndPanSample.csproj">
+      <Project>{120da64e-d1b0-4d35-96ca-e3986504a1b9}</Project>
+      <Name>AdvancedZoomAndPanSample</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\AdvancedZoomAndPanSample\ZoomAndPan\ZoomAndPan.csproj">
       <Project>{468adede-6f5e-40c0-99c9-c6dac4fac934}</Project>
       <Name>ZoomAndPan</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\LeapfrogEditor\PolygonTriangulation_src\PolygonCuttingEar\PolygonCuttingEar.csproj">
-      <Project>{baa6d355-c95d-4714-8989-d9891efc5db6}</Project>
-      <Name>PolygonCuttingEar</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\MicroMvvm\MicroMvvm.csproj">
       <Project>{9efe6cbd-df21-436e-9f81-e258bab0b653}</Project>
@@ -525,6 +525,14 @@
     <ProjectReference Include="PolygonTriangulation_src\GeometryUtility\GeometryUtility.csproj">
       <Project>{fd47d6ac-8238-4975-91c8-51e88326f27f}</Project>
       <Name>GeometryUtility</Name>
+    </ProjectReference>
+    <ProjectReference Include="PolygonTriangulation_src\PolygonCuttingEarInterface\PolygonCuttingEarInterface.csproj">
+      <Project>{1ad8d0fd-89cd-4c72-81ed-e4fbdb78b00f}</Project>
+      <Name>PolygonCuttingEarInterface</Name>
+    </ProjectReference>
+    <ProjectReference Include="PolygonTriangulation_src\PolygonCuttingEar\PolygonCuttingEar.csproj">
+      <Project>{baa6d355-c95d-4714-8989-d9891efc5db6}</Project>
+      <Name>PolygonCuttingEar</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
