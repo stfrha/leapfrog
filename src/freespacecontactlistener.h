@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Box2D/Box2D.h"
+#include "Box2d/Box2D.h"
 #include "sceneactor.h"
 
 class FreeSpaceContactListener : public b2ContactListener

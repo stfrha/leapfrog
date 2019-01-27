@@ -1,6 +1,6 @@
 
 #include "oxygine-framework.h"
-#include "Box2D/Box2D.h"
+#include "Box2d/Box2D.h"
 #include "Box2DDebugDraw.h"
 
 DECLARE_SMART(Marker, spMarker);
