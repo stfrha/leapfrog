@@ -976,6 +976,79 @@
     height="14.999999999999998"
     density="8"
     friction="0" />
+  <dynamicPolygon
+    name="noName"
+    texture="default"
+    posX="242.03685629092297"
+    posY="97.518818295305664"
+    angle="0.50614548307835583"
+    zLevel="0"
+    collisionEntity="notApplicable"
+    collisionCategory="33"
+    collisionMask="65534"
+    textureMeterWidth="400"
+    textureMeterHeight="400"
+    textureOffsetMeterX="3"
+    textureOffsetMeterY="0"
+    density="1"
+    friction="0">
+    <vertices>
+      <vertex
+        id="1"
+        x="-10.323215046515438"
+        y="-6.0519346883713094" />
+      <vertex
+        id="2"
+        x="23.922388871784278"
+        y="-7.280727047934306" />
+      <vertex
+        id="3"
+        x="23.308093425677413"
+        y="13.045614401446796" />
+      <vertex
+        id="4"
+        x="0"
+        y="16.641661823849972" />
+    </vertices>
+    <triangles>
+      <triangle
+        id="1"
+        v1="1"
+        v2="4"
+        v3="3" />
+      <triangle
+        id="2"
+        v1="3"
+        v2="2"
+        v3="1" />
+    </triangles>
+    <border
+      leftGroundAngle="0"
+      rightGroundAngle="0"
+      leftCeilingAngle="0"
+      rightCeilingAngle="0">
+      <groundBorder
+        texture="notDefined"
+        horisontalMeterOffset="0"
+        textureMeterWidth="0"
+        textureMeterHeight="0" />
+      <ceilingBorder
+        texture="notDefined"
+        horisontalMeterOffset="0"
+        textureMeterWidth="0"
+        textureMeterHeight="0" />
+      <leftWallBorder
+        texture="notDefined"
+        horisontalMeterOffset="0"
+        textureMeterWidth="0"
+        textureMeterHeight="0" />
+      <rightWallBorder
+        texture="notDefined"
+        horisontalMeterOffset="0"
+        textureMeterWidth="0"
+        textureMeterHeight="0" />
+    </border>
+  </dynamicPolygon>
   <weldJoint
     name="noJointName"
     objectAName="springWeight"
@@ -1112,8 +1185,8 @@
       state="landingState">
       <properties
         file="leapfrog_reentry.xml"
-        posX="70"
-        posY="75.733034202529012" />
+        posX="294.49995740923578"
+        posY="29.711785249662739" />
     </stateProperties>
     <stateProperties
       state="groundState">
