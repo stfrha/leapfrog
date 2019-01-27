@@ -41,7 +41,7 @@ android {
 
         externalNativeBuild {
             ndkBuild {
-                arguments 'NDK_MODULE_PATH+=../../'
+                arguments 'NDK_MODULE_PATH+=../../../'
             }
         }
     }

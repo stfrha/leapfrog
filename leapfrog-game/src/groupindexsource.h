@@ -9,7 +9,7 @@ private:
    int m_source;
 
 public:
-   class GroupIndexSource();
+   GroupIndexSource();
 
    int getNewGroupIndex();
 
