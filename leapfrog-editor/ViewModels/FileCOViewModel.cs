@@ -58,7 +58,7 @@ namespace LeapfrogEditor
       {
          get
          {
-            string s = @"..\..\..\leapfrog\data\" + FileName;
+            string s = GlobalConstants.DataDirectory + FileName;
             string fullPath = System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
             string fullFileName = System.IO.Path.Combine(fullPath, s);
 

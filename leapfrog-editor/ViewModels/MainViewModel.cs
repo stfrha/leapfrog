@@ -102,14 +102,14 @@ namespace LeapfrogEditor
       public MainViewModel()
       {
          string fileName = "z_levels.xml";
-         string s = @"..\..\..\leapfrog\data\" + fileName;
+         string s = GlobalConstants.DataDirectory + fileName;
          string fullPath = System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
          string fullFileName = System.IO.Path.Combine(fullPath, s);
 
          MyZLevels = ZLevels.ReadFromFile(fullFileName);
 
          fileName = "collision_entities.xml";
-         s = @"..\..\..\leapfrog\data\" + fileName;
+         s = GlobalConstants.DataDirectory + fileName;
          fullPath = System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
          fullFileName = System.IO.Path.Combine(fullPath, s);
 
@@ -118,7 +118,7 @@ namespace LeapfrogEditor
 
          // Build collections of texture names
          // Process the list of files found in the directory.
-         s = @"..\..\..\leapfrog\data\images";
+         s = GlobalConstants.DataDirectory + "images";
 
          string[] fileEntries = Directory.GetFiles(s);
          foreach (string file in fileEntries)
@@ -281,7 +281,7 @@ namespace LeapfrogEditor
             if (sfd.ShowDialog() == true)
             {
                string fileName = System.IO.Path.GetFileName(sfd.FileName);
-               string s = @"..\..\..\leapfrog\data\" + fileName;
+               string s = GlobalConstants.DataDirectory + fileName;
                string fullPath = System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
                string fullFileName = System.IO.Path.Combine(fullPath, s);
 
@@ -588,7 +588,7 @@ namespace LeapfrogEditor
          if (ofd.ShowDialog() == true)
          {
             string fileName = System.IO.Path.GetFileName(ofd.FileName);
-            string s = @"..\..\..\leapfrog\data\" + fileName;
+            string s = GlobalConstants.DataDirectory + fileName;
             string fullPath = System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
             string fullFileName = System.IO.Path.Combine(fullPath, s);
 
@@ -2136,7 +2136,7 @@ namespace LeapfrogEditor
 
       private FileCOViewModel OpenFile(string fileName)
       {
-         string s = @"..\..\..\leapfrog\data\" + fileName;
+         string s = GlobalConstants.DataDirectory + fileName;
          string fullPath = System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
          string fullFileName = System.IO.Path.Combine(fullPath, s);
 

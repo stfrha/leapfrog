@@ -54,6 +54,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Utilities\GlobalDataDirectory.cs" />
     <Compile Include="Models\Behaviours\BreakableObjectProperties.cs" />
     <Compile Include="Models\Behaviours\CoBehaviour.cs" />
     <Compile Include="Models\Behaviours\SceneProperties.cs" />
@@ -505,9 +506,21 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\AdvancedZoomAndPanSample\ZoomAndPan\ZoomAndPan.csproj">
+    <ProjectReference Include="..\..\AdvancedZoomAndPanSample\ZoomAndPan\ZoomAndPan.csproj">
       <Project>{468adede-6f5e-40c0-99c9-c6dac4fac934}</Project>
       <Name>ZoomAndPan</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\LeapfrogEditor\PolygonTriangulation_src\PolygonCuttingEar\PolygonCuttingEar.csproj">
+      <Project>{baa6d355-c95d-4714-8989-d9891efc5db6}</Project>
+      <Name>PolygonCuttingEar</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\MicroMvvm\MicroMvvm.csproj">
+      <Project>{9efe6cbd-df21-436e-9f81-e258bab0b653}</Project>
+      <Name>MicroMvvm</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\MultiSelectTreeView\MultiSelectTreeView\MultiSelectTreeView.csproj">
+      <Project>{2854814f-ea3c-41d4-aa94-460c4694f430}</Project>
+      <Name>MultiSelectTreeView</Name>
     </ProjectReference>
     <ProjectReference Include="PolygonTriangulation_src\GeometryUtility\GeometryUtility.csproj">
       <Project>{fd47d6ac-8238-4975-91c8-51e88326f27f}</Project>

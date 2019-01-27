@@ -99,7 +99,7 @@ namespace LeapfrogEditor
       public void SetWidthToTextureAspectRatio()
       {
          // Get bitmap file and path
-         string s = @".\..\..\..\leapfrog\data\images\" + Texture + ".png";
+         string s = GlobalConstants.ImageDirectory + Texture + ".png";
          string fullPath = System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
          string fullFileName = System.IO.Path.Combine(fullPath, s);
 
@@ -115,7 +115,7 @@ namespace LeapfrogEditor
       public void SetHeightToTextureAspectRatio()
       {
          // Get bitmap file and path
-         string s = @".\..\..\..\leapfrog\data\images\" + Texture + ".png";
+         string s = GlobalConstants.ImageDirectory + Texture + ".png";
          string fullPath = System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
          string fullFileName = System.IO.Path.Combine(fullPath, s);
 

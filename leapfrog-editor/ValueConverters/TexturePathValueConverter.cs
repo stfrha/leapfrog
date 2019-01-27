@@ -16,7 +16,7 @@ namespace LeapfrogEditor
          {
             string texture = (string)value;
 
-            string s = @".\..\..\..\leapfrog\data\images\" + texture + ".png";
+            string s = GlobalConstants.ImageDirectory + texture + ".png";
             string fullPath = System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
             string fullFileName = System.IO.Path.Combine(fullPath, s);
 
