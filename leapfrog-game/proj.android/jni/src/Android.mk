@@ -96,6 +96,7 @@ LOCAL_SRC_FILES += ../../../src/spawnobject.cpp
 LOCAL_SRC_FILES += ../../../src/statusbar.cpp
 LOCAL_SRC_FILES += ../../../src/steerableobject.cpp
 LOCAL_SRC_FILES += ../../../src/steeringmanager.cpp
+LOCAL_SRC_FILES += ../../../src/system.cpp
 LOCAL_SRC_FILES += ../../../src/main.cpp
 
 

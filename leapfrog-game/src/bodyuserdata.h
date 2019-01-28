@@ -54,7 +54,8 @@ public:
          else
          {
             // We get the parent CompoundObject of the shape
-            oxygine::Actor* testAct = ActorUserData::getParentObject(act->getUserData());
+            CompoundObject* co = ActorUserData::getParentObject(act->getUserData());
+            oxygine::Actor* testAct = co;
 
             if (testAct)
             {
@@ -67,7 +68,8 @@ public:
                // via the ActorUserData, then it was a CompoundObeject.
                // We must continue up the ladder but for a CO, the parent is
                // pointed as it's m_parentCo memeber. 
-               act = static_cast<CompoundObject*>(act)->getParentObject();
+               CompoundObject* co = static_cast<CompoundObject*>(act)->getParentObject();
+               act = static_cast<oxygine::Actor*>(co);
             }
          }
       }
