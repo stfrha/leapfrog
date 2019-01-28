@@ -541,7 +541,7 @@ bool CompoundObject::initCompoundObjectParts(
 
 void CompoundObject::doCommonShapeDefinitions(
    Resources& gameResources,
-   spSprite& sprite,
+   Sprite* sprite,
    Vector2 pos,
    xml_node& objectNode)
 {
@@ -588,7 +588,7 @@ void CompoundObject::defineSpriteBox(
 {
    // Define sprite
    spSprite sprite = new Sprite();
-   doCommonShapeDefinitions(gameResources, sprite, pos, objectNode);
+   doCommonShapeDefinitions(gameResources, sprite.get(), pos, objectNode);
    Vector2 newPos(pos.x + objectNode.attribute("posX").as_float(), pos.y + objectNode.attribute("posY").as_float());
    sprite->setPosition(newPos);
    sprite->setSize(objectNode.attribute("width").as_float(), objectNode.attribute("height").as_float());
@@ -608,7 +608,7 @@ void CompoundObject::defineSpritePolygon(
    // Define sprite, which is a polygon, in this case
    spPolygon sprite = new oxygine::Polygon();
 
-   doCommonShapeDefinitions(gameResources, static_cast<spSprite>(sprite), pos, objectNode);
+   doCommonShapeDefinitions(gameResources, sprite.get(), pos, objectNode);
 
    // TODO: What about rotation?
 
@@ -634,7 +634,7 @@ void CompoundObject::defineCircle(
 {
    // Define sprite
    spSprite sprite = new Sprite();
-   doCommonShapeDefinitions(gameResources, sprite, pos, objectNode);
+   doCommonShapeDefinitions(gameResources, sprite.get(), pos, objectNode);
    sprite->setSize(objectNode.attribute("radius").as_float() * 2.0f, objectNode.attribute("radius").as_float() * 2.0f);
    sprite->setAnchor(0.5f, 0.5f);
    sprite->attachTo(sceneParent);
@@ -711,7 +711,7 @@ void CompoundObject::defineBox(
 
    // Define sprite
    spSprite sprite = new Sprite();
-   doCommonShapeDefinitions(gameResources, sprite, pos, objectNode);
+   doCommonShapeDefinitions(gameResources, sprite.get(), pos, objectNode);
 
    sprite->setSize(objectNode.attribute("width").as_float(), objectNode.attribute("height").as_float());
    sprite->setAnchor(0.5f, 0.5f);
@@ -788,7 +788,7 @@ void CompoundObject::defineStaticPolygon(
 {
    spPolygon sprite = new oxygine::Polygon();
 
-   doCommonShapeDefinitions(gameResources, static_cast<spSprite>(sprite), pos, objectNode);
+   doCommonShapeDefinitions(gameResources, sprite.get(), pos, objectNode);
 
    b2Body* body = NULL;
    b2Fixture* fixture = NULL;
@@ -836,7 +836,7 @@ void CompoundObject::defineBoxedSpritePolygon(
    // Define sprite, which is a polygon, in this case
 
    spSprite sprite = new Sprite();
-   doCommonShapeDefinitions(gameResources, sprite, pos, objectNode);
+   doCommonShapeDefinitions(gameResources, sprite.get(), pos, objectNode);
 
    sprite->setSize(objectNode.attribute("width").as_float(), objectNode.attribute("height").as_float());
    sprite->setAnchor(0.5f, 0.5f);
@@ -923,7 +923,7 @@ void CompoundObject::defineDynamicPolygon(
    // Define sprite, which is a polygon, in this case
 
    spPolygon sprite = new oxygine::Polygon();
-   doCommonShapeDefinitions(gameResources, static_cast<spSprite>(sprite), pos, objectNode);
+   doCommonShapeDefinitions(gameResources, sprite.get(), pos, objectNode);
 
    vector<Vector2> vertices(distance(objectNode.child("vertices").children("vertex").begin(), objectNode.child("vertices").children("vertex").end()));
    b2Body* body = NULL;
@@ -1648,7 +1648,7 @@ System* CompoundObject::getSystemImpl(const std::string& name)
       }
    }
 
-   logs::messageln("Did not find the system %s that was searched for", name);
+   logs::messageln("Did not find the system %s that was searched for", name.c_str());
 
    return NULL;
 }

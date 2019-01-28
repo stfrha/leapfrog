@@ -57,7 +57,7 @@ private:
 
    void doCommonShapeDefinitions(
       oxygine::Resources& gameResources,
-      oxygine::spSprite& sprite,
+      oxygine::Sprite* sprite,
       oxygine::Vector2 pos,
       pugi::xml_node& objectNode);
 
