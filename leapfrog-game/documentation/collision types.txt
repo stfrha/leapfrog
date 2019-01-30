@@ -1,3 +1,36 @@
+
+Categories:
+0     1           Normal colliding body                
+1     2           Normal un-colliding body (use sprite instead, if possible)
+2     4           Body temporarilly attached to other bodies
+3     8           Particles that may be invisible to some bodies
+4     16          
+5     32          
+6     64          
+7     128            
+8     256            
+9     512            
+10    1024            
+11    2048            
+12    4096            
+13    8192        
+14    16384       
+15    32768            
+
+Maskes:
+Normal colliding body:                       	65533
+Normal un-colliding body:                    	0
+Body temporarilly attached to other bodies:  	65529
+Particles that may be invisible to some bodies:	65525
+Bodies invisible to particles			65525 (they are category 1) 
+
+
+Apart from above, Group Index (if defined) is used to make all bodies in a Compound object not collide within themselves.
+
+
+
+
+Below is the old-old list: 
 0     1                          
 1     2            
 2     4           Leapfrog body parts

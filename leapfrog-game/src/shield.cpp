@@ -63,8 +63,8 @@ Shield::Shield(
    fixtureDef.density = 0.1f;
    fixtureDef.friction = 0.0f;
    fixtureDef.restitution = 0.3f;
-   //fixtureDef.filter.categoryBits = 16384;
-   //fixtureDef.filter.maskBits = 33819;
+   fixtureDef.filter.categoryBits = 1;
+   fixtureDef.filter.maskBits = 65533;
    fixtureDef.filter.groupIndex = -groupIndex;
 
    BodyUserData* bud = new BodyUserData();
@@ -103,46 +103,6 @@ void Shield::readShieldNode(const xml_node& objectNode)
    m_radius = objectNode.attribute("radius").as_float();
 }
 
-
-
-//(Resources& gameResources, b2World* world, const Vector2& pos)
-//{
-//   m_resAnim = gameResources.getResAnim("shield_exciter");
-//   setAnimFrame(m_resAnim, 0, 0);
-//   
-//   // Size need to be set like this since the tween animation will
-//   // screw up the size otherwise
-//   setSize(512.0f, 256.0f);
-//   setScale(16.0f / 512.0f);
-//   setAlpha(0);
-//   setAnchor(Vector2(0.5f, 1.0f));
-//   setPriority(147);
-//
-//
-//   b2BodyDef bodyDef;
-//   bodyDef.type = b2_dynamicBody;
-//   bodyDef.position = PhysDispConvert::convert(pos / Scales::c_physToStageScale, 1.0);
-//
-//   m_body = world->CreateBody(&bodyDef);
-//
-//   setUserData(m_body);
-//
-//   b2CircleShape shape;
-//   shape.m_radius = 8.0f;
-//
-//   b2FixtureDef fixtureDef;
-//   fixtureDef.shape = &shape;
-//   fixtureDef.density = 0.1f;
-//   fixtureDef.friction = 0.0f;
-//   fixtureDef.restitution = 0.3f;
-//   fixtureDef.filter.categoryBits = 16384;
-//   fixtureDef.filter.maskBits = 33819;
-//
-//   m_body->CreateFixture(&fixtureDef);
-//   m_body->SetUserData(this);
-//
-//   m_body->GetFixtureList()->SetUserData((CollisionEntity*)this);
-//}
 
 void Shield::setAngle(float angle)
 {

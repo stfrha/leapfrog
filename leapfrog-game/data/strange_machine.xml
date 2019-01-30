@@ -8,8 +8,8 @@
     angle="0.680678408277789"
     zLevel="0"
     collisionEntity="destroyableObject"
-    collisionCategory="9"
-    collisionMask="65534"
+    collisionCategory="1"
+    collisionMask="65533"
     width="20"
     height="20" />
   <dynamicBox
@@ -20,8 +20,8 @@
     angle="-0.89011791851710886"
     zLevel="0"
     collisionEntity="notApplicable"
-    collisionCategory="9"
-    collisionMask="65534"
+    collisionCategory="1"
+    collisionMask="65533"
     width="20"
     height="20"
     density="1"

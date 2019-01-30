@@ -10,8 +10,8 @@
       angle="0"
       zLevel="80"
       collisionEntity="landingPad"
-      collisionCategory="2048"
-      collisionMask="65535"
+      collisionCategory="1"
+      collisionMask="65533"
       width="36"
       height="7.5" />
 </compoundObject>

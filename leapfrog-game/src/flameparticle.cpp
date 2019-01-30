@@ -55,8 +55,8 @@ FlameParticle::FlameParticle(
    fixtureDef.density = 3.0f;
    fixtureDef.friction = 0.3f;
    fixtureDef.restitution = 0.5f;
-   //fixtureDef.filter.categoryBits = 8192;
-   //fixtureDef.filter.maskBits = 56459;
+   fixtureDef.filter.categoryBits = 8;
+   fixtureDef.filter.maskBits = 65525;
    fixtureDef.filter.groupIndex = -groupIndex;
 
    BodyUserData* bud = new BodyUserData();

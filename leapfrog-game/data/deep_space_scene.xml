@@ -194,8 +194,8 @@
                   angle="3.1415"
                   zLevel="160"
                   collisionEntity="steerableObject"
-                  collisionCategory="16"
-                  collisionMask="56495"
+                  collisionCategory="1"
+                  collisionMask="65533"
                   density="5"
                   friction="1" />
                <system
