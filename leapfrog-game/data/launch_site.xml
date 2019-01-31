@@ -639,7 +639,7 @@
          angle="1.57"
          emitterWidth="12"
          lifeTime="1000"
-         impulseMagnitude="1500"
+         impulseMagnitude="200"
          radius="30" />
    </system>
    <system
@@ -652,7 +652,7 @@
          angle="1.57"
          emitterWidth="2"
          lifeTime="1000"
-         impulseMagnitude="1500"
+         impulseMagnitude="200"
          radius="20" />
    </system>
    <system
@@ -665,7 +665,7 @@
          angle="1.57"
          emitterWidth="2"
          lifeTime="1000"
-         impulseMagnitude="1500"
+         impulseMagnitude="200"
          radius="20" />
    </system>
 

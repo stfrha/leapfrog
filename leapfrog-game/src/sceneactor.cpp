@@ -80,7 +80,6 @@ SceneActor::SceneActor(Resources& gameResources, b2World* world, float zoomScale
 
 SceneActor::~SceneActor()
 {
-   delete m_world;
 }
 
 SceneTypeEnum SceneActor::getSceneType(void)

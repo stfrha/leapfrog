@@ -58,25 +58,26 @@ void MainActor::startScene(SceneTypeEnum scene)
    // Clean up current scene
    spActor actor = getFirstChild();
 
+   while (actor)
+   {
+      spActor next = actor->getNextSibling();
+      if (actor.get() != NULL)
+      {
+         actor->detach();
+      }
+      actor = next;
+   }
+
    if (m_world != NULL)
    {
       delete m_world;
+      m_world == NULL;
    }
 
    // Gravity resets to zero. The Scene behaviour must set the gravity
    // by itself
    m_world = new b2World(b2Vec2(0.0f, 0.0f));
 
-   while (actor)
-   {
-      spActor next = actor->getNextSibling();
-      if (actor.get() != NULL)
-      {
-   	   actor->detach();
-      }
-      actor = next;
-   }
-   
    spClipRectActor window = new ClipRectActor();
 
    window->setSize(getStage()->getSize());
