@@ -14,16 +14,8 @@ public:
    
    OrbitWindow(
       oxygine::Resources& gameResources, 
-      oxygine::Actor* sceneParent,
       CompoundObject* parentObject,
-      const pugi::xml_node& objectNode,
-	  const std::string& initialState);
-
-   // Initiate used when not defined from XML
-   void InitiateOrbitWindow(
-      oxygine::Resources& gameResources,
-      oxygine::Actor* sceneParent,
-      CompoundObject* parentObject,
+      b2World* world,
       float posX,
       float posY,
       float width,

@@ -10,6 +10,8 @@
 #include "gamestatus.h"
 #include "statusbar.h"
 #include "mainactor.h"
+#include "orbitscene.h"
+#include "orbitspacescene.h"
 
 #include "gamestatusevents.h"
 
@@ -17,7 +19,10 @@ using namespace oxygine;
 using namespace std;
 
 MainActor::MainActor() :
-   m_world(NULL)
+   m_world(NULL),
+   m_nextSceneFile("landing_scene.xml"),
+   m_armNextScene(true),
+   m_nextSceneType(STE_LANDING)
 {
    g_Layout.initLayout();
    
@@ -32,7 +37,19 @@ MainActor::MainActor() :
 
 	setSize(getStage()->getSize());
 
-   startScene(STE_LANDING);
+   m_nextSceneFile = "landing_scene.xml";
+   m_armNextScene = true;
+   m_nextSceneType = STE_LANDING;
+
+   //m_nextSceneFile = "deep_space_scene.xml";
+   //m_armNextScene = true;
+   //m_nextSceneType = STE_FREE_SPACE;
+
+   //m_nextSceneFile = "orbit_scene.xml";
+   //m_armNextScene = true;
+   //m_nextSceneType = STE_ORBIT;
+
+   // startScene(STE_LANDING);
    //startScene(STE_FREE_SPACE);
    // startScene(STE_ORBIT);
 
@@ -46,14 +63,10 @@ MainActor::~MainActor()
 	m_gameResources.free();
 }
 
-void MainActor::startScene(SceneTypeEnum scene)
+void MainActor::startScene(void)
 {
    // Remove listners for statusbars
    removeAllEventListeners();
-
-   // And then re-add those needed by main actor
-   addTouchDownListener(CLOSURE(this, &MainActor::sceneDownHandler));
-   addTouchUpListener(CLOSURE(this, &MainActor::sceneUpHandler));
 
    // Clean up current scene
    spActor actor = getFirstChild();
@@ -63,6 +76,7 @@ void MainActor::startScene(SceneTypeEnum scene)
       spActor next = actor->getNextSibling();
       if (actor.get() != NULL)
       {
+         recursiveRemoveChildren(actor);
          actor->detach();
       }
       actor = next;
@@ -77,6 +91,10 @@ void MainActor::startScene(SceneTypeEnum scene)
    // Gravity resets to zero. The Scene behaviour must set the gravity
    // by itself
    m_world = new b2World(b2Vec2(0.0f, 0.0f));
+
+   // And then re-add those needed by main actor
+   addTouchDownListener(CLOSURE(this, &MainActor::sceneDownHandler));
+   addTouchUpListener(CLOSURE(this, &MainActor::sceneUpHandler));
 
    spClipRectActor window = new ClipRectActor();
 
@@ -139,44 +157,73 @@ void MainActor::startScene(SceneTypeEnum scene)
    //   m_sceneObject = (SceneActor*)reentryActor->m_space;
    //}
 
-   string fileName;
-   string initialState;
+   //string fileName;
+   string initialState = "default";
 
-   // Start selected scene
-   if (scene == STE_LANDING)
-   { 
-      fileName = "landing_scene.xml";
-      initialState = "landingState";
-   }
-   else if (scene == STE_FREE_SPACE)
-   {
-      fileName = "deep_space_scene.xml";
-      initialState = "deepSpaceState";
-   }
-   else if (scene == STE_ORBIT)
-   {
-      fileName = "orbit_scene.xml";
-      initialState = "deepSpaceState";
-   }
+   //// Start selected scene
+   //if (m_nextSceneType == STE_LANDING)
+   //{ 
+   //   fileName = "landing_scene.xml";
+   //   initialState = "landingState";
+   //}
+   //else if (m_nextSceneType == STE_FREE_SPACE)
+   //{
+   //   fileName = "deep_space_scene.xml";
+   //   initialState = "deepSpaceState";
+   //}
+   //else if (m_nextSceneType == STE_ORBIT)
+   //{
+   //   fileName = "orbit_scene.xml";
+   //   initialState = "deepSpaceState";
+   //}
 
-   spSceneActor sceneObj = static_cast<SceneActor*>(CompoundObject::readDefinitionXmlFile(
-      m_gameResources,
-      NULL,
-      NULL,
-      m_world,
-      Vector2(0.0f, 0.0f),
-      fileName,
-      initialState));
-
-   if (sceneObj == NULL)
+   if ((m_nextSceneType == STE_LANDING) || (m_nextSceneType == STE_FREE_SPACE))
    {
-      return;
+      spSceneActor sceneObj = static_cast<SceneActor*>(CompoundObject::readDefinitionXmlFile(
+         m_gameResources,
+         NULL,
+         NULL,
+         m_world,
+         Vector2(0.0f, 0.0f),
+         m_nextSceneFile,
+         initialState));
+
+      if (sceneObj == NULL)
+      {
+         return;
+      }
+
+      window->addChild(sceneObj);
+
+      if (m_nextSceneType == STE_LANDING)
+      {
+         m_sceneObject = sceneObj.get();
+         sceneObj->addEventListener(LandingActorTranstToDeepSpaceEvent::EVENT, CLOSURE(this, &MainActor::transitToDeepSpaceListner));
+      }
+      else
+      {
+         m_sceneObject = sceneObj.get();
+         sceneObj->addEventListener(DeepSpaceSceneTranstToOrbitEvent::EVENT, CLOSURE(this, &MainActor::transitToOrbitListner));
+      }
    }
-   
-   window->addChild(sceneObj);
-   sceneObj->addEventListener(LandingActorTranstToDeepSpaceEvent::EVENT, CLOSURE(this, &MainActor::transitToDeepSpaceListner));
-   sceneObj->addEventListener(DeepSpaceSceneTranstToOrbitEvent::EVENT, CLOSURE(this, &MainActor::transitToOrbitListner));
-   m_sceneObject = sceneObj.get();
+   else if (m_nextSceneType == STE_ORBIT)
+   {
+      spCompoundObject co = CompoundObject::readDefinitionXmlFile(
+         m_gameResources, 
+         NULL, 
+         NULL, 
+         m_world, 
+         Vector2(0.0f, 0.0f), 
+         m_nextSceneFile, 
+         initialState);
+
+      window->addChild(co);
+
+      OrbitScene* os = static_cast<OrbitScene*>(co.get());
+      m_sceneObject = os->m_space;
+
+      co.get()->addEventListener(OrbitSceneLandingComplete::EVENT, CLOSURE(this, &MainActor::landingCompleteListner));
+   }
 
    // Init game status in leapfrog object
    CompoundObject* leapfrog = m_sceneObject->getObject("leapfrog1");
@@ -233,7 +280,7 @@ void MainActor::startScene(SceneTypeEnum scene)
 
    addEventListener(StatusResourceDepletedEvent::EVENT, CLOSURE(this, &MainActor::resourceDepletedHandler));
 
-   if (scene == STE_LANDING)
+   if (m_nextSceneType == STE_LANDING)
    {
       shieldBar->setAlpha(128);
    }
@@ -329,7 +376,9 @@ void MainActor::fadeFromLanding(void)
 
 void MainActor::goToDeepSpaceFader(Event *ev)
 {
-   startScene(STE_FREE_SPACE);
+   m_armNextScene = true;
+   m_nextSceneFile = "deep_space_scene.xml";
+   m_nextSceneType = STE_FREE_SPACE;
 
    spColorRectSprite fader = new ColorRectSprite();
    fader->setColor(Color::White);
@@ -343,12 +392,16 @@ void MainActor::goToDeepSpaceFader(Event *ev)
 
 void MainActor::transitToOrbitListner(Event *ev)
 {
-   startScene(STE_ORBIT);
+   m_armNextScene = true;
+   m_nextSceneFile = "orbit_scene.xml";
+   m_nextSceneType = STE_ORBIT;
 }
 
 void MainActor::landingCompleteListner(oxygine::Event *ev)
 {
-   startScene(STE_LANDING);
+   m_armNextScene = true;
+   m_nextSceneFile = "landing_scene.xml";
+   m_nextSceneType = STE_LANDING;
 }
 
 void MainActor::resourceDepletedHandler(oxygine::Event *ev)
@@ -378,22 +431,35 @@ void MainActor::resourceDepletedHandler(oxygine::Event *ev)
 
 void MainActor::doUpdate(const UpdateState& us)
 {
-   const Uint8* data = SDL_GetKeyboardState(0);
+   if (m_armNextScene)
+   {
+      m_armNextScene = false;
+      startScene();
+   }
+   else
+   {
+      const Uint8* data = SDL_GetKeyboardState(0);
 
-   if (data[SDL_SCANCODE_F1])
-   {
-      startScene(STE_LANDING);
-   }
-   else if (data[SDL_SCANCODE_F2])
-   {
-//      startScene(STE_FREE_SPACE);
-      fadeFromLanding();
+      if (data[SDL_SCANCODE_F1])
+      {
+         m_armNextScene = true;
+         m_nextSceneFile = "landing_scene.xml";
+         m_nextSceneType = STE_LANDING;
+     }
+      else if (data[SDL_SCANCODE_F2])
+      {
+         //      startScene(STE_FREE_SPACE);
+         fadeFromLanding();
 
+      }
+      else if (data[SDL_SCANCODE_F3])
+      {
+         m_armNextScene = true;
+         m_nextSceneFile = "orbit_scene.xml";
+         m_nextSceneType = STE_ORBIT;
+      }
    }
-   else if (data[SDL_SCANCODE_F3])
-   {
-      startScene(STE_ORBIT);
-   }
+
 }
 
 
@@ -608,4 +674,19 @@ void MainActor::sceneMoveHandler(Event* event)
 void MainActor::dummyHandler(Event* event)
 {
    logs::messageln("Got dummy event");
+}
+
+void MainActor::recursiveRemoveChildren(spActor& parent)
+{
+   spActor child = parent->getFirstChild();
+
+   while (child != NULL)
+   {
+      spActor copy = child;
+
+      recursiveRemoveChildren(child);
+      child.get()->detach();
+
+      child = copy->getNextSibling();
+   }
 }

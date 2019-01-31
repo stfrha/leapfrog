@@ -98,7 +98,7 @@ private:
    bool m_stateChange;
    oxygine::Vector2 m_orbitStartPos;
    LandingResult m_results;
-   SceneActor* m_sceneParent;
+   CompoundObject* m_parentObject;
 
    float m_planetAngleAtOrbitEstablished;
    float m_planetAngleAtBurnStart;
@@ -119,7 +119,6 @@ public:
 
    PlanetActor(
       oxygine::Resources& gameResources,
-      SceneActor* sceneParent,
       CompoundObject* parentObject,
       const pugi::xml_node& objectNode);
    void orbitEstablished(void);

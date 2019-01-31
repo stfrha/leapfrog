@@ -16,7 +16,7 @@
 #include "steerableobject.h"
 #include "landingpad.h"
 #include "planetactor.h"
-#include "orbitwindow.h"
+#include "orbitscene.h"
 #include "system.h"
 
 #include "polygonvertices.h"
@@ -209,6 +209,21 @@ CompoundObject* CompoundObject::initCompoundObject(
 
       return static_cast<CompoundObject*>(sa);
    }
+   else if (behavStr == "orbitScene")
+   {
+      OrbitScene* sa = new OrbitScene(
+         gameResources,
+         parentObject,
+         world,
+         root,
+         initialState,
+         groupIndex);
+
+      sa->m_behaviourType = BehaviourEnum::orbitScene;
+
+      return static_cast<CompoundObject*>(sa);
+   }
+
    else if (behavStr == "leapfrog")
    {
       LeapFrog* lf = new LeapFrog(
@@ -474,25 +489,25 @@ bool CompoundObject::initCompoundObjectParts(
    }
 
 
-   for (auto it = savedNode.children("planetActor").begin();
-      it != savedNode.children("planetActor").end();
-      ++it)
-   {
-      xml_node stateNode;
-      
-      if (getStateNode(*it, initialState, stateNode))
-      {
-         PlanetActor* pa = new PlanetActor(
-            gameResources,
-            sceneParent,
-            parentObject,
-            stateNode.child("properties"));
+   //for (auto it = savedNode.children("planetActor").begin();
+   //   it != savedNode.children("planetActor").end();
+   //   ++it)
+   //{
+   //   xml_node stateNode;
+   //   
+   //   if (getStateNode(*it, initialState, stateNode))
+   //   {
+   //      PlanetActor* pa = new PlanetActor(
+   //         gameResources,
+   //         sceneParent,
+   //         parentObject,
+   //         stateNode.child("properties"));
 
-         m_children.push_back(static_cast<CompoundObject*>(pa));
+   //      m_children.push_back(static_cast<CompoundObject*>(pa));
 
-         pa->setName(it->attribute("name").as_string());
-      }
-   }
+   //      pa->setName(it->attribute("name").as_string());
+   //   }
+   //}
 
    // Asteroid fields are replaced by Object Factories
    //for (auto it = savedNode.children("asteroidField").begin();
@@ -516,25 +531,25 @@ bool CompoundObject::initCompoundObjectParts(
    //   }
    //}
 
-   for (auto it = savedNode.children("clippedWindow").begin();
-      it != savedNode.children("clippedWindow").end();
-      ++it)
-   {
-      xml_node stateNode;
+   //for (auto it = savedNode.children("clippedWindow").begin();
+   //   it != savedNode.children("clippedWindow").end();
+   //   ++it)
+   //{
+   //   xml_node stateNode;
 
-      if (getStateNode(*it, initialState, stateNode))
-      {
-         OrbitWindow* ow = new OrbitWindow(
-            gameResources,
-            sceneParent,
-            parentObject,
-            stateNode.child("properties"),
-            initialState);
+   //   if (getStateNode(*it, initialState, stateNode))
+   //   {
+   //      OrbitWindow* ow = new OrbitWindow(
+   //         gameResources,
+   //         sceneParent,
+   //         parentObject,
+   //         stateNode.child("properties"),
+   //         initialState);
 
-         m_children.push_back(static_cast<CompoundObject*>(ow));
-         ow->setName(it->attribute("name").as_string());
-      }
-   }
+   //      m_children.push_back(static_cast<CompoundObject*>(ow));
+   //      ow->setName(it->attribute("name").as_string());
+   //   }
+   //}
 
    return true;
 }

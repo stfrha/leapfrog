@@ -32,11 +32,11 @@ private:
 
 public:
 	OrbitSpaceScene(
-      oxygine::Resources& gameResources, 
-      float zoomScale,
-      const std::string& backgroundTexture,
-      const std::string& fileName,
-      const std::string& initialState);
+      oxygine::Resources& gameResources,
+      b2World* world,
+      pugi::xml_node& root,
+      const std::string& initialState,
+      int groupIndex);
 
 protected:
    void doUpdate(const oxygine::UpdateState &us);

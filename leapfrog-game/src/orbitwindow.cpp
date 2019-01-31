@@ -9,38 +9,10 @@ using namespace oxygine;
 using namespace pugi;
 using namespace std;
 
-OrbitWindow::OrbitWindow() :
-   CompoundObject((SceneActor*)this, NULL)
-{
-}
-
 OrbitWindow::OrbitWindow(
    Resources& gameResources,
-   Actor* sceneParent,
    CompoundObject* parentObject,
-   const xml_node& objectNode,
-   const string& initialState) :
-   CompoundObject((SceneActor*)this, parentObject)
-{
-   InitiateOrbitWindow(
-      gameResources,
-      sceneParent,
-      parentObject,
-      objectNode.attribute("posX").as_float(),
-      objectNode.attribute("posY").as_float(),
-      objectNode.attribute("width").as_float(),
-      objectNode.attribute("height").as_float(),
-      objectNode.attribute("frameThickness").as_float(),
-      objectNode.attribute("zoomScale").as_float(),
-      objectNode.attribute("background").as_string(),
-      objectNode.attribute("spaceSceneFile").as_string(),
-      initialState);
-}
-
-void OrbitWindow::InitiateOrbitWindow(
-   Resources& gameResources,
-   Actor* sceneParent,
-   CompoundObject* parentObject,
+   b2World* world,
    float posX,
    float posY,
    float width,
@@ -49,7 +21,8 @@ void OrbitWindow::InitiateOrbitWindow(
    float spaceZoomScale,
    const string& spaceBackground,
    const string& spaceSceneFile,
-   const string& state)
+   const string& state) :
+   CompoundObject((SceneActor*)this, parentObject)
 {
    // Set up clip window which becoms the boundary for the SceneActor
    // Build closeup of Leapfrog
@@ -66,20 +39,31 @@ void OrbitWindow::InitiateOrbitWindow(
    clip->setPosition(frameThickness, frameThickness);
    clip->attachTo(frame);
 
-   spOrbitSpaceScene orbitSpaceActor = new OrbitSpaceScene(
+   spSceneActor sceneObj = static_cast<SceneActor*>(CompoundObject::readDefinitionXmlFile(
       gameResources,
-      spaceZoomScale,
-      spaceBackground,
+      NULL,
+      NULL,
+      world,
+      Vector2(0.0f, 0.0f),
       spaceSceneFile,
-      string("deepSpaceState"));
+      string("default")));
 
-   clip->addChild(orbitSpaceActor);
+   sceneObj->setScale(spaceZoomScale);
 
-   m_children.push_back(static_cast<CompoundObject*>(orbitSpaceActor.get()));
+   //spOrbitSpaceScene orbitSpaceActor = new OrbitSpaceScene(
+   //   gameResources,
+   //   spaceZoomScale,
+   //   spaceBackground,
+   //   spaceSceneFile,
+   //   string("deepSpaceState"));
 
-   orbitSpaceActor->setName("spaceScene");
+   clip->addChild(sceneObj);
 
-   attachTo(sceneParent);
+   m_children.push_back(static_cast<CompoundObject*>(sceneObj.get()));
+
+   sceneObj->setName("spaceScene");
+
+   attachTo(parentObject);
 }
 
 void OrbitWindow::doUpdate(const oxygine::UpdateState &us)

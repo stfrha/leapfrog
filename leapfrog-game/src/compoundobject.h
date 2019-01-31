@@ -37,6 +37,7 @@ public:
    {
       notApplicable,
       scene,
+      orbitScene,
       leapfrog,
       launchSite,
       landingPad,

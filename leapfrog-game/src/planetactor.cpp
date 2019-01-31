@@ -7,12 +7,11 @@ using namespace pugi;
 
 PlanetActor::PlanetActor(
    Resources& gameResources,
-   SceneActor* sceneParent,
    CompoundObject* parentObject,
    const xml_node& objectNode) :
    CompoundObject((SceneActor*)this, parentObject),
    m_gameResources(&gameResources),
-   m_sceneParent(sceneParent),
+   m_parentObject(parentObject),
    m_state(PAS_INITITAL),
    m_stateChange(true),
    m_orbitStartPos(Vector2(500.0f, 150.0f)),
@@ -39,8 +38,8 @@ PlanetActor::PlanetActor(
    maskedSprite->setPosition(0.0f, 0.0f);
 
    spBox9Sprite planetSprite = new Box9Sprite();
-   planetSprite->setResAnim(gameResources.getResAnim("planet_rock"));
-//   planetSprite->setResAnim(gameResources.getResAnim(objectNode.attribute("texture").as_string()));
+//   planetSprite->setResAnim(gameResources.getResAnim("planet_rock"));
+   planetSprite->setResAnim(gameResources.getResAnim(objectNode.attribute("texture").as_string()));
    planetSprite->setSize(7000.0f, 7000.0f);
    planetSprite->setAnchor(0.5f, 0.5f);
    planetSprite->setGuides(0, 0, 0, 0);
@@ -100,7 +99,7 @@ PlanetActor::PlanetActor(
 
    setScale(fmin(vScale, hScale));
 
-   attachTo(m_sceneParent);
+   attachTo(m_parentObject);
 
    m_positionIndicator = new Sprite();
    m_positionIndicator->setResAnim(m_gameResources->getResAnim("lf_position"));
@@ -256,14 +255,14 @@ void PlanetActor::orbitEstablished(void)
    burnFrame->setSize(barWidth, barHeight);
    burnFrame->setColor(Color::Fuchsia);
    burnFrame->setPosition(barHorCenter, barVertCenter);
-   burnFrame->attachTo(m_sceneParent);
+   burnFrame->attachTo(m_parentObject);
 
    spColorRectSprite burnHaze = new ColorRectSprite();
    burnHaze->setAnchor(0.5f, 0.5f);
    burnHaze->setSize(barInsideFrameWidth, barInsideFrameHeight);
    burnHaze->setColor(Color::Purple);
    burnHaze->setPosition(barHorCenter, barVertCenter);
-   burnHaze->attachTo(m_sceneParent);
+   burnHaze->attachTo(m_parentObject);
 
    spColorRectSprite safeZoom = new ColorRectSprite();
    safeZoom->setAnchor(0.5f, 0.5f);
@@ -271,7 +270,7 @@ void PlanetActor::orbitEstablished(void)
    safeZoom->setColor(Color::Fuchsia);
    safeZoom->setPosition(barHorCenter, barCaretVertCenter);
    safeZoom->setAlpha(96);
-   safeZoom->attachTo(m_sceneParent);
+   safeZoom->attachTo(m_parentObject);
 
    m_burnIndicator = new ProgressBar();
    m_burnIndicator->setAnchor(0.5f, 0.5f);
@@ -279,7 +278,7 @@ void PlanetActor::orbitEstablished(void)
    m_burnIndicator->setColor(Color::Fuchsia);
    m_burnIndicator->setDirection(ProgressBar::dir_90);
    m_burnIndicator->setPosition(barHorCenter, barVertCenter);
-   m_burnIndicator->attachTo(m_sceneParent);
+   m_burnIndicator->attachTo(m_parentObject);
    m_burnIndicator->setProgress(0.0f);
 
    spSprite level = new Sprite();
@@ -287,7 +286,7 @@ void PlanetActor::orbitEstablished(void)
    level->setAnchor(0.5f, 0.5f);
    level->setSize(barCaretWidth, barCaretHeight);
    level->setPosition(barHorCenter, barCaretVertCenter);
-   level->attachTo(m_sceneParent);
+   level->attachTo(m_parentObject);
 }
 
 

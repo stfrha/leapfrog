@@ -112,7 +112,7 @@ void ReentryFlameEmitter::doUpdate(const oxygine::UpdateState& us)
          flameParticle->setRotation(emitAngle - MATH_PI / 2.0f);
 
          // Attach to parent's parent which is the view actor
-         flameParticle->attachTo(getParent()->getParent());
+         flameParticle->attachTo(m_sceneActor);
 
          int pri = (int)(1.0f / m_intensity * 1000.0f);
          m_timeOfNextParticle = us.time + pri;

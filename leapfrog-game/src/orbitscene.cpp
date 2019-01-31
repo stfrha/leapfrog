@@ -11,27 +11,24 @@
 #include "layout.h"
 
 using namespace oxygine;
+using namespace pugi;
+using namespace std;
 
 OrbitScene::OrbitScene(
    Resources& gameResources,
-   spGameStatus gameStatus,
-   const std::string& fileName,
-   const std::string& initialState) :
-   CompoundObject((SceneActor*)this, NULL),
-   m_state(enteringOrbit)
+   CompoundObject* parentObject,
+   b2World* world,
+   xml_node& root,
+   const std::string& initialState,
+   int groupIndex) :
+      CompoundObject(NULL, parentObject),
+      m_state(enteringOrbit)
 {
-   readDefinitionXmlFile(gameResources, (SceneActor*)this, NULL, NULL, Vector2(0.02f, 0.0f), fileName, initialState);
+   // Nothing should be read here 
+   // initCompoundObjectParts(gameResources, this, NULL, world, Vector2(0.02f, 0.0f), root, initialState, groupIndex);
 
-   // The XML file no longer defines the clippedWindow (named orbitWindow)
-   // and thus not the space scene with it's leapfrog definition. We must 
-   // add it here specifically
+   m_planet = new PlanetActor(gameResources, this, root.child("behaviour").child("properties"));
 
-   // TODO: the string here will change for each planet, we need some
-   // way of getting an object by type.
-   m_planet = static_cast<PlanetActor*>(getObject("planetAlpha"));
-
-   spOrbitWindow orbWin = new OrbitWindow();
-   
    // Here we need to calculate some geometrics
    // Position, size, scale and frameThickness of OrbitWindow is needed
    // Original values are:
@@ -49,11 +46,11 @@ OrbitScene::OrbitScene(
    float s = 0.4f * w / 300.0f;
    float ft = 1.0f / 300.0f * w;
 
-
-   orbWin->InitiateOrbitWindow(
+   // Below creates the space scene window incl the space scene itself
+   spOrbitWindow orbWin = new OrbitWindow(
       gameResources,
       this,
-      this,
+      world,
       x,
       y,
       w,
@@ -68,7 +65,7 @@ OrbitScene::OrbitScene(
 
    m_leapfrog = static_cast<LeapFrog*>(orbWin->getObject("spaceScene.leapfrog1"));
 
-   m_leapfrog->initGameStatus(gameStatus);
+//   m_leapfrog->initGameStatus(gameStatus);
 
    m_space->addEventListener(OrbitSpaceOrbitEstablished::EVENT, CLOSURE(this, &OrbitScene::orbitEstablishedHandler));
 

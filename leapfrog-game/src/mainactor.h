@@ -33,6 +33,10 @@ private:
 
    spGameStatus m_gameStatus;
 
+   bool m_armNextScene;
+   std::string m_nextSceneFile;
+   SceneTypeEnum m_nextSceneType;
+
    void transitToDeepSpaceListner(oxygine::Event *ev);
    void fadeFromLanding(void);
    void transitToOrbitListner(oxygine::Event *ev);
@@ -60,6 +64,8 @@ private:
 
    void dummyHandler(Event* event);
 
+   void recursiveRemoveChildren(oxygine::spActor& parent);
+
 public:
 
 	MainActor();
@@ -73,7 +79,7 @@ public:
    /*
       startScene reads xml file which builds the tree of CompoundObjects.
    */
-   void startScene(SceneTypeEnum scene);
+   void startScene(void);
 
    float getProperty(std::string object, int propId);
    void setProperty(std::string object, int propId, float value);

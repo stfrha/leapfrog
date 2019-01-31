@@ -40,10 +40,12 @@ private:
 public:
 	OrbitScene(
       oxygine::Resources& gameResources,
-      spGameStatus gameStatus,
-      const std::string& fileName,
-      const std::string& initialState);
-
+      CompoundObject* parentObject,
+      b2World* world,
+      pugi::xml_node& root,
+      const std::string& initialState,
+      int groupIndex);
+   
 protected:
    void doUpdate(const oxygine::UpdateState &us);
 

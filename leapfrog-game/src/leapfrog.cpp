@@ -152,7 +152,7 @@ LeapFrog::LeapFrog(
    m_reentryFlameEmitterRightLeg = static_cast<ReentryFlameEmitter*>(getSystem("rightReentryFlame"));
    // m_reentryFlameEmitterRightLeg->attachTo(this);
 
-   m_reentryFlameEmitterLeftLeg = static_cast<ReentryFlameEmitter*>(getSystem("rightReentryFlame"));
+   m_reentryFlameEmitterLeftLeg = static_cast<ReentryFlameEmitter*>(getSystem("leftReentryFlame"));
    // m_reentryFlameEmitterLeftLeg->attachTo(this);
 
    // Register all properties:
@@ -258,12 +258,19 @@ void LeapFrog::doUpdate(const UpdateState &us)
 
       angle = m_mainBody->GetAngle();
 
+      if (angle < -10000.0f)
+      {
+         int a = 10;
+         return;
+      }
+
+
       while (angle > 2.0f * MATH_PI)
       {
          angle -= 2.0f * MATH_PI;
       }
 
-      while (angle < -2.0f * MATH_PI)
+       while (angle < -2.0f * MATH_PI)
       {
          angle += 2.0f * MATH_PI;
       }

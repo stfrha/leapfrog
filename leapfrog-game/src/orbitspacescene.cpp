@@ -8,14 +8,15 @@
 
 using namespace oxygine;
 using namespace std;
+using namespace pugi;
 
 OrbitSpaceScene::OrbitSpaceScene(
    Resources& gameResources,
-   float zoomScale,
-   const string& backgroundTexture,
-   const string& fileName,
-   const string& initialState) :
-	SceneActor(gameResources, NULL, zoomScale),
+   b2World* world,
+   xml_node& root,
+   const string& initialState,
+   int groupIndex) :
+	SceneActor(gameResources, world, 0.4f),
    m_state(enteringOrbit),
    m_stateStartTime(0)
 {
@@ -27,7 +28,8 @@ OrbitSpaceScene::OrbitSpaceScene(
 
 //   m_world->SetContactListener(&m_contactListener);
 
-   readDefinitionXmlFile(gameResources, this, NULL, m_world, Vector2(0.0f, 0.0f), fileName, initialState);
+//   readDefinitionXmlFile(gameResources, this, NULL, m_world, Vector2(0.0f, 0.0f), fileName, initialState);
+   initCompoundObjectParts(gameResources, this, this, world, Vector2(0.0f, 0.0f), root, initialState, groupIndex);
 
    // Create background before the leapfrog
    // generateBackground(gameResources);
@@ -39,10 +41,10 @@ OrbitSpaceScene::OrbitSpaceScene(
    takeControlOfLeapfrog(true);
 
    CompoundObject* co = m_leapfrog->getObject("lfMainBody");
-   m_leapfrogBody = ActorUserData::getBody(co->getUserData());
-
+   m_leapfrogBody = m_leapfrog->getBody("lfMainBody");
+ 
    spSprite background = new Sprite();
-   background->setResAnim(gameResources.getResAnim(backgroundTexture));
+   background->setResAnim(gameResources.getResAnim("starfield"));
    background->setSize(800.0f, 300.0f);
    background->setPosition(-150.0f, 0.0f);
    background->setScale(0.3f);

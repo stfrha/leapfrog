@@ -1,7 +1,7 @@
 #include "sceneactor.h"
 #include "landingactor.h"
 #include "freespaceactor.h"
-#include "orbitscene.h"
+#include "orbitspacescene.h"
 #include "bodyuserdata.h"
 
 using namespace oxygine;
@@ -28,6 +28,17 @@ SceneActor* SceneActor::defineScene(
    else if (sceneTypeStr == "space")
    {
       FreeSpaceActor* spaceScene = new FreeSpaceActor(gameResources, world, root, string("deepSpaceState"), groupIndex);
+
+      return static_cast<SceneActor*>(spaceScene);
+   }
+   else if (sceneTypeStr == "orbitSpaceScene")
+   {
+      OrbitSpaceScene* spaceScene = new OrbitSpaceScene(
+         gameResources,
+         world, 
+         root, 
+         string("default"), 
+         groupIndex);
 
       return static_cast<SceneActor*>(spaceScene);
    }

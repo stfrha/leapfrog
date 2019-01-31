@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<compoundObject>
+   <behaviour
+      type="scene">
+      <sceneProperties
+         sceneType="orbitSpaceScene">
+         <states>
+            <state>default</state>
+         </states>
+      </sceneProperties>
+   </behaviour>
+   <childObject
+      name="leapfrog1">
+      <stateProperties
+         state="default">
+         <properties
+            file="leapfrog_deep_space.xml" 
+            posX="-8.0"
+            posY="16.0" />
+      </stateProperties>
+   </childObject>
+</compoundObject>
+
