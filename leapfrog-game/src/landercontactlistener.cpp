@@ -191,11 +191,13 @@ void LanderContactListener::LeapfrogFeetContactHandler(b2Contact* contact, bool 
    {
       if (begin)
       {
-         landingPad->leapfrogFootTouch(contact, leapfrogLeftFoot);
+         landingPad->leapfrogFootTouch(contact, leapfrogLeftFoot, leapfrog );
+         leapfrog->footOnLandingPad(true);
       }
       else
       {
-         landingPad->leapfrogFootLift(contact, leapfrogLeftFoot);
+         landingPad->leapfrogFootLift(contact, leapfrogLeftFoot, leapfrog);
+         leapfrog->footOnLandingPad(false);
       }
    }
 

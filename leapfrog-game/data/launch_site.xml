@@ -638,8 +638,8 @@
          emitterOriginY="28"
          angle="1.57"
          emitterWidth="12"
-         lifeTime="1000"
-         impulseMagnitude="200"
+         lifeTime="500"
+         impulseMagnitude="400"
          radius="30" />
    </system>
    <system
@@ -651,9 +651,9 @@
          emitterOriginY="19"
          angle="1.57"
          emitterWidth="2"
-         lifeTime="1000"
-         impulseMagnitude="200"
-         radius="20" />
+         lifeTime="500"
+         impulseMagnitude="400"
+         radius="10" />
    </system>
    <system
       type="flameEmitter"
@@ -664,9 +664,9 @@
          emitterOriginY="19"
          angle="1.57"
          emitterWidth="2"
-         lifeTime="1000"
-         impulseMagnitude="200"
-         radius="20" />
+         lifeTime="500"
+         impulseMagnitude="400"
+         radius="10" />
    </system>
 
 </compoundObject>

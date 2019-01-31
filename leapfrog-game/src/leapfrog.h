@@ -197,6 +197,7 @@ public:
 
    void hitImpulse(b2Contact* contact, const b2ContactImpulse* impulse);
    void hitByBullet(b2Contact* contact, float bulletEqvDamage);
+   void footOnLandingPad(bool resting);
 
 
    oxygine::Actor* getMainActor(void);

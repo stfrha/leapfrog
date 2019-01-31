@@ -32,10 +32,16 @@ LandingPad::LandingPad(
    // be empty (=NULL)
    setUserData(NULL);
 
+   // Here we attach Launch Site object to tree so it gets updates etc.
+   attachTo(sceneParent);
+
+
 }
 
-void LandingPad::leapfrogFootTouch(b2Contact* contact, bool leftFoot)
+void LandingPad::leapfrogFootTouch(b2Contact* contact, bool leftFoot, LeapFrog* leapfrog)
 {
+   m_latestLeapfrog = leapfrog;
+
    if (leftFoot)
    {
       m_leftFootContact = true;
@@ -44,18 +50,12 @@ void LandingPad::leapfrogFootTouch(b2Contact* contact, bool leftFoot)
    {
       m_rightFootContact = true;
    }
-
-   if (m_leftFootContact && m_rightFootContact)
-   {
-      // Start timer and at the end of that, if both feet still
-      // are in contact, send event for Leapfrog has landed.
-      logs::messageln("Landing Pad landing stable");
-      //g_gameStatus.deltaFuel(100.0f - g_gameStatus.getFuel());
-   }
 }
 
-void LandingPad::leapfrogFootLift(b2Contact* contact, bool leftFoot)
+void LandingPad::leapfrogFootLift(b2Contact* contact, bool leftFoot, LeapFrog* leapfrog)
 {
+   m_latestLeapfrog = leapfrog;
+
    if (leftFoot)
    {
       m_leftFootContact = false;
@@ -65,4 +65,19 @@ void LandingPad::leapfrogFootLift(b2Contact* contact, bool leftFoot)
       m_rightFootContact = false;
    }
 }
+
+void LandingPad::doUpdate(const UpdateState &us)
+{
+   if (m_leftFootContact && m_rightFootContact)
+   {
+      // Start timer and at the end of that, if both feet still
+      // are in contact, send event for Leapfrog has landed.
+      logs::messageln("Landing Pad landing stable");
+      if (m_latestLeapfrog->m_gameStatus->getFuel() < 100.0f)
+      {
+         m_latestLeapfrog->m_gameStatus->deltaFuel(0.2);
+      }
+   }
+}
+
 

@@ -4,6 +4,7 @@
 #include "Box2D/Box2D.h"
 #include "collisionentity.h"
 #include "compoundobject.h"
+#include "leapfrog.h"
 
 class SceneActor;
 
@@ -27,6 +28,8 @@ private:
    bool m_leftFootContact;
    bool m_rightFootContact;
 
+   LeapFrog* m_latestLeapfrog;
+
 public:
 	LandingPad(
       oxygine::Resources& gameResources,
@@ -37,10 +40,11 @@ public:
       pugi::xml_node& root,
       int groupIndex);
 
+   void leapfrogFootTouch(b2Contact* contact, bool leftFoot, LeapFrog* leapfrog);
+   void leapfrogFootLift(b2Contact* contact, bool leftFoot, LeapFrog* leapfrog);
 
-
-   void leapfrogFootTouch(b2Contact* contact, bool leftFoot);
-   void leapfrogFootLift(b2Contact* contact, bool leftFoot);
+protected:
+   void doUpdate(const oxygine::UpdateState &us);
 
 };
 

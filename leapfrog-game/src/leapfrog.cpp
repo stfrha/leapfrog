@@ -1198,3 +1198,15 @@ void LeapFrog::hitByBullet(b2Contact* contact, float bulletEqvDamage)
 
    evaluateLepfrogDamage();
 }
+
+void LeapFrog::footOnLandingPad(bool resting)
+{
+   if (resting)
+   {
+      lockJoints();
+   }
+   else
+   {
+      unlockJoints();
+   }
+}

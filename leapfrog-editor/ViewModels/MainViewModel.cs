@@ -977,7 +977,48 @@ namespace LeapfrogEditor
             return new MicroMvvm.RelayCommand<Object>(parameter => AddChildObjectExecute(parameter), parameter => CanAddChildObjectExecute(parameter));
          }
       }
-      
+
+      void LocateInBrowserExecute(Object parameter)
+      {
+         if (parameter is TreeViewViewModel)
+         {
+            TreeViewViewModel tvvm = parameter as TreeViewViewModel;
+            TreeViewViewModel originalTvvm = tvvm;
+
+            tvvm.IsSelected = false;
+
+            List<TreeViewViewModel> expandBransch = new List<TreeViewViewModel>();
+
+            while (tvvm.TreeParent != null)
+            {
+               expandBransch.Add(tvvm.TreeParent);
+               tvvm = tvvm.TreeParent;
+            }
+
+            for (int i = expandBransch.Count - 1; i >= 0; i--)
+            {
+               expandBransch[i].IsExpanded = true;
+            }
+
+            ((MainWindow)System.Windows.Application.Current.MainWindow).TheTreeView.UpdateLayout();
+
+            originalTvvm.IsSelected = true;
+         }
+      }
+
+      bool CanLocateInBrowserExecute(Object parameter)
+      {
+         return true;
+      }
+
+      public ICommand LocateInBrowser
+      {
+         get
+         {
+            return new MicroMvvm.RelayCommand<Object>(parameter => LocateInBrowserExecute(parameter), parameter => CanLocateInBrowserExecute(parameter));
+         }
+      }
+
 
 
       void DebugHaltExecute(Object parameter)

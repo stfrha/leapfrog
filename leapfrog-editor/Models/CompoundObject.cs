@@ -322,6 +322,10 @@ namespace LeapfrogEditor
 
       public void RemoveShape(object shape)
       {
+         // Below it is important to start with the classes
+         // that are of lowest decendants since they will trigger
+         // in the base classes otherwise
+
          if (shape is LfSpriteBox)
          {
             SpriteBoxes.Remove((LfSpriteBox)shape);
@@ -329,18 +333,6 @@ namespace LeapfrogEditor
          else if (shape is LfSpritePolygon)
          {
             SpritePolygons.Remove((LfSpritePolygon)shape);
-         }
-         else if (shape is LfStaticBox)
-         {
-            StaticBoxes.Remove((LfStaticBox)shape);
-         }
-         else if (shape is LfStaticCircle)
-         {
-            StaticCircles.Remove((LfStaticCircle)shape);
-         }
-         else if (shape is LfStaticPolygon)
-         {
-            StaticPolygons.Remove((LfStaticPolygon)shape);
          }
          else if (shape is LfDynamicBox)
          {
@@ -354,13 +346,25 @@ namespace LeapfrogEditor
          {
             DynamicPolygons.Remove((LfDynamicPolygon)shape);
          }
-         else if (shape is LfStaticBoxedSpritePolygon)
-         {
-            StaticBoxedSpritePolygons.Remove((LfStaticBoxedSpritePolygon)shape);
-         }
          else if (shape is LfDynamicBoxedSpritePolygon)
          {
             DynamicBoxedSpritePolygons.Remove((LfDynamicBoxedSpritePolygon)shape);
+         }
+         else if (shape is LfStaticBox)
+         {
+            StaticBoxes.Remove((LfStaticBox)shape);
+         }
+         else if (shape is LfStaticCircle)
+         {
+            StaticCircles.Remove((LfStaticCircle)shape);
+         }
+         else if (shape is LfStaticPolygon)
+         {
+            StaticPolygons.Remove((LfStaticPolygon)shape);
+         }
+         else if (shape is LfStaticBoxedSpritePolygon)
+         {
+            StaticBoxedSpritePolygons.Remove((LfStaticBoxedSpritePolygon)shape);
          }
       }
 
