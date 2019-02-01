@@ -48,7 +48,7 @@ OrbitWindow::OrbitWindow(
       spaceSceneFile,
       string("default")));
 
-   sceneObj->setScale(spaceZoomScale);
+   sceneObj->setZoom(spaceZoomScale);
 
    //spOrbitSpaceScene orbitSpaceActor = new OrbitSpaceScene(
    //   gameResources,

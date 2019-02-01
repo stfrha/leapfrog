@@ -80,6 +80,7 @@ public:
    void setLeapfrog(spLeapFrog lf);
    void setPanorateMode(PanorateModeEnum mode);
    void setPanorateObject(CompoundObject* co);
+   void setZoom(float zoom);
 
    void addMeToDeathList(Actor* actor);
    void addObjectToSpawnList(

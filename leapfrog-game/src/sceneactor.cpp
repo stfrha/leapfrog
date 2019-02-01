@@ -123,6 +123,13 @@ void SceneActor::setPanorateObject(CompoundObject* co)
    m_panObject = co;
 }
 
+void SceneActor::setZoom(float zoom)
+{
+   m_zoomScale = zoom;
+   m_stageToViewPortScale = m_zoomScale * Scales::c_stageToViewPortScale;
+   setScale(m_stageToViewPortScale);
+}
+
 void SceneActor::addMeToDeathList(Actor* actor)
 {
    if (std::find(m_deathList.begin(), m_deathList.end(), actor) != m_deathList.end())

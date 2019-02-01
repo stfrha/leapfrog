@@ -16,7 +16,7 @@
          <properties
             file="leapfrog_deep_space.xml" 
             posX="-8.0"
-            posY="16.0" />
+            posY="18.0" />
       </stateProperties>
    </childObject>
 </compoundObject>
