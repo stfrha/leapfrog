@@ -155,6 +155,7 @@ LeapFrog::LeapFrog(
    m_reentryFlameEmitterLeftLeg = static_cast<ReentryFlameEmitter*>(getSystem("leftReentryFlame"));
    // m_reentryFlameEmitterLeftLeg->attachTo(this);
 
+
    // Register all properties:
    m_properties.push_back(ObjectProperty(this, new LeapfrogExtSetModeEvent, 0, 0.0f)); // Mode
    m_properties.push_back(ObjectProperty(this, new LeapfrogExtSetEnvEvent, 1, 0.0f)); // Environment
@@ -1049,8 +1050,17 @@ void LeapFrog::fireReentryFlames(bool fire)
    }
 }
 
-void LeapFrog::reentrySetHeat(unsigned char heatAmount)
+void LeapFrog::reentrySetHeat(int heatAmount)
 {
+   if (heatAmount > 255)
+   {
+      heatAmount = 255;
+   }
+   else if (heatAmount < 0)
+   {
+      heatAmount = 0;
+   }
+
    float intensity = 60.0f / 255.0f * heatAmount;
    float hSize = 0.5f + 1.0f / 255.0f * heatAmount;
    float vSize = 5.0f + 25.0f / 255.0f * heatAmount;
@@ -1130,6 +1140,17 @@ void LeapFrog::dumpParts(void)
    dumpPart("Right Steer Booster:", m_rightSteerBody, m_mainBody);
    dumpPart("Left Steer Booster:", m_leftSteerBody, m_mainBody);
 }
+
+void LeapFrog::dumpReentryFlamees(void)
+{
+   logs::message("Left reentry flame: ");
+   logs::messageln(m_reentryFlameEmitterLeftLeg->dumpData().c_str());
+   logs::message("Center reentry flame: ");
+   logs::messageln(m_reentryFlameEmitterBooster->dumpData().c_str());
+   logs::message("Right reentry flame: ");
+   logs::messageln(m_reentryFlameEmitterRightLeg->dumpData().c_str());
+}
+
 
 void LeapFrog::collisionBlast(b2Contact* contact, bool small)
 // Sparks blastemitter, small is default, can also be big

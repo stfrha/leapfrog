@@ -1,7 +1,11 @@
+#include <sstream>
+
+#include "reentryflameemitter.h"
 #include "reentryflameparticle.h"
 #include "sceneactor.h"
 #include "compoundobject.h"
 
+using namespace std;
 using namespace oxygine;
 using namespace pugi;
 
@@ -16,10 +20,13 @@ ReentryFlameEmitter::ReentryFlameEmitter(
       sceneActor,
       world,
       parent),
-   m_emit(false)
+   m_emit(false),
+   m_firstUpdate(true)
 {
    readReentryFlameEmitterNode(objectNode);
    attachTo(sceneActor);
+
+   m_particleCounter = 0;
 }
 
 void ReentryFlameEmitter::readReentryFlameEmitterNode(const xml_node& objectNode)
@@ -114,12 +121,30 @@ void ReentryFlameEmitter::doUpdate(const oxygine::UpdateState& us)
          // Attach to parent's parent which is the view actor
          flameParticle->attachTo(m_sceneActor);
 
+         m_particleCounter++;
+
          int pri = (int)(1.0f / m_intensity * 1000.0f);
          m_timeOfNextParticle = us.time + pri;
       }
    }
    else
    {
-      m_firstUpdate = false;
+      m_firstUpdate = true;
    }
 }
+
+string ReentryFlameEmitter::dumpData(void)
+{
+   b2Vec2 startPos = m_emitterBody->GetWorldPoint(m_emitterLineStart);
+   b2Vec2 endPos = m_emitterBody->GetWorldPoint(m_emitterLineEnd);
+
+   ostringstream  message;
+   
+   message << "(World coordinates) Start.x: " << startPos.x << ", Start.y: " << startPos.y;
+   message << " End.x: " << endPos.x << ", End.y: " << endPos.y;
+   message << " particles generated: " << m_particleCounter << endl;
+
+   return message.str();
+}
+
+

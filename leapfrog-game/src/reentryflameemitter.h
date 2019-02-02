@@ -37,6 +37,9 @@ private:
    // Working member variable
    bool m_emit;
 
+   // For debugging
+   int m_particleCounter;
+
    // Intensity calculating members
    bool m_firstUpdate;
    int m_timeOfNextParticle; // [ms}
@@ -69,6 +72,8 @@ public:
    void setParameters(float intensity,
       int lifetime,
       b2Vec2 maxSize);
+
+   std::string dumpData(void);
 
 protected:
 	void doUpdate(const oxygine::UpdateState& us);

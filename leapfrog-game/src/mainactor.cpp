@@ -37,21 +37,17 @@ MainActor::MainActor() :
 
 	setSize(getStage()->getSize());
 
-   m_nextSceneFile = "landing_scene.xml";
-   m_armNextScene = true;
-   m_nextSceneType = STE_LANDING;
+   //m_nextSceneFile = "landing_scene.xml";
+   //m_armNextScene = true;
+   //m_nextSceneType = STE_LANDING;
 
    //m_nextSceneFile = "deep_space_scene.xml";
    //m_armNextScene = true;
    //m_nextSceneType = STE_FREE_SPACE;
 
-   //m_nextSceneFile = "orbit_scene.xml";
-   //m_armNextScene = true;
-   //m_nextSceneType = STE_ORBIT;
-
-   // startScene(STE_LANDING);
-   //startScene(STE_FREE_SPACE);
-   // startScene(STE_ORBIT);
+   m_nextSceneFile = "orbit_scene.xml";
+   m_armNextScene = true;
+   m_nextSceneType = STE_ORBIT;
 
    //   addEventListener(TouchEvent::MOVE, CLOSURE(this, &MainActor::sceneMoveHandler));
 

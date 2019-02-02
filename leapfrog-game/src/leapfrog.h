@@ -214,13 +214,15 @@ public:
 	void fireSteeringBooster(int dir); // -1 is counter clockwise, 1 is clockwise
    void fireGun(bool fire);
    void fireReentryFlames(bool fire);
-   void reentrySetHeat(unsigned char heatAmount);   // 0 = off, 1 = coldest, 255 = hottest, most intense
+   void reentrySetHeat(int heatAmount);   // 0 = off, 1 = coldest, 255 = hottest, most intense
    void setHoldAngle(float angle);
    void releaseHoldAngle(void);
    void breakJoints(void);
 
    void dumpPart(std::string name, b2Body* body, b2Body* mainBody);
    void dumpParts(void);
+   void dumpReentryFlamees(void);
+
 
 private:
 	void setJointMotor(b2RevoluteJoint* joint, float goal, float speedMagnitude);

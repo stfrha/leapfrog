@@ -15,7 +15,8 @@ ObjectFactory::ObjectFactory(
    const xml_node& objectNode) :
    System(gameResources, sceneParent, world, parentObject),
    m_timeSinceLast(0),
-   m_initialSpawn(0)
+   m_initialSpawn(0),
+   m_attachedBody(NULL)
 {
    readObjectFactoryNode(objectNode);
 
@@ -45,7 +46,16 @@ void ObjectFactory::readObjectFactoryNode(const xml_node& objectNode)
    m_interval = 1.0f / objectNode.attribute("intensity").as_float() * 1000.0f;
    m_fieldLifetime = objectNode.attribute("lifeTime").as_int();
 
-   m_attachedBody = m_parent->getBody(objectNode.attribute("body").as_string());
+   string body = objectNode.attribute("body").as_string();
+   
+   if ((body != "") && (body != "notApplicable"))
+   {
+      m_attachedBody = m_parent->getBody(body);
+   }
+   else
+   {
+      m_attachedBody = NULL;
+   }
 
    m_coNode = objectNode.child("spawnObject");
    m_coNodeHolder = new xml_document();
