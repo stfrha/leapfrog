@@ -22,7 +22,13 @@ MainActor::MainActor() :
    m_world(NULL),
    m_nextSceneFile("landing_scene.xml"),
    m_armNextScene(true),
-   m_nextSceneType(STE_LANDING)
+   m_nextSceneType(STE_LANDING),
+   m_turnRightTouchIndex(0),
+   m_turnLeftTouchIndex(0),
+   m_boosterTouchIndex(0),
+   m_fireTouchIndex(0),
+   m_zoomInTouchIndex(0),
+   m_zoomOutTouchIndex(0)
 {
    g_Layout.initLayout();
    
@@ -599,26 +605,32 @@ void MainActor::sceneDownHandler(Event* event)
    if (m_turnLeftButtonRect.pointIn(p))
    {
       m_sceneObject->m_turnLeftPressed = true;
+      m_turnLeftTouchIndex = te->index;
    }
    else if (m_turnRightButtonRect.pointIn(p))
    {
       m_sceneObject->m_turnRightPressed = true;
+      m_turnRightTouchIndex = te->index;
    }
    else if (m_boosterButtonRect.pointIn(p))
    {
       m_sceneObject->m_boosterPressed = true;
+      m_boosterTouchIndex = te->index;
    }
    else if (m_fireButtonRect.pointIn(p))
    {
       m_sceneObject->m_firePressed = true;
+      m_fireTouchIndex = te->index;
    }
    else if (m_zoomInButtonRect.pointIn(p))
    {
       m_sceneObject->m_zoomInPressed = true;
+      m_zoomInTouchIndex = te->index;
    }
    else if (m_zoomOutButtonRect.pointIn(p))
    {
       m_sceneObject->m_zoomOutPressed = true;
+      m_zoomOutTouchIndex = te->index;
    }
 }
 
@@ -626,35 +638,41 @@ void MainActor::sceneDownHandler(Event* event)
 void MainActor::sceneUpHandler(Event* event)
 {
    TouchEvent* te = (TouchEvent*)event;
-   Vector2 v = te->localPosition;
 
    logs::messageln("Up with index: %d", te->index);
 
-   Point p = Point((int)v.x, (int)v.y);
+   // Vector2 v = te->localPosition;
+   // Point p = Point((int)v.x, (int)v.y);
 
-   if (m_turnLeftButtonRect.pointIn(p))
+   if (te->index == m_turnLeftTouchIndex)
    {
       m_sceneObject->m_turnLeftPressed = false;
+      m_turnLeftTouchIndex = 0;
    }
-   else if (m_turnRightButtonRect.pointIn(p))
+   else if (te->index == m_turnRightTouchIndex)
    {
       m_sceneObject->m_turnRightPressed = false;
+      m_turnRightTouchIndex = 0;
    }
-   else if (m_boosterButtonRect.pointIn(p))
+   else if (te->index == m_boosterTouchIndex)
    {
       m_sceneObject->m_boosterPressed = false;
+      m_boosterTouchIndex = 0;
    }
-   else if (m_fireButtonRect.pointIn(p))
+   else if (te->index == m_fireTouchIndex)
    {
       m_sceneObject->m_firePressed = false;
+      m_fireTouchIndex = 0;
    }
-   else if (m_zoomInButtonRect.pointIn(p))
+   else if (te->index == m_zoomInTouchIndex)
    {
       m_sceneObject->m_zoomInPressed = false;
+      m_zoomInTouchIndex = 0;
    }
-   else if (m_zoomOutButtonRect.pointIn(p))
+   else if (te->index == m_zoomOutTouchIndex)
    {
       m_sceneObject->m_zoomOutPressed = false;
+      m_zoomOutTouchIndex = 0;
    }
 }
 

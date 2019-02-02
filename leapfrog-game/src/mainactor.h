@@ -31,6 +31,13 @@ private:
    oxygine::Rect m_zoomInButtonRect;
    oxygine::Rect m_zoomOutButtonRect;
 
+   int m_turnRightTouchIndex;
+   int m_turnLeftTouchIndex;
+   int m_boosterTouchIndex;
+   int m_fireTouchIndex;
+   int m_zoomInTouchIndex;
+   int m_zoomOutTouchIndex;
+
    spGameStatus m_gameStatus;
 
    bool m_armNextScene;
@@ -75,7 +82,6 @@ public:
    // "std::string object" are on the form "objectA.objectAsB.objectBsC" in the hierarcical 
    // CompoundObject structure
 
-   // TODO: Enum to be replaced by file name of scene xml
    /*
       startScene reads xml file which builds the tree of CompoundObjects.
    */
