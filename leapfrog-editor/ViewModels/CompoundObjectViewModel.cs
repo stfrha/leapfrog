@@ -184,6 +184,7 @@ namespace LeapfrogEditor
                "launchSite",
                "landingPad",
                "breakableObject",
+               "explosiveObject",
                "steerableObject"
             };
          }

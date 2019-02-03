@@ -290,11 +290,11 @@ void MainActor::startScene(void)
 
    createButtonOverlay();
 
-   m_debugDraw = new Box2DDraw;
-   m_debugDraw->SetFlags(b2Draw::e_shapeBit | b2Draw::e_jointBit | b2Draw::e_pairBit | b2Draw::e_centerOfMassBit);
-   m_debugDraw->attachTo(m_sceneObject);
-   m_debugDraw->setWorld(Scales::c_physToStageScale, m_sceneObject->GetWorld());
-   m_debugDraw->setPriority(2550);
+   //m_debugDraw = new Box2DDraw;
+   //m_debugDraw->SetFlags(b2Draw::e_shapeBit | b2Draw::e_jointBit | b2Draw::e_pairBit | b2Draw::e_centerOfMassBit);
+   //m_debugDraw->attachTo(m_sceneObject);
+   //m_debugDraw->setWorld(Scales::c_physToStageScale, m_sceneObject->GetWorld());
+   //m_debugDraw->setPriority(2550);
 }
 
 float MainActor::getProperty(std::string object, int propId)

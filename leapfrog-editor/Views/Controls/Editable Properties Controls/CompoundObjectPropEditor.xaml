@@ -29,6 +29,9 @@
                   <DataTemplate DataType="{x:Type local:BreakableObjectPropertiesViewModel}">
                      <local:BreakabkeBehaviourPropEditor />
                   </DataTemplate>
+                  <DataTemplate DataType="{x:Type local:ExplosiveObjectPropertiesViewModel}">
+                     <local:ExplosiveBehaviourPropEditor />
+                  </DataTemplate>
                   <DataTemplate x:Key="He1" >
                      <Label Content="Undef Properties" />
                   </DataTemplate>

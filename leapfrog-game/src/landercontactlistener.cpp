@@ -7,6 +7,7 @@
 #include "launchsite.h"
 #include "landingpad.h"
 #include "breakableobject.h"
+#include "explosiveobject.h"
 #include "blastemitter.h"
 
 void LanderContactListener::InitContactListner(SceneActor* sceneActor)
@@ -26,6 +27,9 @@ void LanderContactListener::PostSolve(b2Contact* contact, const b2ContactImpulse
    CompoundObject* destroyableCO = NULL;
    Actor* destroyableActor = NULL;
    BreakableObject* breakable = NULL;
+   ExplosiveObject* explosive = NULL;
+   bool flameParticle = false;
+   bool blastParticle = false;
 
    if (eA == CollisionEntity::leapfrog)
    {
@@ -57,6 +61,16 @@ void LanderContactListener::PostSolve(b2Contact* contact, const b2ContactImpulse
       breakable = BodyUserData::getParentObjectOfType<BreakableObject*>(contact->GetFixtureB()->GetBody()->GetUserData());
    }
 
+   if (eA == CollisionEntity::explosiveObject)
+   {
+      explosive = BodyUserData::getParentObjectOfType<ExplosiveObject*>(contact->GetFixtureA()->GetBody()->GetUserData());
+   }
+
+   if (eB == CollisionEntity::explosiveObject)
+   {
+      explosive = BodyUserData::getParentObjectOfType<ExplosiveObject*>(contact->GetFixtureB()->GetBody()->GetUserData());
+   }
+
    // For destroyable, we want to kill the body that was hit, no the entire 
    // CompoundObject that it was a child to. However, we want also to remove 
    // the body (i.e. the shape) from the CompoundObject, so we still need the 
@@ -73,21 +87,52 @@ void LanderContactListener::PostSolve(b2Contact* contact, const b2ContactImpulse
       destroyableCO = BodyUserData::getParentObjectOfType<CompoundObject*>(contact->GetFixtureB()->GetBody()->GetUserData());
    }
 
+   if ((eA == CollisionEntity::flameParticle) || (eB == CollisionEntity::flameParticle))
+   {
+      flameParticle = true;
+   }
+
+   if ((eA == CollisionEntity::blastParticle) || (eB == CollisionEntity::blastParticle))
+   {
+      blastParticle = true;
+   }
+
    if (bullet)
    {
       // Bullet hit something
       bullet->bulletHit(contact);
+   }
 
-      if (breakable && bullet)
+   if (breakable)
+   {
+      if (bullet)
       {
-         // Bullet hit breakable
          breakable->damageCollision(contact, 1.0f);
       }
+      else if (blastParticle)
+      {
+         breakable->damageCollision(contact, 1.0f);
+      }
+      else if (flameParticle)
+      {
+         breakable->damageCollision(contact, 0.02f);
+      }
+   }
 
-      if (destroyableActor && bullet)
+   if (destroyableActor)
+   {
+      if (bullet || blastParticle)
       {
          destroyableCO->removeShape(destroyableActor);
          m_sceneActor->addMeToDeathList(destroyableActor);
+      }
+   }
+
+   if (explosive)
+   {
+      if (bullet || blastParticle)
+      {
+         explosive->triggerExplosion();
       }
    }
 

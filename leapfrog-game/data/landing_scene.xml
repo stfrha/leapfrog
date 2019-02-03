@@ -189,8 +189,8 @@
         y="0" />
       <vertex
         id="2"
-        x="63"
-        y="-3" />
+        x="61.996813402787211"
+        y="0.51115309024589806" />
       <vertex
         id="3"
         x="60"
@@ -1114,32 +1114,31 @@
     <stateProperties
       state="default">
       <properties
-        posX="265"
-        posY="25" >
-         <compoundObject
-            needsGroupIndex="false" >
-            <behaviour
-               type="explosiveObject" >
-               <explosiveObjectProperties
-                  numOfParticles="100"
-                  particleRadius="0.05"
-                  blastPower="5000" />
-            </behaviour>
-            <dynamicBox
-               name="bombBody"
-               texture="bomb_crate"
-               posX="0"
-               posY="0"
-               width="10" 
-               height="10"
-               angle="0"
-               zLevel="160"
-               collisionEntity="breakableObject"
-               collisionCategory="1"
-               collisionMask="65533"
-               density="7"
-               friction="1" />
-         </compoundObject>
+        posX="380.76054204083943"
+        posY="242.51373552136573">
+        <compoundObject>
+          <behaviour
+            type="explosiveObject">
+            <explosiveObjectProperties
+              numOfParticles="40"
+              particleRadius="1"
+              blastPower="1000" />
+          </behaviour>
+          <dynamicBox
+            name="bombBody"
+            texture="bomb_crate"
+            posX="0"
+            posY="0"
+            angle="0"
+            zLevel="160"
+            collisionEntity="explosiveObject"
+            collisionCategory="1"
+            collisionMask="65533"
+            width="20"
+            height="20"
+            density="7"
+            friction="1" />
+        </compoundObject>
       </properties>
     </stateProperties>
   </childObject>

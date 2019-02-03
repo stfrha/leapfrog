@@ -24,7 +24,9 @@ public:
       landingPad,
       breakableObject,
       destroyableObject,
-      steerableObject
+      steerableObject,
+      blastParticle,
+      explosiveObject
    };
 
    static CollisionEntityTypeEnum convert(const std::string& value)
@@ -45,6 +47,8 @@ public:
       else if (value == "breakableObject") return CollisionEntity::breakableObject;
       else if (value == "destroyableObject") return CollisionEntity::destroyableObject;
       else if (value == "steerableObject") return CollisionEntity::steerableObject;
+      else if (value == "blastParticle") return CollisionEntity::blastParticle;
+      else if (value == "explosiveObject") return CollisionEntity::explosiveObject;
 
       return CollisionEntity::notApplicable;
    }

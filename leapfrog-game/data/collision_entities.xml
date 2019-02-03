@@ -17,4 +17,6 @@
 	<collisionEntity id="14" name="breakableObject" />
 	<collisionEntity id="15" name="destroyableObject" />
 	<collisionEntity id="16" name="steerableObject" />
+	<collisionEntity id="17" name="blastParticle" />
+	<collisionEntity id="18" name="explosiveObject" />
 </collisionEntities>     

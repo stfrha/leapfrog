@@ -39,6 +39,7 @@ private:
    ExplosionState m_state;
    oxygine::timeMS m_blastTime;
    std::vector<b2Body*> m_blastParticleBodies;
+   oxygine::spSprite m_explosionAnimation;
 
    int m_numOfParticles;
    float m_particlesRadius;
@@ -46,6 +47,7 @@ private:
 
    void readExplosiveObjectNode(const pugi::xml_node& node);
    void doExplosion(void);
+   void startAnimation(b2Vec2 pos);
 
 public:
 	ExplosiveObject(

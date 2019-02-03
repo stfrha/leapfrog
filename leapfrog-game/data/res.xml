@@ -20,7 +20,7 @@
 		<image file="ground.png"/>		
 		<image file="flame_particle.png"/>		
 		<image file="white_circle.png"/>	
-		<image file="shield_exciter.png" cols = "11" />
+		<image file="shield_exciter.png" cols="11" />
 		<image file="planet_mask.png"/>	
 		<image file="trajectory.png"/>	
 		<image file="predicted_site.png"/>	
@@ -47,6 +47,7 @@
 		<image file="circle.png"/>	
 		<image file="asteroid_cutout.png"/>	
 		<image file="bomb_crate.png"/>	
+		<image file="explosion_ani.png" rows="8" cols="8" />
 	</atlas>
 	<atlas clamp2edge="false"> 
 		<image file="default.png" trim="false" extend="false"/>

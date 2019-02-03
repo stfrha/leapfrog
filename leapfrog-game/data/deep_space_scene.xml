@@ -239,6 +239,39 @@
          </properties>
       </stateProperties>
    </childObject>
+  <childObject
+    name="bomb1">
+    <stateProperties
+      state="default">
+      <properties
+        posX="256.43088151425547"
+        posY="68.457513737895681">
+        <compoundObject>
+          <behaviour
+            type="explosiveObject">
+            <explosiveObjectProperties
+              numOfParticles="40"
+              particleRadius="1"
+              blastPower="1000" />
+          </behaviour>
+          <dynamicBox
+            name="bombBody"
+            texture="bomb_crate"
+            posX="0"
+            posY="0"
+            angle="0"
+            zLevel="160"
+            collisionEntity="explosiveObject"
+            collisionCategory="1"
+            collisionMask="65533"
+            width="20"
+            height="20"
+            density="7"
+            friction="1" />
+        </compoundObject>
+      </properties>
+    </stateProperties>
+  </childObject>
    <system
       type="objectFactory"
       name="asteroidField">

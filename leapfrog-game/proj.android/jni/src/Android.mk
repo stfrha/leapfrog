@@ -60,6 +60,7 @@ LOCAL_SRC_FILES += ../../../src/Box2DDebugDraw.cpp
 LOCAL_SRC_FILES += ../../../src/breakableobject.cpp
 LOCAL_SRC_FILES += ../../../src/bullet.cpp
 LOCAL_SRC_FILES += ../../../src/compoundobject.cpp
+LOCAL_SRC_FILES += ../../../src/explosiveobject.cpp
 LOCAL_SRC_FILES += ../../../src/flameemitter.cpp
 LOCAL_SRC_FILES += ../../../src/flameparticle.cpp
 LOCAL_SRC_FILES += ../../../src/flamesmokeparticle.cpp

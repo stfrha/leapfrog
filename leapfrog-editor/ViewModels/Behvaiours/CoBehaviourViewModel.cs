@@ -19,6 +19,7 @@ namespace LeapfrogEditor
       private CoBehaviour _modelObject;
       private SteerableObjectPropertiesViewModel _steerableObjProperties;
       private BreakableObjectPropertiesViewModel _breakableObjProperties;
+      private ExplosiveObjectPropertiesViewModel _explosiveObjProperties;
       private ScenePropertiesViewModel _sceneProperties;
 
 
@@ -42,6 +43,7 @@ namespace LeapfrogEditor
          _sceneProperties = new ScenePropertiesViewModel(treeParent, parentVm, mainVm, ModelObject.SceneProperties);
          _steerableObjProperties = new SteerableObjectPropertiesViewModel(treeParent, parentVm, mainVm, ModelObject.SteerableObjProps);
          _breakableObjProperties = new BreakableObjectPropertiesViewModel(treeParent, parentVm, mainVm, ModelObject.BreakableObjProps);
+         _explosiveObjProperties = new ExplosiveObjectPropertiesViewModel(treeParent, parentVm, mainVm, ModelObject.ExplosiveObjProps);
 
          _defaultStates.Add(_defaultState);
       }
@@ -122,6 +124,10 @@ namespace LeapfrogEditor
             else if (Type == "breakableObject")
             {
                return _breakableObjProperties;
+            }
+            else if (Type == "explosiveObject")
+            {
+               return _explosiveObjProperties;
             }
 
             return null;

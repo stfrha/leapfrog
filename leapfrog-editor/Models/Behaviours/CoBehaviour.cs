@@ -16,6 +16,7 @@ namespace LeapfrogEditor
       private string _type;
       private SteerableObjectProperties _steerableObjProps = new SteerableObjectProperties();
       private BreakableObjectProperties _breakableObjProps = new BreakableObjectProperties();
+      private ExplosiveObjectProperties _explosiveObjProps = new ExplosiveObjectProperties();
       private SceneProperties _sceneProperties = new SceneProperties();
 
 
@@ -61,6 +62,18 @@ namespace LeapfrogEditor
       public bool ShouldSerializeBreakableObjProps()
       {
          return (Type == "breakableObject");
+      }
+
+      [XmlElement("explosiveObjectProperties")]
+      public ExplosiveObjectProperties ExplosiveObjProps
+      {
+         get { return _explosiveObjProps; }
+         set { _explosiveObjProps = value; }
+      }
+
+      public bool ShouldSerializeExplosiveObjProps()
+      {
+         return (Type == "explosiveObject");
       }
 
       [XmlElement("sceneProperties")]
