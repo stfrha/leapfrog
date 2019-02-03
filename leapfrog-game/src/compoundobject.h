@@ -42,6 +42,7 @@ public:
       launchSite,
       landingPad,
       breakableObject,
+      explosiveObject,
       steerableObject
    };
 

@@ -294,6 +294,9 @@
     <ClCompile Include="..\..\..\Box2D\Box2D\Dynamics\b2WorldCallbacks.cpp">
       <Filter>Box2D</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\explosiveobject.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\physdispconvert.h">
@@ -601,6 +604,9 @@
     </ClInclude>
     <ClInclude Include="..\..\..\Box2D\Box2D\Box2D.h">
       <Filter>Box2D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\explosiveobject.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

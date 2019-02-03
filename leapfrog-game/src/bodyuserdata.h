@@ -25,12 +25,22 @@ public:
    template<class T>
    static T getActor(void* userData)
    {
-      return static_cast<T>(static_cast<BodyUserData*>(userData)->m_actor);
+      if (userData != NULL)
+      {
+         return static_cast<T>(static_cast<BodyUserData*>(userData)->m_actor);
+      }
+
+      return NULL;
    }
 
    static CollisionEntity::CollisionEntityTypeEnum getCollisionType(void* userData)
    {
-      return static_cast<BodyUserData*>(userData)->m_collisionType;
+      if (userData != NULL)
+      {
+         return static_cast<BodyUserData*>(userData)->m_collisionType;
+      }
+
+      return CollisionEntity::CollisionEntityTypeEnum::notApplicable;
    }
 
 

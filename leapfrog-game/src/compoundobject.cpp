@@ -13,6 +13,7 @@
 #include "launchsite.h"
 #include "leapfrog.h"
 #include "breakableobject.h"
+#include "explosiveobject.h"
 #include "steerableobject.h"
 #include "landingpad.h"
 #include "planetactor.h"
@@ -282,6 +283,21 @@ CompoundObject* CompoundObject::initCompoundObject(
 
       bo->m_behaviourType = BehaviourEnum::breakableObject;
       bo->initGameStatus(new GameStatus());
+
+      return static_cast<CompoundObject*>(bo);
+   }
+   else if (behavStr == "explosiveObject")
+   {
+      ExplosiveObject* bo = new ExplosiveObject(
+         gameResources,
+         sceneParent,
+         parentObject,
+         world,
+         pos,
+         root,
+         groupIndex);
+
+      bo->m_behaviourType = BehaviourEnum::explosiveObject;
 
       return static_cast<CompoundObject*>(bo);
    }

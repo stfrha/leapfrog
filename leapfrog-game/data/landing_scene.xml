@@ -1109,4 +1109,38 @@
         posY="121.19325468177033" />
     </stateProperties>
   </childObject>
+  <childObject
+    name="bomb1">
+    <stateProperties
+      state="default">
+      <properties
+        posX="265"
+        posY="25" >
+         <compoundObject
+            needsGroupIndex="false" >
+            <behaviour
+               type="explosiveObject" >
+               <explosiveObjectProperties
+                  numOfParticles="100"
+                  particleRadius="0.05"
+                  blastPower="5000" />
+            </behaviour>
+            <dynamicBox
+               name="bombBody"
+               texture="bomb_crate"
+               posX="0"
+               posY="0"
+               width="10" 
+               height="10"
+               angle="0"
+               zLevel="160"
+               collisionEntity="breakableObject"
+               collisionCategory="1"
+               collisionMask="65533"
+               density="7"
+               friction="1" />
+         </compoundObject>
+      </properties>
+    </stateProperties>
+  </childObject>
 </compoundObject>

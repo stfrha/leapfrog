@@ -46,6 +46,7 @@
 		<image file="hammer.png"/>	
 		<image file="circle.png"/>	
 		<image file="asteroid_cutout.png"/>	
+		<image file="bomb_crate.png"/>	
 	</atlas>
 	<atlas clamp2edge="false"> 
 		<image file="default.png" trim="false" extend="false"/>
