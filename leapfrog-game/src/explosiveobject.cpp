@@ -24,9 +24,13 @@ ExplosiveObject::ExplosiveObject(
    m_gameResource(&gameResources),
    m_sceneActor(sceneParent),
    m_world(world),
+   m_blastDuration(500),
    m_numOfParticles(20),
    m_particlesRadius(0.5f),
    m_blastPower(5000.0f),
+   m_damageBulletEqv(1.0f),
+   m_impactExplosion(false),
+   m_impactThreshold(0.0f),
    m_state(ExplosionState::idle),
    m_explosionAnimation(NULL)
 {
@@ -64,6 +68,9 @@ void ExplosiveObject::readExplosiveObjectNode(const pugi::xml_node& node)
    m_numOfParticles = node.attribute("numOfParticles").as_int(0);
    m_particlesRadius = node.attribute("particleRadius").as_float(0.0f);
    m_blastPower = node.attribute("blastPower").as_float(0.0f);
+   m_damageBulletEqv = node.attribute("damageBulletEqv").as_float(1.0f);
+   m_impactExplosion = node.attribute("impactExplosion").as_bool(false);
+   m_impactThreshold = node.attribute("impactThreshold").as_float(0.0f);
 }
 
 
@@ -91,13 +98,15 @@ void ExplosiveObject::doUpdate(const oxygine::UpdateState& us)
       // it is ok to remove actors and kill bodies.
       doExplosion();
 
-      m_blastTime = us.time;
+      m_blastStartTime = us.time;
       m_state = ExplosionState::waitForExplosionEnd;
       break;
 
    case ExplosionState::waitForExplosionEnd:
 
-      if (us.time > m_blastTime + 500)
+      m_blastProgress = us.time - m_blastStartTime;
+
+      if (m_blastProgress > m_blastDuration)
       {
          for (auto it = m_blastParticleBodies.begin(); it != m_blastParticleBodies.end(); ++it)
          {
@@ -125,7 +134,7 @@ void ExplosiveObject::startAnimation(b2Vec2 pos)
    m_explosionAnimation->setAnchor(0.5f, 0.5f);
    m_explosionAnimation->setPosition(PhysDispConvert::convert(pos, 1.0f));
    m_sceneActor->addChild(m_explosionAnimation);
-   spTween animTween = m_explosionAnimation->addTween(TweenAnim(resAnim, 0, 63), 500);
+   spTween animTween = m_explosionAnimation->addTween(TweenAnim(resAnim, 0, 63), m_blastDuration);
    m_explosionAnimation->setSize(200.0f, 200.0f);
    m_explosionAnimation->setPriority(164);
 }
@@ -195,4 +204,31 @@ void ExplosiveObject::doExplosion(void)
 void ExplosiveObject::triggerExplosion(void)
 {
    m_state = ExplosionState::armExplosion;
+}
+
+float ExplosiveObject::getDamageBulletEqv(void)
+{
+   float decay = (float)(m_blastDuration - m_blastProgress) / (float)m_blastDuration;
+   
+   if (decay < 0)
+   {
+      decay = 0.0f;
+   }
+
+   return m_damageBulletEqv * decay;
+}
+
+void ExplosiveObject::hitImpulse(const b2ContactImpulse* impulse)
+{
+   float normalImpulses = 0.0f;
+
+   for (int i = 0; i < impulse->count; i++)
+   {
+      normalImpulses += impulse->normalImpulses[i];
+   }
+
+   if (normalImpulses > m_impactThreshold)
+   {
+      triggerExplosion();
+   }
 }

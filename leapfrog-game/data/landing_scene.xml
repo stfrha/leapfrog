@@ -1098,8 +1098,8 @@
       state="landingState">
       <properties
         file="leapfrog_reentry.xml"
-        posX="259.51165866245026"
-        posY="25.680506468823438" />
+        posX="532.69938948315985"
+        posY="-26.69470300565785" />
     </stateProperties>
     <stateProperties
       state="groundState">
@@ -1114,15 +1114,18 @@
     <stateProperties
       state="default">
       <properties
-        posX="380.76054204083943"
-        posY="242.51373552136573">
+        posX="469.53851241055759"
+        posY="8.2864187818491626">
         <compoundObject>
           <behaviour
             type="explosiveObject">
             <explosiveObjectProperties
               numOfParticles="40"
               particleRadius="1"
-              blastPower="1000" />
+              blastPower="1000"
+              damageBulletEqv="1"
+              impactExplosion="true"
+              impactThreshold="2500" />
           </behaviour>
           <dynamicBox
             name="bombBody"
@@ -1136,7 +1139,7 @@
             collisionMask="65533"
             width="20"
             height="20"
-            density="7"
+            density="3"
             friction="1" />
         </compoundObject>
       </properties>

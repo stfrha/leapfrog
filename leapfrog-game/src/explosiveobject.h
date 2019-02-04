@@ -35,15 +35,23 @@ private:
    oxygine::Resources* m_gameResource;
    b2World* m_world;
    SceneActor* m_sceneActor;
+   int m_blastDuration;
 
    ExplosionState m_state;
-   oxygine::timeMS m_blastTime;
+   oxygine::timeMS m_blastStartTime;
+
+   // Below time is needed to calculate the damage of a particle
+   // which could be called when current time is not known.
+   oxygine::timeMS m_blastProgress;
    std::vector<b2Body*> m_blastParticleBodies;
    oxygine::spSprite m_explosionAnimation;
 
    int m_numOfParticles;
    float m_particlesRadius;
    float m_blastPower;
+   float m_damageBulletEqv;
+   bool m_impactExplosion;
+   float m_impactThreshold;
 
    void readExplosiveObjectNode(const pugi::xml_node& node);
    void doExplosion(void);
@@ -61,6 +69,8 @@ public:
 
 
    void triggerExplosion(void);
+   float getDamageBulletEqv(void);
+   void hitImpulse(const b2ContactImpulse* impulse);
 
 protected:
    void doUpdate(const oxygine::UpdateState& us);
