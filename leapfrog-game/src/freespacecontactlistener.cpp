@@ -27,7 +27,7 @@ void FreeSpaceContactListener::PostSolve(b2Contact* contact, const b2ContactImpu
    BreakableObject* breakable = NULL;
    ExplosiveObject* explosive = NULL;
    bool flameParticle = false;
-   bool blastParticle = false;
+   ExplosiveObject* blastSource = NULL;
 
    if (eA == CollisionEntity::shield)
    {
@@ -110,9 +110,14 @@ void FreeSpaceContactListener::PostSolve(b2Contact* contact, const b2ContactImpu
       flameParticle = true;      
    }
 
-   if ((eA == CollisionEntity::blastParticle) || (eB == CollisionEntity::blastParticle))
+   if (eA == CollisionEntity::blastParticle)
    {
-      blastParticle = true;
+      blastSource = BodyUserData::getParentObjectOfType<ExplosiveObject*>(contact->GetFixtureA()->GetBody()->GetUserData());
+   }
+
+   if (eB == CollisionEntity::blastParticle)
+   {
+      blastSource = BodyUserData::getParentObjectOfType<ExplosiveObject*>(contact->GetFixtureB()->GetBody()->GetUserData());
    }
 
    if (eB == CollisionEntity::steerableObject)
@@ -132,9 +137,10 @@ void FreeSpaceContactListener::PostSolve(b2Contact* contact, const b2ContactImpu
       {
          breakable->damageCollision(contact, 1.0f);
       }
-      else if (blastParticle)
+      else if (blastSource != NULL)
       {
-         breakable->damageCollision(contact, 0.5f);
+         float bulletEqvDamage = blastSource->getDamageBulletEqv();
+         breakable->damageCollision(contact, bulletEqvDamage);
       }
       else if (flameParticle)
       {
@@ -148,9 +154,10 @@ void FreeSpaceContactListener::PostSolve(b2Contact* contact, const b2ContactImpu
       {
          shield1->shieldHitByBullet(contact, 1.0f);
       }
-      else if (blastParticle)
+      else if (blastSource != NULL)
       {
-         shield1->shieldHitByBullet(contact, 0.5f);
+         float bulletEqvDamage = blastSource->getDamageBulletEqv();
+         shield1->shieldHitByBullet(contact, bulletEqvDamage);
       }
       else
       {
@@ -164,9 +171,10 @@ void FreeSpaceContactListener::PostSolve(b2Contact* contact, const b2ContactImpu
       {
          shield2->shieldHitByBullet(contact, 1.0f);
       }
-      else if (blastParticle)
+      else if (blastSource != NULL)
       {
-         shield2->shieldHitByBullet(contact, 0.5f);
+         float bulletEqvDamage = blastSource->getDamageBulletEqv();
+         shield2->shieldHitByBullet(contact, bulletEqvDamage);
       }
       else
       {
@@ -187,9 +195,10 @@ void FreeSpaceContactListener::PostSolve(b2Contact* contact, const b2ContactImpu
          {
             leapfrog->hitByBullet(contact, 1.0f);
          }
-         else if (blastParticle)
+         else if (blastSource != NULL)
          {
-            leapfrog->hitByBullet(contact, 1.0f);
+            float bulletEqvDamage = blastSource->getDamageBulletEqv();
+            leapfrog->hitByBullet(contact, bulletEqvDamage);
          }
          else
          {
@@ -205,9 +214,10 @@ void FreeSpaceContactListener::PostSolve(b2Contact* contact, const b2ContactImpu
       {
          steerableObject->hitByBullet(contact, 1.0f);
       }
-      else if (blastParticle)
+      else if (blastSource != NULL)
       {
-         steerableObject->hitByBullet(contact, 1.0f);
+         float bulletEqvDamage = blastSource->getDamageBulletEqv();
+         steerableObject->hitByBullet(contact, bulletEqvDamage);
       }
       else
       {
@@ -217,9 +227,13 @@ void FreeSpaceContactListener::PostSolve(b2Contact* contact, const b2ContactImpu
 
    if (explosive)
    {
-      if (bullet || blastParticle)
+      if (bullet || blastSource != NULL)
       { 
          explosive->triggerExplosion();
+      }
+      else
+      {
+         explosive->hitImpulse(impulse);
       }
    }
 }

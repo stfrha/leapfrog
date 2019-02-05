@@ -29,7 +29,7 @@ void LanderContactListener::PostSolve(b2Contact* contact, const b2ContactImpulse
    BreakableObject* breakable = NULL;
    ExplosiveObject* explosive = NULL;
    bool flameParticle = false;
-   bool blastParticle = false;
+   ExplosiveObject* blastSource = NULL;
 
    if (eA == CollisionEntity::leapfrog)
    {
@@ -92,9 +92,14 @@ void LanderContactListener::PostSolve(b2Contact* contact, const b2ContactImpulse
       flameParticle = true;
    }
 
-   if ((eA == CollisionEntity::blastParticle) || (eB == CollisionEntity::blastParticle))
+   if (eA == CollisionEntity::blastParticle)
    {
-      blastParticle = true;
+      blastSource = BodyUserData::getParentObjectOfType<ExplosiveObject*>(contact->GetFixtureA()->GetBody()->GetUserData());
+   }
+
+   if (eB == CollisionEntity::blastParticle)
+   {
+      blastSource = BodyUserData::getParentObjectOfType<ExplosiveObject*>(contact->GetFixtureB()->GetBody()->GetUserData());
    }
 
    if (bullet)
@@ -109,9 +114,10 @@ void LanderContactListener::PostSolve(b2Contact* contact, const b2ContactImpulse
       {
          breakable->damageCollision(contact, 1.0f);
       }
-      else if (blastParticle)
+      else if (blastSource != NULL)
       {
-         breakable->damageCollision(contact, 1.0f);
+         float bulletEqvDamage = blastSource->getDamageBulletEqv();
+         breakable->damageCollision(contact, bulletEqvDamage);
       }
       else if (flameParticle)
       {
@@ -121,7 +127,7 @@ void LanderContactListener::PostSolve(b2Contact* contact, const b2ContactImpulse
 
    if (destroyableActor)
    {
-      if (bullet || blastParticle)
+      if (bullet || blastSource != NULL)
       {
          destroyableCO->m_isDead = true;
          destroyableCO->removeShape(destroyableActor);
@@ -131,15 +137,31 @@ void LanderContactListener::PostSolve(b2Contact* contact, const b2ContactImpulse
 
    if (explosive)
    {
-      if (bullet || blastParticle)
+      if (bullet || blastSource != NULL)
       {
          explosive->triggerExplosion();
+      }
+      else
+      {
+         explosive->hitImpulse(impulse);
       }
    }
 
    if (leapfrog)
    {
-      leapfrog->hitImpulse(contact, impulse);
+      if (bullet)
+      {
+         leapfrog->hitByBullet(contact, 1.0f);
+      }
+      else if (blastSource != NULL)
+      {
+         float bulletEqvDamage = blastSource->getDamageBulletEqv();
+         leapfrog->hitByBullet(contact, bulletEqvDamage);
+      }
+      else
+      {
+         leapfrog->hitImpulse(contact, impulse);
+      }
    }
 }
 
