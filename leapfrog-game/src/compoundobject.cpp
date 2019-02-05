@@ -34,7 +34,8 @@ CompoundObject::CompoundObject(SceneActor* sceneActor, CompoundObject* parentObj
    m_sceneActor(sceneActor),
    m_parentObject(parentObject),
    m_collisionType(CollisionEntity::notApplicable),
-   m_behaviourType(notApplicable)
+   m_behaviourType(notApplicable),
+   m_isDead(false)
 { }
 
 
@@ -1783,6 +1784,7 @@ void CompoundObject::addMeToDeathList(void)
 
 void CompoundObject::hitByBullet(b2Contact* contact)
 {
+   m_isDead = true;
    m_sceneActor->addMeToDeathList(this);
 }
 

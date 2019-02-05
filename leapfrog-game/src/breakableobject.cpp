@@ -135,6 +135,11 @@ void BreakableObject::collisionBlast(b2Contact* contact, bool small)
 void BreakableObject::damageCollision(b2Contact* contact, float bulletEqvDamage)
 // Create blast emitter and check for breaking
 {
+   if (m_isDead)
+   {
+      return;
+   }
+
    bool shattered = false;
 
    // Take damage
@@ -142,6 +147,7 @@ void BreakableObject::damageCollision(b2Contact* contact, float bulletEqvDamage)
 
    if (m_gameStatus->getDamage() >= m_breakAtDamage)
    {
+      m_isDead = true;
       addMeToDeathList();
 
       spawnBreakableObjects();
@@ -165,9 +171,30 @@ void BreakableObject::doUpdate(const oxygine::UpdateState& us)
 
 void BreakableObject::spawnBreakableObjects(void)
 {
-   m_sceneActor->addObjectToSpawnList(
-      m_numberOfSpawns,
-      getCompoundObjectPosition(),
-      Vector2(2.0f, 2.0f),
-      m_spawnObjects);
+   if (m_numberOfSpawns == 1)
+   {
+      m_sceneActor->addObjectToSpawnList(
+         m_numberOfSpawns,
+         getCompoundObjectPosition(),
+         Vector2(2.0f, 2.0f),
+         m_spawnObjects);
+
+      return;
+   }
+
+   Vector2 center = getCompoundObjectPosition();
+   float radius = m_shapes[0]->getWidth() / 4;
+
+   for (int i = 0; i < m_numberOfSpawns; i++)
+   {
+      float angle = (i / (float)m_numberOfSpawns) * 2.0f * MATH_PI;
+      Vector2 rayDir(sinf(angle), cosf(angle));
+      Vector2 spawnPos = rayDir * radius + center;
+
+      m_sceneActor->addObjectToSpawnList(
+         1,
+         spawnPos,
+         Vector2(2.0f, 2.0f),
+         m_spawnObjects);
+   }
 }

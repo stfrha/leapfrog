@@ -236,6 +236,7 @@ public:
    std::vector<CompoundObject*> m_children;
    std::vector<System*> m_systems;
    spGameStatus m_gameStatus;
+   bool m_isDead;
 
    CompoundObject(SceneActor* sceneActor, CompoundObject* parentObject);
 

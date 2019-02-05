@@ -123,6 +123,7 @@ void LanderContactListener::PostSolve(b2Contact* contact, const b2ContactImpulse
    {
       if (bullet || blastParticle)
       {
+         destroyableCO->m_isDead = true;
          destroyableCO->removeShape(destroyableActor);
          m_sceneActor->addMeToDeathList(destroyableActor);
       }
