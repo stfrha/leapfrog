@@ -94,6 +94,9 @@ public:
    void hitImpulse(b2Contact* contact, const b2ContactImpulse* impulse);
    void hitByBullet(b2Contact* contact, float bulletEqvDamage);
 
+   // Specialisation of map registration
+   void registerToMap(void) override;
+
 protected:
 	void doUpdate(const oxygine::UpdateState& us);
 

@@ -46,14 +46,17 @@ protected:
    float	m_physToStageScale;
    b2World * m_world;
    spLaunchSite m_launchSite;
-   std::vector<Actor*> m_deathList;
+   std::vector<oxygine::spActor> m_deathList;
    std::vector<spSpawnInstruction> m_spawnInstructions;
    PanorateModeEnum m_panorateMode;
    bool m_externalControl;
    SceneTypeEnum m_sceneType;
 
 public:
-	SceneActor(oxygine::Resources& gameResources, b2World* world, float zoomScale);
+	SceneActor(
+      oxygine::Resources& gameResources, 
+      b2World* world, 
+      float zoomScale);
    ~SceneActor();
 
    static SceneActor* defineScene(
@@ -73,23 +76,25 @@ public:
    bool m_zoomInPressed;
    bool m_zoomOutPressed;
    spLeapFrog  m_leapfrog;
+   HeadDownDisplay* m_map;
 
    b2World* GetWorld(void);
    Resources* getResources(void);
 
-   void setLeapfrog(spLeapFrog lf);
    void setPanorateMode(PanorateModeEnum mode);
    void setPanorateObject(CompoundObject* co);
    void setZoom(float zoom);
 
-   void addMeToDeathList(Actor* actor);
+   void addMeToDeathList(spActor actor);
    void addObjectToSpawnList(
       int numOfSpawns,
       oxygine::Vector2 leftTop,
       oxygine::Vector2 widthHeight,
       spSpawnObjectList spawnSource);
+   
+   void registerObjectsToMap(void);
 
-   void takeControlOfLeapfrog(bool control);
+  void takeControlOfLeapfrog(bool control);
 
    SceneTypeEnum getSceneType(void);
 

@@ -16,3 +16,4 @@ public:
 };
 
 extern GroupIndexSource g_GroupIndexSource;
+

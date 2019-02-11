@@ -50,7 +50,9 @@ float Layout::getXFromLeft(int column)
 
 float Layout::getXFromRight(int column)
 {
-   return (getStage()->getSize()).x - ((float) column + 1.0f) * m_buttonWidth;
+   float stageWidth = (getStage()->getSize()).x;
+   float x = stageWidth - ((float)column + 1.0f) * m_buttonWidth;
+   return x;
 }
 
 float Layout::getYFromTop(int row)

@@ -6,6 +6,7 @@
 #include "objectproperty.h"
 #include "system.h"
 #include "gamestatus.h"
+#include "headdowndisplay.h"
 
 class NamedJoint
 {
@@ -43,6 +44,7 @@ public:
       landingPad,
       breakableObject,
       explosiveObject,
+      magneticMine,
       steerableObject
    };
 
@@ -210,7 +212,7 @@ private:
 
    void splitString(const std::string& source, std::string& thisLevel, std::string& lowerLevels);
    b2Body* getBodyImpl(const std::string& name);
-   oxygine::Actor* getActorImpl(const std::string& name);
+   oxygine::spActor getActorImpl(const std::string& name);
    CompoundObject* getObjectImpl(const std::string& name);
    b2Joint* getJointImpl(const std::string& name);
    System* getSystemImpl(const std::string& name);
@@ -224,7 +226,7 @@ private:
 protected:
    SceneActor * m_sceneActor;
    CompoundObject * m_parentObject;
-   std::vector<oxygine::Actor*> m_shapes;
+   std::vector<oxygine::spActor> m_shapes;
 
    void setAllBodiesToBounding(FreeSpaceActor* actor);
 
@@ -308,9 +310,11 @@ public:
    void hitByBullet(b2Contact* contact);
    void addMeToDeathList(void);
 
+   virtual void registerToMap(void);
+
    // Should these three be protected since they are called by the base class?
    CompoundObject* getObject(const std::string& name);
-   oxygine::Actor* getActor(const std::string& name);
+   oxygine::spActor getActor(const std::string& name);
    b2Body* getBody(const std::string& name);
    b2Joint* getJoint(const std::string& name);
    System* getSystem(const std::string& name);

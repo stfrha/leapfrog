@@ -17,6 +17,8 @@
 #include "actoruserdata.h"
 
 #include "blastemitter.h"
+#include "headdowndisplay.h"
+
 
 using namespace oxygine;
 using namespace std;
@@ -74,8 +76,8 @@ LeapFrog::LeapFrog(
 	initCompoundObjectParts(gameResources, sceneParent, parentObject, world, pos, root, string(""), groupIndex);
 
    m_mainActor = getActor("lfMainBody");
-   m_lfRightBigLeg = static_cast<Sprite*>(getActor("lfRightBigLeg"));
-   m_lfLeftBigLeg = static_cast<Sprite*>(getActor("lfLeftBigLeg"));
+   m_lfRightBigLeg = static_cast<Sprite*>(getActor("lfRightBigLeg").get());
+   m_lfLeftBigLeg = static_cast<Sprite*>(getActor("lfLeftBigLeg").get());
    m_mainBody = ActorUserData::getBody(m_mainActor->getUserData());
    m_rightBigLegBody = ActorUserData::getBody(m_lfRightBigLeg->getUserData());
    m_leftBigLegBody = ActorUserData::getBody(m_lfLeftBigLeg->getUserData());
@@ -176,6 +178,7 @@ LeapFrog::LeapFrog(
    // member. The userData for this object should thus
    // be empty (=NULL)
    setUserData(NULL);
+
 }
 
 void LeapFrog::setModePropHandler(oxygine::Event *ev)
@@ -1231,3 +1234,9 @@ void LeapFrog::footOnLandingPad(bool resting)
       unlockJoints();
    }
 }
+
+void LeapFrog::registerToMap(void)
+{
+   g_HeadDownDisplay->addMeToMap(MapItem::MapItemTypeEnum::me, m_mainActor);
+}
+

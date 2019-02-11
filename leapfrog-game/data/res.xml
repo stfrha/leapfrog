@@ -48,6 +48,13 @@
 		<image file="asteroid_cutout.png"/>	
 		<image file="bomb_crate.png"/>	
 		<image file="explosion_ani.png" rows="8" cols="8" />
+		<image file="my_map_item.png" />
+		<image file="friendly_moving.png" />
+		<image file="friendly_stationary.png" />
+		<image file="enemy_moving.png" />
+		<image file="enemy_stationary.png" />
+		<image file="neutral_moving.png" />
+		<image file="neutral_stationary.png" />
 	</atlas>
 	<atlas clamp2edge="false"> 
 		<image file="default.png" trim="false" extend="false"/>

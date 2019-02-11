@@ -176,6 +176,8 @@
     <ClCompile Include="..\src\gamestatus.cpp" />
     <ClCompile Include="..\src\groupindexsource.cpp" />
     <ClCompile Include="..\src\gun.cpp" />
+    <ClCompile Include="..\src\headdowndisplay.cpp" />
+    <ClCompile Include="..\src\magneticmine.cpp" />
     <ClCompile Include="..\src\steerableobject.cpp" />
     <ClCompile Include="..\src\landercontactlistener.cpp" />
     <ClCompile Include="..\src\landingpad.cpp" />
@@ -274,6 +276,8 @@
     <ClInclude Include="..\src\gamestatusevents.h" />
     <ClInclude Include="..\src\groupindexsource.h" />
     <ClInclude Include="..\src\gun.h" />
+    <ClInclude Include="..\src\headdowndisplay.h" />
+    <ClInclude Include="..\src\magneticmine.h" />
     <ClInclude Include="..\src\steerableobject.h" />
     <ClInclude Include="..\src\landercontactlistener.h" />
     <ClInclude Include="..\src\landingactorevents.h" />

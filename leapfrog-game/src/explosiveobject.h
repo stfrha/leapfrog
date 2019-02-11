@@ -31,7 +31,7 @@ private:
       waitForExplosionEnd
    };
 
-
+protected:
    oxygine::Resources* m_gameResource;
    b2World* m_world;
    SceneActor* m_sceneActor;

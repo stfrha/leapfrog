@@ -297,6 +297,12 @@
     <ClCompile Include="..\src\explosiveobject.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\magneticmine.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\headdowndisplay.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\physdispconvert.h">
@@ -606,6 +612,12 @@
       <Filter>Box2D</Filter>
     </ClInclude>
     <ClInclude Include="..\src\explosiveobject.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\magneticmine.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\headdowndisplay.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

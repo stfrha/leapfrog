@@ -218,6 +218,9 @@ public:
    void setHoldAngle(float angle);
    void releaseHoldAngle(void);
    void breakJoints(void);
+   
+   // Leapfrog specialisation of map registration
+   void registerToMap(void) override;
 
    void dumpPart(std::string name, b2Body* body, b2Body* mainBody);
    void dumpParts(void);

@@ -74,7 +74,6 @@ private:
    void recursiveRemoveChildren(oxygine::spActor& parent);
 
 public:
-
 	MainActor();
 	~MainActor();
 

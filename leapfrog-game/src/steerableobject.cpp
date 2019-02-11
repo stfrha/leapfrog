@@ -6,6 +6,7 @@
 #include "blastemitter.h"
 #include "actoruserdata.h"
 #include "polygonvertices.h"
+#include "headdowndisplay.h"
 
 using namespace std;
 using namespace oxygine;
@@ -481,6 +482,8 @@ void SteerableObject::evaluateDamage(void)
       if (m_gameStatus->getDamage() > 100.0f)
       {
          addMeToDeathList();
+         g_HeadDownDisplay->removeMeFromMap(getActor("mainBody"));
+
       }
    }
 }
@@ -509,5 +512,10 @@ void SteerableObject::hitByBullet(b2Contact* contact, float bulletEqvDamage)
    if (m_gameStatus) m_gameStatus->deltaDamage(25.0f);
 
    evaluateDamage();
+}
+
+void SteerableObject::registerToMap(void)
+{
+   g_HeadDownDisplay->addMeToMap(MapItem::MapItemTypeEnum::enemyMoving, getActor("mainBody"));
 }
 

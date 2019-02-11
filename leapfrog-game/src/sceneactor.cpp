@@ -3,6 +3,7 @@
 #include "freespaceactor.h"
 #include "orbitspacescene.h"
 #include "bodyuserdata.h"
+#include "mainactor.h"
 
 using namespace oxygine;
 using namespace std;
@@ -98,11 +99,6 @@ SceneTypeEnum SceneActor::getSceneType(void)
    return m_sceneType;
 }
 
-void SceneActor::setLeapfrog(spLeapFrog lf)
-{
-	m_leapfrog = lf;
-}
-
 b2World* SceneActor::GetWorld(void)
 {
    return m_world;
@@ -130,7 +126,7 @@ void SceneActor::setZoom(float zoom)
    setScale(m_stageToViewPortScale);
 }
 
-void SceneActor::addMeToDeathList(Actor* actor)
+void SceneActor::addMeToDeathList(spActor actor)
 {
    if (std::find(m_deathList.begin(), m_deathList.end(), actor) != m_deathList.end())
    {
@@ -150,6 +146,14 @@ void SceneActor::addObjectToSpawnList(
 {
    spSpawnInstruction spi = new SpawnInstruction(numOfSpawns, topLeft, widthHeight, spawnSource);
    m_spawnInstructions.push_back(spi);
+}
+
+void SceneActor::registerObjectsToMap(void)
+{
+   for (auto it = m_children.begin(); it != m_children.end(); ++it)
+   {
+      (*it)->registerToMap();
+   }
 }
 
 void SceneActor::takeControlOfLeapfrog(bool control)
@@ -327,7 +331,7 @@ void SceneActor::sweepKillList(void)
 {
    for (auto it = m_deathList.begin(); it != m_deathList.end(); ++it)
    {
-      Actor* actor = *it;
+      spActor actor = *it;
 
       b2Body* myBody = ActorUserData::getBody(actor->getUserData());
 

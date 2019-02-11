@@ -14,6 +14,7 @@
 #include "leapfrog.h"
 #include "breakableobject.h"
 #include "explosiveobject.h"
+#include "magneticmine.h"
 #include "steerableobject.h"
 #include "landingpad.h"
 #include "planetactor.h"
@@ -299,6 +300,21 @@ CompoundObject* CompoundObject::initCompoundObject(
          groupIndex);
 
       bo->m_behaviourType = BehaviourEnum::explosiveObject;
+
+      return static_cast<CompoundObject*>(bo);
+   }
+   else if (behavStr == "magneticMine")
+   {
+      MagneticMine* bo = new MagneticMine(
+         gameResources,
+         sceneParent,
+         parentObject,
+         world,
+         pos,
+         root,
+         groupIndex);
+
+      bo->m_behaviourType = BehaviourEnum::magneticMine;
 
       return static_cast<CompoundObject*>(bo);
    }
@@ -1511,7 +1527,7 @@ CompoundObject* CompoundObject::getObject(const std::string& name)
    return NULL;
 }
 
-oxygine::Actor* CompoundObject::getActor(const std::string& name)
+oxygine::spActor CompoundObject::getActor(const std::string& name)
 {
    string thisLevel;
    string lowerLevels;
@@ -1624,7 +1640,7 @@ CompoundObject* CompoundObject::getObjectImpl(const std::string& name)
    return NULL;
 }
 
-oxygine::Actor* CompoundObject::getActorImpl(const std::string& name)
+oxygine::spActor CompoundObject::getActorImpl(const std::string& name)
 {
    for (auto it = m_shapes.begin(); it != m_shapes.end(); ++it)
    {
@@ -1807,4 +1823,11 @@ void CompoundObject::setAllBodiesToBounding(FreeSpaceActor* actor)
    {
       (*it)->setAllBodiesToBounding(actor);
    }
+}
+
+// Base implementation of this does nothing. Overloaded 
+// can optionally implement a specilised version of this
+void CompoundObject::registerToMap(void) 
+{
+   return;
 }

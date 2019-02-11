@@ -1,5 +1,7 @@
 
 #include <functional>
+#include "mainactor.h"
+
 #include "Box2D/Box2D.h"
 #include "Box2DDebugDraw.h"
 #include "physdispconvert.h"
@@ -9,9 +11,9 @@
 #include "layout.h"
 #include "gamestatus.h"
 #include "statusbar.h"
-#include "mainactor.h"
 #include "orbitscene.h"
 #include "orbitspacescene.h"
+#include "headdowndisplay.h"
 
 #include "gamestatusevents.h"
 
@@ -36,6 +38,8 @@ MainActor::MainActor() :
 	m_gameResources.loadXML("res.xml");
 
    m_gameStatus = new GameStatus();
+
+   g_HeadDownDisplay = new HeadDownDisplay();
 
    // Here the game status should probably be read from file
 
@@ -84,10 +88,12 @@ void MainActor::startScene(void)
       actor = next;
    }
 
+   g_HeadDownDisplay->clearMap();
+
    if (m_world != NULL)
    {
       delete m_world;
-      m_world == NULL;
+      m_world = NULL;
    }
 
    // Gravity resets to zero. The Scene behaviour must set the gravity
@@ -98,86 +104,16 @@ void MainActor::startScene(void)
    addTouchDownListener(CLOSURE(this, &MainActor::sceneDownHandler));
    addTouchUpListener(CLOSURE(this, &MainActor::sceneUpHandler));
 
+
+
    spClipRectActor window = new ClipRectActor();
 
    window->setSize(getStage()->getSize());
    window->setPosition(0.0f, 0.0f);
    addChild(window);
 
-   //// Start selected scene
-   //if (scene == STE_LANDING)
-   //{ 
-   //   //spClipRectActor window = new ClipRectActor();
-
-   //   //window->setSize(getStage()->getSize() - Vector2(100, 100));
-   //   //window->setPosition(50.0f, 50.0f);
-   //   //addChild(window);
-
-   //   //spLandingActor landingActor = new LandingActor(m_gameResources, m_gameStatus, string("landing_scene.xml"), string("landingState"));
-   //   
-   //   spLandingActor landingActor = static_cast<LandingActor*>(CompoundObject::readDefinitionXmlFile(
-   //      m_gameResources, 
-   //      NULL, 
-   //      NULL, 
-   //      m_world, 
-   //      Vector2(0.0f, 0.0f), 
-   //      string("landing_scene.xml"), 
-   //      string("landingState")));
-   //   
-   //   window->addChild(landingActor);
-   //   landingActor->addEventListener(LandingActorTranstToDeepSpaceEvent::EVENT, CLOSURE(this, &MainActor::transitToDeepSpaceListner));
-   //   m_sceneObject = static_cast<SceneActor*>(landingActor.get());
-
-   //}
-   //else if (scene == STE_FREE_SPACE)
-   //{
-   //   //spClipRectActor window = new ClipRectActor();
-
-   //   //window->setSize(getStage()->getSize() - Vector2(100, 100));
-   //   //window->setPosition(50.0f, 50.0f);
-   //   //addChild(window);
-
-   //   spFreeSpaceActor freeSpaceActor = new FreeSpaceActor(m_gameResources, m_gameStatus, string("deep_space_scene.xml"), string("deepSpaceState"));
-   //   window->addChild(freeSpaceActor);
-   //   freeSpaceActor->addEventListener(DeepSpaceSceneTranstToOrbitEvent::EVENT, CLOSURE(this, &MainActor::transitToOrbitListner));
-
-   //   m_sceneObject = static_cast<SceneActor*>(freeSpaceActor.get());
-
-   //}
-   //else if (scene == STE_ORBIT)
-   //{
-   //   //spClipRectActor window = new ClipRectActor();
-
-   //   //window->setSize(getStage()->getSize() - Vector2(100, 100));
-   //   //window->setPosition(50.0f, 50.0f);
-   //   //addChild(window);
-
-   //   spOrbitScene reentryActor = new OrbitScene(m_gameResources, m_gameStatus, string("orbit_scene.xml"), string("deepSpaceState"));
-   //   window->addChild(reentryActor);
-   //   reentryActor->addEventListener(OrbitSceneLandingComplete::EVENT, CLOSURE(this, &MainActor::landingCompleteListner));
-
-   //   m_sceneObject = (SceneActor*)reentryActor->m_space;
-   //}
-
    //string fileName;
    string initialState = "default";
-
-   //// Start selected scene
-   //if (m_nextSceneType == STE_LANDING)
-   //{ 
-   //   fileName = "landing_scene.xml";
-   //   initialState = "landingState";
-   //}
-   //else if (m_nextSceneType == STE_FREE_SPACE)
-   //{
-   //   fileName = "deep_space_scene.xml";
-   //   initialState = "deepSpaceState";
-   //}
-   //else if (m_nextSceneType == STE_ORBIT)
-   //{
-   //   fileName = "orbit_scene.xml";
-   //   initialState = "deepSpaceState";
-   //}
 
    if ((m_nextSceneType == STE_LANDING) || (m_nextSceneType == STE_FREE_SPACE))
    {
@@ -281,6 +217,16 @@ void MainActor::startScene(void)
       GameStatusTypeEnum::damage);
 
    addEventListener(StatusResourceDepletedEvent::EVENT, CLOSURE(this, &MainActor::resourceDepletedHandler));
+
+   g_HeadDownDisplay->initialiseMap(
+      &m_gameResources,
+      m_sceneObject,
+      Vector2(0.0f, 0.0f),
+      m_sceneObject->getSize());
+
+   // Now that the map is initialised, we tell child objects to register on the 
+   // map
+   m_sceneObject->registerObjectsToMap();
 
    if (m_nextSceneType == STE_LANDING)
    {
