@@ -43,6 +43,9 @@ public:
    void leapfrogFootTouch(b2Contact* contact, bool leftFoot, LeapFrog* leapfrog);
    void leapfrogFootLift(b2Contact* contact, bool leftFoot, LeapFrog* leapfrog);
 
+   // Specialisation of map registration
+   void registerToMap(void) override;
+
 protected:
    void doUpdate(const oxygine::UpdateState &us);
 

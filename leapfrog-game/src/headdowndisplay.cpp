@@ -150,7 +150,7 @@ void HeadDownDisplay::initialiseMap(
    float yScale = (mapBottom - mapTop) / (bottomRight.y - topLeft.y);
 
    m_mapScale = fmin(xScale, yScale);
-   m_itemScale = 1.0f / m_mapScale;
+   m_itemScale = 1.0f / m_mapScale * g_Layout.getButtonWidth() / 80.0f;
 
    float thickness = 8.0f;
 

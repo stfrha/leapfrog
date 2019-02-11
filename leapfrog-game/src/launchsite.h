@@ -128,6 +128,9 @@ public:
 
    void startLaunchSequence(LeapFrog* leapFrog);
 
+   // Specialisation of map registration
+   void registerToMap(void) override;
+
 protected:
    void doUpdate(const oxygine::UpdateState &us);
 

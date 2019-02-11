@@ -6,6 +6,7 @@
 #include "gamestatus.h"
 
 #include "actoruserdata.h"
+#include "headdowndisplay.h"
 
 using namespace oxygine;
 using namespace std;
@@ -80,4 +81,8 @@ void LandingPad::doUpdate(const UpdateState &us)
    }
 }
 
+void LandingPad::registerToMap(void)
+{
+   g_HeadDownDisplay->addMeToMap(MapItem::MapItemTypeEnum::neutralStationary, getActor("landingPad1"));
+}
 
