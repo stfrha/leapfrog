@@ -19,6 +19,7 @@ MagneticMine::MagneticMine(
    b2World* world,
    const Vector2& pos,
    xml_node& root,
+   xml_node& propNode,
    int groupIndex) :
    ExplosiveObject(
       gameResources, 
@@ -27,12 +28,13 @@ MagneticMine::MagneticMine(
       world, 
       pos, 
       root, 
+      propNode,
       groupIndex),
-   m_magneticDistance(100.0f),
-   m_magneticForce(1000.0f),
+   m_magneticDistance(0.0f),
+   m_magneticForce(0.0f),
    m_magenticMineBody(NULL)
 {
-   readMagneticMineNode(root.child("behaviour").child("mineProperties"));
+   readMagneticMineNode(propNode);
      
    m_magenticMineBody = getBody("magenticMineBody");
 }
@@ -40,7 +42,7 @@ MagneticMine::MagneticMine(
 void MagneticMine::readMagneticMineNode(const pugi::xml_node& node)
 {
    m_magneticDistance = node.attribute("magneticDistance").as_float(0.0f);
-   m_magneticForce = node.attribute("magenticForce").as_float(0.0f);
+   m_magneticForce = node.attribute("magneticForce").as_float(0.0f);
 }
 
 

@@ -297,6 +297,7 @@ CompoundObject* CompoundObject::initCompoundObject(
          world,
          pos,
          root,
+         root.child("behaviour").child("explosiveObjectProperties"),
          groupIndex);
 
       bo->m_behaviourType = BehaviourEnum::explosiveObject;
@@ -312,6 +313,7 @@ CompoundObject* CompoundObject::initCompoundObject(
          world,
          pos,
          root,
+         root.child("behaviour").child("magneticMineProperties"),
          groupIndex);
 
       bo->m_behaviourType = BehaviourEnum::magneticMine;

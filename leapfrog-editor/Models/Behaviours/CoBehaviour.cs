@@ -17,6 +17,7 @@ namespace LeapfrogEditor
       private SteerableObjectProperties _steerableObjProps = new SteerableObjectProperties();
       private BreakableObjectProperties _breakableObjProps = new BreakableObjectProperties();
       private ExplosiveObjectProperties _explosiveObjProps = new ExplosiveObjectProperties();
+      private MagneticMineProperties _magneticMineProps = new MagneticMineProperties();
       private SceneProperties _sceneProperties = new SceneProperties();
 
 
@@ -74,6 +75,19 @@ namespace LeapfrogEditor
       public bool ShouldSerializeExplosiveObjProps()
       {
          return (Type == "explosiveObject");
+      }
+
+      // The line below looks funny but is correct (I hope)
+      [XmlElement("magneticMineProperties")]
+      public MagneticMineProperties MagneticMineProps
+      {
+         get { return _magneticMineProps; }
+         set { _magneticMineProps = value; }
+      }
+
+      public bool ShouldSerializeMagneticMineProps()
+      {
+         return (Type == "magneticMine");
       }
 
       [XmlElement("sceneProperties")]

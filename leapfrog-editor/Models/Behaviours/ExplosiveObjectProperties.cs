@@ -53,6 +53,7 @@ namespace LeapfrogEditor
          set { _blastPower = value; }
       }
 
+
       #endregion
 
    }

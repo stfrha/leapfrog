@@ -285,16 +285,15 @@
         <compoundObject>
           <behaviour
             type="magneticMine">
-            <explosiveObjectProperties
-              numOfParticles="40"
-              particleRadius="1"
-              blastPower="1000"
-              damageBulletEqv="1"
-              impactExplosion="true"
-              impactThreshold="2500" />
-            <mineProperties
-              magneticDistance="101"
-              magenticForce="100010" />
+            <magneticMineProperties
+               numOfParticles="40"
+               particleRadius="1"
+               blastPower="1000"
+               damageBulletEqv="1"
+               impactExplosion="true"
+               impactThreshold="2500"
+               magneticDistance="101"
+               magneticForce="100010" />
           </behaviour>
           <dynamicBox
             name="magenticMineBody"

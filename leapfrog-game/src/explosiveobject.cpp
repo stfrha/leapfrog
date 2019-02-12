@@ -19,6 +19,7 @@ ExplosiveObject::ExplosiveObject(
    b2World* world,
    const Vector2& pos,
    xml_node& root,
+   xml_node& propNode,
    int groupIndex) :
    CompoundObject(sceneParent, parentObject),
    m_gameResource(&gameResources),
@@ -34,8 +35,10 @@ ExplosiveObject::ExplosiveObject(
    m_state(ExplosionState::idle),
    m_explosionAnimation(NULL)
 {
-   readExplosiveObjectNode(root.child("behaviour").child("explosiveObjectProperties"));
-     
+   
+   //readExplosiveObjectNode(root.child("behaviour").child("explosiveObjectProperties"));
+   readExplosiveObjectNode(propNode);
+
    initCompoundObjectParts(
       gameResources,
       sceneParent,

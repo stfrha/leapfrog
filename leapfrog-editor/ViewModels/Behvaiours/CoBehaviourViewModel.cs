@@ -20,8 +20,8 @@ namespace LeapfrogEditor
       private SteerableObjectPropertiesViewModel _steerableObjProperties;
       private BreakableObjectPropertiesViewModel _breakableObjProperties;
       private ExplosiveObjectPropertiesViewModel _explosiveObjProperties;
+      private MagneticMinePropertiesViewModel _magneticMineProperties;
       private ScenePropertiesViewModel _sceneProperties;
-
 
       private ObservableCollection<StateViewModel> _defaultStates = new ObservableCollection<StateViewModel>();
       private StateViewModel _defaultState = new StateViewModel(null, null, null, null, "default");
@@ -44,6 +44,7 @@ namespace LeapfrogEditor
          _steerableObjProperties = new SteerableObjectPropertiesViewModel(treeParent, parentVm, mainVm, ModelObject.SteerableObjProps);
          _breakableObjProperties = new BreakableObjectPropertiesViewModel(treeParent, parentVm, mainVm, ModelObject.BreakableObjProps);
          _explosiveObjProperties = new ExplosiveObjectPropertiesViewModel(treeParent, parentVm, mainVm, ModelObject.ExplosiveObjProps);
+         _magneticMineProperties = new MagneticMinePropertiesViewModel(treeParent, parentVm, mainVm, ModelObject.MagneticMineProps);
 
          _defaultStates.Add(_defaultState);
       }
@@ -128,6 +129,10 @@ namespace LeapfrogEditor
             else if (Type == "explosiveObject")
             {
                return _explosiveObjProperties;
+            }
+            else if (Type == "magneticMine")
+            {
+               return _magneticMineProperties;
             }
 
             return null;

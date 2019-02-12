@@ -54,6 +54,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Models\Behaviours\MagneticMineProperties.cs" />
     <Compile Include="Models\Behaviours\ExplosiveObjectProperties.cs" />
     <Compile Include="Utilities\GlobalDataDirectory.cs" />
     <Compile Include="Models\Behaviours\BreakableObjectProperties.cs" />
@@ -72,6 +73,7 @@
     <Compile Include="ValueConverters\TextureBorderValueConverters.cs" />
     <Compile Include="ValueConverters\StatePropertiesHeadlineConverter.cs" />
     <Compile Include="ViewModels\Behvaiours\BehaviourViewModelBase.cs" />
+    <Compile Include="ViewModels\Behvaiours\MagneticMinePropertiesViewModel.cs" />
     <Compile Include="ViewModels\Behvaiours\ExplosiveObjectPropertiesViewModel.cs" />
     <Compile Include="ViewModels\Behvaiours\CoBehaviourViewModel.cs" />
     <Compile Include="ViewModels\Behvaiours\StateBehaviourCollectionViewModel.cs" />
@@ -99,6 +101,9 @@
     <Compile Include="ViewModels\TreeViewViewModel.cs" />
     <Compile Include="Views\Controls\ChildCOObjectUserControl.xaml.cs">
       <DependentUpon>ChildCOObjectUserControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Controls\Editable Properties Controls\Behaviour Properties Control\MagneticMineBehaviourPropEditor.xaml.cs">
+      <DependentUpon>MagneticMineBehaviourPropEditor.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\Controls\Editable Properties Controls\Behaviour Properties Control\ExplosiveBehaviourPropEditor.xaml.cs">
       <DependentUpon>ExplosiveBehaviourPropEditor.xaml</DependentUpon>
@@ -308,6 +313,10 @@
     </Compile>
     <Compile Include="Views\Controls\Editable Shapes Controls\TriangleShape.cs" />
     <Page Include="Views\Controls\ChildCOObjectUserControl.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\Controls\Editable Properties Controls\Behaviour Properties Control\MagneticMineBehaviourPropEditor.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
