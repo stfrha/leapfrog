@@ -16,9 +16,8 @@
    </UserControl.Resources>
    <Canvas>
       <Line
-               StrokeThickness="{Binding ContentScale, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type ZoomAndPan:ZoomAndPanControl}}, Converter={StaticResource ZoomThicknessValueConverter}}"
-               Stroke="DarkGreen"
-               >
+         StrokeThickness="{Binding ContentScale, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type ZoomAndPan:ZoomAndPanControl}}, Converter={StaticResource ZoomThicknessValueConverter}}"
+         Stroke="DarkGreen" >
          <Line.X1>
             <MultiBinding Converter="{StaticResource MultiRotatedJointValueConverter}" ConverterParameter="x">
                <Binding Path="AAnchorX" />
@@ -50,9 +49,8 @@
       </Line>
       <!-- Below is upper and lower limit lines-->
       <Line
-               StrokeThickness="{Binding ContentScale, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type ZoomAndPan:ZoomAndPanControl}}, Converter={StaticResource ZoomThicknessValueConverter}}"
-               Stroke="DarkGreen"
-               >
+         StrokeThickness="{Binding ContentScale, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type ZoomAndPan:ZoomAndPanControl}}, Converter={StaticResource ZoomThicknessValueConverter}}"
+         Stroke="DarkGreen">
          <Line.X1>
             <MultiBinding Converter="{StaticResource MultiRotatedJointValueConverter}" ConverterParameter="x">
                <Binding Path="UpperLimitPosX" />
@@ -150,8 +148,7 @@
                Fill="DarkGreen"
                MouseDown="AnchorA_MouseDown"
 					MouseUp="AnchorA_MouseUp"
-					MouseMove="AnchorA_MouseMove" 
-               >
+					MouseMove="AnchorA_MouseMove" >
          <Canvas.Left>
             <MultiBinding Converter="{StaticResource MultiRotatedJointValueConverter}" ConverterParameter="x">
                <Binding Path="AAnchorX" />
@@ -184,13 +181,12 @@
          </local:TriangleShape.RenderTransform>
       </local:TriangleShape>
       <local:TriangleShape
-               Size="{Binding ContentScale, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type ZoomAndPan:ZoomAndPanControl}}, Converter={StaticResource ZoomHandleSizeValueConverter}}"
-               StrokeThickness="{Binding ContentScale, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type ZoomAndPan:ZoomAndPanControl}}, Converter={StaticResource ZoomThicknessValueConverter}}"
-               Fill="DarkGreen"
-               MouseDown="AnchorB_MouseDown"
-					MouseUp="AnchorB_MouseUp"
-					MouseMove="AnchorB_MouseMove" 
-               >
+         Size="{Binding ContentScale, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type ZoomAndPan:ZoomAndPanControl}}, Converter={StaticResource ZoomHandleSizeValueConverter}}"
+         StrokeThickness="{Binding ContentScale, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type ZoomAndPan:ZoomAndPanControl}}, Converter={StaticResource ZoomThicknessValueConverter}}"
+         Fill="DarkGreen"
+         MouseDown="AnchorB_MouseDown"
+		   MouseUp="AnchorB_MouseUp"
+		   MouseMove="AnchorB_MouseMove" >
          <Canvas.Left>
             <MultiBinding Converter="{StaticResource MultiRotatedJointValueConverter}" ConverterParameter="x">
                <Binding Path="BAnchorX" />
@@ -201,7 +197,6 @@
          <Canvas.Top>
             <MultiBinding Converter="{StaticResource MultiRotatedJointValueConverter}" ConverterParameter="y">
                <Binding Path="BAnchorX" />
-               <Binding Path="BAnchorY" />
                <Binding Path="BShapeObject"/>
             </MultiBinding>
          </Canvas.Top>

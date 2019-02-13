@@ -185,11 +185,9 @@
             </local:ChildCOObjectUserControl.ContextMenu>
          </local:ChildCOObjectUserControl>
       </DataTemplate>
-      <!--
-      <DataTemplate DataType="{x:Type local:ObjectFactoryViewModel}">
+      <DataTemplate DataType="{x:Type local:ObjectFactoryPropertiesViewModel}">
          <local:LabeledBoxControl />
       </DataTemplate>
-      -->
    </UserControl.Resources>
    <Canvas x:Name="myCoUserControl" >
       <ItemsControl ItemsSource="{Binding StateShapes.Shapes}">
@@ -207,6 +205,13 @@
       </ItemsControl>
       <ItemsControl ItemsSource="{Binding StateJoints.Joints}"
          Visibility="{Binding ShowJoints, ElementName=root, Converter={StaticResource BoolToVisibilityValueConverter}}" >
+         <ItemsControl.ItemsPanel>
+            <ItemsPanelTemplate>
+               <Canvas/>
+            </ItemsPanelTemplate>
+         </ItemsControl.ItemsPanel>
+      </ItemsControl>
+      <ItemsControl ItemsSource="{Binding StateSystems.Systems}" >
          <ItemsControl.ItemsPanel>
             <ItemsPanelTemplate>
                <Canvas/>

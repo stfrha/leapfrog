@@ -1,0 +1,17 @@
+﻿<UserControl x:Class="LeapfrogEditor.MagneticMineBehaviourPropEditor"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:LeapfrogEditor"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800">
+   <StackPanel Margin="2">
+      <local:HeadlineControl Headline="ExplosiveObject Behaviour Properties" />
+      <local:IntEditorControl Headline="Num. of particles" MyValue="{Binding NumOfParticles, Mode=TwoWay}" />
+      <local:DoubleEditorControl Headline="Particle Radius" MyValue="{Binding ParticlesRadius, Mode=TwoWay}" />
+      <local:DoubleEditorControl Headline="Blast Power" MyValue="{Binding BlastPower, Mode=TwoWay}" />
+      <local:DoubleEditorControl Headline="Magnetic Distance" MyValue="{Binding MagneticDistance, Mode=TwoWay}" />
+      <local:DoubleEditorControl Headline="Magnetic Force" MyValue="{Binding MagneticForce, Mode=TwoWay}" />
+   </StackPanel>
+</UserControl>
