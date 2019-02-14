@@ -54,6 +54,7 @@ MapItem::MapItem(
    setPosition(m_realActor->getPosition());
    setSize(10.0f, 10.0f);
    setAnchor(0.5f, 0.5f);
+   setAlpha(128);
    setScale(scale);
    attachTo(hddMapActor);
 }
@@ -165,7 +166,7 @@ void HeadDownDisplay::initialiseMap(
    theBar->setSize(m_sceneWidth, m_sceneHeight);
    theBar->setPosition(0.0f, 0.0f);
    theBar->setColor(Color::Fuchsia);
-   theBar->setAlpha(128);
+   theBar->setAlpha(32);
    theBar->attachTo(this);
 
    spColorRectSprite top = new ColorRectSprite();

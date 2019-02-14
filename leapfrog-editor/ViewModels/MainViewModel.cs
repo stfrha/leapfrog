@@ -50,7 +50,8 @@ namespace LeapfrogEditor
       jointAnchorA,                 // object is the joint
       jointAnchorB,                 // object is the joint
       prismJointUpperLimit,         // object is the prismatic joint
-      prismJointLowerLimit          // object is the prismatic joint
+      prismJointLowerLimit,         // object is the prismatic joint
+      objectFactory                 // object is the an object factory
    }
 
    public class MainViewModel : MicroMvvm.ViewModelBase

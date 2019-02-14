@@ -27,8 +27,7 @@
          <local:RopeControl />
       </DataTemplate>
       <DataTemplate DataType="{x:Type local:LfScalableTexturePolygonViewModel}">
-         <local:ScalableTexturePolygonControl>
-         </local:ScalableTexturePolygonControl>
+         <local:ScalableTexturePolygonControl />
       </DataTemplate>
       <DataTemplate DataType="{x:Type local:LfStaticBoxedSpritePolygonViewModel}">
          <local:BoxedSpritePolygonControl />
@@ -55,14 +54,6 @@
                   <Setter Property="Canvas.Top" Value="{Binding PosY}"/>
                </Style>
             </ItemsControl.ItemContainerStyle>
-            <ItemsControl.ContextMenu>
-               <ContextMenu>
-                  <Separator />
-                  <MenuItem Header="Delete" 
-                                 CommandParameter="{Binding}"
-                                 Command="{Binding Path=Data.DeleteThisObject, Source={StaticResource DataContextProxy}}" />
-               </ContextMenu>
-            </ItemsControl.ContextMenu>
          </ItemsControl>
       </DataTemplate>
       <DataTemplate DataType="{x:Type local:ChildCOViewModel}">
@@ -73,23 +64,16 @@
                   <Binding Path="DispState" />
                </MultiBinding>
             </local:ChildCOObjectUserControl.Visibility>
-            <local:ChildCOObjectUserControl.ContextMenu>
-               <ContextMenu>
-                  <Separator />
-                  <MenuItem Header="Delete" 
-                                 CommandParameter="{Binding}"
-                                 Command="{Binding Path=Data.DeleteThisObject, Source={StaticResource DataContextProxy}}" />
-               </ContextMenu>
-            </local:ChildCOObjectUserControl.ContextMenu>
          </local:ChildCOObjectUserControl>
       </DataTemplate>
       <DataTemplate DataType="{x:Type local:CoSystemViewModel}" >
-         <DataTemplate.Resources>
-            <DataTemplate DataType="{x:Type local:ObjectFactoryPropertiesViewModel}">
-               <local:LabeledBoxControl />
-            </DataTemplate>
-         </DataTemplate.Resources>
-         <ContentControl DataContext="{Binding Properties}" />
+         <ContentControl DataContext="{Binding Properties}" Content="{Binding}" >
+            <ContentControl.Resources>
+               <DataTemplate DataType="{x:Type local:ObjectFactoryPropertiesViewModel}">
+                  <local:LabeledBoxControl />
+               </DataTemplate>
+            </ContentControl.Resources>
+         </ContentControl>
       </DataTemplate>
    </UserControl.Resources>
    <Canvas x:Name="myCoUserControl" >
@@ -107,7 +91,7 @@
          </ItemsControl.ItemContainerStyle>
       </ItemsControl>
       <ItemsControl ItemsSource="{Binding StateJoints.Joints}"
-         Visibility="{Binding ShowJoints, ElementName=root, Converter={StaticResource BoolToVisibilityValueConverter}}" Canvas.Top="4" >
+         Visibility="{Binding ShowJoints, ElementName=root, Converter={StaticResource BoolToVisibilityValueConverter}}" >
          <ItemsControl.ItemsPanel>
             <ItemsPanelTemplate>
                <Canvas/>
@@ -141,5 +125,4 @@
 			MouseMove="CompoundObject_MouseMove"
          Cursor="ScrollAll" />
    </Canvas>
-            
 </UserControl>

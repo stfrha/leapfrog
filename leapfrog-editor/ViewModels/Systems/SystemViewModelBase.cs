@@ -17,6 +17,8 @@ namespace LeapfrogEditor
    {
       #region Declarations
 
+      private CoSystemViewModel _systemViewModel;
+
       #endregion
 
       #region Constructors
@@ -25,15 +27,31 @@ namespace LeapfrogEditor
          TreeViewViewModel treeParent, 
          CompoundObjectViewModel parentVm, 
          MainViewModel mainVm,
+         CoSystemViewModel systemViewModel,
          bool enabled = true) :
          base(treeParent, parentVm, mainVm, enabled)
       {
+         _systemViewModel = systemViewModel;
       }
 
       #endregion
 
       #region Properties
 
+      public string ObjectName
+      {
+         get { return _systemViewModel.Name; }
+         set
+         {
+            _systemViewModel.Name = value;
+            OnPropertyChanged("ObjectName");
+         }
+      }
+
+      public string Type
+      {
+         get { return _systemViewModel.Type; }
+      }
 
       #endregion
 

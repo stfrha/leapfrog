@@ -28,7 +28,11 @@ namespace LeapfrogEditor
       private void Shape_MouseDown(object sender, MouseButtonEventArgs e)
       {
          CompoundObjectUserControl parentControl = ParentalFinder.FindParent<CompoundObjectUserControl>(this);
-         parentControl.GeneralMouse<LfShapeViewModel>(true, MouseEventObjectType.shape, sender, e);
+         if (parentControl != null)
+         {
+            parentControl.GeneralMouse<ObjectFactoryPropertiesViewModel>(true, MouseEventObjectType.shape, sender, e);
+            return;
+         }
       }
 
       private void Shape_MouseUp(object sender, MouseButtonEventArgs e)

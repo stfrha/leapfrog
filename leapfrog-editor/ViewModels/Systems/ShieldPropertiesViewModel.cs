@@ -24,8 +24,9 @@ namespace LeapfrogEditor
          TreeViewViewModel treeParent,
          CompoundObjectViewModel parentVm,
          MainViewModel mainVm,
-         ShieldProperties modelObject) :
-         base(treeParent, parentVm, mainVm)
+         ShieldProperties modelObject,
+         CoSystemViewModel systemViewModel) :
+         base(treeParent, parentVm, mainVm, systemViewModel)
       {
          ModelObject = modelObject;
       }

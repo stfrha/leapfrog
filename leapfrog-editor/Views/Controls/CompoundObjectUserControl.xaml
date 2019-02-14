@@ -90,7 +90,7 @@
          </local:ScalableTexturePolygonControl>
       </DataTemplate>
       <DataTemplate DataType="{x:Type local:LfStaticBoxedSpritePolygonViewModel}">
-         <local:BoxedSpritePolygonControl >
+         <local:BoxedSpritePolygonControl>
             <local:BoxedSpritePolygonControl.ContextMenu>
                <ContextMenu>
                   <MenuItem Header="Locate in browser" 
@@ -105,7 +105,7 @@
          </local:BoxedSpritePolygonControl>
       </DataTemplate>
       <DataTemplate DataType="{x:Type local:LfStaticBoxViewModel}">
-         <local:RotatableBoxControl >
+         <local:RotatableBoxControl>
             <local:RotatableBoxControl.ContextMenu>
                <ContextMenu>
                   <MenuItem Header="Locate in browser" 
@@ -120,7 +120,7 @@
          </local:RotatableBoxControl>
       </DataTemplate>
       <DataTemplate DataType="{x:Type local:LfSpriteBoxViewModel}">
-         <local:RotatableBoxControl >
+         <local:RotatableBoxControl>
             <local:RotatableBoxControl.ContextMenu>
                <ContextMenu>
                   <MenuItem Header="Locate in browser" 
@@ -135,7 +135,7 @@
          </local:RotatableBoxControl>
       </DataTemplate>
       <DataTemplate DataType="{x:Type local:LfStaticCircleViewModel}">
-         <local:RotatableCircleControl >
+         <local:RotatableCircleControl>
             <local:RotatableCircleControl.ContextMenu>
                <ContextMenu>
                   <MenuItem Header="Locate in browser" 
@@ -175,8 +175,8 @@
             <local:ChildCOObjectUserControl.ContextMenu>
                <ContextMenu>
                   <MenuItem Header="Locate in browser" 
-                                 CommandParameter="{Binding}"
-                                 Command="{Binding Path=Data.LocateInBrowser, Source={StaticResource DataContextProxy}}" />
+                     CommandParameter="{Binding}"
+                     Command="{Binding Path=Data.LocateInBrowser, Source={StaticResource DataContextProxy}}" />
                   <Separator />
                   <MenuItem Header="Delete" 
                                  CommandParameter="{Binding}"
@@ -185,8 +185,14 @@
             </local:ChildCOObjectUserControl.ContextMenu>
          </local:ChildCOObjectUserControl>
       </DataTemplate>
-      <DataTemplate DataType="{x:Type local:ObjectFactoryPropertiesViewModel}">
-         <local:LabeledBoxControl />
+      <DataTemplate DataType="{x:Type local:CoSystemViewModel}" >
+         <ContentControl DataContext="{Binding Properties}" Content="{Binding}" >
+            <ContentControl.Resources>
+               <DataTemplate DataType="{x:Type local:ObjectFactoryPropertiesViewModel}">
+                  <local:LabeledBoxControl/>
+               </DataTemplate>
+            </ContentControl.Resources>
+         </ContentControl>
       </DataTemplate>
    </UserControl.Resources>
    <Canvas x:Name="myCoUserControl" >
@@ -226,5 +232,4 @@
          </ItemsControl.ItemsPanel>
       </ItemsControl>
    </Canvas>
-            
 </UserControl>

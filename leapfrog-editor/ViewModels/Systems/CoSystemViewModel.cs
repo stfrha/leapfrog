@@ -42,10 +42,10 @@ namespace LeapfrogEditor
 
          SelectedSystemIndex = Systems.IndexOf(LocalModelObject.Type);
 
-         _objFactStatesProps = new ObjectFactoryPropertiesViewModel(treeParent, parentVm, mainVm, LocalModelObject.ObjFactStateProperties);
-         _flameEmitterStatesProps = new FlameEmitterPropertiesViewModel(treeParent, parentVm, mainVm, LocalModelObject.FlameEmitterStateProperties);
-         _gunStatesProps = new GunPropertiesViewModel(treeParent, parentVm, mainVm, LocalModelObject.GunStateProperties);
-         _shieldStatesProps = new ShieldPropertiesViewModel(treeParent, parentVm, mainVm, LocalModelObject.ShieldStateProperties);
+         _objFactStatesProps = new ObjectFactoryPropertiesViewModel(treeParent, parentVm, mainVm, LocalModelObject.ObjFactStateProperties, this);
+         _flameEmitterStatesProps = new FlameEmitterPropertiesViewModel(treeParent, parentVm, mainVm, LocalModelObject.FlameEmitterStateProperties, this);
+         _gunStatesProps = new GunPropertiesViewModel(treeParent, parentVm, mainVm, LocalModelObject.GunStateProperties, this);
+         _shieldStatesProps = new ShieldPropertiesViewModel(treeParent, parentVm, mainVm, LocalModelObject.ShieldStateProperties, this);
       }
 
       #endregion
@@ -69,6 +69,7 @@ namespace LeapfrogEditor
          {
             LocalModelObject.Name = value;
             OnPropertyChanged("Name");
+            Properties.OnPropertyChanged("ObjectName");
          }
       }
 

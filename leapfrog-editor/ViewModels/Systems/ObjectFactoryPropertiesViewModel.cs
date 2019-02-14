@@ -27,8 +27,9 @@ namespace LeapfrogEditor
          TreeViewViewModel treeParent, 
          CompoundObjectViewModel parentVm,
          MainViewModel mainVm, 
-         ObjectFactoryProperties modelObject) :
-         base(treeParent, parentVm, mainVm)
+         ObjectFactoryProperties modelObject,
+         CoSystemViewModel systemViewModel) :
+         base(treeParent, parentVm, mainVm, systemViewModel)
       {
          _modelObject = modelObject;
       }
@@ -218,6 +219,8 @@ namespace LeapfrogEditor
             OnPropertyChanged("LifeTime");
          }
       }
+
+      // We also expose some properties of the 
 
       #endregion
 

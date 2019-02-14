@@ -353,6 +353,7 @@
                            <ContentControl.Resources>
                               <DataTemplate DataType="{x:Type local:CompoundObjectViewModel}">
                                  <local:CompoundObjectUserControl 
+                                    EnableContextMenues="False"
                                     ShowJoints="{Binding DataContext.ShowJoints, RelativeSource={RelativeSource AncestorType={x:Type Window}}}"
                                     ShowTriangles="{Binding DataContext.ShowTriangles, RelativeSource={RelativeSource AncestorType={x:Type Window}}}" />
                               </DataTemplate>

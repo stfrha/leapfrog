@@ -18,6 +18,8 @@
    </UserControl.Resources>
    <Canvas>
       <Rectangle
+               Canvas.Left="{Binding PosX}"
+               Canvas.Top="{Binding PosY}"
                Width="{Binding Width}"
                Height="{Binding Height}"
                Fill="Thistle"
@@ -38,16 +40,17 @@
          </Rectangle.RenderTransform>
       </Rectangle>
       <StackPanel               
-               Canvas.Left="-5" Canvas.Top="-2.5">
+               Canvas.Left="{Binding PosX}"
+               Canvas.Top="{Binding PosY}">
          <TextBlock 
                   IsHitTestVisible="False"
-                  Text="Object Factory" 
+                  Text="{Binding Type}" 
                   TextAlignment="Left"
                   FontSize="5"
                   />
          <TextBlock 
                   IsHitTestVisible="False"
-                  Text="{Binding Name}" 
+                  Text="{Binding ObjectName}" 
                   TextAlignment="Left"
                   FontSize="5"
                   />
