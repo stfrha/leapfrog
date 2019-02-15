@@ -38,6 +38,14 @@ namespace LeapfrogEditor
 
       #region Properties
 
+      // Since the controls gets a reference to the properties object and not the
+      // parent CoSystemViewModel we expose the parent view model here
+
+      public CoSystemViewModel SystemViewModel
+      {
+         get { return _systemViewModel; }
+      }
+
       public string ObjectName
       {
          get { return _systemViewModel.Name; }

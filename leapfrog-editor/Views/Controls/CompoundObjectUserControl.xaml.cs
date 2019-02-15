@@ -98,18 +98,18 @@ namespace LeapfrogEditor
 
       public void GeneralMouse<T>(bool down, MouseEventObjectType type, object sender, MouseButtonEventArgs e)
       {
-         // We want access to the parent Canvas above the "content" Canvas. 
-         // The "content" (content it is it's name) Canvas, is the top Canvas of the 
+         // We want access to the parent Canvas above the "myCoUserControl" Canvas. 
+         // The "myCoUserControl" (content it is it's name) Canvas, is the top Canvas of the 
          // CompoundObjectUserControl, so the parent canvas is the one above
          // it. We need it to set the focus (why?) and to get the mouse point
          // expressed in the parent coordinate system.
          // Hence, we are not seeking the top most canvas, i.e. the CenteredCanvas
          // specialised Canvas of the main window. 
-         // By getting access to the "content" Canvas which is the top most canvas
+         // By getting access to the "myCoUserControl" Canvas which is the top most canvas
          // of this object, we search immediatly above it to make sure that the found
          // canvas is the one above it. 
-         // Now, can this be done without knowledge of the content Canvas?
-         // Can it, for instance, be assumed that the content Canvas is the first 
+         // Now, can this be done without knowledge of the myCoUserControl Canvas?
+         // Can it, for instance, be assumed that the myCoUserControl Canvas is the first 
          // Parent Canvas and the sought Canvas is the second found?
          // 
          UIElement parentCanvas = ParentalFinder.FindParent<Canvas>(myCoUserControl);

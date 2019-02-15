@@ -132,7 +132,7 @@ namespace LeapfrogEditor
          foreach (LfPointViewModel p in PointVms)
          {
             // Convert point according to angle
-            Point rtp = RotatedPointFromLocal(new Point(p.PosX, p.PosY));
+            Point rtp = CoordinateTransformations.RotatedPointFromLocal(new Point(p.PosX, p.PosY), Angle);
 
 
             if (rtp.X < l)

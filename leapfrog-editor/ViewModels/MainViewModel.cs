@@ -51,7 +51,24 @@ namespace LeapfrogEditor
       jointAnchorB,                 // object is the joint
       prismJointUpperLimit,         // object is the prismatic joint
       prismJointLowerLimit,         // object is the prismatic joint
-      objectFactory                 // object is the an object factory
+      objectFactory                 // object is an object factory
+   }
+
+   class MouseEventObjectTypeConverter
+   {
+      static MouseEventObjectType GetObjectType(object o)
+      {
+         if (o is LfShapeViewModel)
+         {
+            return MouseEventObjectType.shape;
+         }
+         else if (o is ObjectFactoryPropertiesViewModel)
+         {
+            return MouseEventObjectType.objectFactory;
+         }
+
+         return MouseEventObjectType.none;
+      }
    }
 
    public class MainViewModel : MicroMvvm.ViewModelBase
@@ -1097,6 +1114,10 @@ namespace LeapfrogEditor
                   //LfShapeViewModel shvm = (LfShapeViewModel)sender;
                   return false;
 
+               case MouseEventObjectType.objectFactory:
+                  // So far we do not do anything here
+                  return false;
+
                case MouseEventObjectType.dragableBorder:
                   break;
 
@@ -1186,7 +1207,7 @@ namespace LeapfrogEditor
 
                // Before moving all vertices, we rotate the vector to match the shape rotation.
                Point vectPoint = new Point(dragVector.X, dragVector.Y);
-               Point rotPoint = dpvm.Parent.LocalPointFromRotated(vectPoint);
+               Point rotPoint = CoordinateTransformations.LocalPointFromRotated(vectPoint, dpvm.Parent.Angle);
                Vector rotatedDragVector = new Vector(rotPoint.X, rotPoint.Y);
                
                foreach (LfDragablePointViewModel point in _selectedPoints)
@@ -1203,7 +1224,7 @@ namespace LeapfrogEditor
 
                // Before moving, we rotate the vector to match the shape rotation.
                vectPoint = new Point(dragVector.X, dragVector.Y);
-               rotPoint = wjvm.AShapeObject.LocalPointFromRotated(vectPoint);
+               rotPoint = CoordinateTransformations.LocalPointFromRotated(vectPoint, wjvm.AShapeObject.Angle);
                rotatedDragVector = new Vector(rotPoint.X, rotPoint.Y);
 
                // Find new point
@@ -1220,7 +1241,7 @@ namespace LeapfrogEditor
 
                // Before moving, we rotate the vector to match the shape rotation.
                vectPoint = new Point(dragVector.X, dragVector.Y);
-               rotPoint = wjvm.BShapeObject.LocalPointFromRotated(vectPoint);
+               rotPoint = CoordinateTransformations.LocalPointFromRotated(vectPoint, wjvm.BShapeObject.Angle);
                rotatedDragVector = new Vector(rotPoint.X, rotPoint.Y);
 
                // Find new point
@@ -1237,7 +1258,7 @@ namespace LeapfrogEditor
 
                // Before moving, we rotate the vector to match the shape rotation.
                vectPoint = new Point(dragVector.X, dragVector.Y);
-               rotPoint = pjvm.AShapeObject.LocalPointFromRotated(vectPoint);
+               rotPoint = CoordinateTransformations.LocalPointFromRotated(vectPoint, pjvm.AShapeObject.Angle);
                rotatedDragVector = new Vector(rotPoint.X, rotPoint.Y);
 
                // Find new point
@@ -1269,7 +1290,7 @@ namespace LeapfrogEditor
 
                // Before moving, we rotate the vector to match the shape rotation.
                vectPoint = new Point(dragVector.X, dragVector.Y);
-               rotPoint = pjvm.AShapeObject.LocalPointFromRotated(vectPoint);
+               rotPoint = CoordinateTransformations.LocalPointFromRotated(vectPoint, pjvm.AShapeObject.Angle);
                rotatedDragVector = new Vector(rotPoint.X, rotPoint.Y);
 
                // Find new point
@@ -1371,6 +1392,43 @@ namespace LeapfrogEditor
                   // not mark the event as handled if we right click
                   return (button != MouseButton.Right);
 
+               case MouseEventObjectType.objectFactory:
+
+                  // Mouse up on Shape
+                  ObjectFactoryPropertiesViewModel ofpvm = (ObjectFactoryPropertiesViewModel)sender;
+
+                  // If the clicked shape is children of the edited object, it should
+                  // be selected (assessing the ctrl key in the process for multiple 
+                  // selection)
+                  // If it is not part of the Editable object, the parent should be selected
+                  // also assessing ctrl-key
+
+                  if (ofpvm.ParentVm == EditedCpVm)
+                  {
+                     if (!ctrl)
+                     {
+                        DeselectAll();
+                     }
+
+                     ofpvm.SystemViewModel.IsSelected = true;
+                  }
+                  else
+                  {
+                     // The clicked shape is part of a child object, select it or add
+                     // it to selected childs
+                     if (!ctrl)
+                     {
+                        DeselectAll();
+                     }
+
+                     ofpvm.SystemViewModel.ParentVm.IsSelected = true;
+                  }
+
+                  // If we pressed right click to select, we want to the rest
+                  // of the even handling to handle context menu, so we does
+                  // not mark the event as handled if we right click
+                  return (button != MouseButton.Right);
+
                case MouseEventObjectType.jointAnchorA:
                case MouseEventObjectType.jointAnchorB:
 
@@ -1407,7 +1465,7 @@ namespace LeapfrogEditor
 
                      Point unrotatedShapePoint = dpvm.Parent.ParentVm.CoPointInShape(clickPoint, dpvm.Parent);
 
-                     Point rotShapePoint = dpvm.Parent.LocalPointFromRotated(unrotatedShapePoint);
+                     Point rotShapePoint = CoordinateTransformations.LocalPointFromRotated(unrotatedShapePoint, dpvm.Parent.Angle);
 
                      LfDragablePointViewModel newPoint = dpvm.Parent.InsertPoint(rotShapePoint, dpvm);
 
@@ -1690,7 +1748,7 @@ namespace LeapfrogEditor
 
                // Rotate point to shape rotation
 //               Point rotatedAClickPoint = wjvm.AShapeObject.RotatedPointFromLocal(localAClickPoint);
-               Point rotatedAClickPoint = wjvm.AShapeObject.LocalPointFromRotated(localAClickPoint);
+               Point rotatedAClickPoint = CoordinateTransformations.LocalPointFromRotated(localAClickPoint, wjvm.AShapeObject.Angle);
 
                wjvm.AAnchorX = rotatedAClickPoint.X;
                wjvm.AAnchorY = rotatedAClickPoint.Y;
@@ -1703,7 +1761,7 @@ namespace LeapfrogEditor
 
                // Rotate point to shape rotation
 //               Point rotatedBClickPoint = wjvm.BShapeObject.RotatedPointFromLocal(localBClickPoint);
-               Point rotatedBClickPoint = wjvm.BShapeObject.LocalPointFromRotated(localBClickPoint);
+               Point rotatedBClickPoint = CoordinateTransformations.LocalPointFromRotated(localBClickPoint, wjvm.BShapeObject.Angle);
 
                wjvm.BAnchorX = rotatedBClickPoint.X;
                wjvm.BAnchorY = rotatedBClickPoint.Y;
@@ -1760,7 +1818,7 @@ namespace LeapfrogEditor
                localAClickPoint = (Point)(clickPoint - shapeAOrigo);
 
                // Rotate point to shape rotation
-               Point rotatedAClickPoint = rpvm.AShapeObject.LocalPointFromRotated(localAClickPoint);
+               Point rotatedAClickPoint = CoordinateTransformations.LocalPointFromRotated(localAClickPoint, rpvm.AShapeObject.Angle);
 
                rpvm.AAnchorX = rotatedAClickPoint.X;
                rpvm.AAnchorY = rotatedAClickPoint.Y;
@@ -1774,7 +1832,7 @@ namespace LeapfrogEditor
                   localBClickPoint = (Point)(clickPoint - shapeBOrigo);
 
                   // Rotate point to shape rotation
-                  Point rotatedBClickPoint = rpvm.BShapeObject.LocalPointFromRotated(localBClickPoint);
+                  Point rotatedBClickPoint = CoordinateTransformations.LocalPointFromRotated(localBClickPoint, rpvm.BShapeObject.Angle);
 
                   rpvm.BAnchorX = rotatedBClickPoint.X;
                   rpvm.BAnchorY = rotatedBClickPoint.Y;

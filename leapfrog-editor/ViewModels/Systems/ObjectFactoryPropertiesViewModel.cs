@@ -32,6 +32,7 @@ namespace LeapfrogEditor
          base(treeParent, parentVm, mainVm, systemViewModel)
       {
          _modelObject = modelObject;
+         UpdateCornerPoints();
       }
 
       #endregion
@@ -246,7 +247,6 @@ namespace LeapfrogEditor
       #endregion
 
       #region public Methods
-
 
       #endregion
    }

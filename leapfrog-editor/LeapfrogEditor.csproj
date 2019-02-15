@@ -56,6 +56,7 @@
     </ApplicationDefinition>
     <Compile Include="Models\Behaviours\MagneticMineProperties.cs" />
     <Compile Include="Models\Behaviours\ExplosiveObjectProperties.cs" />
+    <Compile Include="Utilities\CoordinateTransformations.cs" />
     <Compile Include="Utilities\GlobalDataDirectory.cs" />
     <Compile Include="Models\Behaviours\BreakableObjectProperties.cs" />
     <Compile Include="Models\Behaviours\CoBehaviour.cs" />

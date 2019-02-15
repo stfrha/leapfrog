@@ -18,7 +18,7 @@ namespace LeapfrogEditor
             {
                Point pos = new Point((double)values[0], (double)values[1]);
                LfShapeViewModel shape = (LfShapeViewModel)values[2];
-               Point rp = shape.RotatedPointFromLocal(pos);
+               Point rp = CoordinateTransformations.RotatedPointFromLocal(pos, shape.Angle);
                rp.Offset(shape.PosX, shape.PosY);
 
                if (parameter as string == "x")
@@ -72,7 +72,7 @@ namespace LeapfrogEditor
                }
 
                Point p = new Point(vertex.PosX, vertex.PosY);
-               Point rp = polygon.RotatedPointFromLocal(p);
+               Point rp = CoordinateTransformations.RotatedPointFromLocal(p, polygon.Angle);
 
                if (parameter as string == "x")
                {
@@ -124,7 +124,7 @@ namespace LeapfrogEditor
                }
 
                Point p = new Point(vertex.PosX, vertex.PosY);
-               Point rp = polygon.RotatedPointFromLocal(p);
+               Point rp = CoordinateTransformations.RotatedPointFromLocal(p, polygon.Angle);
 
                if (parameter as string == "x")
                {
@@ -163,13 +163,13 @@ namespace LeapfrogEditor
                if (parameter as string == "x")
                {
                   p = new Point(pos, vertex.PosY);
-                  Point rp = shape.RotatedPointFromLocal(p);
+                  Point rp = CoordinateTransformations.RotatedPointFromLocal(p, shape.Angle);
                   return rp.X;
                }
                else
                {
                   p = new Point(vertex.PosX, pos);
-                  Point rp = shape.RotatedPointFromLocal(p);
+                  Point rp = CoordinateTransformations.RotatedPointFromLocal(p, shape.Angle);
                   return rp.Y;
                }
             }
@@ -188,13 +188,29 @@ namespace LeapfrogEditor
    {
       public object Convert(object[] values, Type targetType, object parameter, System.Globalization.CultureInfo culture)
       {
-         if (values.Count() == 2)
+         // We provides two alternatives here
+         // If the angle is supplied (where the number of 
+         // values is 3) the angle is used.
+         // If it is not supplied (number of values is 2)
+         // we get the angle from the shape (and assume that 
+         // there is an shape that is calling)
+         if ((values.Count() == 2) || (values.Count() == 3))
          {
             if ((values[0] is double) && (values[1] is LfPointViewModel))
             {
                LfPointViewModel origVertex = (LfPointViewModel)values[1];
                IBoxPointsInterface boxVm = origVertex.PointsParent;
-               LfShapeViewModel shapeVm = (LfShapeViewModel)origVertex.PointsParent;
+               double angle = 0;
+
+               if (values.Count() == 2)
+               {
+                  LfShapeViewModel shapeVm = (LfShapeViewModel)origVertex.PointsParent;
+                  angle = shapeVm.Angle;
+               }
+               else
+               {
+                  angle = (double)values[2];
+               }
 
                int i = boxVm.PointVms.IndexOf(origVertex);
 
@@ -215,7 +231,7 @@ namespace LeapfrogEditor
                }
 
                Point p = new Point(vertex.PosX, vertex.PosY);
-               Point rp = shapeVm.RotatedPointFromLocal(p);
+               Point rp = CoordinateTransformations.RotatedPointFromLocal(p, angle);
 
                if (parameter as string == "x")
                {
@@ -227,6 +243,49 @@ namespace LeapfrogEditor
                }
             }
          }
+
+
+
+
+         //if (values.Count() == 2)
+         //{
+         //   if ((values[0] is double) && (values[1] is LfPointViewModel))
+         //   {
+         //      LfPointViewModel origVertex = (LfPointViewModel)values[1];
+         //      IBoxPointsInterface boxVm = origVertex.PointsParent;
+         //      LfShapeViewModel shapeVm = (LfShapeViewModel)origVertex.PointsParent;
+
+         //      int i = boxVm.PointVms.IndexOf(origVertex);
+
+         //      if (i == -1)
+         //      {
+         //         return null;
+         //      }
+
+         //      LfPointViewModel vertex;
+
+         //      if (i > 0)
+         //      {
+         //         vertex = boxVm.PointVms[i - 1];
+         //      }
+         //      else
+         //      {
+         //         vertex = boxVm.PointVms[boxVm.PointVms.Count() - 1];
+         //      }
+
+         //      Point p = new Point(vertex.PosX, vertex.PosY);
+         //      Point rp = CoordinateTransformations.RotatedPointFromLocal(p, shapeVm.Angle);
+
+         //      if (parameter as string == "x")
+         //      {
+         //         return rp.X;
+         //      }
+         //      else
+         //      {
+         //         return rp.Y;
+         //      }
+         //   }
+         //}
 
          return null;
       }
@@ -241,27 +300,43 @@ namespace LeapfrogEditor
    {
       public object Convert(object[] values, Type targetType, object parameter, System.Globalization.CultureInfo culture)
       {
-         if (values.Count() == 2)
+         // We provides two alternatives here
+         // If the angle is supplied (where the number of 
+         // values is 3) the angle is used.
+         // If it is not supplied (number of values is 2)
+         // we get the angle from the shape (and assume that 
+         // there is an shape that is calling)
+         if ((values.Count() == 2) || (values.Count() == 3))
          {
             if ((values[0] is double) && (values[1] is LfPointViewModel))
             {
+               Point p;
                double pos = (double)values[0];
+
                LfPointViewModel vertex = (LfPointViewModel)values[1];
                IBoxPointsInterface boxVm = vertex.PointsParent;
-               LfShapeViewModel shapeVm = (LfShapeViewModel)vertex.PointsParent;
+               double angle = 0;
 
-               Point p;
+               if (values.Count() == 2)
+               {
+                  LfShapeViewModel shapeVm = (LfShapeViewModel)vertex.PointsParent;
+                  angle = shapeVm.Angle;
+               }
+               else
+               {
+                  angle = (double)values[2];
+               }
 
                if (parameter as string == "x")
                {
                   p = new Point(pos, vertex.PosY);
-                  Point rp = shapeVm.RotatedPointFromLocal(p);
+                  Point rp = CoordinateTransformations.RotatedPointFromLocal(p, angle);
                   return rp.X;
                }
                else
                {
                   p = new Point(vertex.PosX, pos);
-                  Point rp = shapeVm.RotatedPointFromLocal(p);
+                  Point rp = CoordinateTransformations.RotatedPointFromLocal(p, angle);
                   return rp.Y;
                }
             }
@@ -286,7 +361,7 @@ namespace LeapfrogEditor
             LfShapeViewModel shape = vertex.Parent;
 
             Point p = new Point(vertex.PosX, vertex.PosY);
-            Point rp = shape.RotatedPointFromLocal(p);
+            Point rp = CoordinateTransformations.RotatedPointFromLocal(p, shape.Angle);
             
             return rp.X;
          }
@@ -310,7 +385,7 @@ namespace LeapfrogEditor
             LfShapeViewModel shape = vertex.Parent;
 
             Point p = new Point(vertex.PosX, vertex.PosY);
-            Point rp = shape.RotatedPointFromLocal(p);
+            Point rp = CoordinateTransformations.RotatedPointFromLocal(p, shape.Angle);
 
             return rp.Y;
          }
@@ -335,7 +410,7 @@ namespace LeapfrogEditor
                // In this case Shape B exists and is used. The conversion is done as in MultiRotatedJointValueConverter
                Point pos = new Point((double)values[0], (double)values[1]);
                LfShapeViewModel shape = (LfShapeViewModel)values[2];
-               Point rp = shape.RotatedPointFromLocal(pos);
+               Point rp = CoordinateTransformations.RotatedPointFromLocal(pos, shape.Angle);
                rp.Offset(shape.PosX, shape.PosY);
 
                if (parameter as string == "x")
@@ -354,7 +429,7 @@ namespace LeapfrogEditor
                Point pos = new Point((double)values[3], (double)values[4]);
                LfShapeViewModel shape = (LfShapeViewModel)values[5];
                double length = (double)values[6];
-               Point rp = shape.RotatedPointFromLocal(pos);
+               Point rp = CoordinateTransformations.RotatedPointFromLocal(pos, shape.Angle);
                rp.Offset(shape.PosX, shape.PosY);
 
                rp.Y += length; 
