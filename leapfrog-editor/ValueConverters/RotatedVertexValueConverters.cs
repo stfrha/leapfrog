@@ -194,23 +194,13 @@ namespace LeapfrogEditor
          // If it is not supplied (number of values is 2)
          // we get the angle from the shape (and assume that 
          // there is an shape that is calling)
-         if ((values.Count() == 2) || (values.Count() == 3))
+         if (values.Count() == 2)
          {
             if ((values[0] is double) && (values[1] is LfPointViewModel))
             {
                LfPointViewModel origVertex = (LfPointViewModel)values[1];
                IBoxPointsInterface boxVm = origVertex.PointsParent;
-               double angle = 0;
-
-               if (values.Count() == 2)
-               {
-                  LfShapeViewModel shapeVm = (LfShapeViewModel)origVertex.PointsParent;
-                  angle = shapeVm.Angle;
-               }
-               else
-               {
-                  angle = (double)values[2];
-               }
+               double angle = boxVm.Angle;
 
                int i = boxVm.PointVms.IndexOf(origVertex);
 
@@ -306,7 +296,7 @@ namespace LeapfrogEditor
          // If it is not supplied (number of values is 2)
          // we get the angle from the shape (and assume that 
          // there is an shape that is calling)
-         if ((values.Count() == 2) || (values.Count() == 3))
+         if (values.Count() == 2)
          {
             if ((values[0] is double) && (values[1] is LfPointViewModel))
             {
@@ -315,17 +305,7 @@ namespace LeapfrogEditor
 
                LfPointViewModel vertex = (LfPointViewModel)values[1];
                IBoxPointsInterface boxVm = vertex.PointsParent;
-               double angle = 0;
-
-               if (values.Count() == 2)
-               {
-                  LfShapeViewModel shapeVm = (LfShapeViewModel)vertex.PointsParent;
-                  angle = shapeVm.Angle;
-               }
-               else
-               {
-                  angle = (double)values[2];
-               }
+               double angle = boxVm.Angle;
 
                if (parameter as string == "x")
                {

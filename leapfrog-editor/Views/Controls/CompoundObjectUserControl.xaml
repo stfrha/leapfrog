@@ -189,7 +189,19 @@
          <ContentControl DataContext="{Binding Properties}" Content="{Binding}" >
             <ContentControl.Resources>
                <DataTemplate DataType="{x:Type local:ObjectFactoryPropertiesViewModel}">
-                  <local:LabeledBoxControl/>
+                  <local:LabeledBoxControl>
+                     <local:LabeledBoxControl.ContextMenu>
+                        <ContextMenu>
+                           <MenuItem Header="Locate in browser" 
+                                    CommandParameter="{Binding}"
+                                    Command="{Binding Path=Data.LocateInBrowser, Source={StaticResource DataContextProxy}}" />
+                           <Separator />
+                           <MenuItem Header="Delete" 
+                                    CommandParameter="{Binding}"
+                                    Command="{Binding Path=Data.DeleteThisObject, Source={StaticResource DataContextProxy}}" />
+                        </ContextMenu>
+                     </local:LabeledBoxControl.ContextMenu>
+                  </local:LabeledBoxControl>
                </DataTemplate>
             </ContentControl.Resources>
          </ContentControl>
@@ -223,6 +235,12 @@
                <Canvas/>
             </ItemsPanelTemplate>
          </ItemsControl.ItemsPanel>
+         <ItemsControl.ItemContainerStyle>
+            <Style TargetType="ContentPresenter">
+               <Setter Property="Canvas.Left" Value="{Binding Properties.PosX}"/>
+               <Setter Property="Canvas.Top" Value="{Binding Properties.PosY}"/>
+            </Style>
+         </ItemsControl.ItemContainerStyle>
       </ItemsControl>
       <ItemsControl ItemsSource="{Binding ChildObjectsWithStates.Children}">
          <ItemsControl.ItemsPanel>

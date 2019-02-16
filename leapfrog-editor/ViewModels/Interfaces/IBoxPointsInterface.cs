@@ -15,5 +15,9 @@ namespace LeapfrogEditor
          set;
       }
 
+      double Angle
+      {
+         get;
+      }
    }
 }

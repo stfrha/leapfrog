@@ -154,7 +154,7 @@
                            <ContextMenu>
                               <MenuItem Header="Add Spawn object..." 
                                  CommandParameter="{Binding}"
-                                 Command="{Binding Path=Data.OpenChildFile, Source={StaticResource DataContextProxy}}" />
+                                 Command="{Binding Path=Data.NewSpawnObject, Source={StaticResource DataContextProxy}}" />
                            </ContextMenu>
                         </TextBlock.ContextMenu>
                      </TextBlock>

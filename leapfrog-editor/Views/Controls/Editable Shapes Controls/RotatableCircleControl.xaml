@@ -19,13 +19,13 @@
    </UserControl.Resources>
    <Canvas>
       <Image
-               Width="{Binding Radius, Converter={StaticResource TwiceDoubleValueConverter}}"
-               Height="{Binding Radius, Converter={StaticResource TwiceDoubleValueConverter}}"
-               Source="{Binding Texture, Converter={StaticResource TexturePathValueConverter}}"
-				   MouseDown="Shape_MouseDown"
-				   MouseUp="Shape_MouseUp"
-               RenderTransformOrigin="0, 0"
-               >
+         Width="{Binding Radius, Converter={StaticResource TwiceDoubleValueConverter}}"
+         Height="{Binding Radius, Converter={StaticResource TwiceDoubleValueConverter}}"
+         Source="{Binding Texture, Converter={StaticResource TexturePathValueConverter}}"
+         Stretch="Fill"
+		   MouseDown="Shape_MouseDown"
+		   MouseUp="Shape_MouseUp"
+         RenderTransformOrigin="0, 0" >
          <Image.RenderTransform >
             <TransformGroup>
                <TranslateTransform x:Name="d2"

@@ -727,6 +727,24 @@ namespace LeapfrogEditor
             }
          }
 
+         if (StateSystems != null)
+         {
+            foreach (object o in StateSystems.Systems)
+            {
+               if (o is CoSystemViewModel)
+               {
+                  CoSystemViewModel system = (CoSystemViewModel)o;
+
+                  system.IsSelected = false;
+
+                  if ((system.Properties != null) && (system.Properties is TreeViewViewModel))
+                  {
+                     system.Properties.IsSelected = false;
+                  }
+               }
+            }
+         }
+
          if (ChildObjectsWithStates != null)
          {
             foreach (ChildObjectViewModel child in ChildObjectsWithStates.Children)

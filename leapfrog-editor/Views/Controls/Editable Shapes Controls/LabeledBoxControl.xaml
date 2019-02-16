@@ -18,15 +18,12 @@
    </UserControl.Resources>
    <Canvas>
       <Rectangle
-               Canvas.Left="{Binding PosX}"
-               Canvas.Top="{Binding PosY}"
                Width="{Binding Width}"
                Height="{Binding Height}"
                Fill="Thistle"
 				   MouseDown="Shape_MouseDown"
 				   MouseUp="Shape_MouseUp"
-               Stretch="Fill"
-               >
+               Stretch="Fill">
          <Rectangle.RenderTransform >
             <TransformGroup>
                <TranslateTransform x:Name="d2"
@@ -39,9 +36,7 @@
             </TransformGroup>
          </Rectangle.RenderTransform>
       </Rectangle>
-      <StackPanel               
-               Canvas.Left="{Binding PosX}"
-               Canvas.Top="{Binding PosY}">
+      <StackPanel>
          <TextBlock 
                   IsHitTestVisible="False"
                   Text="{Binding Type}" 
@@ -70,39 +65,34 @@
             <DataTemplate>
                <Canvas>
                   <Line
-                           StrokeThickness="{Binding ContentScale, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type ZoomAndPan:ZoomAndPanControl}}, Converter={StaticResource ZoomThicknessValueConverter}}"
-                           Stroke="DarkBlue"
-                           MouseDown="ShapeBorder_MouseDown"
-			                  MouseUp="ShapeBorder_MouseUp"
-			                  MouseMove="ShapeBorder_MouseMove"
-                           Cursor="ScrollAll"
-                           >
+                     StrokeThickness="{Binding ContentScale, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type ZoomAndPan:ZoomAndPanControl}}, Converter={StaticResource ZoomThicknessValueConverter}}"
+                     Stroke="DarkBlue"
+                     MouseDown="ShapeBorder_MouseDown"
+			            MouseUp="ShapeBorder_MouseUp"
+			            MouseMove="ShapeBorder_MouseMove"
+                     Cursor="ScrollAll">
                      <Line.X1>
                         <MultiBinding Converter="{StaticResource MultiRotatedPointValueConverter}" ConverterParameter="x">
                            <Binding Path="PosX" />
                            <Binding />
-                           <Binding Path="Angle" />
                         </MultiBinding>
                      </Line.X1>
                      <Line.Y1>
                         <MultiBinding Converter="{StaticResource MultiRotatedPointValueConverter}" ConverterParameter="y">
                            <Binding Path="PosY" />
                            <Binding />
-                           <Binding Path="Angle" />
                         </MultiBinding>
                      </Line.Y1>
                      <Line.X2>
                         <MultiBinding Converter="{StaticResource PreviousMultiRotatedPointValueConverter}" ConverterParameter="x">
                            <Binding Path="PosX" />
                            <Binding />
-                           <Binding Path="Angle" />
                         </MultiBinding>
                      </Line.X2>
                      <Line.Y2>
                         <MultiBinding Converter="{StaticResource PreviousMultiRotatedPointValueConverter}" ConverterParameter="y">
                            <Binding Path="PosY" />
                            <Binding />
-                           <Binding Path="Angle" />
                         </MultiBinding>
                      </Line.Y2>
                   </Line>

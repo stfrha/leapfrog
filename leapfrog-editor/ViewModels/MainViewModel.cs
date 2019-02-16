@@ -813,6 +813,50 @@ namespace LeapfrogEditor
          }
       }
 
+      void NewSpawnObjectExecute(Object parameter)
+      {
+         if (parameter is BreakableObjectPropertiesViewModel)
+         {
+            BreakableObjectPropertiesViewModel bovm = parameter as BreakableObjectPropertiesViewModel;
+
+            // First add all model elements
+            SpawnObject newSo = new SpawnObject();
+            ChildObject cho = new ChildObject();
+            newSo.MyChildObject = cho;
+            TStateProperties<ChildObjectStateProperties> sp = new TStateProperties<ChildObjectStateProperties>();
+            cho.StateProperties.Add(sp);
+
+            ChildObjectStateProperties cosp = new ChildObjectStateProperties();
+            sp.Properties = cosp;
+
+            CompoundObject co = new CompoundObject();
+            cosp.CompObj = co;
+
+            bovm.LocalModelObject.SpawnObjects.Add(newSo);
+
+            // Then add and link ViewModel elements
+            SpawnObjectViewModel sovm = new SpawnObjectViewModel(bovm, EditedCpVm, this, newSo);
+            bovm.SpawnObjects.Add(sovm);
+         }
+      }
+
+      bool CanNewSpawnObjectExecute(Object parameter)
+      {
+         if (parameter is BreakableObjectPropertiesViewModel)
+         {
+            return true;
+         }
+         return false;
+      }
+
+      public ICommand NewSpawnObject
+      {
+         get
+         {
+            return new MicroMvvm.RelayCommand<Object>(parameter => NewSpawnObjectExecute(parameter), parameter => CanNewSpawnObjectExecute(parameter));
+         }
+      }
+
       void DeleteExecute(Object parameter)
       {
          if (_selectedPoints.Count > 0)
@@ -2011,9 +2055,25 @@ namespace LeapfrogEditor
          return "#Error should not reach here#";
       }
 
-      public int GetEditableCoBehaviourIndexOf(string state)
+      public int GetEditableCoBehaviourIndexOf(IParentInterface child, string state)
       {
-         return EditedCpVm.Behaviour.States.IndexOf(EditedCpVm.Behaviour.FindStateVM(state));
+         FileCOViewModel fvm = GetFileViewModelOfChild(child);
+         if ((fvm != null) && (fvm.Behaviour != null))
+         {
+            return fvm.Behaviour.States.IndexOf(EditedCpVm.Behaviour.FindStateVM(state));
+         }
+
+         return 0;
+      }
+
+      public FileCOViewModel GetFileViewModelOfChild(IParentInterface child)
+      {
+         while ((child != null) && (!(child is FileCOViewModel)))
+         {
+            child = child.ParentVm;
+         }
+
+         return child as FileCOViewModel;
       }
 
       public void BuildSelectionCollections()
@@ -2124,11 +2184,22 @@ namespace LeapfrogEditor
             }
          }
 
+         // Now assess if the spawn object is selected.
+         // There can, potentially, multiple selected spawn object
+         // but it would not make sense, so let the last selected
+         // spawn object be the one to be edited.
+         if (EditedCpVm.Behaviour.BehaviourProperties is BreakableObjectPropertiesViewModel)
+         {
+            BreakableObjectPropertiesViewModel breakProp = EditedCpVm.Behaviour.BehaviourProperties as BreakableObjectPropertiesViewModel;
 
-         //if (tvvm is SpawnObjectViewModel)
-         //{
-         //   EditableSpawnObject = tvvm as SpawnObjectViewModel;
-         //}
+            foreach (SpawnObjectViewModel sovm in breakProp.SpawnObjects)
+            {
+               if (sovm.IsSelected)
+               {
+                  EditableSpawnObject = sovm;
+               }
+            }
+         }
       }
 
 

@@ -164,6 +164,11 @@ namespace LeapfrogEditor
          }
       }
 
+      public double Angle
+      {
+         get { return 0; }
+      }
+
       public ObservableCollection<LfPointViewModel> PointVms
       {
          get { return _points; }

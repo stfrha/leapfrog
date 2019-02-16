@@ -42,7 +42,7 @@ namespace LeapfrogEditor
          ChildStateModelObject = childStateModelObject;
 
          // Below we need to find the top level behavior. Must get it from the MainViewModel!
-         int i = MainVm.GetEditableCoBehaviourIndexOf(ChildStateModelObject.State);
+         int i = MainVm.GetEditableCoBehaviourIndexOf(this, ChildStateModelObject.State);
 
          if (i < 0)
          {
