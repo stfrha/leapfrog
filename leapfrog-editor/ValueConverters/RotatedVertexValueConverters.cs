@@ -188,12 +188,6 @@ namespace LeapfrogEditor
    {
       public object Convert(object[] values, Type targetType, object parameter, System.Globalization.CultureInfo culture)
       {
-         // We provides two alternatives here
-         // If the angle is supplied (where the number of 
-         // values is 3) the angle is used.
-         // If it is not supplied (number of values is 2)
-         // we get the angle from the shape (and assume that 
-         // there is an shape that is calling)
          if (values.Count() == 2)
          {
             if ((values[0] is double) && (values[1] is LfPointViewModel))
@@ -233,49 +227,6 @@ namespace LeapfrogEditor
                }
             }
          }
-
-
-
-
-         //if (values.Count() == 2)
-         //{
-         //   if ((values[0] is double) && (values[1] is LfPointViewModel))
-         //   {
-         //      LfPointViewModel origVertex = (LfPointViewModel)values[1];
-         //      IBoxPointsInterface boxVm = origVertex.PointsParent;
-         //      LfShapeViewModel shapeVm = (LfShapeViewModel)origVertex.PointsParent;
-
-         //      int i = boxVm.PointVms.IndexOf(origVertex);
-
-         //      if (i == -1)
-         //      {
-         //         return null;
-         //      }
-
-         //      LfPointViewModel vertex;
-
-         //      if (i > 0)
-         //      {
-         //         vertex = boxVm.PointVms[i - 1];
-         //      }
-         //      else
-         //      {
-         //         vertex = boxVm.PointVms[boxVm.PointVms.Count() - 1];
-         //      }
-
-         //      Point p = new Point(vertex.PosX, vertex.PosY);
-         //      Point rp = CoordinateTransformations.RotatedPointFromLocal(p, shapeVm.Angle);
-
-         //      if (parameter as string == "x")
-         //      {
-         //         return rp.X;
-         //      }
-         //      else
-         //      {
-         //         return rp.Y;
-         //      }
-         //   }
-         //}
 
          return null;
       }
@@ -432,5 +383,38 @@ namespace LeapfrogEditor
          throw new NotImplementedException();
       }
    }
+
+   class MultiRotatedPosPointValueConverter : IMultiValueConverter
+   {
+      public object Convert(object[] values, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+      {
+         // Values should be: PosX, PosY, Angle. Parameter is "x" or "y", 
+         // Returns rotated point x or y value, depending on parameter.
+         if (values.Count() == 3)
+         {
+            if ((values[0] is double) && (values[1] is double) && (values[2] is double))
+            {
+               Point p = new Point( (double)values[0], (double)values[1]);
+               double angle = (double)values[2];
+
+               Point rotPoint = CoordinateTransformations.RotatedPointFromLocal(p, angle);
+
+               if (parameter as string == "x")
+               {
+                  return rotPoint.X;
+               }
+               return rotPoint.Y;
+            }
+         }
+
+         return null;
+      }
+
+      public object[] ConvertBack(object value, Type[] targetTypes, object parameter, System.Globalization.CultureInfo culture)
+      {
+         throw new NotImplementedException();
+      }
+   }
+
 
 }

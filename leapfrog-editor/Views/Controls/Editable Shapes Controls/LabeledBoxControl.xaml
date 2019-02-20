@@ -15,47 +15,59 @@
       <local:ZoomThicknessValueConverter x:Key="ZoomThicknessValueConverter" />
       <local:MultiRotatedPointValueConverter x:Key="MultiRotatedPointValueConverter" />
       <local:PreviousMultiRotatedPointValueConverter x:Key="PreviousMultiRotatedPointValueConverter" />
+      <local:MultiRotatedPosPointValueConverter x:Key="MultiRotatedPosPointValueConverter" />
    </UserControl.Resources>
    <Canvas>
-      <Rectangle
-               Width="{Binding Width}"
-               Height="{Binding Height}"
-               Fill="Thistle"
-				   MouseDown="Shape_MouseDown"
-				   MouseUp="Shape_MouseUp"
-               Stretch="Fill">
-         <!--<Rectangle.RenderTransform >
+      <Rectangle         
+         Width="{Binding Width}"
+         Height="{Binding Height}"
+         Fill="Thistle"
+		   MouseDown="Shape_MouseDown"
+		   MouseUp="Shape_MouseUp"
+         Stretch="Fill">
+         <Canvas.Left>
+            <MultiBinding Converter="{StaticResource MultiRotatedPosPointValueConverter}" ConverterParameter="x">
+               <Binding Path="PosX" />
+               <Binding Path="PosY" />
+               <Binding Path="Angle" />
+            </MultiBinding>
+         </Canvas.Left>
+         <Canvas.Top>
+            <MultiBinding Converter="{StaticResource MultiRotatedPosPointValueConverter}" ConverterParameter="y">
+               <Binding Path="PosX" />
+               <Binding Path="PosY" />
+               <Binding Path="Angle" />
+            </MultiBinding>
+         </Canvas.Top>
+         <Rectangle.RenderTransform >
             <TransformGroup>
-               <TranslateTransform x:Name="d2"
+               <!--<TranslateTransform x:Name="d2"
                         X="{Binding Width, Converter={StaticResource NegativeHalfValueConverter}}" 
                         Y="{Binding Height, Converter={StaticResource NegativeHalfValueConverter}}" 
-                     />
+                     />-->
                <RotateTransform x:Name="d1"
                         Angle="{Binding Angle, Converter={StaticResource NegRadToDegValueConverter}}"
                      />
             </TransformGroup>
-         </Rectangle.RenderTransform>-->
+         </Rectangle.RenderTransform>
       </Rectangle>
       <StackPanel>
          <TextBlock 
-                  IsHitTestVisible="False"
-                  Text="{Binding Type}" 
-                  TextAlignment="Left"
-                  FontSize="5"
-                  />
+            IsHitTestVisible="False"
+            Text="{Binding Type}" 
+            TextAlignment="Left"
+            FontSize="5" />
          <TextBlock 
-                  IsHitTestVisible="False"
-                  Text="{Binding ObjectName}" 
-                  TextAlignment="Left"
-                  FontSize="5"
-                  />
+            IsHitTestVisible="False"
+            Text="{Binding ObjectName}" 
+            TextAlignment="Left"
+            FontSize="5" />
       </StackPanel>
       <!-- Below is the lines between the vertices of the polygon. The lines are
             drawn between the vertices of the polygon and they are rotated acc to the angle-->
       <ItemsControl 
                Visibility="{Binding SystemViewModel.IsSelected, Converter={StaticResource BoolToVisibilityValueConverter}}"
-               ItemsSource="{Binding PointVms}" 
-               >
+               ItemsSource="{Binding PointVms}" >
          <ItemsControl.ItemsPanel>
             <ItemsPanelTemplate>
                <Canvas/>

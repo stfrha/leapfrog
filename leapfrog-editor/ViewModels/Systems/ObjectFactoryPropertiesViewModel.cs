@@ -18,6 +18,7 @@ namespace LeapfrogEditor
       private ObjectFactoryProperties _modelObject;
       private CompoundObjectViewModel _parent;
       private ObservableCollection<LfPointViewModel> _points = new ObservableCollection<LfPointViewModel>();
+      private LfShapeViewModel _bodyObject = null;
 
       #endregion
 
@@ -32,6 +33,12 @@ namespace LeapfrogEditor
          base(treeParent, parentVm, mainVm, systemViewModel)
       {
          _modelObject = modelObject;
+
+         if (_modelObject != null)
+         {
+            _bodyObject = ParentVm.FindBodyObject(_modelObject.Body);
+         }
+
          UpdateCornerPoints();
       }
 
@@ -60,6 +67,7 @@ namespace LeapfrogEditor
          set
          {
             _modelObject.Body = value;
+            _bodyObject = ParentVm.FindBodyObject(_modelObject.Body);
             OnPropertyChanged("Body");
          }
       }
@@ -176,7 +184,15 @@ namespace LeapfrogEditor
 
       public double Angle
       {
-         get { return 0; }
+         get
+         {
+            if (_bodyObject != null)
+            {
+               return _bodyObject.Angle;
+            }
+
+            return 0;
+         }
       }
 
       public ObservableCollection<LfPointViewModel> PointVms

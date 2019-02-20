@@ -235,12 +235,12 @@
                <Canvas/>
             </ItemsPanelTemplate>
          </ItemsControl.ItemsPanel>
-         <ItemsControl.ItemContainerStyle>
+         <!--<ItemsControl.ItemContainerStyle>
             <Style TargetType="ContentPresenter">
                <Setter Property="Canvas.Left" Value="{Binding Properties.PosX}"/>
                <Setter Property="Canvas.Top" Value="{Binding Properties.PosY}"/>
             </Style>
-         </ItemsControl.ItemContainerStyle>
+         </ItemsControl.ItemContainerStyle>-->
       </ItemsControl>
       <ItemsControl ItemsSource="{Binding ChildObjectsWithStates.Children}">
          <ItemsControl.ItemsPanel>

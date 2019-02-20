@@ -545,7 +545,6 @@ namespace LeapfrogEditor
 
       #region Public Methods
 
-
       public void SetBehaviourPropertyInTreeView()
       {
          // Remove the current element (if any) in the TreeCollection that is of BehaviourViewModelBase
@@ -908,6 +907,37 @@ namespace LeapfrogEditor
             foreach (ChildCOViewModel propvm in covm.StateProperties)
             {
                propvm.GenerateTriangles();
+            }
+         }
+      }
+
+      public LfShapeViewModel FindBodyObject(string bodyName)
+      {
+         foreach (object o in StateShapes.Shapes)
+         {
+            if (o is LfShapeViewModel)
+            {
+               LfShapeViewModel lsvm = o as LfShapeViewModel;
+
+               if (lsvm.Name == bodyName)
+               {
+                  return lsvm;
+               }
+            }
+         }
+
+         return null;
+      }
+
+      public void UpdateAnglePropertyOfSystems()
+      {
+         foreach (object o in StateSystems.Systems)
+         {
+            if (o is CoSystemViewModel)
+            {
+               CoSystemViewModel sysVm = o as CoSystemViewModel;
+
+               sysVm.Properties.OnPropertyChanged("");
             }
          }
       }

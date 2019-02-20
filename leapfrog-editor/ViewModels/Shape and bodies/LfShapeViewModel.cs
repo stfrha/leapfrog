@@ -155,6 +155,7 @@ namespace LeapfrogEditor
             _modelObject.Angle = -value;
             OnPropertyChanged("Angle");
             OnPropertyChanged("BoundingBox");
+            ParentVm.UpdateAnglePropertyOfSystems();
 
             CompoundObjectViewModel p = ParentVm;
 
