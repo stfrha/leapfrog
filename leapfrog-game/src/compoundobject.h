@@ -318,6 +318,8 @@ public:
    b2Body* getBody(const std::string& name);
    b2Joint* getJoint(const std::string& name);
    System* getSystem(const std::string& name);
+
+   virtual void connectToForeignObjects(void);
   
    void extSetProperty(int propId, float value);
    void setProperty(int propId, float value);

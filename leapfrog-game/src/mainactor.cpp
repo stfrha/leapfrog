@@ -163,6 +163,8 @@ void MainActor::startScene(void)
       co.get()->addEventListener(OrbitSceneLandingComplete::EVENT, CLOSURE(this, &MainActor::landingCompleteListner));
    }
 
+   m_sceneObject->connectToForeignObjects();
+
    // Init game status in leapfrog object
    CompoundObject* leapfrog = m_sceneObject->getObject("leapfrog1");
 

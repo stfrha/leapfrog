@@ -1242,6 +1242,16 @@ namespace LeapfrogEditor
                   child.PosY += dragVector.Y;
                }
 
+               foreach (CoSystemViewModel child in SelectedSystems)
+               {
+                  if (child.Properties is IPositionInterface)
+                  {
+                     IPositionInterface sysPos = child.Properties as IPositionInterface;
+                     sysPos.PosX += dragVector.X;
+                     sysPos.PosY += dragVector.Y;
+                  }
+               }
+
                return true;
 
             case MouseEventObjectType.dragablePoint:
@@ -2198,6 +2208,36 @@ namespace LeapfrogEditor
                {
                   EditableSpawnObject = sovm;
                }
+
+               TreeViewViewModel tvvm = sovm.SpawnChildObject[0];
+
+               if (tvvm is ChildObjectViewModel)
+               {
+                  ChildObjectViewModel covm = tvvm as ChildObjectViewModel;
+
+                  if (covm.ParentVm == EditedCpVm)
+                  {
+                     // This is the child object of the object being edited, 
+                     if (covm.IsSelected)
+                     {
+                        SelectedChildObjects.Add(covm);
+                     }
+
+                     foreach (ChildCOViewModel chvm in covm.StateProperties)
+                     {
+                        if (chvm is ChildCOViewModel)
+                        {
+                           ChildCOViewModel cospvm = chvm as ChildCOViewModel;
+
+                           if (cospvm.IsSelected)
+                           {
+                              SelectedChildObjectStateProperties.Add(cospvm);
+                           }
+                        }
+                     }
+                  }
+               }
+
             }
          }
       }

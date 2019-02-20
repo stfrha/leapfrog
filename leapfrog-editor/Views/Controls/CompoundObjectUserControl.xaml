@@ -19,12 +19,12 @@
             <local:WeldJointControl.ContextMenu>
                <ContextMenu>
                   <MenuItem Header="Locate in browser" 
-                                 CommandParameter="{Binding}"
-                                 Command="{Binding Path=Data.LocateInBrowser, Source={StaticResource DataContextProxy}}" />
+                     CommandParameter="{Binding}"
+                     Command="{Binding Path=Data.LocateInBrowser, Source={StaticResource DataContextProxy}}" />
                   <Separator />
                   <MenuItem Header="Delete" 
-                                 CommandParameter="{Binding}"
-                                 Command="{Binding Path=Data.DeleteThisObject, Source={StaticResource DataContextProxy}}" />
+                     CommandParameter="{Binding}"
+                     Command="{Binding Path=Data.DeleteThisObject, Source={StaticResource DataContextProxy}}" />
                </ContextMenu>
             </local:WeldJointControl.ContextMenu>
          </local:WeldJointControl>
@@ -34,12 +34,12 @@
             <local:RevoluteJointControl.ContextMenu>
                <ContextMenu>
                   <MenuItem Header="Locate in browser" 
-                                 CommandParameter="{Binding}"
-                                 Command="{Binding Path=Data.LocateInBrowser, Source={StaticResource DataContextProxy}}" />
+                     CommandParameter="{Binding}"
+                     Command="{Binding Path=Data.LocateInBrowser, Source={StaticResource DataContextProxy}}" />
                   <Separator />
                   <MenuItem Header="Delete" 
-                                 CommandParameter="{Binding}"
-                                 Command="{Binding Path=Data.DeleteThisObject, Source={StaticResource DataContextProxy}}" />
+                     CommandParameter="{Binding}"
+                     Command="{Binding Path=Data.DeleteThisObject, Source={StaticResource DataContextProxy}}" />
                </ContextMenu>
             </local:RevoluteJointControl.ContextMenu>
          </local:RevoluteJointControl>
@@ -49,12 +49,12 @@
             <local:PrismaticJointControl.ContextMenu>
                <ContextMenu>
                   <MenuItem Header="Locate in browser" 
-                                 CommandParameter="{Binding}"
-                                 Command="{Binding Path=Data.LocateInBrowser, Source={StaticResource DataContextProxy}}" />
+                     CommandParameter="{Binding}"
+                     Command="{Binding Path=Data.LocateInBrowser, Source={StaticResource DataContextProxy}}" />
                   <Separator />
                   <MenuItem Header="Delete" 
-                                 CommandParameter="{Binding}"
-                                 Command="{Binding Path=Data.DeleteThisObject, Source={StaticResource DataContextProxy}}" />
+                     CommandParameter="{Binding}"
+                     Command="{Binding Path=Data.DeleteThisObject, Source={StaticResource DataContextProxy}}" />
                </ContextMenu>
             </local:PrismaticJointControl.ContextMenu>
          </local:PrismaticJointControl>
@@ -64,12 +64,12 @@
             <local:RopeControl.ContextMenu>
                <ContextMenu>
                   <MenuItem Header="Locate in browser" 
-                                 CommandParameter="{Binding}"
-                                 Command="{Binding Path=Data.LocateInBrowser, Source={StaticResource DataContextProxy}}" />
+                     CommandParameter="{Binding}"
+                     Command="{Binding Path=Data.LocateInBrowser, Source={StaticResource DataContextProxy}}" />
                   <Separator />
                   <MenuItem Header="Delete" 
-                                 CommandParameter="{Binding}"
-                                 Command="{Binding Path=Data.DeleteThisObject, Source={StaticResource DataContextProxy}}" />
+                     CommandParameter="{Binding}"
+                     Command="{Binding Path=Data.DeleteThisObject, Source={StaticResource DataContextProxy}}" />
                </ContextMenu>
             </local:RopeControl.ContextMenu>
          </local:RopeControl>
@@ -79,12 +79,12 @@
             <local:ScalableTexturePolygonControl.ContextMenu>
                <ContextMenu>
                   <MenuItem Header="Locate in browser" 
-                                 CommandParameter="{Binding}"
-                                 Command="{Binding Path=Data.LocateInBrowser, Source={StaticResource DataContextProxy}}" />
+                     CommandParameter="{Binding}"
+                     Command="{Binding Path=Data.LocateInBrowser, Source={StaticResource DataContextProxy}}" />
                   <Separator />
                   <MenuItem Header="Delete" 
-                                 CommandParameter="{Binding}"
-                                 Command="{Binding Path=Data.DeleteThisObject, Source={StaticResource DataContextProxy}}" />
+                     CommandParameter="{Binding}"
+                     Command="{Binding Path=Data.DeleteThisObject, Source={StaticResource DataContextProxy}}" />
                </ContextMenu>
             </local:ScalableTexturePolygonControl.ContextMenu>
          </local:ScalableTexturePolygonControl>
@@ -94,12 +94,12 @@
             <local:BoxedSpritePolygonControl.ContextMenu>
                <ContextMenu>
                   <MenuItem Header="Locate in browser" 
-                                 CommandParameter="{Binding}"
-                                 Command="{Binding Path=Data.LocateInBrowser, Source={StaticResource DataContextProxy}}" />
+                     CommandParameter="{Binding}"
+                     Command="{Binding Path=Data.LocateInBrowser, Source={StaticResource DataContextProxy}}" />
                   <Separator />
                   <MenuItem Header="Delete" 
-                                 CommandParameter="{Binding}"
-                                 Command="{Binding Path=Data.DeleteThisObject, Source={StaticResource DataContextProxy}}" />
+                     CommandParameter="{Binding}"
+                     Command="{Binding Path=Data.DeleteThisObject, Source={StaticResource DataContextProxy}}" />
                </ContextMenu>
             </local:BoxedSpritePolygonControl.ContextMenu>
          </local:BoxedSpritePolygonControl>
@@ -109,12 +109,12 @@
             <local:RotatableBoxControl.ContextMenu>
                <ContextMenu>
                   <MenuItem Header="Locate in browser" 
-                                 CommandParameter="{Binding}"
-                                 Command="{Binding Path=Data.LocateInBrowser, Source={StaticResource DataContextProxy}}" />
+                     CommandParameter="{Binding}"
+                     Command="{Binding Path=Data.LocateInBrowser, Source={StaticResource DataContextProxy}}" />
                   <Separator />
                   <MenuItem Header="Delete" 
-                                 CommandParameter="{Binding}"
-                                 Command="{Binding Path=Data.DeleteThisObject, Source={StaticResource DataContextProxy}}" />
+                     CommandParameter="{Binding}"
+                     Command="{Binding Path=Data.DeleteThisObject, Source={StaticResource DataContextProxy}}" />
                </ContextMenu>
             </local:RotatableBoxControl.ContextMenu>
          </local:RotatableBoxControl>
@@ -124,12 +124,12 @@
             <local:RotatableBoxControl.ContextMenu>
                <ContextMenu>
                   <MenuItem Header="Locate in browser" 
-                                 CommandParameter="{Binding}"
-                                 Command="{Binding Path=Data.LocateInBrowser, Source={StaticResource DataContextProxy}}" />
+                     CommandParameter="{Binding}"
+                     Command="{Binding Path=Data.LocateInBrowser, Source={StaticResource DataContextProxy}}" />
                   <Separator />
                   <MenuItem Header="Delete" 
-                                 CommandParameter="{Binding}"
-                                 Command="{Binding Path=Data.DeleteThisObject, Source={StaticResource DataContextProxy}}" />
+                     CommandParameter="{Binding}"
+                     Command="{Binding Path=Data.DeleteThisObject, Source={StaticResource DataContextProxy}}" />
                </ContextMenu>
             </local:RotatableBoxControl.ContextMenu>
          </local:RotatableBoxControl>

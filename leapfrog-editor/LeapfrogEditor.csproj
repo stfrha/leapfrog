@@ -160,6 +160,9 @@
     <Compile Include="Models\CollisionEntities.cs" />
     <Compile Include="Models\ZLevels.cs" />
     <Compile Include="Utilities\ParentalFinder.cs" />
+    <Compile Include="Views\Controls\Editable Properties Controls\System Properties Control\ObjectFactoryPropEditor.xaml.cs">
+      <DependentUpon>ObjectFactoryPropEditor.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\Controls\Editable Properties Controls\System Properties Control\SystemPropertiesEditor.xaml.cs">
       <DependentUpon>SystemPropertiesEditor.xaml</DependentUpon>
     </Compile>
@@ -372,6 +375,10 @@
     <Page Include="Views\Controls\Editable Properties Controls\CompoundObjectPropEditor.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\Controls\Editable Properties Controls\System Properties Control\ObjectFactoryPropEditor.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
     <Page Include="Views\Controls\Editable Properties Controls\System Properties Control\SystemPropertiesEditor.xaml">
       <Generator>MSBuild:Compile</Generator>

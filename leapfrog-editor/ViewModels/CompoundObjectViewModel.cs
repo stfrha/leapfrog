@@ -97,6 +97,16 @@ namespace LeapfrogEditor
          }
       }
 
+      public bool NeedsGroupIndex
+      {
+         get { return _modelObject.NeedsGroupIndex; }
+         set
+         {
+            _modelObject.NeedsGroupIndex = value;
+            OnPropertyChanged("NeedsGroupIndex");
+         }
+      }
+
       public CoBehaviourViewModel Behaviour
       {
          get { return _behaviour; }
@@ -266,6 +276,8 @@ namespace LeapfrogEditor
          {
             if (this is ChildCOViewModel)
             {
+               // PosX and Y are overridden in ChildCOViewModel so
+               // this should really not be needed.
                ChildCOViewModel vm = this as ChildCOViewModel;
 
                return vm.PosX;
@@ -692,6 +704,32 @@ namespace LeapfrogEditor
          if ((Behaviour != null) && (Behaviour.BehaviourProperties != null))
          {
             Behaviour.BehaviourProperties.IsSelected = false;
+
+            if (Behaviour.BehaviourProperties is BreakableObjectPropertiesViewModel)
+            {
+               BreakableObjectPropertiesViewModel bovm = Behaviour.BehaviourProperties as BreakableObjectPropertiesViewModel;
+
+               foreach (object o in bovm.SpawnObjects)
+               {
+                  if (o is SpawnObjectViewModel)
+                  {
+                     SpawnObjectViewModel sovm = o as SpawnObjectViewModel;
+
+                     sovm.IsSelected = false;
+                     sovm.SpawnChildObject[0].IsSelected = false;
+
+                     foreach (object p in sovm.SpawnChildObject[0].StateProperties)
+                     {
+                        if (p is ChildCOViewModel)
+                        {
+                           ChildCOViewModel ccovm = p as ChildCOViewModel;
+
+                           ccovm.IsSelected = false;
+                        }
+                     }
+                  }
+               }
+            }
          }
 
          if ((StateShapes != null) && (StateShapes.Shapes != null))

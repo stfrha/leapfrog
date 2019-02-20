@@ -58,6 +58,7 @@ private:
    SteeringStateEnum m_state;
    b2Vec2 m_seekPoint;
    b2Body* m_targetBody;
+   std::string m_targetBodyStr;
    float m_bodyToBoosterAngle;
    float m_maxBoosterForce;
    float m_maxSpeed;
@@ -96,6 +97,7 @@ public:
 
    // Specialisation of map registration
    void registerToMap(void) override;
+   void connectToForeignObjects(void) override;
 
 protected:
 	void doUpdate(const oxygine::UpdateState& us);

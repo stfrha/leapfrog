@@ -64,7 +64,7 @@ SteerableObject::SteerableObject(
 
 void SteerableObject::readSteerableObjectNode(pugi::xml_node node)
 {
-   m_targetBody = m_sceneActor->getBody(node.attribute("targetBody").as_string());
+   m_targetBodyStr = node.attribute("targetBody").as_string();
    
    string st = node.attribute("steeringState").as_string();
 
@@ -84,6 +84,17 @@ void SteerableObject::readSteerableObjectNode(pugi::xml_node node)
    m_maxRotateSpeed = node.attribute("degPerSecMaxRotateSpeed").as_float(0.0f) / 180.0f * MATH_PI;
    m_linearDamping = node.attribute("linearDamping").as_float(0.0f);
 }
+
+void SteerableObject::connectToForeignObjects(void)
+{
+   m_targetBody = m_sceneActor->getBody(m_targetBodyStr);
+
+   for (auto it = m_children.begin(); it != m_children.end(); ++it)
+   {
+      (*it)->connectToForeignObjects();
+   }
+}
+
 
 void SteerableObject::doUpdate(const oxygine::UpdateState& us)
 {

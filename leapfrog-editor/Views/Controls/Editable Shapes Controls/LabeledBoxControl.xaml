@@ -24,7 +24,7 @@
 				   MouseDown="Shape_MouseDown"
 				   MouseUp="Shape_MouseUp"
                Stretch="Fill">
-         <Rectangle.RenderTransform >
+         <!--<Rectangle.RenderTransform >
             <TransformGroup>
                <TranslateTransform x:Name="d2"
                         X="{Binding Width, Converter={StaticResource NegativeHalfValueConverter}}" 
@@ -34,7 +34,7 @@
                         Angle="{Binding Angle, Converter={StaticResource NegRadToDegValueConverter}}"
                      />
             </TransformGroup>
-         </Rectangle.RenderTransform>
+         </Rectangle.RenderTransform>-->
       </Rectangle>
       <StackPanel>
          <TextBlock 

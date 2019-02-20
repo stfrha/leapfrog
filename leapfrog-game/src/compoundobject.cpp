@@ -1708,6 +1708,25 @@ System* CompoundObject::getSystemImpl(const std::string& name)
 //   return static_cast<Sprite*>(getFirstChild().get());
 //}
 
+
+
+// This method allows a object that needs to refere to 
+// a foreign object (i.e. a shape, body or system that 
+// is defined in another CompoundObject and may not 
+// have been read at the creation time
+// This is called after all objects are defined
+// The base implementation simply calls the 
+// same function to all its child objects.
+// Any CO that need foreign accesses must override
+// this to find the object or body
+void CompoundObject::connectToForeignObjects(void)
+{
+   for (auto it = m_children.begin(); it != m_children.end(); ++it)
+   {
+      (*it)->connectToForeignObjects();
+   }
+}
+
 ObjectProperty* CompoundObject::getProp(int propId)
 {
    if ((propId > 0) && ((unsigned int)propId < m_properties.size()))

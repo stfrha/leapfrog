@@ -125,9 +125,6 @@ namespace LeapfrogEditor
 
             return Name + stateRef + fileRef;
          }
-         set
-         {
-         }
       }
 
 
@@ -206,6 +203,8 @@ namespace LeapfrogEditor
          {
             ChildStateModelObject.Properties.File = value;
             OnPropertyChanged("File");
+            OnPropertyChanged("DispName");
+            OnPropertyChanged("IsFileReferenceChild");
          }
       }
 

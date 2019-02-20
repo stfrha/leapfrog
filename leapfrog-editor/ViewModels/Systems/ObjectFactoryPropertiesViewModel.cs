@@ -54,6 +54,16 @@ namespace LeapfrogEditor
          }
       }
 
+      public string Body
+      {
+         get { return _modelObject.Body; }
+         set
+         {
+            _modelObject.Body = value;
+            OnPropertyChanged("Body");
+         }
+      }
+
 
       public double PosX
       {
@@ -236,10 +246,10 @@ namespace LeapfrogEditor
       {
          _points.Clear();
 
-         _points.Add(new LfPointViewModel(MainVm, this, new Point(-Width / 2, -Height / 2)));
-         _points.Add(new LfPointViewModel(MainVm, this, new Point(Width / 2, -Height / 2)));
-         _points.Add(new LfPointViewModel(MainVm, this, new Point(Width / 2, Height / 2)));
-         _points.Add(new LfPointViewModel(MainVm, this, new Point(-Width / 2, Height / 2)));
+         _points.Add(new LfPointViewModel(MainVm, this, new Point(0, 0)));
+         _points.Add(new LfPointViewModel(MainVm, this, new Point(Width, 0)));
+         _points.Add(new LfPointViewModel(MainVm, this, new Point(Width, Height)));
+         _points.Add(new LfPointViewModel(MainVm, this, new Point(0, Height)));
 
          OnPropertyChanged("PointVms");
       }

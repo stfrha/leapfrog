@@ -51,7 +51,7 @@ namespace LeapfrogEditor
          set { _steeringState = value; }
       }
 
-      [XmlAttribute("body")]
+      [XmlAttribute("targetBody")]
       public string BodyName
       {
          get { return _bodyName; }

@@ -1,244 +1,164 @@
-<?xml version="1.0"?>
-<compoundObject>
-   <behaviour
-      type="scene">
-      <sceneProperties
-         sceneType="space">
-        <states>
-          <state>default</state>
-        </states>
-      </sceneProperties>
-   </behaviour>
-   <childObject
-      name="asteroid1">
-      <stateProperties
-         state="default">
-         <properties
-            posX="500.0"
-            posY="240.0" 
-            file="large_asteroid.xml" />
-      </stateProperties>
-   </childObject>
-   <childObject
-      name="leapfrog1">
-      <stateProperties
-         state="default">
-         <properties
-            posX="250.0"
-            posY="250.0" 
-            file="leapfrog_deep_space.xml" />
-      </stateProperties>
-   </childObject>
-<!--
-   <childObject
-      name="mineLayer">
-      <stateProperties
-         state="default">
-         <properties
-            posX="800.0"
-            posY="150.0" >
-            <compoundObject
-               needsGroupIndex="true" >
-               <behaviour
-                  type="steerableObject">
-                  <steerableObjectProperties
-                     steeringState="wander"
-                     targetBody="leapfrog1.lfMainBody"
-                     bodyToBoosterAngle="3.1415"
-                     seekTargetX="100.0"
-                     seekTargetY="100.0"
-                     maxBoosterForce="700.0"
-                     maxSpeed="25.0"
-                     degPerSecMaxRotateSpeed="20.0"
-                     linearDamping="0.5" />
-               </behaviour>
-               <dynamicBox
-                  name="mainBody"
-                  texture="hammer"
-                  posX="0"
-                  posY="0"
-                  width="24" 
-                  height="12.6"
-                  angle="3.1415"
-                  zLevel="160"
-                  collisionEntity="steerableObject"
-                  collisionCategory="16"
-                  collisionMask="56495"
-                  density="5"
-                  friction="1" />
-               <system
-                  type="flameEmitter"
-                  name="boosterFlame">
-                  <flameEmitterProperties
-                     body="mainBody"
-                     emitterOriginX="12"
-                     emitterOriginY="0"
-                     angle="0"
-                     emitterWidth="4"
-                     lifeTime="500"
-                     impulseMagnitude="90"
-                     radius="10" />
-               </system>
-               <system
-                  type="gun"
-                  name="gun">
-                  <gunProperties
-                     body="mainBody"
-                     emitterOriginX="-10"
-                     emitterOriginY="0"
-                     angle="-3.1415"
-                     fireRate="4"
-                     lifeTime="2000"
-                     impulseMagnitude="10000"
-                     bouncy="false" />
-               </system>
-               <system
-                  type="shield"
-                  name="hammerShield">
-                  <shieldProperties
-                     body="mainBody"
-                     bodyAnchorX="0"
-                     bodyAnchorY="1.0"
-                     radius="30" 
-                     zLevel="147"
-                     />
-               </system>
-               <system
-                  type="objectFactory"
-                  name="mineField">
-                  <objectFactoryProperties
-                     body="mainBody"
-                     posX="40.0"
-                     posY="0.0"
-                     width="10"
-                     height="10"
-                     spawnInitial="0"
-                     intensity="0.2"
-                     lifeTime="60000"
-                     >
-                     <spawnObject
-                        probabilityFactor="1">
-                        <childObject
-                           name="largeAsteroid">
-                           <stateProperties
-                              state="default">
-                              <properties
-                                 posX="0"
-                                 posY="0" 
-                                 file="large_asteroid.xml" />
-                           </stateProperties>
-                        </childObject>
-                     </spawnObject>
-                     <spawnObject
-                        probabilityFactor="1">
-                        <childObject
-                           name="mediumAsteroid">
-                           <stateProperties
-                              state="default">
-                              <properties
-                                 posX="0"
-                                 posY="0" 
-                                 file="medium_asteroid.xml" />
-                           </stateProperties>
-                        </childObject>
-                     </spawnObject>
-                     <spawnObject
-                        probabilityFactor="1">
-                        <childObject
-                           name="smallAsteroid">
-                           <stateProperties
-                              state="default">
-                              <properties
-                                 posX="0"
-                                 posY="0" 
-                                 file="small_asteroid.xml" />
-                           </stateProperties>
-                        </childObject>
-                     </spawnObject>
-                  </objectFactoryProperties>
-               </system>
-            </compoundObject>
-         </properties>
-      </stateProperties>
-   </childObject>
--->
-   <childObject
-      name="hammer1">
-      <stateProperties
-         state="default">
-         <properties
-            posX="700.0"
-            posY="250.0" >
-            <compoundObject
-               needsGroupIndex="true" >
-               <behaviour
-                  type="steerableObject" >
-                  <steerableObjectProperties
-                     steeringState="wanderHunt"
-                     targetBody="leapfrog1.lfMainBody"
-                     bodyToBoosterAngle="3.1415"
-                     seekTargetX="100.0"
-                     seekTargetY="100.0"
-                     maxBoosterForce="700.0"
-                     maxSpeed="35.0"
-                     degPerSecMaxRotateSpeed="30.0"
-                     linearDamping="0.5" />
-               </behaviour>
-               <dynamicBox
-                  name="mainBody"
-                  texture="hammer"
-                  posX="0"
-                  posY="0"
-                  width="24" 
-                  height="12.6"
-                  angle="3.1415"
-                  zLevel="160"
-                  collisionEntity="steerableObject"
-                  collisionCategory="1"
-                  collisionMask="65533"
-                  density="5"
-                  friction="1" />
-               <system
-                  type="flameEmitter"
-                  name="boosterFlame">
-                  <flameEmitterProperties
-                     body="mainBody"
-                     emitterOriginX="12"
-                     emitterOriginY="0"
-                     angle="0"
-                     emitterWidth="4"
-                     lifeTime="500"
-                     impulseMagnitude="90"
-                     radius="10" />
-               </system>
-               <system
-                  type="gun"
-                  name="gun">
-                  <gunProperties
-                     body="mainBody"
-                     emitterOriginX="-10"
-                     emitterOriginY="0"
-                     angle="-3.1415"
-                     fireRate="6"
-                     lifeTime="2000"
-                     impulseMagnitude="10000"
-                     bouncy="false" />
-               </system>
-               <system
-                  type="shield"
-                  name="hammerShield">
-                  <shieldProperties
-                     body="mainBody"
-                     bodyAnchorX="0"
-                     bodyAnchorY="1.0"
-                     radius="30" 
-                     zLevel="147"
-                     />
-               </system>
-            </compoundObject>
-         </properties>
-      </stateProperties>
-   </childObject>
+﻿<?xml version="1.0" encoding="utf-8"?>
+<compoundObject
+  needsGroupIndex="false">
+  <behaviour
+    type="scene">
+    <sceneProperties
+      sceneType="space">
+      <states>
+        <state>default</state>
+      </states>
+    </sceneProperties>
+  </behaviour>
+  <system
+    name="asteroidField"
+    type="objectFactory">
+    <objectFactoryProperties
+      body="notDefined"
+      posX="484.91492450774194"
+      posY="58.284384068435429"
+      width="20"
+      height="20"
+      spawnInitial="10"
+      intensity="0"
+      lifeTime="60000">
+      <spawnObject
+        probabilityFactor="1">
+        <childObject
+          name="largeAsteroid">
+          <stateProperties
+            state="default">
+            <properties
+              file="large_asteroid.xml"
+              posX="0"
+              posY="0" />
+          </stateProperties>
+        </childObject>
+      </spawnObject>
+      <spawnObject
+        probabilityFactor="1">
+        <childObject
+          name="mediumAsteroid">
+          <stateProperties
+            state="default">
+            <properties
+              file="medium_asteroid.xml"
+              posX="0"
+              posY="0" />
+          </stateProperties>
+        </childObject>
+      </spawnObject>
+      <spawnObject
+        probabilityFactor="1">
+        <childObject
+          name="smallAsteroid">
+          <stateProperties
+            state="default">
+            <properties
+              file="small_asteroid.xml"
+              posX="0"
+              posY="0" />
+          </stateProperties>
+        </childObject>
+      </spawnObject>
+    </objectFactoryProperties>
+  </system>
+  <childObject
+    name="asteroid1">
+    <stateProperties
+      state="default">
+      <properties
+        file="large_asteroid.xml"
+        posX="500"
+        posY="240" />
+    </stateProperties>
+  </childObject>
+  <childObject
+    name="leapfrog1">
+    <stateProperties
+      state="default">
+      <properties
+        file="leapfrog_deep_space.xml"
+        posX="250"
+        posY="250" />
+    </stateProperties>
+  </childObject>
+  <childObject
+    name="hammer1">
+    <stateProperties
+      state="default">
+      <properties
+        posX="700"
+        posY="250">
+        <compoundObject
+          needsGroupIndex="true">
+          <behaviour
+            type="steerableObject">
+            <steerableObjectProperties
+              steeringState="wanderHunt"
+              targetBody="leapfrog1.lfMainBody"
+              bodyToBoosterAngle="3.1415"
+              seekTargetX="100"
+              seekTargetY="100"
+              maxBoosterForce="700"
+              maxSpeed="35"
+              degPerSecMaxRotateSpeed="30"
+              linearDamping="0.5" />
+          </behaviour>
+          <dynamicBox
+            name="mainBody"
+            texture="hammer"
+            posX="0"
+            posY="0"
+            angle="3.1415"
+            zLevel="160"
+            collisionEntity="steerableObject"
+            collisionCategory="1"
+            collisionMask="65533"
+            width="24"
+            height="12.6"
+            density="5"
+            friction="1" />
+          <system
+            name="boosterFlame"
+            type="flameEmitter">
+            <flameEmitterProperties
+              body="mainBody"
+              emitterOriginX="12"
+              emitterOriginY="0"
+              angle="0"
+              emitterWidth="4"
+              lifeTime="500"
+              impulseMagnitude="90"
+              radius="10" />
+          </system>
+          <system
+            name="gun"
+            type="gun">
+            <gunProperties
+              body="mainBody"
+              emitterOriginX="-10"
+              emitterOriginY="0"
+              angle="-3.1415"
+              fireRate="6"
+              lifeTime="2000"
+              impulseMagnitude="10000"
+              bouncy="false" />
+          </system>
+          <system
+            name="hammerShield"
+            type="shield">
+            <shieldProperties
+              body="mainBody"
+              bodyAnchorX="0"
+              bodyAnchorY="1"
+              radius="30"
+              zLevel="147" />
+          </system>
+        </compoundObject>
+      </properties>
+    </stateProperties>
+  </childObject>
   <childObject
     name="bomb1">
     <stateProperties
@@ -246,16 +166,14 @@
       <properties
         posX="256.43088151425547"
         posY="68.457513737895681">
-        <compoundObject>
+        <compoundObject
+          needsGroupIndex="false">
           <behaviour
             type="explosiveObject">
             <explosiveObjectProperties
               numOfParticles="40"
               particleRadius="1"
-              blastPower="1000"
-              damageBulletEqv="1"
-              impactExplosion="true"
-              impactThreshold="2500" />
+              blastPower="1000" />
           </behaviour>
           <dynamicBox
             name="bombBody"
@@ -282,18 +200,16 @@
       <properties
         posX="256"
         posY="100">
-        <compoundObject>
+        <compoundObject
+          needsGroupIndex="false">
           <behaviour
             type="magneticMine">
             <magneticMineProperties
-               numOfParticles="40"
-               particleRadius="1"
-               blastPower="1000"
-               damageBulletEqv="1"
-               impactExplosion="true"
-               impactThreshold="2500"
-               magneticDistance="101"
-               magneticForce="100010" />
+              magneticDistance="101"
+              magneticForce="100010"
+              numOfParticles="40"
+              particleRadius="1"
+              blastPower="1000" />
           </behaviour>
           <dynamicBox
             name="magenticMineBody"
@@ -313,57 +229,133 @@
       </properties>
     </stateProperties>
   </childObject>
-   <system
-      type="objectFactory"
-      name="asteroidField">
-      <objectFactoryProperties
-         posX="200.0"
-         posY="125.0"
-         width="700"
-         height="300"
-         spawnInitial="10"
-         intensity="0"
-         lifeTime="60000">
-         <spawnObject
-            probabilityFactor="1">
-            <childObject
-               name="largeAsteroid">
-               <stateProperties
-                  state="default">
-                  <properties
-                     posX="0"
-                     posY="0" 
-                     file="large_asteroid.xml" />
-               </stateProperties>
-            </childObject>
-         </spawnObject>
-         <spawnObject
-            probabilityFactor="1">
-            <childObject
-               name="mediumAsteroid">
-               <stateProperties
-                  state="default">
-                  <properties
-                     posX="0"
-                     posY="0" 
-                     file="medium_asteroid.xml" />
-               </stateProperties>
-            </childObject>
-         </spawnObject>
-         <spawnObject
-            probabilityFactor="1">
-            <childObject
-               name="smallAsteroid">
-               <stateProperties
-                  state="default">
-                  <properties
-                     posX="0"
-                     posY="0" 
-                     file="small_asteroid.xml" />
-               </stateProperties>
-            </childObject>
-         </spawnObject>
-      </objectFactoryProperties>
-   </system>
+  <childObject
+    name="mineLayer">
+    <stateProperties
+      state="default">
+      <properties
+        posX="800"
+        posY="150">
+        <compoundObject
+          needsGroupIndex="true">
+          <behaviour
+            type="steerableObject">
+            <steerableObjectProperties
+              steeringState="wander"
+              targetBody="leapfrog1.lfMainBody"
+              bodyToBoosterAngle="3.1415"
+              seekTargetX="100"
+              seekTargetY="100"
+              maxBoosterForce="700"
+              maxSpeed="25"
+              degPerSecMaxRotateSpeed="20"
+              linearDamping="0.5" />
+          </behaviour>
+          <dynamicBox
+            name="mainBody"
+            texture="hammer"
+            posX="0"
+            posY="0"
+            angle="3.1415"
+            zLevel="160"
+            collisionEntity="steerableObject"
+            collisionCategory="16"
+            collisionMask="56495"
+            width="24"
+            height="12.6"
+            density="5"
+            friction="1" />
+          <system
+            name="boosterFlame"
+            type="flameEmitter">
+            <flameEmitterProperties
+              body="mainBody"
+              emitterOriginX="12"
+              emitterOriginY="0"
+              angle="0"
+              emitterWidth="4"
+              lifeTime="500"
+              impulseMagnitude="90"
+              radius="10" />
+          </system>
+          <system
+            name="gun"
+            type="gun">
+            <gunProperties
+              body="mainBody"
+              emitterOriginX="-10"
+              emitterOriginY="0"
+              angle="-3.1415"
+              fireRate="4"
+              lifeTime="2000"
+              impulseMagnitude="10000"
+              bouncy="false" />
+          </system>
+          <system
+            name="hammerShield"
+            type="shield">
+            <shieldProperties
+              body="mainBody"
+              bodyAnchorX="0"
+              bodyAnchorY="1"
+              radius="30"
+              zLevel="147" />
+          </system>
+          <system
+            name="mineField"
+            type="objectFactory">
+            <objectFactoryProperties
+              body="mainBody"
+              posX="-4.7979399328739873"
+              posY="-32.576147704917275"
+              width="10"
+              height="10"
+              spawnInitial="0"
+              intensity="0.2"
+              lifeTime="60000">
+              <spawnObject
+                probabilityFactor="1">
+                <childObject
+                  name="largeAsteroid">
+                  <stateProperties
+                    state="default">
+                    <properties
+                      file="large_asteroid.xml"
+                      posX="0"
+                      posY="0" />
+                  </stateProperties>
+                </childObject>
+              </spawnObject>
+              <spawnObject
+                probabilityFactor="1">
+                <childObject
+                  name="mediumAsteroid">
+                  <stateProperties
+                    state="default">
+                    <properties
+                      file="medium_asteroid.xml"
+                      posX="0"
+                      posY="0" />
+                  </stateProperties>
+                </childObject>
+              </spawnObject>
+              <spawnObject
+                probabilityFactor="1">
+                <childObject
+                  name="smallAsteroid">
+                  <stateProperties
+                    state="default">
+                    <properties
+                      file="small_asteroid.xml"
+                      posX="0"
+                      posY="0" />
+                  </stateProperties>
+                </childObject>
+              </spawnObject>
+            </objectFactoryProperties>
+          </system>
+        </compoundObject>
+      </properties>
+    </stateProperties>
+  </childObject>
 </compoundObject>
-

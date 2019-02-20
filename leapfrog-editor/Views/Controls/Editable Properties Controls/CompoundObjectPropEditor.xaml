@@ -12,6 +12,7 @@
          <StackPanel Margin="2">
             <local:HeadlineControl Headline="{Binding Headline, ElementName=root}" />
             <local:StringEditorControl Headline="Name" MyValue="{Binding Name, Mode=TwoWay}" />
+            <local:BoolEditorControl Headline="Needs Group Index" MyValue="{Binding NeedsGroupIndex, Mode=TwoWay}" />
             <local:StringListSelectionEditorControl 
                Headline="Behaviour" 
                Strings="{Binding Behaviours}"

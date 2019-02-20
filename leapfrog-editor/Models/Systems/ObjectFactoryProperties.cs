@@ -13,6 +13,7 @@ namespace LeapfrogEditor
    {
       #region Declarations
 
+      private string _body;
       private double _posX;
       private double _posY;
       private double _width;
@@ -28,6 +29,7 @@ namespace LeapfrogEditor
 
       public ObjectFactoryProperties()
       {
+         _body = "notDefined";
          _posX = 0;
          _posY = 0;
          _width = 100;
@@ -40,6 +42,13 @@ namespace LeapfrogEditor
       #endregion
 
       #region Properties
+
+      [XmlAttribute("body")]
+      public string Body
+      {
+         get { return _body; }
+         set { _body = value; }
+      }
 
       [XmlAttribute("posX")]
       public double PosX

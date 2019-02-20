@@ -18,6 +18,8 @@ namespace LeapfrogEditor
    {
       #region Declarations
 
+      private bool _needsGroupIndex = false;
+
       //Behaviour
       private CoBehaviour _behaviour = new CoBehaviour();
 
@@ -61,6 +63,13 @@ namespace LeapfrogEditor
       #endregion
 
       #region Properties
+           
+      [XmlAttribute("needsGroupIndex")]
+      public bool NeedsGroupIndex
+      {
+         get { return _needsGroupIndex; }
+         set { _needsGroupIndex = value; }
+      }
 
       [XmlElement("behaviour")]
       public CoBehaviour Behaviour
