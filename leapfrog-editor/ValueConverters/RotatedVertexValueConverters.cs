@@ -8,6 +8,133 @@ using System.Windows.Data;
 
 namespace LeapfrogEditor
 {
+   class RotatableBodyPointMultiConverter : IMultiValueConverter
+   {
+      public object Convert(object[] values, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+      {
+         // Values should be: PosX, PosY, Angle. Parameter is "x" or "y", 
+         // Returns rotated point x or y value, depending on parameter.
+         if (values.Count() == 3)
+         {
+            if ((values[0] is double) && (values[1] is double) && (values[2] is double))
+            {
+               Point p = new Point((double)values[0], (double)values[1]);
+               double angle = (double)values[2];
+
+               Point rotPoint = CoordinateTransformations.RotatedPointFromLocal(p, angle);
+
+               if (parameter as string == "x")
+               {
+                  return rotPoint.X;
+               }
+               return rotPoint.Y;
+            }
+         }
+
+         return null;
+      }
+
+      public object[] ConvertBack(object value, Type[] targetTypes, object parameter, System.Globalization.CultureInfo culture)
+      {
+         throw new NotImplementedException();
+      }
+   }
+
+   class PreviousRotatableBodyPointMultiConverter : IMultiValueConverter
+   {
+      public object Convert(object[] values, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+      {
+         // Values should be: PosX, PosY, Angle and either a LfDragablePointViewModel 
+         // or a LfPointViewModel with its parent a IBoxPointsInterface. 
+         // Parameter is "x" or "y", returns rotated point x or y value, depending on parameter.
+         // PosX and PosY is not really used, but they will force an update if they are
+         // changed
+         if (values.Count() == 4)
+         {
+            if ((values[0] is double) && (values[1] is double) && (values[2] is double))
+            {
+               Point p = new Point(0,0);
+               double angle = (double)values[2];
+
+               if (values[3] is LfDragablePointViewModel)
+               {
+                  LfDragablePointViewModel vertex;
+
+                  LfDragablePointViewModel origVertex = (LfDragablePointViewModel)values[3];
+                  LfPolygonViewModel polygon = origVertex.Parent;
+
+                  // Resolve the previous point, it is index - 1
+                  // except if index == 0, in which case it is 
+                  // count - 1
+                  int i = polygon.PointVms.IndexOf(origVertex);
+
+                  if (i == -1)
+                  {
+                     return null;
+                  }
+
+
+                  if (i > 0)
+                  {
+                     vertex = polygon.PointVms[i - 1];
+                  }
+                  else
+                  {
+                     vertex = polygon.PointVms[polygon.PointVms.Count() - 1];
+                  }
+
+                  p = new Point(vertex.PosX, vertex.PosY);
+
+               }
+               else if (values[3] is LfPointViewModel)
+               {
+                  LfPointViewModel vertex;
+
+                  LfPointViewModel origVertex = (LfPointViewModel)values[3];
+                  IBoxPointsInterface boxVm = origVertex.PointsParent;
+
+                  int i = boxVm.PointVms.IndexOf(origVertex);
+
+                  if (i == -1)
+                  {
+                     return null;
+                  }
+
+                  if (i > 0)
+                  {
+                     vertex = boxVm.PointVms[i - 1];
+                  }
+                  else
+                  {
+                     vertex = boxVm.PointVms[boxVm.PointVms.Count() - 1];
+                  }
+
+                  p = new Point(vertex.PosX, vertex.PosY);
+               }
+               else
+               {
+                  return null;
+               }
+
+               Point rp = CoordinateTransformations.RotatedPointFromLocal(p, angle);
+
+               if (parameter as string == "x")
+               {
+                  return rp.X;
+               }
+               return rp.Y;
+            }
+         }
+
+         return null;
+      }
+
+      public object[] ConvertBack(object value, Type[] targetTypes, object parameter, System.Globalization.CultureInfo culture)
+      {
+         throw new NotImplementedException();
+      }
+   }
+
    class MultiRotatedJointValueConverter : IMultiValueConverter
    {
       public object Convert(object[] values, Type targetType, object parameter, System.Globalization.CultureInfo culture)
@@ -94,242 +221,6 @@ namespace LeapfrogEditor
       }
    }
 
-   class PreviousMultiRotatedVertexValueConverter : IMultiValueConverter
-   {
-      public object Convert(object[] values, Type targetType, object parameter, System.Globalization.CultureInfo culture)
-      {
-         if (values.Count() == 2)
-         {
-            if ((values[0] is double) && (values[1] is LfDragablePointViewModel))
-            {
-               LfDragablePointViewModel origVertex = (LfDragablePointViewModel)values[1];
-               LfPolygonViewModel polygon = origVertex.Parent;
-
-               int i = polygon.PointVms.IndexOf(origVertex);
-
-               if (i == -1)
-               {
-                  return null;
-               }
-
-               LfDragablePointViewModel vertex;
-
-               if (i > 0)
-               {
-                  vertex = polygon.PointVms[i - 1];
-               }
-               else
-               {
-                  vertex = polygon.PointVms[polygon.PointVms.Count() - 1];
-               }
-
-               Point p = new Point(vertex.PosX, vertex.PosY);
-               Point rp = CoordinateTransformations.RotatedPointFromLocal(p, polygon.Angle);
-
-               if (parameter as string == "x")
-               {
-                  return rp.X;
-               }
-               else
-               {
-                  return rp.Y;
-               }
-            }
-         }
-
-         return null;
-      }
-
-      public object[] ConvertBack(object value, Type[] targetTypes, object parameter, System.Globalization.CultureInfo culture)
-      {
-         throw new NotImplementedException();
-      }
-   }
-
-   class MultiRotatedVertexValueConverter : IMultiValueConverter
-   {
-      public object Convert(object[] values, Type targetType, object parameter, System.Globalization.CultureInfo culture)
-      {
-         if (values.Count() == 2)
-         {
-            if ((values[0] is double) && (values[1] is LfDragablePointViewModel))
-            {
-               double pos = (double)values[0];
-               LfDragablePointViewModel vertex = (LfDragablePointViewModel)values[1];
-               LfShapeViewModel shape = vertex.Parent;
-
-               Point p;
-
-               if (parameter as string == "x")
-               {
-                  p = new Point(pos, vertex.PosY);
-                  Point rp = CoordinateTransformations.RotatedPointFromLocal(p, shape.Angle);
-                  return rp.X;
-               }
-               else
-               {
-                  p = new Point(vertex.PosX, pos);
-                  Point rp = CoordinateTransformations.RotatedPointFromLocal(p, shape.Angle);
-                  return rp.Y;
-               }
-            }
-         }
-
-         return null;
-      }
-
-      public object[] ConvertBack(object value, Type[] targetTypes, object parameter, System.Globalization.CultureInfo culture)
-      {
-         throw new NotImplementedException();
-      }
-   }
-
-   class PreviousMultiRotatedPointValueConverter : IMultiValueConverter
-   {
-      public object Convert(object[] values, Type targetType, object parameter, System.Globalization.CultureInfo culture)
-      {
-         if (values.Count() == 2)
-         {
-            if ((values[0] is double) && (values[1] is LfPointViewModel))
-            {
-               LfPointViewModel origVertex = (LfPointViewModel)values[1];
-               IBoxPointsInterface boxVm = origVertex.PointsParent;
-               double angle = boxVm.Angle;
-
-               int i = boxVm.PointVms.IndexOf(origVertex);
-
-               if (i == -1)
-               {
-                  return null;
-               }
-
-               LfPointViewModel vertex;
-
-               if (i > 0)
-               {
-                  vertex = boxVm.PointVms[i - 1];
-               }
-               else
-               {
-                  vertex = boxVm.PointVms[boxVm.PointVms.Count() - 1];
-               }
-
-               Point p = new Point(vertex.PosX, vertex.PosY);
-               Point rp = CoordinateTransformations.RotatedPointFromLocal(p, angle);
-
-               if (parameter as string == "x")
-               {
-                  return rp.X;
-               }
-               else
-               {
-                  return rp.Y;
-               }
-            }
-         }
-
-         return null;
-      }
-
-      public object[] ConvertBack(object value, Type[] targetTypes, object parameter, System.Globalization.CultureInfo culture)
-      {
-         throw new NotImplementedException();
-      }
-   }
-
-   class MultiRotatedPointValueConverter : IMultiValueConverter
-   {
-      public object Convert(object[] values, Type targetType, object parameter, System.Globalization.CultureInfo culture)
-      {
-         // We provides two alternatives here
-         // If the angle is supplied (where the number of 
-         // values is 3) the angle is used.
-         // If it is not supplied (number of values is 2)
-         // we get the angle from the shape (and assume that 
-         // there is an shape that is calling)
-         if (values.Count() == 2)
-         {
-            if ((values[0] is double) && (values[1] is LfPointViewModel))
-            {
-               Point p;
-               double pos = (double)values[0];
-
-               LfPointViewModel vertex = (LfPointViewModel)values[1];
-               IBoxPointsInterface boxVm = vertex.PointsParent;
-               double angle = boxVm.Angle;
-
-               if (parameter as string == "x")
-               {
-                  p = new Point(pos, vertex.PosY);
-                  Point rp = CoordinateTransformations.RotatedPointFromLocal(p, angle);
-                  return rp.X;
-               }
-               else
-               {
-                  p = new Point(vertex.PosX, pos);
-                  Point rp = CoordinateTransformations.RotatedPointFromLocal(p, angle);
-                  return rp.Y;
-               }
-            }
-         }
-
-         return null;
-      }
-
-      public object[] ConvertBack(object value, Type[] targetTypes, object parameter, System.Globalization.CultureInfo culture)
-      {
-         throw new NotImplementedException();
-      }
-   }
-
-   class RotatedVertexXValueConverter : IValueConverter
-   {
-      public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
-      {
-         if (value is LfDragablePointViewModel)
-         {
-            LfDragablePointViewModel vertex = (LfDragablePointViewModel)value;
-            LfShapeViewModel shape = vertex.Parent;
-
-            Point p = new Point(vertex.PosX, vertex.PosY);
-            Point rp = CoordinateTransformations.RotatedPointFromLocal(p, shape.Angle);
-            
-            return rp.X;
-         }
-
-         return null;
-      }
-
-      public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
-      {
-         return DependencyProperty.UnsetValue;
-      }
-   }
-
-   class RotatedVertexYValueConverter : IValueConverter
-   {
-      public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
-      {
-         if (value is LfDragablePointViewModel)
-         {
-            LfDragablePointViewModel vertex = (LfDragablePointViewModel)value;
-            LfShapeViewModel shape = vertex.Parent;
-
-            Point p = new Point(vertex.PosX, vertex.PosY);
-            Point rp = CoordinateTransformations.RotatedPointFromLocal(p, shape.Angle);
-
-            return rp.Y;
-         }
-
-         return null;
-      }
-
-      public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
-      {
-         return DependencyProperty.UnsetValue;
-      }
-   }
-
    class ConditionalRotatedJointValueConverter : IMultiValueConverter
    {
       public object Convert(object[] values, Type targetType, object parameter, System.Globalization.CultureInfo culture)
@@ -384,37 +275,6 @@ namespace LeapfrogEditor
       }
    }
 
-   class MultiRotatedPosPointValueConverter : IMultiValueConverter
-   {
-      public object Convert(object[] values, Type targetType, object parameter, System.Globalization.CultureInfo culture)
-      {
-         // Values should be: PosX, PosY, Angle. Parameter is "x" or "y", 
-         // Returns rotated point x or y value, depending on parameter.
-         if (values.Count() == 3)
-         {
-            if ((values[0] is double) && (values[1] is double) && (values[2] is double))
-            {
-               Point p = new Point( (double)values[0], (double)values[1]);
-               double angle = (double)values[2];
-
-               Point rotPoint = CoordinateTransformations.RotatedPointFromLocal(p, angle);
-
-               if (parameter as string == "x")
-               {
-                  return rotPoint.X;
-               }
-               return rotPoint.Y;
-            }
-         }
-
-         return null;
-      }
-
-      public object[] ConvertBack(object value, Type[] targetTypes, object parameter, System.Globalization.CultureInfo culture)
-      {
-         throw new NotImplementedException();
-      }
-   }
 
 
 }

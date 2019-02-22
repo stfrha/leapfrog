@@ -10,8 +10,7 @@
              d:DesignHeight="450" d:DesignWidth="800">
    <UserControl.Resources>
       <local:ZoomThicknessValueConverter x:Key="ZoomThicknessValueConverter" />
-      <local:MultiRotatedVertexValueConverter x:Key="MultiRotatedVertexValueConverter" />
-      <local:PreviousMultiRotatedVertexValueConverter x:Key="PreviousMultiRotatedVertexValueConverter" />
+      <local:RotatableBodyPointMultiConverter x:Key="RotatableBodyPointMultiConverter" />
       <local:PreviousMultiRotatedTriangleVertexValueConverter x:Key="PreviousMultiRotatedTriangleVertexValueConverter" />
    </UserControl.Resources>
    <Canvas>
@@ -21,14 +20,17 @@
          Cursor="ScrollAll"
          >
          <Line.X1>
-            <MultiBinding Converter="{StaticResource MultiRotatedVertexValueConverter}" ConverterParameter="x">
+            <MultiBinding Converter="{StaticResource RotatableBodyPointMultiConverter}" ConverterParameter="x">
                <Binding Path="PosX" />
-               <Binding />
+               <Binding Path="PosY" />
+               <Binding Path="Parent.Angle"/>
             </MultiBinding>
          </Line.X1>
          <Line.Y1>
-            <MultiBinding Converter="{StaticResource MultiRotatedVertexValueConverter}" ConverterParameter="y">
+            <MultiBinding Converter="{StaticResource RotatableBodyPointMultiConverter}" ConverterParameter="y">
+               <Binding Path="PosX" />
                <Binding Path="PosY" />
+               <Binding Path="Parent.Angle"/>
                <Binding />
             </MultiBinding>
          </Line.Y1>

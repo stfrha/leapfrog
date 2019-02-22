@@ -256,7 +256,7 @@
             texture="hammer"
             posX="0"
             posY="0"
-            angle="3.1415"
+            angle="3.1414999999999997"
             zLevel="160"
             collisionEntity="steerableObject"
             collisionCategory="16"
@@ -306,8 +306,8 @@
             type="objectFactory">
             <objectFactoryProperties
               body="mainBody"
-              posX="-4.7979399328739873"
-              posY="-32.576147704917275"
+              posX="-4.2452432413879073"
+              posY="-47.779529440358921"
               width="10"
               height="10"
               spawnInitial="0"

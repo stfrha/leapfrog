@@ -44,7 +44,8 @@ namespace LeapfrogEditor
       shape,                        // object is the shape
       dragablePolygonBorder,        // border that a point can be added to,
                                     // object is the point (before or after?) the line
-      dragableBorder,               // object is the point (before or after?) the line
+      dragableBorder,               // object is the border of a shape that is not rotated
+      rotatableObjectDragableBorder, // object is the border of a shape that can rotate
       dragablePoint,                // object is the point
       compoundObjectBoundaryBox,    // object is the CompoundObject
       jointAnchorA,                 // object is the joint
@@ -1163,6 +1164,7 @@ namespace LeapfrogEditor
                   return false;
 
                case MouseEventObjectType.dragableBorder:
+               case MouseEventObjectType.rotatableObjectDragableBorder:
                   break;
 
                case MouseEventObjectType.dragablePoint:
@@ -1220,6 +1222,11 @@ namespace LeapfrogEditor
             return false;
          }
 
+         Point vectPoint;
+         Point rotPoint;
+         Vector rotatedDragVector;
+
+
          // Decode target ViewModel and view oobject that was clicked
          switch (objectType)
          {
@@ -1254,15 +1261,38 @@ namespace LeapfrogEditor
 
                return true;
 
+            case MouseEventObjectType.rotatableObjectDragableBorder:
+
+               // Mouse move on rectangle of Rotatable object point
+               LfPointViewModel pvm = (LfPointViewModel)sender;
+
+               // Before moving all vertices, we rotate the vector to match the shape rotation.
+               vectPoint = new Point(dragVector.X, dragVector.Y);
+               rotPoint = CoordinateTransformations.LocalPointFromRotated(vectPoint, pvm.PointsParent.Angle);
+               rotatedDragVector = new Vector(rotPoint.X, rotPoint.Y);
+
+               foreach (CoSystemViewModel child in SelectedSystems)
+               {
+                  if (child.Properties is IPositionInterface)
+                  {
+                     IPositionInterface sysPos = child.Properties as IPositionInterface;
+                     sysPos.PosX += rotatedDragVector.X;
+                     sysPos.PosY += rotatedDragVector.Y;
+                  }
+               }
+
+
+               return true;
+
             case MouseEventObjectType.dragablePoint:
 
                // Mouse move on rectangle of DragablePoint
                LfDragablePointViewModel dpvm = (LfDragablePointViewModel)sender;
 
                // Before moving all vertices, we rotate the vector to match the shape rotation.
-               Point vectPoint = new Point(dragVector.X, dragVector.Y);
-               Point rotPoint = CoordinateTransformations.LocalPointFromRotated(vectPoint, dpvm.Parent.Angle);
-               Vector rotatedDragVector = new Vector(rotPoint.X, rotPoint.Y);
+               vectPoint = new Point(dragVector.X, dragVector.Y);
+               rotPoint = CoordinateTransformations.LocalPointFromRotated(vectPoint, dpvm.Parent.Angle);
+               rotatedDragVector = new Vector(rotPoint.X, rotPoint.Y);
                
                foreach (LfDragablePointViewModel point in _selectedPoints)
                {
@@ -1536,6 +1566,7 @@ namespace LeapfrogEditor
                   return (button != MouseButton.Right);
 
                case MouseEventObjectType.dragableBorder:
+               case MouseEventObjectType.rotatableObjectDragableBorder:
 
                   return true;
 

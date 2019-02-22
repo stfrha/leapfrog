@@ -78,17 +78,6 @@ namespace LeapfrogEditor
          }
       }
 
-      //public bool IsSelected
-      //{
-      //   get { return _isSelected; }
-      //   set
-      //   {
-      //      _isSelected = value;
-      //      OnPropertyChanged("IsSelected");
-      //   }
-      //}
-
-
       #endregion
    }
 }

@@ -15,8 +15,6 @@
       <local:ZoomThicknessValueConverter x:Key="ZoomThicknessValueConverter" />
       <local:ZoomHandleSizeValueConverter x:Key="ZoomHandleSizeValueConverter" />
       <local:ZoomHandleTranslateValueConverter x:Key="ZoomHandleTranslateValueConverter" />
-      <local:MultiRotatedVertexValueConverter x:Key="MultiRotatedVertexValueConverter" />
-      <local:PreviousMultiRotatedVertexValueConverter x:Key="PreviousMultiRotatedVertexValueConverter" />
       <local:NegativeHalfValueConverter x:Key="NegativeHalfValueConverter" />
    </UserControl.Resources>
    <Canvas>
