@@ -64,8 +64,8 @@ public:
       CompoundObject* parentObject,
       b2World* world,
       const oxygine::Vector2& pos,
-      pugi::xml_node& root,
-      pugi::xml_node& propNode,
+      const pugi::xml_node& root,
+      const pugi::xml_node& propNode,
       int groupIndex);
 
 

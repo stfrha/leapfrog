@@ -368,7 +368,7 @@ bool CompoundObject::initCompoundObjectParts(
    CompoundObject* parentObject,
    b2World* world,
    const Vector2& pos,
-   pugi::xml_node& root,
+   const pugi::xml_node& root,
    const string& initialState,
    int groupIndex)
 {

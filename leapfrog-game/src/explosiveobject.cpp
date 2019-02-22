@@ -18,8 +18,8 @@ ExplosiveObject::ExplosiveObject(
    CompoundObject* parentObject,
    b2World* world,
    const Vector2& pos,
-   xml_node& root,
-   xml_node& propNode,
+   const xml_node& root,
+   const xml_node& propNode,
    int groupIndex) :
    CompoundObject(sceneParent, parentObject),
    m_gameResource(&gameResources),

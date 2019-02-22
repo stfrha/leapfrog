@@ -284,7 +284,7 @@ public:
       CompoundObject* parentObject,
       b2World* world,
       const oxygine::Vector2& pos,
-      pugi::xml_node& objectNode,
+      const pugi::xml_node& objectNode,
       const std::string& initialState,
       int groupIndex);
 
