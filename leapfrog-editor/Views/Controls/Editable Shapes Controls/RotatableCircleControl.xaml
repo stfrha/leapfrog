@@ -13,7 +13,6 @@
       <local:TwiceDoubleValueConverter x:Key="TwiceDoubleValueConverter" />
       <local:TexturePathValueConverter x:Key="TexturePathValueConverter" />
       <local:NegativeValueConverter x:Key="NegativeValueConverter" />
-      <local:NegRadToDegValueConverter x:Key="NegRadToDegValueConverter" />
       <local:BoolToVisibilityValueConverter x:Key="BoolToVisibilityValueConverter" />
       <local:ZoomThicknessValueConverter x:Key="ZoomThicknessValueConverter" />
    </UserControl.Resources>
@@ -33,7 +32,7 @@
                         Y="{Binding Radius, Converter={StaticResource NegativeValueConverter}}" 
                      />
                <RotateTransform x:Name="d1"
-                        Angle="{Binding Angle, Converter={StaticResource NegRadToDegValueConverter}}"
+                        Angle="{Binding Angle}"
                      />
             </TransformGroup>
          </Image.RenderTransform>

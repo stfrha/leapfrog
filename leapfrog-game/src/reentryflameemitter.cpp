@@ -37,7 +37,7 @@ void ReentryFlameEmitter::readReentryFlameEmitterNode(const xml_node& objectNode
    m_emitterLineStart.y = objectNode.attribute("emitterLineStartY").as_float();
    m_emitterLineEnd.x = objectNode.attribute("emitterLineEndX").as_float();
    m_emitterLineEnd.y = objectNode.attribute("emitterLineEndY").as_float();
-   m_emittAngle = objectNode.attribute("angle").as_float();
+   m_emittAngle = objectNode.attribute("angle").as_float() * MATH_PI / 180.0f;
 
    m_intensity = objectNode.attribute("intensity").as_float();
    m_lifetime = objectNode.attribute("lifeTime").as_int(); // [ms}

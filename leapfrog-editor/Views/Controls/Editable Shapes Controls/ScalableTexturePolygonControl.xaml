@@ -11,7 +11,7 @@
    <UserControl.Resources>
       <local:TexturePathValueConverter x:Key="TexturePathValueConverter" />
       <local:TextureRectMultiValueConverter x:Key="TextureRectMultiValueConverter" />
-      <local:NegRadToDegValueConverter x:Key="NegRadToDegValueConverter" />
+
       <local:BoolToVisibilityValueConverter x:Key="BoolToVisibilityValueConverter" />
       <local:ZoomThicknessValueConverter x:Key="ZoomThicknessValueConverter" />
       <local:ZoomHandleSizeValueConverter x:Key="ZoomHandleSizeValueConverter" />
@@ -45,7 +45,7 @@
          <Polygon.RenderTransform>
             <TransformGroup>
                <RotateTransform x:Name="d1"
-                        Angle="{Binding Angle, Converter={StaticResource NegRadToDegValueConverter}}"
+                        Angle="{Binding Angle}"
                         CenterX="0"
                         CenterY="0"
                      />

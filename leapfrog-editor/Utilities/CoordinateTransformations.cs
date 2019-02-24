@@ -23,8 +23,8 @@ namespace LeapfrogEditor
       {
          Point p2 = new Point();
 
-         double cosa = Math.Cos(angle);
-         double sina = Math.Sin(angle);
+         double cosa = Math.Cos(-angle / 180 * Math.PI);
+         double sina = Math.Sin(-angle / 180 * Math.PI);
 
          p2.X = localPoint.X * cosa - sina * -localPoint.Y;
          p2.Y = -(localPoint.X * sina + cosa * -localPoint.Y);
@@ -39,8 +39,8 @@ namespace LeapfrogEditor
       {
          Point p2 = new Point();
 
-         double cosa = Math.Cos(-angle);
-         double sina = Math.Sin(-angle);
+         double cosa = Math.Cos(angle / 180 * Math.PI);
+         double sina = Math.Sin(angle / 180 * Math.PI);
 
          p2.X = localPoint.X * cosa - sina * -localPoint.Y;
          p2.Y = -(localPoint.X * sina + cosa * -localPoint.Y);

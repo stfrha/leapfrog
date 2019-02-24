@@ -29,7 +29,7 @@ public:
    LandingSite(pugi::xml_node& objectNode) 
    {  
       m_name = objectNode.attribute("name").as_string();
-      m_angle = objectNode.attribute("angle").as_float();
+      m_angle = objectNode.attribute("angle").as_float() * MATH_PI / 180.0f;
       m_texture = objectNode.attribute("texture").as_string();
    }
 

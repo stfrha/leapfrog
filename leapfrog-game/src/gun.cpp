@@ -35,7 +35,7 @@ void Gun::readGunNode(const xml_node& objectNode)
 
    m_emitterOrigin.x = objectNode.attribute("emitterOriginX").as_float();
    m_emitterOrigin.y = objectNode.attribute("emitterOriginY").as_float();
-   m_emittAngle = objectNode.attribute("angle").as_float();
+   m_emittAngle = objectNode.attribute("angle").as_float() * MATH_PI / 180.0f;
    m_lifetime = objectNode.attribute("lifeTime").as_int(); // [ms}
    m_impulseMagnitude = objectNode.attribute("impulseMagnitude").as_float();
    m_interval = 1.0f / objectNode.attribute("fireRate").as_float() * 1000.0f;

@@ -143,16 +143,13 @@ namespace LeapfrogEditor
          {
             if (_modelObject == null) return 0;
 
-            // Angle is defined differently (invers) for the editor and the game,
-            // In an attempt to make as few changes as possible, I do the inversion
-            // in the getter and setter of this property.
-            return - _modelObject.Angle;
+            return _modelObject.Angle;
          }
          set
          {
             if (_modelObject == null) return;
 
-            _modelObject.Angle = -value;
+            _modelObject.Angle = value;
             OnPropertyChanged("Angle");
             OnPropertyChanged("BoundingBox");
             ParentVm.UpdateAnglePropertyOfSystems();
@@ -303,7 +300,7 @@ namespace LeapfrogEditor
 
          if (IsSelected)
          {
-            Angle += increment / 120 / 180 * Math.PI;
+            Angle += increment / 120;
             //InvalidateAll();
          }
       }

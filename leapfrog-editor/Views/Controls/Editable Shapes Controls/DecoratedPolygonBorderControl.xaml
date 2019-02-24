@@ -11,7 +11,6 @@
    <UserControl.Resources>
       <local:TexturePathValueConverter x:Key="TexturePathValueConverter" />
       <local:TextureRectMultiValueConverter x:Key="TextureRectMultiValueConverter" />
-      <local:NegRadToDegValueConverter x:Key="NegRadToDegValueConverter" />
       <local:BoolToVisibilityValueConverter x:Key="BoolToVisibilityValueConverter" />
       <local:ZoomThicknessValueConverter x:Key="ZoomThicknessValueConverter" />
       <local:ZoomHandleSizeValueConverter x:Key="ZoomHandleSizeValueConverter" />
@@ -127,6 +126,7 @@
                               <MultiBinding Converter="{StaticResource TextureBorderAngleMultiConverter}" >
                                  <Binding Path="PosX" />
                                  <Binding Path="PosY" />
+                                 <Binding Path="Parent.Angle" />
                                  <Binding />
                               </MultiBinding>
                            </RotateTransform.Angle>

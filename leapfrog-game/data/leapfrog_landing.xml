@@ -512,7 +512,6 @@
          lifeTime="125"
          impulseMagnitude="35"
          radius="5" />
-      </stateProperties>
    </system>
    <system
       type="flameEmitter"
@@ -526,7 +525,6 @@
          lifeTime="125"
          impulseMagnitude="35"
          radius="5" />
-      </stateProperties>
    </system>
    <system
       type="reentryFlameEmitter"

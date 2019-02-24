@@ -220,7 +220,7 @@ void PolygonVertices::createBodyPolygon(
    b2Vec2 delta = b2Vec2(objectNode.attribute("posX").as_float(), objectNode.attribute("posY").as_float());
    b2Vec2 bPos = pos /*+ delta*/;
    bodyDef.position = bPos;
-   bodyDef.angle = objectNode.attribute("angle").as_float();
+   bodyDef.angle = objectNode.attribute("angle").as_float() * MATH_PI / 180.0f;
    *body = world->CreateBody(&bodyDef);
 
    b2PolygonShape polyShape;

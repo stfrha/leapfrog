@@ -15,7 +15,7 @@
                texture="alpha_mine1" />
             <landingSite
                name="alphaCity"
-               angle="0.1"
+               angle="5.7"
                texture="alpha_city1" />
          </landingSites>
       </properties>

@@ -75,7 +75,7 @@ void SteerableObject::readSteerableObjectNode(pugi::xml_node node)
    else if (st == "wanderHunt") m_state = wanderHunt;
    else m_state = fix;
 
-   m_bodyToBoosterAngle = node.attribute("bodyToBoosterAngle").as_float(0.0f);
+   m_bodyToBoosterAngle = node.attribute("bodyToBoosterAngle").as_float(0.0f) * MATH_PI / 180.0f;
    m_seekPoint.x = node.attribute("seekTargetX").as_float(0.0f);
    m_seekPoint.y = node.attribute("seekTargetY").as_float(0.0f);
 

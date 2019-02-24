@@ -642,7 +642,7 @@ void CompoundObject::defineSpriteBox(
    Vector2 newPos(pos.x + objectNode.attribute("posX").as_float(), pos.y + objectNode.attribute("posY").as_float());
    sprite->setPosition(newPos);
    sprite->setSize(objectNode.attribute("width").as_float(), objectNode.attribute("height").as_float());
-   sprite->setRotation(objectNode.attribute("angle").as_float());
+   sprite->setRotation(objectNode.attribute("angle").as_float() * MATH_PI / 180.0f);
    sprite->setAnchor(0.5f, 0.5f);
    sprite->attachTo(sceneParent);
    m_shapes.push_back(sprite.get());
@@ -701,7 +701,7 @@ void CompoundObject::defineCircle(
    }
    b2Vec2 bPos = PhysDispConvert::convert(pos, 1.0f) + b2Vec2(objectNode.attribute("posX").as_float(), objectNode.attribute("posY").as_float());
    bodyDef.position = bPos;
-   bodyDef.angle = objectNode.attribute("angle").as_float();
+   bodyDef.angle = objectNode.attribute("angle").as_float() * MATH_PI / 180.0f;
    b2Body* body = world->CreateBody(&bodyDef);
 
    b2CircleShape circleShape;
@@ -779,7 +779,7 @@ void CompoundObject::defineBox(
    }
    b2Vec2 bPos = PhysDispConvert::convert(pos, 1.0f) + b2Vec2(objectNode.attribute("posX").as_float(), objectNode.attribute("posY").as_float());
    bodyDef.position = bPos;
-   bodyDef.angle = objectNode.attribute("angle").as_float();
+   bodyDef.angle = objectNode.attribute("angle").as_float() * MATH_PI / 180.0f;
    b2Body* body = world->CreateBody(&bodyDef);
 
    b2PolygonShape boxShape;

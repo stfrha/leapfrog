@@ -61,14 +61,14 @@ namespace LeapfrogEditor
             angle -= Math.PI * 2;
          }
 
-         return angle;
+         return angle / Math.PI * 180;
       }
 
       public static Vector GetOffset(LfDragablePointViewModel myPoint, Point origP, Point prevP, double angle)
       {
          Vector diffV = origP - prevP;
          double distance = diffV.Length;
-         Vector rotatedNormal = new Vector(-Math.Sin(angle), Math.Cos(angle));
+         Vector rotatedNormal = new Vector(-Math.Sin(angle * Math.PI / 180), Math.Cos(angle * Math.PI / 180));
          BorderTextureViewModel border = TextureBorderHelperClass.GetTextureViewModel(myPoint, angle);
          Vector offset = -rotatedNormal * border.HorisontalOffset;
 
@@ -81,7 +81,7 @@ namespace LeapfrogEditor
          // Select view model accordingly to angle
          LfStaticPolygonViewModel polygon = (LfStaticPolygonViewModel)myPoint.Parent;
 
-         double degAngle = angle * 180 / Math.PI;
+         double degAngle = angle;
 
          if ((degAngle <= polygon.RightGroundAngle) && (degAngle > polygon.LeftGroundAngle))
          {
@@ -232,25 +232,18 @@ namespace LeapfrogEditor
    {
       public object Convert(object[] values, Type targetType, object parameter, System.Globalization.CultureInfo culture)
       {
-         if (values.Count() == 3)
+         if (values.Count() == 4)
          {
-            if ((values[0] is double) && (values[1] is double) && (values[2] is LfDragablePointViewModel))
+            if ((values[0] is double) && (values[1] is double) &&
+               (values[2] is double) && (values[3] is LfDragablePointViewModel))
             {
-               LfDragablePointViewModel origVertex = (LfDragablePointViewModel)values[2];
-
-               double shapeAngle = 0;
-
-               if (origVertex.Parent is LfShapeViewModel)
-               {
-                  LfShapeViewModel shape = origVertex.Parent as LfShapeViewModel;
-
-                  shapeAngle = shape.Angle;
-               }
+               LfDragablePointViewModel origVertex = (LfDragablePointViewModel)values[3];
+               double shapeAngle = (double)values[2];
 
                Point currP = TextureBorderHelperClass.GetOriginalPoint(origVertex);
                Point prevP = TextureBorderHelperClass.GetPreviousPoint(origVertex);
                double angle = TextureBorderHelperClass.GetAngle(origVertex, currP, prevP);
-               return (angle - shapeAngle) / Math.PI * 180;
+               return angle + shapeAngle;
             }
          }
 
