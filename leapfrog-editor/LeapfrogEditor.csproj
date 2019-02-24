@@ -124,8 +124,44 @@
     <Compile Include="Views\Controls\Editable Properties Controls\ChildObjectPropEditor.xaml.cs">
       <DependentUpon>ChildObjectPropEditor.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Views\Controls\Editable Properties Controls\Joint Properties Controls\PrismaticJointPropertiesControl.xaml.cs">
+      <DependentUpon>PrismaticJointPropertiesControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Controls\Editable Properties Controls\Joint Properties Controls\RevoluteJointPropertiesControl.xaml.cs">
+      <DependentUpon>RevoluteJointPropertiesControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Controls\Editable Properties Controls\Joint Properties Controls\RopePropertiesControl.xaml.cs">
+      <DependentUpon>RopePropertiesControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Controls\Editable Properties Controls\Joint Properties Controls\WeldJointPropertiesControl.xaml.cs">
+      <DependentUpon>WeldJointPropertiesControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Controls\Editable Properties Controls\Primitives\BodyRefEditorControl.xaml.cs">
+      <DependentUpon>BodyRefEditorControl.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\Controls\Editable Properties Controls\Primitives\StringListSelectionEditorControl.xaml.cs">
       <DependentUpon>StringListSelectionEditorControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Controls\Editable Properties Controls\Shape Properties Controls\DynamicBoxedPolyPropEditor.xaml.cs">
+      <DependentUpon>DynamicBoxedPolyPropEditor.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Controls\Editable Properties Controls\Shape Properties Controls\StaticBoxedPolyPropEditor.xaml.cs">
+      <DependentUpon>StaticBoxedPolyPropEditor.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Controls\Editable Properties Controls\Shape Properties Controls\DynamicBoxPropEditor.xaml.cs">
+      <DependentUpon>DynamicBoxPropEditor.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Controls\Editable Properties Controls\Shape Properties Controls\StaticBoxPropEditor.xaml.cs">
+      <DependentUpon>StaticBoxPropEditor.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Controls\Editable Properties Controls\Shape Properties Controls\DynamicCirclePropEditor.xaml.cs">
+      <DependentUpon>DynamicCirclePropEditor.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Controls\Editable Properties Controls\Shape Properties Controls\StaticCirclePropEditor.xaml.cs">
+      <DependentUpon>StaticCirclePropEditor.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Controls\Editable Properties Controls\Shape Properties Controls\DynamicPolygonPropEditor.xaml.cs">
+      <DependentUpon>DynamicPolygonPropEditor.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\Controls\Editable Properties Controls\Shape Properties Controls\TextureBorderPropEditor.xaml.cs">
       <DependentUpon>TextureBorderPropEditor.xaml</DependentUpon>
@@ -172,7 +208,7 @@
     <Compile Include="Views\Controls\Editable Shapes Controls\BoxedSpritePolygonControl.xaml.cs">
       <DependentUpon>BoxedSpritePolygonControl.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\Controls\Editable Shapes Controls\LabeledBoxControl.xaml.cs">
+    <Compile Include="Views\Controls\Editable Shapes Controls\Systems\LabeledBoxControl.xaml.cs">
       <DependentUpon>LabeledBoxControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\Controls\Editable Shapes Controls\DecoratedPolygonBorderControl.xaml.cs">
@@ -180,6 +216,9 @@
     </Compile>
     <Compile Include="Views\Controls\Editable Shapes Controls\PolygonBorderControl.xaml.cs">
       <DependentUpon>PolygonBorderControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Controls\Editable Shapes Controls\Systems\GunControl.xaml.cs">
+      <DependentUpon>GunControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\Controls\Editable Shapes Controls\PrismaticJointControl.xaml.cs">
       <DependentUpon>PrismaticJointControl.xaml</DependentUpon>
@@ -348,7 +387,55 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
+    <Page Include="Views\Controls\Editable Properties Controls\Joint Properties Controls\PrismaticJointPropertiesControl.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\Controls\Editable Properties Controls\Joint Properties Controls\RevoluteJointPropertiesControl.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\Controls\Editable Properties Controls\Joint Properties Controls\RopePropertiesControl.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\Controls\Editable Properties Controls\Joint Properties Controls\WeldJointPropertiesControl.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\Controls\Editable Properties Controls\Primitives\BodyRefEditorControl.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="Views\Controls\Editable Properties Controls\Primitives\StringListSelectionEditorControl.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\Controls\Editable Properties Controls\Shape Properties Controls\DynamicBoxedPolyPropEditor.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\Controls\Editable Properties Controls\Shape Properties Controls\StaticBoxedPolyPropEditor.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\Controls\Editable Properties Controls\Shape Properties Controls\DynamicBoxPropEditor.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\Controls\Editable Properties Controls\Shape Properties Controls\StaticBoxPropEditor.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\Controls\Editable Properties Controls\Shape Properties Controls\DynamicCirclePropEditor.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\Controls\Editable Properties Controls\Shape Properties Controls\StaticCirclePropEditor.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\Controls\Editable Properties Controls\Shape Properties Controls\DynamicPolygonPropEditor.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
@@ -392,7 +479,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Views\Controls\Editable Shapes Controls\LabeledBoxControl.xaml">
+    <Page Include="Views\Controls\Editable Shapes Controls\Systems\LabeledBoxControl.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
@@ -401,6 +488,10 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="Views\Controls\Editable Shapes Controls\PolygonBorderControl.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\Controls\Editable Shapes Controls\Systems\GunControl.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>

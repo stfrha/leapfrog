@@ -83,6 +83,8 @@ namespace LeapfrogEditor
 
             _modelObject.AName = value;
             OnPropertyChanged("AName");
+            ConnectToShapes(ParentVm.StateShapes);
+            OnPropertyChanged("AShapeObject");
          }
       }
 
@@ -101,6 +103,8 @@ namespace LeapfrogEditor
             _modelObject.BName = value;
             OnPropertyChanged("BName");
             OnPropertyChanged("ShapeBExists");
+            ConnectToShapes(ParentVm.StateShapes);
+            OnPropertyChanged("BShapeObject");
          }
       }
 

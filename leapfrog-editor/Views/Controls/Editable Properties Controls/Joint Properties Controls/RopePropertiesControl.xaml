@@ -1,0 +1,31 @@
+﻿<UserControl x:Class="LeapfrogEditor.RopePropertiesControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:LeapfrogEditor"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800">
+   <DockPanel Margin="2">
+      <Border CornerRadius="5" BorderBrush="DarkGray" BorderThickness="1">
+         <StackPanel Margin="2">
+            <local:HeadlineControl Headline="Rope" />
+            <local:StringEditorControl Headline="Name" MyValue="{Binding Name, Mode=TwoWay}" />
+            <local:TexturePickerEditorControl Headline="Texture" MyValue="{Binding Texture, Mode=TwoWay}" />
+            <local:DoubleEditorControl Headline="Length" MyValue="{Binding Length, Mode=TwoWay}" />
+            <local:DoubleEditorControl Headline="Thickness" MyValue="{Binding Thickness, Mode=TwoWay}" />
+            <local:IntEditorControl Headline="Num of segments" MyValue="{Binding NoOfSegments, Mode=TwoWay}" />
+            <local:BodyRefEditorControl Headline="Body A" MyValue="{Binding AName, Mode=TwoWay}" />
+            <local:DoubleEditorControl Headline="A Anchor X" MyValue="{Binding AAnchorX, Mode=TwoWay}" />
+            <local:DoubleEditorControl Headline="A Anchor Y" MyValue="{Binding AAnchorY, Mode=TwoWay}" />
+            <local:BodyRefEditorControl Headline="Body B" MyValue="{Binding BName, Mode=TwoWay}" />
+            <local:DoubleEditorControl Headline="B Anchor X" MyValue="{Binding BAnchorX, Mode=TwoWay}" />
+            <local:DoubleEditorControl Headline="B Anchor Y" MyValue="{Binding BAnchorY, Mode=TwoWay}" />
+            <local:ZLevelEditorControl Headline="Z-level" MyValue="{Binding ZLevel, Mode=TwoWay}" />
+            <local:CollisionEntityEditorControl Headline="Collision Entity" MyValue="{Binding CollisionEntity, Mode=TwoWay}" />
+            <local:CollisionCategoryEditorControl Headline="Coll. Category" MyValue="{Binding CollisionCategory, Mode=TwoWay}" />
+            <local:CollisionCategoryEditorControl Headline="Collision Mask" MyValue="{Binding CollisionMask, Mode=TwoWay}" />
+         </StackPanel>
+      </Border>
+   </DockPanel>
+</UserControl>

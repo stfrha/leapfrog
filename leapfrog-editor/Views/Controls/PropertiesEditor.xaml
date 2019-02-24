@@ -76,176 +76,29 @@
                <local:SpritePolygonPropEditor />
             </DataTemplate>
             <DataTemplate DataType="{x:Type local:LfStaticCircleViewModel}">
-               <DockPanel Margin="2">
-                  <Border CornerRadius="5" BorderBrush="DarkGray" BorderThickness="1">
-                     <StackPanel Margin="2">
-                        <local:HeadlineControl Headline="Static circle" />
-                        <local:StringEditorControl Headline="Name" MyValue="{Binding Name, Mode=TwoWay}" />
-                        <local:TexturePickerEditorControl Headline="Texture" MyValue="{Binding Texture, Mode=TwoWay}" />
-                        <local:DoubleEditorControl Headline="PosX" MyValue="{Binding PosX, Mode=TwoWay}" />
-                        <local:DoubleEditorControl Headline="PosY" MyValue="{Binding PosY, Mode=TwoWay}" />
-                        <local:DoubleEditorControl Headline="Radius" MyValue="{Binding Radius, Mode=TwoWay}" />
-                        <local:DoubleEditorControl Headline="Angle" MyValue="{Binding Angle, Mode=TwoWay}" />
-                        <local:ZLevelEditorControl Headline="Z-level" MyValue="{Binding ZLevel, Mode=TwoWay}" />
-                        <local:CollisionEntityEditorControl Headline="Collision Entity" MyValue="{Binding CollisionEntity, Mode=TwoWay}" />
-                        <local:CollisionCategoryEditorControl Headline="Coll. Category" MyValue="{Binding CollisionCategory, Mode=TwoWay}" />
-                        <local:CollisionCategoryEditorControl Headline="Collision Mask" MyValue="{Binding CollisionMask, Mode=TwoWay}" />
-                     </StackPanel>
-                  </Border>
-               </DockPanel>
+               <local:StaticCirclePropEditor />
             </DataTemplate>
             <DataTemplate DataType="{x:Type local:LfStaticBoxViewModel}">
-               <DockPanel Margin="2">
-                  <Border CornerRadius="5" BorderBrush="DarkGray" BorderThickness="1">
-                     <StackPanel Margin="2">
-                        <local:HeadlineControl Headline="Static Box" />
-                        <local:StringEditorControl Headline="Name" MyValue="{Binding Name, Mode=TwoWay}" />
-                        <local:TexturePickerEditorControl Headline="Texture" MyValue="{Binding Texture, Mode=TwoWay}" />
-                        <local:DoubleEditorControl Headline="PosX" MyValue="{Binding PosX, Mode=TwoWay}" />
-                        <local:DoubleEditorControl Headline="PosY" MyValue="{Binding PosY, Mode=TwoWay}" />
-                        <local:WidthEditorControl Headline="Width" MyValue="{Binding Width, Mode=TwoWay}" />
-                        <local:HeightEditorControl Headline="Height" MyValue="{Binding Height, Mode=TwoWay}" />
-                        <local:DoubleEditorControl Headline="Angle" MyValue="{Binding Angle, Mode=TwoWay}" />
-                        <local:ZLevelEditorControl Headline="Z-level" MyValue="{Binding ZLevel, Mode=TwoWay}" />
-                        <local:CollisionEntityEditorControl Headline="Collision Entity" MyValue="{Binding CollisionEntity, Mode=TwoWay}" />
-                        <local:CollisionCategoryEditorControl Headline="Coll. Category" MyValue="{Binding CollisionCategory, Mode=TwoWay}" />
-                        <local:CollisionCategoryEditorControl Headline="Collision Mask" MyValue="{Binding CollisionMask, Mode=TwoWay}" />
-                     </StackPanel>
-                  </Border>
-               </DockPanel>
+               <local:StaticBoxPropEditor />
             </DataTemplate>
             <DataTemplate DataType="{x:Type local:LfStaticPolygonViewModel}">
                <local:StaticPolygonPropEditor />
             </DataTemplate>
             <DataTemplate DataType="{x:Type local:LfStaticBoxedSpritePolygonViewModel}">
-               <DockPanel Margin="2">
-                  <Border CornerRadius="5" BorderBrush="DarkGray" BorderThickness="1">
-                     <StackPanel Margin="2">
-                        <local:HeadlineControl Headline="Static Boxed Sprite Polygon" />
-                        <local:StringEditorControl Headline="Name" MyValue="{Binding Name, Mode=TwoWay}" />
-                        <local:TexturePickerEditorControl Headline="Texture" MyValue="{Binding Texture, Mode=TwoWay}" />
-                        <local:DoubleEditorControl Headline="PosX" MyValue="{Binding PosX, Mode=TwoWay}" />
-                        <local:DoubleEditorControl Headline="PosY" MyValue="{Binding PosY, Mode=TwoWay}" />
-                        <local:DoubleEditorControl Headline="Width" MyValue="{Binding Width, Mode=TwoWay}" />
-                        <local:DoubleEditorControl Headline="Height" MyValue="{Binding Height, Mode=TwoWay}" />
-                        <local:DoubleEditorControl Headline="Angle" MyValue="{Binding Angle, Mode=TwoWay}" />
-                        <local:ZLevelEditorControl Headline="Z-level" MyValue="{Binding ZLevel, Mode=TwoWay}" />
-                        <local:CollisionEntityEditorControl Headline="Collision Entity" MyValue="{Binding CollisionEntity, Mode=TwoWay}" />
-                        <local:CollisionCategoryEditorControl Headline="Coll. Category" MyValue="{Binding CollisionCategory, Mode=TwoWay}" />
-                        <local:CollisionCategoryEditorControl Headline="Collision Mask" MyValue="{Binding CollisionMask, Mode=TwoWay}" />
-                     </StackPanel>
-                  </Border>
-               </DockPanel>
+               <local:StaticBoxedPolyPropEditor />
             </DataTemplate>
             <DataTemplate DataType="{x:Type local:LfDynamicCircleViewModel}">
-               <DockPanel Margin="2">
-                  <Border CornerRadius="5" BorderBrush="DarkGray" BorderThickness="1">
-                     <StackPanel Margin="2">
-                        <local:HeadlineControl Headline="Dynamic Circle" />
-                        <local:StringEditorControl Headline="Name" MyValue="{Binding Name, Mode=TwoWay}" />
-                        <local:TexturePickerEditorControl Headline="Texture" MyValue="{Binding Texture, Mode=TwoWay}" />
-                        <local:DoubleEditorControl Headline="PosX" MyValue="{Binding PosX, Mode=TwoWay}" />
-                        <local:DoubleEditorControl Headline="PosY" MyValue="{Binding PosY, Mode=TwoWay}" />
-                        <local:DoubleEditorControl Headline="Radius" MyValue="{Binding Radius, Mode=TwoWay}" />
-                        <local:DoubleEditorControl Headline="Angle" MyValue="{Binding Angle, Mode=TwoWay}" />
-                        <local:DoubleEditorControl Headline="Density" MyValue="{Binding Density, Mode=TwoWay}" />
-                        <local:DoubleEditorControl Headline="Friction" MyValue="{Binding Friction, Mode=TwoWay}" />
-                        <local:ZLevelEditorControl Headline="Z-level" MyValue="{Binding ZLevel, Mode=TwoWay}" />
-                        <local:CollisionEntityEditorControl Headline="Collision Entity" MyValue="{Binding CollisionEntity, Mode=TwoWay}" />
-                        <local:CollisionCategoryEditorControl Headline="Coll. Category" MyValue="{Binding CollisionCategory, Mode=TwoWay}" />
-                        <local:CollisionCategoryEditorControl Headline="Collision Mask" MyValue="{Binding CollisionMask, Mode=TwoWay}" />
-                     </StackPanel>
-                  </Border>
-               </DockPanel>
+               <local:DynamicCirclePropEditor />
             </DataTemplate>
             <DataTemplate DataType="{x:Type local:LfDynamicBoxViewModel}">
-               <DockPanel Margin="2">
-                  <Border CornerRadius="5" BorderBrush="DarkGray" BorderThickness="1">
-                     <StackPanel Margin="2">
-                        <local:HeadlineControl Headline="Dynamic Box" />
-                        <local:StringEditorControl Headline="Name" MyValue="{Binding Name, Mode=TwoWay}" />
-                        <local:TexturePickerEditorControl Headline="Texture" MyValue="{Binding Texture, Mode=TwoWay}" />
-                        <local:DoubleEditorControl Headline="PosX" MyValue="{Binding PosX, Mode=TwoWay}" />
-                        <local:DoubleEditorControl Headline="PosY" MyValue="{Binding PosY, Mode=TwoWay}" />
-                        <local:WidthEditorControl Headline="Width" MyValue="{Binding Width, Mode=TwoWay}" />
-                        <local:HeightEditorControl Headline="Height" MyValue="{Binding Height, Mode=TwoWay}" />
-                        <local:DoubleEditorControl Headline="Angle" MyValue="{Binding Angle, Mode=TwoWay}" />
-                        <local:DoubleEditorControl Headline="Density" MyValue="{Binding Density, Mode=TwoWay}" />
-                        <local:DoubleEditorControl Headline="Friction" MyValue="{Binding Friction, Mode=TwoWay}" />
-                        <local:ZLevelEditorControl Headline="Z-level" MyValue="{Binding ZLevel, Mode=TwoWay}" />
-                        <local:CollisionEntityEditorControl Headline="Collision Entity" MyValue="{Binding CollisionEntity, Mode=TwoWay}" />
-                        <local:CollisionCategoryEditorControl Headline="Coll. Category" MyValue="{Binding CollisionCategory, Mode=TwoWay}" />
-                        <local:CollisionCategoryEditorControl Headline="Collision Mask" MyValue="{Binding CollisionMask, Mode=TwoWay}" />
-                     </StackPanel>
-                  </Border>
-               </DockPanel>
+               <local:DynamicBoxPropEditor />
             </DataTemplate>
             <DataTemplate DataType="{x:Type local:LfDynamicPolygonViewModel}">
-               <DockPanel Margin="2">
-                  <Border CornerRadius="5" BorderBrush="DarkGray" BorderThickness="1">
-                     <StackPanel Margin="2">
-                        <local:HeadlineControl Headline="Dynamic Polygon" />
-                        <local:StringEditorControl Headline="Name" MyValue="{Binding Name, Mode=TwoWay}" />
-                        <local:TexturePickerEditorControl Headline="Texture" MyValue="{Binding Texture, Mode=TwoWay}" />
-                        <local:DoubleEditorControl Headline="PosX" MyValue="{Binding PosX, Mode=TwoWay}" />
-                        <local:DoubleEditorControl Headline="PosY" MyValue="{Binding PosY, Mode=TwoWay}" />
-                        <local:DoubleEditorControl Headline="Angle" MyValue="{Binding Angle, Mode=TwoWay}" />
-                        <local:DoubleEditorControl Headline="Density" MyValue="{Binding Density, Mode=TwoWay}" />
-                        <local:DoubleEditorControl Headline="Friction" MyValue="{Binding Friction, Mode=TwoWay}" />
-                        <local:DoubleEditorControl Headline="Texture Width" MyValue="{Binding TextureWidth, Mode=TwoWay}" />
-                        <local:DoubleEditorControl Headline="Texture Height" MyValue="{Binding TextureHeight, Mode=TwoWay}" />
-                        <local:DoubleEditorControl Headline="Texture Offset X" MyValue="{Binding TextureOffsetX, Mode=TwoWay}" />
-                        <local:DoubleEditorControl Headline="Texture Offset Y" MyValue="{Binding TextureOffsetY, Mode=TwoWay}" />
-                        <local:ZLevelEditorControl Headline="Z-level" MyValue="{Binding ZLevel, Mode=TwoWay}" />
-                        <local:CollisionEntityEditorControl Headline="Collision Entity" MyValue="{Binding CollisionEntity, Mode=TwoWay}" />
-                        <local:CollisionCategoryEditorControl Headline="Coll. Category" MyValue="{Binding CollisionCategory, Mode=TwoWay}" />
-                        <local:CollisionCategoryEditorControl Headline="Collision Mask" MyValue="{Binding CollisionMask, Mode=TwoWay}" />
-                     </StackPanel>
-                  </Border>
-               </DockPanel>
+               <local:DynamicPolygonPropEditor />
             </DataTemplate>
             <DataTemplate DataType="{x:Type local:LfDynamicBoxedSpritePolygonViewModel}">
-               <DockPanel Margin="2">
-                  <Border CornerRadius="5" BorderBrush="DarkGray" BorderThickness="1">
-                     <StackPanel Margin="2">
-                        <local:HeadlineControl Headline="Dynamic Boxed Sprite Polygon" />
-                        <local:StringEditorControl Headline="Name" MyValue="{Binding Name, Mode=TwoWay}" />
-                        <local:TexturePickerEditorControl Headline="Texture" MyValue="{Binding Texture, Mode=TwoWay}" />
-                        <local:DoubleEditorControl Headline="PosX" MyValue="{Binding PosX, Mode=TwoWay}" />
-                        <local:DoubleEditorControl Headline="PosY" MyValue="{Binding PosY, Mode=TwoWay}" />
-                        <local:DoubleEditorControl Headline="Width" MyValue="{Binding Width, Mode=TwoWay}" />
-                        <local:DoubleEditorControl Headline="Height" MyValue="{Binding Height, Mode=TwoWay}" />
-                        <local:DoubleEditorControl Headline="Angle" MyValue="{Binding Angle, Mode=TwoWay}" />
-                        <local:DoubleEditorControl Headline="Density" MyValue="{Binding Density, Mode=TwoWay}" />
-                        <local:DoubleEditorControl Headline="Friction" MyValue="{Binding Friction, Mode=TwoWay}" />
-                        <local:ZLevelEditorControl Headline="Z-level" MyValue="{Binding ZLevel, Mode=TwoWay}" />
-                        <local:CollisionEntityEditorControl Headline="Collision Entity" MyValue="{Binding CollisionEntity, Mode=TwoWay}" />
-                        <local:CollisionCategoryEditorControl Headline="Coll. Category" MyValue="{Binding CollisionCategory, Mode=TwoWay}" />
-                        <local:CollisionCategoryEditorControl Headline="Collision Mask" MyValue="{Binding CollisionMask, Mode=TwoWay}" />
-                     </StackPanel>
-                  </Border>
-               </DockPanel>
+               <local:DynamicBoxedPolyPropEditor />
             </DataTemplate>
-            <!--
-            <DataTemplate DataType="{x:Type local:ObjectFactoryViewModel}">
-               <DockPanel Margin="2">
-                  <Border CornerRadius="5" BorderBrush="DarkGray" BorderThickness="1">
-                     <StackPanel Margin="2">
-                        <local:HeadlineControl Headline="Object Factory" />
-                        <local:StringEditorControl Headline="Name" MyValue="{Binding Name, Mode=TwoWay}" />
-                        <local:CoStateEditorControl Headline="States" />
-                        <local:DoubleEditorControl Headline="PosX" MyValue="{Binding PosX, Mode=TwoWay}" />
-                        <local:DoubleEditorControl Headline="PosY" MyValue="{Binding PosY, Mode=TwoWay}" />
-                        <local:DoubleEditorControl Headline="Width" MyValue="{Binding Width, Mode=TwoWay}" />
-                        <local:DoubleEditorControl Headline="Height" MyValue="{Binding Height, Mode=TwoWay}" />
-                        <local:IntEditorControl Headline="Initally Spawned" MyValue="{Binding SpawnInitial, Mode=TwoWay}" />
-                        <local:DoubleEditorControl Headline="Intensity" MyValue="{Binding Intensity, Mode=TwoWay}" />
-                        <local:IntEditorControl Headline="Life Time" MyValue="{Binding LifeTime, Mode=TwoWay}" />
-                     </StackPanel>
-                  </Border>
-               </DockPanel>
-            </DataTemplate>
-            -->
          </ItemsControl.Resources>
          <ItemsControl.ItemsPanel>
             <ItemsPanelTemplate>
@@ -259,76 +112,16 @@
          >
          <ItemsControl.Resources>
             <DataTemplate DataType="{x:Type local:WeldJointViewModel}">
-               <DockPanel Margin="2">
-                  <Border CornerRadius="5" BorderBrush="DarkGray" BorderThickness="1">
-                     <StackPanel Margin="2">
-                        <local:HeadlineControl Headline="Weld Joint" />
-                        <local:StringEditorControl Headline="Name" MyValue="{Binding Name, Mode=TwoWay}" />
-                        <local:DoubleEditorControl Headline="A Anchor X" MyValue="{Binding AAnchorX, Mode=TwoWay}" />
-                        <local:DoubleEditorControl Headline="A Anchor Y" MyValue="{Binding AAnchorY, Mode=TwoWay}" />
-                        <local:DoubleEditorControl Headline="B Anchor X" MyValue="{Binding BAnchorX, Mode=TwoWay}" />
-                        <local:DoubleEditorControl Headline="B Anchor Y" MyValue="{Binding BAnchorY, Mode=TwoWay}" />
-                     </StackPanel>
-                  </Border>
-               </DockPanel>
+               <local:WeldJointPropertiesControl />
             </DataTemplate>
             <DataTemplate DataType="{x:Type local:RevoluteJointViewModel}">
-               <DockPanel Margin="2">
-                  <Border CornerRadius="5" BorderBrush="DarkGray" BorderThickness="1">
-                     <StackPanel Margin="2">
-                        <local:HeadlineControl Headline="Revolute Joint" />
-                        <local:StringEditorControl Headline="Name" MyValue="{Binding Name, Mode=TwoWay}" />
-                        <local:DoubleEditorControl Headline="A Anchor X" MyValue="{Binding AAnchorX, Mode=TwoWay}" />
-                        <local:DoubleEditorControl Headline="A Anchor Y" MyValue="{Binding AAnchorY, Mode=TwoWay}" />
-                        <local:DoubleEditorControl Headline="B Anchor X" MyValue="{Binding BAnchorX, Mode=TwoWay}" />
-                        <local:DoubleEditorControl Headline="B Anchor Y" MyValue="{Binding BAnchorY, Mode=TwoWay}" />
-                        <local:BoolEditorControl Headline="Lock Joint" MyValue="{Binding LockJoint, Mode=TwoWay}" />
-                        <local:BoolEditorControl Headline="Use Motor" MyValue="{Binding UseMotor, Mode=TwoWay}" />
-                        <local:DoubleEditorControl Headline="Motor Speed" MyValue="{Binding MotorSpeed, Mode=TwoWay}" />
-                        <local:DoubleEditorControl Headline="Max Torque" MyValue="{Binding MaxMotorTorque, Mode=TwoWay}" />
-                     </StackPanel>
-                  </Border>
-               </DockPanel>
+               <local:RevoluteJointPropertiesControl />
             </DataTemplate>
             <DataTemplate DataType="{x:Type local:PrismaticJointViewModel}">
-               <DockPanel Margin="2">
-                  <Border CornerRadius="5" BorderBrush="DarkGray" BorderThickness="1">
-                     <StackPanel Margin="2">
-                        <local:HeadlineControl Headline="Prismatic Joint" />
-                        <local:StringEditorControl Headline="Name" MyValue="{Binding Name, Mode=TwoWay}" />
-                        <local:DoubleEditorControl Headline="A Anchor X" MyValue="{Binding AAnchorX, Mode=TwoWay}" />
-                        <local:DoubleEditorControl Headline="A Anchor Y" MyValue="{Binding AAnchorY, Mode=TwoWay}" />
-                        <local:DoubleEditorControl Headline="B Anchor X" MyValue="{Binding BAnchorX, Mode=TwoWay}" />
-                        <local:DoubleEditorControl Headline="B Anchor Y" MyValue="{Binding BAnchorY, Mode=TwoWay}" />
-                        <local:BoolEditorControl Headline="Lock Joint" MyValue="{Binding LockJoint, Mode=TwoWay}" />
-                        <local:BoolEditorControl Headline="Use Motor" MyValue="{Binding UseMotor, Mode=TwoWay}" />
-                        <local:DoubleEditorControl Headline="Motor Speed" MyValue="{Binding MotorSpeed, Mode=TwoWay}" />
-                        <local:DoubleEditorControl Headline="Max Force" MyValue="{Binding MaxMotorForce, Mode=TwoWay}" />
-                     </StackPanel>
-                  </Border>
-               </DockPanel>
+               <local:PrismaticJointPropertiesControl />
             </DataTemplate>
             <DataTemplate DataType="{x:Type local:RopeViewModel}">
-               <DockPanel Margin="2">
-                  <Border CornerRadius="5" BorderBrush="DarkGray" BorderThickness="1">
-                     <StackPanel Margin="2">
-                        <local:HeadlineControl Headline="Rope" />
-                        <local:StringEditorControl Headline="Name" MyValue="{Binding Name, Mode=TwoWay}" />
-                        <local:TexturePickerEditorControl Headline="Texture" MyValue="{Binding Texture, Mode=TwoWay}" />
-                        <local:DoubleEditorControl Headline="Length" MyValue="{Binding Length, Mode=TwoWay}" />
-                        <local:DoubleEditorControl Headline="Thickness" MyValue="{Binding Thickness, Mode=TwoWay}" />
-                        <local:IntEditorControl Headline="Num of segments" MyValue="{Binding NoOfSegments, Mode=TwoWay}" />
-                        <local:DoubleEditorControl Headline="A Anchor X" MyValue="{Binding AAnchorX, Mode=TwoWay}" />
-                        <local:DoubleEditorControl Headline="A Anchor Y" MyValue="{Binding AAnchorY, Mode=TwoWay}" />
-                        <local:DoubleEditorControl Headline="B Anchor X" MyValue="{Binding BAnchorX, Mode=TwoWay}" />
-                        <local:DoubleEditorControl Headline="B Anchor Y" MyValue="{Binding BAnchorY, Mode=TwoWay}" />
-                        <local:ZLevelEditorControl Headline="Z-level" MyValue="{Binding ZLevel, Mode=TwoWay}" />
-                        <local:CollisionEntityEditorControl Headline="Collision Entity" MyValue="{Binding CollisionEntity, Mode=TwoWay}" />
-                        <local:CollisionCategoryEditorControl Headline="Coll. Category" MyValue="{Binding CollisionCategory, Mode=TwoWay}" />
-                        <local:CollisionCategoryEditorControl Headline="Collision Mask" MyValue="{Binding CollisionMask, Mode=TwoWay}" />
-                     </StackPanel>
-                  </Border>
-               </DockPanel>
+               <local:RopePropertiesControl />
             </DataTemplate>
          </ItemsControl.Resources>
          <ItemsControl.ItemsPanel>

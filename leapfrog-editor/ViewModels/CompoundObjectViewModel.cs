@@ -693,6 +693,22 @@ namespace LeapfrogEditor
             }
          }
 
+         // Only now is the Systems property valid for this state
+         foreach (object o in _systems.Systems)
+         {
+            if (o is CoSystemViewModel)
+            {
+               CoSystemViewModel sys = o as CoSystemViewModel;
+
+               if (sys.Properties is GunPropertiesViewModel)
+               {
+                  GunPropertiesViewModel gunSys = sys.Properties as GunPropertiesViewModel;
+
+                  gunSys.ConnectToShapes(_shapes);
+               }
+            }
+         }
+
          ChildObjectsWithStates = SetChildren(ModelObject, enabledChildren);
 
          BuildTreeViewCollection();
@@ -937,7 +953,10 @@ namespace LeapfrogEditor
             {
                CoSystemViewModel sysVm = o as CoSystemViewModel;
 
-               sysVm.Properties.OnPropertyChanged("");
+               if (sysVm.Properties != null)
+               {
+                  sysVm.Properties.OnPropertyChanged("");
+               }
             }
          }
       }

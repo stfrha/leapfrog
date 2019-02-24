@@ -164,13 +164,6 @@ namespace LeapfrogEditor
             if (_modelObject == null) return 0;
 
             return _modelObject.AAxisX * _modelObject.UpperLimit + _modelObject.AAnchorX;
-
-            //double localPosX = _modelObject.AAxisX * _modelObject.UpperLimit;
-            //double localPosY = _modelObject.AAxisY * _modelObject.UpperLimit;
-
-            //Point p = _aVm.RotatedPointFromLocal(new Point(localPosX, localPosY));
-
-            //return p.X;
          }
       }
 
@@ -181,13 +174,6 @@ namespace LeapfrogEditor
             if (_modelObject == null) return 0;
 
             return _modelObject.AAxisY * _modelObject.UpperLimit + _modelObject.AAnchorY;
-
-            //double localPosX = _modelObject.AAxisX * _modelObject.UpperLimit;
-            //double localPosY = _modelObject.AAxisY * _modelObject.UpperLimit;
-
-            //Point p = _aVm.RotatedPointFromLocal(new Point(localPosX, localPosY));
-
-            //return p.Y;
          }
       }
 
@@ -198,13 +184,6 @@ namespace LeapfrogEditor
             if (_modelObject == null) return 0;
 
             return _modelObject.AAxisX * _modelObject.LowerLimit + _modelObject.AAnchorX;
-
-            //double localPosX = -_modelObject.AAxisX * _modelObject.LowerLimit;
-            //double localPosY = -_modelObject.AAxisY * _modelObject.LowerLimit;
-
-            //Point p = _aVm.RotatedPointFromLocal(new Point(localPosX, localPosY));
-
-            //return p.X;
          }
       }
 

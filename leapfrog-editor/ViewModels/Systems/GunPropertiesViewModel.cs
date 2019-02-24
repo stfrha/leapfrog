@@ -15,6 +15,8 @@ namespace LeapfrogEditor
       #region Declarations
 
       private GunProperties ModelObject;
+      private LfShapeViewModel _bodyVm;
+
 
       #endregion
 
@@ -54,8 +56,20 @@ namespace LeapfrogEditor
 
             LocalModelObject.BodyName = value;
             OnPropertyChanged("BodyName");
+            ConnectToShapes(ParentVm.StateShapes);
+            OnPropertyChanged("BodyObject");
+
          }
       }
+
+      public LfShapeViewModel BodyObject
+      {
+         get
+         {
+            return _bodyVm;
+         }
+      }
+
 
       public double EmitterOriginX
       {
@@ -187,6 +201,15 @@ namespace LeapfrogEditor
       #endregion
 
       #region public Methods
+
+      public void ConnectToShapes(StateShapeCollectionViewModel shapes)
+      {
+         _bodyVm = ParentVm.FindShape(ModelObject.BodyName, shapes);
+         if (_bodyVm == null)
+         {
+            MessageBox.Show("The shape pointed to by " + ModelObject.BodyName + " does not exists in CO " + ParentVm.Name, "Error parsing file", MessageBoxButton.OK, MessageBoxImage.Error);
+         }
+      }
 
       #endregion
    }

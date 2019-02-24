@@ -15,6 +15,7 @@
       <local:ZoomHandleTranslateValueConverter x:Key="ZoomHandleTranslateValueConverter" />
    </UserControl.Resources>
    <Canvas>
+      <!-- Below is the line between the two bodies' anchors -->
       <Line
          StrokeThickness="{Binding ContentScale, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type ZoomAndPan:ZoomAndPanControl}}, Converter={StaticResource ZoomThicknessValueConverter}}"
          Stroke="DarkGreen" >
@@ -142,6 +143,7 @@
                   />
          </local:TriangleShape.RenderTransform>
       </local:TriangleShape>
+      <!-- Below is the Body A anchor triangle -->
       <local:TriangleShape
                Size="{Binding ContentScale, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type ZoomAndPan:ZoomAndPanControl}}, Converter={StaticResource ZoomHandleSizeValueConverter}}"
                StrokeThickness="{Binding ContentScale, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type ZoomAndPan:ZoomAndPanControl}}, Converter={StaticResource ZoomThicknessValueConverter}}"
@@ -180,6 +182,7 @@
                   />
          </local:TriangleShape.RenderTransform>
       </local:TriangleShape>
+      <!-- Below is the Body B anchor triangle -->
       <local:TriangleShape
          Size="{Binding ContentScale, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type ZoomAndPan:ZoomAndPanControl}}, Converter={StaticResource ZoomHandleSizeValueConverter}}"
          StrokeThickness="{Binding ContentScale, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type ZoomAndPan:ZoomAndPanControl}}, Converter={StaticResource ZoomThicknessValueConverter}}"
@@ -197,6 +200,7 @@
          <Canvas.Top>
             <MultiBinding Converter="{StaticResource MultiRotatedJointValueConverter}" ConverterParameter="y">
                <Binding Path="BAnchorX" />
+               <Binding Path="BAnchorY" />
                <Binding Path="BShapeObject"/>
             </MultiBinding>
          </Canvas.Top>

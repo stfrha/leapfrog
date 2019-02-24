@@ -203,6 +203,9 @@
                      </local:LabeledBoxControl.ContextMenu>
                   </local:LabeledBoxControl>
                </DataTemplate>
+               <DataTemplate DataType="{x:Type local:GunPropertiesViewModel}">
+                  <local:GunControl />
+               </DataTemplate>
             </ContentControl.Resources>
          </ContentControl>
       </DataTemplate>
