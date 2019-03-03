@@ -70,6 +70,7 @@
     <Compile Include="Models\SpawnObject.cs" />
     <Compile Include="Models\Systems\ShieldProperties.cs" />
     <Compile Include="Models\Systems\GunProperties.cs" />
+    <Compile Include="ValueConverters\ToCollectionValueConverter.cs" />
     <Compile Include="ValueConverters\MatchingStateVisibilityConverter.cs" />
     <Compile Include="ValueConverters\TextureBorderValueConverters.cs" />
     <Compile Include="ValueConverters\StatePropertiesHeadlineConverter.cs" />

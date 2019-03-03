@@ -16,6 +16,7 @@
       <local:MainViewModel x:Name="myMainViewModel"/>
    </Window.DataContext>
    <Window.Resources>
+      <local:ToCollectionValueConverter x:Key="ToCollectionValueConverter" />
       <local:BindingProxy x:Key="DataContextProxy" Data="{Binding}" />
    </Window.Resources>
    <Grid>
@@ -283,7 +284,7 @@
                         </TextBlock.ContextMenu>
                      </TextBlock>
                   </HierarchicalDataTemplate>
-                  <HierarchicalDataTemplate DataType="{x:Type local:CoSystemViewModel}" >
+                  <!--<HierarchicalDataTemplate DataType="{x:Type local:CoSystemViewModel}" >
                      <TextBlock Margin="2"  Text="{Binding Name}">
                         <TextBlock.ContextMenu>
                            <ContextMenu>
@@ -291,6 +292,31 @@
                               <MenuItem Header="Delete" 
                                  CommandParameter="{Binding}"
                                  Command="{Binding Path=Data.DeleteThisObject, Source={StaticResource DataContextProxy}}" />
+                           </ContextMenu>
+                        </TextBlock.ContextMenu>
+                     </TextBlock>
+                  </HierarchicalDataTemplate>-->
+                  <HierarchicalDataTemplate DataType="{x:Type local:CoSystemViewModel}" 
+                     ItemsSource="{Binding Properties, Converter={StaticResource ToCollectionValueConverter}}">
+                     <TextBlock Margin="2"  Text="{Binding Name}">
+                        <TextBlock.ContextMenu>
+                           <ContextMenu>
+                              <Separator />
+                              <MenuItem Header="Delete" 
+                                 CommandParameter="{Binding}"
+                                 Command="{Binding Path=Data.DeleteThisObject, Source={StaticResource DataContextProxy}}" />
+                           </ContextMenu>
+                        </TextBlock.ContextMenu>
+                     </TextBlock>
+                  </HierarchicalDataTemplate>
+                  <HierarchicalDataTemplate DataType="{x:Type local:ObjectFactoryPropertiesViewModel}"
+                     ItemsSource="{Binding SpawnObjects}">
+                     <TextBlock Margin="2"  Text="Spawn Objects">
+                        <TextBlock.ContextMenu>
+                           <ContextMenu>
+                              <MenuItem Header="Add Spawn object..." 
+                                 CommandParameter="{Binding}"
+                                 Command="{Binding Path=Data.NewSpawnObject, Source={StaticResource DataContextProxy}}" />
                            </ContextMenu>
                         </TextBlock.ContextMenu>
                      </TextBlock>
