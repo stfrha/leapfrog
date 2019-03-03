@@ -51,6 +51,7 @@ namespace LeapfrogEditor
          }
       }
 
+
       private void ShapeBorder_MouseDown(object sender, MouseButtonEventArgs e)
       {
          CompoundObjectUserControl parentControl = ParentalFinder.FindParent<CompoundObjectUserControl>(this);

@@ -135,18 +135,65 @@ namespace LeapfrogEditor
       }
    }
 
-   class MultiRotatedJointValueConverter : IMultiValueConverter
+   class AttachedBodyPointValueConverter : IMultiValueConverter
    {
+      // Values should be: PosX, PosY, Body PosX, Body PosY, Body Angle
+      // Parameter is "x" or "y", returns rotated point x or y value, depending on parameter.
       public object Convert(object[] values, Type targetType, object parameter, System.Globalization.CultureInfo culture)
       {
-         if (values.Count() == 3)
+         if (values.Count() == 5)
          {
-            if ((values[0] is double) && (values[1] is double) && (values[2] is LfShapeViewModel))
+            if ((values[0] is double) && (values[1] is double) && (values[2] is double) &&
+               (values[3] is double) && (values[4] is double))
             {
                Point pos = new Point((double)values[0], (double)values[1]);
-               LfShapeViewModel shape = (LfShapeViewModel)values[2];
-               Point rp = CoordinateTransformations.RotatedPointFromLocal(pos, shape.Angle);
-               rp.Offset(shape.PosX, shape.PosY);
+               Point bodyPos = new Point((double)values[2], (double)values[3]);
+               double bodyAngle = (double)values[4];
+               Point rp = CoordinateTransformations.RotatedPointFromLocal(pos, bodyAngle);
+               rp.Offset(bodyPos.X, bodyPos.Y);
+
+               if (parameter as string == "x")
+               {
+                  return rp.X;
+               }
+               else
+               {
+                  return rp.Y;
+               }
+            }
+         }
+
+         return null;
+      }
+      public object[] ConvertBack(object value, Type[] targetTypes, object parameter, System.Globalization.CultureInfo culture)
+      {
+         throw new NotImplementedException();
+      }
+   }
+
+   class PointAnglePositionValueConverter : IMultiValueConverter
+   {
+      // Values should be: PosX, PosY, Point angle, Body PosX, Body PosY, Body Angle
+      // Parameter is "x" or "y", returns rotated point x or y value, depending on parameter.
+      public object Convert(object[] values, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+      {
+         if (values.Count() == 6)
+         {
+            if ((values[0] is double) && (values[1] is double) && (values[2] is double) &&
+               (values[3] is double) && (values[4] is double) && (values[5] is double))
+            {
+               Point pos = new Point((double)values[0], (double)values[1]);
+               double pointAngle = (double)values[2];
+
+               // anglePoint is the point at the end of the vector from pos to 10 m in the 
+               // pointAngle direction
+               Vector angleVect = new Vector(10 * Math.Cos(pointAngle / 180 * Math.PI), 10 * Math.Sin(pointAngle / 180 * Math.PI));
+               Point anglePoint = pos + angleVect;
+
+               Point bodyPos = new Point((double)values[3], (double)values[4]);
+               double bodyAngle = (double)values[5];
+               Point rp = CoordinateTransformations.RotatedPointFromLocal(anglePoint, bodyAngle);
+               rp.Offset(bodyPos.X, bodyPos.Y);
 
                if (parameter as string == "x")
                {
