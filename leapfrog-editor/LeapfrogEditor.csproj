@@ -56,6 +56,7 @@
     </ApplicationDefinition>
     <Compile Include="Models\Behaviours\MagneticMineProperties.cs" />
     <Compile Include="Models\Behaviours\ExplosiveObjectProperties.cs" />
+    <Compile Include="Models\Interfaces\ISpawnObjectParentInterface.cs" />
     <Compile Include="Utilities\CoordinateTransformations.cs" />
     <Compile Include="Utilities\GlobalDataDirectory.cs" />
     <Compile Include="Models\Behaviours\BreakableObjectProperties.cs" />
@@ -70,6 +71,8 @@
     <Compile Include="Models\SpawnObject.cs" />
     <Compile Include="Models\Systems\ShieldProperties.cs" />
     <Compile Include="Models\Systems\GunProperties.cs" />
+    <Compile Include="ValueConverters\NegDoubleValueConverter.cs" />
+    <Compile Include="ValueConverters\FlameEmitterValueConverters.cs" />
     <Compile Include="ValueConverters\ToCollectionValueConverter.cs" />
     <Compile Include="ValueConverters\MatchingStateVisibilityConverter.cs" />
     <Compile Include="ValueConverters\TextureBorderValueConverters.cs" />
@@ -87,6 +90,7 @@
     <Compile Include="ViewModels\Child Objects\ChildCOViewModel.cs" />
     <Compile Include="ViewModels\FileCOViewModel.cs" />
     <Compile Include="ViewModels\DataBindingProxy.cs" />
+    <Compile Include="ViewModels\Interfaces\ISpawnObjectParentVmInterface.cs" />
     <Compile Include="ViewModels\Interfaces\IParentVmInterface.cs" />
     <Compile Include="ViewModels\Joints\StateJointCollectionViewModel.cs" />
     <Compile Include="ViewModels\Shape and bodies\BorderTextureViewModel.cs" />
@@ -208,6 +212,9 @@
     </Compile>
     <Compile Include="Views\Controls\Editable Shapes Controls\BoxedSpritePolygonControl.xaml.cs">
       <DependentUpon>BoxedSpritePolygonControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Controls\Editable Shapes Controls\Systems\FlameEmitterControl.xaml.cs">
+      <DependentUpon>FlameEmitterControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\Controls\Editable Shapes Controls\Systems\LabeledBoxControl.xaml.cs">
       <DependentUpon>LabeledBoxControl.xaml</DependentUpon>
@@ -476,6 +483,10 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="Views\Controls\Editable Shapes Controls\BoxedSpritePolygonControl.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\Controls\Editable Shapes Controls\Systems\FlameEmitterControl.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>

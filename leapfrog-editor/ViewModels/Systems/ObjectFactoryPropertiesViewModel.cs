@@ -11,7 +11,7 @@ using System.Windows.Media.Imaging;
 namespace LeapfrogEditor
 {
    // TODO: The object factory has a position, width and height
-   class ObjectFactoryPropertiesViewModel : SystemViewModelBase, IPositionInterface, IBoxPointsInterface
+   class ObjectFactoryPropertiesViewModel : SystemViewModelBase, IPositionInterface, IBoxPointsInterface, ISpawnObjectParentVmInterface
    {
       #region Declarations
 
@@ -19,6 +19,7 @@ namespace LeapfrogEditor
       private CompoundObjectViewModel _parent;
       private ObservableCollection<LfPointViewModel> _points = new ObservableCollection<LfPointViewModel>();
       private LfShapeViewModel _bodyObject = null;
+      private ObservableCollection<SpawnObjectViewModel> _spawnObjects = new ObservableCollection<SpawnObjectViewModel>();
 
       #endregion
 
@@ -39,6 +40,12 @@ namespace LeapfrogEditor
             _bodyObject = ParentVm.FindBodyObject(_modelObject.Body);
          }
 
+         foreach (SpawnObject so in LocalModelObject.SpawnObjects)
+         {
+            SpawnObjectViewModel sovm = new SpawnObjectViewModel(this, parentVm, mainVm, this, so);
+            SpawnObjects.Add(sovm);
+         }
+
          UpdateCornerPoints();
       }
 
@@ -49,6 +56,11 @@ namespace LeapfrogEditor
       public ObjectFactoryProperties LocalModelObject
       {
          get { return (ObjectFactoryProperties)_modelObject; }
+      }
+
+      public ISpawnObjectParentInterface SpawnParentModelObject
+      {
+         get { return _modelObject as ISpawnObjectParentInterface; }
       }
 
       public CompoundObjectViewModel Parent
@@ -72,6 +84,15 @@ namespace LeapfrogEditor
          }
       }
 
+      public ObservableCollection<SpawnObjectViewModel> SpawnObjects
+      {
+         get { return _spawnObjects; }
+         set
+         {
+            _spawnObjects = value;
+            OnPropertyChanged("SpawnObjects");
+         }
+      }
 
       public double PosX
       {

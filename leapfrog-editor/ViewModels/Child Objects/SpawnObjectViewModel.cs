@@ -16,6 +16,8 @@ namespace LeapfrogEditor
 
       private SpawnObject ModelObject;
 
+      private ISpawnObjectParentVmInterface _spawnParent;
+
       // The _spawnChildObject field is a collection because it must be added to the itemssource
       private ObservableCollection<ChildObjectViewModel> _spawnChildObject = new ObservableCollection<ChildObjectViewModel>();
 
@@ -26,12 +28,14 @@ namespace LeapfrogEditor
       public SpawnObjectViewModel(
          TreeViewViewModel treeParent, 
          CompoundObjectViewModel parentVm, 
-         MainViewModel mainVm, 
+         MainViewModel mainVm,
+         ISpawnObjectParentVmInterface spawnParent,
          SpawnObject modelObject,
          bool enabled = true) :
          base(treeParent, parentVm, mainVm)
       {
          ModelObject = modelObject;
+         SpawnParent = spawnParent;
 
          ChildObjectViewModel chvm = new ChildObjectViewModel(this, parentVm, mainVm, modelObject.MyChildObject);
          SpawnChildObject.Add(chvm);
@@ -44,6 +48,16 @@ namespace LeapfrogEditor
       public SpawnObject LocalModelObject
       {
          get { return ModelObject; }
+      }
+
+      public ISpawnObjectParentVmInterface SpawnParent
+      {
+         get { return _spawnParent; }
+         set
+         {
+            _spawnParent = value;
+            OnPropertyChanged("SpawnParent");
+         }
       }
 
       public double ProbabilityFactor

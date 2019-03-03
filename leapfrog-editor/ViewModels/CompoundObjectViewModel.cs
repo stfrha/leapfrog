@@ -703,8 +703,13 @@ namespace LeapfrogEditor
                if (sys.Properties is GunPropertiesViewModel)
                {
                   GunPropertiesViewModel gunSys = sys.Properties as GunPropertiesViewModel;
-
                   gunSys.ConnectToShapes(_shapes);
+               }
+
+               if (sys.Properties is FlameEmitterPropertiesViewModel)
+               {
+                  FlameEmitterPropertiesViewModel feSys = sys.Properties as FlameEmitterPropertiesViewModel;
+                  feSys.ConnectToShapes(_shapes);
                }
             }
          }

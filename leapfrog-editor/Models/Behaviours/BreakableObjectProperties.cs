@@ -9,7 +9,7 @@ using System.Xml.Serialization;
 namespace LeapfrogEditor
 {
    [Serializable]
-   public class BreakableObjectProperties
+   public class BreakableObjectProperties : ISpawnObjectParentInterface
    {
       #region Declarations
 

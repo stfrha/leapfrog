@@ -817,9 +817,9 @@ namespace LeapfrogEditor
 
       void NewSpawnObjectExecute(Object parameter)
       {
-         if (parameter is BreakableObjectPropertiesViewModel)
+         if (parameter is ISpawnObjectParentVmInterface)
          {
-            BreakableObjectPropertiesViewModel bovm = parameter as BreakableObjectPropertiesViewModel;
+            ISpawnObjectParentVmInterface bovm = parameter as ISpawnObjectParentVmInterface;
 
             // First add all model elements
             SpawnObject newSo = new SpawnObject();
@@ -834,17 +834,17 @@ namespace LeapfrogEditor
             CompoundObject co = new CompoundObject();
             cosp.CompObj = co;
 
-            bovm.LocalModelObject.SpawnObjects.Add(newSo);
+            bovm.SpawnParentModelObject.SpawnObjects.Add(newSo);
 
             // Then add and link ViewModel elements
-            SpawnObjectViewModel sovm = new SpawnObjectViewModel(bovm, EditedCpVm, this, newSo);
+            SpawnObjectViewModel sovm = new SpawnObjectViewModel(bovm.ParentVm, EditedCpVm, this, bovm, newSo);
             bovm.SpawnObjects.Add(sovm);
          }
       }
 
       bool CanNewSpawnObjectExecute(Object parameter)
       {
-         if (parameter is BreakableObjectPropertiesViewModel)
+         if (parameter is ISpawnObjectParentVmInterface)
          {
             return true;
          }
@@ -962,6 +962,16 @@ namespace LeapfrogEditor
             covm.ModelObject.ChildObjects.Remove(chvm.ModelObject);
             covm.ChildObjectsWithStates.Children.Remove(chvm);
          }
+
+         if (parameter is SpawnObjectViewModel)
+         {
+            SpawnObjectViewModel sovm = parameter as SpawnObjectViewModel;
+            ISpawnObjectParentVmInterface spvm = sovm.SpawnParent;
+
+            spvm.SpawnParentModelObject.SpawnObjects.Remove(sovm.LocalModelObject);
+            spvm.SpawnObjects.Remove(sovm);
+
+         }
       }
 
       bool CanDeleteThisObjectExecute(Object parameter)
@@ -973,7 +983,7 @@ namespace LeapfrogEditor
 
          if ((EditedCpVm != null) && ((parameter is LfShapeViewModel) || 
             (parameter is WeldJointViewModel) || (parameter is ChildCOViewModel) ||
-            (parameter is ChildObjectViewModel)))
+            (parameter is ChildObjectViewModel) || (parameter is SpawnObjectViewModel)))
          {
             return true;
          }
@@ -2300,6 +2310,52 @@ namespace LeapfrogEditor
                      // This is the shape of the object being edited, 
                      SelectedSystems.Add(system);
                   }
+
+                  // Check if any spawn objects are selected in this system
+                  // and set EditableSpawnObject to it.
+                  // Note that this may be overwritten when spawn obejcts
+                  // are hunted in the BrakableObject behaviour.
+                  if (system.Type == "objectFactory")
+                  {
+                     ObjectFactoryPropertiesViewModel ofvm = system.Properties as ObjectFactoryPropertiesViewModel;
+
+                     foreach (SpawnObjectViewModel sovm in ofvm.SpawnObjects)
+                     {
+                        if (sovm.IsSelected)
+                        {
+                           EditableSpawnObject = sovm;
+                        }
+
+                        TreeViewViewModel tvvm = sovm.SpawnChildObject[0];
+
+                        if (tvvm is ChildObjectViewModel)
+                        {
+                           ChildObjectViewModel covm = tvvm as ChildObjectViewModel;
+
+                           if (covm.ParentVm == EditedCpVm)
+                           {
+                              // This is the child object of the object being edited, 
+                              if (covm.IsSelected)
+                              {
+                                 SelectedChildObjects.Add(covm);
+                              }
+
+                              foreach (ChildCOViewModel chvm in covm.StateProperties)
+                              {
+                                 if (chvm is ChildCOViewModel)
+                                 {
+                                    ChildCOViewModel cospvm = chvm as ChildCOViewModel;
+
+                                    if (cospvm.IsSelected)
+                                    {
+                                       SelectedChildObjectStateProperties.Add(cospvm);
+                                    }
+                                 }
+                              }
+                           }
+                        }
+                     }
+                  }
                }
             }
          }
@@ -2308,6 +2364,8 @@ namespace LeapfrogEditor
          // There can, potentially, multiple selected spawn object
          // but it would not make sense, so let the last selected
          // spawn object be the one to be edited.
+         // Also, spawn object can exists in breakable objects
+         // and object factories
          if (EditedCpVm.Behaviour.BehaviourProperties is BreakableObjectPropertiesViewModel)
          {
             BreakableObjectPropertiesViewModel breakProp = EditedCpVm.Behaviour.BehaviourProperties as BreakableObjectPropertiesViewModel;

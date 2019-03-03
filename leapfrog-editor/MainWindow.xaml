@@ -162,7 +162,15 @@
                   </HierarchicalDataTemplate>
                   <HierarchicalDataTemplate DataType="{x:Type local:SpawnObjectViewModel}" 
                      ItemsSource="{Binding SpawnChildObject}">
-                     <TextBlock Margin="2"  Text="{Binding Headline}" />
+                     <TextBlock Margin="2"  Text="{Binding Headline}" >
+                        <TextBlock.ContextMenu>
+                           <ContextMenu>
+                              <MenuItem Header="Delete" 
+                                 CommandParameter="{Binding}"
+                                 Command="{Binding Path=Data.DeleteThisObject, Source={StaticResource DataContextProxy}}" />
+                           </ContextMenu>
+                        </TextBlock.ContextMenu>
+                     </TextBlock>
                   </HierarchicalDataTemplate>
                   <HierarchicalDataTemplate DataType="{x:Type local:ScenePropertiesViewModel}"
                      ItemsSource="{Binding States}">

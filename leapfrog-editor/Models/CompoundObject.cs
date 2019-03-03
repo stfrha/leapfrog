@@ -214,23 +214,10 @@ namespace LeapfrogEditor
 
       #region Public Methods
 
-      public static CompoundObject ReadFromFile(string fileName)
-         // This method reads an xml file containing a CompoundObject
-         // and returns with the generated CompoundObject. 
-         // All child objects with other XML-files are also read 
-         // (however it will not be possible to edit them without
-         // explicitly open thems as separate files.
-         // TODO: Error handling is non-existent.
+      public void AnalyseForChildFiles(string path)
       {
-         string path = Path.GetDirectoryName(fileName);
-
-         XmlSerializer ser = new XmlSerializer(typeof(CompoundObject));
-         FileStream fs = new FileStream(fileName, FileMode.Open);
-         XmlReader reader = XmlReader.Create(fs);
-         CompoundObject co = (CompoundObject)ser.Deserialize(reader);
-
          // Iterate ChildObjects to load all child objects
-         foreach (ChildObject cor in co.ChildObjects)
+         foreach (ChildObject cor in ChildObjects)
          {
             // Iterate all state properties
             foreach (TStateProperties<ChildObjectStateProperties> sp in cor.StateProperties)
@@ -247,13 +234,19 @@ namespace LeapfrogEditor
                   sp.Properties.CompObj = childCo;
 
                }
+               else
+               {
+                  //...however, the child objects may have behaviours or systems that
+                  // has spawn objects or child objects that need to be loaded
+                  sp.Properties.CompObj.AnalyseForChildFiles(path);
+               }
             }
          }
 
          // Iterate SpawnObjects of BreakableObject Behaviour properties to load all spawn objects
-         if (co.Behaviour.Type == "breakableObject")
+         if (Behaviour.Type == "breakableObject")
          {
-            foreach (SpawnObject so in co.Behaviour.BreakableObjProps.SpawnObjects)
+            foreach (SpawnObject so in Behaviour.BreakableObjProps.SpawnObjects)
             {
                ChildObject cor = so.MyChildObject;
 
@@ -276,8 +269,38 @@ namespace LeapfrogEditor
             }
          }
 
+
+         // Iterate SpawnObjects of ObejctFactories in Systems.Propertiesto load all spawn objects
+         foreach (CoSystem sys in Systems)
+         {
+            if (sys.Type == "objectFactory")
+            {
+               foreach (SpawnObject so in sys.ObjFactStateProperties.SpawnObjects)
+               {
+                  ChildObject cor = so.MyChildObject;
+
+                  // Iterate all state properties
+                  foreach (TStateProperties<ChildObjectStateProperties> sp in cor.StateProperties)
+                  {
+                     // Only read files if the child object is referenced from a 
+                     // separate file, otherwise the serialization will already have
+                     // populated the child object.
+                     if ((sp.Properties.File != "") && (sp.Properties.CompObj == null))
+                     {
+                        string newFile = System.IO.Path.Combine(path, sp.Properties.File);
+
+                        CompoundObject childCo = CompoundObject.ReadFromFile(newFile);
+
+                        sp.Properties.CompObj = childCo;
+
+                     }
+                  }
+               }
+            }
+         }
+
          // Iterate ClippedWindows to load all each child objects
-         foreach (ClippedWindowRef cwr in co.ClippedWindows)
+         foreach (ClippedWindowRef cwr in ClippedWindows)
          {
             // Iterate all state properties
             foreach (TStateProperties<ClippedWindowProperties> sp in cwr.StateProperties)
@@ -289,6 +312,24 @@ namespace LeapfrogEditor
                sp.Properties.CompObj = childCo;
             }
          }
+      }
+
+      public static CompoundObject ReadFromFile(string fileName)
+         // This method reads an xml file containing a CompoundObject
+         // and returns with the generated CompoundObject. 
+         // All child objects with other XML-files are also read 
+         // (however it will not be possible to edit them without
+         // explicitly open thems as separate files.
+         // TODO: Error handling is non-existent.
+      {
+         string path = Path.GetDirectoryName(fileName);
+
+         XmlSerializer ser = new XmlSerializer(typeof(CompoundObject));
+         FileStream fs = new FileStream(fileName, FileMode.Open);
+         XmlReader reader = XmlReader.Create(fs);
+         CompoundObject co = (CompoundObject)ser.Deserialize(reader);
+
+         co.AnalyseForChildFiles(path);
 
          fs.Close();
 

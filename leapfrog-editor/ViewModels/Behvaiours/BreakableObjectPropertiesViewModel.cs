@@ -10,7 +10,7 @@ using System.Windows.Media.Imaging;
 
 namespace LeapfrogEditor
 {
-   class BreakableObjectPropertiesViewModel : BehaviourViewModelBase
+   class BreakableObjectPropertiesViewModel : BehaviourViewModelBase, ISpawnObjectParentVmInterface
    {
       #region Declarations
 
@@ -34,7 +34,7 @@ namespace LeapfrogEditor
                   
          foreach (SpawnObject so in ModelObject.SpawnObjects)
          {
-            SpawnObjectViewModel sovm = new SpawnObjectViewModel(this, parentVm, mainVm, so);
+            SpawnObjectViewModel sovm = new SpawnObjectViewModel(this, parentVm, mainVm, this, so);
             SpawnObjects.Add(sovm);
          }
       }
@@ -46,6 +46,11 @@ namespace LeapfrogEditor
       public BreakableObjectProperties LocalModelObject
       {
          get { return ModelObject; }
+      }
+
+      public ISpawnObjectParentInterface SpawnParentModelObject
+      {
+         get { return ModelObject as ISpawnObjectParentInterface; }
       }
 
       public int BreakBulletDamage

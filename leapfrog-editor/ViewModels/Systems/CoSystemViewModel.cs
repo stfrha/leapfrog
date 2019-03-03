@@ -21,10 +21,10 @@ namespace LeapfrogEditor
 
       // Only one object is in use per instance of this class. The object
       // in use is defined by the type string of the system.
-      private ObjectFactoryPropertiesViewModel _objFactStatesProps;
-      private FlameEmitterPropertiesViewModel _flameEmitterStatesProps;
-      private GunPropertiesViewModel _gunStatesProps;
-      private ShieldPropertiesViewModel _shieldStatesProps;
+      private ObjectFactoryPropertiesViewModel _objFactStatesProps = null;
+      private FlameEmitterPropertiesViewModel _flameEmitterStatesProps = null;
+      private GunPropertiesViewModel _gunStatesProps = null;
+      private ShieldPropertiesViewModel _shieldStatesProps = null;
 
       #endregion
 
@@ -42,10 +42,23 @@ namespace LeapfrogEditor
 
          SelectedSystemIndex = Systems.IndexOf(LocalModelObject.Type);
 
-         _objFactStatesProps = new ObjectFactoryPropertiesViewModel(treeParent, parentVm, mainVm, LocalModelObject.ObjFactStateProperties, this);
-         _flameEmitterStatesProps = new FlameEmitterPropertiesViewModel(treeParent, parentVm, mainVm, LocalModelObject.FlameEmitterStateProperties, this);
-         _gunStatesProps = new GunPropertiesViewModel(treeParent, parentVm, mainVm, LocalModelObject.GunStateProperties, this);
-         _shieldStatesProps = new ShieldPropertiesViewModel(treeParent, parentVm, mainVm, LocalModelObject.ShieldStateProperties, this);
+         if (LocalModelObject.Type == "objectFactory")
+         {
+            _objFactStatesProps = new ObjectFactoryPropertiesViewModel(treeParent, parentVm, mainVm, LocalModelObject.ObjFactStateProperties, this);
+         }
+         else if (LocalModelObject.Type == "flameEmitter")
+         {
+            _flameEmitterStatesProps = new FlameEmitterPropertiesViewModel(treeParent, parentVm, mainVm, LocalModelObject.FlameEmitterStateProperties, this);
+         }
+         else if (LocalModelObject.Type == "gun")
+         {
+            _gunStatesProps = new GunPropertiesViewModel(treeParent, parentVm, mainVm, LocalModelObject.GunStateProperties, this);
+         }
+         else if (LocalModelObject.Type == "shield")
+         {
+            _shieldStatesProps = new ShieldPropertiesViewModel(treeParent, parentVm, mainVm, LocalModelObject.ShieldStateProperties, this);
+         }
+
       }
 
       #endregion

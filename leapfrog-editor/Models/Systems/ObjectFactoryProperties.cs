@@ -9,7 +9,7 @@ using System.Xml.Serialization;
 namespace LeapfrogEditor
 {
    [Serializable]
-   public class ObjectFactoryProperties
+   public class ObjectFactoryProperties : ISpawnObjectParentInterface
    {
       #region Declarations
 
