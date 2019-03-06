@@ -83,6 +83,9 @@ void LandingPad::doUpdate(const UpdateState &us)
 
 void LandingPad::registerToMap(void)
 {
-   g_HeadDownDisplay->addMeToMap(MapItem::MapItemTypeEnum::neutralStationary, getActor("landingPad1"));
+   g_HeadDownDisplay->addMeToMap(
+      MapItem::MapItemTypeEnum::neutralStationary, 
+      getActor("landingPad1"), 
+      MapItem::MapItemStateEnum::hollow);
 }
 

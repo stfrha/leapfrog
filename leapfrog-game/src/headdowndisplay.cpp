@@ -16,37 +16,42 @@ MapItem::MapItem(
    oxygine::Resources* gameResources,
    HeadDownDisplay* hddMapActor,
    MapItemTypeEnum type,
+   MapItemStateEnum state,
+   int id,
    oxygine::spActor actor,
    float scale) :
-   m_parentMap(hddMapActor)
-{
-   m_type = type;
-   m_realActor = actor;
+   m_itemId(id),
+   m_type(type),
+   m_parentMap(hddMapActor),
+   m_realActor(actor)
 
+{
    switch (type)
    {
    case MapItemTypeEnum::me:
-      setResAnim(gameResources->getResAnim("my_map_item"));
+      m_resAnim = gameResources->getResAnim("friendly_moving");
       break;
    case MapItemTypeEnum::friendlyMoving:
-      setResAnim(gameResources->getResAnim("firendly_moving"));
+      m_resAnim = gameResources->getResAnim("friendly_moving");
       break;
    case MapItemTypeEnum::friendlyStationary:
-      setResAnim(gameResources->getResAnim("friendly_stationary"));
+      m_resAnim = gameResources->getResAnim("friendly_stationary");
       break;
    case MapItemTypeEnum::enemyMoving:
-      setResAnim(gameResources->getResAnim("enemy_moving"));
+      m_resAnim = gameResources->getResAnim("enemy_moving");
       break;
    case MapItemTypeEnum::enemyStationary:
-      setResAnim(gameResources->getResAnim("enemy_stationary"));
+      m_resAnim = gameResources->getResAnim("enemy_stationary");
       break;
    case MapItemTypeEnum::neutralMoving:
-      setResAnim(gameResources->getResAnim("neutral_moving"));
+      m_resAnim = gameResources->getResAnim("neutral_moving");
       break;
    case MapItemTypeEnum::neutralStationary:
-      setResAnim(gameResources->getResAnim("neutral_stationary"));
+      m_resAnim = gameResources->getResAnim("neutral_stationary");
       break;
    }
+
+   setState(state);
 
    setPriority(231);
    setTouchChildrenEnabled(false);
@@ -68,6 +73,37 @@ oxygine::spActor MapItem::getActor(void)
 {
    return m_realActor;
 }
+
+int MapItem::getId(void)
+{
+   return m_itemId;
+}
+
+void MapItem::setState(MapItem::MapItemStateEnum state)
+{
+   switch (state)
+   {
+   case hollow:
+      removeTweens();
+      setResAnim(m_resAnim, 0, 0);
+      break;
+   case filled:
+      removeTweens();
+      setResAnim(m_resAnim, 1, 0);
+      break;
+   case flashingSlow:
+      setResAnim(m_resAnim, 0, 0);
+      removeTweens();
+      addTween(TweenAnim(m_resAnim), 1000, -1);
+      break;
+   case flashingFast:
+      setResAnim(m_resAnim, 0, 0);
+      removeTweens();
+      addTween(TweenAnim(m_resAnim), 250, -1);
+      break;
+   }
+}
+
 
 void MapItem::doUpdate(const oxygine::UpdateState& us)
 {
@@ -97,7 +133,8 @@ void MapItem::doUpdate(const oxygine::UpdateState& us)
 }
 
 
-HeadDownDisplay::HeadDownDisplay()
+HeadDownDisplay::HeadDownDisplay() :
+   m_itemIdRepository(0)
 {
 }
 
@@ -199,19 +236,25 @@ void HeadDownDisplay::initialiseMap(
 
 }
 
-void HeadDownDisplay::addMeToMap(
+int HeadDownDisplay::addMeToMap(
    MapItem::MapItemTypeEnum type,
-   spActor actor)
+   spActor actor,
+   MapItem::MapItemStateEnum state)
 {
+
    spMapItem mi = new MapItem(
       m_gameResources,
       this,
       type,
+      state,
+      m_itemIdRepository,
       actor,
       m_itemScale);
 
 
    m_mapActors.push_back(mi);
+
+   return m_itemIdRepository++;
 }
 
 void HeadDownDisplay::removeMeFromMap(spActor removeMe)
@@ -223,6 +266,33 @@ void HeadDownDisplay::removeMeFromMap(spActor removeMe)
          spActor d = (*it)->getActor();
          (*it)->detach();
          m_mapActors.erase(it);
+         return;
+      }
+   }
+}
+
+
+void HeadDownDisplay::removeMeFromMap(int itemId)
+{
+   for (auto it = m_mapActors.begin(); it != m_mapActors.end(); ++it)
+   {
+      if ((*it)->getId() == itemId)
+      {
+         spActor d = (*it)->getActor();
+         (*it)->detach();
+         m_mapActors.erase(it);
+         return;
+      }
+   }
+}
+
+void HeadDownDisplay::setState(int itemId, MapItem::MapItemStateEnum state)
+{
+   for (auto it = m_mapActors.begin(); it != m_mapActors.end(); ++it)
+   {
+      if ((*it)->getId() == itemId)
+      {
+         (*it)->setState(state);
          return;
       }
    }

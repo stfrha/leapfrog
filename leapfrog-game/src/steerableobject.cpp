@@ -106,6 +106,22 @@ void SteerableObject::doUpdate(const oxygine::UpdateState& us)
       break;
    case wanderHunt:
       steeringVelChange = m_steeringManager->wanderHunt(us, m_targetBody, m_maxSpeed);
+      if (m_steeringManager->getWanderHunterStateChanged())
+      {
+         SteeringManager::WanderHunterState whState = m_steeringManager->getWanderHunterState();
+         switch (whState)
+         {
+         case SteeringManager::WanderHunterState::wanderState:
+            g_HeadDownDisplay->setState(m_headDownDisplayItemId, MapItem::MapItemStateEnum::hollow);
+            break;
+         case SteeringManager::WanderHunterState::seekState:
+            g_HeadDownDisplay->setState(m_headDownDisplayItemId, MapItem::MapItemStateEnum::flashingSlow);
+            break;
+         case SteeringManager::WanderHunterState::pursuitState:
+            g_HeadDownDisplay->setState(m_headDownDisplayItemId, MapItem::MapItemStateEnum::flashingFast);
+            break;
+         }
+      }
       break;
    case seek:
       steeringVelChange = m_steeringManager->seek(m_seekPoint, m_maxSpeed);
@@ -171,7 +187,7 @@ void SteerableObject::executeSteeringForce(b2Vec2 steeringVelChange, const Updat
       }
 
       if (isAvoiding ||
-         (m_steeringManager->m_wanderHunterState != SteeringManager::WanderHunterState::pursuitState) ||
+         (m_steeringManager->peekWanderHunterState() != SteeringManager::WanderHunterState::pursuitState) ||
          ((m_targetBody->GetPosition() - m_body->GetPosition()).Length() > /* bullet range*/ 400.0f))
       {
          m_aimState = noAim;
@@ -191,7 +207,7 @@ void SteerableObject::executeSteeringForce(b2Vec2 steeringVelChange, const Updat
       }
 
       if (isAvoiding ||
-         (m_steeringManager->m_wanderHunterState != SteeringManager::WanderHunterState::pursuitState) ||
+         (m_steeringManager->peekWanderHunterState() != SteeringManager::WanderHunterState::pursuitState) ||
          ((m_targetBody->GetPosition() - m_body->GetPosition()).Length() > /* bullet range*/ 400.0f))
       {
          m_aimState = noAim;
@@ -527,6 +543,9 @@ void SteerableObject::hitByBullet(b2Contact* contact, float bulletEqvDamage)
 
 void SteerableObject::registerToMap(void)
 {
-   g_HeadDownDisplay->addMeToMap(MapItem::MapItemTypeEnum::enemyMoving, getActor("mainBody"));
+   m_headDownDisplayItemId = g_HeadDownDisplay->addMeToMap(
+      MapItem::MapItemTypeEnum::enemyMoving, 
+      getActor("mainBody"),
+      MapItem::MapItemStateEnum::hollow);
 }
 

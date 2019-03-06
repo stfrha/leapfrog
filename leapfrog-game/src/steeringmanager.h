@@ -25,6 +25,8 @@ private:
    b2Vec2 m_lastKnowTargetPos;
    bool m_targetIsHiding;
    oxygine::timeMS m_stateStartTime;
+   WanderHunterState m_wanderHunterState;
+   bool m_wanderHunterStateChanged;
 
    // The m_desiredVelocity is the velocity that push the 
    // object closer to its target. Detours because of 
@@ -54,7 +56,6 @@ private:
 	
 public:
    float m_wanderAngle;
-   WanderHunterState m_wanderHunterState;
    bool m_fireTrigger;
 
    b2Vec2 m_debugAhead;
@@ -72,4 +73,9 @@ public:
 	b2Vec2 pursuit(b2Body* target, float maxVelocity);
    b2Vec2 wanderHunt(const oxygine::UpdateState& us, b2Body* target, float maxVelocity);
    b2Vec2 avoidCollision(float maxVelocity);
+
+   WanderHunterState peekWanderHunterState(void);
+   WanderHunterState getWanderHunterState(void);
+   bool getWanderHunterStateChanged(void);
+
 };

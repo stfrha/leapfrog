@@ -53,6 +53,7 @@ private:
    SteeringManager* m_steeringManager;
    AimStateEnum m_aimState;
    oxygine::timeMS m_aimStateStartTime;
+   int m_headDownDisplayItemId;
 
 
    SteeringStateEnum m_state;

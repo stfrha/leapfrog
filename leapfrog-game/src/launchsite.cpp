@@ -431,6 +431,9 @@ void LaunchSite::updateHoldAngle(timeMS now)
 
 void LaunchSite::registerToMap(void)
 {
-   g_HeadDownDisplay->addMeToMap(MapItem::MapItemTypeEnum::neutralStationary, m_tankActor);
+   g_HeadDownDisplay->addMeToMap(
+      MapItem::MapItemTypeEnum::neutralStationary, 
+      m_tankActor, 
+      MapItem::MapItemStateEnum::hollow);
 }
 

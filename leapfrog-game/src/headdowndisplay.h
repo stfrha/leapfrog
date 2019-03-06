@@ -25,22 +25,36 @@ public:
       enemyStationary
    };
 
+   enum MapItemStateEnum
+   {
+      hollow,
+      filled,
+      flashingSlow,
+      flashingFast
+   };
+
 
 private:
+   oxygine::ResAnim* m_resAnim;
    MapItemTypeEnum m_type;
    oxygine::spActor m_realActor;
    HeadDownDisplay* m_parentMap;
+   int m_itemId;
 
 public:
    MapItem(
       oxygine::Resources* gameResources,
       HeadDownDisplay* hddMapActor,
       MapItemTypeEnum type,
+      MapItemStateEnum state,
+      int id,
       oxygine::spActor actor,
       float scale);
 
    MapItemTypeEnum getType(void);
    oxygine::spActor getActor(void);
+   int getId(void);
+   void setState(MapItem::MapItemStateEnum state);
 
 protected:
    void doUpdate(const oxygine::UpdateState& us);
@@ -58,6 +72,7 @@ private:
    std::vector<spMapItem> m_mapActors;
    float m_mapScale;
    float m_itemScale;
+   int m_itemIdRepository;
 
 
 public:
@@ -75,11 +90,15 @@ public:
 
    void clearMap(void);
 
-   void addMeToMap(
+   int addMeToMap(
       MapItem::MapItemTypeEnum type,
-      oxygine::spActor actor);
+      oxygine::spActor actor,
+      MapItem::MapItemStateEnum state);
 
    void removeMeFromMap(oxygine::spActor removeMe);
+   void removeMeFromMap(int itemId);
+
+   void setState(int itemId, MapItem::MapItemStateEnum state);
 
 protected:
 	void doUpdate(const oxygine::UpdateState& us);

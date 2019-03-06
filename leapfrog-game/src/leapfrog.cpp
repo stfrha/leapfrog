@@ -1237,6 +1237,9 @@ void LeapFrog::footOnLandingPad(bool resting)
 
 void LeapFrog::registerToMap(void)
 {
-   g_HeadDownDisplay->addMeToMap(MapItem::MapItemTypeEnum::me, m_mainActor);
+   g_HeadDownDisplay->addMeToMap(
+      MapItem::MapItemTypeEnum::me, 
+      m_mainActor,
+      MapItem::MapItemStateEnum::filled);
 }
 

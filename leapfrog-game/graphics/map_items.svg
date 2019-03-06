@@ -14,7 +14,7 @@
    viewBox="0 0 210 297"
    version="1.1"
    id="svg8"
-   inkscape:version="0.92.3 (2405546, 2018-03-11)"
+   inkscape:version="0.92.2 (5c3e80d, 2017-08-06)"
    sodipodi:docname="map_items.svg">
   <defs
      id="defs2" />
@@ -25,14 +25,14 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="0.35"
-     inkscape:cx="-64.285714"
-     inkscape:cy="560"
+     inkscape:zoom="0.49497475"
+     inkscape:cx="310.83986"
+     inkscape:cy="646.51059"
      inkscape:document-units="mm"
      inkscape:current-layer="layer1"
      showgrid="false"
-     inkscape:window-width="1600"
-     inkscape:window-height="837"
+     inkscape:window-width="1920"
+     inkscape:window-height="1017"
      inkscape:window-x="-8"
      inkscape:window-y="-8"
      inkscape:window-maximized="1" />
@@ -44,7 +44,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title></dc:title>
+        <dc:title />
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -57,45 +57,114 @@
        id="rect815"
        width="39.196457"
        height="39.196457"
-       x="47.744137"
-       y="27.874878" />
+       x="3.4017708"
+       y="254.40178"
+       inkscape:export-filename="E:\git_dummy\leapfrog\leapfrog-game\data\images\enemy_stationary.png"
+       inkscape:export-xdpi="17.669571"
+       inkscape:export-ydpi="17.669571" />
     <rect
-       style="opacity:1;fill:#0000ff;fill-opacity:0.25882354;stroke:#0000ff;stroke-width:6.80354166;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       style="opacity:1;fill:#0000ff;fill-opacity:0.25882353;stroke:#0000ff;stroke-width:6.80354166;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
        id="rect815-0"
        width="39.196457"
        height="39.196457"
-       x="48.53735"
-       y="93.605476" />
+       x="3.4017708"
+       y="154.40178"
+       inkscape:export-filename="E:\git_dummy\leapfrog\leapfrog-game\data\images\friendly_stationary.png"
+       inkscape:export-xdpi="17.669571"
+       inkscape:export-ydpi="17.669571" />
     <circle
        style="opacity:1;fill:#ff0000;fill-opacity:0.25966851;stroke:#ff0000;stroke-width:6.30735445;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
        id="path832"
-       cx="139.80943"
-       cy="52.11319"
-       r="19.846323" />
+       cx="23"
+       cy="124"
+       r="19.846323"
+       inkscape:export-filename="E:\git_dummy\leapfrog\leapfrog-game\data\images\enemy_moving.png"
+       inkscape:export-xdpi="17.669571"
+       inkscape:export-ydpi="17.669571" />
     <circle
-       style="opacity:1;fill:#0000ff;fill-opacity:0.25882354;stroke:#0000ff;stroke-width:6.30735445;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       style="opacity:1;fill:#0000ff;fill-opacity:0.25882353;stroke:#0000ff;stroke-width:6.30735445;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
        id="path832-2"
-       cx="140.60715"
-       cy="111.03571"
-       r="19.846323" />
+       cx="23"
+       cy="24"
+       r="19.846323"
+       inkscape:export-filename="E:\git_dummy\leapfrog\leapfrog-game\data\images\friendly_moving.png"
+       inkscape:export-xdpi="17.669571"
+       inkscape:export-ydpi="17.669571" />
     <rect
        style="opacity:1;fill:#ffff00;fill-opacity:0.25882353;stroke:#ffff00;stroke-width:6.80354214;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
        id="rect815-0-8"
        width="39.196457"
        height="39.196457"
-       x="49.999317"
-       y="158.28934" />
+       x="3.4017711"
+       y="204.40178"
+       inkscape:export-filename="E:\git_dummy\leapfrog\leapfrog-game\data\images\neutral_stationary.png"
+       inkscape:export-xdpi="17.669571"
+       inkscape:export-ydpi="17.669571" />
     <circle
        style="opacity:1;fill:#ffff00;fill-opacity:0.25882353;stroke:#ffff00;stroke-width:6.30735445;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
        id="path832-2-9"
-       cx="142.06912"
-       cy="175.71957"
-       r="19.846323" />
+       cx="23"
+       cy="74"
+       r="19.846323"
+       inkscape:export-filename="E:\git_dummy\leapfrog\leapfrog-game\data\images\neutral_moving.png"
+       inkscape:export-xdpi="17.669571"
+       inkscape:export-ydpi="17.669571" />
     <circle
        style="opacity:1;fill:#0000ff;fill-opacity:1;stroke:#0000ff;stroke-width:6.30735445;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
        id="path832-2-2"
-       cx="201.83929"
-       cy="110.27976"
-       r="19.846323" />
+       cx="69"
+       cy="24"
+       r="19.846323"
+       inkscape:export-filename="E:\git_dummy\leapfrog\leapfrog-game\data\images\friendly_moving.png"
+       inkscape:export-xdpi="17.669571"
+       inkscape:export-ydpi="17.669571" />
+    <rect
+       style="opacity:1;fill:#ff0000;fill-opacity:1;stroke:#ff0000;stroke-width:6.80354214;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       id="rect815-5"
+       width="39.196457"
+       height="39.196457"
+       x="49.401772"
+       y="254.40178"
+       inkscape:export-filename="E:\git_dummy\leapfrog\leapfrog-game\data\images\enemy_stationary.png"
+       inkscape:export-xdpi="17.669571"
+       inkscape:export-ydpi="17.669571" />
+    <rect
+       style="opacity:1;fill:#ffff00;fill-opacity:1;stroke:#ffff00;stroke-width:6.80354261;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       id="rect815-0-8-7"
+       width="39.196457"
+       height="39.196457"
+       x="49.401772"
+       y="204.40178"
+       inkscape:export-filename="E:\git_dummy\leapfrog\leapfrog-game\data\images\neutral_stationary.png"
+       inkscape:export-xdpi="17.669571"
+       inkscape:export-ydpi="17.669571" />
+    <rect
+       style="opacity:1;fill:#0000ff;fill-opacity:1;stroke:#0000ff;stroke-width:6.80354214;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       id="rect815-0-1"
+       width="39.196457"
+       height="39.196457"
+       x="49.401772"
+       y="154.40178"
+       inkscape:export-filename="E:\git_dummy\leapfrog\leapfrog-game\data\images\friendly_stationary.png"
+       inkscape:export-xdpi="17.669571"
+       inkscape:export-ydpi="17.669571" />
+    <circle
+       style="opacity:1;fill:#ff0000;fill-opacity:1;stroke:#ff0000;stroke-width:6.30735445;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       id="path832-8"
+       cx="69"
+       cy="124"
+       r="19.846323"
+       inkscape:export-filename="E:\git_dummy\leapfrog\leapfrog-game\data\images\enemy_moving.png"
+       inkscape:export-xdpi="17.669571"
+       inkscape:export-ydpi="17.669571" />
+    <circle
+       style="opacity:1;fill:#ffff00;fill-opacity:0.99534881;stroke:#ffff00;stroke-width:6.30735445;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       id="path832-2-9-8"
+       cx="69"
+       cy="74"
+       r="19.846323"
+       inkscape:export-filename="E:\git_dummy\leapfrog\leapfrog-game\data\images\neutral_moving.png"
+       inkscape:export-xdpi="17.669571"
+       inkscape:export-ydpi="17.669571" />
   </g>
 </svg>

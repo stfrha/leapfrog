@@ -11,7 +11,8 @@ SteeringManager::SteeringManager(
    m_sceneActor(sceneActor),
    m_wanderAngle(0.0f),
    m_wanderHunterState(WanderHunterState::wanderState),
-   m_fireTrigger(false)
+   m_fireTrigger(false),
+   m_wanderHunterStateChanged(false)
 {
 }
 
@@ -545,6 +546,7 @@ b2Vec2 SteeringManager::doWanderHunt(const UpdateState& us, b2Body* target, floa
          {
             // Go to pursuit
             m_wanderHunterState = WanderHunterState::pursuitState;
+            m_wanderHunterStateChanged = true;
 
             logs::messageln("Pursuit");
 
@@ -576,6 +578,7 @@ b2Vec2 SteeringManager::doWanderHunt(const UpdateState& us, b2Body* target, floa
          {
             // Go to pursuit
             m_wanderHunterState = WanderHunterState::pursuitState;
+            m_wanderHunterStateChanged = true;
 
             logs::messageln("Pursuit");
 
@@ -588,6 +591,8 @@ b2Vec2 SteeringManager::doWanderHunt(const UpdateState& us, b2Body* target, floa
       {
          // Go to wander
          m_wanderHunterState = WanderHunterState::wanderState;
+         m_wanderHunterStateChanged = true;
+
          m_stateStartTime = us.time;
 
          logs::messageln("Wander");
@@ -612,6 +617,7 @@ b2Vec2 SteeringManager::doWanderHunt(const UpdateState& us, b2Body* target, floa
       {
          // Go to seek
          m_wanderHunterState = WanderHunterState::seekState;
+         m_wanderHunterStateChanged = true;
 
          m_stateStartTime = us.time;
 
@@ -633,3 +639,18 @@ b2Vec2 SteeringManager::doWanderHunt(const UpdateState& us, b2Body* target, floa
    return b2Vec2(0.0f, 0.0f);
 }
 
+SteeringManager::WanderHunterState SteeringManager::peekWanderHunterState(void)
+{
+   return m_wanderHunterState;
+}
+
+SteeringManager::WanderHunterState SteeringManager::getWanderHunterState(void)
+{
+   m_wanderHunterStateChanged = false;
+   return m_wanderHunterState;
+}
+
+bool SteeringManager::getWanderHunterStateChanged(void)
+{
+   return m_wanderHunterStateChanged;
+}
