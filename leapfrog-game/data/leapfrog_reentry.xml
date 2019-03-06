@@ -1,8 +1,8 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <compoundObject
-   needsGroupIndex="true" >
-   <behaviour
-      type="leapfrog" />
+  needsGroupIndex="true">
+  <behaviour
+    type="leapfrog" />
   <dynamicBox
     name="lfBooster"
     texture="lf_boost"
@@ -474,116 +474,111 @@
     useMotor="false"
     motorSpeed="0"
     maxMotorTorque="0" />
-   <system
-      type="gun"
-      name="lfGun">
-      <gunProperties
-         body="lfMainBody"
-         systemOriginX="0"
-         systemOriginY="-4"
-         angle="-90"
-         fireRate="4"
-         lifeTime="2000"
-         impulseMagnitude="10000"
-         bouncy="false" />
-   </system>
-   <system
-      type="flameEmitter"
-      name="boosterFlame">
-      <flameEmitterProperties
-         body="lfBooster"
-         systemOriginX="0"
-         systemOriginY="3"
-         angle="90"
-         emitterWidth="4"
-         lifeTime="250"
-         impulseMagnitude="70"
-         radius="10" />
-   </system>
-   <system
-      type="flameEmitter"
-      name="leftSteeringFlame">
-      <flameEmitterProperties
-         body="lfLeftSteer"
-         systemOriginX="1"
-         systemOriginY="0"
-         angle="0"
-         emitterWidth="1"
-         lifeTime="125"
-         impulseMagnitude="35"
-         radius="5" />
-   </system>
-   <system
-      type="flameEmitter"
-      name="rightSteeringFlame">
-      <flameEmitterProperties
-         body="lfRightSteer"
-         systemOriginX="-1"
-         systemOriginY="0"
-         angle="180"
-         emitterWidth="1"
-         lifeTime="125"
-         impulseMagnitude="35"
-         radius="5" />
-   </system>
-   <system
-      type="reentryFlameEmitter"
-      name="leftReentryFlame">
-      <reentryFlameEmitterProperties
-         body="lfBooster"
-         emitterLineStartX="-8.0"
-         emitterLineStartY="1.7"
-         emitterLineEndX="-2.0"
-         emitterLineEndY="1.7"
-         systemOriginX="22"
-         systemOriginY="0"
-         angle="90"
-         intensity="4.0"
-         lifeTime="500"
-         maxWidth="0.1"
-         maxHeight="5.0" />
-   </system>
-   <system
-      type="reentryFlameEmitter"
-      name="centerReentryFlame">
-      <reentryFlameEmitterProperties
-         body="lfBooster"
-         emitterLineStartX="-2.0"
-         emitterLineStartY="1.7"
-         emitterLineEndX="2.0"
-         emitterLineEndY="1.7"
-         systemOriginX="22"
-         systemOriginY="0"
-         angle="90"
-         intensity="4.0"
-         lifeTime="500"
-         maxWidth="0.1"
-         maxHeight="5.0" />
-   </system>
-   <system
-      type="reentryFlameEmitter"
-      name="rightReentryFlame">
-      <reentryFlameEmitterProperties
-         body="lfBooster"
-         emitterLineStartX="2.0"
-         emitterLineStartY="1.7"
-         emitterLineEndX="8.0"
-         emitterLineEndY="1.7"
-         systemOriginX="22"
-         systemOriginY="0"
-         angle="90"
-         intensity="4.0"
-         lifeTime="500"
-         maxWidth="0.1"
-         maxHeight="5.0" />
-   </system>
-   <system
-      type="shield"
-      name="lfShield">
-      <shieldProperties
-         body="lfMainBody"
-         systemOriginX="0"
-         systemOriginY="1.0"
-         radius="16" />
-   </system>
+  <system
+    name="lfGun"
+    type="gun">
+    <gunProperties
+      body="lfMainBody"
+      systemOriginX="0"
+      systemOriginY="-4"
+      angle="-90"
+      fireRate="4"
+      lifeTime="2000"
+      impulseMagnitude="10000"
+      bouncy="false" />
+  </system>
+  <system
+    name="boosterFlame"
+    type="flameEmitter">
+    <flameEmitterProperties
+      body="lfBooster"
+      systemOriginX="0"
+      systemOriginY="3"
+      angle="90"
+      emitterWidth="4"
+      lifeTime="250"
+      impulseMagnitude="70"
+      radius="10" />
+  </system>
+  <system
+    name="leftSteeringFlame"
+    type="flameEmitter">
+    <flameEmitterProperties
+      body="lfLeftSteer"
+      systemOriginX="1"
+      systemOriginY="0"
+      angle="0"
+      emitterWidth="1"
+      lifeTime="125"
+      impulseMagnitude="35"
+      radius="5" />
+  </system>
+  <system
+    name="rightSteeringFlame"
+    type="flameEmitter">
+    <flameEmitterProperties
+      body="lfRightSteer"
+      systemOriginX="-1"
+      systemOriginY="0"
+      angle="180"
+      emitterWidth="1"
+      lifeTime="125"
+      impulseMagnitude="35"
+      radius="5" />
+  </system>
+  <system
+    name="leftReentryFlame"
+    type="reentryFlameEmitter">
+    <reentryFlameEmitterProperties
+      body="lfBooster"
+      emitterLineStartX="-9.7"
+      emitterLineStartY="0.75"
+      emitterLineEndX="-2.5"
+      emitterLineEndY="1.2"
+      angle="90"
+      intensity="4"
+      lifeTime="500"
+      maxWidth="0.1"
+      maxHeight="5" />
+  </system>
+  <system
+    name="centerReentryFlame"
+    type="reentryFlameEmitter">
+    <reentryFlameEmitterProperties
+      body="lfBooster"
+      emitterLineStartX="-2.3371573300021282"
+      emitterLineStartY="0.96438400726829054"
+      emitterLineEndX="2.245205330910494"
+      emitterLineEndY="1.0869866727236512"
+      angle="90"
+      intensity="4"
+      lifeTime="500"
+      maxWidth="0.1"
+      maxHeight="5" />
+  </system>
+  <system
+    name="rightReentryFlame"
+    type="reentryFlameEmitter">
+    <reentryFlameEmitterProperties
+      body="lfBooster"
+      emitterLineStartX="2.3678079963656273"
+      emitterLineStartY="1.2402400045427384"
+      emitterLineEndX="9.7"
+      emitterLineEndY="0.75"
+      angle="90"
+      intensity="4"
+      lifeTime="500"
+      maxWidth="0.1"
+      maxHeight="5" />
+  </system>
+  <system
+    name="lfShield"
+    type="shield">
+    <shieldProperties
+      body="lfMainBody"
+      systemOriginX="0"
+      systemOriginY="1"
+      radius="16"
+      zLevel="147" />
+  </system>
 </compoundObject>

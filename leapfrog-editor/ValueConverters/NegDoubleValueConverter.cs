@@ -55,18 +55,20 @@ namespace LeapfrogEditor
       }
    }
 
-   class GunDirectionAngleValueConverter : IMultiValueConverter
+   class DirectionAngleValueConverter : IMultiValueConverter
    {
       public object Convert(object[] values, Type targetType, object parameter, System.Globalization.CultureInfo culture)
       {
-         // Values should be: Gun angle, body angle
+         // Values should be: Gun angle, body angle, and angular offset
          if (values.Count() == 2)
          {
+            double angularOffset = System.Convert.ToDouble(parameter);
+
             if ((values[0] is double) && (values[1] is double))
             {
                double gunAngle = (double)values[0];
                double bodyAngle = (double)values[1];
-               return bodyAngle + gunAngle + 90;
+               return bodyAngle + gunAngle + angularOffset;
             }
          }
 

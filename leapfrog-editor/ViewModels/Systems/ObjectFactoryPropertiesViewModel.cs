@@ -84,6 +84,16 @@ namespace LeapfrogEditor
          }
       }
 
+      public LfShapeViewModel BodyObject
+      {
+         get
+         {
+            return _bodyObject;
+         }
+      }
+
+
+
       public ObservableCollection<SpawnObjectViewModel> SpawnObjects
       {
          get { return _spawnObjects; }

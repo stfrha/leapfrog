@@ -23,6 +23,7 @@ namespace LeapfrogEditor
       // in use is defined by the type string of the system.
       private ObjectFactoryPropertiesViewModel _objFactStatesProps = null;
       private FlameEmitterPropertiesViewModel _flameEmitterStatesProps = null;
+      private ReentryFlameEmitterPropertiesViewModel _reentryFlameEmitterStatesProps = null;
       private GunPropertiesViewModel _gunStatesProps = null;
       private ShieldPropertiesViewModel _shieldStatesProps = null;
 
@@ -49,6 +50,10 @@ namespace LeapfrogEditor
          else if (LocalModelObject.Type == "flameEmitter")
          {
             _flameEmitterStatesProps = new FlameEmitterPropertiesViewModel(treeParent, parentVm, mainVm, LocalModelObject.FlameEmitterStateProperties, this);
+         }
+         else if (LocalModelObject.Type == "reentryFlameEmitter")
+         {
+            _reentryFlameEmitterStatesProps = new ReentryFlameEmitterPropertiesViewModel(treeParent, parentVm, mainVm, LocalModelObject.ReentryFlameEmitterStateProperties, this);
          }
          else if (LocalModelObject.Type == "gun")
          {
@@ -108,6 +113,10 @@ namespace LeapfrogEditor
             else if (Type == "flameEmitter")
             {
                return _flameEmitterStatesProps;
+            }
+            else if (Type == "reentryFlameEmitter")
+            {
+               return _reentryFlameEmitterStatesProps;
             }
             else if (Type == "gun")
             {

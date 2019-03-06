@@ -233,6 +233,21 @@
                      </local:FlameEmitterControl.ContextMenu>
                   </local:FlameEmitterControl>
                </DataTemplate>
+               <DataTemplate DataType="{x:Type local:ReentryFlameEmitterPropertiesViewModel}">
+                  <local:ReentryFlameEmitterControl>
+                     <local:ReentryFlameEmitterControl.ContextMenu>
+                        <ContextMenu>
+                           <MenuItem Header="Locate in browser" 
+                                    CommandParameter="{Binding}"
+                                    Command="{Binding Path=Data.LocateInBrowser, Source={StaticResource DataContextProxy}}" />
+                           <Separator />
+                           <MenuItem Header="Delete" 
+                                    CommandParameter="{Binding}"
+                                    Command="{Binding Path=Data.DeleteThisObject, Source={StaticResource DataContextProxy}}" />
+                        </ContextMenu>
+                     </local:ReentryFlameEmitterControl.ContextMenu>
+                  </local:ReentryFlameEmitterControl>
+               </DataTemplate>
                <DataTemplate DataType="{x:Type local:ShieldPropertiesViewModel}">
                   <local:ShieldControl>
                      <local:ShieldControl.ContextMenu>

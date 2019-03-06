@@ -1,4 +1,4 @@
-﻿<UserControl x:Class="LeapfrogEditor.FlameEmitterControl"
+﻿<UserControl x:Class="LeapfrogEditor.ReentryFlameEmitterControl"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
@@ -13,54 +13,46 @@
       <local:ZoomHandleSizeValueConverter x:Key="ZoomHandleSizeValueConverter" />
       <local:ZoomHandleTranslateValueConverter x:Key="ZoomHandleTranslateValueConverter" />
       <local:AttachedBodyPointValueConverter x:Key="AttachedBodyPointValueConverter" />
-      <local:PointAnglePositionValueConverter x:Key="PointAnglePositionValueConverter" />
       <local:FlameEmitterWidthValueConverter x:Key="FlameEmitterWidthValueConverter" />
       <local:DirectionAngleValueConverter x:Key="DirectionAngleValueConverter" />
+      <local:CenterPointAnglePositionValueConverter x:Key="CenterPointAnglePositionValueConverter" />
    </UserControl.Resources>
    <Canvas>
-      <!-- Below is the line along the width of the emitter -->
+      <!-- Below is the line between start and end emitter line -->
       <Line
          StrokeThickness="{Binding ContentScale, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type ZoomAndPan:ZoomAndPanControl}}, Converter={StaticResource ZoomThicknessValueConverter}}"
          Stroke="Purple" >
          <Line.X1>
-            <MultiBinding Converter="{StaticResource FlameEmitterWidthValueConverter}" ConverterParameter="1x">
-               <Binding Path="SystemOriginX" />
-               <Binding Path="SystemOriginY" />
-               <Binding Path="Angle" />
-               <Binding Path="EmitterWidth" />
+            <MultiBinding Converter="{StaticResource AttachedBodyPointValueConverter}" ConverterParameter="x">
+               <Binding Path="EmitterLineStartX" />
+               <Binding Path="EmitterLineStartY" />
                <Binding Path="BodyObject.PosX"/>
                <Binding Path="BodyObject.PosY"/>
                <Binding Path="BodyObject.Angle"/>
             </MultiBinding>
          </Line.X1>
          <Line.Y1>
-            <MultiBinding Converter="{StaticResource FlameEmitterWidthValueConverter}" ConverterParameter="1y">
-               <Binding Path="SystemOriginX" />
-               <Binding Path="SystemOriginY" />
-               <Binding Path="Angle" />
-               <Binding Path="EmitterWidth" />
+            <MultiBinding Converter="{StaticResource AttachedBodyPointValueConverter}" ConverterParameter="y">
+               <Binding Path="EmitterLineStartX" />
+               <Binding Path="EmitterLineStartY" />
                <Binding Path="BodyObject.PosX"/>
                <Binding Path="BodyObject.PosY"/>
                <Binding Path="BodyObject.Angle"/>
             </MultiBinding>
          </Line.Y1>
          <Line.X2>
-            <MultiBinding Converter="{StaticResource FlameEmitterWidthValueConverter}" ConverterParameter="2x">
-               <Binding Path="SystemOriginX" />
-               <Binding Path="SystemOriginY" />
-               <Binding Path="Angle" />
-               <Binding Path="EmitterWidth" />
+            <MultiBinding Converter="{StaticResource AttachedBodyPointValueConverter}" ConverterParameter="x">
+               <Binding Path="EmitterLineEndX" />
+               <Binding Path="EmitterLineEndY" />
                <Binding Path="BodyObject.PosX"/>
                <Binding Path="BodyObject.PosY"/>
                <Binding Path="BodyObject.Angle"/>
             </MultiBinding>
          </Line.X2>
          <Line.Y2>
-            <MultiBinding Converter="{StaticResource FlameEmitterWidthValueConverter}" ConverterParameter="2y">
-               <Binding Path="SystemOriginX" />
-               <Binding Path="SystemOriginY" />
-               <Binding Path="Angle" />
-               <Binding Path="EmitterWidth" />
+            <MultiBinding Converter="{StaticResource AttachedBodyPointValueConverter}" ConverterParameter="y">
+               <Binding Path="EmitterLineEndX" />
+               <Binding Path="EmitterLineEndY" />
                <Binding Path="BodyObject.PosX"/>
                <Binding Path="BodyObject.PosY"/>
                <Binding Path="BodyObject.Angle"/>
@@ -72,27 +64,35 @@
          StrokeThickness="{Binding ContentScale, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type ZoomAndPan:ZoomAndPanControl}}, Converter={StaticResource ZoomThicknessValueConverter}}"
          Stroke="Purple" >
          <Line.X1>
-            <MultiBinding Converter="{StaticResource AttachedBodyPointValueConverter}" ConverterParameter="x">
-               <Binding Path="SystemOriginX" />
-               <Binding Path="SystemOriginY" />
+            <MultiBinding Converter="{StaticResource CenterPointAnglePositionValueConverter}" ConverterParameter="1x">
+               <Binding Path="EmitterLineStartX" />
+               <Binding Path="EmitterLineStartY" />
+               <Binding Path="EmitterLineEndX" />
+               <Binding Path="EmitterLineEndY" />
+               <Binding Path="Angle" />
                <Binding Path="BodyObject.PosX"/>
                <Binding Path="BodyObject.PosY"/>
                <Binding Path="BodyObject.Angle"/>
             </MultiBinding>
          </Line.X1>
          <Line.Y1>
-            <MultiBinding Converter="{StaticResource AttachedBodyPointValueConverter}" ConverterParameter="y">
-               <Binding Path="SystemOriginX" />
-               <Binding Path="SystemOriginY" />
+            <MultiBinding Converter="{StaticResource CenterPointAnglePositionValueConverter}" ConverterParameter="1y">
+               <Binding Path="EmitterLineStartX" />
+               <Binding Path="EmitterLineStartY" />
+               <Binding Path="EmitterLineEndX" />
+               <Binding Path="EmitterLineEndY" />
+               <Binding Path="Angle" />
                <Binding Path="BodyObject.PosX"/>
                <Binding Path="BodyObject.PosY"/>
                <Binding Path="BodyObject.Angle"/>
             </MultiBinding>
          </Line.Y1>
          <Line.X2>
-            <MultiBinding Converter="{StaticResource PointAnglePositionValueConverter}" ConverterParameter="x">
-               <Binding Path="SystemOriginX" />
-               <Binding Path="SystemOriginY" />
+            <MultiBinding Converter="{StaticResource CenterPointAnglePositionValueConverter}" ConverterParameter="2x">
+               <Binding Path="EmitterLineStartX" />
+               <Binding Path="EmitterLineStartY" />
+               <Binding Path="EmitterLineEndX" />
+               <Binding Path="EmitterLineEndY" />
                <Binding Path="Angle" />
                <Binding Path="BodyObject.PosX"/>
                <Binding Path="BodyObject.PosY"/>
@@ -100,9 +100,11 @@
             </MultiBinding>
          </Line.X2>
          <Line.Y2>
-            <MultiBinding Converter="{StaticResource PointAnglePositionValueConverter}" ConverterParameter="y">
-               <Binding Path="SystemOriginX" />
-               <Binding Path="SystemOriginY" />
+            <MultiBinding Converter="{StaticResource CenterPointAnglePositionValueConverter}" ConverterParameter="2y">
+               <Binding Path="EmitterLineStartX" />
+               <Binding Path="EmitterLineStartY" />
+               <Binding Path="EmitterLineEndX" />
+               <Binding Path="EmitterLineEndY" />
                <Binding Path="Angle" />
                <Binding Path="BodyObject.PosX"/>
                <Binding Path="BodyObject.PosY"/>
@@ -110,7 +112,7 @@
             </MultiBinding>
          </Line.Y2>
       </Line>
-      <!-- Below is the gun starting point, the end of the barrel -->
+      <!-- Below is the starting point of the emitter line -->
       <Ellipse
          Width="{Binding ContentScale, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type ZoomAndPan:ZoomAndPanControl}}, Converter={StaticResource ZoomHandleSizeValueConverter}}"
          Height="{Binding ContentScale, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type ZoomAndPan:ZoomAndPanControl}}, Converter={StaticResource ZoomHandleSizeValueConverter}}"
@@ -121,8 +123,8 @@
 		   MouseMove="AnchorA_MouseMove" >
          <Canvas.Left>
             <MultiBinding Converter="{StaticResource AttachedBodyPointValueConverter}" ConverterParameter="x">
-               <Binding Path="SystemOriginX" />
-               <Binding Path="SystemOriginY" />
+               <Binding Path="EmitterLineStartX" />
+               <Binding Path="EmitterLineStartY" />
                <Binding Path="BodyObject.PosX"/>
                <Binding Path="BodyObject.PosY"/>
                <Binding Path="BodyObject.Angle"/>
@@ -130,8 +132,52 @@
          </Canvas.Left>
          <Canvas.Top>
             <MultiBinding Converter="{StaticResource AttachedBodyPointValueConverter}" ConverterParameter="y">
-               <Binding Path="SystemOriginX" />
-               <Binding Path="SystemOriginY" />
+               <Binding Path="EmitterLineStartX" />
+               <Binding Path="EmitterLineStartY" />
+               <Binding Path="BodyObject.PosX"/>
+               <Binding Path="BodyObject.PosY"/>
+               <Binding Path="BodyObject.Angle"/>
+            </MultiBinding>
+         </Canvas.Top>
+         <Ellipse.Style>
+            <Style TargetType="{x:Type Ellipse}" >
+               <Setter Property="Stroke" Value="Purple"/>
+               <Style.Triggers>
+                  <DataTrigger Binding="{Binding SystemViewModel.IsSelected}" Value="True">
+                     <Setter Property="Stroke" Value="Violet" />
+                  </DataTrigger>
+               </Style.Triggers>
+            </Style>
+         </Ellipse.Style>
+         <Ellipse.RenderTransform>
+            <TranslateTransform 
+                     X="{Binding ContentScale, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type ZoomAndPan:ZoomAndPanControl}}, Converter={StaticResource ZoomHandleTranslateValueConverter}}"
+                     Y="{Binding ContentScale, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type ZoomAndPan:ZoomAndPanControl}}, Converter={StaticResource ZoomHandleTranslateValueConverter}}"
+                  />
+         </Ellipse.RenderTransform>
+      </Ellipse>
+      <!-- Below is the end point of the emitter line -->
+      <Ellipse
+         Width="{Binding ContentScale, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type ZoomAndPan:ZoomAndPanControl}}, Converter={StaticResource ZoomHandleSizeValueConverter}}"
+         Height="{Binding ContentScale, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type ZoomAndPan:ZoomAndPanControl}}, Converter={StaticResource ZoomHandleSizeValueConverter}}"
+         StrokeThickness="{Binding ContentScale, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type ZoomAndPan:ZoomAndPanControl}}, Converter={StaticResource ZoomThicknessValueConverter}}"
+         Fill="Purple"
+         MouseDown="AnchorB_MouseDown"
+		   MouseUp="AnchorB_MouseUp"
+		   MouseMove="AnchorB_MouseMove" >
+         <Canvas.Left>
+            <MultiBinding Converter="{StaticResource AttachedBodyPointValueConverter}" ConverterParameter="x">
+               <Binding Path="EmitterLineEndX" />
+               <Binding Path="EmitterLineEndY" />
+               <Binding Path="BodyObject.PosX"/>
+               <Binding Path="BodyObject.PosY"/>
+               <Binding Path="BodyObject.Angle"/>
+            </MultiBinding>
+         </Canvas.Left>
+         <Canvas.Top>
+            <MultiBinding Converter="{StaticResource AttachedBodyPointValueConverter}" ConverterParameter="y">
+               <Binding Path="EmitterLineEndX" />
+               <Binding Path="EmitterLineEndY" />
                <Binding Path="BodyObject.PosX"/>
                <Binding Path="BodyObject.PosY"/>
                <Binding Path="BodyObject.Angle"/>
@@ -161,9 +207,11 @@
                Stroke="Purple"
                Fill="White"               >
          <Canvas.Left>
-            <MultiBinding Converter="{StaticResource PointAnglePositionValueConverter}" ConverterParameter="x">
-               <Binding Path="SystemOriginX" />
-               <Binding Path="SystemOriginY" />
+            <MultiBinding Converter="{StaticResource CenterPointAnglePositionValueConverter}" ConverterParameter="2x">
+               <Binding Path="EmitterLineStartX" />
+               <Binding Path="EmitterLineStartY" />
+               <Binding Path="EmitterLineEndX" />
+               <Binding Path="EmitterLineEndY" />
                <Binding Path="Angle" />
                <Binding Path="BodyObject.PosX"/>
                <Binding Path="BodyObject.PosY"/>
@@ -171,9 +219,11 @@
             </MultiBinding>
          </Canvas.Left>
          <Canvas.Top>
-            <MultiBinding Converter="{StaticResource PointAnglePositionValueConverter}" ConverterParameter="y">
-               <Binding Path="SystemOriginX" />
-               <Binding Path="SystemOriginY" />
+            <MultiBinding Converter="{StaticResource CenterPointAnglePositionValueConverter}" ConverterParameter="2y">
+               <Binding Path="EmitterLineStartX" />
+               <Binding Path="EmitterLineStartY" />
+               <Binding Path="EmitterLineEndX" />
+               <Binding Path="EmitterLineEndY" />
                <Binding Path="Angle" />
                <Binding Path="BodyObject.PosX"/>
                <Binding Path="BodyObject.PosY"/>
@@ -187,7 +237,7 @@
                   Y="{Binding ContentScale, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type ZoomAndPan:ZoomAndPanControl}}, Converter={StaticResource ZoomHandleTranslateValueConverter}}" />
                <RotateTransform x:Name="d2">
                   <RotateTransform.Angle>
-                     <MultiBinding Converter="{StaticResource DirectionAngleValueConverter}" ConverterParameter="90" >
+                     <MultiBinding Converter="{StaticResource DirectionAngleValueConverter}" ConverterParameter="-90" >
                         <Binding Path="Angle" />
                         <Binding Path="BodyObject.Angle"/>
                      </MultiBinding>

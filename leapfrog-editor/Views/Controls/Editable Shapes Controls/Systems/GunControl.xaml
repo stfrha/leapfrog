@@ -14,7 +14,7 @@
       <local:ZoomHandleTranslateValueConverter x:Key="ZoomHandleTranslateValueConverter" />
       <local:AttachedBodyPointValueConverter x:Key="AttachedBodyPointValueConverter" />
       <local:PointAnglePositionValueConverter x:Key="PointAnglePositionValueConverter" />
-      <local:GunDirectionAngleValueConverter x:Key="GunDirectionAngleValueConverter" />
+      <local:DirectionAngleValueConverter x:Key="DirectionAngleValueConverter" />
    </UserControl.Resources>
    <Canvas>
       <!-- Below is the line along the barrel axis -->
@@ -137,7 +137,7 @@
                   Y="{Binding ContentScale, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type ZoomAndPan:ZoomAndPanControl}}, Converter={StaticResource ZoomHandleTranslateValueConverter}}" />
                <RotateTransform x:Name="d2">
                   <RotateTransform.Angle>
-                     <MultiBinding Converter="{StaticResource GunDirectionAngleValueConverter}">
+                     <MultiBinding Converter="{StaticResource DirectionAngleValueConverter}" ConverterParameter="90" >
                         <Binding Path="Angle" />
                         <Binding Path="BodyObject.Angle"/>
                      </MultiBinding>

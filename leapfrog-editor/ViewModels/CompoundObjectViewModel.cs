@@ -705,6 +705,12 @@ namespace LeapfrogEditor
                   BodyOriginSystemViewModel sysProp = sys.Properties as BodyOriginSystemViewModel;
                   sysProp.ConnectToShapes(_shapes);
                }
+
+               if (sys.Properties is ReentryFlameEmitterPropertiesViewModel)
+               {
+                  ReentryFlameEmitterPropertiesViewModel sysProp = sys.Properties as ReentryFlameEmitterPropertiesViewModel;
+                  sysProp.ConnectToShapes(_shapes);
+               }
             }
          }
 

@@ -15,7 +15,6 @@
       <local:ZoomHandleTranslateValueConverter x:Key="ZoomHandleTranslateValueConverter" />
       <local:AttachedBodyPointValueConverter x:Key="AttachedBodyPointValueConverter" />
       <local:PointAnglePositionValueConverter x:Key="PointAnglePositionValueConverter" />
-      <local:GunDirectionAngleValueConverter x:Key="GunDirectionAngleValueConverter" />
    </UserControl.Resources>
    <Canvas>
       <!-- Below is the shield extent -->

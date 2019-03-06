@@ -26,7 +26,7 @@ namespace LeapfrogEditor
       public FlameEmitterProperties()
       {
          _angle = 0;
-         _emitterWidth = 0;
+         _emitterWidth = 10;
          _lifeTime = 60000;
          _impulseMagnitude = 100;
          _radius = 100;

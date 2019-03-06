@@ -19,6 +19,7 @@ namespace LeapfrogEditor
       private GunProperties _gunStateProperties;
       private ShieldProperties _shieldStateProperties;
       private FlameEmitterProperties _flameEmitterStateProperties;
+      private ReentryFlameEmitterProperties _reentryFlameEmitterStateProperties;
 
       #endregion
 
@@ -95,6 +96,18 @@ namespace LeapfrogEditor
       public bool ShouldSerializeFlameEmitterStateProperties()
       {
          return (Type == "flameEmitter");
+      }
+
+      [XmlElement("reentryFlameEmitterProperties")]
+      public ReentryFlameEmitterProperties ReentryFlameEmitterStateProperties
+      {
+         get { return _reentryFlameEmitterStateProperties; }
+         set { _reentryFlameEmitterStateProperties = value; }
+      }
+
+      public bool ShouldSerializeReentryFlameEmitterStateProperties()
+      {
+         return (Type == "reentryFlameEmitter");
       }
 
 

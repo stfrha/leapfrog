@@ -49,9 +49,13 @@
                <MenuItem Header="Weld Joint" Command="{Binding NewJoint}" CommandParameter="weldJoint"  />
                <MenuItem Header="Revolute Joint" Command="{Binding NewJoint}" CommandParameter="revoluteJoint"  />
                <MenuItem Header="Prismatic Joint" Command="{Binding NewJoint}" CommandParameter="prismaticJoint"  />
-               <Separator />
-               <MenuItem Header="Object Factory" Command="{Binding NewShape}" CommandParameter="objectFactory"  />
                <MenuItem Header="Rope" Command="{Binding NewJoint}" CommandParameter="rope"  />
+               <Separator />
+               <MenuItem Header="Object Factory System" Command="{Binding NewSystem}" CommandParameter="objectFactory"  />
+               <MenuItem Header="Gun System" Command="{Binding NewSystem}" CommandParameter="gun"  />
+               <MenuItem Header="Shield System" Command="{Binding NewSystem}" CommandParameter="shield"  />
+               <MenuItem Header="Flame Emitter System" Command="{Binding NewSystem}" CommandParameter="flameEmitter"  />
+               <MenuItem Header="Reentry Flame Emitter System" Command="{Binding NewSystem}" CommandParameter="reentryFlameEmitter"  />
             </MenuItem>
             <MenuItem Header="Import">
                <MenuItem Header="Compound Object" Command="{Binding ImportCompoundObject}" />

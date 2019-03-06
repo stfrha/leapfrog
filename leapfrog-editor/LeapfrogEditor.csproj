@@ -58,6 +58,7 @@
     <Compile Include="Models\Behaviours\ExplosiveObjectProperties.cs" />
     <Compile Include="Models\Interfaces\ISpawnObjectParentInterface.cs" />
     <Compile Include="Models\Systems\BodyOriginSystem.cs" />
+    <Compile Include="Models\Systems\ReentryFlameEmitterProperties.cs" />
     <Compile Include="Utilities\CoordinateTransformations.cs" />
     <Compile Include="Utilities\GlobalDataDirectory.cs" />
     <Compile Include="Models\Behaviours\BreakableObjectProperties.cs" />
@@ -74,6 +75,7 @@
     <Compile Include="Models\Systems\GunProperties.cs" />
     <Compile Include="ValueConverters\NegDoubleValueConverter.cs" />
     <Compile Include="ValueConverters\FlameEmitterValueConverters.cs" />
+    <Compile Include="ValueConverters\ReentryFlameEmitterValueConverters.cs" />
     <Compile Include="ValueConverters\ToCollectionValueConverter.cs" />
     <Compile Include="ValueConverters\MatchingStateVisibilityConverter.cs" />
     <Compile Include="ValueConverters\TextureBorderValueConverters.cs" />
@@ -100,6 +102,7 @@
     <Compile Include="ViewModels\StateCollectionViewModelBase.cs" />
     <Compile Include="ViewModels\Child Objects\StateChildCollectionViewModel.cs" />
     <Compile Include="ViewModels\Systems\BodyOriginSystemViewModel.cs" />
+    <Compile Include="ViewModels\Systems\ReentryFlameEmitterPropertiesViewModel.cs" />
     <Compile Include="ViewModels\Systems\StateSystemCollectionViewModel.cs" />
     <Compile Include="ViewModels\Systems\SystemViewModelBase.cs" />
     <Compile Include="ViewModels\Systems\CoSystemViewModel.cs" />
@@ -203,6 +206,9 @@
     <Compile Include="Models\CollisionEntities.cs" />
     <Compile Include="Models\ZLevels.cs" />
     <Compile Include="Utilities\ParentalFinder.cs" />
+    <Compile Include="Views\Controls\Editable Properties Controls\System Properties Control\ReentryFlameEmitterSystemPropEditor.xaml.cs">
+      <DependentUpon>ReentryFlameEmitterSystemPropEditor.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\Controls\Editable Properties Controls\System Properties Control\FlameEmitterSystemPropEditor.xaml.cs">
       <DependentUpon>FlameEmitterSystemPropEditor.xaml</DependentUpon>
     </Compile>
@@ -220,6 +226,9 @@
     </Compile>
     <Compile Include="Views\Controls\Editable Shapes Controls\BoxedSpritePolygonControl.xaml.cs">
       <DependentUpon>BoxedSpritePolygonControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Controls\Editable Shapes Controls\Systems\ReentryFlameEmitterControl.xaml.cs">
+      <DependentUpon>ReentryFlameEmitterControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\Controls\Editable Shapes Controls\Systems\FlameEmitterControl.xaml.cs">
       <DependentUpon>FlameEmitterControl.xaml</DependentUpon>
@@ -239,19 +248,19 @@
     <Compile Include="Views\Controls\Editable Shapes Controls\Systems\GunControl.xaml.cs">
       <DependentUpon>GunControl.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\Controls\Editable Shapes Controls\PrismaticJointControl.xaml.cs">
+    <Compile Include="Views\Controls\Editable Shapes Controls\Joints\PrismaticJointControl.xaml.cs">
       <DependentUpon>PrismaticJointControl.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\Controls\Editable Shapes Controls\RevoluteJointControl.xaml.cs">
+    <Compile Include="Views\Controls\Editable Shapes Controls\Joints\RevoluteJointControl.xaml.cs">
       <DependentUpon>RevoluteJointControl.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\Controls\Editable Shapes Controls\RopeControl.xaml.cs">
+    <Compile Include="Views\Controls\Editable Shapes Controls\Joints\RopeControl.xaml.cs">
       <DependentUpon>RopeControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\Controls\Editable Shapes Controls\TrianglesControl.xaml.cs">
       <DependentUpon>TrianglesControl.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\Controls\Editable Shapes Controls\WeldJointControl.xaml.cs">
+    <Compile Include="Views\Controls\Editable Shapes Controls\Joints\WeldJointControl.xaml.cs">
       <DependentUpon>WeldJointControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\Controls\Editable Shapes Controls\ScalableTexturePolygonControl.xaml.cs">
@@ -481,6 +490,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Views\Controls\Editable Properties Controls\System Properties Control\ReentryFlameEmitterSystemPropEditor.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="Views\Controls\Editable Properties Controls\System Properties Control\FlameEmitterSystemPropEditor.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -502,6 +515,10 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="Views\Controls\Editable Shapes Controls\BoxedSpritePolygonControl.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\Controls\Editable Shapes Controls\Systems\ReentryFlameEmitterControl.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
@@ -529,15 +546,15 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Views\Controls\Editable Shapes Controls\PrismaticJointControl.xaml">
+    <Page Include="Views\Controls\Editable Shapes Controls\Joints\PrismaticJointControl.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Views\Controls\Editable Shapes Controls\RevoluteJointControl.xaml">
+    <Page Include="Views\Controls\Editable Shapes Controls\Joints\RevoluteJointControl.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Views\Controls\Editable Shapes Controls\RopeControl.xaml">
+    <Page Include="Views\Controls\Editable Shapes Controls\Joints\RopeControl.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
@@ -545,7 +562,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Views\Controls\Editable Shapes Controls\WeldJointControl.xaml">
+    <Page Include="Views\Controls\Editable Shapes Controls\Joints\WeldJointControl.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>

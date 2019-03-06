@@ -34,8 +34,12 @@ namespace LeapfrogEditor
       revoluteJoint,
       prismaticJoint,
       addPoint,
+      rope,
       objectFactory,
-      rope
+      gun,
+      shield,
+      flameEmitter,
+      reentryFlameEmitter
    }
 
    public enum MouseEventObjectType
@@ -55,7 +59,9 @@ namespace LeapfrogEditor
       objectFactory,                // object is an object factory
       gunSystem,                    // object is an gun system
       flameEmitterSystem,           // object is an flame emitter system
-      shieldSystem                  // object is an shield system
+      shieldSystem,                 // object is an shield system
+      systemAnchorA,                // object is an reentry flame emitter system
+      systemAnchorB                 // object is an reentry flame emitter system
    }
 
    class MouseEventObjectTypeConverter
@@ -799,6 +805,10 @@ namespace LeapfrogEditor
          {
             _LeftClickState = LeftClickState.none;
          }
+         else
+         {
+            ShowJoints = true;
+         }
       }
 
       bool CanNewJointExecute(Object parameter)
@@ -825,6 +835,40 @@ namespace LeapfrogEditor
          get
          {
             return new MicroMvvm.RelayCommand<Object>(parameter => NewJointExecute(parameter), parameter => CanNewJointExecute(parameter));
+         }
+      }
+
+      void NewSystemExecute(Object parameter)
+      {
+         string param = parameter as string;
+
+         if (!Enum.TryParse<LeftClickState>(param, out _LeftClickState))
+         {
+            _LeftClickState = LeftClickState.none;
+         }
+         else
+         {
+            ShowSystems = true;
+         }
+      }
+
+      bool CanNewSystemExecute(Object parameter)
+      {
+         if (parameter is string)
+         {
+            string p = (string)parameter;
+
+            return ((EditedCpVm != null) && (SelectedShapes.Count == 1));
+         }
+
+         return false;
+      }
+
+      public ICommand NewSystem
+      {
+         get
+         {
+            return new MicroMvvm.RelayCommand<Object>(parameter => NewSystemExecute(parameter), parameter => CanNewSystemExecute(parameter));
          }
       }
 
@@ -985,6 +1029,25 @@ namespace LeapfrogEditor
             spvm.SpawnObjects.Remove(sovm);
 
          }
+
+         if (parameter is SystemViewModelBase)
+         {
+            SystemViewModelBase spvm = parameter as SystemViewModelBase;
+            CoSystemViewModel sysVm = spvm.SystemViewModel;
+            CompoundObjectViewModel covm = sysVm.ParentVm as CompoundObjectViewModel;
+
+            covm.ModelObject.Systems.Remove(sysVm.LocalModelObject);
+            covm.StateSystems.Systems.Remove(sysVm);
+         }
+
+         if (parameter is CoSystemViewModel)
+         {
+            CoSystemViewModel sysVm = parameter as CoSystemViewModel;
+            CompoundObjectViewModel covm = sysVm.ParentVm as CompoundObjectViewModel;
+
+            covm.ModelObject.Systems.Remove(sysVm.LocalModelObject);
+            covm.StateSystems.Systems.Remove(sysVm);
+         }
       }
 
       bool CanDeleteThisObjectExecute(Object parameter)
@@ -996,7 +1059,8 @@ namespace LeapfrogEditor
 
          if ((EditedCpVm != null) && ((parameter is LfShapeViewModel) || 
             (parameter is WeldJointViewModel) || (parameter is ChildCOViewModel) ||
-            (parameter is ChildObjectViewModel) || (parameter is SpawnObjectViewModel)))
+            (parameter is ChildObjectViewModel) || (parameter is SpawnObjectViewModel) ||
+            (parameter is SystemViewModelBase) || (parameter is CoSystemViewModel)))
          {
             return true;
          }
@@ -1186,6 +1250,9 @@ namespace LeapfrogEditor
                case MouseEventObjectType.gunSystem:
                case MouseEventObjectType.flameEmitterSystem:
                case MouseEventObjectType.objectFactory:
+               case MouseEventObjectType.shieldSystem:
+               case MouseEventObjectType.systemAnchorA:
+               case MouseEventObjectType.systemAnchorB:
                   // So far we do not do anything here
                   return false;
 
@@ -1447,22 +1514,39 @@ namespace LeapfrogEditor
 
                return true;
 
-            //case MouseEventObjectType.flameEmitterSystem:
+            case MouseEventObjectType.systemAnchorA:
 
-            //   FlameEmitterPropertiesViewModel fevm = (FlameEmitterPropertiesViewModel)sender;
+               ReentryFlameEmitterPropertiesViewModel refevm = (ReentryFlameEmitterPropertiesViewModel)sender;
 
-            //   // Before moving, we rotate the vector to match the shape rotation.
-            //   vectPoint = new Point(dragVector.X, dragVector.Y);
-            //   rotPoint = CoordinateTransformations.LocalPointFromRotated(vectPoint, fevm.BodyObject.Angle);
-            //   rotatedDragVector = new Vector(rotPoint.X, rotPoint.Y);
+               // Before moving, we rotate the vector to match the shape rotation.
+               vectPoint = new Point(dragVector.X, dragVector.Y);
+               rotPoint = CoordinateTransformations.LocalPointFromRotated(vectPoint, refevm.BodyObject.Angle);
+               rotatedDragVector = new Vector(rotPoint.X, rotPoint.Y);
 
-            //   // Find new point
-            //   fevm.EmitterOriginX += rotatedDragVector.X;
-            //   fevm.EmitterOriginY += rotatedDragVector.Y;
+               // Find new point
+               refevm.EmitterLineStartX += rotatedDragVector.X;
+               refevm.EmitterLineStartY += rotatedDragVector.Y;
 
-            //   fevm.OnPropertyChanged("");
+               refevm.OnPropertyChanged("");
 
-            //   return true;
+               return true;
+
+            case MouseEventObjectType.systemAnchorB:
+
+               refevm = (ReentryFlameEmitterPropertiesViewModel)sender;
+
+               // Before moving, we rotate the vector to match the shape rotation.
+               vectPoint = new Point(dragVector.X, dragVector.Y);
+               rotPoint = CoordinateTransformations.LocalPointFromRotated(vectPoint, refevm.BodyObject.Angle);
+               rotatedDragVector = new Vector(rotPoint.X, rotPoint.Y);
+
+               // Find new point
+               refevm.EmitterLineEndX += rotatedDragVector.X;
+               refevm.EmitterLineEndY += rotatedDragVector.Y;
+
+               refevm.OnPropertyChanged("");
+
+               return true;
 
             case MouseEventObjectType.none:
                break;
@@ -1542,6 +1626,8 @@ namespace LeapfrogEditor
                case MouseEventObjectType.gunSystem:
                case MouseEventObjectType.flameEmitterSystem:
                case MouseEventObjectType.shieldSystem:
+               case MouseEventObjectType.systemAnchorA:
+               case MouseEventObjectType.systemAnchorB:
 
                   // Mouse up on Shape
                   SystemViewModelBase ofpvm = (SystemViewModelBase)sender;
@@ -1994,40 +2080,136 @@ namespace LeapfrogEditor
                _LeftClickState = LeftClickState.none;
 
             }
-/*
             else if (_LeftClickState == LeftClickState.objectFactory)
             {
-               // The first point of this polygon will be the PosX and PosY of the 
-               // new shape, and thus, the first polygon vertex should be at 0,0.
-               Point parentOrigo = new Point(SelectedChildObjects.PosX, SelectedChildObjects.PosY);
-               Point localClickPoint = new Point();
-               localClickPoint = (Point)(clickPoint - parentOrigo);
+               // Create a new object factory
+               CoSystem newSystem = new CoSystem();
+               newSystem.Type = "objectFactory";
+               newSystem.ObjFactStateProperties = new ObjectFactoryProperties();
+               newSystem.ObjFactStateProperties.Body = SelectedShapes[0].Name;
 
-               ObjectFactoryRef afr = new ObjectFactoryRef();
+               // Create new view model, will also create the properties vm and connect to bodý
+               CoSystemViewModel newSysVm = new CoSystemViewModel(EditedCpVm.StateSystems, EditedCpVm, this, newSystem, true);
 
-               TStateProperties<ObjectFactoryProperties> sp = new TStateProperties<ObjectFactoryProperties>();
+               ObjectFactoryPropertiesViewModel propVm = newSysVm.Properties as ObjectFactoryPropertiesViewModel;
 
-               afr.StateProperties.Add(sp);
+               Point parentObjectOrigo = new Point(0, 0);
 
-               ObjectFactoryProperties afp = new ObjectFactoryProperties();
-               afp.PosX = localClickPoint.X;
-               afp.PosY = localClickPoint.Y;
+               // Shape point
+               Point shapeAOrigo = new Point(propVm.PosX, propVm.PosY);
+               shapeAOrigo.Offset(parentObjectOrigo.X, parentObjectOrigo.Y);
+               Point localAClickPoint = new Point();
+               localAClickPoint = (Point)(clickPoint - shapeAOrigo);
 
-               sp.Properties = afp;
+               // Rotate point to shape rotation
+               Point rotatedAClickPoint = CoordinateTransformations.LocalPointFromRotated(localAClickPoint, propVm.BodyObject.Angle);
 
-               ObjectFactoryViewModel afvm = new ObjectFactoryViewModel(this, SelectedChildObjects, afr);
+               propVm.PosX = rotatedAClickPoint.X;
+               propVm.PosY = rotatedAClickPoint.Y;
 
-               SelectedChildObjects.ModelObject.ObjectFactories.Add(afr);
+               EditedCpVm.StateSystems.Systems.Add(newSysVm);
+               EditedCpVm.ModelObject.Systems.Add(newSystem);
 
-               SelectedChildObjects.Shapes.Add(afvm);
-
-               SelectedShapes.Add(afvm);
-               afvm.IsSelected = true;
+               newSysVm.IsSelected = true;
 
                _LeftClickState = LeftClickState.none;
 
             }
-            */
+            else if ((_LeftClickState == LeftClickState.gun) ||
+                  (_LeftClickState == LeftClickState.flameEmitter) ||
+                  (_LeftClickState == LeftClickState.shield))
+            {
+               // Create a new system model
+               CoSystem newSystem = new CoSystem();
+
+               newSystem.Type = _LeftClickState.ToString();
+
+               if (_LeftClickState == LeftClickState.gun)
+               {
+                  newSystem.GunStateProperties = new GunProperties();
+                  newSystem.GunStateProperties.BodyName = SelectedShapes[0].Name;
+               }
+               else if (_LeftClickState == LeftClickState.flameEmitter)
+               {
+                  newSystem.FlameEmitterStateProperties = new FlameEmitterProperties();
+                  newSystem.FlameEmitterStateProperties.BodyName = SelectedShapes[0].Name;
+               }
+               else if (_LeftClickState == LeftClickState.shield)
+               {
+                  newSystem.ShieldStateProperties = new ShieldProperties();
+                  newSystem.ShieldStateProperties.BodyName = SelectedShapes[0].Name;
+               }
+               
+               // Create new view model, will also create the properties vm but does not connect to body
+               CoSystemViewModel newSysVm = new CoSystemViewModel(EditedCpVm.StateSystems, EditedCpVm, this, newSystem, true);
+
+               BodyOriginSystemViewModel propVm = newSysVm.Properties as BodyOriginSystemViewModel;
+
+               propVm.ConnectToShapes(EditedCpVm.StateShapes);
+
+               Point parentObjectOrigo = new Point(0, 0);
+
+               // Shape point
+               Point shapeAOrigo = new Point(propVm.SystemOriginX, propVm.SystemOriginY);
+               shapeAOrigo.Offset(parentObjectOrigo.X, parentObjectOrigo.Y);
+               Point localAClickPoint = new Point();
+               localAClickPoint = (Point)(clickPoint - shapeAOrigo);
+
+               // Rotate point to shape rotation
+               Point rotatedAClickPoint = CoordinateTransformations.LocalPointFromRotated(localAClickPoint, propVm.BodyObject.Angle);
+
+               propVm.SystemOriginX = rotatedAClickPoint.X;
+               propVm.SystemOriginY = rotatedAClickPoint.Y;
+
+               EditedCpVm.StateSystems.Systems.Add(newSysVm);
+               EditedCpVm.ModelObject.Systems.Add(newSystem);
+
+               newSysVm.IsSelected = true;
+
+               _LeftClickState = LeftClickState.none;
+
+            }
+            else if (_LeftClickState == LeftClickState.reentryFlameEmitter)
+            {
+               // Create a new system model
+               CoSystem newSystem = new CoSystem();
+
+               newSystem.Type = _LeftClickState.ToString();
+               newSystem.ReentryFlameEmitterStateProperties = new ReentryFlameEmitterProperties();
+               newSystem.ReentryFlameEmitterStateProperties.BodyName = SelectedShapes[0].Name;
+
+               // Create new view model, will also create the properties vm but does not connect to body
+               CoSystemViewModel newSysVm = new CoSystemViewModel(EditedCpVm.StateSystems, EditedCpVm, this, newSystem, true);
+
+               ReentryFlameEmitterPropertiesViewModel propVm = newSysVm.Properties as ReentryFlameEmitterPropertiesViewModel;
+
+               propVm.ConnectToShapes(EditedCpVm.StateShapes);
+
+               Point parentObjectOrigo = new Point(0, 0);
+
+               // Shape point
+               Point shapeAOrigo = new Point(propVm.EmitterLineStartX, propVm.EmitterLineStartY);
+               shapeAOrigo.Offset(parentObjectOrigo.X, parentObjectOrigo.Y);
+               Point localAClickPoint = new Point();
+               localAClickPoint = (Point)(clickPoint - shapeAOrigo);
+
+               // Rotate point to shape rotation
+               Point rotatedAClickPoint = CoordinateTransformations.LocalPointFromRotated(localAClickPoint, propVm.BodyObject.Angle);
+
+               propVm.EmitterLineStartX = rotatedAClickPoint.X;
+               propVm.EmitterLineStartY = rotatedAClickPoint.Y;
+
+               propVm.EmitterLineEndX = propVm.EmitterLineStartX + 10;
+               propVm.EmitterLineEndY = propVm.EmitterLineStartY + 10;
+
+               EditedCpVm.StateSystems.Systems.Add(newSysVm);
+               EditedCpVm.ModelObject.Systems.Add(newSystem);
+
+               newSysVm.IsSelected = true;
+
+               _LeftClickState = LeftClickState.none;
+
+            }
             else if (_LeftClickState == LeftClickState.addPoint)
             {
                // When adding points to new polygon we require that the
@@ -2145,6 +2327,25 @@ namespace LeapfrogEditor
             if (syvm.Properties is FlameEmitterPropertiesViewModel)
             {
                FlameEmitterPropertiesViewModel gpvm = syvm.Properties as FlameEmitterPropertiesViewModel;
+
+               double increment;
+
+               if (fine)
+               {
+                  increment = (double)delta * 0.1;
+               }
+               else
+               {
+                  increment = (double)delta * 1;
+               }
+
+               gpvm.Angle += increment / 120;
+
+            }
+
+            if (syvm.Properties is ReentryFlameEmitterPropertiesViewModel)
+            {
+               ReentryFlameEmitterPropertiesViewModel gpvm = syvm.Properties as ReentryFlameEmitterPropertiesViewModel;
 
                double increment;
 

@@ -26,9 +26,9 @@ namespace LeapfrogEditor
       public GunProperties()
       {
          _angle = 0;
-         _fireRate = 0;
-         _lifeTime = 0;
-         _impulseMagnitude = 0;
+         _fireRate = 4;
+         _lifeTime = 2000;
+         _impulseMagnitude = 10000;
          _bouncy = false;
       }
 

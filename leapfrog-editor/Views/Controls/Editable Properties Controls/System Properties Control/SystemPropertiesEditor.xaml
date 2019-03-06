@@ -31,6 +31,9 @@
                   <DataTemplate DataType="{x:Type local:ObjectFactoryPropertiesViewModel}">
                      <local:ObjectFactoryPropEditor />
                   </DataTemplate>
+                  <DataTemplate DataType="{x:Type local:ReentryFlameEmitterPropertiesViewModel}">
+                     <local:ReentryFlameEmitterSystemPropEditor />
+                  </DataTemplate>
                </ContentControl.Resources>
             </ContentControl>
          </StackPanel>
