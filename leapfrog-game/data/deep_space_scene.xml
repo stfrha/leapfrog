@@ -10,6 +10,58 @@
       </states>
     </sceneProperties>
   </behaviour>
+  <dynamicCircle
+    name="ammo"
+    texture="ammo_power_up"
+    posX="451.484387656139"
+    posY="77.260911375963587"
+    angle="-17"
+    zLevel="160"
+    collisionEntity="notApplicable"
+    collisionCategory="1"
+    collisionMask="65534"
+    radius="7"
+    density="1"
+    friction="0" />
+  <dynamicCircle
+    name="coin"
+    texture="coin_power_up"
+    posX="366.83544941847367"
+    posY="144.14933688440306"
+    angle="0"
+    zLevel="160"
+    collisionEntity="notApplicable"
+    collisionCategory="1"
+    collisionMask="65533"
+    radius="7"
+    density="1"
+    friction="0" />
+  <dynamicCircle
+    name="fuel"
+    texture="fuel_power_up"
+    posX="366.52858368766738"
+    posY="205.52248304566047"
+    angle="0"
+    zLevel="160"
+    collisionEntity="notApplicable"
+    collisionCategory="1"
+    collisionMask="65533"
+    radius="7"
+    density="1"
+    friction="0" />
+  <dynamicCircle
+    name="shield"
+    texture="shield_power_up"
+    posX="403.28902358074811"
+    posY="181.99437978962669"
+    angle="0"
+    zLevel="160"
+    collisionEntity="notApplicable"
+    collisionCategory="1"
+    collisionMask="65533"
+    radius="7"
+    density="1"
+    friction="0" />
   <system
     name="asteroidField"
     type="objectFactory">
