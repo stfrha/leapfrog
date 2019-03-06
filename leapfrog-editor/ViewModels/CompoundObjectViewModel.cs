@@ -599,6 +599,41 @@ namespace LeapfrogEditor
             }
          }
 
+         // Check if there are any systems connected to this svm, if so, removed them
+         // We may remove systems so we need a for loop here:
+         for (int i = StateSystems.Systems.Count - 1; i >= 0; i--)
+         {
+            if (StateSystems.Systems[i] is CoSystemViewModel)
+            {
+               CoSystemViewModel system = (CoSystemViewModel)StateSystems.Systems[i];
+
+               string bodyName = "";
+
+               if (system.Properties is BodyOriginSystemViewModel)
+               {
+                  BodyOriginSystemViewModel prop = system.Properties as BodyOriginSystemViewModel;
+                  bodyName = prop.BodyName;
+               }
+               else if (system.Properties is ObjectFactoryPropertiesViewModel)
+               {
+                  ObjectFactoryPropertiesViewModel prop = system.Properties as ObjectFactoryPropertiesViewModel;
+                  bodyName = prop.Body;
+               }
+               else if (system.Properties is ReentryFlameEmitterPropertiesViewModel)
+               {
+                  ReentryFlameEmitterPropertiesViewModel prop = system.Properties as ReentryFlameEmitterPropertiesViewModel;
+                  bodyName = prop.BodyName;
+               }
+
+               if (bodyName == svm.Name)
+               {
+                  // Remove the system
+                  ModelObject.Systems.Remove(system.LocalModelObject);
+                  StateSystems.Systems.RemoveAt(i);
+               }
+            }
+         }
+
          // Remove the shape model
          ModelObject.RemoveShape(svm.ModelObject);
 
