@@ -54,6 +54,16 @@ namespace LeapfrogEditor
           DependencyProperty.Register("ShowJoints", typeof(bool), typeof(ChildCOObjectUserControl), new PropertyMetadata(false));
 
 
+      public bool ShowSystems
+      {
+         get { return (bool)GetValue(ShowSystemsProperty); }
+         set { SetValue(ShowSystemsProperty, value); }
+      }
+
+      // Using a DependencyProperty as the backing store for ShowSystems.  This enables animation, styling, binding, etc...
+      public static readonly DependencyProperty ShowSystemsProperty =
+          DependencyProperty.Register("ShowSystems", typeof(bool), typeof(ChildCOObjectUserControl), new PropertyMetadata(false));
+
 
 
       public bool ShowTriangles

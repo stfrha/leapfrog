@@ -10,11 +10,9 @@ using System.Windows.Media.Imaging;
 
 namespace LeapfrogEditor
 {
-   class ShieldPropertiesViewModel : SystemViewModelBase
+   class ShieldPropertiesViewModel : BodyOriginSystemViewModel
    {
       #region Declarations
-
-      private ShieldProperties ModelObject;
 
       #endregion
 
@@ -26,9 +24,8 @@ namespace LeapfrogEditor
          MainViewModel mainVm,
          ShieldProperties modelObject,
          CoSystemViewModel systemViewModel) :
-         base(treeParent, parentVm, mainVm, systemViewModel)
+         base(treeParent, parentVm, mainVm, modelObject, systemViewModel)
       {
-         ModelObject = modelObject;
       }
 
       #endregion
@@ -38,57 +35,6 @@ namespace LeapfrogEditor
       public ShieldProperties LocalModelObject
       {
          get { return (ShieldProperties)ModelObject; }
-      }
-
-      public string BodyName
-      {
-         get
-         {
-            if (LocalModelObject == null) return "notDefined";
-
-            return LocalModelObject.BodyName;
-         }
-         set
-         {
-            if (LocalModelObject == null) return;
-
-            LocalModelObject.BodyName = value;
-            OnPropertyChanged("BodyName");
-         }
-      }
-
-      public double BodyAnchorX
-      {
-         get
-         {
-            if (LocalModelObject == null) return 0;
-
-            return LocalModelObject.BodyAnchorX;
-         }
-         set
-         {
-            if (LocalModelObject == null) return;
-
-            LocalModelObject.BodyAnchorX = value;
-            OnPropertyChanged("BodyAnchorX");
-         }
-      }
-
-      public double BodyAnchorY
-      {
-         get
-         {
-            if (LocalModelObject == null) return 0;
-
-            return LocalModelObject.BodyAnchorY;
-         }
-         set
-         {
-            if (LocalModelObject == null) return;
-
-            LocalModelObject.BodyAnchorY = value;
-            OnPropertyChanged("BodyAnchorY");
-         }
       }
 
       public double Radius

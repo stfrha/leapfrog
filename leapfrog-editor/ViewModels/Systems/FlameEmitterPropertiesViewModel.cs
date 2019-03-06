@@ -10,12 +10,9 @@ using System.Windows.Media.Imaging;
 
 namespace LeapfrogEditor
 {
-   class FlameEmitterPropertiesViewModel : SystemViewModelBase
+   class FlameEmitterPropertiesViewModel : BodyOriginSystemViewModel
    {
       #region Declarations
-
-      private  FlameEmitterProperties ModelObject;
-      private LfShapeViewModel _bodyVm;
 
       #endregion
 
@@ -27,9 +24,8 @@ namespace LeapfrogEditor
          MainViewModel mainVm,
          FlameEmitterProperties modelObject,
          CoSystemViewModel systemViewModel) :
-         base(treeParent, parentVm, mainVm, systemViewModel)
+         base(treeParent, parentVm, mainVm, modelObject, systemViewModel)
       {
-         ModelObject = modelObject;
       }
 
       #endregion
@@ -38,69 +34,7 @@ namespace LeapfrogEditor
 
       public FlameEmitterProperties LocalModelObject
       {
-         get { return ModelObject; }
-      }
-
-      public string BodyName
-      {
-         get
-         {
-            if (LocalModelObject == null) return "notDefined";
-
-            return LocalModelObject.BodyName;
-         }
-         set
-         {
-            if (LocalModelObject == null) return;
-
-            LocalModelObject.BodyName = value;
-            OnPropertyChanged("BodyName");
-            ConnectToShapes(ParentVm.StateShapes);
-            OnPropertyChanged("BodyObject");
-         }
-      }
-
-      public LfShapeViewModel BodyObject
-      {
-         get
-         {
-            return _bodyVm;
-         }
-      }
-
-
-      public double EmitterOriginX
-      {
-         get
-         {
-            if (LocalModelObject == null) return 0;
-
-            return LocalModelObject.EmitterOriginX;
-         }
-         set
-         {
-            if (LocalModelObject == null) return;
-
-            LocalModelObject.EmitterOriginX = value;
-            OnPropertyChanged("EmitterOriginX");
-         }
-      }
-
-      public double EmitterOriginY
-      {
-         get
-         {
-            if (LocalModelObject == null) return 0;
-
-            return LocalModelObject.EmitterOriginY;
-         }
-         set
-         {
-            if (LocalModelObject == null) return;
-
-            LocalModelObject.EmitterOriginY = value;
-            OnPropertyChanged("EmitterOriginY");
-         }
+         get { return ModelObject as FlameEmitterProperties; }
       }
 
       public double Angle
@@ -199,15 +133,6 @@ namespace LeapfrogEditor
       #endregion
 
       #region public Methods
-
-      public void ConnectToShapes(StateShapeCollectionViewModel shapes)
-      {
-         _bodyVm = ParentVm.FindShape(ModelObject.BodyName, shapes);
-         if (_bodyVm == null)
-         {
-            MessageBox.Show("The shape pointed to by " + ModelObject.BodyName + " does not exists in CO " + ParentVm.Name, "Error parsing file", MessageBoxButton.OK, MessageBoxImage.Error);
-         }
-      }
 
       #endregion
    }

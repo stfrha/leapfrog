@@ -204,10 +204,49 @@
                   </local:LabeledBoxControl>
                </DataTemplate>
                <DataTemplate DataType="{x:Type local:GunPropertiesViewModel}">
-                  <local:GunControl />
+                  <local:GunControl>
+                     <local:GunControl.ContextMenu>
+                        <ContextMenu>
+                           <MenuItem Header="Locate in browser" 
+                                    CommandParameter="{Binding}"
+                                    Command="{Binding Path=Data.LocateInBrowser, Source={StaticResource DataContextProxy}}" />
+                           <Separator />
+                           <MenuItem Header="Delete" 
+                                    CommandParameter="{Binding}"
+                                    Command="{Binding Path=Data.DeleteThisObject, Source={StaticResource DataContextProxy}}" />
+                        </ContextMenu>
+                     </local:GunControl.ContextMenu>
+                  </local:GunControl>
                </DataTemplate>
                <DataTemplate DataType="{x:Type local:FlameEmitterPropertiesViewModel}">
-                  <local:FlameEmitterControl />
+                  <local:FlameEmitterControl>
+                     <local:FlameEmitterControl.ContextMenu>
+                        <ContextMenu>
+                           <MenuItem Header="Locate in browser" 
+                                    CommandParameter="{Binding}"
+                                    Command="{Binding Path=Data.LocateInBrowser, Source={StaticResource DataContextProxy}}" />
+                           <Separator />
+                           <MenuItem Header="Delete" 
+                                    CommandParameter="{Binding}"
+                                    Command="{Binding Path=Data.DeleteThisObject, Source={StaticResource DataContextProxy}}" />
+                        </ContextMenu>
+                     </local:FlameEmitterControl.ContextMenu>
+                  </local:FlameEmitterControl>
+               </DataTemplate>
+               <DataTemplate DataType="{x:Type local:ShieldPropertiesViewModel}">
+                  <local:ShieldControl>
+                     <local:ShieldControl.ContextMenu>
+                        <ContextMenu>
+                           <MenuItem Header="Locate in browser" 
+                                    CommandParameter="{Binding}"
+                                    Command="{Binding Path=Data.LocateInBrowser, Source={StaticResource DataContextProxy}}" />
+                           <Separator />
+                           <MenuItem Header="Delete" 
+                                    CommandParameter="{Binding}"
+                                    Command="{Binding Path=Data.DeleteThisObject, Source={StaticResource DataContextProxy}}" />
+                        </ContextMenu>
+                     </local:ShieldControl.ContextMenu>
+                  </local:ShieldControl>
                </DataTemplate>
             </ContentControl.Resources>
          </ContentControl>
@@ -235,18 +274,13 @@
             </ItemsPanelTemplate>
          </ItemsControl.ItemsPanel>
       </ItemsControl>
-      <ItemsControl ItemsSource="{Binding StateSystems.Systems}" >
+      <ItemsControl ItemsSource="{Binding StateSystems.Systems}" 
+         Visibility="{Binding ShowSystems, ElementName=root, Converter={StaticResource BoolToVisibilityValueConverter}}" >
          <ItemsControl.ItemsPanel>
             <ItemsPanelTemplate>
                <Canvas/>
             </ItemsPanelTemplate>
          </ItemsControl.ItemsPanel>
-         <!--<ItemsControl.ItemContainerStyle>
-            <Style TargetType="ContentPresenter">
-               <Setter Property="Canvas.Left" Value="{Binding Properties.PosX}"/>
-               <Setter Property="Canvas.Top" Value="{Binding Properties.PosY}"/>
-            </Style>
-         </ItemsControl.ItemContainerStyle>-->
       </ItemsControl>
       <ItemsControl ItemsSource="{Binding ChildObjectsWithStates.Children}">
          <ItemsControl.ItemsPanel>

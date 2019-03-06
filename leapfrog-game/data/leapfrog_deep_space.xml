@@ -479,8 +479,8 @@
       name="lfGun">
       <gunProperties
          body="lfMainBody"
-         emitterOriginX="0"
-         emitterOriginY="-4"
+         systemOriginX="0"
+         systemOriginY="-4"
          angle="-90"
          fireRate="4"
          lifeTime="2000"
@@ -492,8 +492,8 @@
       name="boosterFlame">
       <flameEmitterProperties
          body="lfBooster"
-         emitterOriginX="0"
-         emitterOriginY="3"
+         systemOriginX="0"
+         systemOriginY="3"
          angle="90"
          emitterWidth="4"
          lifeTime="250"
@@ -505,8 +505,8 @@
       name="leftSteeringFlame">
       <flameEmitterProperties
          body="lfLeftSteer"
-         emitterOriginX="1"
-         emitterOriginY="0"
+         systemOriginX="1"
+         systemOriginY="0"
          angle="0"
          emitterWidth="1"
          lifeTime="125"
@@ -518,8 +518,8 @@
       name="rightSteeringFlame">
       <flameEmitterProperties
          body="lfRightSteer"
-         emitterOriginX="-1"
-         emitterOriginY="0"
+         systemOriginX="-1"
+         systemOriginY="0"
          angle="180"
          emitterWidth="1"
          lifeTime="125"
@@ -535,8 +535,8 @@
          emitterLineStartY="1.7"
          emitterLineEndX="-2.0"
          emitterLineEndY="1.7"
-         emitterOriginX="22"
-         emitterOriginY="0"
+         systemOriginX="22"
+         systemOriginY="0"
          angle="90"
          intensity="4.0"
          lifeTime="500"
@@ -552,8 +552,8 @@
          emitterLineStartY="1.7"
          emitterLineEndX="2.0"
          emitterLineEndY="1.7"
-         emitterOriginX="22"
-         emitterOriginY="0"
+         systemOriginX="22"
+         systemOriginY="0"
          angle="90"
          intensity="4.0"
          lifeTime="500"
@@ -569,8 +569,8 @@
          emitterLineStartY="1.7"
          emitterLineEndX="8.0"
          emitterLineEndY="1.7"
-         emitterOriginX="22"
-         emitterOriginY="0"
+         systemOriginX="22"
+         systemOriginY="0"
          angle="90"
          intensity="4.0"
          lifeTime="500"
@@ -582,8 +582,8 @@
       name="lfShield">
       <shieldProperties
          body="lfMainBody"
-         bodyAnchorX="0"
-         bodyAnchorY="1.0"
+         systemOriginX="0"
+         systemOriginY="1.0"
          radius="16" 
          zLevel="147" />
    </system>

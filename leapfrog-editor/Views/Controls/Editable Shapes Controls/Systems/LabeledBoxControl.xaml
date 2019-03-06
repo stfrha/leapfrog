@@ -49,32 +49,6 @@
             </TransformGroup>
          </Rectangle.RenderTransform>
       </Rectangle>
-      <StackPanel>
-         <Canvas.Left>
-            <MultiBinding Converter="{StaticResource RotatableBodyPointMultiConverter}" ConverterParameter="x">
-               <Binding Path="PosX" />
-               <Binding Path="PosY" />
-               <Binding Path="Angle" />
-            </MultiBinding>
-         </Canvas.Left>
-         <Canvas.Top>
-            <MultiBinding Converter="{StaticResource RotatableBodyPointMultiConverter}" ConverterParameter="y">
-               <Binding Path="PosX" />
-               <Binding Path="PosY" />
-               <Binding Path="Angle" />
-            </MultiBinding>
-         </Canvas.Top>
-         <TextBlock 
-            IsHitTestVisible="False"
-            Text="{Binding Type}" 
-            TextAlignment="Left"
-            FontSize="5" />
-         <TextBlock 
-            IsHitTestVisible="False"
-            Text="{Binding ObjectName}" 
-            TextAlignment="Left"
-            FontSize="5" />
-      </StackPanel>
       <!-- Below is the lines between the vertices of the polygon. The lines are
             drawn between the vertices of the polygon and they are rotated acc to the angle-->
       <ItemsControl 
@@ -104,7 +78,7 @@
                <Canvas>
                   <Line
                      StrokeThickness="{Binding ContentScale, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type ZoomAndPan:ZoomAndPanControl}}, Converter={StaticResource ZoomThicknessValueConverter}}"
-                     Stroke="DarkBlue"
+                     Stroke="Purple"
                      MouseDown="ShapeBorder_MouseDown"
 			            MouseUp="ShapeBorder_MouseUp"
 			            MouseMove="ShapeBorder_MouseMove"

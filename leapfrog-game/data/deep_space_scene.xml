@@ -124,8 +124,8 @@
             type="flameEmitter">
             <flameEmitterProperties
               body="mainBody"
-              emitterOriginX="12"
-              emitterOriginY="0"
+              systemOriginX="12"
+              systemOriginY="0"
               angle="0"
               emitterWidth="4"
               lifeTime="500"
@@ -137,8 +137,8 @@
             type="gun">
             <gunProperties
               body="mainBody"
-              emitterOriginX="-10"
-              emitterOriginY="0"
+              systemOriginX="-10"
+              systemOriginY="0"
               angle="-180"
               fireRate="6"
               lifeTime="2000"
@@ -150,8 +150,8 @@
             type="shield">
             <shieldProperties
               body="mainBody"
-              bodyAnchorX="0"
-              bodyAnchorY="1"
+              systemOriginX="0"
+              systemOriginY="1"
               radius="30"
               zLevel="147" />
           </system>
@@ -200,8 +200,8 @@
             type="flameEmitter">
             <flameEmitterProperties
               body="mainBody"
-              emitterOriginX="12"
-              emitterOriginY="0"
+              systemOriginX="12"
+              systemOriginY="0"
               angle="0"
               emitterWidth="4"
               lifeTime="500"
@@ -213,8 +213,8 @@
             type="gun">
             <gunProperties
               body="mainBody"
-              emitterOriginX="-10"
-              emitterOriginY="0"
+              systemOriginX="-10"
+              systemOriginY="0"
               angle="180"
               fireRate="4"
               lifeTime="2000"
@@ -226,8 +226,8 @@
             type="shield">
             <shieldProperties
               body="mainBody"
-              bodyAnchorX="0"
-              bodyAnchorY="1"
+              systemOriginX="0"
+              systemOriginY="1"
               radius="30"
               zLevel="147" />
           </system>

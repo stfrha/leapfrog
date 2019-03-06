@@ -53,7 +53,9 @@ namespace LeapfrogEditor
       prismJointUpperLimit,         // object is the prismatic joint
       prismJointLowerLimit,         // object is the prismatic joint
       objectFactory,                // object is an object factory
-      gunSystem                     // object is an gun system
+      gunSystem,                    // object is an gun system
+      flameEmitterSystem,           // object is an flame emitter system
+      shieldSystem                  // object is an shield system
    }
 
    class MouseEventObjectTypeConverter
@@ -111,6 +113,7 @@ namespace LeapfrogEditor
       private LeftClickState _LeftClickState = LeftClickState.none;
 
       private bool _showJoints;
+      private bool _showSystems;
       private bool _showTriangles;
 
       private ObservableCollection<string> _textures = new ObservableCollection<string>();
@@ -248,6 +251,16 @@ namespace LeapfrogEditor
          {
             _showJoints = value;
             OnPropertyChanged("ShowJoints");
+         }
+      }
+
+      public bool ShowSystems
+      {
+         get { return _showSystems; }
+         set
+         {
+            _showSystems = value;
+            OnPropertyChanged("ShowSystems");
          }
       }
 
@@ -1171,6 +1184,7 @@ namespace LeapfrogEditor
                   return false;
 
                case MouseEventObjectType.gunSystem:
+               case MouseEventObjectType.flameEmitterSystem:
                case MouseEventObjectType.objectFactory:
                   // So far we do not do anything here
                   return false;
@@ -1415,21 +1429,40 @@ namespace LeapfrogEditor
                return true;
 
             case MouseEventObjectType.gunSystem:
+            case MouseEventObjectType.flameEmitterSystem:
+            case MouseEventObjectType.shieldSystem:
 
-               GunPropertiesViewModel gpvm = (GunPropertiesViewModel)sender;
+               BodyOriginSystemViewModel bosvm = (BodyOriginSystemViewModel)sender;
 
                // Before moving, we rotate the vector to match the shape rotation.
                vectPoint = new Point(dragVector.X, dragVector.Y);
-               rotPoint = CoordinateTransformations.LocalPointFromRotated(vectPoint, gpvm.BodyObject.Angle);
+               rotPoint = CoordinateTransformations.LocalPointFromRotated(vectPoint, bosvm.BodyObject.Angle);
                rotatedDragVector = new Vector(rotPoint.X, rotPoint.Y);
 
                // Find new point
-               gpvm.EmitterOriginX += rotatedDragVector.X;
-               gpvm.EmitterOriginY += rotatedDragVector.Y;
+               bosvm.SystemOriginX += rotatedDragVector.X;
+               bosvm.SystemOriginY += rotatedDragVector.Y;
 
-               gpvm.OnPropertyChanged("");
+               bosvm.OnPropertyChanged("");
 
                return true;
+
+            //case MouseEventObjectType.flameEmitterSystem:
+
+            //   FlameEmitterPropertiesViewModel fevm = (FlameEmitterPropertiesViewModel)sender;
+
+            //   // Before moving, we rotate the vector to match the shape rotation.
+            //   vectPoint = new Point(dragVector.X, dragVector.Y);
+            //   rotPoint = CoordinateTransformations.LocalPointFromRotated(vectPoint, fevm.BodyObject.Angle);
+            //   rotatedDragVector = new Vector(rotPoint.X, rotPoint.Y);
+
+            //   // Find new point
+            //   fevm.EmitterOriginX += rotatedDragVector.X;
+            //   fevm.EmitterOriginY += rotatedDragVector.Y;
+
+            //   fevm.OnPropertyChanged("");
+
+            //   return true;
 
             case MouseEventObjectType.none:
                break;
@@ -1506,9 +1539,12 @@ namespace LeapfrogEditor
                   return (button != MouseButton.Right);
 
                case MouseEventObjectType.objectFactory:
+               case MouseEventObjectType.gunSystem:
+               case MouseEventObjectType.flameEmitterSystem:
+               case MouseEventObjectType.shieldSystem:
 
                   // Mouse up on Shape
-                  ObjectFactoryPropertiesViewModel ofpvm = (ObjectFactoryPropertiesViewModel)sender;
+                  SystemViewModelBase ofpvm = (SystemViewModelBase)sender;
 
                   // If the clicked shape is children of the edited object, it should
                   // be selected (assessing the ctrl key in the process for multiple 
@@ -1535,43 +1571,6 @@ namespace LeapfrogEditor
                      }
 
                      ofpvm.SystemViewModel.ParentVm.IsSelected = true;
-                  }
-
-                  // If we pressed right click to select, we want to the rest
-                  // of the even handling to handle context menu, so we does
-                  // not mark the event as handled if we right click
-                  return (button != MouseButton.Right);
-
-               case MouseEventObjectType.gunSystem:
-
-                  // Mouse up on Shape
-                  GunPropertiesViewModel gpvm = (GunPropertiesViewModel)sender;
-
-                  // If the clicked shape is children of the edited object, it should
-                  // be selected (assessing the ctrl key in the process for multiple 
-                  // selection)
-                  // If it is not part of the Editable object, the parent should be selected
-                  // also assessing ctrl-key
-
-                  if (gpvm.ParentVm == EditedCpVm)
-                  {
-                     if (!ctrl)
-                     {
-                        DeselectAll();
-                     }
-
-                     gpvm.SystemViewModel.IsSelected = true;
-                  }
-                  else
-                  {
-                     // The clicked shape is part of a child object, select it or add
-                     // it to selected childs
-                     if (!ctrl)
-                     {
-                        DeselectAll();
-                     }
-
-                     gpvm.SystemViewModel.ParentVm.IsSelected = true;
                   }
 
                   // If we pressed right click to select, we want to the rest
@@ -2127,6 +2126,25 @@ namespace LeapfrogEditor
             if (syvm.Properties is GunPropertiesViewModel)
             {
                GunPropertiesViewModel gpvm = syvm.Properties as GunPropertiesViewModel;
+
+               double increment;
+
+               if (fine)
+               {
+                  increment = (double)delta * 0.1;
+               }
+               else
+               {
+                  increment = (double)delta * 1;
+               }
+
+               gpvm.Angle += increment / 120;
+
+            }
+
+            if (syvm.Properties is FlameEmitterPropertiesViewModel)
+            {
+               FlameEmitterPropertiesViewModel gpvm = syvm.Properties as FlameEmitterPropertiesViewModel;
 
                double increment;
 

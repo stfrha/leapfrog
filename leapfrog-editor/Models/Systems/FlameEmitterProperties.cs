@@ -9,13 +9,10 @@ using System.Xml.Serialization;
 namespace LeapfrogEditor
 {
    [Serializable]
-   public class FlameEmitterProperties
+   public class FlameEmitterProperties : BodyOriginSystem
    {
       #region Declarations
 
-      private string _bodyName;
-      private double _emitterOriginX;
-      private double _emitterOriginY;
       private double _angle;
       private double _emitterWidth;
       private int _lifeTime;
@@ -28,9 +25,6 @@ namespace LeapfrogEditor
 
       public FlameEmitterProperties()
       {
-         _bodyName = "notDefined";
-         _emitterOriginX = 0;
-         _emitterOriginY = 0;
          _angle = 0;
          _emitterWidth = 0;
          _lifeTime = 60000;
@@ -41,27 +35,6 @@ namespace LeapfrogEditor
       #endregion
 
       #region Properties
-
-      [XmlAttribute("body")]
-      public string BodyName
-      {
-         get { return _bodyName; }
-         set { _bodyName = value; }
-      }
-
-      [XmlAttribute("emitterOriginX")]
-      public double EmitterOriginX
-      {
-         get { return _emitterOriginX; }
-         set { _emitterOriginX = value; }
-      }
-
-      [XmlAttribute("emitterOriginY")]
-      public double EmitterOriginY
-      {
-         get { return _emitterOriginY; }
-         set { _emitterOriginY = value; }
-      }
 
       [XmlAttribute("angle")]
       public double Angle

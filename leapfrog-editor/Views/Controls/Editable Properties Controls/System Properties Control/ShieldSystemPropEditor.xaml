@@ -1,4 +1,4 @@
-﻿<UserControl x:Class="LeapfrogEditor.GunSystemPropEditor"
+﻿<UserControl x:Class="LeapfrogEditor.ShieldSystemPropEditor"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
@@ -11,10 +11,7 @@
       <local:StringEditorControl Headline="Body Name" MyValue="{Binding BodyName, Mode=TwoWay}" />
       <local:DoubleEditorControl Headline="Origin X" MyValue="{Binding SystemOriginX, Mode=TwoWay}" />
       <local:DoubleEditorControl Headline="Origin Y" MyValue="{Binding SystemOriginY, Mode=TwoWay}" />
-      <local:DoubleEditorControl Headline="Angle" MyValue="{Binding Angle, Mode=TwoWay}" />
-      <local:DoubleEditorControl Headline="Fire Rate" MyValue="{Binding FireRate, Mode=TwoWay}" />
-      <local:IntEditorControl Headline="Life Time" MyValue="{Binding LifeTime, Mode=TwoWay}" />
-      <local:DoubleEditorControl Headline="Impulse Mag." MyValue="{Binding ImpulseMagnitude, Mode=TwoWay}" />
-      <local:BoolEditorControl Headline="Bouncy" MyValue="{Binding Bouncy, Mode=TwoWay}" />
+      <local:DoubleEditorControl Headline="Radius" MyValue="{Binding Radius, Mode=TwoWay}" />
+      <local:ZLevelEditorControl Headline="Z-level" MyValue="{Binding ZLevel, Mode=TwoWay}" />
    </StackPanel>
 </UserControl>

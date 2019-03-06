@@ -30,8 +30,8 @@ void FlameEmitter::readFlameEmitterNode(const xml_node& objectNode)
 {
    m_emitterBody = m_parent->getBody(objectNode.attribute("body").as_string());
 
-   m_emitterOrigin.x = objectNode.attribute("emitterOriginX").as_float();
-   m_emitterOrigin.y = objectNode.attribute("emitterOriginY").as_float();
+   m_emitterOrigin.x = objectNode.attribute("systemOriginX").as_float();
+   m_emitterOrigin.y = objectNode.attribute("systemOriginY").as_float();
    m_emittAngle = objectNode.attribute("angle").as_float() * MATH_PI / 180.0f;
    m_emitterWidth = objectNode.attribute("emitterWidth").as_float();
    m_radius = objectNode.attribute("radius").as_float();

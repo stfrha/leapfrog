@@ -634,9 +634,9 @@
       name="boosterFlame">
       <flameEmitterProperties
          body="mainTank"
-         emitterOriginX="0"
-         emitterOriginY="28"
-         angle="1.57"
+         systemOriginX="0"
+         systemOriginY="28"
+         angle="90"
          emitterWidth="12"
          lifeTime="500"
          impulseMagnitude="400"
@@ -647,8 +647,8 @@
       name="rightFlame">
       <flameEmitterProperties
          body="rightSupportBooster"
-         emitterOriginX="0"
-         emitterOriginY="19"
+         systemOriginX="0"
+         systemOriginY="19"
          angle="90"
          emitterWidth="2"
          lifeTime="500"
@@ -660,8 +660,8 @@
       name="leftFlame">
       <flameEmitterProperties
          body="leftSupportBooster"
-         emitterOriginX="0"
-         emitterOriginY="19"
+         systemOriginX="0"
+         systemOriginY="19"
          angle="90"
          emitterWidth="2"
          lifeTime="500"

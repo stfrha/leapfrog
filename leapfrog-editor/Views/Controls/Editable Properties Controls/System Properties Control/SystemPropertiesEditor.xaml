@@ -22,6 +22,12 @@
                   <DataTemplate DataType="{x:Type local:GunPropertiesViewModel}">
                      <local:GunSystemPropEditor />
                   </DataTemplate>
+                  <DataTemplate DataType="{x:Type local:FlameEmitterPropertiesViewModel}">
+                     <local:FlameEmitterSystemPropEditor />
+                  </DataTemplate>
+                  <DataTemplate DataType="{x:Type local:ShieldPropertiesViewModel}">
+                     <local:ShieldSystemPropEditor/>
+                  </DataTemplate>
                   <DataTemplate DataType="{x:Type local:ObjectFactoryPropertiesViewModel}">
                      <local:ObjectFactoryPropEditor />
                   </DataTemplate>

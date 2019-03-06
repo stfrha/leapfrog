@@ -66,7 +66,7 @@
             </local:ChildCOObjectUserControl.Visibility>
          </local:ChildCOObjectUserControl>
       </DataTemplate>
-      <DataTemplate DataType="{x:Type local:CoSystemViewModel}" >
+      <!--<DataTemplate DataType="{x:Type local:CoSystemViewModel}" >
          <ContentControl DataContext="{Binding Properties}" Content="{Binding}" >
             <ContentControl.Resources>
                <DataTemplate DataType="{x:Type local:ObjectFactoryPropertiesViewModel}">
@@ -74,7 +74,7 @@
                </DataTemplate>
             </ContentControl.Resources>
          </ContentControl>
-      </DataTemplate>
+      </DataTemplate>-->
    </UserControl.Resources>
    <Canvas x:Name="myCoUserControl" >
       <ItemsControl ItemsSource="{Binding StateShapes.Shapes}">
@@ -98,7 +98,8 @@
             </ItemsPanelTemplate>
          </ItemsControl.ItemsPanel>
       </ItemsControl>
-      <ItemsControl ItemsSource="{Binding StateSystems.Systems}" >
+      <ItemsControl ItemsSource="{Binding StateSystems.Systems}" 
+         Visibility="{Binding ShowSystems, ElementName=root, Converter={StaticResource BoolToVisibilityValueConverter}}" >
          <ItemsControl.ItemsPanel>
             <ItemsPanelTemplate>
                <Canvas/>

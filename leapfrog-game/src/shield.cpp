@@ -97,8 +97,8 @@ void Shield::readShieldNode(const xml_node& objectNode)
    // Seems that only the center of the attachedBody is used.
    // Therefore we don't use origin now, lets see if this 
    // can be corrected
-   // m_attachedOrigin.x = objectNode.attribute("emitterOriginX").as_float();
-   // m_attachedOrigin.y = objectNode.attribute("emitterOriginY").as_float();
+   // m_attachedOrigin.x = objectNode.attribute("systemOriginX").as_float();
+   // m_attachedOrigin.y = objectNode.attribute("systemOriginY").as_float();
 
    m_radius = objectNode.attribute("radius").as_float();
 }

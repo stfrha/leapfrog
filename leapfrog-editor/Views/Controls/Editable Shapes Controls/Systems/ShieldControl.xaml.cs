@@ -16,11 +16,11 @@ using System.Windows.Shapes;
 namespace LeapfrogEditor
 {
    /// <summary>
-   /// Interaction logic for FlameEmitterControl.xaml
+   /// Interaction logic for ShieldControl.xaml
    /// </summary>
-   public partial class FlameEmitterControl : UserControl
+   public partial class ShieldControl : UserControl
    {
-      public FlameEmitterControl()
+      public ShieldControl()
       {
          InitializeComponent();
       }
@@ -30,9 +30,9 @@ namespace LeapfrogEditor
          CompoundObjectUserControl parentControl = ParentalFinder.FindParent<CompoundObjectUserControl>(this);
          if (parentControl != null)
          {
-            if (DataContext is FlameEmitterPropertiesViewModel)
+            if (DataContext is ShieldPropertiesViewModel)
             {
-               parentControl.GeneralMouse<FlameEmitterPropertiesViewModel>(true, MouseEventObjectType.flameEmitterSystem, sender, e);
+               parentControl.GeneralMouse<ShieldPropertiesViewModel>(true, MouseEventObjectType.shieldSystem, sender, e);
                return;
             }
          }
@@ -43,9 +43,9 @@ namespace LeapfrogEditor
          CompoundObjectUserControl parentControl = ParentalFinder.FindParent<CompoundObjectUserControl>(this);
          if (parentControl != null)
          {
-            if (DataContext is FlameEmitterPropertiesViewModel)
+            if (DataContext is ShieldPropertiesViewModel)
             {
-               parentControl.GeneralMouse<FlameEmitterPropertiesViewModel>(false, MouseEventObjectType.flameEmitterSystem, sender, e);
+               parentControl.GeneralMouse<ShieldPropertiesViewModel>(false, MouseEventObjectType.shieldSystem, sender, e);
                return;
             }
          }
@@ -54,7 +54,7 @@ namespace LeapfrogEditor
       private void AnchorA_MouseMove(object sender, MouseEventArgs e)
       {
          CompoundObjectUserControl parentControl = ParentalFinder.FindParent<CompoundObjectUserControl>(this);
-         parentControl.GeneralMouseMove<FlameEmitterPropertiesViewModel>(MouseEventObjectType.flameEmitterSystem, sender, e);
+         parentControl.GeneralMouseMove<ShieldPropertiesViewModel>(MouseEventObjectType.shieldSystem, sender, e);
       }
    }
 }

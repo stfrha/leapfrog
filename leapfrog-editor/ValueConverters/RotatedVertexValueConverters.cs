@@ -187,7 +187,7 @@ namespace LeapfrogEditor
 
                // anglePoint is the point at the end of the vector from pos to 10 m in the 
                // pointAngle direction
-               Vector angleVect = new Vector(10 * Math.Cos(pointAngle / 180 * Math.PI), 10 * Math.Sin(pointAngle / 180 * Math.PI));
+               Vector angleVect = new Vector(3 * Math.Cos(pointAngle / 180 * Math.PI), 3 * Math.Sin(pointAngle / 180 * Math.PI));
                Point anglePoint = pos + angleVect;
 
                Point bodyPos = new Point((double)values[3], (double)values[4]);

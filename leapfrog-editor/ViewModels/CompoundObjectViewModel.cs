@@ -700,16 +700,10 @@ namespace LeapfrogEditor
             {
                CoSystemViewModel sys = o as CoSystemViewModel;
 
-               if (sys.Properties is GunPropertiesViewModel)
+               if (sys.Properties is BodyOriginSystemViewModel)
                {
-                  GunPropertiesViewModel gunSys = sys.Properties as GunPropertiesViewModel;
-                  gunSys.ConnectToShapes(_shapes);
-               }
-
-               if (sys.Properties is FlameEmitterPropertiesViewModel)
-               {
-                  FlameEmitterPropertiesViewModel feSys = sys.Properties as FlameEmitterPropertiesViewModel;
-                  feSys.ConnectToShapes(_shapes);
+                  BodyOriginSystemViewModel sysProp = sys.Properties as BodyOriginSystemViewModel;
+                  sysProp.ConnectToShapes(_shapes);
                }
             }
          }
