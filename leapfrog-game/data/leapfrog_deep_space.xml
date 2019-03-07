@@ -140,7 +140,7 @@
     texture="lf_small_leg"
     posX="1.75"
     posY="-2.3649460819533035"
-    angle="-77"
+    angle="283"
     zLevel="128"
     collisionEntity="lfSmallLeg"
     collisionCategory="1"

@@ -19,7 +19,7 @@
     zLevel="160"
     collisionEntity="notApplicable"
     collisionCategory="1"
-    collisionMask="65534"
+    collisionMask="65533"
     radius="7"
     density="1"
     friction="0" />
