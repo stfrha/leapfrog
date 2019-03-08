@@ -86,6 +86,7 @@ LOCAL_SRC_FILES += ../../../src/orbitspacescene.cpp
 LOCAL_SRC_FILES += ../../../src/orbitwindow.cpp
 LOCAL_SRC_FILES += ../../../src/physdispconvert.cpp
 LOCAL_SRC_FILES += ../../../src/planetactor.cpp
+LOCAL_SRC_FILES += ../../../src/pickupobject.cpp
 LOCAL_SRC_FILES += ../../../src/polygonvertices.cpp
 LOCAL_SRC_FILES += ../../../src/reentryflameemitter.cpp
 LOCAL_SRC_FILES += ../../../src/reentryflameparticle.cpp

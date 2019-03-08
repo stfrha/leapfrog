@@ -16,6 +16,7 @@
 #include "explosiveobject.h"
 #include "magneticmine.h"
 #include "steerableobject.h"
+#include "pickupobject.h"
 #include "landingpad.h"
 #include "planetactor.h"
 #include "orbitscene.h"
@@ -335,6 +336,21 @@ CompoundObject* CompoundObject::initCompoundObject(
       so->initGameStatus(new GameStatus());
 
       return static_cast<CompoundObject*>(so);
+   }
+   else if (behavStr == "pickupObject")
+   {
+      PickupObject* pu = new PickupObject(
+         gameResources,
+         sceneParent,
+         parentObject,
+         world,
+         pos,
+         root,
+         groupIndex);
+
+      pu->m_behaviourType = BehaviourEnum::pickup;
+
+      return static_cast<CompoundObject*>(pu);
    }
    else
    {

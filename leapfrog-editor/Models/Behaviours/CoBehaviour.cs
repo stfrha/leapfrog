@@ -18,6 +18,7 @@ namespace LeapfrogEditor
       private BreakableObjectProperties _breakableObjProps = new BreakableObjectProperties();
       private ExplosiveObjectProperties _explosiveObjProps = new ExplosiveObjectProperties();
       private MagneticMineProperties _magneticMineProps = new MagneticMineProperties();
+      private PickupObjectProperties _pickupProps = new PickupObjectProperties();
       private SceneProperties _sceneProperties = new SceneProperties();
 
 
@@ -89,6 +90,19 @@ namespace LeapfrogEditor
       {
          return (Type == "magneticMine");
       }
+
+      [XmlElement("pickupObjectProperties")]
+      public PickupObjectProperties PickupObjProps
+      {
+         get { return _pickupProps; }
+         set { _pickupProps = value; }
+      }
+
+      public bool ShouldSerializePickupObjProps()
+      {
+         return (Type == "explosiveObject");
+      }
+
 
       [XmlElement("sceneProperties")]
       public SceneProperties SceneProperties

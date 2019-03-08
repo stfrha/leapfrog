@@ -45,7 +45,8 @@ public:
       breakableObject,
       explosiveObject,
       magneticMine,
-      steerableObject
+      steerableObject,
+      pickup
    };
 
 

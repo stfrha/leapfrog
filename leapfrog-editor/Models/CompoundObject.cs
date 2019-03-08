@@ -253,17 +253,22 @@ namespace LeapfrogEditor
                // Iterate all state properties
                foreach (TStateProperties<ChildObjectStateProperties> sp in cor.StateProperties)
                {
-                  // Only read files if the child object is referenced from a 
-                  // separate file, otherwise the serialization will already have
-                  // populated the child object.
-                  if ((sp.Properties.File != "") && (sp.Properties.CompObj == null))
+                  // There may be null child objects and those will have a properties 
+                  // set to null. Ignore these.
+                  if (sp.Properties != null)
                   {
-                     string newFile = System.IO.Path.Combine(path, sp.Properties.File);
+                     // Only read files if the child object is referenced from a 
+                     // separate file, otherwise the serialization will already have
+                     // populated the child object.
+                     if ((sp.Properties.File != "") && (sp.Properties.CompObj == null))
+                     {
+                        string newFile = System.IO.Path.Combine(path, sp.Properties.File);
 
-                     CompoundObject childCo = CompoundObject.ReadFromFile(newFile);
+                        CompoundObject childCo = CompoundObject.ReadFromFile(newFile);
 
-                     sp.Properties.CompObj = childCo;
+                        sp.Properties.CompObj = childCo;
 
+                     }
                   }
                }
             }

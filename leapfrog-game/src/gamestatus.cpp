@@ -29,12 +29,11 @@ void  GameStatus::deltaShots(int shots)
 {
    m_ammo += shots;
 
-   if (m_ammo < 0)
+   if (m_ammo > 100)
    {
-      m_ammo = 0;
+      m_ammo = 100;
    }
 
-   
    if (m_statusEventOriginator)
    {
       StatusChangedEvent event(GameStatusTypeEnum::shots, m_ammo, 100.0f);
@@ -45,6 +44,11 @@ void  GameStatus::deltaShots(int shots)
          StatusResourceDepletedEvent event(GameStatusTypeEnum::shots);
          m_statusEventOriginator->dispatchEvent(&event);
       }
+   }
+
+   if (m_ammo < 0)
+   {
+      m_ammo = 0;
    }
 }
 
@@ -57,11 +61,10 @@ void GameStatus::deltaShield(float shield)
 {
    m_shield += shield;
 
-   if (m_shield < 0.0f)
+   if (m_shield > 100)
    {
-      m_shield = 0.0f;
+      m_shield = 100;
    }
-
 
    if (m_statusEventOriginator)
    {
@@ -74,6 +77,12 @@ void GameStatus::deltaShield(float shield)
          m_statusEventOriginator->dispatchEvent(&event);
       }
    }
+
+   if (m_shield < 0.0f)
+   {
+      m_shield = 0.0f;
+   }
+
 }
 
 float GameStatus::getFuel(void)
@@ -85,11 +94,10 @@ void GameStatus::deltaFuel(float fuel)
 {
    m_fuel += fuel;
 
-   if (m_fuel < 0.0f)
+   if (m_fuel > 100)
    {
-      m_fuel = 0.0f;
+      m_fuel = 100;
    }
-
 
    if (m_statusEventOriginator)
    {
@@ -101,6 +109,11 @@ void GameStatus::deltaFuel(float fuel)
          StatusResourceDepletedEvent event(GameStatusTypeEnum::fuel);
          m_statusEventOriginator->dispatchEvent(&event);
       }
+   }
+
+   if (m_fuel < 0.0f)
+   {
+      m_fuel = 0.0f;
    }
 }
 
@@ -135,12 +148,6 @@ void GameStatus::deltaDamage(float deltaDamage)
 {
    m_damage += deltaDamage;
 
-   if (m_damage < 0.0f)
-   {
-      m_damage = 0.0f;
-   }
-
-
    if (m_statusEventOriginator)
    {
       StatusChangedEvent event(GameStatusTypeEnum::damage, m_damage, 100.0f);
@@ -152,5 +159,11 @@ void GameStatus::deltaDamage(float deltaDamage)
          m_statusEventOriginator->dispatchEvent(&event);
       }
    }
+
+   if (m_damage < 0.0f)
+   {
+      m_damage = 0.0f;
+   }
+
 }
 

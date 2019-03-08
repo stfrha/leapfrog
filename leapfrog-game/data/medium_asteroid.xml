@@ -7,7 +7,7 @@
          breakBulletDamage="60"
          numberOfSpawns="3">
          <spawnObject
-            probabilityFactor="9" >
+            probabilityFactor="72" >
             <childObject
                name="smallAsteroid">
                <stateProperties
@@ -19,23 +19,155 @@
                </stateProperties>
             </childObject>
          </spawnObject>
+         <spawnObject
+            probabilityFactor="1">
+           <childObject
+             name="coinPu1">
+             <stateProperties
+               state="default">
+               <properties
+                   posX="0"
+                   posY="0" >
+                 <compoundObject 
+                    needsGroupIndex="true">
+                   <behaviour
+                     type="pickupObject">
+                     <pickupObjectProperties
+                       pickupType="resourceCoin"
+                       amountType="random"
+                       amountMax="50"
+                       amountMin="10" />
+                   </behaviour>
+                   <dynamicCircle
+                       name="coinPuBody"
+                       texture="coin_power_up"
+                       posX="0"
+                       posY="0"
+                       angle="-17"
+                       zLevel="160"
+                       collisionEntity="pickup"
+                       collisionCategory="1"
+                       collisionMask="65533"
+                       radius="7"
+                       density="1"
+                       friction="0" />
+                 </compoundObject>
+               </properties>
+             </stateProperties>
+           </childObject>
+         </spawnObject>
+         <spawnObject
+            probabilityFactor="1">
+           <childObject
+             name="fuelPu1">
+             <stateProperties
+               state="default">
+               <properties
+                   posX="0"
+                   posY="0" >
+                 <compoundObject 
+                    needsGroupIndex="true">
+                   <behaviour
+                     type="pickupObject">
+                     <pickupObjectProperties
+                       pickupType="resourceFuel"
+                       amountType="random"
+                       amountMax="50"
+                       amountMin="10" />
+                   </behaviour>
+                   <dynamicCircle
+                       name="fuelPuBody"
+                       texture="fuel_power_up"
+                       posX="0"
+                       posY="0"
+                       angle="-17"
+                       zLevel="160"
+                       collisionEntity="pickup"
+                       collisionCategory="1"
+                       collisionMask="65533"
+                       radius="7"
+                       density="1"
+                       friction="0" />
+                 </compoundObject>
+               </properties>
+             </stateProperties>
+           </childObject>
+         </spawnObject>
+         <spawnObject
+            probabilityFactor="1">
+           <childObject
+             name="ammoPu1">
+             <stateProperties
+               state="default">
+               <properties
+                   posX="0"
+                   posY="0" >
+                 <compoundObject 
+                    needsGroupIndex="true">
+                   <behaviour
+                     type="pickupObject">
+                     <pickupObjectProperties
+                       pickupType="resourceAmmo"
+                       amountType="random"
+                       amountMax="50"
+                       amountMin="10" />
+                   </behaviour>
+                   <dynamicCircle
+                       name="ammoPuBody"
+                       texture="ammo_power_up"
+                       posX="0"
+                       posY="0"
+                       angle="-17"
+                       zLevel="160"
+                       collisionEntity="pickup"
+                       collisionCategory="1"
+                       collisionMask="65533"
+                       radius="7"
+                       density="1"
+                       friction="0" />
+                 </compoundObject>
+               </properties>
+             </stateProperties>
+           </childObject>
+         </spawnObject>
+         <spawnObject
+            probabilityFactor="1">
+           <childObject
+             name="shieldPu1">
+             <stateProperties
+               state="default">
+               <properties
+                   posX="0"
+                   posY="0" >
+                 <compoundObject 
+                    needsGroupIndex="true">
+                   <behaviour
+                     type="pickupObject">
+                     <pickupObjectProperties
+                       pickupType="resourceShield"
+                       amountType="fix"
+                       amount="100" />
+                   </behaviour>
+                   <dynamicCircle
+                       name="shieldPuBody"
+                       texture="shield_power_up"
+                       posX="0"
+                       posY="0"
+                       angle="-17"
+                       zLevel="160"
+                       collisionEntity="pickup"
+                       collisionCategory="1"
+                       collisionMask="65533"
+                       radius="7"
+                       density="1"
+                       friction="0" />
+                 </compoundObject>
+               </properties>
+             </stateProperties>
+           </childObject>
+         </spawnObject>
       </breakableObjectProperties>
    </behaviour>
-<!--
-   <spawnObject
-      probabilityFactor="1" />
-      <childObject
-         name="fuel">
-         <stateProperties
-            state="default">
-            <properties
-               posX="0"
-               posY="0" >
-               <compoundObject>
-               </compoundObject>
-      </childObject>
-   </spawnObject>
--->
    <dynamicCircle
       name="mediumAsteroid"
       texture="asteroid_cutout"

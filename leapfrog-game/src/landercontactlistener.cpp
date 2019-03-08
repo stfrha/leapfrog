@@ -9,6 +9,8 @@
 #include "breakableobject.h"
 #include "explosiveobject.h"
 #include "blastemitter.h"
+#include "pickupobject.h"
+#include "gamestatus.h"
 
 void LanderContactListener::InitContactListner(SceneActor* sceneActor)
 {
@@ -30,6 +32,7 @@ void LanderContactListener::PostSolve(b2Contact* contact, const b2ContactImpulse
    ExplosiveObject* explosive = NULL;
    bool flameParticle = false;
    ExplosiveObject* blastSource = NULL;
+   PickupObject* pickup = NULL;
 
    if (eA == CollisionEntity::leapfrog)
    {
@@ -49,6 +52,16 @@ void LanderContactListener::PostSolve(b2Contact* contact, const b2ContactImpulse
    if (eB == CollisionEntity::bullet)
    {
       bullet = BodyUserData::getParentObjectOfType<Bullet*>(contact->GetFixtureB()->GetBody()->GetUserData());
+   }
+
+   if (eA == CollisionEntity::pickup)
+   {
+      pickup = BodyUserData::getParentObjectOfType<PickupObject*>(contact->GetFixtureA()->GetBody()->GetUserData());
+   }
+
+   if (eB == CollisionEntity::pickup)
+   {
+      pickup = BodyUserData::getParentObjectOfType<PickupObject*>(contact->GetFixtureB()->GetBody()->GetUserData());
    }
 
    if (eA == CollisionEntity::breakableObject)
@@ -149,7 +162,11 @@ void LanderContactListener::PostSolve(b2Contact* contact, const b2ContactImpulse
 
    if (leapfrog)
    {
-      if (bullet)
+      if (pickup)
+      {
+         pickup->handlePickup(leapfrog->m_gameStatus.get());
+      }
+      else if (bullet)
       {
          leapfrog->hitByBullet(contact, 1.0f);
       }

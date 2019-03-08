@@ -21,6 +21,7 @@ namespace LeapfrogEditor
       private BreakableObjectPropertiesViewModel _breakableObjProperties;
       private ExplosiveObjectPropertiesViewModel _explosiveObjProperties;
       private MagneticMinePropertiesViewModel _magneticMineProperties;
+      private PickupObjectPropertiesViewModel _pickupProperties;
       private ScenePropertiesViewModel _sceneProperties;
 
       private ObservableCollection<StateViewModel> _defaultStates = new ObservableCollection<StateViewModel>();
@@ -45,7 +46,7 @@ namespace LeapfrogEditor
          _breakableObjProperties = new BreakableObjectPropertiesViewModel(treeParent, parentVm, mainVm, ModelObject.BreakableObjProps);
          _explosiveObjProperties = new ExplosiveObjectPropertiesViewModel(treeParent, parentVm, mainVm, ModelObject.ExplosiveObjProps);
          _magneticMineProperties = new MagneticMinePropertiesViewModel(treeParent, parentVm, mainVm, ModelObject.MagneticMineProps);
-
+         _pickupProperties = new PickupObjectPropertiesViewModel(treeParent, parentVm, mainVm, ModelObject.PickupObjProps);
          _defaultStates.Add(_defaultState);
       }
 
@@ -133,6 +134,10 @@ namespace LeapfrogEditor
             else if (Type == "magneticMine")
             {
                return _magneticMineProperties;
+            }
+            else if (Type == "pickupObject")
+            {
+               return _pickupProperties;
             }
 
             return null;

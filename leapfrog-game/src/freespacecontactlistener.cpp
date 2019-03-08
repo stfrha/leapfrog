@@ -7,6 +7,7 @@
 #include "steerableobject.h"
 #include "breakableobject.h"
 #include "explosiveobject.h"
+#include "pickupobject.h"
 #include "gamestatus.h"
 
 
@@ -28,6 +29,7 @@ void FreeSpaceContactListener::PostSolve(b2Contact* contact, const b2ContactImpu
    ExplosiveObject* explosive = NULL;
    bool flameParticle = false;
    ExplosiveObject* blastSource = NULL;
+   PickupObject* pickup = NULL;
 
    if (eA == CollisionEntity::shield)
    {
@@ -73,6 +75,16 @@ void FreeSpaceContactListener::PostSolve(b2Contact* contact, const b2ContactImpu
    if (eB == CollisionEntity::explosiveObject)
    {
       explosive = BodyUserData::getParentObjectOfType<ExplosiveObject*>(contact->GetFixtureB()->GetBody()->GetUserData());
+   }
+
+   if (eA == CollisionEntity::pickup)
+   {
+      pickup = BodyUserData::getParentObjectOfType<PickupObject*>(contact->GetFixtureA()->GetBody()->GetUserData());
+   }
+
+   if (eB == CollisionEntity::pickup)
+   {
+      pickup = BodyUserData::getParentObjectOfType<PickupObject*>(contact->GetFixtureB()->GetBody()->GetUserData());
    }
 
    if (eA == CollisionEntity::leapfrog)
@@ -150,7 +162,11 @@ void FreeSpaceContactListener::PostSolve(b2Contact* contact, const b2ContactImpu
 
    if (shield1)
    {
-      if (bullet)
+      if (pickup)
+      {
+         pickup->handlePickup(shield1->getParent()->m_gameStatus.get());
+      }
+      else if (bullet)
       {
          shield1->shieldHitByBullet(contact, 1.0f);
       }
@@ -167,7 +183,11 @@ void FreeSpaceContactListener::PostSolve(b2Contact* contact, const b2ContactImpu
 
    if (shield2)
    {
-      if (bullet)
+      if (pickup)
+      {
+         pickup->handlePickup(shield2->getParent()->m_gameStatus.get());
+      }
+      else if (bullet)
       {
          shield2->shieldHitByBullet(contact, 1.0f);
       }
@@ -191,7 +211,11 @@ void FreeSpaceContactListener::PostSolve(b2Contact* contact, const b2ContactImpu
       // leapfrog 
       if (leapfrog->m_gameStatus->getShield() <= 0.0f)
       {
-         if (bullet)
+         if (pickup)
+         {
+            pickup->handlePickup(leapfrog->m_gameStatus.get());
+         }
+         else if (bullet)
          {
             leapfrog->hitByBullet(contact, 1.0f);
          }
@@ -210,7 +234,11 @@ void FreeSpaceContactListener::PostSolve(b2Contact* contact, const b2ContactImpu
    // Hammer hit anything
    if (steerableObject)
    {
-      if (bullet)
+      if (pickup)
+      {
+         pickup->handlePickup(steerableObject->m_gameStatus.get());
+      }
+      else if (bullet)
       {
          steerableObject->hitByBullet(contact, 1.0f);
       }

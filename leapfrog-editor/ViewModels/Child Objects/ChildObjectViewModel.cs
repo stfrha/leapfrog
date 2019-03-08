@@ -42,20 +42,23 @@ namespace LeapfrogEditor
 
          foreach (TStateProperties<ChildObjectStateProperties> cosp in ModelObject.StateProperties)
          {
-            ChildCOViewModel cospvm = new ChildCOViewModel(this, parentVm, mainVm, cosp, enabled);
-            StateProperties.Add(cospvm);
+            if (cosp.Properties != null)
+            {
+               ChildCOViewModel cospvm = new ChildCOViewModel(this, parentVm, mainVm, cosp, enabled);
+               StateProperties.Add(cospvm);
 
-            // Since this COVM is the child of another COVM we need to check if the COVM
-            // is a reference to a file or not. If it is, the children of the COVM shall 
-            // not be selectable, i.e. they shall be disabled. If it it is not a file ref
-            // it shall be selectable.
-            if (cospvm.IsFileReferenceChild)
-            {
-               cospvm.BuildViewModel(false);
-            }
-            else
-            {
-               cospvm.BuildViewModel(true);
+               // Since this COVM is the child of another COVM we need to check if the COVM
+               // is a reference to a file or not. If it is, the children of the COVM shall 
+               // not be selectable, i.e. they shall be disabled. If it it is not a file ref
+               // it shall be selectable.
+               if (cospvm.IsFileReferenceChild)
+               {
+                  cospvm.BuildViewModel(false);
+               }
+               else
+               {
+                  cospvm.BuildViewModel(true);
+               }
             }
          }
       }

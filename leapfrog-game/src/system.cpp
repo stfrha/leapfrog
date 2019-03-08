@@ -105,5 +105,9 @@ System* System::initialiseSystemNode(
    return NULL;
 }
 
+CompoundObject* System::getParent(void)
+{
+   return m_parent;
+}
 
 

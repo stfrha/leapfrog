@@ -19,4 +19,5 @@
 	<collisionEntity id="16" name="steerableObject" />
 	<collisionEntity id="17" name="blastParticle" />
 	<collisionEntity id="18" name="explosiveObject" />
+	<collisionEntity id="19" name="pickup" />
 </collisionEntities>     

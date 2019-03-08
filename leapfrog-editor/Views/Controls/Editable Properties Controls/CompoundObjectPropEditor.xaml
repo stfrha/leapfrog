@@ -36,6 +36,9 @@
                   <DataTemplate DataType="{x:Type local:MagneticMinePropertiesViewModel}">
                      <local:MagneticMineBehaviourPropEditor />
                   </DataTemplate>
+                  <DataTemplate DataType="{x:Type local:PickupObjectPropertiesViewModel}">
+                     <local:PickupBehaviourPropEditor />
+                  </DataTemplate>
                   <DataTemplate x:Key="He1" >
                      <Label Content="Undef Properties" />
                   </DataTemplate>

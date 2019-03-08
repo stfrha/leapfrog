@@ -196,7 +196,8 @@ namespace LeapfrogEditor
                "breakableObject",
                "explosiveObject",
                "steerableObject",
-               "magneticMine"
+               "magneticMine",
+               "pickupObject"
             };
          }
       }

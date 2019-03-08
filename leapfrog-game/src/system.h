@@ -42,4 +42,6 @@ public:
       const pugi::xml_node& node,
       int groupIndex);
 
+   CompoundObject* getParent(void);
+
 };
