@@ -306,6 +306,9 @@
     <ClCompile Include="..\src\pickupobject.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\messagedisplay.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\physdispconvert.h">
@@ -625,6 +628,9 @@
     </ClInclude>
     <ClInclude Include="..\src\pickupobject.h">
       <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\messagedisplay.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

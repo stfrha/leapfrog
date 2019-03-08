@@ -14,6 +14,7 @@
 #include "orbitscene.h"
 #include "orbitspacescene.h"
 #include "headdowndisplay.h"
+#include "messagedisplay.h"
 
 #include "gamestatusevents.h"
 
@@ -40,6 +41,8 @@ MainActor::MainActor() :
    m_gameStatus = new GameStatus();
 
    g_HeadDownDisplay = new HeadDownDisplay();
+
+   g_MessageDisplay = new MessageDisplay();
 
    // Here the game status should probably be read from file
 
@@ -221,6 +224,12 @@ void MainActor::startScene(void)
    addEventListener(StatusResourceDepletedEvent::EVENT, CLOSURE(this, &MainActor::resourceDepletedHandler));
 
    g_HeadDownDisplay->initialiseMap(
+      &m_gameResources,
+      m_sceneObject,
+      Vector2(0.0f, 0.0f),
+      m_sceneObject->getSize());
+
+   g_MessageDisplay->initialiseMessageDisplay(
       &m_gameResources,
       m_sceneObject,
       Vector2(0.0f, 0.0f),

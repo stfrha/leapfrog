@@ -1,4 +1,4 @@
-#include "headdowndisplay.h"
+#include "messagedisplay.h"
 
 #include "sceneactor.h"
 #include "actoruserdata.h"
@@ -10,13 +10,13 @@ using namespace oxygine;
 
 
 // Instanciate global instance of the HDD
-spHeadDownDisplay g_HeadDownDisplay;
+spMessageDisplay g_MessageDisplay;
 
-MapItem::MapItem(
+MessageItem::MessageItem(
    oxygine::Resources* gameResources,
-   HeadDownDisplay* hddMapActor,
-   MapItemTypeEnum type,
-   MapItemStateEnum state,
+   MessageDisplay* hddMapActor,
+   MessageItemTypeEnum type,
+   MessageItemStateEnum state,
    int id,
    oxygine::spActor actor,
    float scale) :
@@ -28,25 +28,25 @@ MapItem::MapItem(
 {
    switch (type)
    {
-   case MapItemTypeEnum::me:
+   case MessageItemTypeEnum::me:
       m_resAnim = gameResources->getResAnim("friendly_moving");
       break;
-   case MapItemTypeEnum::friendlyMoving:
+   case MessageItemTypeEnum::friendlyMoving:
       m_resAnim = gameResources->getResAnim("friendly_moving");
       break;
-   case MapItemTypeEnum::friendlyStationary:
+   case MessageItemTypeEnum::friendlyStationary:
       m_resAnim = gameResources->getResAnim("friendly_stationary");
       break;
-   case MapItemTypeEnum::enemyMoving:
+   case MessageItemTypeEnum::enemyMoving:
       m_resAnim = gameResources->getResAnim("enemy_moving");
       break;
-   case MapItemTypeEnum::enemyStationary:
+   case MessageItemTypeEnum::enemyStationary:
       m_resAnim = gameResources->getResAnim("enemy_stationary");
       break;
-   case MapItemTypeEnum::neutralMoving:
+   case MessageItemTypeEnum::neutralMoving:
       m_resAnim = gameResources->getResAnim("neutral_moving");
       break;
-   case MapItemTypeEnum::neutralStationary:
+   case MessageItemTypeEnum::neutralStationary:
       m_resAnim = gameResources->getResAnim("neutral_stationary");
       break;
    }
@@ -64,22 +64,22 @@ MapItem::MapItem(
    attachTo(hddMapActor);
 }
 
-MapItem::MapItemTypeEnum MapItem::getType(void)
+MessageItem::MessageItemTypeEnum MessageItem::getType(void)
 {
    return m_type;
 }
 
-oxygine::spActor MapItem::getActor(void)
+oxygine::spActor MessageItem::getActor(void)
 {
    return m_realActor;
 }
 
-int MapItem::getId(void)
+int MessageItem::getId(void)
 {
    return m_itemId;
 }
 
-void MapItem::setState(MapItem::MapItemStateEnum state)
+void MessageItem::setState(MessageItem::MessageItemStateEnum state)
 {
    switch (state)
    {
@@ -105,7 +105,7 @@ void MapItem::setState(MapItem::MapItemStateEnum state)
 }
 
 
-void MapItem::doUpdate(const oxygine::UpdateState& us)
+void MessageItem::doUpdate(const oxygine::UpdateState& us)
 {
    Vector2 pos = m_realActor->getPosition();
 
@@ -133,12 +133,12 @@ void MapItem::doUpdate(const oxygine::UpdateState& us)
 }
 
 
-HeadDownDisplay::HeadDownDisplay() :
+MessageDisplay::MessageDisplay() :
    m_itemIdRepository(0)
 {
 }
 
-void HeadDownDisplay::clearMap(void)
+void MessageDisplay::clearMessageDisplay(void)
 {
    // since this is class is supposed to be instance once globally
    // (a lazy singleton implementation) we need to clean up all here
@@ -162,7 +162,7 @@ void HeadDownDisplay::clearMap(void)
 }
 
 
-void HeadDownDisplay::initialiseMap(
+void MessageDisplay::initialiseMessageDisplay(
    Resources* gameResources,
    SceneActor* sceneActor,
    const Vector2& topLeft, 
@@ -171,26 +171,30 @@ void HeadDownDisplay::initialiseMap(
    m_gameResources = gameResources;
    m_sceneActor = sceneActor;
 
-   // The map is the same size as the game map but scaled to fit into the 
-   // map window between the lower buttons
+   // The MessageDisplay is the same size as the game MessageDisplay but scaled to fit into the 
+   // MessageDisplay window between the lower buttons
 
-   m_sceneWidth = bottomRight.x - topLeft.x;
-   m_sceneHeight = bottomRight.y - topLeft.y;
 
-   // Calculate the rect where the map is to be
-   float mapLeft = g_Layout.getXFromLeft(2) + g_Layout.getButtonWidth() / 4.0f;
-   float mapRight = g_Layout.getXFromRight(1) - g_Layout.getButtonWidth() / 4.0f;
-   float mapTop = g_Layout.getYFromBottom(1);
-   float mapBottom = g_Layout.getYFromBottom(-1) - g_Layout.getButtonWidth() / 4.0f;
-   Vector2 mapCenter((mapRight - mapLeft) / 2.0f + mapLeft, (mapBottom - mapTop) / 2.0f + mapTop);
+   // Calculate the rect where the MessageDisplay is to be
+   float mapLeft = 0.0f;
+   float mapRight = 160.0f;
+   float mapTop = g_Layout.getButtonWidth();
+   float mapBottom = g_Layout.getYFromBottom(2);
 
-   float xScale = (mapRight - mapLeft) / (m_sceneWidth);
-   float yScale = (mapBottom - mapTop) / (m_sceneHeight);
+   m_sceneWidth = mapRight - mapLeft;
+   m_sceneHeight = mapBottom - mapTop;
 
-   m_mapScale = fmin(xScale, yScale);
-   m_itemScale = 1.0f / m_mapScale * g_Layout.getButtonWidth() / 80.0f;
+   Vector2 mapCenter((m_sceneWidth) / 2.0f + mapLeft, (m_sceneHeight) / 2.0f + mapTop);
 
-   float thickness = 8.0f;
+   //float xScale = (mapRight - mapLeft) / (bottomRight.x - topLeft.x);
+   //float yScale = (mapBottom - mapTop) / (bottomRight.y - topLeft.y);
+
+   //m_mapScale = fmin(xScale, yScale);
+   //m_itemScale = 1.0f / m_mapScale * g_Layout.getButtonWidth() / 80.0f;
+
+   m_mapScale = 1.0f;
+
+   float thickness = 4.0f;
 
    setAnchor(0.5f, 0.5f);
    setSize(m_sceneWidth, m_sceneHeight);
@@ -217,7 +221,7 @@ void HeadDownDisplay::initialiseMap(
    bottom->setColor(Color::Fuchsia);
    bottom->setAnchor(0.0f, 0.0f);
    bottom->setSize(m_sceneWidth, thickness);
-   bottom->setPosition(0.0f, bottomRight.y - thickness);
+   bottom->setPosition(0.0f, m_sceneHeight - thickness);
    bottom->attachTo(theBar);
 
    spColorRectSprite left = new ColorRectSprite();
@@ -231,18 +235,18 @@ void HeadDownDisplay::initialiseMap(
    right->setColor(Color::Fuchsia);
    right->setAnchor(0.0f, 0.0f);
    right->setSize(thickness, m_sceneHeight);
-   right->setPosition(bottomRight.x - thickness, 0.0f);
+   right->setPosition(m_sceneWidth - thickness, 0.0f);
    right->attachTo(theBar);
 
 }
 
-int HeadDownDisplay::addMeToMap(
-   MapItem::MapItemTypeEnum type,
+int MessageDisplay::addMeToMessageDisplay(
+   MessageItem::MessageItemTypeEnum type,
    spActor actor,
-   MapItem::MapItemStateEnum state)
+   MessageItem::MessageItemStateEnum state)
 {
 
-   spMapItem mi = new MapItem(
+   spMessageItem mi = new MessageItem(
       m_gameResources,
       this,
       type,
@@ -257,7 +261,7 @@ int HeadDownDisplay::addMeToMap(
    return m_itemIdRepository++;
 }
 
-void HeadDownDisplay::removeMeFromMap(spActor removeMe)
+void MessageDisplay::removeMeFromMessageDisplay(spActor removeMe)
 {
    for (auto it = m_mapActors.begin(); it != m_mapActors.end(); ++it)
    {
@@ -272,7 +276,7 @@ void HeadDownDisplay::removeMeFromMap(spActor removeMe)
 }
 
 
-void HeadDownDisplay::removeMeFromMap(int itemId)
+void MessageDisplay::removeMeFromMessageDisplay(int itemId)
 {
    for (auto it = m_mapActors.begin(); it != m_mapActors.end(); ++it)
    {
@@ -286,19 +290,7 @@ void HeadDownDisplay::removeMeFromMap(int itemId)
    }
 }
 
-void HeadDownDisplay::setState(int itemId, MapItem::MapItemStateEnum state)
-{
-   for (auto it = m_mapActors.begin(); it != m_mapActors.end(); ++it)
-   {
-      if ((*it)->getId() == itemId)
-      {
-         (*it)->setState(state);
-         return;
-      }
-   }
-}
-
-void HeadDownDisplay::doUpdate(const oxygine::UpdateState& us)
+void MessageDisplay::doUpdate(const oxygine::UpdateState& us)
 {
 }
 
