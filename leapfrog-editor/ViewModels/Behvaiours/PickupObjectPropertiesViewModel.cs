@@ -31,7 +31,9 @@ namespace LeapfrogEditor
          base(treeParent, parentVm, mainVm, enabled)
       {
          ModelObject = modelObject;
-                 
+
+         SelectedPickupTypeIndex = PickupTypes.IndexOf(LocalModelObject.PickupType);
+         SelectedAmountTypeIndex = AmountTypes.IndexOf(LocalModelObject.PickupAmountType);
       }
 
       #endregion
