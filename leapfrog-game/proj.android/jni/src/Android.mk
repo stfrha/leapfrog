@@ -79,6 +79,7 @@ LOCAL_SRC_FILES += ../../../src/leapfrog.cpp
 LOCAL_SRC_FILES += ../../../src/magneticmine.cpp
 LOCAL_SRC_FILES += ../../../src/mainactor.cpp
 LOCAL_SRC_FILES += ../../../src/marker.cpp
+LOCAL_SRC_FILES += ../../../src/messagedisplay.cpp
 LOCAL_SRC_FILES += ../../../src/objectfactory.cpp
 LOCAL_SRC_FILES += ../../../src/objectproperty.cpp
 LOCAL_SRC_FILES += ../../../src/orbitscene.cpp

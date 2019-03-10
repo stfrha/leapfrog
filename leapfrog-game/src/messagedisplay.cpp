@@ -13,7 +13,22 @@ using namespace oxygine;
 spMessageDisplay g_MessageDisplay;
 
 
-MessageDisplay::MessageDisplay() 
+
+MessageItem::MessageItem(
+   string message,
+   string sender,
+   bool leftBubble) :
+   m_message(message),
+   m_sender(sender),
+   m_leftBubble(leftBubble)
+{
+
+}
+
+
+MessageDisplay::MessageDisplay()  :
+   m_state(idle),
+   m_noMessagesYet(true)
 {
 }
 
@@ -24,7 +39,7 @@ void MessageDisplay::clearMessageDisplay(void)
 
 void MessageDisplay::initialiseMessageDisplay(
    Resources* gameResources,
-   SceneActor* sceneActor,
+   Actor* mainActor,
    const Vector2& topLeft, 
    const Vector2& bottomRight)
 {
@@ -39,7 +54,7 @@ void MessageDisplay::initialiseMessageDisplay(
    setAnchor(0.0f, 0.0f);
    setSize(m_messageDisplayWidth, m_messageDisplayHeight);
    setPosition(topLeft);
-   attachTo(sceneActor->getParent());
+   attachTo(mainActor);
 
    spActor mdFrame = new Actor();
    mdFrame->setAnchor(0.0f, 0.0f);
@@ -93,37 +108,71 @@ void MessageDisplay::initialiseMessageDisplay(
 
 void MessageDisplay::doUpdate(const oxygine::UpdateState& us)
 {
+   // We only handle idle state here. The other states
+   // are active during tween animation and the end of 
+   // tween handlers will set state back to idel (eventually).
+   if (m_state == idle)
+   {
+      if (m_messageQueue.size() > 0)
+      {
+         processFirstInQueue();
+
+         if (m_noMessagesYet)
+         {
+            m_noMessagesYet = false;
+
+            m_state = newBubbleAnimation;
+
+            startMessageAnimation();
+         }
+         else
+         {
+            // New message but there are already old messages on display
+            // we need to move old messages to make space for the new
+            startTransit();
+
+            m_state = inTransit;
+         }
+      }
+   }
 }
 
 void MessageDisplay::initMessage(
    bool leftBubble,
-   std::string& messageString,
-   std::string& senderString)
+   const char* messageString,
+   const char* senderString)
 {
-   spBox9Sprite bubble = new Box9Sprite();
+   MessageItem newMessage(messageString, senderString, leftBubble);
 
-   if (leftBubble)
+   m_messageQueue.push_back(newMessage);
+}
+
+void MessageDisplay::processFirstInQueue(void)
+{
+   m_newBubble = new Box9Sprite();
+
+   if (m_messageQueue[0].m_leftBubble)
    {
-      bubble->setResAnim(m_gameResources->getResAnim("msg_bbl_left"));
+      m_newBubble->setResAnim(m_gameResources->getResAnim("msg_bbl_left"));
    }
    else
    {
-      bubble->setResAnim(m_gameResources->getResAnim("msg_bbl_right"));
+      m_newBubble->setResAnim(m_gameResources->getResAnim("msg_bbl_right"));
    }
 
 
-   bubble->setVerticalMode(Box9Sprite::STRETCHING);
-   bubble->setHorizontalMode(Box9Sprite::STRETCHING);
+   m_newBubble->setVerticalMode(Box9Sprite::STRETCHING);
+   m_newBubble->setHorizontalMode(Box9Sprite::STRETCHING);
 
-   if (leftBubble)
+   if (m_messageQueue[0].m_leftBubble)
    {
-      bubble->setAnchor(0.0f, 0.0f);
-      bubble->setPosition(4.0f, 4.0f);
+      m_newBubble->setAnchor(0.0f, 1.0f);
+      m_newBubble->setPosition(4.0f, m_messageDisplayHeight - 4.0f);
    }
    else
    {
-      bubble->setAnchor(1.0f, 0.0f);
-      bubble->setPosition(m_messageDisplayWidth - 4.0f, 4.0f);
+      m_newBubble->setAnchor(1.0f, 1.0f);
+      m_newBubble->setPosition(m_messageDisplayWidth - 4.0f, m_messageDisplayHeight - 4.0f);
    }
 
    spTextField msgTextField = new TextField();
@@ -140,16 +189,24 @@ void MessageDisplay::initMessage(
    msgTextField->setSize(Vector2(m_messageDisplayWidth - 40.0f - 8.0f, 0));
    msgTextField->setAnchor(0.0f, 0.0f);
    msgTextField->setPosition(8.0f, 8.0f);
-   msgTextField->setText(messageString);
+   msgTextField->setText(m_messageQueue[0].m_message);
 
    const Rect& rect = msgTextField->getTextRect();
-  
-   float newMessageHeight = rect.size.y + 20.0f;
-   
-   bubble->setSize(rect.size.x + 20.0f, newMessageHeight);
 
-   // Now we now the size of the new entry. We can now move all other children 
-   // down by that same amount
+   m_newMessageHeight = rect.size.y + 20.0f;
+
+   m_newBubble->setSize(rect.size.x + 20.0f, m_newMessageHeight);
+
+   msgTextField->attachTo(m_newBubble);
+
+}
+
+void MessageDisplay::startTransit(void)
+{
+   // Now we know the size of the new entry. We can now move all other children 
+   // up by that same amount
+
+   spTween tween;
 
    spActor actor = m_messageActor->getFirstChild();
 
@@ -158,18 +215,48 @@ void MessageDisplay::initMessage(
       Vector2 pos = actor->getPosition();
 
       // Check if message is no longer visible
-      if (pos.y + newMessageHeight > m_messageDisplayHeight)
+      if (pos.y + m_newMessageHeight > m_messageDisplayHeight)
       {
          // TODO: remove actor
+         //actor->detach();
       }
 
-      actor->setPosition(pos.x, pos.y + newMessageHeight + 4.0f);
+//      actor->setPosition(pos.x, pos.y + m_newMessageHeight + 4.0f);
+
+      tween = actor->addTween(Actor::TweenPosition(pos.x, pos.y - m_newMessageHeight - 4.0f), 500);
+
       actor = actor->getNextSibling();
    }
-   
-   // When all old messages are pushed down, 
-   // we add the new actors
-   bubble->attachTo(m_messageActor);
-   msgTextField->attachTo(bubble);
 
+   if (tween)
+   {
+      // Lets use the last tween to get a call back when it is finished
+      tween->setDoneCallback(CLOSURE(this, &MessageDisplay::atTransitFinished));
+   }
+}
+
+void MessageDisplay::startMessageAnimation(void)
+{
+   // When all old messages are pushed up, 
+   // we add the new actors
+   m_newBubble->setScale(0.0f);
+   m_newBubble->attachTo(m_messageActor);
+
+   spTween tween = m_newBubble->addTween(Actor::TweenScale(1.0f, 1.0f), 250, 1, false, 0, Tween::EASE::ease_inOutBack);
+
+   tween->setDoneCallback(CLOSURE(this, &MessageDisplay::atNewBubbleFinished));
+}
+
+
+void MessageDisplay::atTransitFinished(oxygine::Event* event)
+{
+   m_state = newBubbleAnimation;
+
+   startMessageAnimation();
+}
+
+void MessageDisplay::atNewBubbleFinished(oxygine::Event* event)
+{
+   m_messageQueue.erase(m_messageQueue.begin());
+   m_state = idle;
 }

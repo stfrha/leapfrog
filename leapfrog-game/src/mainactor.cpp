@@ -231,39 +231,40 @@ void MainActor::startScene(void)
 
    g_MessageDisplay->initialiseMessageDisplay(
       &m_gameResources,
-      m_sceneObject,
+      this,
       Vector2(0.0f, g_Layout.getButtonWidth()),
       Vector2(g_Layout.getButtonWidth() * 2.0f, g_Layout.getYFromBottom(1) - g_Layout.getButtonWidth() / 2.0f));
 
-   g_MessageDisplay->initMessage(
-      true,
-      string("Hello! Hmm... are you... The driver of the leapfrog? I have meaning to talk to you for quite some time. You see, we are having a slight problem with Space Invaders in these here parts."),
-      string("Dr Lando"));
-
-   g_MessageDisplay->initMessage(
-      false,
-      string("Look, I have not got the time."),
-      string("Me"));
 
    g_MessageDisplay->initMessage(
       true,
-      string("We can pay you. Quite.."),
-      string("Dr Lando"));
+      "Hello! Hmm... are you... The driver of the leapfrog? I have meaning to talk to you for quite some time. You see, we are having a slight problem with Space Invaders in these here parts.",
+      "Dr Lando");
 
    g_MessageDisplay->initMessage(
       false,
-      string("How much?"),
-      string("Me"));
+      "Look, I have not got the time.",
+      "Me");
 
    g_MessageDisplay->initMessage(
       true,
-      string("20 000 credits. More than enough."),
-      string("Dr Lando"));
+      "We can pay you. Quite..",
+      "Dr Lando");
 
    g_MessageDisplay->initMessage(
       false,
-      string("Local currency?"),
-      string("Me"));
+      "How much?",
+      "Me");
+
+   g_MessageDisplay->initMessage(
+      true,
+      "20 000 credits. More than enough.",
+      "Dr Lando");
+
+   g_MessageDisplay->initMessage(
+      false,
+      "Local currency?",
+      "Me");
 
    // Now that the map is initialised, we tell child objects to register on the 
    // map

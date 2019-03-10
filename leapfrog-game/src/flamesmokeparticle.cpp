@@ -104,3 +104,4 @@ void FlameSmokeParticle::atParticleDeath(Event* event)
 
    this->detach();
 }
+

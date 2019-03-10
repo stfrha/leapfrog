@@ -10,8 +10,30 @@ class SceneActor;
 
 DECLARE_SMART(MessageDisplay, spMessageDisplay);
 
+class MessageItem
+{
+public:
+   std::string m_message;
+   std::string m_sender;
+   bool m_leftBubble;
+   bool m_inTransit;
+
+   MessageItem(
+      std::string message,
+      std::string sender,
+      bool leftBubble);
+};
+
 class MessageDisplay : public oxygine::Actor
 {
+public:
+   enum MsgDispStateEnum
+   {
+      idle,
+      inTransit,
+      newBubbleAnimation
+   };
+
 private:
    oxygine::Resources* m_gameResources;
    oxygine::spClipRectActor m_messageActor;
@@ -19,12 +41,18 @@ private:
    float m_messageDisplayWidth;
    float m_messageDisplayHeight;
 
+   std::vector<MessageItem> m_messageQueue;
+   MsgDispStateEnum m_state;
+   bool m_noMessagesYet;
+   oxygine::spBox9Sprite m_newBubble;
+   float m_newMessageHeight;
+
 public:
    MessageDisplay();
 
    void initialiseMessageDisplay(
       oxygine::Resources* gameResources,
-      SceneActor* sceneActor,
+      oxygine::Actor* sceneActor,
       const oxygine::Vector2& topLeft, 
       const oxygine::Vector2& bottomRight);
 
@@ -32,8 +60,17 @@ public:
 
    void initMessage(
       bool leftBubble,
-      std::string& messageString,
-      std::string& senderString);
+      const char* messageString,
+      const char* senderString);
+
+   void processFirstInQueue(void);
+   void startMessageAnimation(void);
+   void startTransit(void);
+
+   void atTransitFinished(oxygine::Event* event);
+   void atNewBubbleFinished(oxygine::Event* event);
+
+
 
 protected:
 	void doUpdate(const oxygine::UpdateState& us);
