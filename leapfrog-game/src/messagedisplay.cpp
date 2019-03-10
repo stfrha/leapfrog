@@ -12,153 +12,13 @@ using namespace oxygine;
 // Instanciate global instance of the HDD
 spMessageDisplay g_MessageDisplay;
 
-MessageItem::MessageItem(
-   oxygine::Resources* gameResources,
-   MessageDisplay* hddMapActor,
-   MessageItemTypeEnum type,
-   MessageItemStateEnum state,
-   int id,
-   oxygine::spActor actor,
-   float scale) :
-   m_itemId(id),
-   m_type(type),
-   m_parentMap(hddMapActor),
-   m_realActor(actor)
 
-{
-   switch (type)
-   {
-   case MessageItemTypeEnum::me:
-      m_resAnim = gameResources->getResAnim("friendly_moving");
-      break;
-   case MessageItemTypeEnum::friendlyMoving:
-      m_resAnim = gameResources->getResAnim("friendly_moving");
-      break;
-   case MessageItemTypeEnum::friendlyStationary:
-      m_resAnim = gameResources->getResAnim("friendly_stationary");
-      break;
-   case MessageItemTypeEnum::enemyMoving:
-      m_resAnim = gameResources->getResAnim("enemy_moving");
-      break;
-   case MessageItemTypeEnum::enemyStationary:
-      m_resAnim = gameResources->getResAnim("enemy_stationary");
-      break;
-   case MessageItemTypeEnum::neutralMoving:
-      m_resAnim = gameResources->getResAnim("neutral_moving");
-      break;
-   case MessageItemTypeEnum::neutralStationary:
-      m_resAnim = gameResources->getResAnim("neutral_stationary");
-      break;
-   }
-
-   setState(state);
-
-   setPriority(231);
-   setTouchChildrenEnabled(false);
-
-   setPosition(m_realActor->getPosition());
-   setSize(10.0f, 10.0f);
-   setAnchor(0.5f, 0.5f);
-   setAlpha(128);
-   setScale(scale);
-   attachTo(hddMapActor);
-}
-
-MessageItem::MessageItemTypeEnum MessageItem::getType(void)
-{
-   return m_type;
-}
-
-oxygine::spActor MessageItem::getActor(void)
-{
-   return m_realActor;
-}
-
-int MessageItem::getId(void)
-{
-   return m_itemId;
-}
-
-void MessageItem::setState(MessageItem::MessageItemStateEnum state)
-{
-   switch (state)
-   {
-   case hollow:
-      removeTweens();
-      setResAnim(m_resAnim, 0, 0);
-      break;
-   case filled:
-      removeTweens();
-      setResAnim(m_resAnim, 1, 0);
-      break;
-   case flashingSlow:
-      setResAnim(m_resAnim, 0, 0);
-      removeTweens();
-      addTween(TweenAnim(m_resAnim), 1000, -1);
-      break;
-   case flashingFast:
-      setResAnim(m_resAnim, 0, 0);
-      removeTweens();
-      addTween(TweenAnim(m_resAnim), 250, -1);
-      break;
-   }
-}
-
-
-void MessageItem::doUpdate(const oxygine::UpdateState& us)
-{
-   Vector2 pos = m_realActor->getPosition();
-
-   if (pos.x < 0.0f)
-   {
-      pos.x = 0.0f;
-   }
-
-   if (pos.y < 0.0f)
-   {
-      pos.y = 0.0f;
-   }
-
-   if (pos.x > m_parentMap->m_sceneWidth)
-   {
-      pos.x = m_parentMap->m_sceneWidth;
-   }
-
-   if (pos.y > m_parentMap->m_sceneHeight)
-   {
-      pos.y = m_parentMap->m_sceneHeight;
-   }
-
-   setPosition(pos);
-}
-
-
-MessageDisplay::MessageDisplay() :
-   m_itemIdRepository(0)
+MessageDisplay::MessageDisplay() 
 {
 }
 
 void MessageDisplay::clearMessageDisplay(void)
 {
-   // since this is class is supposed to be instance once globally
-   // (a lazy singleton implementation) we need to clean up all here
-   // and recreate all 
-   // Clean up current scene
-   spActor actor = getFirstChild();
-
-   while (actor)
-   {
-      spActor next = actor->getNextSibling();
-      if (actor.get() != NULL)
-      {
-         actor->detach();
-      }
-      actor = next;
-   }
-
-   // vector is of type spActor so clearing it will delete all items
-   m_mapActors.clear();
-
 }
 
 
@@ -169,128 +29,147 @@ void MessageDisplay::initialiseMessageDisplay(
    const Vector2& bottomRight)
 {
    m_gameResources = gameResources;
-   m_sceneActor = sceneActor;
-
-   // The MessageDisplay is the same size as the game MessageDisplay but scaled to fit into the 
-   // MessageDisplay window between the lower buttons
-
 
    // Calculate the rect where the MessageDisplay is to be
-   float mapLeft = 0.0f;
-   float mapRight = 160.0f;
-   float mapTop = g_Layout.getButtonWidth();
-   float mapBottom = g_Layout.getYFromBottom(2);
+   m_messageDisplayWidth = bottomRight.x - topLeft.x;
+   m_messageDisplayHeight = bottomRight.y - topLeft.y;
 
-   m_sceneWidth = mapRight - mapLeft;
-   m_sceneHeight = mapBottom - mapTop;
+   float thickness = 1.0f;
 
-   Vector2 mapCenter((m_sceneWidth) / 2.0f + mapLeft, (m_sceneHeight) / 2.0f + mapTop);
-
-   //float xScale = (mapRight - mapLeft) / (bottomRight.x - topLeft.x);
-   //float yScale = (mapBottom - mapTop) / (bottomRight.y - topLeft.y);
-
-   //m_mapScale = fmin(xScale, yScale);
-   //m_itemScale = 1.0f / m_mapScale * g_Layout.getButtonWidth() / 80.0f;
-
-   m_mapScale = 1.0f;
-
-   float thickness = 4.0f;
-
-   setAnchor(0.5f, 0.5f);
-   setSize(m_sceneWidth, m_sceneHeight);
-   setPosition(mapCenter);
-   setScale(m_mapScale);
+   setAnchor(0.0f, 0.0f);
+   setSize(m_messageDisplayWidth, m_messageDisplayHeight);
+   setPosition(topLeft);
    attachTo(sceneActor->getParent());
+
+   spActor mdFrame = new Actor();
+   mdFrame->setAnchor(0.0f, 0.0f);
+   mdFrame->setSize(m_messageDisplayWidth, m_messageDisplayHeight);
+   mdFrame->setPosition(0.0f, 0.0f);
+   mdFrame->attachTo(this);
+
+   m_messageActor = new ClipRectActor();
+   m_messageActor->setAnchor(0.0f, 0.0f);
+   m_messageActor->setSize(m_messageDisplayWidth, m_messageDisplayHeight);
+   m_messageActor->setPosition(0.0f, 0.0f);
+   m_messageActor->attachTo(mdFrame);
 
    spColorRectSprite theBar = new ColorRectSprite();
    theBar->setAnchor(0.0f, 0.0f);
-   theBar->setSize(m_sceneWidth, m_sceneHeight);
+   theBar->setSize(m_messageDisplayWidth, m_messageDisplayHeight);
    theBar->setPosition(0.0f, 0.0f);
    theBar->setColor(Color::Fuchsia);
    theBar->setAlpha(32);
-   theBar->attachTo(this);
+   theBar->attachTo(mdFrame);
 
    spColorRectSprite top = new ColorRectSprite();
    top->setColor(Color::Fuchsia);
    top->setAnchor(0.0f, 0.0f);
-   top->setSize(m_sceneWidth, thickness);
+   top->setSize(m_messageDisplayWidth, thickness);
    top->setPosition(0.0f, 0.0f);
-   top->attachTo(theBar);
+   top->attachTo(mdFrame);
 
    spColorRectSprite bottom = new ColorRectSprite();
    bottom->setColor(Color::Fuchsia);
    bottom->setAnchor(0.0f, 0.0f);
-   bottom->setSize(m_sceneWidth, thickness);
-   bottom->setPosition(0.0f, m_sceneHeight - thickness);
-   bottom->attachTo(theBar);
+   bottom->setSize(m_messageDisplayWidth, thickness);
+   bottom->setPosition(0.0f, m_messageDisplayHeight - thickness);
+   bottom->attachTo(mdFrame);
 
    spColorRectSprite left = new ColorRectSprite();
    left->setColor(Color::Fuchsia);
    left->setAnchor(0.0f, 0.0f);
-   left->setSize(thickness, m_sceneHeight);
+   left->setSize(thickness, m_messageDisplayHeight);
    left->setPosition(0.0f, 0.0f);
-   left->attachTo(theBar);
+   left->attachTo(mdFrame);
 
    spColorRectSprite right = new ColorRectSprite();
    right->setColor(Color::Fuchsia);
    right->setAnchor(0.0f, 0.0f);
-   right->setSize(thickness, m_sceneHeight);
-   right->setPosition(m_sceneWidth - thickness, 0.0f);
-   right->attachTo(theBar);
+   right->setSize(thickness, m_messageDisplayHeight);
+   right->setPosition(m_messageDisplayWidth - thickness, 0.0f);
+   right->attachTo(mdFrame);
 
-}
-
-int MessageDisplay::addMeToMessageDisplay(
-   MessageItem::MessageItemTypeEnum type,
-   spActor actor,
-   MessageItem::MessageItemStateEnum state)
-{
-
-   spMessageItem mi = new MessageItem(
-      m_gameResources,
-      this,
-      type,
-      state,
-      m_itemIdRepository,
-      actor,
-      m_itemScale);
-
-
-   m_mapActors.push_back(mi);
-
-   return m_itemIdRepository++;
-}
-
-void MessageDisplay::removeMeFromMessageDisplay(spActor removeMe)
-{
-   for (auto it = m_mapActors.begin(); it != m_mapActors.end(); ++it)
-   {
-      if ((*it)->getActor() == removeMe)
-      {
-         spActor d = (*it)->getActor();
-         (*it)->detach();
-         m_mapActors.erase(it);
-         return;
-      }
-   }
-}
-
-
-void MessageDisplay::removeMeFromMessageDisplay(int itemId)
-{
-   for (auto it = m_mapActors.begin(); it != m_mapActors.end(); ++it)
-   {
-      if ((*it)->getId() == itemId)
-      {
-         spActor d = (*it)->getActor();
-         (*it)->detach();
-         m_mapActors.erase(it);
-         return;
-      }
-   }
 }
 
 void MessageDisplay::doUpdate(const oxygine::UpdateState& us)
 {
 }
 
+void MessageDisplay::initMessage(
+   bool leftBubble,
+   std::string& messageString,
+   std::string& senderString)
+{
+   spBox9Sprite bubble = new Box9Sprite();
+
+   if (leftBubble)
+   {
+      bubble->setResAnim(m_gameResources->getResAnim("msg_bbl_left"));
+   }
+   else
+   {
+      bubble->setResAnim(m_gameResources->getResAnim("msg_bbl_right"));
+   }
+
+
+   bubble->setVerticalMode(Box9Sprite::STRETCHING);
+   bubble->setHorizontalMode(Box9Sprite::STRETCHING);
+
+   if (leftBubble)
+   {
+      bubble->setAnchor(0.0f, 0.0f);
+      bubble->setPosition(4.0f, 4.0f);
+   }
+   else
+   {
+      bubble->setAnchor(1.0f, 0.0f);
+      bubble->setPosition(m_messageDisplayWidth - 4.0f, 4.0f);
+   }
+
+   spTextField msgTextField = new TextField();
+
+   TextStyle style;
+   style.multiline = true;
+   style.vAlign = TextStyle::VerticalAlign::VALIGN_TOP;
+   style.hAlign = TextStyle::HorizontalAlign::HALIGN_LEFT;
+   style.font = m_gameResources->getResFont("lf_font");
+   style.color = Color::White;
+   style.fontSize = 14.0f;
+
+   msgTextField->setStyle(style);
+   msgTextField->setSize(Vector2(m_messageDisplayWidth - 40.0f - 8.0f, 0));
+   msgTextField->setAnchor(0.0f, 0.0f);
+   msgTextField->setPosition(8.0f, 8.0f);
+   msgTextField->setText(messageString);
+
+   const Rect& rect = msgTextField->getTextRect();
+  
+   float newMessageHeight = rect.size.y + 20.0f;
+   
+   bubble->setSize(rect.size.x + 20.0f, newMessageHeight);
+
+   // Now we now the size of the new entry. We can now move all other children 
+   // down by that same amount
+
+   spActor actor = m_messageActor->getFirstChild();
+
+   while (actor)
+   {
+      Vector2 pos = actor->getPosition();
+
+      // Check if message is no longer visible
+      if (pos.y + newMessageHeight > m_messageDisplayHeight)
+      {
+         // TODO: remove actor
+      }
+
+      actor->setPosition(pos.x, pos.y + newMessageHeight + 4.0f);
+      actor = actor->getNextSibling();
+   }
+   
+   // When all old messages are pushed down, 
+   // we add the new actors
+   bubble->attachTo(m_messageActor);
+   msgTextField->attachTo(bubble);
+
+}

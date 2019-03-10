@@ -198,41 +198,47 @@ void HeadDownDisplay::initialiseMap(
    setScale(m_mapScale);
    attachTo(sceneActor->getParent());
 
+   spActor hddFrame = new Actor();
+   hddFrame->setAnchor(0.0f, 0.0f);
+   hddFrame->setSize(m_sceneWidth, m_sceneHeight);
+   hddFrame->setPosition(0.0f, 0.0f);
+   hddFrame->attachTo(this);
+
    spColorRectSprite theBar = new ColorRectSprite();
    theBar->setAnchor(0.0f, 0.0f);
    theBar->setSize(m_sceneWidth, m_sceneHeight);
    theBar->setPosition(0.0f, 0.0f);
    theBar->setColor(Color::Fuchsia);
    theBar->setAlpha(32);
-   theBar->attachTo(this);
+   theBar->attachTo(hddFrame);
 
    spColorRectSprite top = new ColorRectSprite();
    top->setColor(Color::Fuchsia);
    top->setAnchor(0.0f, 0.0f);
    top->setSize(m_sceneWidth, thickness);
    top->setPosition(0.0f, 0.0f);
-   top->attachTo(theBar);
+   top->attachTo(hddFrame);
 
    spColorRectSprite bottom = new ColorRectSprite();
    bottom->setColor(Color::Fuchsia);
    bottom->setAnchor(0.0f, 0.0f);
    bottom->setSize(m_sceneWidth, thickness);
    bottom->setPosition(0.0f, bottomRight.y - thickness);
-   bottom->attachTo(theBar);
+   bottom->attachTo(hddFrame);
 
    spColorRectSprite left = new ColorRectSprite();
    left->setColor(Color::Fuchsia);
    left->setAnchor(0.0f, 0.0f);
    left->setSize(thickness, m_sceneHeight);
    left->setPosition(0.0f, 0.0f);
-   left->attachTo(theBar);
+   left->attachTo(hddFrame);
 
    spColorRectSprite right = new ColorRectSprite();
    right->setColor(Color::Fuchsia);
    right->setAnchor(0.0f, 0.0f);
    right->setSize(thickness, m_sceneHeight);
    right->setPosition(bottomRight.x - thickness, 0.0f);
-   right->attachTo(theBar);
+   right->attachTo(hddFrame);
 
 }
 

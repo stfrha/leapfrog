@@ -51,6 +51,8 @@
 		<image file="shield_power_up.png"/>	
 		<image file="fuel_power_up.png"/>	
 		<image file="coin_power_up.png"/>	
+		<image file="msg_bbl_left.png"  guideX1="24" guideX2="104" guideY1="24" guideY2="104" />	
+		<image file="msg_bbl_right.png"  guideX1="24" guideX2="104" guideY1="24" guideY2="104" />	
 		<image file="explosion_ani.png" rows="8" cols="8" />
 		<image file="friendly_moving.png" rows="1" cols="2" />
 		<image file="friendly_stationary.png"  rows="1" cols="2" />
