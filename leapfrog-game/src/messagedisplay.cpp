@@ -41,19 +41,22 @@ void MessageDisplay::initialiseMessageDisplay(
    Resources* gameResources,
    Actor* mainActor,
    const Vector2& topLeft, 
-   const Vector2& bottomRight)
+   const Vector2& bottomRight,
+   const float fontSize)
 {
    m_gameResources = gameResources;
 
    // Calculate the rect where the MessageDisplay is to be
    m_messageDisplayWidth = bottomRight.x - topLeft.x;
    m_messageDisplayHeight = bottomRight.y - topLeft.y;
+   m_fontSize = fontSize;
 
    float thickness = 1.0f;
 
    setAnchor(0.0f, 0.0f);
    setSize(m_messageDisplayWidth, m_messageDisplayHeight);
    setPosition(topLeft);
+   setPriority(250);
    attachTo(mainActor);
 
    spActor mdFrame = new Actor();
@@ -183,7 +186,7 @@ void MessageDisplay::processFirstInQueue(void)
    style.hAlign = TextStyle::HorizontalAlign::HALIGN_LEFT;
    style.font = m_gameResources->getResFont("lf_font");
    style.color = Color::White;
-   style.fontSize = 14.0f;
+   style.fontSize = m_fontSize;
 
    msgTextField->setStyle(style);
    msgTextField->setSize(Vector2(m_messageDisplayWidth - 40.0f - 8.0f, 0));
@@ -210,20 +213,22 @@ void MessageDisplay::startTransit(void)
 
    spActor actor = m_messageActor->getFirstChild();
 
+   vector<spActor> toOldToLiveList;
+
    while (actor)
    {
       Vector2 pos = actor->getPosition();
 
       // Check if message is no longer visible
-      if (pos.y + m_newMessageHeight > m_messageDisplayHeight)
+      if (pos.y < 0)
       {
          // TODO: remove actor
-         //actor->detach();
+         toOldToLiveList.push_back(actor);
       }
-
-//      actor->setPosition(pos.x, pos.y + m_newMessageHeight + 4.0f);
-
-      tween = actor->addTween(Actor::TweenPosition(pos.x, pos.y - m_newMessageHeight - 4.0f), 500);
+      else
+      {
+         tween = actor->addTween(Actor::TweenPosition(pos.x, pos.y - m_newMessageHeight - 4.0f), 500);
+      }
 
       actor = actor->getNextSibling();
    }
@@ -232,6 +237,11 @@ void MessageDisplay::startTransit(void)
    {
       // Lets use the last tween to get a call back when it is finished
       tween->setDoneCallback(CLOSURE(this, &MessageDisplay::atTransitFinished));
+   }
+
+   for (auto it = toOldToLiveList.begin(); it !=  toOldToLiveList.end(); ++it)
+   {
+      (*it)->detach();
    }
 }
 

@@ -13,6 +13,7 @@ StatusBar::StatusBar(
    SceneActor* sceneActor,
    const Vector2& pos,
    const Vector2& size,
+   const float fontSize,
    const float maxProgress,
    const float initialProgress,
    string headline,
@@ -38,9 +39,11 @@ StatusBar::StatusBar(
 
 //   TextStyle style = TextStyle(gameResources.getResFont("lf_font")).withColor(Color::Fuchsia).alignLeft();
    TextStyle style = TextStyle(gameResources.getResFont("lf_font")).withColor(Color::White).alignLeft();
-   style.fontSize = size.y / 2.0f / 8.0f * 6.0f;
+   //style.fontSize = size.y / 2.0f / 8.0f * 6.0f;
+   style.fontSize = fontSize;
+   
    t->setStyle(style);
-
+   
    t->setText(m_headline);
    t->setPosition(0.0f, size.y / 2.0f / 8.0f );
    

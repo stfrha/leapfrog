@@ -44,6 +44,14 @@ MainActor::MainActor() :
 
    g_MessageDisplay = new MessageDisplay();
 
+   g_MessageDisplay->initialiseMessageDisplay(
+      &m_gameResources,
+      getStage().get(),
+      Vector2(0.0f, g_Layout.getButtonWidth()),
+      Vector2(g_Layout.getButtonWidth() * 2.0f, g_Layout.getYFromBottom(1) - g_Layout.getButtonWidth() / 2.0f),
+      g_Layout.getDefaultFontSize());
+
+
    // Here the game status should probably be read from file
 
    m_gameStatus->initGameStatus(this);
@@ -183,6 +191,7 @@ void MainActor::startScene(void)
       m_sceneObject,
       Vector2(g_Layout.getXFromRight(1), g_Layout.getYFromTop(2)),
       Vector2(g_Layout.getButtonWidth() * 2.0f, g_Layout.getButtonWidth() / 2.0f),
+      g_Layout.getDefaultFontSize(),
       100.0f,
       m_gameStatus->getShots(),
       "Ammo:",
@@ -194,6 +203,7 @@ void MainActor::startScene(void)
       m_sceneObject,
       Vector2(g_Layout.getXFromRight(1), g_Layout.getYFromTop(2) + g_Layout.getButtonWidth() / 2.0f + 2.0f),
       Vector2(g_Layout.getButtonWidth() * 2.0f, g_Layout.getButtonWidth() / 2.0f),
+      g_Layout.getDefaultFontSize(),
       100.0f,
       m_gameStatus->getFuel(),
       "Fuel:",
@@ -205,6 +215,7 @@ void MainActor::startScene(void)
       m_sceneObject,
       Vector2(g_Layout.getXFromRight(1), g_Layout.getYFromTop(2) + g_Layout.getButtonWidth() / 2.0f * 2.0f + 2.0f),
       Vector2(g_Layout.getButtonWidth() * 2.0f, g_Layout.getButtonWidth() / 2.0f),
+      g_Layout.getDefaultFontSize(),
       100.0f,
       m_gameStatus->getShield(),
       "Shield:",
@@ -216,6 +227,7 @@ void MainActor::startScene(void)
       m_sceneObject,
       Vector2(g_Layout.getXFromRight(1), g_Layout.getYFromTop(2) + g_Layout.getButtonWidth() / 2.0f * 3.0f + 2.0f),
       Vector2(g_Layout.getButtonWidth() * 2.0f, g_Layout.getButtonWidth() / 2.0f),
+      g_Layout.getDefaultFontSize(),
       100.0f,
       m_gameStatus->getDamage(),
       "Damage:",
@@ -228,13 +240,6 @@ void MainActor::startScene(void)
       m_sceneObject,
       Vector2(0.0f, 0.0f),
       m_sceneObject->getSize());
-
-   g_MessageDisplay->initialiseMessageDisplay(
-      &m_gameResources,
-      this,
-      Vector2(0.0f, g_Layout.getButtonWidth()),
-      Vector2(g_Layout.getButtonWidth() * 2.0f, g_Layout.getYFromBottom(1) - g_Layout.getButtonWidth() / 2.0f));
-
 
    g_MessageDisplay->initMessage(
       true,

@@ -40,6 +40,7 @@ private:
 
    float m_messageDisplayWidth;
    float m_messageDisplayHeight;
+   float m_fontSize;
 
    std::vector<MessageItem> m_messageQueue;
    MsgDispStateEnum m_state;
@@ -54,7 +55,8 @@ public:
       oxygine::Resources* gameResources,
       oxygine::Actor* sceneActor,
       const oxygine::Vector2& topLeft, 
-      const oxygine::Vector2& bottomRight);
+      const oxygine::Vector2& bottomRight,
+      const float fontSize);
 
    void clearMessageDisplay(void);
 

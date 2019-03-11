@@ -25,6 +25,7 @@ public:
       SceneActor* sceneActor,
       const oxygine::Vector2 & pos,
       const oxygine::Vector2 & size,
+      const float fontSize,
       const float maxProgress,
       const float initialProgress,
       std::string headline,
