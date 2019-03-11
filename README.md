@@ -8,6 +8,7 @@ https://github.com/stfrha/Box2D.git
 https://github.com/stfrha/MultiSelectTreeView.git
 https://github.com/stfrha/AdvancedZoomAndPanSample.git
 https://github.com/stfrha/MicroMvvm.git
+https://github.com/stfrha/lua.git
 
 For the SDL repository, switch to tag "old_stable"
 

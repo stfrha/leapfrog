@@ -22,6 +22,9 @@
     <Filter Include="Box2D">
       <UniqueIdentifier>{95ba31f3-904e-4716-a404-45a82f8bc7dd}</UniqueIdentifier>
     </Filter>
+    <Filter Include="LUA">
+      <UniqueIdentifier>{1d4edfda-005b-40cf-88ae-c1348d3ddb9d}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\src\main.cpp">
@@ -307,6 +310,108 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\src\messagedisplay.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\lua\lapi.c">
+      <Filter>LUA</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\lua\lauxlib.c">
+      <Filter>LUA</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\lua\lbaselib.c">
+      <Filter>LUA</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\lua\lcode.c">
+      <Filter>LUA</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\lua\lcorolib.c">
+      <Filter>LUA</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\lua\lctype.c">
+      <Filter>LUA</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\lua\ldblib.c">
+      <Filter>LUA</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\lua\ldebug.c">
+      <Filter>LUA</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\lua\ldo.c">
+      <Filter>LUA</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\lua\ldump.c">
+      <Filter>LUA</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\lua\lfunc.c">
+      <Filter>LUA</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\lua\lgc.c">
+      <Filter>LUA</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\lua\linit.c">
+      <Filter>LUA</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\lua\liolib.c">
+      <Filter>LUA</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\lua\llex.c">
+      <Filter>LUA</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\lua\lmathlib.c">
+      <Filter>LUA</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\lua\lmem.c">
+      <Filter>LUA</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\lua\loadlib.c">
+      <Filter>LUA</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\lua\lobject.c">
+      <Filter>LUA</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\lua\lopcodes.c">
+      <Filter>LUA</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\lua\loslib.c">
+      <Filter>LUA</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\lua\lparser.c">
+      <Filter>LUA</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\lua\lstate.c">
+      <Filter>LUA</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\lua\lstring.c">
+      <Filter>LUA</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\lua\lstrlib.c">
+      <Filter>LUA</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\lua\ltable.c">
+      <Filter>LUA</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\lua\ltablib.c">
+      <Filter>LUA</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\lua\ltests.c">
+      <Filter>LUA</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\lua\ltm.c">
+      <Filter>LUA</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\lua\lundump.c">
+      <Filter>LUA</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\lua\lutf8lib.c">
+      <Filter>LUA</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\lua\lvm.c">
+      <Filter>LUA</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\lua\lzio.c">
+      <Filter>LUA</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\luainterface.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -630,6 +735,12 @@
       <Filter>Source Files</Filter>
     </ClInclude>
     <ClInclude Include="..\src\messagedisplay.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\lua.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\luainterface.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

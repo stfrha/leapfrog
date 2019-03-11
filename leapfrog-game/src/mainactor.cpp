@@ -15,6 +15,7 @@
 #include "orbitspacescene.h"
 #include "headdowndisplay.h"
 #include "messagedisplay.h"
+#include "luainterface.h"
 
 #include "gamestatusevents.h"
 
@@ -39,6 +40,8 @@ MainActor::MainActor() :
 	m_gameResources.loadXML("res.xml");
 
    m_gameStatus = new GameStatus();
+
+   g_LuaInterface.initLuaInterface();
 
    g_HeadDownDisplay = new HeadDownDisplay();
 
@@ -82,6 +85,10 @@ MainActor::~MainActor()
 
 void MainActor::startScene(void)
 {
+   // Test to execute script here
+   g_LuaInterface.runAverage();
+
+
    // Remove listners for statusbars
    removeAllEventListeners();
 
