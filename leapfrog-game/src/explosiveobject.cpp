@@ -58,7 +58,7 @@ ExplosiveObject::ExplosiveObject(
    // be empty (=NULL)
    setUserData(NULL);
 
-   if (m_sceneActor->getSceneType() == STE_FREE_SPACE)
+   if (m_sceneActor->getSceneType() == SceneActor::SceneTypeEnum::deepSpace)
    {
       FreeSpaceActor* spaceActor = (FreeSpaceActor*)m_sceneActor;
 

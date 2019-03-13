@@ -20,9 +20,9 @@ OrbitSpaceScene::OrbitSpaceScene(
    m_state(enteringOrbit),
    m_stateStartTime(0)
 {
-   m_sceneType = STE_ORBIT;
+   m_sceneType = orbit;
 
-   setPanorateMode(PME_FIX);
+   setPanorateMode(fix);
 
    m_world->SetGravity(b2Vec2(0.0f, 0.0f));
 

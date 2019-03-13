@@ -47,7 +47,7 @@ public:
 		lfLanded = 1
 	};
 
-   enum launchState
+   enum LaunchStateEnum
    {
       idle,
       leapfrogLanded,
@@ -73,7 +73,7 @@ private:
    bool m_leftFootContact;
    bool m_rightFootContact;
 
-   launchState m_state;
+   LaunchStateEnum m_state;
    oxygine::timeMS m_stateStartTime;
    int m_countdownCounter;
 

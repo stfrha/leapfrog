@@ -20,9 +20,9 @@ LandingActor::LandingActor(
 {
    m_contactListener.InitContactListner(this);
 
-   m_sceneType = STE_LANDING;
+   m_sceneType = landing;
 
-   setPanorateMode(PME_CENTER);
+   setPanorateMode(center);
 
    //   m_world->SetGravity(b2Vec2(0, 1.62));
    m_world->SetGravity(b2Vec2(0, 3.0f));

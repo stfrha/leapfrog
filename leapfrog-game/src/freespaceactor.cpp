@@ -22,9 +22,9 @@ FreeSpaceActor::FreeSpaceActor(
    m_state(insertBurn),
    m_stateChangeTime(0)
 {
-   m_sceneType = STE_FREE_SPACE;
+   m_sceneType = deepSpace;
 
-   setPanorateMode(PME_CENTER);
+   setPanorateMode(center);
 
    m_world->SetGravity(b2Vec2(0.0f, 0.0f));
 

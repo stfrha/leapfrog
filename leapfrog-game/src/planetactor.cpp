@@ -25,7 +25,7 @@ PlanetActor::PlanetActor(
    c_safeLandingMaxRadDeviation(100.0f / 3500.0f / 2.0f)
 {
    //// I should probably load resources that are uniuqe here
-   //setPanorateMode(PME_TOP_LEFT);
+   //setPanorateMode(topLeft);
 
    m_planet = new Actor();
    m_planet->attachTo(this);

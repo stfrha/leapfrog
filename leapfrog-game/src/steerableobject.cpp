@@ -40,7 +40,7 @@ SteerableObject::SteerableObject(
 
    m_body = getBody("mainBody");
 
-   if (m_sceneActor->getSceneType() == STE_FREE_SPACE)
+   if (m_sceneActor->getSceneType() == SceneActor::SceneTypeEnum::deepSpace)
    {
       FreeSpaceActor* spaceActor = (FreeSpaceActor*)m_sceneActor;
 

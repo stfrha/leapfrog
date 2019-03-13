@@ -1,4 +1,4 @@
-
+#pragma once
 
 extern "C" {
 #include "..\..\lua\lua.h"

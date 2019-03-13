@@ -55,9 +55,9 @@ SceneActor::SceneActor(Resources& gameResources, b2World* world, float zoomScale
    m_zoomScale(zoomScale),
    m_stageToViewPortScale(m_zoomScale * Scales::c_stageToViewPortScale),
    m_physToStageScale(1.0f),
-   m_panorateMode(PME_CENTER),
+   m_panorateMode(center),
    m_externalControl(false),
-   m_sceneType(STE_LANDING),
+   m_sceneType(landing),
    m_turnLeftPressed(false),
    m_turnRightPressed(false),
    m_boosterPressed(false),
@@ -94,7 +94,7 @@ SceneActor::~SceneActor()
 {
 }
 
-SceneTypeEnum SceneActor::getSceneType(void)
+SceneActor::SceneTypeEnum SceneActor::getSceneType(void)
 {
    return m_sceneType;
 }
@@ -302,24 +302,24 @@ void SceneActor::doUpdate(const UpdateState& us)
 
    Vector2 wantedVpPos = Vector2(0.0f, 0.0f);
    
-   if (m_panorateMode == PME_CENTER)
+   if (m_panorateMode == center)
    {
       wantedVpPos = Vector2(vpSize.x / 2.0f, vpSize.y / 2.0f);
    }
-   else if (m_panorateMode == PME_TOP)
+   else if (m_panorateMode == top)
    { 
       wantedVpPos = Vector2(vpSize.x / 2.0f, vpSize.y * 0.1f);
    }
-   else if (m_panorateMode == PME_BOTTOM)
+   else if (m_panorateMode == bottom)
    {
       wantedVpPos = Vector2(vpSize.x / 2.0f, vpSize.y * 0.9f);
    }
-   else if (m_panorateMode == PME_TOP_LEFT)
+   else if (m_panorateMode == topLeft)
    {
       wantedVpPos = Vector2(vpSize.x * 0.1f, vpSize.y * 0.1f);
    }
    
-   if (m_panorateMode != PME_FIX)
+   if (m_panorateMode != fix)
    {
       Vector2 stagePos = wantedVpPos - panPos * m_stageToViewPortScale;
 

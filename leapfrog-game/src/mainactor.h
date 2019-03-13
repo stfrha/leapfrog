@@ -1,6 +1,7 @@
 #pragma once
 
 #include "oxygine-framework.h"
+#include "sceneactor.h"
 #include "landingactor.h"
 #include "freespaceactor.h"
 #include "orbitscene.h"
@@ -42,7 +43,8 @@ private:
 
    bool m_armNextScene;
    std::string m_nextSceneFile;
-   SceneTypeEnum m_nextSceneType;
+   std::string m_nextSceneState;
+   SceneActor::SceneTypeEnum m_nextSceneType;
 
    void transitToDeepSpaceListner(oxygine::Event *ev);
    void fadeFromLanding(void);

@@ -8,28 +8,30 @@
 #include "physdispconvert.h"
 #include "spawnobject.h"
 
-enum PanorateModeEnum
-{
-   PME_TOP,
-   PME_CENTER,
-   PME_BOTTOM,
-   PME_TOP_LEFT,
-   PME_FIX
-};
-
-enum SceneTypeEnum
-{
-   STE_LANDING,
-   STE_FREE_SPACE,
-   STE_ORBIT
-};
 
 DECLARE_SMART(SceneActor, spSceneActor);
 
 class SceneActor : public CompoundObject
 {
 public:
-   enum launchState
+   enum PanorateModeEnum
+   {
+      top,
+      center,
+      bottom,
+      topLeft,
+      fix
+   };
+
+   enum SceneTypeEnum
+   {
+      landing,
+      deepSpace,
+      orbit,
+      hyperSpace
+   };
+
+   enum LaunchStateEnum
    {
       fadeIn,
       sceneIsOn,
@@ -96,7 +98,7 @@ public:
 
   void takeControlOfLeapfrog(bool control);
 
-   SceneTypeEnum getSceneType(void);
+  SceneActor::SceneTypeEnum getSceneType(void);
 
 protected:
 	void doUpdate(const UpdateState& us);

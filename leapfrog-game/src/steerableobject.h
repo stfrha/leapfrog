@@ -18,7 +18,7 @@ DECLARE_SMART(SteerableObject, spSteerableObject);
 class SteerableObject : public CompoundObject
 {
 public:
-   enum launchState
+   enum LaunchStateEnum
    {
       start,
       goRight,
