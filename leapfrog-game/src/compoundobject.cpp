@@ -207,6 +207,7 @@ CompoundObject* CompoundObject::initCompoundObject(
          parentObject,
          world,
          root,
+         initialState,
          groupIndex);
 
       sa->m_behaviourType = BehaviourEnum::scene;

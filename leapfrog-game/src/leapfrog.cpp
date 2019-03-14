@@ -223,6 +223,8 @@ oxygine::Actor* LeapFrog::getMainActor(void)
 
 void LeapFrog::doUpdate(const UpdateState &us)
 {
+   // Update properties with the values that where determined by 
+   // the physics engine
    b2Vec2 pos = m_mainBody->GetPosition();
    m_properties[propXPos].setProperty(pos.x);
    m_properties[propYPos].setProperty(pos.y);

@@ -15,20 +15,21 @@ SceneActor* SceneActor::defineScene(
    CompoundObject* parentObject,
    b2World* world,
    pugi::xml_node& root,
+   const string& initialState,
    int groupIndex)
 {
    string sceneTypeStr = root.child("behaviour").child("sceneProperties").attribute("sceneType").as_string();
 
    if (sceneTypeStr == "ground")
    {
-      LandingActor* landingScene = new LandingActor(gameResources, world, root, string("landingState"), groupIndex);
+      LandingActor* landingScene = new LandingActor(gameResources, world, root, initialState, groupIndex);
 
       return static_cast<SceneActor*>(landingScene);
 
    }
    else if (sceneTypeStr == "space")
    {
-      FreeSpaceActor* spaceScene = new FreeSpaceActor(gameResources, world, root, string("deepSpaceState"), groupIndex);
+      FreeSpaceActor* spaceScene = new FreeSpaceActor(gameResources, world, root, initialState, groupIndex);
 
       return static_cast<SceneActor*>(spaceScene);
    }
@@ -38,7 +39,7 @@ SceneActor* SceneActor::defineScene(
          gameResources,
          world, 
          root, 
-         string("default"), 
+         initialState,
          groupIndex);
 
       return static_cast<SceneActor*>(spaceScene);

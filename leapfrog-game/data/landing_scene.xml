@@ -920,80 +920,6 @@
         textureMeterHeight="0" />
     </border>
   </staticPolygon>
-  <dynamicBox
-    name="plank"
-    texture="concrete"
-    posX="667.93849314015449"
-    posY="185.41396978024989"
-    angle="29"
-    zLevel="0"
-    collisionEntity="notApplicable"
-    collisionCategory="1"
-    collisionMask="65533"
-    width="100"
-    height="2"
-    density="1"
-    friction="0" />
-  <dynamicBox
-    name="springWeight"
-    texture="concrete"
-    posX="651.48863894401916"
-    posY="169.65053470367769"
-    angle="29"
-    zLevel="0"
-    collisionEntity="notApplicable"
-    collisionCategory="1"
-    collisionMask="65533"
-    width="10"
-    height="10"
-    density="1"
-    friction="0" />
-  <dynamicBox
-    name="wrecker"
-    texture="crater_rock"
-    posX="230"
-    posY="235"
-    angle="0"
-    zLevel="0"
-    collisionEntity="notApplicable"
-    collisionCategory="1"
-    collisionMask="65533"
-    width="20"
-    height="20"
-    density="1"
-    friction="0" />
-  <weldJoint
-    name="noJointName"
-    objectAName="springWeight"
-    objectBName="plank"
-    objectAAnchorX="-0.011118706305387992"
-    objectAAnchorY="5.1746795831890147"
-    objectBAnchorX="-21.978551850253766"
-    objectBAnchorY="-0.68233217477888575" />
-  <revoluteJoint
-    name="noJointName"
-    objectAName="springHolder"
-    objectBName="plank"
-    objectAAnchorX="5.291370673866254"
-    objectAAnchorY="-24.050963677123434"
-    objectBAnchorX="-0.1047338857955617"
-    objectBAnchorY="0.72199657104785464"
-    lockJoint="false"
-    useMotor="false"
-    motorSpeed="0"
-    maxMotorTorque="0" />
-  <revoluteJoint
-    name="noJointName"
-    objectAName="springDestroyable"
-    objectBName="plank"
-    objectAAnchorX="0.032617398948559639"
-    objectAAnchorY="-0.11420251524893388"
-    objectBAnchorX="-49.140878382052222"
-    objectBAnchorY="-0.29308232879679491"
-    lockJoint="false"
-    useMotor="false"
-    motorSpeed="0"
-    maxMotorTorque="0" />
   <rope
     name="rope1"
     objectAName="ropeHolder"
@@ -1010,58 +936,6 @@
     collisionEntity="notApplicable"
     collisionCategory="33"
     collisionMask="65534" />
-  <system
-    name="asteroidField"
-    type="objectFactory">
-    <objectFactoryProperties
-      posX="368.94376116632873"
-      posY="67.132029854208866"
-      width="10"
-      height="10"
-      spawnInitial="1"
-      intensity="0.2"
-      lifeTime="60000">
-      <spawnObject
-        probabilityFactor="1">
-        <childObject
-          name="largeAsteroid">
-          <stateProperties
-            state="default">
-            <properties
-              file="large_asteroid.xml"
-              posX="0"
-              posY="0" />
-          </stateProperties>
-        </childObject>
-      </spawnObject>
-      <spawnObject
-        probabilityFactor="1">
-        <childObject
-          name="mediumAsteroid">
-          <stateProperties
-            state="default">
-            <properties
-              file="medium_asteroid.xml"
-              posX="0"
-              posY="0" />
-          </stateProperties>
-        </childObject>
-      </spawnObject>
-      <spawnObject
-        probabilityFactor="1">
-        <childObject
-          name="smallAsteroid">
-          <stateProperties
-            state="default">
-            <properties
-              file="small_asteroid.xml"
-              posX="0"
-              posY="0" />
-          </stateProperties>
-        </childObject>
-      </spawnObject>
-    </objectFactoryProperties>
-  </system>
   <childObject
     name="machine1">
     <stateProperties
@@ -1107,42 +981,6 @@
         file="leapfrog_landing.xml"
         posX="1045.3511872914392"
         posY="121.19325468177033" />
-    </stateProperties>
-  </childObject>
-  <childObject
-    name="bomb1">
-    <stateProperties
-      state="default">
-      <properties
-        posX="469.53851241055759"
-        posY="8.2864187818491626">
-        <compoundObject>
-          <behaviour
-            type="explosiveObject">
-            <explosiveObjectProperties
-              numOfParticles="40"
-              particleRadius="1"
-              blastPower="1000"
-              damageBulletEqv="1"
-              impactExplosion="true"
-              impactThreshold="2500" />
-          </behaviour>
-          <dynamicBox
-            name="bombBody"
-            texture="bomb_crate"
-            posX="0"
-            posY="0"
-            angle="0"
-            zLevel="160"
-            collisionEntity="explosiveObject"
-            collisionCategory="1"
-            collisionMask="65533"
-            width="20"
-            height="20"
-            density="3"
-            friction="1" />
-        </compoundObject>
-      </properties>
     </stateProperties>
   </childObject>
 </compoundObject>

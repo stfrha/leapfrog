@@ -60,6 +60,15 @@ void LuaInterface::initLuaInterface(void)
    result = lua_pcall(m_L, 0, 0, 0);
 }
 
+void LuaInterface::forceCurrentScene(const std::string& newCurrentScene)
+{
+   int a1 = lua_getglobal(m_L, "forceCurrentScene");
+   lua_pushstring(m_L, newCurrentScene.c_str());
+   lua_pcall(m_L, 1, 0, 0);
+}
+
+
+
 int LuaInterface::determineNextScene(
    const std::string& entryType,
    const std::string& entryParameter,

@@ -78,18 +78,18 @@ void ObjectProperty::setProperty(float value)
    // Handeling an even may cause it to be removed as a trigger from this 
    // list which would invalidate the iterator. Therefore we build a list of
    // all events to be sent and send them after the loop
-   vector<ObjectPropertyTriggeredEvent> m_eventList;
+   vector<ObjectPropertyTriggeredEvent> eventList;
 
 	for (auto it = m_eventTriggers.begin(); it != m_eventTriggers.end(); ++it)
 	{
 		if (it->evaluateTrigger(value))
 		{
          // Trigger event
-         m_eventList.push_back(ObjectPropertyTriggeredEvent(it->getEventId(), m_id, value));
+         eventList.push_back(ObjectPropertyTriggeredEvent(it->getEventId(), m_id, value));
 		}		
 	}
 
-   for (auto it = m_eventList.begin(); it != m_eventList.end(); ++it)
+   for (auto it = eventList.begin(); it != eventList.end(); ++it)
    {
       m_object->dispatchEvent(&(*it));
    }

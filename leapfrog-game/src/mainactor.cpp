@@ -66,7 +66,7 @@ MainActor::MainActor() :
 
    //g_LuaInterface.determineNextScene("toDeepSpace", "", m_nextSceneFile, m_nextSceneState, m_nextSceneType);
    //g_LuaInterface.determineNextScene("toOrbit", "", m_nextSceneFile, m_nextSceneState, m_nextSceneType);
-   //g_LuaInterface.determineNextScene("toGround", "alphaCity", m_nextSceneFile, m_nextSceneState, m_nextSceneType);
+   //g_LuaInterface.determineNextScene("toLanding", "alphaCity", m_nextSceneFile, m_nextSceneState, m_nextSceneType);
 
    //m_nextSceneFile = "landing_scene.xml";
    //m_armNextScene = true;
@@ -92,10 +92,6 @@ MainActor::~MainActor()
 
 void MainActor::startScene(void)
 {
-   // Test to execute script here
-   g_LuaInterface.runAverage();
-
-
    // Remove listners for statusbars
    removeAllEventListeners();
 
@@ -137,9 +133,6 @@ void MainActor::startScene(void)
    window->setPosition(0.0f, 0.0f);
    addChild(window);
 
-   //string fileName;
-   string initialState = "default";
-
    if ((m_nextSceneType == SceneActor::SceneTypeEnum::landing) || 
       (m_nextSceneType == SceneActor::SceneTypeEnum::deepSpace))
    {
@@ -150,7 +143,7 @@ void MainActor::startScene(void)
          m_world,
          Vector2(0.0f, 0.0f),
          m_nextSceneFile,
-         initialState));
+         m_nextSceneState));
 
       if (sceneObj == NULL)
       {
@@ -179,7 +172,7 @@ void MainActor::startScene(void)
          m_world, 
          Vector2(0.0f, 0.0f), 
          m_nextSceneFile, 
-         initialState);
+         m_nextSceneState);
 
       window->addChild(co);
 
@@ -415,7 +408,7 @@ void MainActor::transitToOrbitListner(Event *ev)
 
 void MainActor::landingCompleteListner(oxygine::Event *ev)
 {
-   g_LuaInterface.determineNextScene("toGround", "alphaCity", m_nextSceneFile, m_nextSceneState, m_nextSceneType);
+   g_LuaInterface.determineNextScene("toLanding", "alphaCity", m_nextSceneFile, m_nextSceneState, m_nextSceneType);
    m_armNextScene = true;
 
    //m_armNextScene = true;
@@ -461,21 +454,21 @@ void MainActor::doUpdate(const UpdateState& us)
 
       if (data[SDL_SCANCODE_F1])
       {
+         g_LuaInterface.forceCurrentScene("orbit_scene.xml");
+         g_LuaInterface.determineNextScene("toLanding", "alphaCity", m_nextSceneFile, m_nextSceneState, m_nextSceneType);
          m_armNextScene = true;
-         m_nextSceneFile = "landing_scene.xml";
-         m_nextSceneType = SceneActor::SceneTypeEnum::landing;
      }
       else if (data[SDL_SCANCODE_F2])
       {
-         //      startScene(deepSpace);
+         g_LuaInterface.forceCurrentScene("landing_scene.xml");
          fadeFromLanding();
 
       }
       else if (data[SDL_SCANCODE_F3])
       {
+         g_LuaInterface.forceCurrentScene("deep_space_scene.xml");
+         g_LuaInterface.determineNextScene("toOrbit", "", m_nextSceneFile, m_nextSceneState, m_nextSceneType);
          m_armNextScene = true;
-         m_nextSceneFile = "orbit_scene.xml";
-         m_nextSceneType = SceneActor::SceneTypeEnum::orbit;
       }
    }
 

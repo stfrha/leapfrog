@@ -5,7 +5,7 @@ currentScene = "New Game"
 gameProgress = 0
 
 
--- entryType is: toGround, toDeepSpace, toOrbit, toHyperspace
+-- entryType is: toLanding, toDeepSpace, toOrbit, toHyperspace
 -- entryParameter is additional information related to an enty
 function determineNextScene(entryType, entryParameter)
    local nextScene = ""
@@ -21,7 +21,7 @@ function determineNextScene(entryType, entryParameter)
       if entryType == "toDeepSpace" then
          nextScene = "deep_space_scene.xml"
          sceneType = "deepSpace"
-         sceneState = "fromGround"
+         sceneState = "default"
       else
          nextScene = "Current scene is " .. currentScene .. ", could not find currentState"
          sceneType = ""
@@ -29,7 +29,7 @@ function determineNextScene(entryType, entryParameter)
       end
 
    elseif currentScene == "orbit_scene.xml" then
-      if entryType == "toGround" then
+      if entryType == "toLanding" then
          if entryParameter == "alphaCity" then
             nextScene = "landing_scene.xml"
             sceneType = "landing"
@@ -49,11 +49,11 @@ function determineNextScene(entryType, entryParameter)
       if entryType == "toOrbit" then
          nextScene = "orbit_scene.xml"
          sceneType = "orbit"
-         sceneState = "fromDeepSpace"
+         sceneState = "default"
       elseif entryType == "toHyperspace" then
          nextScene = "hyper_scene.xml"
          sceneType = "hyperSpace"
-         sceneState = "fromDeepSpace"
+         sceneState = "default"
       else
          nextScene = "Current scene is " .. currentScene .. ", could not find currentState"
          sceneType = ""
@@ -72,3 +72,6 @@ function determineNextScene(entryType, entryParameter)
    
 end
 
+function forceCurrentScene(newCurrentScene)
+   currentScene = newCurrentScene;
+end

@@ -17,6 +17,7 @@ private:
 public:
    LuaInterface();
    void initLuaInterface();
+   void forceCurrentScene(const std::string& newCurrentScene);
    int determineNextScene(
       const std::string& entryType,
       const std::string& entryParameter,
