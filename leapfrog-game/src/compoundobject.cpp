@@ -1790,8 +1790,7 @@ float CompoundObject::getProperty(int propId)
 void CompoundObject::registerPropertyEventTrigger(
    int propId, 
    int eventId,
-   PropertyEventTrigger::TriggerType 
-   triggerType, 
+   PropertyEventTrigger::TriggerType triggerType, 
    float lower, 
    float upper)
 {

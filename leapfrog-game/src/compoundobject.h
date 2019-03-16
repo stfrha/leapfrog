@@ -325,7 +325,7 @@ public:
    void extSetProperty(int propId, float value);
    void setProperty(int propId, float value);
    float getProperty(int propId);
-   void registerPropertyEventTrigger(int eventId, int propId, PropertyEventTrigger::TriggerType triggerType, float lower, float upper);
+   void registerPropertyEventTrigger(int propId, int eventId, PropertyEventTrigger::TriggerType triggerType, float lower, float upper);
    void registerDualPropEventTrigger(int propId, DualPropEventTrigger* trigger);
    void unregisterDualPropEventTrigger(int propId, DualPropEventTrigger* trigger);
 

@@ -28,20 +28,18 @@
     height="10"
     density="1"
     friction="0" />
-  <dynamicBox
-    name="wrecker"
-    texture="crater_rock"
-    posX="230"
-    posY="235"
+  <staticBox
+    name="springDestroyable"
+    texture="lf_position"
+    posX="625.11145463894582"
+    posY="161.4572729849277"
     angle="0"
     zLevel="0"
-    collisionEntity="notApplicable"
+    collisionEntity="destroyableObject"
     collisionCategory="1"
     collisionMask="65533"
-    width="20"
-    height="20"
-    density="1"
-    friction="0" />
+    width="10"
+    height="10" />
   <weldJoint
     name="noJointName"
     objectAName="springWeight"

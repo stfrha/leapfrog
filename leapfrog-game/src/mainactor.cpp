@@ -64,6 +64,7 @@ MainActor::MainActor() :
    g_LuaInterface.determineNextScene("New Game", "", m_nextSceneFile, m_nextSceneState, m_nextSceneType);
    m_armNextScene = true;
 
+
    //g_LuaInterface.determineNextScene("toDeepSpace", "", m_nextSceneFile, m_nextSceneState, m_nextSceneType);
    //g_LuaInterface.determineNextScene("toOrbit", "", m_nextSceneFile, m_nextSceneState, m_nextSceneType);
    //g_LuaInterface.determineNextScene("toLanding", "alphaCity", m_nextSceneFile, m_nextSceneState, m_nextSceneType);
@@ -183,6 +184,8 @@ void MainActor::startScene(void)
    }
 
    m_sceneObject->connectToForeignObjects();
+
+   g_LuaInterface.setupMissionStateScene(m_sceneObject);
 
    // Init game status in leapfrog object
    CompoundObject* leapfrog = m_sceneObject->getObject("leapfrog1");

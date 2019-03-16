@@ -20,7 +20,7 @@ function setupMissionStateScene()
          c_registerPropertyTrigger("leapfrog1", "eventId", propertyIndex, "insideRange", lowerLimit, upperLimit);
          
          -- Register all events required for this mission-state-scene
-         c_registerEventHandler("propertyTriggerEvent", eventId, propertyId)
+         c_registerEventHandler("OpTr", eventId, propertyId)
 
       elseif currentScene == "deep_space_scene.xml" then
 

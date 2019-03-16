@@ -15,7 +15,7 @@ function determineNextScene(entryType, entryParameter)
    if currentScene == "New Game" then
       nextScene = "landing_scene.xml"
       sceneType = "landing"
-      sceneState = "groundState"
+      sceneState = "landingState"
    
    elseif currentScene == "landing_scene.xml" then
       if entryType == "toDeepSpace" then

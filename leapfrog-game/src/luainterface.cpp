@@ -1,13 +1,101 @@
 #include "luainterface.h"
 
 #include "messagedisplay.h"
+#include "objectproperty.h"
 
 using namespace oxygine;
 
 // Instansiate global class
 LuaInterface g_LuaInterface;
 
-/* The function we'll call from the lua script */
+
+// ------------------------------------------------------------------------
+// General event handler for events handled by LUA script
+void luaEventListner(oxygine::Event *ev)
+{
+   std::string actorName = ev->target->getName();
+   std::string eventType = "1234";
+
+   eventType[0] = (ev->type & 0xff);
+   eventType[1] = ((ev->type >> 8) & 0xff);
+   eventType[2] = ((ev->type >> 16) & 0xff);
+   eventType[3] = ((ev->type >> 24) & 0xff);
+
+   if (ev->type == eventID('O', 'p', 'T', 'r'))
+   {
+      // This is a Property trigger event, get some additional parameters
+      ObjectPropertyTriggeredEvent* propTrigEv = static_cast<ObjectPropertyTriggeredEvent*>(ev);
+
+      g_LuaInterface.missionStateSceneEventHandler(
+         eventType, actorName, propTrigEv->m_propertyId);
+
+
+   }
+}
+
+
+
+// ------------------------------------------------------------------------
+// The functions we'll call from the lua script 
+static int c_registerPropertyTrigger(lua_State *L)
+{
+   std::string actorName = lua_tostring(L, 1);
+   int eventId = lua_tointeger(L, 2);
+   int propertyIndex = lua_tointeger(L, 3);
+   std::string triggerTypeStr = lua_tostring(L, 4);
+   float lowerLimit = lua_tonumber(L, 5);
+   float upperLimit = lua_tonumber(L, 6);
+   
+   PropertyEventTrigger::TriggerType triggerType;
+
+   if (triggerTypeStr == "ignore")
+   {
+      triggerType = PropertyEventTrigger::TriggerType::ignore;
+   }
+   else if (triggerTypeStr == "insideRange")
+   {
+      triggerType = PropertyEventTrigger::TriggerType::insideRange;
+   }
+   else if (triggerTypeStr == "outsideRange")
+   {
+      triggerType = PropertyEventTrigger::TriggerType::outsideRange;
+   }
+
+   CompoundObject* actor = g_LuaInterface.getSceneActor()->getObject(actorName);
+
+   actor->registerPropertyEventTrigger(propertyIndex, eventId, triggerType, lowerLimit, upperLimit);
+
+   return 0;
+}
+
+static int c_registerEventHandler(lua_State *L)
+{
+   std::string actorName = lua_tostring(L, 1);
+   std::string eventString = lua_tostring(L, 2);
+   int eventId = lua_tointeger(L, 3);
+   int propertyIndex = lua_tointeger(L, 4);
+
+   oxygine::eventType eventType = eventID(
+      eventString[0],
+      eventString[1],
+      eventString[2],
+      eventString[3]);
+
+   CompoundObject* actor = g_LuaInterface.getSceneActor()->getObject(actorName);
+
+   actor->addEventListener(eventType, luaEventListner);
+
+   return 0;
+}
+
+static int c_addMissionStateSceneObjects(lua_State *L)
+{
+   std::string missionStateSceneAdditionsFileName = lua_tostring(L, 1);
+
+   return 0;
+}
+
+
 static int average(lua_State *L)
 {
    /* get number of arguments */
@@ -40,7 +128,12 @@ static int average(lua_State *L)
    return 2;
 }
 
-LuaInterface::LuaInterface()
+
+// ------------------------------------------------------------------------
+// The LUA interface implementation
+
+
+LuaInterface::LuaInterface() : m_sceneActor(NULL)
 {
 }
 
@@ -52,12 +145,28 @@ void LuaInterface::initLuaInterface(void)
 //   lua_register(m_L, "average", average);
 
    ox::file::read("scene_navigator.lua", m_sceneNavigatorScriptBuffer);
-
-   lua_pushstring(m_L, "0.7");
-   lua_setglobal(m_L, "VERSION");
-
-   int result = luaL_loadbuffer(m_L, reinterpret_cast<char*>(&m_sceneNavigatorScriptBuffer[0]), m_sceneNavigatorScriptBuffer.size(), "sceneNavigatorScript");
+   int result = luaL_loadbuffer(m_L, reinterpret_cast<char*>(&m_sceneNavigatorScriptBuffer[0]), m_sceneNavigatorScriptBuffer.size(), "scene_navigator");
    result = lua_pcall(m_L, 0, 0, 0);
+
+   ox::file::read("mission_script.lua", m_sceneNavigatorScriptBuffer);
+   result = luaL_loadbuffer(m_L, reinterpret_cast<char*>(&m_sceneNavigatorScriptBuffer[0]), m_sceneNavigatorScriptBuffer.size(), "mission_script");
+   result = lua_pcall(m_L, 0, 0, 0);
+
+   lua_register(m_L, "c_registerPropertyTrigger", c_registerPropertyTrigger);
+   lua_register(m_L, "c_registerEventHandler", c_registerEventHandler);
+   lua_register(m_L, "c_addMissionStateSceneObjects", c_addMissionStateSceneObjects);
+
+   
+}
+
+//void LuaInterface::setSceneActor(SceneActor* sceneActor)
+//{
+//   m_sceneActor = sceneActor;
+//}
+
+SceneActor* LuaInterface::getSceneActor(void)
+{
+   return m_sceneActor;
 }
 
 void LuaInterface::forceCurrentScene(const std::string& newCurrentScene)
@@ -133,6 +242,24 @@ int LuaInterface::determineNextScene(
 
 }
 
+void LuaInterface::setupMissionStateScene(SceneActor* sceneActor)
+{
+   // This makes sure that the latest scene actor ís used, do not remove it
+   m_sceneActor = sceneActor;
+
+   int a1 = lua_getglobal(m_L, "setupMissionStateScene");
+   int result = lua_pcall(m_L, 0, 0, 0);
+}
+
+
+void LuaInterface::missionStateSceneEventHandler(std::string eventId, std::string actorName, int parameter)
+{
+   int a1 = lua_getglobal(m_L, "missionStateSceneEventHandler");
+   lua_pushstring(m_L, eventId.c_str());
+   lua_pushstring(m_L, actorName.c_str());
+   lua_pushinteger(m_L, parameter);
+   int result = lua_pcall(m_L, 3, 0, 0);
+}
 
 void LuaInterface::runAverage(void)
 {
