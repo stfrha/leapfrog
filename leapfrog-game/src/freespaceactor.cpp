@@ -17,7 +17,7 @@ FreeSpaceActor::FreeSpaceActor(
    xml_node& root,
    const string& initialState,
    int groupIndex) :
-   SceneActor(gameResources, world, 0.4f),
+   SceneActor(gameResources, world, 0.4f, initialState),
    m_inOrbitField(false),
    m_state(insertBurn),
    m_stateChangeTime(0)

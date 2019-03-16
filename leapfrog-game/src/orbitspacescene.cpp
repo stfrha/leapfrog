@@ -16,7 +16,7 @@ OrbitSpaceScene::OrbitSpaceScene(
    xml_node& root,
    const string& initialState,
    int groupIndex) :
-	SceneActor(gameResources, world, 0.4f),
+	SceneActor(gameResources, world, 0.4f, initialState),
    m_state(enteringOrbit),
    m_stateStartTime(0)
 {

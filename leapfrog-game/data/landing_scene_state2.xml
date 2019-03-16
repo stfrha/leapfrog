@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<addOns>
+<compoundObject>
   <dynamicBox
     name="plank"
     texture="concrete"
@@ -160,4 +160,4 @@
       </properties>
     </stateProperties>
   </childObject>
-</addOns>
+</compoundObject>

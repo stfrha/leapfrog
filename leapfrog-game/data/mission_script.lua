@@ -31,8 +31,10 @@ function setupMissionStateScene()
    elseif currentState == "state2" then
 
       if currentScene == "landing_scene.xml" then
-         c_addMissionStateSceneObjects("test_mission/state2/landing_scene.xml")
-         c_registerPropertyTrigger("leapfrog1", 1, 3, "insideRange", 200, 400);
+         c_addDialogMessage("I got to state2", "DEBUG", true, 0, 0)
+         c_addMissionStateSceneObjects("landing_scene_state2.xml")
+         c_registerPropertyTrigger("leapfrog1", 1, 3, "insideRange", 410, 500);
+         c_registerEventHandler("leapfrog1", "OpTr", 1, 3)
 
       elseif currentScene == "deep_space_scene.xml" then
       
@@ -51,10 +53,13 @@ function missionStateSceneEventHandler(eventId, actorName, parameter1)
                if parameter1 == 3 then
 
                   -- Play dialog
+                  
+                  c_addDialogMessage("I am handling the event", "DEBUG", true, 0, 0)
+
                   currentState = "state2"
                   
                   -- Clear triggers and event handler
-                  -- c_clearAllTriggersAndEvents()
+                  c_clearAllTriggersAndEvents()
                   
                   setupMissionStateScene()
                end

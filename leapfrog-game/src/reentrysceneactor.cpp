@@ -4,7 +4,7 @@
 using namespace oxygine;
 
 ReentrySceneActor::ReentrySceneActor(Resources& gameResources) :
-   SceneActor(gameResources, NULL, 0.4f)
+   SceneActor(gameResources, NULL, 0.4f, "default")
 {
    // I should probably load resources that are uniuqe here
    setPanorateMode(center);

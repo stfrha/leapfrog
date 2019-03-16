@@ -169,6 +169,36 @@ void CompoundObject::removeShape(Actor* removeMe)
    return initCompoundObject(gameResources, sceneParent, parentObject, world, pos, root, initialState);
 }
 
+ void CompoundObject::addObjectsFromXmlFile(
+    oxygine::Resources& gameResources,
+    SceneActor* sceneParent,
+    CompoundObject* parentObject,
+    b2World* world,
+    const std::string& fileName,
+    const std::string& initialState)
+ {
+    ox::file::buffer bf;
+    ox::file::read(fileName.c_str(), bf);
+
+    xml_document doc;
+
+    //   xml_parse_result result = doc.load_file(fileName.c_str());
+    xml_parse_result result = doc.load_buffer(&bf.data[0], bf.size());
+
+    xml_node root = doc.child("compoundObject");
+
+    initCompoundObjectParts(
+       gameResources,
+       sceneParent,
+       parentObject,
+       world,
+       Vector2(0.0f, 0.0f),
+       root,
+       string(""),
+       0);
+ }
+
+
 CompoundObject* CompoundObject::initCompoundObject(
    // This method creates a new CO and fills it according to the supplied
    // XML node. The created CO is returned.
@@ -1767,6 +1797,11 @@ void CompoundObject::extSetProperty(int propId, float value)
 {
    setProperty(propId, value);
    setPropertyImpl(propId, value);
+}
+
+ObjectProperty* CompoundObject::getObjectProperty(int propId)
+{
+   return getProp(propId);
 }
 
 // The setPropertyImpl here does nothing. It is ment to be 

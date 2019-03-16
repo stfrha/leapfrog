@@ -53,12 +53,14 @@ protected:
    PanorateModeEnum m_panorateMode;
    bool m_externalControl;
    SceneTypeEnum m_sceneType;
+   std::string m_initialState;
 
 public:
 	SceneActor(
       oxygine::Resources& gameResources, 
       b2World* world, 
-      float zoomScale);
+      float zoomScale,
+      const std::string& initialState);
    ~SceneActor();
 
    static SceneActor* defineScene(
@@ -81,8 +83,9 @@ public:
    spLeapFrog  m_leapfrog;
    HeadDownDisplay* m_map;
 
-   b2World* GetWorld(void);
+   b2World* getWorld(void);
    Resources* getResources(void);
+   std::string* getInitialState(void);
 
    void setPanorateMode(PanorateModeEnum mode);
    void setPanorateObject(CompoundObject* co);

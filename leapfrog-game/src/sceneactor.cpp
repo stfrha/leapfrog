@@ -48,9 +48,13 @@ SceneActor* SceneActor::defineScene(
    return NULL;
 }
 
-
-SceneActor::SceneActor(Resources& gameResources, b2World* world, float zoomScale) :
+SceneActor::SceneActor(
+   Resources& gameResources, 
+   b2World* world, 
+   float zoomScale, 
+   const std::string& initialState) :
    CompoundObject(this, NULL),
+   m_initialState(initialState),
    m_gameResources(&gameResources),
    m_world(world),
    m_zoomScale(zoomScale),
@@ -95,12 +99,13 @@ SceneActor::~SceneActor()
 {
 }
 
+
 SceneActor::SceneTypeEnum SceneActor::getSceneType(void)
 {
    return m_sceneType;
 }
 
-b2World* SceneActor::GetWorld(void)
+b2World* SceneActor::getWorld(void)
 {
    return m_world;
 }
@@ -108,6 +113,11 @@ b2World* SceneActor::GetWorld(void)
 Resources* SceneActor::getResources(void)
 {
    return m_gameResources;
+}
+
+string* SceneActor::getInitialState(void)
+{
+   return &m_initialState;
 }
 
 void SceneActor::setPanorateMode(PanorateModeEnum mode)

@@ -278,6 +278,13 @@ public:
 
 
    // Normal, non-static, public methods of an instance of a CO
+   void addObjectsFromXmlFile(
+      oxygine::Resources& gameResources,
+      SceneActor* sceneParent,
+      CompoundObject* parentObject,
+      b2World* world,
+      const std::string& fileName,
+      const std::string& initialState);
 
    bool initCompoundObjectParts(
       oxygine::Resources& gameResources,
@@ -322,6 +329,7 @@ public:
 
    virtual void connectToForeignObjects(void);
   
+   ObjectProperty* getObjectProperty(int propId);
    void extSetProperty(int propId, float value);
    void setProperty(int propId, float value);
    float getProperty(int propId);

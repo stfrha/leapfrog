@@ -61,9 +61,11 @@ static int c_registerPropertyTrigger(lua_State *L)
       triggerType = PropertyEventTrigger::TriggerType::outsideRange;
    }
 
-   CompoundObject* actor = g_LuaInterface.getSceneActor()->getObject(actorName);
+   CompoundObject* object = g_LuaInterface.getSceneActor()->getObject(actorName);
 
-   actor->registerPropertyEventTrigger(propertyIndex, eventId, triggerType, lowerLimit, upperLimit);
+   object->registerPropertyEventTrigger(propertyIndex, eventId, triggerType, lowerLimit, upperLimit);
+
+   g_LuaInterface.registerTriggerHandle(object, propertyIndex, eventId);
 
    return 0;
 }
@@ -83,14 +85,45 @@ static int c_registerEventHandler(lua_State *L)
 
    CompoundObject* actor = g_LuaInterface.getSceneActor()->getObject(actorName);
 
-   actor->addEventListener(eventType, luaEventListner);
+   int i = actor->addEventListener(eventType, luaEventListner);
 
+   g_LuaInterface.registerHandlerHandle(actor, i);
+
+   return 0;
+}
+
+static int c_clearAllTriggersAndEvents(lua_State *L)
+{
+   g_LuaInterface.clearAllTriggersAndEvents();
    return 0;
 }
 
 static int c_addMissionStateSceneObjects(lua_State *L)
 {
    std::string missionStateSceneAdditionsFileName = lua_tostring(L, 1);
+
+   SceneActor* scene = g_LuaInterface.getSceneActor();
+   
+   scene->addObjectsFromXmlFile(
+      *scene->getResources(),
+      scene,
+      NULL,
+      scene->getWorld(),
+      missionStateSceneAdditionsFileName,
+      *scene->getInitialState());
+   
+   return 0;
+}
+
+static int c_addDialogMessage(lua_State *L)
+{
+   std::string message = lua_tostring(L, 1);
+   std::string sender = lua_tostring(L, 2);
+   bool leftSide = lua_toboolean(L, 3);
+   int preDelay = lua_tointeger(L, 4);
+   int postDelay = lua_tointeger(L, 5);
+
+   g_MessageDisplay->initMessage(leftSide, message.c_str(), sender.c_str());
 
    return 0;
 }
@@ -154,7 +187,9 @@ void LuaInterface::initLuaInterface(void)
 
    lua_register(m_L, "c_registerPropertyTrigger", c_registerPropertyTrigger);
    lua_register(m_L, "c_registerEventHandler", c_registerEventHandler);
+   lua_register(m_L, "c_clearAllTriggersAndEvents", c_clearAllTriggersAndEvents);
    lua_register(m_L, "c_addMissionStateSceneObjects", c_addMissionStateSceneObjects);
+   lua_register(m_L, "c_addDialogMessage", c_addDialogMessage);
 
    
 }
@@ -167,6 +202,35 @@ void LuaInterface::initLuaInterface(void)
 SceneActor* LuaInterface::getSceneActor(void)
 {
    return m_sceneActor;
+}
+
+void LuaInterface::registerHandlerHandle(oxygine::Actor* actor, int eventId)
+{
+   EventHandlerHandle handle(actor, eventId);
+   m_eventHandlerHandles.push_back(handle);
+}
+
+void LuaInterface::registerTriggerHandle(CompoundObject* object, int propertyId, int eventId)
+{
+   TriggerHandle handle(object, propertyId, eventId);
+   m_triggerHandles.push_back(handle);
+}
+
+void LuaInterface::clearAllTriggersAndEvents(void)
+{
+   for (auto it = m_eventHandlerHandles.begin(); it != m_eventHandlerHandles.end(); ++it)
+   {
+      it->m_actor->removeEventListener(it->m_eventId);
+   }
+
+   m_eventHandlerHandles.clear();
+
+   for (auto it = m_triggerHandles.begin(); it != m_triggerHandles.end(); ++it)
+   {
+      it->m_object->getObjectProperty(it->m_propertyId)->unregisterPropertyEventTrigger(it->m_eventId);
+   }
+
+   m_triggerHandles.clear();
 }
 
 void LuaInterface::forceCurrentScene(const std::string& newCurrentScene)
