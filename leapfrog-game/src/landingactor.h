@@ -25,9 +25,7 @@ private:
 
 
 
-   void modeReachedListener(oxygine::Event *ev);
    void leapfrogLandedOnLaunchSiteHandler(oxygine::Event *ev);
-   void handlePropertyTriggeredEvent(oxygine::Event *ev);
    void transitToDeepSpace(oxygine::Event *ev);
 
 

@@ -37,12 +37,6 @@ LandingActor::LandingActor(
    if (m_leapfrog != NULL)
    {
       m_leapfrog->goToEnvironment(ENV_GROUND);
-
-      m_leapfrog->addEventListener(LeapfrogModeReachedEvent::EVENT, CLOSURE(this, &LandingActor::modeReachedListener));
-
-      // m_leapfrog->addEventListener(ObjectPropertyTriggeredEvent::EVENT, CLOSURE(this, &LandingActor::handlePropertyTriggeredEvent));
-      // m_leapfrog->m_properties[LeapFrog::propXPos].registerPropertyEventTrigger(1, PropertyEventTrigger::insideRange, 1200.0f, 10000.0f);
-
       m_leapfrog->goToMode(LFM_LANDING);
    }
 
@@ -56,17 +50,6 @@ LandingActor::LandingActor(
 
 }
 
-void LandingActor::modeReachedListener(Event *ev)
-{
-   LeapfrogModeReachedEvent* event = static_cast<LeapfrogModeReachedEvent*>(ev);
-   logs::messageln("Mode reached with info: %s", event->extraInfo.c_str());
-
-   float mode = m_leapfrog->m_properties[LeapFrog::propMode].getProperty();
-   float state = m_leapfrog->m_properties[LeapFrog::propState].getProperty();
-   logs::messageln("Mode is now: %d", (int)mode);
-   logs::messageln("State is now: %d", (int)state);
-}
-
 void LandingActor::leapfrogLandedOnLaunchSiteHandler(oxygine::Event *ev)
 {
    logs::messageln("Launch Site landing stable");
@@ -74,42 +57,9 @@ void LandingActor::leapfrogLandedOnLaunchSiteHandler(oxygine::Event *ev)
    m_launchSite->startLaunchSequence(m_leapfrog.get());
 }
 
-void LandingActor::handlePropertyTriggeredEvent(oxygine::Event *ev)
-{
-   ObjectPropertyTriggeredEvent* event = static_cast<ObjectPropertyTriggeredEvent*>(ev);
-
-   // Decode the triggered event id:
-   switch (event->m_triggedEventId)
-   {
-   case 1:
-      logs::message("Entered right area, changeing mode.");
-      m_leapfrog->m_properties[LeapFrog::propMode].extSetProperty((float)LFM_DEEP_SPACE);
-      
-      // Unregister this event so that it does not spam
-      m_leapfrog->m_properties[LeapFrog::propXPos].unregisterPropertyEventTrigger(1);
-
-      // Register new event for when we go back to the left
-      m_leapfrog->m_properties[LeapFrog::propXPos].registerPropertyEventTrigger(2, PropertyEventTrigger::insideRange, -10000.0f, 1200.0f);
-
-      break;
-   case 2:
-      logs::message("Entered left area, changeing mode.");
-      m_leapfrog->m_properties[LeapFrog::propMode].extSetProperty((float)LFM_LANDING);
-
-      // Unregister this event so that it does not spam
-      m_leapfrog->m_properties[LeapFrog::propXPos].unregisterPropertyEventTrigger(2);
-
-      // Register new event for when we go back to the left
-      m_leapfrog->m_properties[LeapFrog::propXPos].registerPropertyEventTrigger(1, PropertyEventTrigger::insideRange, 1200.0f, 10000.0f);
-
-      break;
-   }
-
-}
-
 void LandingActor::transitToDeepSpace(oxygine::Event *ev)
 {
-   LandingActorTranstToDeepSpaceEvent event;
+   LandingActorTransitToDeepSpaceEvent event;
    dispatchEvent(&event);
 }
 

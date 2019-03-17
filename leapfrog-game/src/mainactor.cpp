@@ -156,12 +156,12 @@ void MainActor::startScene(void)
       if (m_nextSceneType == SceneActor::SceneTypeEnum::landing)
       {
          m_sceneObject = sceneObj.get();
-         sceneObj->addEventListener(LandingActorTranstToDeepSpaceEvent::EVENT, CLOSURE(this, &MainActor::transitToDeepSpaceListner));
+         sceneObj->addEventListener(LandingActorTransitToDeepSpaceEvent::EVENT, CLOSURE(this, &MainActor::transitToDeepSpaceListner));
       }
       else
       {
          m_sceneObject = sceneObj.get();
-         sceneObj->addEventListener(DeepSpaceSceneTranstToOrbitEvent::EVENT, CLOSURE(this, &MainActor::transitToOrbitListner));
+         sceneObj->addEventListener(DeepSpaceSceneTransitToOrbitEvent::EVENT, CLOSURE(this, &MainActor::transitToOrbitListner));
       }
    }
    else if (m_nextSceneType == SceneActor::SceneTypeEnum::orbit)
@@ -251,36 +251,6 @@ void MainActor::startScene(void)
       m_sceneObject,
       Vector2(0.0f, 0.0f),
       m_sceneObject->getSize());
-
-   g_MessageDisplay->initMessage(
-      true,
-      "Hello! Hmm... are you... The driver of the leapfrog? I have meaning to talk to you for quite some time. You see, we are having a slight problem with Space Invaders in these here parts.",
-      "Dr Lando");
-
-   g_MessageDisplay->initMessage(
-      false,
-      "Look, I have not got the time.",
-      "Me");
-
-   g_MessageDisplay->initMessage(
-      true,
-      "We can pay you. Quite..",
-      "Dr Lando");
-
-   g_MessageDisplay->initMessage(
-      false,
-      "How much?",
-      "Me");
-
-   g_MessageDisplay->initMessage(
-      true,
-      "20 000 credits. More than enough.",
-      "Dr Lando");
-
-   g_MessageDisplay->initMessage(
-      false,
-      "Local currency?",
-      "Me");
 
    // Now that the map is initialised, we tell child objects to register on the 
    // map
@@ -546,65 +516,6 @@ void MainActor::createButtonOverlay(void)
    zoomInButton->attachTo(this);
 }
 
-//void MainActor::turnLeftButtonDownHandler(Event* event)
-//{
-//   m_sceneObject->m_turnLeftPressed = true;
-//}
-//
-//void MainActor::turnLeftButtonUpHandler(Event* event)
-//{
-//   m_sceneObject->m_turnLeftPressed = false;
-//}
-//
-//void MainActor::turnRightButtonDownHandler(Event* event)
-//{
-//   m_sceneObject->m_turnRightPressed = true;
-//}
-//
-//void MainActor::turnRightButtonUpHandler(Event* event)
-//{
-//   m_sceneObject->m_turnRightPressed = false;
-//}
-//
-//void MainActor::boosterButtonDownHandler(Event* event)
-//{
-//   m_sceneObject->m_boosterPressed = true;
-//}
-//
-//void MainActor::boosterButtonUpHandler(Event* event)
-//{
-//   m_sceneObject->m_boosterPressed = false;
-//}
-//
-//void MainActor::fireButtonDownHandler(Event* event)
-//{
-//   m_sceneObject->m_firePressed = true;
-//}
-//
-//void MainActor::fireButtonUpHandler(Event* event)
-//{
-//   m_sceneObject->m_firePressed = false;
-//}
-//
-//void MainActor::zoomInButtonDownHandler(Event* event)
-//{
-//   m_sceneObject->m_zoomInPressed = true;
-//}
-//
-//void MainActor::zoomInButtonUpHandler(Event* event)
-//{
-//   m_sceneObject->m_zoomInPressed = false;
-//}
-//
-//void MainActor::zoomOutButtonDownHandler(Event* event)
-//{
-//   m_sceneObject->m_zoomOutPressed = true;
-//}
-//
-//void MainActor::zoomOutButtonUpHandler(Event* event)
-//{
-//   m_sceneObject->m_zoomOutPressed = false;
-//}
 
 void MainActor::sceneDownHandler(Event* event)
 {

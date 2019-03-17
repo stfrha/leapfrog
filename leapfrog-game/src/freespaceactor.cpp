@@ -42,11 +42,8 @@ FreeSpaceActor::FreeSpaceActor(
    if (m_leapfrog != NULL)
    {
       m_leapfrogBody = m_leapfrog->getBody("lfMainBody");
-      //   m_leapfrogBody = getBody("leapfrog1.lfMainBody");
-
       m_leapfrog->goToEnvironment(ENV_DEEP_SPACE);
 
-      addBoundingBody(m_leapfrogBody);
    }
 
    m_lowerBoundary = new SoftBoundary(gameResources, m_world, 
@@ -154,7 +151,7 @@ void FreeSpaceActor::doUpdate(const oxygine::UpdateState &us)
          if (us.time > m_enteredOrbitFieldAtTime + 2500)
          {
             // Go to Orbit scene
-            DeepSpaceSceneTranstToOrbitEvent event;
+            DeepSpaceSceneTransitToOrbitEvent event;
             dispatchEvent(&event);
          }
       }
