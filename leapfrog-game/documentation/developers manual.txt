@@ -1,0 +1,115 @@
+
+
+
+1. 		Behaviours
+
+1.1		Leapfrog
+
+
+1.1.1		Required Bodies
+
+Name			         Description
+----------------------------------------------------------------------------
+lfMainBody		      The main body upon where forces are applied
+lfMainBooster        The booster engine used to attach a FlameEmitter
+lfRightSteer	      The right steering engine used to attach a FlameEmitter
+lfLeftSteer		      The left steering engine used to attach a FlameEmitter
+
+
+1.1.2		Required Joints
+
+Name			         Description
+----------------------------------------------------------------------------
+rightSteerJoint		Hold steering engine to leg. Used to destroy the joint 
+leftSteerJoint		   Hold steering engine to leg. Used to destroy the joint 
+rightLegJoint		   Hold Big leg to main body. Used to control the mode of the vehicle and to destroy the joint
+leftLegJoint		   Hold Big leg to main body. Used to control the mode of the vehicle and to destroy the joint
+rightSmallLegJoint	Hold small and big leg together. Used to control the mode of the vehicle and to destroy the joint
+leftSmallLegJoint	   Hold small and big leg together. Used to control the mode of the vehicle and to destroy the joint
+rightFootLegJoint	   Hold small leg and foot together. Used to control the mode of the vehicle and to destroy the joint
+leftFootLegJoint	   Hold small leg and foot together. Used to control the mode of the vehicle and to destroy the joint
+
+1.1.3		Required Systems
+
+Name			         Description
+----------------------------------------------------------------------------
+lfGun	               The gun of the leapfrog. Has ammo. Start/Stop fire interface.
+lfBoosterFlame	      The Main Booster Flame particle system. Parameters of it change with the environment. Start/Stop interface.
+lfLeftSteerFlame	   Steering flame particle system. Parameters of it change with the environment. Start/Stop interface.
+lfShield	            Attached to main body. Rotates to the hit direction. Not used in Landing environment.
+lfCenterReentryFlame	Reentry flame particle system. Only used during reentry. Heat amount interface.
+lfLeftReentryFlame	Reentry flame particle system. Only used during reentry. Heat amount interface.
+lfRightReentryFlame	Reentry flame particle system. Only used during reentry. Heat amount interface.
+
+1.1.4    Properties
+
+Name			   Event to set property   ID    R/O   Description       
+--------------------------------------------------------------------------------------
+Set Mode	      LeapfrogExtSetModeEvent 0	   N	   Set the mode of the Leapfrog. 
+                                                   0 = TBD 
+                                                   1 = TBD 
+                                                   2 = TBD
+Set Environm.  LeapfrogExtSetEnvEvent	1	   N  	Set the environment of the Leapfrog. 
+                                                   0 = TBD 
+                                                   1 = TBD 
+                                                   2 = TBD
+Read State	   N/A	                  2	   Y	   Read the state of the Leapfrog
+                                                   0 = TBD
+Read X-pos	   N/A	                  3	   Y	   Read the x-pos
+Read Y-pos	   N/A	                  4	   Y	   Read the y-pos
+
+
+1.2		SteerableObject
+
+1.2.1		Required Bodies
+
+Name			         Description
+----------------------------------------------------------------------------
+lfMainBody		      The main body upon where forces are applied
+lfMainBooster        The booster engine used to attach a FlameEmitter
+lfRightSteer	      The right steering engine used to attach a FlameEmitter
+lfLeftSteer		      The left steering engine used to attach a FlameEmitter
+
+
+1.2.2		Required Joints
+
+Name			         Description
+----------------------------------------------------------------------------
+rightSteerJoint		Hold steering engine to leg. Used to destroy the joint 
+leftSteerJoint		   Hold steering engine to leg. Used to destroy the joint 
+rightLegJoint		   Hold Big leg to main body. Used to control the mode of the vehicle and to destroy the joint
+leftLegJoint		   Hold Big leg to main body. Used to control the mode of the vehicle and to destroy the joint
+rightSmallLegJoint	Hold small and big leg together. Used to control the mode of the vehicle and to destroy the joint
+leftSmallLegJoint	   Hold small and big leg together. Used to control the mode of the vehicle and to destroy the joint
+rightFootLegJoint	   Hold small leg and foot together. Used to control the mode of the vehicle and to destroy the joint
+leftFootLegJoint	   Hold small leg and foot together. Used to control the mode of the vehicle and to destroy the joint
+
+1.2.3		Required Systems
+
+Name			         Description
+----------------------------------------------------------------------------
+lfGun	               The gun of the leapfrog. Has ammo. Start/Stop fire interface.
+lfBoosterFlame	      The Main Booster Flame particle system. Parameters of it change with the environment. Start/Stop interface.
+lfLeftSteerFlame	   Steering flame particle system. Parameters of it change with the environment. Start/Stop interface.
+lfShield	            Attached to main body. Rotates to the hit direction. Not used in Landing environment.
+lfCenterReentryFlame	Reentry flame particle system. Only used during reentry. Heat amount interface.
+lfLeftReentryFlame	Reentry flame particle system. Only used during reentry. Heat amount interface.
+lfRightReentryFlame	Reentry flame particle system. Only used during reentry. Heat amount interface.
+
+1.2.4    Properties
+
+Name			   Event to set property   ID    R/O   Description       
+--------------------------------------------------------------------------------------
+Set Mode	      LeapfrogExtSetModeEvent 0	   N	   Set the mode of the Leapfrog. 
+                                                   0 = TBD 
+                                                   1 = TBD 
+                                                   2 = TBD
+Set Environm.  LeapfrogExtSetEnvEvent	1	   N  	Set the environment of the Leapfrog. 
+                                                   0 = TBD 
+                                                   1 = TBD 
+                                                   2 = TBD
+Read State	   N/A	                  2	   Y	   Read the state of the Leapfrog
+                                                   0 = TBD
+Read X-pos	   N/A	                  3	   Y	   Read the x-pos
+Read Y-pos	   N/A	                  4	   Y	   Read the y-pos
+

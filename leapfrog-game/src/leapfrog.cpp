@@ -264,13 +264,6 @@ void LeapFrog::doUpdate(const UpdateState &us)
 
       angle = m_mainBody->GetAngle();
 
-      if (angle < -10000.0f)
-      {
-         int a = 10;
-         return;
-      }
-
-
       while (angle > 2.0f * MATH_PI)
       {
          angle -= 2.0f * MATH_PI;
