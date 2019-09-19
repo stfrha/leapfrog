@@ -20,32 +20,73 @@ SceneActor* SceneActor::defineScene(
 {
    string sceneTypeStr = root.child("behaviour").child("sceneProperties").attribute("sceneType").as_string();
 
+   SceneActor* baseScene = NULL;
+
    if (sceneTypeStr == "ground")
    {
       LandingActor* landingScene = new LandingActor(gameResources, world, root, initialState, groupIndex);
 
-      return static_cast<SceneActor*>(landingScene);
+      baseScene = static_cast<SceneActor*>(landingScene);
 
    }
    else if (sceneTypeStr == "space")
    {
       FreeSpaceActor* spaceScene = new FreeSpaceActor(gameResources, world, root, initialState, groupIndex);
 
-      return static_cast<SceneActor*>(spaceScene);
+      baseScene = static_cast<SceneActor*>(spaceScene);
    }
    else if (sceneTypeStr == "orbitSpaceScene")
    {
-      OrbitSpaceScene* spaceScene = new OrbitSpaceScene(
+      OrbitSpaceScene* orbitScene = new OrbitSpaceScene(
          gameResources,
          world, 
          root, 
          initialState,
          groupIndex);
 
-      return static_cast<SceneActor*>(spaceScene);
+      baseScene = static_cast<SceneActor*>(orbitScene);
+   }
+   else
+   {
+      return NULL;
    }
 
-   return NULL;
+   baseScene->m_sceneWidth = root.child("behaviour").child("sceneProperties").attribute("width").as_float(1000.0f);
+   baseScene->m_sceneHeight = root.child("behaviour").child("sceneProperties").attribute("height").as_float(500.0f);
+
+   spSoftBoundary sb = new SoftBoundary(
+      gameResources, 
+      baseScene->m_sceneWidth, 
+      baseScene->m_sceneHeight, 
+      SoftBoundary::up);
+   baseScene->addChild(sb);
+   baseScene->m_boundaries.push_back(sb);
+
+   sb = new SoftBoundary(
+      gameResources,
+      baseScene->m_sceneWidth,
+      baseScene->m_sceneHeight,
+      SoftBoundary::down);
+   baseScene->addChild(sb);
+   baseScene->m_boundaries.push_back(sb);
+
+   sb = new SoftBoundary(
+      gameResources,
+      baseScene->m_sceneWidth,
+      baseScene->m_sceneHeight,
+      SoftBoundary::right);
+   baseScene->addChild(sb);
+   baseScene->m_boundaries.push_back(sb);
+
+   sb = new SoftBoundary(
+      gameResources,
+      baseScene->m_sceneWidth,
+      baseScene->m_sceneHeight,
+      SoftBoundary::left);
+   baseScene->addChild(sb);
+   baseScene->m_boundaries.push_back(sb);
+
+   return baseScene;
 }
 
 SceneActor::SceneActor(
@@ -98,6 +139,58 @@ SceneActor::SceneActor(
 SceneActor::~SceneActor()
 {
 }
+
+void SceneActor::addBoundingBody(b2Body* body)
+{
+   m_boundedBodies.push_back(body);
+}
+
+void SceneActor::removeBoundingBody(b2Body* body)
+{
+   m_boundedBodies.erase(std::remove(
+      m_boundedBodies.begin(),
+      m_boundedBodies.end(),
+      body),
+      m_boundedBodies.end());
+}
+
+void SceneActor::testForBoundaryRepel(void)
+{
+   for (auto it = m_boundedBodies.begin(); it != m_boundedBodies.end(); ++it)
+   {
+      for (auto bit = m_boundaries.begin(); bit != m_boundaries.end(); ++bit)
+      {
+         bit->get()->testForRepel(*it);
+      }
+   }
+}
+
+bool SceneActor::isInsideOrbitField(b2Body* body)
+{
+   SoftBoundary* lower = NULL;
+   SoftBoundary* right = NULL;
+
+   for (auto bit = m_boundaries.begin(); bit != m_boundaries.end(); ++bit)
+   {
+      if (bit->get()->getDirection() == SoftBoundary::RepelDirectionEnum::down)
+      {
+         lower = bit->get();
+      }
+
+      if (bit->get()->getDirection() == SoftBoundary::RepelDirectionEnum::right)
+      {
+         right = bit->get();
+      }
+   }
+
+   if ((lower != NULL) && (right != NULL))
+   {
+      return (lower->isInside(body) && right->isInside(body));
+   }
+
+   return false;
+}
+
 
 
 SceneActor::SceneTypeEnum SceneActor::getSceneType(void)
@@ -174,6 +267,9 @@ void SceneActor::takeControlOfLeapfrog(bool control)
 
 void SceneActor::doUpdate(const UpdateState& us)
 {
+   // Find stagePos in viewPortCoord that makes frog at center
+   Point vpSize = core::getDisplaySize(); // TODO: Replace with g_layout.getViewPortBounds
+
 	//in real project you should make steps with fixed dt, check box2d documentation
 	m_world->Step(us.dt / 1000.0f, 6, 2);
 
@@ -194,7 +290,21 @@ void SceneActor::doUpdate(const UpdateState& us)
 		m_zoomScale *= 0.9f;
 	}
 
-	m_stageToViewPortScale = m_zoomScale * Scales::c_stageToViewPortScale;
+
+   // We dont want to be able to zoom out more than so that the whole
+   // stage is visible, we dont want to see outside stage.
+   
+   if (m_zoomScale * Scales::c_stageToViewPortScale < vpSize.x / m_sceneWidth)
+   {
+      m_zoomScale = vpSize.x / m_sceneWidth / Scales::c_stageToViewPortScale;
+   }
+
+   if (m_zoomScale * Scales::c_stageToViewPortScale < vpSize.y / m_sceneHeight)
+   {
+      m_zoomScale = vpSize.y / m_sceneHeight / Scales::c_stageToViewPortScale;
+   }
+
+   m_stageToViewPortScale = m_zoomScale * Scales::c_stageToViewPortScale;
 
    if (!m_externalControl)
    {
@@ -296,10 +406,7 @@ void SceneActor::doUpdate(const UpdateState& us)
 
 	setScale(m_stageToViewPortScale);
 
-	// Find stagePos in viewPortCoord that makes frog at center
-	Point vpSize = core::getDisplaySize();
-
-	// Frog position in stage coordinates
+	// Pan object position in stage coordinates
    Vector2 panPos(0.0f, 0.0f);
 
    if (m_panObject)
@@ -311,6 +418,8 @@ void SceneActor::doUpdate(const UpdateState& us)
       panPos = m_leapfrog->getMainActor()->getPosition();
    }
 
+   // wantedVpPos is the position in main actor coordinates where the center 
+   // of the view port is
    Vector2 wantedVpPos = Vector2(0.0f, 0.0f);
    
    if (m_panorateMode == center)
@@ -332,7 +441,41 @@ void SceneActor::doUpdate(const UpdateState& us)
    
    if (m_panorateMode != fix)
    {
+      // Now stagePos is the position that makes the position of the 
+      // panorated object being at the wanted position.
+      // But we want to restrict panorating outside of the stage outer bounds.
+      // For example, stagePos.x must not be smaller than 
+      if ((m_sceneWidth - panPos.x) * m_stageToViewPortScale < vpSize.x - wantedVpPos.x)
+      {
+         panPos.x = m_sceneWidth - (vpSize.x - wantedVpPos.x) / m_stageToViewPortScale;
+      }
+
+      if (panPos.x * m_stageToViewPortScale < wantedVpPos.x)
+      {
+         panPos.x = wantedVpPos.x / m_stageToViewPortScale;
+      }
+
+      if ((m_sceneHeight - panPos.y) * m_stageToViewPortScale < vpSize.y - wantedVpPos.y)
+      {
+         panPos.y = m_sceneHeight - (vpSize.y - wantedVpPos.y) / m_stageToViewPortScale;
+      }
+
+      if (panPos.y * m_stageToViewPortScale < wantedVpPos.y)
+      {
+         panPos.y = wantedVpPos.y / m_stageToViewPortScale;
+      }
+
+
+      // stagePos is where I must position the pos (this object)
+      // in the main actor coordinate system, to achieve the correct
+      // panoration
       Vector2 stagePos = wantedVpPos - panPos * m_stageToViewPortScale;
+
+
+      
+
+
+
 
       setPosition(stagePos);
    }

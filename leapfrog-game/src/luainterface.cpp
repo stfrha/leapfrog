@@ -37,6 +37,9 @@ void luaEventListner(oxygine::Event *ev)
 
 // ------------------------------------------------------------------------
 // The functions we'll call from the lua script 
+// ------------------------------------------------------------------------
+
+
 static int c_registerPropertyTrigger(lua_State *L)
 {
    std::string actorName = lua_tostring(L, 1);

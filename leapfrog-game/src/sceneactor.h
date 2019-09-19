@@ -7,6 +7,7 @@
 #include "scales.h"
 #include "physdispconvert.h"
 #include "spawnobject.h"
+#include "softboundary.h"
 
 
 DECLARE_SMART(SceneActor, spSceneActor);
@@ -40,6 +41,12 @@ public:
 
 private:
    spCompoundObject m_panObject;
+   //spSoftBoundary m_lowerBoundary;
+   //spSoftBoundary m_leftBoundary;
+   //spSoftBoundary m_rightBoundary;
+   //spSoftBoundary m_topBoundary;
+   std::vector<spSoftBoundary>   m_boundaries;
+   std::vector<b2Body*>   m_boundedBodies;
 
 protected:
    oxygine::Resources * m_gameResources;
@@ -86,6 +93,11 @@ public:
    b2World* getWorld(void);
    Resources* getResources(void);
    std::string* getInitialState(void);
+
+   void addBoundingBody(b2Body* body);
+   void removeBoundingBody(b2Body* body);
+   void testForBoundaryRepel(void);
+   bool isInsideOrbitField(b2Body* body);
 
    void setPanorateMode(PanorateModeEnum mode);
    void setPanorateObject(CompoundObject* co);

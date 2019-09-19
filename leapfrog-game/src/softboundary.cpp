@@ -7,13 +7,50 @@ using namespace oxygine;
 // rc is in stage coordinates, i.e. meters
 SoftBoundary::SoftBoundary(
    oxygine::Resources& gameResources,
-   b2World* world,
-   const RectF& rc,
+   float sceneWidth,
+   float sceneHeight,
    RepelDirectionEnum repelDir) :
-   m_repelDir(repelDir),
-   m_threshold(determineThreshold(rc))
+   m_repelDir(repelDir)
 {
-	setHorizontalMode(Box9Sprite::TILING_FULL);
+
+   RectF rc;
+
+   // Rotate sprite acc to position
+   switch (m_repelDir)
+   {
+   case up:
+      rc = RectF(
+         sceneWidth / 2.0f,
+         sceneHeight,
+         sceneWidth + 300.0f,
+         150.0f);
+      break;
+   case down:
+      rc = RectF(
+         sceneWidth / 2.0f,
+         sceneHeight,
+         sceneWidth + 300.0f,
+         150.0f);
+      break;
+   case left:
+      rc = RectF(
+         sceneWidth,
+         sceneHeight / 2.0f,
+         sceneHeight + 300.0f,
+         150.0f);
+      break;
+   case right:
+      rc = RectF(
+         0.0f,
+         sceneHeight / 2.0f,
+         sceneHeight + 300.0f,
+         150.0f);
+      break;
+   }
+
+   m_threshold= determineThreshold(rc);
+   
+   setHorizontalMode(Box9Sprite::TILING_FULL);
 	//setVerticalMode(Box9Sprite::TILING_FULL);
 	setResAnim(gameResources.getResAnim("deep_space_boundary"));
 
@@ -177,4 +214,10 @@ bool SoftBoundary::isInside(b2Body* body)
    }
 
    return false;
+}
+
+
+SoftBoundary::RepelDirectionEnum SoftBoundary::getDirection(void)
+{
+   return m_repelDir;
 }

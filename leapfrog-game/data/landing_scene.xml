@@ -3,7 +3,13 @@
   <behaviour
     type="scene">
     <sceneProperties
-      sceneType="ground">
+      sceneType="ground"
+      width="1200"
+      height="500"
+      hasUpperBoundary="true"
+      hasLowerBoundary="true"
+      hasLeftBoundary="true"
+      hasRightBoundary="true" >
       <states>
         <state>default</state>
         <state>groundState</state>

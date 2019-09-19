@@ -1,5 +1,4 @@
 #include "layout.h"
-#include "oxygine-framework.h"
 
 using namespace oxygine;
 
@@ -73,3 +72,8 @@ float Layout::getYFromBottom(int row)
    return (getStage()->getSize()).y - ((float)row + 1.0f) * m_buttonWidth;
 }
 
+
+Vector2 getViewPortBounds(void)
+{
+   return getStage()->getSize();
+}

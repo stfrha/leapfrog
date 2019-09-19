@@ -46,68 +46,6 @@ FreeSpaceActor::FreeSpaceActor(
 
    }
 
-   m_lowerBoundary = new SoftBoundary(gameResources, m_world, 
-      RectF(
-         m_sceneWidth / 2.0f, 
-         m_sceneHeight + 75.0f, 
-         m_sceneWidth + 300.0f,
-         150.0f), SoftBoundary::up);
-   addChild(m_lowerBoundary);
-
-   m_topBoundary = new SoftBoundary(gameResources, m_world, 
-      RectF(
-         m_sceneWidth / 2.0f,
-         -75.0f, 
-         m_sceneWidth + 300.0f,
-         150.0f), SoftBoundary::down);
-   addChild(m_topBoundary);
-
-   m_leftBoundary = new SoftBoundary(gameResources, m_world, 
-      RectF(
-         -75.0f, 
-         m_sceneHeight / 2.0f, 
-         m_sceneHeight + 300.0f,
-         150.0f), SoftBoundary::right);
-   addChild(m_leftBoundary);
-
-   m_rightBoundary = new SoftBoundary(gameResources, m_world, 
-      RectF(
-         m_sceneWidth + 75.0f, 
-         m_sceneHeight / 2.0f,
-         m_sceneHeight + 300.0f,
-         150.0f), SoftBoundary::left);
-   addChild(m_rightBoundary);
-
-}
-
-void FreeSpaceActor::addBoundingBody(b2Body* body)
-{
-   m_boundedBodies.push_back(body);
-}
-
-void FreeSpaceActor::removeBoundingBody(b2Body* body)
-{
-   m_boundedBodies.erase(std::remove(
-      m_boundedBodies.begin(), 
-      m_boundedBodies.end(), 
-      body),
-      m_boundedBodies.end());
-}
-
-void FreeSpaceActor::testForBoundaryRepel(void)
-{
-   for (auto it = m_boundedBodies.begin(); it != m_boundedBodies.end(); ++it)
-   {
-      m_lowerBoundary->testForRepel(*it);
-      m_topBoundary->testForRepel(*it);
-      m_leftBoundary->testForRepel(*it);
-      m_rightBoundary->testForRepel(*it);
-   }
-}
-
-bool FreeSpaceActor::isInsideOrbitField(b2Body* body)
-{
-   return (m_lowerBoundary->isInside(body) && m_rightBoundary->isInside(body));
 
 }
 
