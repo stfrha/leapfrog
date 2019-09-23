@@ -15,7 +15,8 @@ SoftBoundary::SoftBoundary(
 
    RectF rc;
 
-   // Rotate sprite acc to position
+   // Place the sprite at the correct position
+   // according to the direction specifier
    switch (m_repelDir)
    {
    case up:
@@ -28,7 +29,7 @@ SoftBoundary::SoftBoundary(
    case down:
       rc = RectF(
          sceneWidth / 2.0f,
-         sceneHeight,
+         0.0f,
          sceneWidth + 300.0f,
          150.0f);
       break;
@@ -48,10 +49,13 @@ SoftBoundary::SoftBoundary(
       break;
    }
 
-   m_threshold= determineThreshold(rc);
+   m_threshold = determineThreshold(rc);
    
-   setHorizontalMode(Box9Sprite::TILING_FULL);
-	//setVerticalMode(Box9Sprite::TILING_FULL);
+   //setHorizontalMode(Box9Sprite::TILING_FULL);
+	
+   
+   
+   //setVerticalMode(Box9Sprite::TILING_FULL);
 	setResAnim(gameResources.getResAnim("deep_space_boundary"));
 
    //setAlpha(0.75f);

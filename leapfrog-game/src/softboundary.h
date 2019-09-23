@@ -8,7 +8,7 @@ DECLARE_SMART(SoftBoundary, spSoftBoundary);
 // The SoftBoundary, though imposing forces on other bodies are not
 // bodies themselfs. 
 
-class SoftBoundary : public oxygine::Box9Sprite
+class SoftBoundary : public oxygine::Sprite
 {
 public:
    enum RepelDirectionEnum

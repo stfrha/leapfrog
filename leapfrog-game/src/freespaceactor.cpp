@@ -111,7 +111,7 @@ void FreeSpaceActor::doUpdate(const oxygine::UpdateState &us)
 
 void FreeSpaceActor::generateBackground(Resources& gameResources)
 {
-   for (int x = 0; x < 5; x++)
+   for (int x = 0; x < 6; x++)
    {
       for (int y = 0; y < 3; y++)
       {
