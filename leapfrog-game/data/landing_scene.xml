@@ -6,7 +6,7 @@
       sceneType="ground"
       width="1200"
       height="500"
-      hasUpperBoundary="true"
+      hasUpperBoundary="false"
       hasLowerBoundary="true"
       hasLeftBoundary="true"
       hasRightBoundary="true" >

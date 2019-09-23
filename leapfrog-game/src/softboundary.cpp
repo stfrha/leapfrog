@@ -1,14 +1,13 @@
 #include "softboundary.h"
 #include "physdispconvert.h"
 #include "scales.h"
+#include "layout.h"
 
 using namespace oxygine;
 
 // rc is in stage coordinates, i.e. meters
 SoftBoundary::SoftBoundary(
    oxygine::Resources& gameResources,
-   float sceneWidth,
-   float sceneHeight,
    RepelDirectionEnum repelDir) :
    m_repelDir(repelDir)
 {
@@ -21,31 +20,31 @@ SoftBoundary::SoftBoundary(
    {
    case up:
       rc = RectF(
-         sceneWidth / 2.0f,
-         sceneHeight,
-         sceneWidth + 300.0f,
-         150.0f);
+         g_Layout.getStageBounds().getLeft() + g_Layout.getStageBounds().getWidth() / 2.0f,
+         g_Layout.getStageBounds().getBottom() - g_Layout.getBoundaryWidth() / 2.0f,
+         g_Layout.getStageBounds().getWidth(),
+         g_Layout.getBoundaryWidth());
       break;
    case down:
       rc = RectF(
-         sceneWidth / 2.0f,
-         0.0f,
-         sceneWidth + 300.0f,
-         150.0f);
+         g_Layout.getStageBounds().getLeft() + g_Layout.getStageBounds().getWidth() / 2.0f,
+         g_Layout.getStageBounds().getTop() + g_Layout.getBoundaryWidth() / 2.0f,
+         g_Layout.getStageBounds().getWidth(),
+         g_Layout.getBoundaryWidth());
       break;
    case left:
       rc = RectF(
-         sceneWidth,
-         sceneHeight / 2.0f,
-         sceneHeight + 300.0f,
-         150.0f);
+         g_Layout.getStageBounds().getRight() - g_Layout.getBoundaryWidth() / 2.0f,
+         g_Layout.getStageBounds().getTop() + g_Layout.getStageBounds().getHeight() / 2.0f,
+         g_Layout.getStageBounds().getHeight(),
+         g_Layout.getBoundaryWidth());
       break;
    case right:
       rc = RectF(
-         0.0f,
-         sceneHeight / 2.0f,
-         sceneHeight + 300.0f,
-         150.0f);
+         g_Layout.getStageBounds().getLeft() + g_Layout.getBoundaryWidth() / 2.0f,
+         g_Layout.getStageBounds().getTop() + g_Layout.getStageBounds().getHeight() / 2.0f,
+         g_Layout.getStageBounds().getHeight(),
+         g_Layout.getBoundaryWidth());
       break;
    }
 

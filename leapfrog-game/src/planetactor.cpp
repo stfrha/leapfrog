@@ -72,16 +72,15 @@ PlanetActor::PlanetActor(
    }
    
    setAnchor(0.5f, 0.5f);
-//   setPosition(objectNode.attribute("posX").as_float(), objectNode.attribute("posY").as_float());
 
-   float height = getStage()->getSize().y;
-   float width = getStage()->getSize().x;
+   //float height = getStage()->getSize().y;
+   //float width = getStage()->getSize().x;
 
    // Originally the position was read from XML and trimmed to 
    // -30,50 for a screen resolution of 960,640.
    // To maintain the position relative to the bottom of 
    // the screen the 20 value is recalculated.
-   float yp = 20.0f / 640.0f * height;
+   float yp = 20.0f / 640.0f * g_Layout.getViewPortBounds().y;
    setPosition(-30.0f, yp);
    
    //setPosition(objectNode.attribute("posX").as_float(), objectNode.attribute("posY").as_float());
@@ -93,8 +92,8 @@ PlanetActor::PlanetActor(
    // set scale with this relationship
    // This means that we no longer want to control this from the XML. 
    // Lets remove it from there and hardcode scale here
-   float vScale = 0.3f / 640.0f * height;
-   float hScale = 0.3f / 960.0f * width;
+   float vScale = 0.3f / 640.0f * g_Layout.getViewPortBounds().y;
+   float hScale = 0.3f / 960.0f * g_Layout.getViewPortBounds().x;
 
 
    setScale(fmin(vScale, hScale));

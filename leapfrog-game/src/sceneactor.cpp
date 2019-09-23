@@ -4,6 +4,7 @@
 #include "orbitspacescene.h"
 #include "bodyuserdata.h"
 #include "mainactor.h"
+#include "layout.h"
 
 using namespace oxygine;
 using namespace std;
@@ -51,40 +52,56 @@ SceneActor* SceneActor::defineScene(
       return NULL;
    }
 
-   baseScene->m_sceneWidth = root.child("behaviour").child("sceneProperties").attribute("width").as_float(1000.0f);
-   baseScene->m_sceneHeight = root.child("behaviour").child("sceneProperties").attribute("height").as_float(500.0f);
+   float width = root.child("behaviour").child("sceneProperties").attribute("width").as_float(1000.0f);
+   float height = root.child("behaviour").child("sceneProperties").attribute("height").as_float(500.0f);
 
-   spSoftBoundary sb = new SoftBoundary(
-      gameResources, 
-      baseScene->m_sceneWidth, 
-      baseScene->m_sceneHeight, 
-      SoftBoundary::up);
-   baseScene->addChild(sb);
-   baseScene->m_boundaries.push_back(sb);
+   g_Layout.initStageSize(Vector2(width, height), 150.0f);
 
-   sb = new SoftBoundary(
-      gameResources,
-      baseScene->m_sceneWidth,
-      baseScene->m_sceneHeight,
-      SoftBoundary::down);
-   baseScene->addChild(sb);
-   baseScene->m_boundaries.push_back(sb);
+   Point size = Point(width, height);
 
-   sb = new SoftBoundary(
-      gameResources,
-      baseScene->m_sceneWidth,
-      baseScene->m_sceneHeight,
-      SoftBoundary::right);
-   baseScene->addChild(sb);
-   baseScene->m_boundaries.push_back(sb);
+   baseScene->setSize(size);
 
-   sb = new SoftBoundary(
-      gameResources,
-      baseScene->m_sceneWidth,
-      baseScene->m_sceneHeight,
-      SoftBoundary::left);
-   baseScene->addChild(sb);
-   baseScene->m_boundaries.push_back(sb);
+   spSoftBoundary sb;
+
+   bool boundary = root.child("behaviour").child("sceneProperties").attribute("hasUpperBoundary").as_bool(false);
+   if (boundary)
+   {
+      sb = new SoftBoundary(
+         gameResources,
+         SoftBoundary::down);
+      baseScene->addChild(sb);
+      baseScene->m_boundaries.push_back(sb);
+   }
+
+   boundary = root.child("behaviour").child("sceneProperties").attribute("hasLowerBoundary").as_bool(false);
+   if (boundary)
+   {
+      sb = new SoftBoundary(
+         gameResources,
+         SoftBoundary::up);
+      baseScene->addChild(sb);
+      baseScene->m_boundaries.push_back(sb);
+   }
+
+   boundary = root.child("behaviour").child("sceneProperties").attribute("hasLeftBoundary").as_bool(false);
+   if (boundary)
+   {
+      sb = new SoftBoundary(
+         gameResources,
+         SoftBoundary::right);
+      baseScene->addChild(sb);
+      baseScene->m_boundaries.push_back(sb);
+   }
+
+   boundary = root.child("behaviour").child("sceneProperties").attribute("hasRightBoundary").as_bool(false);
+   if (boundary)
+   {
+      sb = new SoftBoundary(
+         gameResources,
+         SoftBoundary::left);
+      baseScene->addChild(sb);
+      baseScene->m_boundaries.push_back(sb);
+   }
 
    return baseScene;
 }
@@ -110,15 +127,8 @@ SceneActor::SceneActor(
    m_firePressed(false),
    m_zoomInPressed(false),
    m_zoomOutPressed(false),
-   m_sceneWidth(1000.0f),
-   m_sceneHeight(500.0f),
    m_panObject(NULL)
 {
-	Point size = Point(m_sceneWidth, m_sceneHeight);
-	setSize(size);
-
-	//m_world = new b2World(b2Vec2(0.0f, 0.0f));
-
 	setScale(m_stageToViewPortScale);
 
    // The sceneActor is also an actor whos has two parents
@@ -172,12 +182,12 @@ bool SceneActor::isInsideOrbitField(b2Body* body)
 
    for (auto bit = m_boundaries.begin(); bit != m_boundaries.end(); ++bit)
    {
-      if (bit->get()->getDirection() == SoftBoundary::RepelDirectionEnum::down)
+      if (bit->get()->getDirection() == SoftBoundary::RepelDirectionEnum::up)
       {
          lower = bit->get();
       }
 
-      if (bit->get()->getDirection() == SoftBoundary::RepelDirectionEnum::right)
+      if (bit->get()->getDirection() == SoftBoundary::RepelDirectionEnum::left)
       {
          right = bit->get();
       }
@@ -267,8 +277,7 @@ void SceneActor::takeControlOfLeapfrog(bool control)
 
 void SceneActor::doUpdate(const UpdateState& us)
 {
-   // Find stagePos in viewPortCoord that makes frog at center
-   Point vpSize = core::getDisplaySize(); // TODO: Replace with g_layout.getViewPortBounds
+   testForBoundaryRepel();
 
 	//in real project you should make steps with fixed dt, check box2d documentation
 	m_world->Step(us.dt / 1000.0f, 6, 2);
@@ -294,14 +303,14 @@ void SceneActor::doUpdate(const UpdateState& us)
    // We dont want to be able to zoom out more than so that the whole
    // stage is visible, we dont want to see outside stage.
    
-   if (m_zoomScale * Scales::c_stageToViewPortScale < vpSize.x / m_sceneWidth)
+   if (m_zoomScale * Scales::c_stageToViewPortScale < g_Layout.getViewPortBounds().x / g_Layout.getStageBounds().getWidth())
    {
-      m_zoomScale = vpSize.x / m_sceneWidth / Scales::c_stageToViewPortScale;
+      m_zoomScale = g_Layout.getViewPortBounds().x / g_Layout.getStageBounds().getWidth() / Scales::c_stageToViewPortScale;
    }
 
-   if (m_zoomScale * Scales::c_stageToViewPortScale < vpSize.y / m_sceneHeight)
+   if (m_zoomScale * Scales::c_stageToViewPortScale < g_Layout.getViewPortBounds().y / g_Layout.getStageBounds().getHeight())
    {
-      m_zoomScale = vpSize.y / m_sceneHeight / Scales::c_stageToViewPortScale;
+      m_zoomScale = g_Layout.getViewPortBounds().y / g_Layout.getStageBounds().getHeight() / Scales::c_stageToViewPortScale;
    }
 
    m_stageToViewPortScale = m_zoomScale * Scales::c_stageToViewPortScale;
@@ -386,7 +395,7 @@ void SceneActor::doUpdate(const UpdateState& us)
 			const b2Vec2& pos = body->GetPosition();
 			actor->setPosition(PhysDispConvert::convert(pos, Scales::c_physToStageScale));
 
-         // The sheild direction should not be set here, it
+         // The shield direction should not be set here, it
          // will change angle at collisions
 
          CollisionEntityTypeEnum ce = BodyUserData::getCollisionType(body->GetUserData());
@@ -424,19 +433,19 @@ void SceneActor::doUpdate(const UpdateState& us)
    
    if (m_panorateMode == center)
    {
-      wantedVpPos = Vector2(vpSize.x / 2.0f, vpSize.y / 2.0f);
+      wantedVpPos = Vector2(g_Layout.getViewPortBounds().x / 2.0f, g_Layout.getViewPortBounds().y / 2.0f);
    }
    else if (m_panorateMode == top)
    { 
-      wantedVpPos = Vector2(vpSize.x / 2.0f, vpSize.y * 0.1f);
+      wantedVpPos = Vector2(g_Layout.getViewPortBounds().x / 2.0f, g_Layout.getViewPortBounds().y * 0.1f);
    }
    else if (m_panorateMode == bottom)
    {
-      wantedVpPos = Vector2(vpSize.x / 2.0f, vpSize.y * 0.9f);
+      wantedVpPos = Vector2(g_Layout.getViewPortBounds().x / 2.0f, g_Layout.getViewPortBounds().y * 0.9f);
    }
    else if (m_panorateMode == topLeft)
    {
-      wantedVpPos = Vector2(vpSize.x * 0.1f, vpSize.y * 0.1f);
+      wantedVpPos = Vector2(g_Layout.getViewPortBounds().x * 0.1f, g_Layout.getViewPortBounds().y * 0.1f);
    }
    
    if (m_panorateMode != fix)
@@ -444,25 +453,26 @@ void SceneActor::doUpdate(const UpdateState& us)
       // Now stagePos is the position that makes the position of the 
       // panorated object being at the wanted position.
       // But we want to restrict panorating outside of the stage outer bounds.
-      // For example, stagePos.x must not be smaller than 
-      if ((m_sceneWidth - panPos.x) * m_stageToViewPortScale < vpSize.x - wantedVpPos.x)
+      // TODO: The panorating limit must be turned off for launch. 
+      
+      if ((g_Layout.getStageBounds().getRight() - panPos.x) * m_stageToViewPortScale < g_Layout.getViewPortBounds().x - wantedVpPos.x)
       {
-         panPos.x = m_sceneWidth - (vpSize.x - wantedVpPos.x) / m_stageToViewPortScale;
+         panPos.x = g_Layout.getStageBounds().getRight() - (g_Layout.getViewPortBounds().x - wantedVpPos.x) / m_stageToViewPortScale;
       }
 
-      if (panPos.x * m_stageToViewPortScale < wantedVpPos.x)
+      if ((panPos.x - g_Layout.getStageBounds().getLeft()) * m_stageToViewPortScale < wantedVpPos.x)
       {
-         panPos.x = wantedVpPos.x / m_stageToViewPortScale;
+         panPos.x = wantedVpPos.x / m_stageToViewPortScale + g_Layout.getStageBounds().getLeft();
       }
 
-      if ((m_sceneHeight - panPos.y) * m_stageToViewPortScale < vpSize.y - wantedVpPos.y)
+      if ((g_Layout.getStageBounds().getBottom() - panPos.y) * m_stageToViewPortScale < g_Layout.getViewPortBounds().y - wantedVpPos.y)
       {
-         panPos.y = m_sceneHeight - (vpSize.y - wantedVpPos.y) / m_stageToViewPortScale;
+         panPos.y = g_Layout.getStageBounds().getBottom() - (g_Layout.getViewPortBounds().y - wantedVpPos.y) / m_stageToViewPortScale;
       }
 
-      if (panPos.y * m_stageToViewPortScale < wantedVpPos.y)
+      if ((panPos.y - g_Layout.getStageBounds().getTop()) * m_stageToViewPortScale < wantedVpPos.y)
       {
-         panPos.y = wantedVpPos.y / m_stageToViewPortScale;
+         panPos.y = wantedVpPos.y / m_stageToViewPortScale + g_Layout.getStageBounds().getTop();
       }
 
 

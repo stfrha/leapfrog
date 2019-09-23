@@ -7,7 +7,8 @@ Layout g_Layout;
 
 Layout::Layout() :
    m_defaultFontSize(0.0f),
-   m_buttonWidth(0.0f)
+   m_buttonWidth(0.0f),
+   m_boundaryWidth(150.0f)
 {
 }
 
@@ -38,7 +39,19 @@ void Layout::initLayout(void)
    }
 
    m_defaultFontSize = g_Layout.getButtonWidth() / 2.0f / 2.0f / 8.0f * 6.0f;
+
+   initStageSize(Vector2(1000.0f, 500.0f), 150.0f);
 }
+
+void Layout::initStageSize(oxygine::Vector2 stageSize, float boundaryWidth)
+{
+   m_stageSize = stageSize;
+   m_stageBounds.setX(-boundaryWidth);
+   m_stageBounds.setY(-boundaryWidth);
+   m_stageBounds.setWidth(stageSize.x + 2 * boundaryWidth);
+   m_stageBounds.setHeight(stageSize.y + 2 * boundaryWidth);
+}
+
 
 float Layout::getButtonWidth(void)
 {
@@ -73,7 +86,23 @@ float Layout::getYFromBottom(int row)
 }
 
 
-Vector2 getViewPortBounds(void)
+Vector2 Layout::getViewPortBounds(void)
 {
    return getStage()->getSize();
+}
+
+Vector2 Layout::getStageSize(void)
+{
+   return m_stageSize;
+}
+
+
+RectF Layout::getStageBounds(void)
+{
+   return m_stageBounds;
+}
+
+float Layout::getBoundaryWidth()
+{
+   return m_boundaryWidth;
 }

@@ -53,8 +53,6 @@ void FreeSpaceActor::doUpdate(const oxygine::UpdateState &us)
 {
    SceneActor::doUpdate(us);
 
-   testForBoundaryRepel();
-
    if (m_stateChangeTime == 0)
    {
       m_stateChangeTime = us.time;

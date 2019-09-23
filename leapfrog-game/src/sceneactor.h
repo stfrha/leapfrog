@@ -78,8 +78,8 @@ public:
       const std::string& initialState,
       int groupIndex);
 
-   float m_sceneWidth;
-   float m_sceneHeight;
+   //float m_sceneWidth;
+   //float m_sceneHeight;
 
    bool m_turnLeftPressed;
    bool m_turnRightPressed;

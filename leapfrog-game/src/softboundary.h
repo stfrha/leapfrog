@@ -33,8 +33,6 @@ public:
 	// rc is in stage coordinates, i.e. meters
 	SoftBoundary(
       oxygine::Resources& gameResources, 
-      float sceneWidth,
-      float sceneHeight,
       RepelDirectionEnum repelDir);
 
    void testForRepel(b2Body* body);
