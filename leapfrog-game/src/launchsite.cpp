@@ -91,7 +91,7 @@ void LaunchSite::doUpdate(const UpdateState &us)
 {
    switch (m_state)
    {
-       case idle:
+   case idle:
       break;
    case leapfrogLanded:
       m_grabberJoint->EnableMotor(true);
@@ -124,6 +124,11 @@ void LaunchSite::doUpdate(const UpdateState &us)
          // Lower foot rests, let them fall
          m_leftFootRestJoint->EnableLimit(false);
          m_rightFootRestJoint->EnableLimit(false);
+
+         // Now Leapfrog is attached and we are launching into 
+         // space, and don't want panorating to be limited to ground.
+         m_sceneActor->enablePanorateLimit(false);
+         m_sceneActor->setPanorateMode(SceneActor::PanorateModeEnum::midTop);
 
          m_stateStartTime = us.time;
          m_state = lowerFootRests;

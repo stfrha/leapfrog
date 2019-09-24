@@ -103,6 +103,32 @@ SceneActor* SceneActor::defineScene(
       baseScene->m_boundaries.push_back(sb);
    }
 
+
+   // We attach the parallax backgrounds on the stage.
+   // This means that we need to reposition them in all
+   // updates. Which we would even if they were attached 
+   // to main actor (except for the 0% which would be
+   // static).
+
+   ParallaxBackground newBackground(0.0f);
+
+   newBackground.m_sprite = new Sprite();
+   
+   // Size should be a function of stage size, view port size 
+   // and the parallax effect amount. For now, set it to view port size
+   newBackground.m_sprite->setSize(g_Layout.getViewPortBounds());
+
+   newBackground.m_sprite->setResAnim(gameResources.getResAnim("night_sky"));
+   newBackground.m_sprite->setTouchChildrenEnabled(false);
+   newBackground.m_sprite->setAnchor(0.0f, 0.0f);
+   newBackground.m_sprite->setPosition(0.0f, 0.0f);
+
+   baseScene->m_parallaxBackgrounds.push_back(newBackground);
+
+   baseScene->addChild(newBackground.m_sprite);
+
+   newBackground.m_sprite->setPriority(26); // Far static background
+
    return baseScene;
 }
 
@@ -119,6 +145,7 @@ SceneActor::SceneActor(
    m_stageToViewPortScale(m_zoomScale * Scales::c_stageToViewPortScale),
    m_physToStageScale(1.0f),
    m_panorateMode(center),
+   m_panorateLimitEnabled(true),
    m_externalControl(false),
    m_sceneType(landing),
    m_turnLeftPressed(false),
@@ -130,6 +157,10 @@ SceneActor::SceneActor(
    m_panObject(NULL)
 {
 	setScale(m_stageToViewPortScale);
+
+   // Set wanted viewport position to center (since panorate mode defaults to center)
+   m_wantedVpPos = Vector2(g_Layout.getViewPortBounds().x / 2.0f, g_Layout.getViewPortBounds().y / 2.0f);
+
 
    // The sceneActor is also an actor whos has two parents
    // One is the actor.parent which is the NULL.
@@ -226,6 +257,45 @@ string* SceneActor::getInitialState(void)
 void SceneActor::setPanorateMode(PanorateModeEnum mode)
 {
    m_panorateMode = mode;
+
+   Vector2 newWantedPos = Vector2(0.0f, 0.0f);
+
+   if (m_panorateMode == center)
+   {
+      newWantedPos = Vector2(g_Layout.getViewPortBounds().x / 2.0f, g_Layout.getViewPortBounds().y / 2.0f);
+   }
+   else if (m_panorateMode == top)
+   {
+      newWantedPos = Vector2(g_Layout.getViewPortBounds().x / 2.0f, g_Layout.getViewPortBounds().y * 0.1f);
+   }
+   else if (m_panorateMode == midTop)
+   {
+      newWantedPos = Vector2(g_Layout.getViewPortBounds().x / 2.0f, g_Layout.getViewPortBounds().y * 0.3f);
+   }
+   else if (m_panorateMode == bottom)
+   {
+      newWantedPos = Vector2(g_Layout.getViewPortBounds().x / 2.0f, g_Layout.getViewPortBounds().y * 0.9f);
+   }
+   else if (m_panorateMode == midBottom)
+   {
+      newWantedPos = Vector2(g_Layout.getViewPortBounds().x / 2.0f, g_Layout.getViewPortBounds().y * 0.7f);
+   }
+   else if (m_panorateMode == topLeft)
+   {
+      newWantedPos = Vector2(g_Layout.getViewPortBounds().x * 0.1f, g_Layout.getViewPortBounds().y * 0.1f);
+   }
+      
+   addTween(SceneActor::TweenWantedVpPos(newWantedPos), 4000, 1, false, 0, Tween::ease_inOutQuad);
+}
+
+const Vector2& SceneActor::getWantedVpPos() const
+{
+   return m_wantedVpPos;
+}
+
+void SceneActor::setWantedVpPos(const Vector2& pos)
+{
+   m_wantedVpPos = pos;
 }
 
 void SceneActor::setPanorateObject(CompoundObject* co)
@@ -238,6 +308,11 @@ void SceneActor::setZoom(float zoom)
    m_zoomScale = zoom;
    m_stageToViewPortScale = m_zoomScale * Scales::c_stageToViewPortScale;
    setScale(m_stageToViewPortScale);
+}
+
+void SceneActor::enablePanorateLimit(bool enable)
+{
+   m_panorateLimitEnabled = enable;
 }
 
 void SceneActor::addMeToDeathList(spActor actor)
@@ -427,67 +502,52 @@ void SceneActor::doUpdate(const UpdateState& us)
       panPos = m_leapfrog->getMainActor()->getPosition();
    }
 
-   // wantedVpPos is the position in main actor coordinates where the center 
-   // of the view port is
-   Vector2 wantedVpPos = Vector2(0.0f, 0.0f);
-   
-   if (m_panorateMode == center)
-   {
-      wantedVpPos = Vector2(g_Layout.getViewPortBounds().x / 2.0f, g_Layout.getViewPortBounds().y / 2.0f);
-   }
-   else if (m_panorateMode == top)
-   { 
-      wantedVpPos = Vector2(g_Layout.getViewPortBounds().x / 2.0f, g_Layout.getViewPortBounds().y * 0.1f);
-   }
-   else if (m_panorateMode == bottom)
-   {
-      wantedVpPos = Vector2(g_Layout.getViewPortBounds().x / 2.0f, g_Layout.getViewPortBounds().y * 0.9f);
-   }
-   else if (m_panorateMode == topLeft)
-   {
-      wantedVpPos = Vector2(g_Layout.getViewPortBounds().x * 0.1f, g_Layout.getViewPortBounds().y * 0.1f);
-   }
    
    if (m_panorateMode != fix)
    {
       // Now stagePos is the position that makes the position of the 
       // panorated object being at the wanted position.
       // But we want to restrict panorating outside of the stage outer bounds.
-      // TODO: The panorating limit must be turned off for launch. 
-      
-      if ((g_Layout.getStageBounds().getRight() - panPos.x) * m_stageToViewPortScale < g_Layout.getViewPortBounds().x - wantedVpPos.x)
+      // However, the limit can be enabled or disabled
+      if (m_panorateLimitEnabled)
       {
-         panPos.x = g_Layout.getStageBounds().getRight() - (g_Layout.getViewPortBounds().x - wantedVpPos.x) / m_stageToViewPortScale;
-      }
+         if ((g_Layout.getStageBounds().getRight() - panPos.x) * m_stageToViewPortScale < g_Layout.getViewPortBounds().x - m_wantedVpPos.x)
+         {
+            panPos.x = g_Layout.getStageBounds().getRight() - (g_Layout.getViewPortBounds().x - m_wantedVpPos.x) / m_stageToViewPortScale;
+         }
 
-      if ((panPos.x - g_Layout.getStageBounds().getLeft()) * m_stageToViewPortScale < wantedVpPos.x)
-      {
-         panPos.x = wantedVpPos.x / m_stageToViewPortScale + g_Layout.getStageBounds().getLeft();
-      }
+         if ((panPos.x - g_Layout.getStageBounds().getLeft()) * m_stageToViewPortScale < m_wantedVpPos.x)
+         {
+            panPos.x = m_wantedVpPos.x / m_stageToViewPortScale + g_Layout.getStageBounds().getLeft();
+         }
 
-      if ((g_Layout.getStageBounds().getBottom() - panPos.y) * m_stageToViewPortScale < g_Layout.getViewPortBounds().y - wantedVpPos.y)
-      {
-         panPos.y = g_Layout.getStageBounds().getBottom() - (g_Layout.getViewPortBounds().y - wantedVpPos.y) / m_stageToViewPortScale;
-      }
+         if ((g_Layout.getStageBounds().getBottom() - panPos.y) * m_stageToViewPortScale < g_Layout.getViewPortBounds().y - m_wantedVpPos.y)
+         {
+            panPos.y = g_Layout.getStageBounds().getBottom() - (g_Layout.getViewPortBounds().y - m_wantedVpPos.y) / m_stageToViewPortScale;
+         }
 
-      if ((panPos.y - g_Layout.getStageBounds().getTop()) * m_stageToViewPortScale < wantedVpPos.y)
-      {
-         panPos.y = wantedVpPos.y / m_stageToViewPortScale + g_Layout.getStageBounds().getTop();
+         if ((panPos.y - g_Layout.getStageBounds().getTop()) * m_stageToViewPortScale < m_wantedVpPos.y)
+         {
+            panPos.y = m_wantedVpPos.y / m_stageToViewPortScale + g_Layout.getStageBounds().getTop();
+         }
       }
-
 
       // stagePos is where I must position the pos (this object)
       // in the main actor coordinate system, to achieve the correct
       // panoration
-      Vector2 stagePos = wantedVpPos - panPos * m_stageToViewPortScale;
-
-
-      
-
-
-
+      Vector2 stagePos = m_wantedVpPos - panPos * m_stageToViewPortScale;
 
       setPosition(stagePos);
+
+
+      // Now position the parallax backgrounds
+      for (auto it = m_parallaxBackgrounds.begin(); it != m_parallaxBackgrounds.end(); ++it)
+      {
+         it->m_sprite->setSize(g_Layout.getViewPortBounds() * m_stageToViewPortScale);
+         it->m_sprite->setPosition(-stagePos.x * m_stageToViewPortScale, -stagePos.y * m_stageToViewPortScale);
+      }
+      
+
    }
 }
 
