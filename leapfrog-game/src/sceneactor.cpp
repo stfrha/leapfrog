@@ -110,24 +110,68 @@ SceneActor* SceneActor::defineScene(
    // to main actor (except for the 0% which would be
    // static).
 
-   ParallaxBackground newBackground(0.0f);
 
-   newBackground.m_sprite = new Sprite();
-   
-   // Size should be a function of stage size, view port size 
-   // and the parallax effect amount. For now, set it to view port size
-   newBackground.m_sprite->setSize(g_Layout.getViewPortBounds());
+   for (auto pbIt = root.child("behaviour").child("sceneProperties").children("parallaxBackground").begin();
+      pbIt != root.child("behaviour").child("sceneProperties").children("parallaxBackground").end();
+      ++pbIt)
+   {
+      ParallaxBackground newBackground(0.0f);
+      
+      newBackground.m_sprite = new Sprite();
+      newBackground.m_sprite->setSize(g_Layout.getStageBounds().getSize());
+      newBackground.m_sprite->setAnchor(0.0f, 0.0f);
+      newBackground.m_sprite->setTouchChildrenEnabled(false);
+      newBackground.m_sprite->setPriority(26); // TODO: Set acc to amount!
+      newBackground.m_parallaxAmount = pbIt->attribute("parallaxAmount").as_float(0.0f);
 
-   newBackground.m_sprite->setResAnim(gameResources.getResAnim("night_sky"));
-   newBackground.m_sprite->setTouchChildrenEnabled(false);
-   newBackground.m_sprite->setAnchor(0.0f, 0.0f);
-   newBackground.m_sprite->setPosition(0.0f, 0.0f);
+      for (auto spIt = pbIt->children("spriteBox").begin();
+         spIt != pbIt->children("spriteBox").end();
+         ++spIt)
+      {
+         // Define sprite
+         spSprite sprite = new Sprite();
+         CompoundObject::doCommonShapeDefinitions(gameResources, sprite.get(), *spIt);
+         Vector2 newPos(spIt->attribute("posX").as_float(), spIt->attribute("posY").as_float());
+         sprite->setPosition(newPos);
+         sprite->setSize(spIt->attribute("width").as_float(), spIt->attribute("height").as_float());
+         sprite->setRotation(spIt->attribute("angle").as_float() * MATH_PI / 180.0f);
+         sprite->setAnchor(0.0f, 0.0f);
+         sprite->attachTo(newBackground.m_sprite);
+      }
 
-   baseScene->m_parallaxBackgrounds.push_back(newBackground);
+      baseScene->m_parallaxBackgrounds.push_back(newBackground);
+      baseScene->addChild(newBackground.m_sprite);
+   }
 
-   baseScene->addChild(newBackground.m_sprite);
+//
+//   newBackground.m_sprite = new Sprite();
+//   
+//   // Size should be a function of stage size, view port size 
+//   // and the parallax effect amount. For now, set it to view port size
+//
+//   newBackground.m_sprite->setResAnim(gameResources.getResAnim("night_sky"));
+//   newBackground.m_sprite->setTouchChildrenEnabled(false);
+//   newBackground.m_sprite->setAnchor(0.0f, 0.0f);
+//   newBackground.m_sprite->setPriority(26); // Far static background
+//                                            
+////   newBackground.m_sprite->setPosition(0.0f, 0.0f);
+////   newBackground.m_sprite->setSize(g_Layout.getViewPortBounds());
+//   newBackground.m_parallaxAmount = 0.0f;
+//   baseScene->m_parallaxBackgrounds.push_back(newBackground);
+//   baseScene->addChild(newBackground.m_sprite);
+//
+//
+//   newBackground.m_sprite = new Sprite();
+//
+//   newBackground.m_sprite->setResAnim(gameResources.getResAnim("cloud_sky"));
+//   newBackground.m_sprite->setTouchChildrenEnabled(false);
+//   newBackground.m_sprite->setAnchor(0.0f, 0.0f);
+//   newBackground.m_sprite->setPriority(28); 
+//   newBackground.m_parallaxAmount = 0.5f;
+//   baseScene->m_parallaxBackgrounds.push_back(newBackground);
+//   baseScene->addChild(newBackground.m_sprite);
+//
 
-   newBackground.m_sprite->setPriority(26); // Far static background
 
    return baseScene;
 }
@@ -543,12 +587,38 @@ void SceneActor::doUpdate(const UpdateState& us)
       // Now position the parallax backgrounds
       for (auto it = m_parallaxBackgrounds.begin(); it != m_parallaxBackgrounds.end(); ++it)
       {
-         it->m_sprite->setSize(g_Layout.getViewPortBounds() * m_stageToViewPortScale);
-         it->m_sprite->setPosition(-stagePos.x * m_stageToViewPortScale, -stagePos.y * m_stageToViewPortScale);
-      }
-      
+         //it->m_sprite->setSize(g_Layout.getViewPortBounds() / m_stageToViewPortScale);
+         //it->m_sprite->setPosition(-stagePos.x / m_stageToViewPortScale, -stagePos.y / m_stageToViewPortScale);
 
+         // We now seek the size that makes the background image be the size of the parallax boundary
+         // (i.e. vpBounds for amount = 0, and stageBounds for amount = 1) but expressed in stage coordinates
+         // We want to scale the background to this and it will then be scaled back by the scale of stage to vp.
+         // I.e. we want the size in stage coordinates, now it is in vp coordinates.
+         
+         //Vector2 size = (g_Layout.getViewPortBounds() +
+         //   (g_Layout.getStageBounds().getSize() * m_stageToViewPortScale - g_Layout.getViewPortBounds()) * it->m_parallaxAmount)
+         //   / m_stageToViewPortScale;
+
+         Vector2 vpBoundsInStage = g_Layout.getViewPortBounds() / m_stageToViewPortScale ;
+
+         Vector2 size = (vpBoundsInStage +
+            (g_Layout.getStageBounds().getSize() - vpBoundsInStage) * it->m_parallaxAmount);
+
+         // Should not set size, should set scale
+         // Original size is defined from xml, for example 1200,500. This should be scaled to xSize and ySize
+         // So we get xScale and yScale from xScale = xSize / 1200
+
+         float xScale = size.x / g_Layout.getStageBounds().getWidth();
+         float yScale = size.y / g_Layout.getStageBounds().getHeight();
+
+         //it->m_sprite->setSize(xSize, ySize);
+         it->m_sprite->setScale(xScale, yScale);
+         it->m_sprite->setPosition(-stagePos / m_stageToViewPortScale * (1.0f - it->m_parallaxAmount));
+
+      }
    }
+
+   setScale(m_stageToViewPortScale);
 }
 
 void SceneActor::sweepKillList(void)

@@ -15,6 +15,96 @@
         <state>groundState</state>
         <state>landingState</state>
       </states>
+      <parallaxBackground
+         parallaxAmount="0">
+         <spriteBox
+            name="farBackground"
+            texture="night_sky"
+            posX="0"
+            posY="0"
+            width="1500"
+            height="800" 
+            angle="0"
+            zLevel="0" />
+      </parallaxBackground>
+      <parallaxBackground
+         parallaxAmount="0.7">
+         <spriteBox
+            name="innerWall"
+            texture="dark_cave_wall"
+            posX="550"
+            posY="100"
+            width="1000"
+            height="700" 
+            angle="0"
+            zLevel="0" />
+      </parallaxBackground>
+      <parallaxBackground
+         parallaxAmount="0.2">
+         <spriteBox
+            name="cloud1"
+            texture="cloud"
+            posX="100"
+            posY="20"
+            width="250"
+            height="100"
+            angle="0"
+            zLevel="0" />
+         <spriteBox
+            name="cloud2"
+            texture="cloud"
+            posX="200"
+            posY="75"
+            width="250"
+            height="100"
+            angle="0"
+            zLevel="0" />
+         <spriteBox
+            name="cloud3"
+            texture="cloud"
+            posX="300"
+            posY="15"
+            width="250"
+            height="100"
+            angle="0"
+            zLevel="0" />
+         <spriteBox
+            name="cloud4"
+            texture="cloud"
+            posX="300"
+            posY="35"
+            width="250"
+            height="100"
+            angle="0"
+            zLevel="0" />
+         <spriteBox
+            name="cloud5"
+            texture="cloud"
+            posX="400"
+            posY="80"
+            width="250"
+            height="100"
+            angle="0"
+            zLevel="0" />
+         <spriteBox
+            name="cloud6"
+            texture="cloud"
+            posX="500"
+            posY="20"
+            width="250"
+            height="100"
+            angle="0"
+            zLevel="0" />
+         <spriteBox
+            name="cloud7"
+            texture="cloud"
+            posX="600"
+            posY="98"
+            width="250"
+            height="100"
+            angle="0"
+            zLevel="0" />
+      </parallaxBackground>
     </sceneProperties>
   </behaviour>
   <staticBox
@@ -23,7 +113,7 @@
     posX="200"
     posY="200"
     angle="0"
-    zLevel="0"
+    zLevel="192"
     collisionEntity="notApplicable"
     collisionCategory="1"
     collisionMask="65533"
@@ -35,7 +125,7 @@
     posX="230"
     posY="235"
     angle="0"
-    zLevel="0"
+    zLevel="192"
     collisionEntity="notApplicable"
     collisionCategory="1"
     collisionMask="65533"
@@ -49,7 +139,7 @@
     posX="662.04695772976891"
     posY="210.20026244541327"
     angle="0"
-    zLevel="0"
+    zLevel="192"
     collisionEntity="notApplicable"
     collisionCategory="1"
     collisionMask="65533"
@@ -940,7 +1030,7 @@
     length="40"
     thickness="1"
     noOfSegments="7"
-    zLevel="0"
+    zLevel="192"
     collisionEntity="notApplicable"
     collisionCategory="33"
     collisionMask="65534" />

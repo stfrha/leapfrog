@@ -60,7 +60,10 @@
 		<image file="enemy_stationary.png"  rows="1" cols="2" />
 		<image file="neutral_moving.png"  rows="1" cols="2" />
 		<image file="neutral_stationary.png" rows="1" cols="2" />
-		<image file="night_sky.png"/>	      
+		<image file="night_sky.png"/>	  
+		<image file="cloud.png"/>	  
+		<image file="cloud_sky.png"/>	  
+		<image file="dark_cave_wall.png"/>	  
 	</atlas>
 	<atlas clamp2edge="false"> 
 		<image file="default.png" trim="false" extend="false"/>
