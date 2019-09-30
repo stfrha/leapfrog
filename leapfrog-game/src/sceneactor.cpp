@@ -5,6 +5,7 @@
 #include "bodyuserdata.h"
 #include "mainactor.h"
 #include "layout.h"
+#include "polygonvertices.h"
 
 using namespace oxygine;
 using namespace std;
@@ -121,8 +122,11 @@ SceneActor* SceneActor::defineScene(
       newBackground.m_sprite->setSize(g_Layout.getStageBounds().getSize());
       newBackground.m_sprite->setAnchor(0.0f, 0.0f);
       newBackground.m_sprite->setTouchChildrenEnabled(false);
-      newBackground.m_sprite->setPriority(26); // TODO: Set acc to amount!
       newBackground.m_parallaxAmount = pbIt->attribute("parallaxAmount").as_float(0.0f);
+
+      // z-level range from 20 (at 100% amount, i.e. static background,
+      // to 30 which is foreground
+      newBackground.m_sprite->setPriority(30.0f - newBackground.m_parallaxAmount * 10.0f); 
 
       for (auto spIt = pbIt->children("spriteBox").begin();
          spIt != pbIt->children("spriteBox").end();
@@ -138,6 +142,30 @@ SceneActor* SceneActor::defineScene(
          sprite->setAnchor(0.0f, 0.0f);
          sprite->attachTo(newBackground.m_sprite);
       }
+
+      for (auto spIt = pbIt->children("spritePolygon").begin();
+         spIt != pbIt->children("spritePolygon").end();
+         ++spIt)
+      {
+         // Define sprite, which is a polygon, in this case
+         spPolygon sprite = new oxygine::Polygon();
+
+         doCommonShapeDefinitions(gameResources, sprite.get(), *spIt);
+
+         vector<Vector2> vertices(
+            distance(spIt->child("vertices").children("vertex").begin(), 
+               spIt->child("vertices").children("vertex").end()));
+
+         PolygonVertices::createSpritePolygon(sprite.get(), vertices, *spIt);
+
+         Vector2 newPos(spIt->attribute("posX").as_float(), spIt->attribute("posY").as_float());
+         sprite->setPosition(newPos);
+         sprite->setRotation(spIt->attribute("angle").as_float() * MATH_PI / 180.0f);
+         sprite->setAnchor(0.0f, 0.0f);
+
+         sprite->attachTo(newBackground.m_sprite);
+      }
+
 
       baseScene->m_parallaxBackgrounds.push_back(newBackground);
       baseScene->addChild(newBackground.m_sprite);
@@ -602,7 +630,7 @@ void SceneActor::doUpdate(const UpdateState& us)
          Vector2 vpBoundsInStage = g_Layout.getViewPortBounds() / m_stageToViewPortScale ;
 
          Vector2 size = (vpBoundsInStage +
-            (g_Layout.getStageBounds().getSize() - vpBoundsInStage) * it->m_parallaxAmount);
+            (g_Layout.getStageBounds().getSize() - vpBoundsInStage) * (1.0f - it->m_parallaxAmount));
 
          // Should not set size, should set scale
          // Original size is defined from xml, for example 1200,500. This should be scaled to xSize and ySize
@@ -613,7 +641,7 @@ void SceneActor::doUpdate(const UpdateState& us)
 
          //it->m_sprite->setSize(xSize, ySize);
          it->m_sprite->setScale(xScale, yScale);
-         it->m_sprite->setPosition(-stagePos / m_stageToViewPortScale * (1.0f - it->m_parallaxAmount));
+         it->m_sprite->setPosition(-stagePos / m_stageToViewPortScale * it->m_parallaxAmount);
 
       }
    }

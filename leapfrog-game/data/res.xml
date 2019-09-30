@@ -63,7 +63,6 @@
 		<image file="night_sky.png"/>	  
 		<image file="cloud.png"/>	  
 		<image file="cloud_sky.png"/>	  
-		<image file="dark_cave_wall.png"/>	  
 	</atlas>
 	<atlas clamp2edge="false"> 
 		<image file="default.png" trim="false" extend="false"/>
@@ -103,6 +102,9 @@
 	</atlas>	
 	<atlas clamp2edge="false"> 
 		<image file="crater_rock.png" trim="false" extend="false"/>
+	</atlas>	
+	<atlas clamp2edge="false"> 
+		<image file="dark_cave_wall.png" trim="false" extend="false"/>
 	</atlas>	
 	<atlas clamp2edge="false"> 
 		<image file="deep_space_boundary.png" trim="false" extend="false"/>
