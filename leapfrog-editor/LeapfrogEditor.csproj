@@ -57,6 +57,7 @@
     <Compile Include="Models\Behaviours\PickupObjectProperties.cs" />
     <Compile Include="Models\Behaviours\MagneticMineProperties.cs" />
     <Compile Include="Models\Behaviours\ExplosiveObjectProperties.cs" />
+    <Compile Include="Models\Shape and bodies\ParallaxBackground.cs" />
     <Compile Include="Models\Interfaces\ISpawnObjectParentInterface.cs" />
     <Compile Include="Models\Systems\BodyOriginSystem.cs" />
     <Compile Include="Models\Systems\ReentryFlameEmitterProperties.cs" />
@@ -86,8 +87,12 @@
     <Compile Include="ViewModels\Behvaiours\MagneticMinePropertiesViewModel.cs" />
     <Compile Include="ViewModels\Behvaiours\ExplosiveObjectPropertiesViewModel.cs" />
     <Compile Include="ViewModels\Behvaiours\CoBehaviourViewModel.cs" />
+    <Compile Include="ViewModels\Behvaiours\ParallaxBackgroundViewModel.cs" />
+    <Compile Include="ViewModels\Behvaiours\ScenePropsPBCollectionViewModel.cs" />
+    <Compile Include="ViewModels\Behvaiours\ScenePropsStateCollectionViewModel.cs" />
     <Compile Include="ViewModels\Behvaiours\StateBehaviourCollectionViewModel.cs" />
     <Compile Include="ViewModels\Behvaiours\ScenePropertiesViewModel.cs" />
+    <Compile Include="ViewModels\Behvaiours\ScenePropertyCollectionBaseViewModel.cs" />
     <Compile Include="ViewModels\Behvaiours\SteerableObjectPropertiesViewModel.cs" />
     <Compile Include="ViewModels\Behvaiours\BreakableObjectPropertiesViewModel.cs" />
     <Compile Include="ViewModels\Behvaiours\StateViewModel.cs" />

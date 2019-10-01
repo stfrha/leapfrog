@@ -15,7 +15,13 @@ namespace LeapfrogEditor
       #region Declarations
 
       private SceneProperties _modelObject;
-      private ObservableCollection<StateViewModel> _states = new ObservableCollection<StateViewModel>();
+
+      // The following fields are item 0 and item 1 in the PropertyCollection collection.
+      // They exists to get easy access
+      private ScenePropsStateCollectionViewModel _stateCollection;
+      private ScenePropsPBCollectionViewModel _pbCollection;
+
+      private ObservableCollection<ScenePropertyCollectionBaseViewModel> _propertyCollection = new ObservableCollection<ScenePropertyCollectionBaseViewModel>();
 
       private int _displayedStateIndex = 0;
 
@@ -34,11 +40,42 @@ namespace LeapfrogEditor
       {
          ModelObject = modelObject;
 
+         // Automatically create the properties view models
+         // To get two different tree-sub branches, we divid the states
+         // and ParallaxBackgrounds into two different classes with
+         // a common base class (ScenePropertyCollectionBaseViewModel)
+         // One instance of each class is added to the PropertyCollection
+         // property of this class.
+
+         // Create the ScenePropsStateCollectionViewModel
+         _stateCollection = new ScenePropsStateCollectionViewModel(this, parentVm, mainVm, enabled);
+
+         // Now populate the _stateCollection with StateViewModels from 
+         // the source states
          foreach (string s in ModelObject.States)
          {
             StateViewModel svm = new StateViewModel(this, parentVm, mainVm, this, s);
-            States.Add(svm);
+            _stateCollection.States.Add(svm);
          }
+
+         // Add the state collection to the PropertyCollection
+         _propertyCollection.Add(_stateCollection);
+
+         // Create the ScenePropsPBCollectionViewModel
+         _pbCollection = new ScenePropsPBCollectionViewModel(this, parentVm, mainVm, enabled);
+
+         // Now populate the _pbCollection with ParallaxBackgroundViewModels from 
+         // the source states
+         foreach (ParallaxBackground pb in ModelObject.Backgrounds)
+         {
+            ParallaxBackgroundViewModel pbvm = new ParallaxBackgroundViewModel(this, parentVm, mainVm, pb, enabled);
+            _pbCollection.Backgrounds.Add(pbvm);
+         }
+
+         // Add the background collection to the PropertyCollection
+         _propertyCollection.Add(_pbCollection);
+
+
       }
 
       #endregion
@@ -65,10 +102,16 @@ namespace LeapfrogEditor
          }
       }
 
+      public ObservableCollection<ScenePropertyCollectionBaseViewModel> PropertyCollection
+      {
+         get { return _propertyCollection; }
+         set { _propertyCollection = value; }
+      }
+
       public ObservableCollection<StateViewModel> States
       {
-         get { return _states; }
-         set { _states = value; }
+         get { return _stateCollection.States; }
+         set { _stateCollection.States = value; }
       }
 
 
@@ -97,7 +140,6 @@ namespace LeapfrogEditor
             }
 
             ParentVm.InvalidateChildObjects();
-            //ParentVm.BuildTreeViewCollection();
             DeselectAllChildren();
 
             CompoundObjectViewModel p = ParentVm;

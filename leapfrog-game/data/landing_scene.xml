@@ -16,6 +16,7 @@
         <state>landingState</state>
       </states>
       <parallaxBackground
+         name="nightSky"
          parallaxAmount="1">
          <spriteBox
             name="farBackground"
@@ -27,6 +28,7 @@
             angle="0"/>
       </parallaxBackground>
       <parallaxBackground
+         name="innerWall"
          parallaxAmount="0.3">
         <spritePolygon
             name="innerWall"
@@ -78,6 +80,7 @@
       
       
       <parallaxBackground
+         name="clouds"
          parallaxAmount="0.8">
          <spriteBox
             name="cloud1"
