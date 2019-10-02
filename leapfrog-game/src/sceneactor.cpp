@@ -139,7 +139,7 @@ SceneActor* SceneActor::defineScene(
          sprite->setPosition(newPos);
          sprite->setSize(spIt->attribute("width").as_float(), spIt->attribute("height").as_float());
          sprite->setRotation(spIt->attribute("angle").as_float() * MATH_PI / 180.0f);
-         sprite->setAnchor(0.0f, 0.0f);
+         sprite->setAnchor(0.5f, 0.5f);
          sprite->attachTo(newBackground.m_sprite);
       }
 
