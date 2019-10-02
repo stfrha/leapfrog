@@ -102,6 +102,66 @@ namespace LeapfrogEditor
          }
       }
 
+      public double Width
+      {
+         get { return ModelObject.Width; }
+         set
+         {
+            ModelObject.Width = value;
+            OnPropertyChanged("Width");
+         }
+      }
+
+      public double Height
+      {
+         get { return ModelObject.Height; }
+         set
+         {
+            ModelObject.Height = value;
+            OnPropertyChanged("Height");
+         }
+      }
+
+      public bool HasUpperBoundary
+      {
+         get { return ModelObject.HasUpperBoundary; }
+         set
+         {
+            ModelObject.HasUpperBoundary = value;
+            OnPropertyChanged("HasUpperBoundary");
+         }
+      }
+
+      public bool HasLowerBoundary
+      {
+         get { return ModelObject.HasLowerBoundary; }
+         set
+         {
+            ModelObject.HasLowerBoundary = value;
+            OnPropertyChanged("HasLowerBoundary");
+         }
+      }
+
+      public bool HasLeftBoundary
+      {
+         get { return ModelObject.HasLeftBoundary; }
+         set
+         {
+            ModelObject.HasLeftBoundary = value;
+            OnPropertyChanged("HasLeftBoundary");
+         }
+      }
+
+      public bool HasRightBoundary
+      {
+         get { return ModelObject.HasRightBoundary; }
+         set
+         {
+            ModelObject.HasRightBoundary = value;
+            OnPropertyChanged("HasRightBoundary");
+         }
+      }
+
       public ObservableCollection<ScenePropertyCollectionBaseViewModel> PropertyCollection
       {
          get { return _propertyCollection; }

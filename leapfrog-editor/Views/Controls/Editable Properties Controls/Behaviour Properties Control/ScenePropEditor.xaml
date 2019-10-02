@@ -9,5 +9,11 @@
              d:DesignHeight="450" d:DesignWidth="800">
    <StackPanel Margin="2">
       <local:HeadlineControl Headline="Scene Properties" />
+      <local:DoubleEditorControl Headline="Width" MyValue="{Binding Width, Mode=TwoWay}" />
+      <local:DoubleEditorControl Headline="Height" MyValue="{Binding Height, Mode=TwoWay}" />
+      <local:BoolEditorControl Headline="Upper Bound" MyValue="{Binding HasUpperBoundary, Mode=TwoWay}" />
+      <local:BoolEditorControl Headline="Lower Bound" MyValue="{Binding HasLowerBoundary, Mode=TwoWay}" />
+      <local:BoolEditorControl Headline="Left Bound" MyValue="{Binding HasLeftBoundary, Mode=TwoWay}" />
+      <local:BoolEditorControl Headline="Right Bound" MyValue="{Binding HasRightBoundary, Mode=TwoWay}" />
    </StackPanel>
 </UserControl>

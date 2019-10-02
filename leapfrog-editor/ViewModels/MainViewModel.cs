@@ -2224,11 +2224,11 @@ namespace LeapfrogEditor
                   localClickPoint = (Point)(clickPoint - shapeOrigo);
 
                   LfDragablePointViewModel newPoint = newPolygon.AddPoint(localClickPoint);
-                  foreach (LfDragablePointViewModel selpoint in _selectedPoints)
+
+                  while (_selectedPoints.Count > 0)
                   {
-                     selpoint.IsSelected = false;
+                     _selectedPoints[0].IsSelected = false;
                   }
-                  _selectedPoints.Clear();
 
                   _selectedPoints.Add(newPoint);
                   newPoint.IsSelected = true;
