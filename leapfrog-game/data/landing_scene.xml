@@ -4,8 +4,8 @@
     type="scene">
     <sceneProperties
       sceneType="ground"
-      width="1200"
-      height="500"
+      width="1500"
+      height="900"
       hasUpperBoundary="false"
       hasLowerBoundary="true"
       hasLeftBoundary="true"
@@ -22,9 +22,9 @@
             name="farBackground"
             texture="night_sky"
             posX="750"
-            posY="400"
+            posY="450"
             width="1500"
-            height="800" 
+            height="900" 
             angle="0"/>
       </parallaxBackground>
       <parallaxBackground
@@ -63,6 +63,7 @@
             </triangles>
          </spritePolygon>
       </parallaxBackground>
+
       <!--
       <parallaxBackground
          parallaxAmount="0.3">
@@ -76,9 +77,6 @@
             angle="0" />
       </parallaxBackground>
       -->
-      
-      
-      
       <parallaxBackground
          name="clouds"
          parallaxAmount="0.8">
@@ -139,7 +137,7 @@
             height="100"
             angle="0" />
       </parallaxBackground>
-    </sceneProperties>
+      </sceneProperties>
   </behaviour>
   <staticBox
     name="ropeHolder"

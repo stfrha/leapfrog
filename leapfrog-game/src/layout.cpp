@@ -48,8 +48,8 @@ void Layout::initStageSize(oxygine::Vector2 stageSize, float boundaryWidth)
    m_stageSize = stageSize;
    m_stageBounds.setX(-boundaryWidth);
    m_stageBounds.setY(-boundaryWidth);
-   m_stageBounds.setWidth(stageSize.x + 2 * boundaryWidth);
-   m_stageBounds.setHeight(stageSize.y + 2 * boundaryWidth);
+   m_stageBounds.setWidth(stageSize.x);
+   m_stageBounds.setHeight(stageSize.y);
 }
 
 

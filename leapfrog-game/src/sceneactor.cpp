@@ -58,7 +58,7 @@ SceneActor* SceneActor::defineScene(
 
    g_Layout.initStageSize(Vector2(width, height), 150.0f);
 
-   Point size = Point(width, height);
+   Vector2 size = Vector2(width, height);
 
    baseScene->setSize(size);
 
@@ -135,9 +135,19 @@ SceneActor* SceneActor::defineScene(
          // Define sprite
          spSprite sprite = new Sprite();
          CompoundObject::doCommonShapeDefinitions(gameResources, sprite.get(), *spIt);
+
+         const ResAnim* an = sprite->getResAnim();
+         AnimationFrame anFr = an->getFrame(0);
+         Vector2 frS = anFr.getSize();
+
+         Vector2 wantedSize = Vector2(spIt->attribute("width").as_float(), spIt->attribute("height").as_float());
+         sprite->setScale(Vector2(wantedSize.x / frS.x, wantedSize.y / frS.y));
+
+
+
+
          Vector2 newPos(spIt->attribute("posX").as_float(), spIt->attribute("posY").as_float());
          sprite->setPosition(newPos);
-         sprite->setSize(spIt->attribute("width").as_float(), spIt->attribute("height").as_float());
          sprite->setRotation(spIt->attribute("angle").as_float() * MATH_PI / 180.0f);
          sprite->setAnchor(0.5f, 0.5f);
          sprite->attachTo(newBackground.m_sprite);
@@ -612,7 +622,7 @@ void SceneActor::doUpdate(const UpdateState& us)
       setPosition(stagePos);
 
 
-      // Now position the parallax backgrounds
+      // Now scale and position the parallax backgrounds
       for (auto it = m_parallaxBackgrounds.begin(); it != m_parallaxBackgrounds.end(); ++it)
       {
          //it->m_sprite->setSize(g_Layout.getViewPortBounds() / m_stageToViewPortScale);

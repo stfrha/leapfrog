@@ -5,8 +5,8 @@
     type="scene">
     <sceneProperties
       sceneType="space"
-      width="1200"
-      height="500"
+      width="1500"
+      height="800"
       hasUpperBoundary="true"
       hasLowerBoundary="true"
       hasLeftBoundary="true"

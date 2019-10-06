@@ -5,13 +5,13 @@
 
 using namespace oxygine;
 
-// rc is in stage coordinates, i.e. meters
 SoftBoundary::SoftBoundary(
    oxygine::Resources& gameResources,
    RepelDirectionEnum repelDir) :
    m_repelDir(repelDir)
 {
 
+   // rc is in stage coordinates, i.e. meters
    RectF rc;
 
    // Place the sprite at the correct position
