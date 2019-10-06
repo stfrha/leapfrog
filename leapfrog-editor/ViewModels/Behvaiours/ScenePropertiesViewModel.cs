@@ -168,6 +168,16 @@ namespace LeapfrogEditor
          set { _propertyCollection = value; }
       }
 
+      public ScenePropsStateCollectionViewModel StateCollection
+      {
+         get { return _stateCollection; }
+      }
+
+      public ScenePropsPBCollectionViewModel ParallaxBackgroundCollection
+      {
+         get { return _pbCollection; }
+      }
+
       public ObservableCollection<StateViewModel> States
       {
          get { return _stateCollection.States; }

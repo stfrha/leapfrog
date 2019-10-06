@@ -145,5 +145,20 @@
             </ItemsPanelTemplate>
          </ItemsControl.ItemsPanel>
       </ItemsControl>
+      <ItemsControl 
+         ItemsSource="{Binding SelectedBackgrounds, ElementName=root}"
+         Margin="2"
+         >
+         <ItemsControl.Resources>
+            <DataTemplate DataType="{x:Type local:ParallaxBackgroundViewModel}">
+               <local:ParallaxBackgroundPropEditor />
+            </DataTemplate>
+         </ItemsControl.Resources>
+         <ItemsControl.ItemsPanel>
+            <ItemsPanelTemplate>
+               <StackPanel />
+            </ItemsPanelTemplate>
+         </ItemsControl.ItemsPanel>
+      </ItemsControl>
    </StackPanel>
 </UserControl>

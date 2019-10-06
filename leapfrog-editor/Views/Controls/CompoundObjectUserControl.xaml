@@ -271,7 +271,7 @@
       </DataTemplate>
    </UserControl.Resources>
    <Canvas x:Name="myCoUserControl" >
-      <ItemsControl ItemsSource="{Binding Behaviour.BehaviourProperties.PropertyCollection[1].Backgrounds}">
+      <ItemsControl ItemsSource="{Binding Behaviour.BehaviourProperties.ParallaxBackgroundCollection.Backgrounds}">
          <ItemsControl.ItemsPanel>
             <ItemsPanelTemplate>
                <Canvas/>

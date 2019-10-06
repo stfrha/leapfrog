@@ -111,6 +111,7 @@ namespace LeapfrogEditor
       private ObservableCollection<WeldJointViewModel> _selectedJoints = new ObservableCollection<WeldJointViewModel>();
       private ObservableCollection<CoSystemViewModel> _selectedSystems = new ObservableCollection<CoSystemViewModel>();
       private ObservableCollection<LfDragablePointViewModel> _selectedPoints = new ObservableCollection<LfDragablePointViewModel>();
+      private ObservableCollection<ParallaxBackgroundViewModel> _selectedBackgrounds = new ObservableCollection<ParallaxBackgroundViewModel>();
       private SpawnObjectViewModel _editableSpawnObject = null;
 
       private ZLevels _zLevels = new ZLevels();
@@ -232,6 +233,12 @@ namespace LeapfrogEditor
       {
          get { return _selectedPoints; }
          set { _selectedPoints = value; }
+      }
+
+      public ObservableCollection<ParallaxBackgroundViewModel> SelectedBackgrounds
+      {
+         get { return _selectedBackgrounds; }
+         set { _selectedBackgrounds = value; }
       }
 
       public SpawnObjectViewModel EditableSpawnObject
@@ -590,7 +597,7 @@ namespace LeapfrogEditor
             {
                // Generate Triangles before saving
                EditedCpVm.GenerateTriangles();
-               fvm.FileName = sfd.FileName;
+               fvm.FileName = sfd.SafeFileName;
                EditedCpVm.ModelObject.WriteToFile(fvm.FullPathFileName);
             }
 
@@ -1590,13 +1597,17 @@ namespace LeapfrogEditor
                   // Mouse up on Shape
                   LfShapeViewModel shvm = (LfShapeViewModel)sender;
 
-                  // If the clicked shape is children of the edited object, it should
+                  // If the clicked shape is children of the edited object but is not 
+                  // the tree-child of a Parallaxbackground, it should
                   // be selected (assessing the ctrl key in the process for multiple 
                   // selection)
                   // If it is not part of the Editable object, the parent should be selected
                   // also assessing ctrl-key
+                  // If it is the child of the Editable object but is also 
+                  // the tree-child of a ParallaxBackgroundViewModel, the ParallaxBackground 
+                  // should be selected in the tree view.
 
-                  if (shvm.ParentVm == EditedCpVm)
+                  if ((shvm.ParentVm == EditedCpVm) && !(shvm.TreeParent is ParallaxBackgroundViewModel))
                   {
                      if (!ctrl)
                      {
@@ -1614,7 +1625,14 @@ namespace LeapfrogEditor
                         DeselectAll();
                      }
 
-                     shvm.ParentVm.IsSelected = true;
+                     if (shvm.TreeParent is ParallaxBackgroundViewModel)
+                     {
+                        shvm.TreeParent.IsSelected = true;
+                     }
+                     else
+                     {
+                        shvm.ParentVm.IsSelected = true;
+                     }
                   }
 
                   // If we pressed right click to select, we want to the rest
@@ -2436,6 +2454,7 @@ namespace LeapfrogEditor
          SelectedJoints.Clear();
          SelectedSystems.Clear();
          SelectedPoints.Clear();
+         SelectedBackgrounds.Clear();
          EditableSpawnObject = null;
 
          foreach (TreeViewViewModel tvvm in EditedCpVm.ChildObjectsWithStates.Children)
@@ -2624,11 +2643,28 @@ namespace LeapfrogEditor
                      }
                   }
                }
-
             }
          }
+
+         // Now assess if the parallax background is selected.
+         if (EditedCpVm.Behaviour.BehaviourProperties is ScenePropertiesViewModel)
+         {
+            ScenePropertiesViewModel spvm = EditedCpVm.Behaviour.BehaviourProperties as ScenePropertiesViewModel;
+
+            foreach (ParallaxBackgroundViewModel pbvm in spvm.ParallaxBackgroundCollection.Backgrounds)
+            {
+               if (pbvm.IsSelected)
+               {
+                  SelectedBackgrounds.Add(pbvm);
+               }
+            }
+         }
+
+
       }
 
+
+      
 
       #endregion
 

@@ -786,6 +786,16 @@ namespace LeapfrogEditor
                   }
                }
             }
+            else if (Behaviour.BehaviourProperties is ScenePropertiesViewModel)
+            {
+               // Deselect all the backgrounds
+               ScenePropertiesViewModel spvm = Behaviour.BehaviourProperties as ScenePropertiesViewModel;
+
+               foreach (ParallaxBackgroundViewModel pbvm in spvm.ParallaxBackgroundCollection.Backgrounds)
+               {
+                  pbvm.IsSelected = false;
+               }
+            }
          }
 
          if ((StateShapes != null) && (StateShapes.Shapes != null))

@@ -40,13 +40,13 @@ namespace LeapfrogEditor
 
          foreach (LfSpriteBox sb in ModelObject.SpriteBoxes)
          {
-            LfSpriteBoxViewModel sbvm = new LfSpriteBoxViewModel(this, parentVm, mainVm, sb, enabled);
+            LfSpriteBoxViewModel sbvm = new LfSpriteBoxViewModel(this, parentVm, mainVm, sb, false);
             _shapes.Add(sbvm);
          }
 
          foreach (LfSpritePolygon sp in ModelObject.SpritePolygons)
          {
-            LfSpritePolygonViewModel spvm = new LfSpritePolygonViewModel(this, parentVm, mainVm, sp, enabled);
+            LfSpritePolygonViewModel spvm = new LfSpritePolygonViewModel(this, parentVm, mainVm, sp, false);
 
             foreach (LfDragablePoint dragPoint in sp.Points)
             {

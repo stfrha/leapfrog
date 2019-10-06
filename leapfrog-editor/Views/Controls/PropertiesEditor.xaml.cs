@@ -111,5 +111,19 @@ namespace LeapfrogEditor
       public static readonly DependencyProperty EditableSystemsProperty =
           DependencyProperty.Register("EditableSystems", typeof(ObservableCollection<CoSystemViewModel>), typeof(PropertiesEditor), new PropertyMetadata(default(ObservableCollection<CoSystemViewModel>)));
 
+
+
+      public ObservableCollection<ParallaxBackgroundViewModel> SelectedBackgrounds
+      {
+         get { return (ObservableCollection<ParallaxBackgroundViewModel>)GetValue(SelectedBackgroundsProperty); }
+         set { SetValue(SelectedBackgroundsProperty, value); }
+      }
+
+      // Using a DependencyProperty as the backing store for SelectedChildren.  This enables animation, styling, binding, etc...
+      public static readonly DependencyProperty SelectedBackgroundsProperty =
+          DependencyProperty.Register("SelectedBackgrounds", typeof(ObservableCollection<ParallaxBackgroundViewModel>), typeof(PropertiesEditor), new PropertyMetadata(default(ObservableCollection<ParallaxBackgroundViewModel>)));
+
+
+
    }
 }

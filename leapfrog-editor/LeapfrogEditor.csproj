@@ -132,6 +132,9 @@
     <Compile Include="Views\Controls\Editable Properties Controls\Behaviour Properties Control\ExplosiveBehaviourPropEditor.xaml.cs">
       <DependentUpon>ExplosiveBehaviourPropEditor.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Views\Controls\Editable Properties Controls\Behaviour Properties Control\ParallaxBackgroundPropEditor.xaml.cs">
+      <DependentUpon>ParallaxBackgroundPropEditor.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\Controls\Editable Properties Controls\Behaviour Properties Control\ScenePropEditor.xaml.cs">
       <DependentUpon>ScenePropEditor.xaml</DependentUpon>
     </Compile>
@@ -412,6 +415,10 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="Views\Controls\Editable Properties Controls\Behaviour Properties Control\ExplosiveBehaviourPropEditor.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\Controls\Editable Properties Controls\Behaviour Properties Control\ParallaxBackgroundPropEditor.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>

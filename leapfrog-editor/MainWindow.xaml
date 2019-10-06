@@ -461,7 +461,8 @@
                ChildObjectStateProperties="{Binding SelectedChildObjectStateProperties}"
                EditableShapes="{Binding SelectedShapes}"
                EditableJoints="{Binding SelectedJoints}"
-               EditableSystems="{Binding SelectedSystems}" />
+               EditableSystems="{Binding SelectedSystems}"
+               SelectedBackgrounds="{Binding SelectedBackgrounds }"/>
          </ScrollViewer>
       </Grid>
       <!--<StackPanel Grid.Row="0" HorizontalAlignment="Left" Orientation="Horizontal">
