@@ -1,0 +1,60 @@
+﻿<UserControl x:Class="LeapfrogEditor.BackgroundControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:LeapfrogEditor"
+             xmlns:ZoomAndPan="clr-namespace:ZoomAndPan;assembly=ZoomAndPan"
+             mc:Ignorable="d" 
+             x:Name="root"
+             d:DesignHeight="1000" d:DesignWidth="1000">
+   <UserControl.Resources>
+      <local:BindingProxy x:Key="DataContextProxy" 
+         Data="{Binding DataContext, RelativeSource={RelativeSource FindAncestor, AncestorType=Window}}" />
+      <DataTemplate DataType="{x:Type local:LfScalableTexturePolygonViewModel}">
+         <local:ScalableTexturePolygonControl>
+            <local:ScalableTexturePolygonControl.ContextMenu>
+               <ContextMenu>
+                  <MenuItem Header="Locate in browser" 
+                     CommandParameter="{Binding}"
+                     Command="{Binding Path=Data.LocateInBrowser, Source={StaticResource DataContextProxy}}" />
+                  <Separator />
+                  <MenuItem Header="Delete" 
+                     CommandParameter="{Binding}"
+                     Command="{Binding Path=Data.DeleteThisObject, Source={StaticResource DataContextProxy}}" />
+               </ContextMenu>
+            </local:ScalableTexturePolygonControl.ContextMenu>
+         </local:ScalableTexturePolygonControl>
+      </DataTemplate>
+      <DataTemplate DataType="{x:Type local:LfSpriteBoxViewModel}">
+         <local:RotatableBoxControl>
+            <local:RotatableBoxControl.ContextMenu>
+               <ContextMenu>
+                  <MenuItem Header="Locate in browser" 
+                     CommandParameter="{Binding}"
+                     Command="{Binding Path=Data.LocateInBrowser, Source={StaticResource DataContextProxy}}" />
+                  <Separator />
+                  <MenuItem Header="Delete" 
+                     CommandParameter="{Binding}"
+                     Command="{Binding Path=Data.DeleteThisObject, Source={StaticResource DataContextProxy}}" />
+               </ContextMenu>
+            </local:RotatableBoxControl.ContextMenu>
+         </local:RotatableBoxControl>
+      </DataTemplate>
+   </UserControl.Resources>
+   <Canvas x:Name="myPbUserControl" >
+      <ItemsControl ItemsSource="{Binding Shapes}">
+         <ItemsControl.ItemsPanel>
+            <ItemsPanelTemplate>
+               <Canvas/>
+            </ItemsPanelTemplate>
+         </ItemsControl.ItemsPanel>
+         <ItemsControl.ItemContainerStyle>
+            <Style TargetType="ContentPresenter">
+               <Setter Property="Canvas.Left" Value="{Binding PosX}"/>
+               <Setter Property="Canvas.Top" Value="{Binding PosY}"/>
+            </Style>
+         </ItemsControl.ItemContainerStyle>
+      </ItemsControl>
+   </Canvas>
+</UserControl>
