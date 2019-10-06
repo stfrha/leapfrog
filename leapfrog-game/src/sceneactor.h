@@ -85,7 +85,7 @@ public:
    const Vector2& getWantedVpPos() const; 
    void setWantedVpPos(const Vector2& pos);
 
-   SceneActor(
+	SceneActor(
       oxygine::Resources& gameResources, 
       b2World* world, 
       float zoomScale,

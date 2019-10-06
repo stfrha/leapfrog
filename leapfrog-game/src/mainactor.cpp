@@ -6,6 +6,7 @@
 #include "Box2DDebugDraw.h"
 #include "physdispconvert.h"
 #include "scales.h" 
+#include "compoundobjectevents.h"
 #include "landingactorevents.h"
 #include "deepspacesceneevents.h"
 #include "layout.h"
@@ -82,6 +83,7 @@ MainActor::MainActor() :
    //m_nextSceneType = orbit;
 
    //   addEventListener(TouchEvent::MOVE, CLOSURE(this, &MainActor::sceneMoveHandler));
+   addEventListener(CompoundObjectCreatedEvent::EVENT, CLOSURE(this, &MainActor::dummyHandler));
 
 }
 
@@ -612,6 +614,7 @@ void MainActor::sceneMoveHandler(Event* event)
    logs::messageln("Move with index: %d", te->index);
 
 }
+
 
 void MainActor::dummyHandler(Event* event)
 {

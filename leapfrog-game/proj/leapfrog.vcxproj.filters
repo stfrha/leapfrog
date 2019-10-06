@@ -743,5 +743,11 @@
     <ClInclude Include="..\src\pickupobject.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="..\src\compoundobjectevents.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\sceneactorevents.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

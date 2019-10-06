@@ -4,7 +4,10 @@
 
 DECLARE_SMART(GameStatus, spGameStatus)
 
-// Needs to be an actor to send events
+
+class Shield;
+
+// Needs to be an ref_counter to send events
 class GameStatus : public oxygine::ref_counter
 {
 private:
@@ -13,6 +16,8 @@ private:
    float m_fuel;
    int m_credits;
    float m_damage;
+
+   Shield* m_shieldObj;
 
    // originators are used to dispatch events (since this global object is bad for being an actor)
    // and because (I presume) event goes down and back up a hiearchy branch which may differ
@@ -29,6 +34,7 @@ public:
 
    float getShield(void);
    void deltaShield(float shield);
+   void registerShieldObject(Shield* shieldObj);
 
    float getFuel(void);
    void deltaFuel(float fuel);

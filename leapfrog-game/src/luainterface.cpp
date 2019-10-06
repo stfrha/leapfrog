@@ -131,6 +131,17 @@ static int c_addDialogMessage(lua_State *L)
    return 0;
 }
 
+static int c_setPanningObject(lua_State *L)
+{
+   std::string objectName = lua_tostring(L, 1);
+
+   SceneActor* scene = g_LuaInterface.getSceneActor();
+
+   scene->setPanorateObject(scene->getObject(objectName));
+
+   return 0;
+}
+
 
 static int average(lua_State *L)
 {
@@ -193,6 +204,7 @@ void LuaInterface::initLuaInterface(void)
    lua_register(m_L, "c_clearAllTriggersAndEvents", c_clearAllTriggersAndEvents);
    lua_register(m_L, "c_addMissionStateSceneObjects", c_addMissionStateSceneObjects);
    lua_register(m_L, "c_addDialogMessage", c_addDialogMessage);
+   lua_register(m_L, "c_setPanningObject", c_setPanningObject);
 
    
 }

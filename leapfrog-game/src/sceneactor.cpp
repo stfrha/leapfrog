@@ -1,4 +1,6 @@
 #include "sceneactor.h"
+#include "sceneactorevents.h"
+
 #include "landingactor.h"
 #include "freespaceactor.h"
 #include "orbitspacescene.h"
@@ -382,7 +384,10 @@ void SceneActor::setWantedVpPos(const Vector2& pos)
 
 void SceneActor::setPanorateObject(CompoundObject* co)
 {
-   m_panObject = co;
+   if (co)
+   {
+      m_panObject = co;
+   }
 }
 
 void SceneActor::setZoom(float zoom)
@@ -665,6 +670,11 @@ void SceneActor::sweepKillList(void)
    {
       spActor actor = *it;
 
+      if (m_panObject == actor)
+      {
+         m_panObject = NULL;
+      }
+
       b2Body* myBody = ActorUserData::getBody(actor->getUserData());
 
       if (myBody)
@@ -711,3 +721,9 @@ void SceneActor::sweepSpawnList(void)
 
    m_spawnInstructions.clear();
 }
+
+void SceneActor::dummyHandler(Event* event)
+{
+   logs::messageln("Got dummy event");
+}
+

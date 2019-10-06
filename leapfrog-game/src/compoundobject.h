@@ -328,7 +328,7 @@ public:
    System* getSystem(const std::string& name);
 
    virtual void connectToForeignObjects(void);
-  
+
    ObjectProperty* getObjectProperty(int propId);
    void extSetProperty(int propId, float value);
    void setProperty(int propId, float value);

@@ -1243,3 +1243,9 @@ void LeapFrog::registerToMap(void)
       MapItem::MapItemStateEnum::filled);
 }
 
+void LeapFrog::initGameStatus(spGameStatus status)
+{
+   m_gameStatus = status;
+
+   m_gameStatus->registerShieldObject(m_shield.get());
+}

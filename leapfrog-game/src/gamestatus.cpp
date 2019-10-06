@@ -1,6 +1,8 @@
 #include "gamestatus.h"
 #include "gamestatusevents.h"
 
+#include "shield.h"
+
 using namespace oxygine;
 
 GameStatus::GameStatus()
@@ -59,6 +61,11 @@ float GameStatus::getShield(void)
 
 void GameStatus::deltaShield(float shield)
 {
+   if ((m_shield == 0) && (shield > 0))
+   {
+      m_shieldObj->restartShield();
+   }
+
    m_shield += shield;
 
    if (m_shield > 100)
@@ -84,6 +91,13 @@ void GameStatus::deltaShield(float shield)
    }
 
 }
+
+
+void GameStatus::registerShieldObject(Shield* shieldObj)
+{
+   m_shieldObj = shieldObj;
+}
+
 
 float GameStatus::getFuel(void)
 {

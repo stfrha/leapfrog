@@ -301,6 +301,7 @@
     <ClInclude Include="..\src\bullet.h" />
     <ClInclude Include="..\src\collisionentity.h" />
     <ClInclude Include="..\src\compoundobject.h" />
+    <ClInclude Include="..\src\compoundobjectevents.h" />
     <ClInclude Include="..\src\deepspacesceneevents.h" />
     <ClInclude Include="..\src\explosiveobject.h" />
     <ClInclude Include="..\src\flameemitter.h" />
@@ -318,6 +319,7 @@
     <ClInclude Include="..\src\magneticmine.h" />
     <ClInclude Include="..\src\messagedisplay.h" />
     <ClInclude Include="..\src\pickupobject.h" />
+    <ClInclude Include="..\src\sceneactorevents.h" />
     <ClInclude Include="..\src\steerableobject.h" />
     <ClInclude Include="..\src\landercontactlistener.h" />
     <ClInclude Include="..\src\landingactorevents.h" />
