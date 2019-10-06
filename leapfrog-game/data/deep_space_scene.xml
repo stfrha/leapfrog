@@ -4,7 +4,13 @@
   <behaviour
     type="scene">
     <sceneProperties
-      sceneType="space">
+      sceneType="space"
+      width="1500"
+      height="800"
+      hasUpperBoundary="true"
+      hasLowerBoundary="true"
+      hasLeftBoundary="true"
+      hasRightBoundary="true" >
       <states>
         <state>default</state>
       </states>

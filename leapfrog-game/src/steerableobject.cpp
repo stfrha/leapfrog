@@ -56,7 +56,7 @@ SteerableObject::SteerableObject(
 
    attachTo(m_sceneActor);
 
-   m_steeringManager = new SteeringManager(m_body, m_sceneActor);
+   m_steeringManager = new SteeringManager(m_body);
    m_steeringManager->m_wanderAngle = m_bodyToBoosterAngle;
 
    m_body->SetLinearDamping(m_linearDamping);

@@ -37,6 +37,8 @@ void luaEventListner(oxygine::Event *ev)
 
 // ------------------------------------------------------------------------
 // The functions we'll call from the lua script 
+// ------------------------------------------------------------------------
+
 
 static int c_registerPropertyTrigger(lua_State *L)
 {

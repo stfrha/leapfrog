@@ -60,7 +60,7 @@ MainActor::MainActor() :
 
    m_gameStatus->initGameStatus(this);
 
-	setSize(getStage()->getSize());
+	setSize(g_Layout.getViewPortBounds());
    
    g_LuaInterface.determineNextScene("New Game", "", m_nextSceneFile, m_nextSceneState, m_nextSceneType);
    m_armNextScene = true;
@@ -132,7 +132,7 @@ void MainActor::startScene(void)
 
    spClipRectActor window = new ClipRectActor();
 
-   window->setSize(getStage()->getSize());
+   window->setSize(g_Layout.getViewPortBounds());
    window->setPosition(0.0f, 0.0f);
    addChild(window);
 
@@ -343,7 +343,9 @@ void MainActor::fadeFromLanding(void)
    spColorRectSprite fader = new ColorRectSprite();
    fader->setColor(Color::White);
    fader->setPosition(m_sceneObject->getPosition());
-   fader->setSize(getStage()->getSize().x * m_sceneObject->getScale().x, getStage()->getSize().y * m_sceneObject->getScale().y);
+   fader->setSize(
+      g_Layout.getViewPortBounds().x * m_sceneObject->getScale().x, 
+      g_Layout.getViewPortBounds().y * m_sceneObject->getScale().y);
    fader->setAlpha(0.0f);
    fader->setPriority(216);
    fader->attachTo(m_sceneObject);
@@ -364,7 +366,9 @@ void MainActor::goToDeepSpaceFader(Event *ev)
    spColorRectSprite fader = new ColorRectSprite();
    fader->setColor(Color::White);
    fader->setPosition(m_sceneObject->getPosition().x - 200.0f, m_sceneObject->getPosition().y + 200.0f);
-   fader->setSize(getStage()->getSize().x * m_sceneObject->getScale().x, getStage()->getSize().y * m_sceneObject->getScale().y);
+   fader->setSize(
+      g_Layout.getViewPortBounds().x * m_sceneObject->getScale().x, 
+      g_Layout.getViewPortBounds().y * m_sceneObject->getScale().y);
    fader->setAlpha(255.0f);
    fader->setPriority(216);
    fader->attachTo(m_sceneObject);

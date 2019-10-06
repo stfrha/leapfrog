@@ -1,20 +1,60 @@
 #include "softboundary.h"
 #include "physdispconvert.h"
 #include "scales.h"
+#include "layout.h"
 
 using namespace oxygine;
 
-// rc is in stage coordinates, i.e. meters
 SoftBoundary::SoftBoundary(
    oxygine::Resources& gameResources,
-   b2World* world,
-   const RectF& rc,
    RepelDirectionEnum repelDir) :
-   m_repelDir(repelDir),
-   m_threshold(determineThreshold(rc))
+   m_repelDir(repelDir)
 {
-	setHorizontalMode(Box9Sprite::TILING_FULL);
-	//setVerticalMode(Box9Sprite::TILING_FULL);
+
+   // rc is in stage coordinates, i.e. meters
+   RectF rc;
+
+   // Place the sprite at the correct position
+   // according to the direction specifier
+   switch (m_repelDir)
+   {
+   case up:
+      rc = RectF(
+         g_Layout.getStageBounds().getLeft() + g_Layout.getStageBounds().getWidth() / 2.0f,
+         g_Layout.getStageBounds().getBottom() - g_Layout.getBoundaryWidth() / 2.0f,
+         g_Layout.getStageBounds().getWidth(),
+         g_Layout.getBoundaryWidth());
+      break;
+   case down:
+      rc = RectF(
+         g_Layout.getStageBounds().getLeft() + g_Layout.getStageBounds().getWidth() / 2.0f,
+         g_Layout.getStageBounds().getTop() + g_Layout.getBoundaryWidth() / 2.0f,
+         g_Layout.getStageBounds().getWidth(),
+         g_Layout.getBoundaryWidth());
+      break;
+   case left:
+      rc = RectF(
+         g_Layout.getStageBounds().getRight() - g_Layout.getBoundaryWidth() / 2.0f,
+         g_Layout.getStageBounds().getTop() + g_Layout.getStageBounds().getHeight() / 2.0f,
+         g_Layout.getStageBounds().getHeight(),
+         g_Layout.getBoundaryWidth());
+      break;
+   case right:
+      rc = RectF(
+         g_Layout.getStageBounds().getLeft() + g_Layout.getBoundaryWidth() / 2.0f,
+         g_Layout.getStageBounds().getTop() + g_Layout.getStageBounds().getHeight() / 2.0f,
+         g_Layout.getStageBounds().getHeight(),
+         g_Layout.getBoundaryWidth());
+      break;
+   }
+
+   m_threshold = determineThreshold(rc);
+   
+   //setHorizontalMode(Box9Sprite::TILING_FULL);
+	
+   
+   
+   //setVerticalMode(Box9Sprite::TILING_FULL);
 	setResAnim(gameResources.getResAnim("deep_space_boundary"));
 
    //setAlpha(0.75f);
@@ -177,4 +217,10 @@ bool SoftBoundary::isInside(b2Body* body)
    }
 
    return false;
+}
+
+
+SoftBoundary::RepelDirectionEnum SoftBoundary::getDirection(void)
+{
+   return m_repelDir;
 }

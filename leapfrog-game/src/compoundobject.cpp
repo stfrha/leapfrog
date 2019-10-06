@@ -564,7 +564,6 @@ bool CompoundObject::initCompoundObjectParts(
 void CompoundObject::doCommonShapeDefinitions(
    Resources& gameResources,
    Sprite* sprite,
-   Vector2 pos,
    xml_node& objectNode)
 {
    sprite->setResAnim(gameResources.getResAnim(objectNode.attribute("texture").as_string()));
@@ -610,7 +609,7 @@ void CompoundObject::defineSpriteBox(
 {
    // Define sprite
    spSprite sprite = new Sprite();
-   doCommonShapeDefinitions(gameResources, sprite.get(), pos, objectNode);
+   doCommonShapeDefinitions(gameResources, sprite.get(), objectNode);
    Vector2 newPos(pos.x + objectNode.attribute("posX").as_float(), pos.y + objectNode.attribute("posY").as_float());
    sprite->setPosition(newPos);
    sprite->setSize(objectNode.attribute("width").as_float(), objectNode.attribute("height").as_float());
@@ -630,7 +629,7 @@ void CompoundObject::defineSpritePolygon(
    // Define sprite, which is a polygon, in this case
    spPolygon sprite = new oxygine::Polygon();
 
-   doCommonShapeDefinitions(gameResources, sprite.get(), pos, objectNode);
+   doCommonShapeDefinitions(gameResources, sprite.get(), objectNode);
 
    // TODO: What about rotation?
 
@@ -656,7 +655,7 @@ void CompoundObject::defineCircle(
 {
    // Define sprite
    spSprite sprite = new Sprite();
-   doCommonShapeDefinitions(gameResources, sprite.get(), pos, objectNode);
+   doCommonShapeDefinitions(gameResources, sprite.get(), objectNode);
    sprite->setSize(objectNode.attribute("radius").as_float() * 2.0f, objectNode.attribute("radius").as_float() * 2.0f);
    sprite->setAnchor(0.5f, 0.5f);
    sprite->attachTo(sceneParent);
@@ -733,7 +732,7 @@ void CompoundObject::defineBox(
 
    // Define sprite
    spSprite sprite = new Sprite();
-   doCommonShapeDefinitions(gameResources, sprite.get(), pos, objectNode);
+   doCommonShapeDefinitions(gameResources, sprite.get(), objectNode);
 
    sprite->setSize(objectNode.attribute("width").as_float(), objectNode.attribute("height").as_float());
    sprite->setAnchor(0.5f, 0.5f);
@@ -810,7 +809,7 @@ void CompoundObject::defineStaticPolygon(
 {
    spPolygon sprite = new oxygine::Polygon();
 
-   doCommonShapeDefinitions(gameResources, sprite.get(), pos, objectNode);
+   doCommonShapeDefinitions(gameResources, sprite.get(), objectNode);
 
    b2Body* body = NULL;
    b2Fixture* fixture = NULL;
@@ -858,7 +857,7 @@ void CompoundObject::defineBoxedSpritePolygon(
    // Define sprite, which is a polygon, in this case
 
    spSprite sprite = new Sprite();
-   doCommonShapeDefinitions(gameResources, sprite.get(), pos, objectNode);
+   doCommonShapeDefinitions(gameResources, sprite.get(), objectNode);
 
    sprite->setSize(objectNode.attribute("width").as_float(), objectNode.attribute("height").as_float());
    sprite->setAnchor(0.5f, 0.5f);
@@ -945,7 +944,7 @@ void CompoundObject::defineDynamicPolygon(
    // Define sprite, which is a polygon, in this case
 
    spPolygon sprite = new oxygine::Polygon();
-   doCommonShapeDefinitions(gameResources, sprite.get(), pos, objectNode);
+   doCommonShapeDefinitions(gameResources, sprite.get(), objectNode);
 
    vector<Vector2> vertices(distance(objectNode.child("vertices").children("vertex").begin(), objectNode.child("vertices").children("vertex").end()));
    b2Body* body = NULL;
@@ -1008,7 +1007,8 @@ void CompoundObject::defineRope(
    CompoundObject* newCo = new CompoundObject(sceneParent, parentObject);
 
    newCo->setName(jointNode.attribute("name").as_string());
-   newCo->setPriority(jointNode.attribute("zLevel").as_int());
+   int zLevel = jointNode.attribute("zLevel").as_int();
+   //newCo->setPriority(jointNode.attribute("zLevel").as_int());
    newCo->m_parentObject = parentObject;
    
    int numOfSegments = jointNode.attribute("noOfSegments").as_int();
@@ -1075,6 +1075,7 @@ void CompoundObject::defineRope(
    object->setResAnim(gameResources.getResAnim(texture));
    object->setSize(segmentLength, thickness);
    object->setAnchor(0.5f, 0.5f);
+   object->setPriority(zLevel);
    object->setTouchChildrenEnabled(false);
    b2Vec2 segmentPos = startPos + segmentLength * 0.5f * ropeDirection;
    object->setPosition(PhysDispConvert::convert(segmentPos, 1.0f));
@@ -1137,6 +1138,7 @@ void CompoundObject::defineRope(
       object->setResAnim(gameResources.getResAnim(texture));
       object->setSize(segmentLength, thickness);
       object->setAnchor(0.5f, 0.5f);
+      object->setPriority(zLevel);
       object->setTouchChildrenEnabled(false);
       b2Vec2 segmentPos = startPos + segmentLength * (0.5f + i) * ropeDirection;
       object->setPosition(PhysDispConvert::convert(segmentPos, 1.0f));

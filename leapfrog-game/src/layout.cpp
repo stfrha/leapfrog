@@ -1,5 +1,4 @@
 #include "layout.h"
-#include "oxygine-framework.h"
 
 using namespace oxygine;
 
@@ -8,7 +7,8 @@ Layout g_Layout;
 
 Layout::Layout() :
    m_defaultFontSize(0.0f),
-   m_buttonWidth(0.0f)
+   m_buttonWidth(0.0f),
+   m_boundaryWidth(150.0f)
 {
 }
 
@@ -39,7 +39,19 @@ void Layout::initLayout(void)
    }
 
    m_defaultFontSize = g_Layout.getButtonWidth() / 2.0f / 2.0f / 8.0f * 6.0f;
+
+   initStageSize(Vector2(1000.0f, 500.0f), 150.0f);
 }
+
+void Layout::initStageSize(oxygine::Vector2 stageSize, float boundaryWidth)
+{
+   m_stageSize = stageSize;
+   m_stageBounds.setX(-boundaryWidth);
+   m_stageBounds.setY(-boundaryWidth);
+   m_stageBounds.setWidth(stageSize.x);
+   m_stageBounds.setHeight(stageSize.y);
+}
+
 
 float Layout::getButtonWidth(void)
 {
@@ -73,3 +85,24 @@ float Layout::getYFromBottom(int row)
    return (getStage()->getSize()).y - ((float)row + 1.0f) * m_buttonWidth;
 }
 
+
+Vector2 Layout::getViewPortBounds(void)
+{
+   return getStage()->getSize();
+}
+
+Vector2 Layout::getStageSize(void)
+{
+   return m_stageSize;
+}
+
+
+RectF Layout::getStageBounds(void)
+{
+   return m_stageBounds;
+}
+
+float Layout::getBoundaryWidth()
+{
+   return m_boundaryWidth;
+}

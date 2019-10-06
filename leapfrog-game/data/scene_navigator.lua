@@ -16,6 +16,9 @@ function determineNextScene(entryType, entryParameter)
       nextScene = "landing_scene.xml"
       sceneType = "landing"
       sceneState = "landingState"
+--      nextScene = "deep_space_scene.xml"
+--      sceneType = "deepSpace"
+--      sceneState = "default"
    
    elseif currentScene == "landing_scene.xml" then
       if entryType == "toDeepSpace" then

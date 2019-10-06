@@ -26,6 +26,15 @@ namespace LeapfrogEditor
          base(treeParent, parentVm, mainVm, enabled)
       {
          ModelObject = modelObject;
+
+         //LfSpritePolygon modelSP = ModelObject as LfSpritePolygon;
+
+         //foreach (LfDragablePoint dragPoint in modelSP.Points)
+         //{
+         //   LfDragablePointViewModel dragPointVm = new LfDragablePointViewModel(this, parentVm, MainVm, this, dragPoint, enabled);
+         //   PointVms.Add(dragPointVm);
+         //}
+
       }
 
       #endregion

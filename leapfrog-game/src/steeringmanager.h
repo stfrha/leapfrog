@@ -19,9 +19,6 @@ public:
 private:
 	b2Body* m_hostBody;
 
-	//b2Vec2 m_steering;
-   SceneActor* m_sceneActor;
-
    b2Vec2 m_lastKnowTargetPos;
    bool m_targetIsHiding;
    oxygine::timeMS m_stateStartTime;
@@ -62,7 +59,7 @@ public:
    b2Vec2 m_debugAhead2;
    float m_debugRadius;
 
-   SteeringManager(b2Body* host, SceneActor* sceneActor);
+   SteeringManager(b2Body* host);
 
    //void update( void );
 		

@@ -179,12 +179,7 @@ LeapFrog::LeapFrog(
    // be empty (=NULL)
    setUserData(NULL);
 
-   if (m_sceneActor->getSceneType() == SceneActor::SceneTypeEnum::deepSpace)
-   {
-      FreeSpaceActor* spaceActor = (FreeSpaceActor*)m_sceneActor;
-
-      setAllBodiesToBounding(spaceActor);
-   }
+   m_sceneActor->addBoundingBody(m_mainBody);
 
 }
 
@@ -233,6 +228,9 @@ void LeapFrog::doUpdate(const UpdateState &us)
    // Update properties with the values that where determined by 
    // the physics engine
    b2Vec2 pos = m_mainBody->GetPosition();
+
+//   logs::messageln("(%f,%f)", pos.x, pos.y);
+
    m_properties[propXPos].setProperty(pos.x);
    m_properties[propYPos].setProperty(pos.y);
 

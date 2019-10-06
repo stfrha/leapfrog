@@ -3,13 +3,141 @@
   <behaviour
     type="scene">
     <sceneProperties
-      sceneType="ground">
+      sceneType="ground"
+      width="1500"
+      height="900"
+      hasUpperBoundary="false"
+      hasLowerBoundary="true"
+      hasLeftBoundary="true"
+      hasRightBoundary="true" >
       <states>
         <state>default</state>
         <state>groundState</state>
         <state>landingState</state>
       </states>
-    </sceneProperties>
+      <parallaxBackground
+         name="nightSky"
+         parallaxAmount="1">
+         <spriteBox
+            name="farBackground"
+            texture="night_sky"
+            posX="750"
+            posY="450"
+            width="1500"
+            height="900" 
+            angle="0"/>
+      </parallaxBackground>
+      <parallaxBackground
+         name="innerWall"
+         parallaxAmount="0.3">
+        <spritePolygon
+            name="innerWall"
+            texture="dark_cave_wall"
+            posX="100"
+            posY="100"
+            angle="0"
+            textureMeterWidth="100"
+            textureMeterHeight="75"
+            textureOffsetMeterX="0"
+            textureOffsetMeterY="0">
+            <vertices>
+               <vertex
+                 id="1"
+                 x="0"
+                 y="0" />
+               <vertex
+                 id="2"
+                 x="1000"
+                 y="0" />
+               <vertex
+                 id="3"
+                 x="500"
+                 y="700" />
+            </vertices>
+            <triangles>
+               <triangle
+                 id="1"
+                 v1="3"
+                 v2="2"
+                 v3="1" />
+            </triangles>
+         </spritePolygon>
+      </parallaxBackground>
+
+      <!--
+      <parallaxBackground
+         parallaxAmount="0.3">
+         <spriteBox
+            name="innerWall"
+            texture="dark_cave_wall"
+            posX="550"
+            posY="100"
+            width="1000"
+            height="700" 
+            angle="0" />
+      </parallaxBackground>
+      -->
+      <parallaxBackground
+         name="clouds"
+         parallaxAmount="0.8">
+         <spriteBox
+            name="cloud1"
+            texture="cloud"
+            posX="225"
+            posY="70"
+            width="250"
+            height="100"
+            angle="0" />
+         <spriteBox
+            name="cloud2"
+            texture="cloud"
+            posX="325"
+            posY="125"
+            width="250"
+            height="100"
+            angle="0" />
+         <spriteBox
+            name="cloud3"
+            texture="cloud"
+            posX="425"
+            posY="65"
+            width="250"
+            height="100"
+            angle="0" />
+         <spriteBox
+            name="cloud4"
+            texture="cloud"
+            posX="525"
+            posY="85"
+            width="250"
+            height="100"
+            angle="0" />
+         <spriteBox
+            name="cloud5"
+            texture="cloud"
+            posX="625"
+            posY="130"
+            width="250"
+            height="100"
+            angle="0" />
+         <spriteBox
+            name="cloud6"
+            texture="cloud"
+            posX="725"
+            posY="70"
+            width="250"
+            height="100"
+            angle="0" />
+         <spriteBox
+            name="cloud7"
+            texture="cloud"
+            posX="825"
+            posY="98"
+            width="250"
+            height="100"
+            angle="0" />
+      </parallaxBackground>
+      </sceneProperties>
   </behaviour>
   <staticBox
     name="ropeHolder"
@@ -17,7 +145,7 @@
     posX="200"
     posY="200"
     angle="0"
-    zLevel="0"
+    zLevel="192"
     collisionEntity="notApplicable"
     collisionCategory="1"
     collisionMask="65533"
@@ -29,7 +157,7 @@
     posX="230"
     posY="235"
     angle="0"
-    zLevel="0"
+    zLevel="192"
     collisionEntity="notApplicable"
     collisionCategory="1"
     collisionMask="65533"
@@ -43,7 +171,7 @@
     posX="662.04695772976891"
     posY="210.20026244541327"
     angle="0"
-    zLevel="0"
+    zLevel="192"
     collisionEntity="notApplicable"
     collisionCategory="1"
     collisionMask="65533"
@@ -934,7 +1062,7 @@
     length="40"
     thickness="1"
     noOfSegments="7"
-    zLevel="0"
+    zLevel="192"
     collisionEntity="notApplicable"
     collisionCategory="33"
     collisionMask="65534" />

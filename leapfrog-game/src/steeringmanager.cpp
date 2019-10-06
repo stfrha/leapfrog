@@ -2,13 +2,12 @@
 #include "sceneactor.h"
 #include "bodyuserdata.h"
 #include "polygonvertices.h"
+#include "layout.h"
 
 SteeringManager::SteeringManager(
-   b2Body* hostBody,
-   SceneActor* sceneActor)
+   b2Body* hostBody)
  :
    m_hostBody(hostBody),
-   m_sceneActor(sceneActor),
    m_wanderAngle(0.0f),
    m_wanderHunterState(WanderHunterState::wanderState),
    m_fireTrigger(false),
@@ -267,9 +266,9 @@ b2Vec2 SteeringManager::doStayInScene(void)
 
    // Do bottom
 
-   if (pos.y > m_sceneActor->m_sceneHeight - forceDist)
+   if (pos.y > g_Layout.getStageSize().y - forceDist)
    {
-      float edgeDist = m_sceneActor->m_sceneHeight - forceDist - pos.y;
+      float edgeDist = g_Layout.getStageSize().y - forceDist - pos.y;
 
       b2Vec2 vel = m_hostBody->GetLinearVelocity();
       float velMag = vel.Length();
@@ -295,9 +294,9 @@ b2Vec2 SteeringManager::doStayInScene(void)
 
    // Do right
 
-   if (pos.x > m_sceneActor->m_sceneWidth - forceDist)
+   if (pos.x > g_Layout.getStageSize().x - forceDist)
    {
-      float edgeDist = m_sceneActor->m_sceneWidth - forceDist - pos.x;
+      float edgeDist = g_Layout.getStageSize().x - forceDist - pos.x;
 
       b2Vec2 vel = m_hostBody->GetLinearVelocity();
       float velMag = vel.Length();

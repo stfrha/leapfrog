@@ -16,7 +16,7 @@ LandingActor::LandingActor(
    xml_node& root,
    const string& initialState,
    int groupIndex) :
-   SceneActor(gameResources, world, 0.4f, initialState)
+   SceneActor(gameResources, world, 0.3f, initialState)
 {
 
    m_contactListener.InitContactListner(this);

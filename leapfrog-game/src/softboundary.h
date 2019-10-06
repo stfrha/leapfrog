@@ -8,7 +8,7 @@ DECLARE_SMART(SoftBoundary, spSoftBoundary);
 // The SoftBoundary, though imposing forces on other bodies are not
 // bodies themselfs. 
 
-class SoftBoundary : public oxygine::Box9Sprite
+class SoftBoundary : public oxygine::Sprite
 {
 public:
    enum RepelDirectionEnum
@@ -33,12 +33,12 @@ public:
 	// rc is in stage coordinates, i.e. meters
 	SoftBoundary(
       oxygine::Resources& gameResources, 
-      b2World* world, 
-      const RectF& rc, 
       RepelDirectionEnum repelDir);
 
    void testForRepel(b2Body* body);
    bool isInside(b2Body* body);
+   RepelDirectionEnum getDirection(void);
+
 };
 
 

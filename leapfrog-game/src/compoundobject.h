@@ -60,21 +60,6 @@ private:
    CollisionEntityTypeEnum m_collisionType;
    BehaviourEnum m_behaviourType;
 
-   void doCommonShapeDefinitions(
-      oxygine::Resources& gameResources,
-      oxygine::Sprite* sprite,
-      oxygine::Vector2 pos,
-      pugi::xml_node& objectNode);
-
-   void doCollisionDefinitions(
-      b2Fixture*& fixture,
-      pugi::xml_node& objectNode,
-      int groupIndex);
-
-   void doPhysicalDefinitions(
-      b2Fixture*& fixture,
-      pugi::xml_node& objectNode);
-
    void defineSpriteBox(
       oxygine::Resources& gameResources,
       SceneActor* sceneParent,
@@ -305,6 +290,22 @@ public:
       pugi::xml_node& objectNode,
       const std::string& initialState);
 
+   static void doCommonShapeDefinitions(
+      oxygine::Resources& gameResources,
+      oxygine::Sprite* sprite,
+      pugi::xml_node& objectNode);
+
+   static void doCollisionDefinitions(
+      b2Fixture*& fixture,
+      pugi::xml_node& objectNode,
+      int groupIndex);
+
+   static void doPhysicalDefinitions(
+      b2Fixture*& fixture,
+      pugi::xml_node& objectNode);
+
+
+   void initGameStatus(spGameStatus status);
 
 
    CompoundObject* getParentObject();
@@ -327,7 +328,6 @@ public:
    System* getSystem(const std::string& name);
 
    virtual void connectToForeignObjects(void);
-   virtual void initGameStatus(spGameStatus status);
 
    ObjectProperty* getObjectProperty(int propId);
    void extSetProperty(int propId, float value);

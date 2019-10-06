@@ -14,6 +14,9 @@
       <local:ZoomThicknessValueConverter x:Key="ZoomThicknessValueConverter" />
       <local:BoolToVisibilityValueConverter x:Key="BoolToVisibilityValueConverter" />
       <local:MatchingStateVisibilityConverter x:Key="MatchingStateVisibilityConverter" />
+      <DataTemplate DataType="{x:Type local:ParallaxBackgroundViewModel}">
+         <local:BackgroundControl />
+      </DataTemplate>
       <DataTemplate DataType="{x:Type local:WeldJointViewModel}">
          <local:WeldJointControl>
             <local:WeldJointControl.ContextMenu>
@@ -268,6 +271,13 @@
       </DataTemplate>
    </UserControl.Resources>
    <Canvas x:Name="myCoUserControl" >
+      <ItemsControl ItemsSource="{Binding Behaviour.BehaviourProperties.PropertyCollection[1].Backgrounds}">
+         <ItemsControl.ItemsPanel>
+            <ItemsPanelTemplate>
+               <Canvas/>
+            </ItemsPanelTemplate>
+         </ItemsControl.ItemsPanel>
+      </ItemsControl>
       <ItemsControl ItemsSource="{Binding StateShapes.Shapes}">
          <ItemsControl.ItemsPanel>
             <ItemsPanelTemplate>

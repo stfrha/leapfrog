@@ -20,25 +20,25 @@
 	<zLevel id="17" name="" />
 	<zLevel id="18" name="" />
 	<zLevel id="19" name="" />
-	<zLevel id="20" name="" />
-	<zLevel id="21" name="" />
-	<zLevel id="22" name="" />
-	<zLevel id="23" name="" />
-	<zLevel id="24" name="" />
-	<zLevel id="25" name="" />
-	<zLevel id="26" name="Far static background" />
-	<zLevel id="27" name="" />
-	<zLevel id="28" name="" />
-	<zLevel id="29" name="" />
-	<zLevel id="30" name="Far parallax background" />
+	<zLevel id="20" name="Amount 100% background (static)" />
+	<zLevel id="21" name="Amount 90% background" />
+	<zLevel id="22" name="Amount 80% background" />
+	<zLevel id="23" name="Amount 70% background" />
+	<zLevel id="24" name="Amount 60% background" />
+	<zLevel id="25" name="Amount 50% background" />
+	<zLevel id="26" name="Amount 40% background" />
+	<zLevel id="27" name="Amount 30% background" />
+	<zLevel id="28" name="Amount 20% background" />
+	<zLevel id="29" name="Amount 10% background" />
+	<zLevel id="30" name="Amount 0% background = foreground" />
 	<zLevel id="31" name="" />
 	<zLevel id="32" name="" />
 	<zLevel id="33" name="" />
-	<zLevel id="34" name="Near parallax background" />
+	<zLevel id="34" name="" />
 	<zLevel id="35" name="" /> 
 	<zLevel id="36" name="" />
 	<zLevel id="37" name="" />
-	<zLevel id="38" name="Near object-static background" />
+	<zLevel id="38" name="" />
 	<zLevel id="39" name="" />
 	<zLevel id="40" name="" />
 	<zLevel id="41" name="" />

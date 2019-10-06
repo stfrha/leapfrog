@@ -178,11 +178,16 @@
                      </TextBlock>
                   </HierarchicalDataTemplate>
                   <HierarchicalDataTemplate DataType="{x:Type local:ScenePropertiesViewModel}"
+                     ItemsSource="{Binding PropertyCollection}">
+                     <TextBlock Margin="2"  Text="Scene Properties">
+                     </TextBlock>
+                  </HierarchicalDataTemplate>
+                  <HierarchicalDataTemplate DataType="{x:Type local:ScenePropsStateCollectionViewModel}"
                      ItemsSource="{Binding States}">
                      <TextBlock Margin="2"  Text="States">
                         <TextBlock.ContextMenu>
                            <ContextMenu>
-                              <MenuItem Header="Add State" 
+                              <MenuItem Header="Add State [TODO: not implemented yet]" 
                                  CommandParameter="{Binding}"
                                  Command="{Binding Path=Data.OpenChildFile, Source={StaticResource DataContextProxy}}" />
                            </ContextMenu>
@@ -197,7 +202,35 @@
                                  CommandParameter="{Binding}"
                                  Command="{Binding Path=Data.DisplayState, Source={StaticResource DataContextProxy}}" />
                               <Separator />
-                              <MenuItem Header="Delete State" 
+                              <MenuItem Header="Delete State [TODO: not implemented yet]" 
+                                 CommandParameter="{Binding}"
+                                 Command="{Binding Path=Data.OpenChildFile, Source={StaticResource DataContextProxy}}" />
+                           </ContextMenu>
+                        </TextBlock.ContextMenu>
+                     </TextBlock>
+                  </HierarchicalDataTemplate>
+                  <HierarchicalDataTemplate DataType="{x:Type local:ScenePropsPBCollectionViewModel}"
+                     ItemsSource="{Binding Backgrounds}">
+                     <TextBlock Margin="2"  Text="Parallax Backgrounds">
+                        <TextBlock.ContextMenu>
+                           <ContextMenu>
+                              <MenuItem Header="Add Background [TODO: not implemented yet]" 
+                                 CommandParameter="{Binding}"
+                                 Command="{Binding Path=Data.OpenChildFile, Source={StaticResource DataContextProxy}}" />
+                           </ContextMenu>
+                        </TextBlock.ContextMenu>
+                     </TextBlock>
+                  </HierarchicalDataTemplate>
+                  <HierarchicalDataTemplate DataType="{x:Type local:ParallaxBackgroundViewModel}"
+                     ItemsSource="{Binding Shapes}">
+                     <TextBlock Margin="2"  Text="{Binding BackgroundName}">
+                        <TextBlock.ContextMenu>
+                           <ContextMenu>
+                              <MenuItem Header="Edit this Background [TODO: not implemented yet]" 
+                                 CommandParameter="{Binding}"
+                                 Command="{Binding Path=Data.DisplayState, Source={StaticResource DataContextProxy}}" />
+                              <Separator />
+                              <MenuItem Header="Delete Background [TODO: not implemented yet]" 
                                  CommandParameter="{Binding}"
                                  Command="{Binding Path=Data.OpenChildFile, Source={StaticResource DataContextProxy}}" />
                            </ContextMenu>
