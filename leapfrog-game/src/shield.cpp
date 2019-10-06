@@ -140,11 +140,13 @@ void Shield::evaluatShieldDamage(void)
 {
    if (m_parent->m_gameStatus->getShield() <= 0.0f)
    {
-      // Remove shield from collisions... only, this  didn't work
-      b2Filter filt;
-      filt.groupIndex = -filt.groupIndex;
-      filt.categoryBits = 0;
+      // Remove shield from collisions
+
       b2Fixture* bf = m_body->GetFixtureList();
+      b2Filter filt = bf->GetFilterData();
+      //   filt.groupIndex = -filt.groupIndex;
+      filt.categoryBits = 0;
+      filt.maskBits = 65533;
       bf->SetFilterData(filt);
    }
 }
@@ -174,6 +176,19 @@ void Shield::shieldHitByBullet(b2Contact* contact, float bulletEqvDamage)
 
    evaluatShieldDamage();
 }
+
+void Shield::restartShield(void)
+{
+   // Restart shield collisions
+
+   b2Fixture* bf = m_body->GetFixtureList();
+   b2Filter filt = bf->GetFilterData();
+//   filt.groupIndex = -filt.groupIndex;
+   filt.categoryBits = 1;
+   filt.maskBits = 65533;
+   bf->SetFilterData(filt);
+}
+
 
 void Shield::doUpdate(const oxygine::UpdateState& us)
 {

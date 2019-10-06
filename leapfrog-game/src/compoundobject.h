@@ -305,7 +305,6 @@ public:
       pugi::xml_node& objectNode,
       const std::string& initialState);
 
-   void initGameStatus(spGameStatus status);
 
 
    CompoundObject* getParentObject();
@@ -328,7 +327,8 @@ public:
    System* getSystem(const std::string& name);
 
    virtual void connectToForeignObjects(void);
-  
+   virtual void initGameStatus(spGameStatus status);
+
    ObjectProperty* getObjectProperty(int propId);
    void extSetProperty(int propId, float value);
    void setProperty(int propId, float value);

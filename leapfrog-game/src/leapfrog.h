@@ -221,6 +221,7 @@ public:
    
    // Leapfrog specialisation of map registration
    void registerToMap(void) override;
+   void initGameStatus(spGameStatus status) override;
 
    void dumpPart(std::string name, b2Body* body, b2Body* mainBody);
    void dumpParts(void);

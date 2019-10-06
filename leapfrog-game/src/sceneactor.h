@@ -71,6 +71,8 @@ public:
       const std::string& initialState,
       int groupIndex);
 
+   void dummyHandler(Event* event);
+
    float m_sceneWidth;
    float m_sceneHeight;
 

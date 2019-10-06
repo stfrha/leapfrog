@@ -3,6 +3,7 @@
 #include "Box2D/Box2D.h"
 
 #include "compoundobject.h"
+#include "compoundobjectevents.h"
 
 #include "sceneactor.h"
 #include "freespaceactor.h"
@@ -38,7 +39,10 @@ CompoundObject::CompoundObject(SceneActor* sceneActor, CompoundObject* parentObj
    m_collisionType(CollisionEntity::notApplicable),
    m_behaviourType(notApplicable),
    m_isDead(false)
-{ }
+{
+   //CompoundObjectCreatedEvent event;
+   //dispatchEvent(&event);
+}
 
 
 CompoundObject::~CompoundObject()
@@ -404,11 +408,6 @@ CompoundObject* CompoundObject::initCompoundObject(
    return NULL;
 }
 
-void CompoundObject::initGameStatus(spGameStatus status)
-{
-   m_gameStatus = status;
-}
-
 bool CompoundObject::initCompoundObjectParts(
    oxygine::Resources& gameResources,
    SceneActor* sceneParent,
@@ -421,7 +420,7 @@ bool CompoundObject::initCompoundObjectParts(
 {
    // When defining childObjects that read from other XML-document
    // we somehow loose the pointer in this file,
-   // Therefor we must do the trick of save the root-node
+   // Therefore we must do the trick of save the root-node
    // to a new xml-document in memory and go back to it later.
 
    xml_document* nodeDocHolder = new xml_document();
@@ -557,81 +556,7 @@ bool CompoundObject::initCompoundObjectParts(
 
       // Is it really important to remember the systems here?
       m_systems.push_back(sys);
-
-
-      //xml_node stateNode;
-
-      //if (getStateNode(*it, initialState, stateNode))
-      //{
-      //   System* sys = System::initialiseSystemNode(&gameResources, m_sceneActor, world, this, systemType, systemName, stateNode, groupIndex);
-
-      //   // Is it really important to remember the systems here?
-      //   m_systems.push_back(sys);
-      //}
    }
-
-
-   //for (auto it = savedNode.children("planetActor").begin();
-   //   it != savedNode.children("planetActor").end();
-   //   ++it)
-   //{
-   //   xml_node stateNode;
-   //   
-   //   if (getStateNode(*it, initialState, stateNode))
-   //   {
-   //      PlanetActor* pa = new PlanetActor(
-   //         gameResources,
-   //         sceneParent,
-   //         parentObject,
-   //         stateNode.child("properties"));
-
-   //      m_children.push_back(static_cast<CompoundObject*>(pa));
-
-   //      pa->setName(it->attribute("name").as_string());
-   //   }
-   //}
-
-   // Asteroid fields are replaced by Object Factories
-   //for (auto it = savedNode.children("asteroidField").begin();
-   //   it != savedNode.children("asteroidField").end();
-   //   ++it)
-   //{
-   //   xml_node stateNode;
-
-   //   if (getStateNode(*it, initialState, stateNode))
-   //   {
-   //      AsteroidField* af = new AsteroidField(
-   //         gameResources,
-   //         sceneParent,
-   //         parentObject,
-   //         world,
-   //         stateNode.child("properties"));
-
-   //      m_children.push_back(static_cast<CompoundObject*>(af));
-
-   //      af->setName(it->attribute("name").as_string());
-   //   }
-   //}
-
-   //for (auto it = savedNode.children("clippedWindow").begin();
-   //   it != savedNode.children("clippedWindow").end();
-   //   ++it)
-   //{
-   //   xml_node stateNode;
-
-   //   if (getStateNode(*it, initialState, stateNode))
-   //   {
-   //      OrbitWindow* ow = new OrbitWindow(
-   //         gameResources,
-   //         sceneParent,
-   //         parentObject,
-   //         stateNode.child("properties"),
-   //         initialState);
-
-   //      m_children.push_back(static_cast<CompoundObject*>(ow));
-   //      ow->setName(it->attribute("name").as_string());
-   //   }
-   //}
 
    return true;
 }
@@ -1773,6 +1698,18 @@ void CompoundObject::connectToForeignObjects(void)
       (*it)->connectToForeignObjects();
    }
 }
+
+// This method gets a link to a game status object
+// This is the base version. Override this to 
+// link individual resources to the associated 
+// systems. So that the game status gets a link
+// to the Shield system object.
+void CompoundObject::initGameStatus(spGameStatus status)
+{
+   m_gameStatus = status;
+}
+
+
 
 ObjectProperty* CompoundObject::getProp(int propId)
 {
