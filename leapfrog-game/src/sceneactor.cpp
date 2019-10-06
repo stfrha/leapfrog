@@ -721,9 +721,3 @@ void SceneActor::sweepSpawnList(void)
 
    m_spawnInstructions.clear();
 }
-
-void SceneActor::dummyHandler(Event* event)
-{
-   logs::messageln("Got dummy event");
-}
-
