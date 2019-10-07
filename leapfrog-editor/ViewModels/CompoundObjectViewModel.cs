@@ -569,8 +569,6 @@ namespace LeapfrogEditor
       {
          _treeCollection.Clear();
 
-         // Behaviour child is not ready to be set, it will 
-         // be set later.
          SetBehaviourPropertyInTreeView();
 
          _treeCollection.Add(StateShapes);

@@ -8,6 +8,10 @@ using System.Windows;
 using System.Windows.Data;
 using System.Windows.Media;
 
+// TODO: This class has nothing to do with states anymore and should be 
+// renamed accordingly
+
+
 namespace LeapfrogEditor
 {
    public class StateBehaviourCollectionViewModel : StateCollectionViewModelBase

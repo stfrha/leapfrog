@@ -8,6 +8,14 @@ using System.Windows;
 using System.Windows.Data;
 using System.Windows.Media;
 
+// This class only reason for existing is to be a specific class 
+// that becomes a headline in the tree view with a collection
+// under it. 
+
+// TODO: This class has nothing to do with states anymore and should be 
+// renamed accordingly
+
+
 namespace LeapfrogEditor
 {
    public class StateShapeCollectionViewModel : StateCollectionViewModelBase

@@ -8,6 +8,13 @@ using System.Windows;
 using System.Windows.Data;
 using System.Windows.Media;
 
+// This class is used to provide a tree view hierarcical
+// level under the CompoundObject that holds headlines for
+// Behaviour, Shapes, Joints, Systems and child objects
+
+// TODO: This class has nothing to do with states anymore and should be 
+// renamed accordingly
+
 namespace LeapfrogEditor
 {
    public class StateCollectionViewModelBase : TreeViewViewModel
