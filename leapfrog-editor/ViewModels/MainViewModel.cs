@@ -857,7 +857,14 @@ namespace LeapfrogEditor
          {
             string p = (string)parameter;
 
-            return ((EditedCpVm != null) && (SelectedShapes.Count == 1));
+            if (p == "objectFactory")
+            {
+               return ((EditedCpVm != null) && (SelectedShapes.Count >= 0) && (SelectedShapes.Count < 1));
+            }
+            else
+            {
+               return ((EditedCpVm != null) && (SelectedShapes.Count == 1));
+            }
          }
 
          return false;
@@ -1599,7 +1606,7 @@ namespace LeapfrogEditor
                   // the tree-child of a ParallaxBackgroundViewModel, the ParallaxBackground 
                   // should be selected in the tree view.
 
-                  if ((shvm.ParentVm == EditedCpVm) && !(shvm.TreeParent is ParallaxBackgroundViewModel))
+                  if ((AmISelectable(shvm)) && !(shvm.TreeParent is ParallaxBackgroundViewModel))
                   {
                      if (!ctrl)
                      {
@@ -1648,7 +1655,7 @@ namespace LeapfrogEditor
                   // If it is not part of the Editable object, the parent should be selected
                   // also assessing ctrl-key
 
-                  if (ofpvm.ParentVm == EditedCpVm)
+                  if (AmISelectable(ofpvm))
                   {
                      if (!ctrl)
                      {
@@ -1679,7 +1686,7 @@ namespace LeapfrogEditor
 
                   WeldJointViewModel jvm = (WeldJointViewModel)sender;
 
-                  if (jvm.ParentVm == EditedCpVm)
+                  if (AmISelectable(jvm))
                   {
                      if (!ctrl)
                      {
@@ -1809,24 +1816,15 @@ namespace LeapfrogEditor
             }
             else if ((_LeftClickState == LeftClickState.weldJoint) ||
                (_LeftClickState == LeftClickState.revoluteJoint) ||
-               (_LeftClickState == LeftClickState.prismaticJoint))
+               (_LeftClickState == LeftClickState.prismaticJoint) ||
+               (_LeftClickState == LeftClickState.rope))
             {
-               if (SelectedShapes[0].Name == SelectedShapes[1].Name)
+               string bName = "notDefined";
+
+               if (SelectedShapes.Count > 1)
                {
-                  MessageBox.Show("The selected shapes has the same name and thus a unambigous joint can not be created. Rename at least one of the shapes.", "Error Creating Joint", MessageBoxButton.OK, MessageBoxImage.Error);
+                  bName = SelectedShapes[1].Name;
 
-                  _LeftClickState = LeftClickState.none;
-                  return true;
-               }
-
-               EditedCpVm.AddJoint(_LeftClickState, clickPoint, SelectedShapes[0].Name, SelectedShapes[1].Name);
-
-               _LeftClickState = LeftClickState.none;
-            }
-            else if (_LeftClickState == LeftClickState.rope)
-            {
-               if (SelectedShapes.Count == 2)
-               {
                   if (SelectedShapes[0].Name == SelectedShapes[1].Name)
                   {
                      MessageBox.Show("The selected shapes has the same name and thus a unambigous joint can not be created. Rename at least one of the shapes.", "Error Creating Joint", MessageBoxButton.OK, MessageBoxImage.Error);
@@ -1836,135 +1834,41 @@ namespace LeapfrogEditor
                   }
                }
 
-               EditedCpVm.AddRope(clickPoint, SelectedShapes[0].Name, SelectedShapes[1].Name, SelectedShapes.Count);
+               WeldJointViewModel newJointVm = EditedCpVm.AddJoint(
+                  _LeftClickState, 
+                  clickPoint, 
+                  SelectedShapes[0].Name,
+                  bName, 
+                  SelectedShapes.Count);
+
+               foreach (LfDragablePointViewModel selpoint in _selectedPoints)
+               {
+                  selpoint.IsSelected = false;
+               }
+               _selectedPoints.Clear();
+
+               newJointVm.IsSelected = true;
 
                _LeftClickState = LeftClickState.none;
-
             }
-            else if (_LeftClickState == LeftClickState.objectFactory)
+            else if ((_LeftClickState == LeftClickState.objectFactory) ||
+               (_LeftClickState == LeftClickState.gun) ||
+               (_LeftClickState == LeftClickState.flameEmitter) ||
+               (_LeftClickState == LeftClickState.shield) ||
+               (_LeftClickState == LeftClickState.reentryFlameEmitter))
             {
-               // Create a new object factory
-               CoSystem newSystem = new CoSystem();
-               newSystem.Type = "objectFactory";
-               newSystem.ObjFactStateProperties = new ObjectFactoryProperties();
-               newSystem.ObjFactStateProperties.Body = SelectedShapes[0].Name;
+               string shapeName = "notDefined";
 
-               // Create new view model, will also create the properties vm and connect to bodý
-               CoSystemViewModel newSysVm = new CoSystemViewModel(EditedCpVm.SystemCollection, EditedCpVm, this, newSystem, true);
-
-               ObjectFactoryPropertiesViewModel propVm = newSysVm.Properties as ObjectFactoryPropertiesViewModel;
-
-               Point parentObjectOrigo = new Point(0, 0);
-
-               // Shape point
-               Point shapeAOrigo = new Point(propVm.PosX, propVm.PosY);
-               shapeAOrigo.Offset(parentObjectOrigo.X, parentObjectOrigo.Y);
-               Point localAClickPoint = new Point();
-               localAClickPoint = (Point)(clickPoint - shapeAOrigo);
-
-               // Rotate point to shape rotation
-               Point rotatedAClickPoint = CoordinateTransformations.LocalPointFromRotated(localAClickPoint, propVm.BodyObject.Angle);
-
-               propVm.PosX = rotatedAClickPoint.X;
-               propVm.PosY = rotatedAClickPoint.Y;
-
-               EditedCpVm.SystemCollection.Systems.Add(newSysVm);
-               EditedCpVm.ModelObject.Systems.Add(newSystem);
-
-               newSysVm.IsSelected = true;
-
-               _LeftClickState = LeftClickState.none;
-
-            }
-            else if ((_LeftClickState == LeftClickState.gun) ||
-                  (_LeftClickState == LeftClickState.flameEmitter) ||
-                  (_LeftClickState == LeftClickState.shield))
-            {
-               // Create a new system model
-               CoSystem newSystem = new CoSystem();
-
-               newSystem.Type = _LeftClickState.ToString();
-
-               if (_LeftClickState == LeftClickState.gun)
+               if (SelectedShapes.Count > 0)
                {
-                  newSystem.GunStateProperties = new GunProperties();
-                  newSystem.GunStateProperties.BodyName = SelectedShapes[0].Name;
+                  shapeName = SelectedShapes[0].Name;
                }
-               else if (_LeftClickState == LeftClickState.flameEmitter)
-               {
-                  newSystem.FlameEmitterStateProperties = new FlameEmitterProperties();
-                  newSystem.FlameEmitterStateProperties.BodyName = SelectedShapes[0].Name;
-               }
-               else if (_LeftClickState == LeftClickState.shield)
-               {
-                  newSystem.ShieldStateProperties = new ShieldProperties();
-                  newSystem.ShieldStateProperties.BodyName = SelectedShapes[0].Name;
-               }
-               
-               // Create new view model, will also create the properties vm but does not connect to body
-               CoSystemViewModel newSysVm = new CoSystemViewModel(EditedCpVm.SystemCollection, EditedCpVm, this, newSystem, true);
 
-               BodyOriginSystemViewModel propVm = newSysVm.Properties as BodyOriginSystemViewModel;
-
-               propVm.ConnectToShapes(EditedCpVm.ShapeCollection);
-
-               Point parentObjectOrigo = new Point(0, 0);
-
-               // Shape point
-               Point shapeAOrigo = new Point(propVm.SystemOriginX, propVm.SystemOriginY);
-               shapeAOrigo.Offset(parentObjectOrigo.X, parentObjectOrigo.Y);
-               Point localAClickPoint = new Point();
-               localAClickPoint = (Point)(clickPoint - shapeAOrigo);
-
-               // Rotate point to shape rotation
-               Point rotatedAClickPoint = CoordinateTransformations.LocalPointFromRotated(localAClickPoint, propVm.BodyObject.Angle);
-
-               propVm.SystemOriginX = rotatedAClickPoint.X;
-               propVm.SystemOriginY = rotatedAClickPoint.Y;
-
-               EditedCpVm.SystemCollection.Systems.Add(newSysVm);
-               EditedCpVm.ModelObject.Systems.Add(newSystem);
-
-               newSysVm.IsSelected = true;
-
-               _LeftClickState = LeftClickState.none;
-
-            }
-            else if (_LeftClickState == LeftClickState.reentryFlameEmitter)
-            {
-               // Create a new system model
-               CoSystem newSystem = new CoSystem();
-
-               newSystem.Type = _LeftClickState.ToString();
-               newSystem.ReentryFlameEmitterStateProperties = new ReentryFlameEmitterProperties();
-               newSystem.ReentryFlameEmitterStateProperties.BodyName = SelectedShapes[0].Name;
-
-               // Create new view model, will also create the properties vm but does not connect to body
-               CoSystemViewModel newSysVm = new CoSystemViewModel(EditedCpVm.SystemCollection, EditedCpVm, this, newSystem, true);
-
-               ReentryFlameEmitterPropertiesViewModel propVm = newSysVm.Properties as ReentryFlameEmitterPropertiesViewModel;
-
-               propVm.ConnectToShapes(EditedCpVm.ShapeCollection);
-
-               Point parentObjectOrigo = new Point(0, 0);
-
-               // Shape point
-               Point shapeAOrigo = new Point(propVm.EmitterLineStartX, propVm.EmitterLineStartY);
-               shapeAOrigo.Offset(parentObjectOrigo.X, parentObjectOrigo.Y);
-               Point localAClickPoint = new Point();
-               localAClickPoint = (Point)(clickPoint - shapeAOrigo);
-
-               // Rotate point to shape rotation
-               Point rotatedAClickPoint = CoordinateTransformations.LocalPointFromRotated(localAClickPoint, propVm.BodyObject.Angle);
-
-               propVm.EmitterLineStartX = rotatedAClickPoint.X;
-               propVm.EmitterLineStartY = rotatedAClickPoint.Y;
-
-               propVm.EmitterLineEndX = propVm.EmitterLineStartX + 10;
-               propVm.EmitterLineEndY = propVm.EmitterLineStartY + 10;
-
-               EditedCpVm.SystemCollection.Systems.Add(newSysVm);
-               EditedCpVm.ModelObject.Systems.Add(newSystem);
+               CoSystemViewModel newSysVm = EditedCpVm.AddSystem(
+                  _LeftClickState, 
+                  clickPoint, 
+                  shapeName,
+                  SelectedShapes.Count);
 
                newSysVm.IsSelected = true;
 
@@ -1977,14 +1881,7 @@ namespace LeapfrogEditor
                // shape is the only one selected
                if ((SelectedShapes.Count == 1) && (SelectedShapes[0] is LfPolygonViewModel))
                {
-                  LfPolygonViewModel newPolygon = (LfPolygonViewModel)SelectedShapes[0];
-                  Point parentObjectOrigo = new Point(newPolygon.ParentVm.PosX, newPolygon.ParentVm.PosY);
-                  Point shapeOrigo = new Point(newPolygon.PosX, newPolygon.PosY);
-                  shapeOrigo.Offset(parentObjectOrigo.X, parentObjectOrigo.Y);
-                  Point localClickPoint = new Point();
-                  localClickPoint = (Point)(clickPoint - shapeOrigo);
-
-                  LfDragablePointViewModel newPoint = newPolygon.AddPoint(localClickPoint);
+                  LfDragablePointViewModel newPoint = EditedCpVm.AddPoint((LfPolygonViewModel)SelectedShapes[0], clickPoint);
 
                   while (_selectedPoints.Count > 0)
                   {
@@ -2029,29 +1926,6 @@ namespace LeapfrogEditor
             {
                DeleteExecute(null);
             }
-            //if (_selectedPoints.Count > 0)
-            //{
-            //   foreach (LfDragablePointViewModel dp in _selectedPoints)
-            //   {
-            //      LfPolygonViewModel polyVm = dp.ParentVm;
-
-            //      // Is this the last point to be removed? If so, remove the shape
-            //      // first so there is no problem with updating something with zero
-            //      // points.
-            //      if (polyVm.PointVms.Count == 1)
-            //      {
-            //         // Polygon has no more points, delete the polygon Shape
-
-            //         polyVm.ParentVm.ModelObject.RemoveShape(polyVm.ModelObject);
-            //         polyVm.ParentVm.Shapes.Remove(polyVm);
-            //      }
-
-            //      // Before we remove the point
-            //      polyVm.RemovePoint(dp);
-
-            //   }
-            //   _selectedPoints.Clear();
-            //}
          }
 
          return false;
@@ -2206,7 +2080,7 @@ namespace LeapfrogEditor
             {
                ChildObjectViewModel covm = tvvm as ChildObjectViewModel;
 
-               if (covm.ParentVm == EditedCpVm)
+               if (AmISelectable(covm))
                {
                   // This is the child object of the object being edited, 
                   if (covm.IsSelected)
@@ -2236,7 +2110,7 @@ namespace LeapfrogEditor
             {
                LfShapeViewModel shape = o as LfShapeViewModel;
 
-               if (shape.ParentVm == EditedCpVm)
+               if (AmISelectable(shape))
                {
                   // This is the shape of the object being edited, 
                   if (shape.IsSelected)
@@ -2267,7 +2141,7 @@ namespace LeapfrogEditor
             {
                WeldJointViewModel joint = o as WeldJointViewModel;
 
-               if (joint.ParentVm == EditedCpVm)
+               if (AmISelectable(joint))
                {
                   if (joint.IsSelected)
                   {
@@ -2284,7 +2158,7 @@ namespace LeapfrogEditor
             {
                CoSystemViewModel system = o as CoSystemViewModel;
 
-               if (system.ParentVm == EditedCpVm)
+               if (AmISelectable(system))
                {
                   if (system.IsSelected)
                   {
@@ -2313,7 +2187,7 @@ namespace LeapfrogEditor
                         {
                            ChildObjectViewModel covm = tvvm as ChildObjectViewModel;
 
-                           if (covm.ParentVm == EditedCpVm)
+                           if (AmISelectable(covm))
                            {
                               // This is the child object of the object being edited, 
                               if (covm.IsSelected)
@@ -2364,7 +2238,7 @@ namespace LeapfrogEditor
                {
                   ChildObjectViewModel covm = tvvm as ChildObjectViewModel;
 
-                  if (covm.ParentVm == EditedCpVm)
+                  if (AmISelectable(covm))
                   {
                      // This is the child object of the object being edited, 
                      if (covm.IsSelected)

@@ -734,128 +734,350 @@ namespace LeapfrogEditor
          OnPropertyChanged("");
       }
 
-      public WeldJointViewModel AddJoint(LeftClickState shapeType, Point position, string shapeAName, string shapeBName )
-      {
-         WeldJoint wj = null;
-         WeldJointViewModel wjvm = null;
-
-         wj.AName = shapeAName;
-         wj.BName = shapeBName;
-
-         if (shapeType == LeftClickState.weldJoint)
-         {
-            wj = new WeldJoint();
-            wjvm = new WeldJointViewModel(JointCollection, this, MainVm, wj);
-            ModelObject.WeldJoints.Add(wjvm.ModelObject);
-         }
-         else if (shapeType == LeftClickState.revoluteJoint)
-         {
-            wj = new RevoluteJoint();
-            wjvm = new RevoluteJointViewModel(JointCollection, this, MainVm, (RevoluteJoint)wj);
-            ModelObject.RevoluteJoints.Add((RevoluteJoint)wjvm.ModelObject);
-         }
-         else if (shapeType == LeftClickState.prismaticJoint)
-         {
-            wj = new PrismaticJoint();
-            wjvm = new PrismaticJointViewModel(JointCollection, this, MainVm, (PrismaticJoint)wj);
-            ModelObject.PrismaticJoints.Add((PrismaticJoint)wjvm.ModelObject);
-         }
-
-
-
-         // TODO: Add me!!!!
-         // ModelObject.Ropes.Add((Rope)wjvm.ModelObject);
-
-         wjvm.ConnectToShapes(ShapeCollection);
-
-         Point parentObjectOrigo = new Point(0, 0);
-
-         // Shape A point
-         Point shapeAOrigo = new Point(wjvm.AShapeObject.PosX, wjvm.AShapeObject.PosY);
-         shapeAOrigo.Offset(parentObjectOrigo.X, parentObjectOrigo.Y);
-
-         Point localAClickPoint = new Point();
-         localAClickPoint = (Point)(position - shapeAOrigo);
-
-
-         // Rotate point to shape rotation
-         Point rotatedAClickPoint = CoordinateTransformations.LocalPointFromRotated(localAClickPoint, wjvm.AShapeObject.Angle);
-
-         wjvm.AAnchorX = rotatedAClickPoint.X;
-         wjvm.AAnchorY = rotatedAClickPoint.Y;
-
-         // Shape B point
-         Point shapeBOrigo = new Point(wjvm.BShapeObject.PosX, wjvm.BShapeObject.PosY);
-         shapeBOrigo.Offset(parentObjectOrigo.X, parentObjectOrigo.Y);
-         Point localBClickPoint = new Point();
-         localBClickPoint = (Point)(position - shapeBOrigo);
-
-         // Rotate point to shape rotation
-         //               Point rotatedBClickPoint = wjvm.BShapeObject.RotatedPointFromLocal(localBClickPoint);
-         Point rotatedBClickPoint = CoordinateTransformations.LocalPointFromRotated(localBClickPoint, wjvm.BShapeObject.Angle);
-
-         wjvm.BAnchorX = rotatedBClickPoint.X;
-         wjvm.BAnchorY = rotatedBClickPoint.Y;
-
-         JointCollection.Joints.Add(wjvm);
-
-         return wjvm;
-      }
-
-      public RopeViewModel AddRope(Point position, string shapeAName, string shapeBName, int numOfShapes)
+      public WeldJointViewModel AddJoint(
+         LeftClickState shapeType, 
+         Point position, 
+         string shapeAName, 
+         string shapeBName, 
+         int numOfShapes)
       {
 
-         Rope rp = new Rope();
-         RopeViewModel rpvm = new RopeViewModel(JointCollection, this, MainVm, rp);
-
-         rp.AName = shapeAName;
-
-         if (numOfShapes == 2)
+         // First do special handling for ropes and later handle 
+         // all other joints
+         if (shapeType == LeftClickState.rope)
          {
-            rp.BName = shapeBName;
+            Rope rp = new Rope();
+            RopeViewModel rpvm = new RopeViewModel(JointCollection, this, MainVm, rp);
+
+            rp.AName = shapeAName;
+
+            if (numOfShapes == 2)
+            {
+               rp.BName = shapeBName;
+            }
+
+            // If there is no shape B, the rp.BName should be default "notDef"
+
+            rpvm.ConnectToShapes(ShapeCollection);
+
+            Point parentObjectOrigo = new Point(0, 0);
+
+            // Shape A point
+            Point shapeAOrigo = new Point(rpvm.AShapeObject.PosX, rpvm.AShapeObject.PosY);
+            shapeAOrigo.Offset(parentObjectOrigo.X, parentObjectOrigo.Y);
+            Point localAClickPoint = new Point();
+            localAClickPoint = (Point)(position - shapeAOrigo);
+
+            // Rotate point to shape rotation
+            Point rotatedAClickPoint = CoordinateTransformations.LocalPointFromRotated(localAClickPoint, rpvm.AShapeObject.Angle);
+
+            rpvm.AAnchorX = rotatedAClickPoint.X;
+            rpvm.AAnchorY = rotatedAClickPoint.Y;
+
+            if (numOfShapes == 2)
+            {
+               // Shape B point
+               Point shapeBOrigo = new Point(rpvm.BShapeObject.PosX, rpvm.BShapeObject.PosY);
+               shapeBOrigo.Offset(parentObjectOrigo.X, parentObjectOrigo.Y);
+               Point localBClickPoint = new Point();
+               localBClickPoint = (Point)(position - shapeBOrigo);
+
+               // Rotate point to shape rotation
+               Point rotatedBClickPoint = CoordinateTransformations.LocalPointFromRotated(localBClickPoint, rpvm.BShapeObject.Angle);
+
+               rpvm.BAnchorX = rotatedBClickPoint.X;
+               rpvm.BAnchorY = rotatedBClickPoint.Y;
+            }
+
+            JointCollection.Joints.Add(rpvm);
+            ModelObject.Ropes.Add(rp);
+
+            return rpvm;
          }
-
-
-         // If there is no shape B, the rp.BName should be default "notDef"
-
-         rpvm.ConnectToShapes(ShapeCollection);
-
-         Point parentObjectOrigo = new Point(0, 0);
-
-         // Shape A point
-         Point shapeAOrigo = new Point(rpvm.AShapeObject.PosX, rpvm.AShapeObject.PosY);
-         shapeAOrigo.Offset(parentObjectOrigo.X, parentObjectOrigo.Y);
-         Point localAClickPoint = new Point();
-         localAClickPoint = (Point)(position - shapeAOrigo);
-
-         // Rotate point to shape rotation
-         Point rotatedAClickPoint = CoordinateTransformations.LocalPointFromRotated(localAClickPoint, rpvm.AShapeObject.Angle);
-
-         rpvm.AAnchorX = rotatedAClickPoint.X;
-         rpvm.AAnchorY = rotatedAClickPoint.Y;
-
-         if (numOfShapes == 2)
+         else
          {
+            // If it wasn't a rope, it was some other joint...
+            WeldJoint wj = null;
+            WeldJointViewModel wjvm = null;
+
+
+            if (shapeType == LeftClickState.weldJoint)
+            {
+               wj = new WeldJoint();
+               wj.AName = shapeAName;
+               wj.BName = shapeBName;
+               wjvm = new WeldJointViewModel(JointCollection, this, MainVm, wj);
+               ModelObject.WeldJoints.Add(wjvm.ModelObject);
+            }
+            else if (shapeType == LeftClickState.revoluteJoint)
+            {
+               wj = new RevoluteJoint();
+               wj.AName = shapeAName;
+               wj.BName = shapeBName;
+               wjvm = new RevoluteJointViewModel(JointCollection, this, MainVm, (RevoluteJoint)wj);
+               ModelObject.RevoluteJoints.Add((RevoluteJoint)wjvm.ModelObject);
+            }
+            else if (shapeType == LeftClickState.prismaticJoint)
+            {
+               wj = new PrismaticJoint();
+               wj.AName = shapeAName;
+               wj.BName = shapeBName;
+               wjvm = new PrismaticJointViewModel(JointCollection, this, MainVm, (PrismaticJoint)wj);
+               ModelObject.PrismaticJoints.Add((PrismaticJoint)wjvm.ModelObject);
+            }
+
+            wjvm.ConnectToShapes(ShapeCollection);
+
+            Point parentObjectOrigo = new Point(0, 0);
+
+            // Shape A point
+            Point shapeAOrigo = new Point(wjvm.AShapeObject.PosX, wjvm.AShapeObject.PosY);
+            shapeAOrigo.Offset(parentObjectOrigo.X, parentObjectOrigo.Y);
+
+            Point localAClickPoint = new Point();
+            localAClickPoint = (Point)(position - shapeAOrigo);
+
+
+            // Rotate point to shape rotation
+            Point rotatedAClickPoint = CoordinateTransformations.LocalPointFromRotated(localAClickPoint, wjvm.AShapeObject.Angle);
+
+            wjvm.AAnchorX = rotatedAClickPoint.X;
+            wjvm.AAnchorY = rotatedAClickPoint.Y;
+
             // Shape B point
-            Point shapeBOrigo = new Point(rpvm.BShapeObject.PosX, rpvm.BShapeObject.PosY);
+            Point shapeBOrigo = new Point(wjvm.BShapeObject.PosX, wjvm.BShapeObject.PosY);
             shapeBOrigo.Offset(parentObjectOrigo.X, parentObjectOrigo.Y);
             Point localBClickPoint = new Point();
             localBClickPoint = (Point)(position - shapeBOrigo);
 
             // Rotate point to shape rotation
-            Point rotatedBClickPoint = CoordinateTransformations.LocalPointFromRotated(localBClickPoint, rpvm.BShapeObject.Angle);
+            //               Point rotatedBClickPoint = wjvm.BShapeObject.RotatedPointFromLocal(localBClickPoint);
+            Point rotatedBClickPoint = CoordinateTransformations.LocalPointFromRotated(localBClickPoint, wjvm.BShapeObject.Angle);
 
-            rpvm.BAnchorX = rotatedBClickPoint.X;
-            rpvm.BAnchorY = rotatedBClickPoint.Y;
+            wjvm.BAnchorX = rotatedBClickPoint.X;
+            wjvm.BAnchorY = rotatedBClickPoint.Y;
+
+            JointCollection.Joints.Add(wjvm);
+
+            return wjvm;
          }
-
-         JointCollection.Joints.Add(rpvm);
-         ModelObject.Ropes.Add(rp);
-
-         return rpvm;
       }
 
+      //public RopeViewModel AddRope(Point position, string shapeAName, string shapeBName, int numOfShapes)
+      //{
 
+      //   Rope rp = new Rope();
+      //   RopeViewModel rpvm = new RopeViewModel(JointCollection, this, MainVm, rp);
+
+      //   rp.AName = shapeAName;
+
+      //   if (numOfShapes == 2)
+      //   {
+      //      rp.BName = shapeBName;
+      //   }
+
+      //   // If there is no shape B, the rp.BName should be default "notDef"
+
+      //   rpvm.ConnectToShapes(ShapeCollection);
+
+      //   Point parentObjectOrigo = new Point(0, 0);
+
+      //   // Shape A point
+      //   Point shapeAOrigo = new Point(rpvm.AShapeObject.PosX, rpvm.AShapeObject.PosY);
+      //   shapeAOrigo.Offset(parentObjectOrigo.X, parentObjectOrigo.Y);
+      //   Point localAClickPoint = new Point();
+      //   localAClickPoint = (Point)(position - shapeAOrigo);
+
+      //   // Rotate point to shape rotation
+      //   Point rotatedAClickPoint = CoordinateTransformations.LocalPointFromRotated(localAClickPoint, rpvm.AShapeObject.Angle);
+
+      //   rpvm.AAnchorX = rotatedAClickPoint.X;
+      //   rpvm.AAnchorY = rotatedAClickPoint.Y;
+
+      //   if (numOfShapes == 2)
+      //   {
+      //      // Shape B point
+      //      Point shapeBOrigo = new Point(rpvm.BShapeObject.PosX, rpvm.BShapeObject.PosY);
+      //      shapeBOrigo.Offset(parentObjectOrigo.X, parentObjectOrigo.Y);
+      //      Point localBClickPoint = new Point();
+      //      localBClickPoint = (Point)(position - shapeBOrigo);
+
+      //      // Rotate point to shape rotation
+      //      Point rotatedBClickPoint = CoordinateTransformations.LocalPointFromRotated(localBClickPoint, rpvm.BShapeObject.Angle);
+
+      //      rpvm.BAnchorX = rotatedBClickPoint.X;
+      //      rpvm.BAnchorY = rotatedBClickPoint.Y;
+      //   }
+
+      //   JointCollection.Joints.Add(rpvm);
+      //   ModelObject.Ropes.Add(rp);
+
+      //   return rpvm;
+      //}
+
+      public CoSystemViewModel AddSystem(
+         LeftClickState shapeType, 
+         Point position, 
+         string shapeName,
+         int numOfShapes)
+      {
+         CoSystem newSystem = new CoSystem();
+         CoSystemViewModel newSysVm = null;
+
+         Point parentObjectOrigo = new Point(0, 0);
+
+         if (shapeType == LeftClickState.objectFactory)
+         {
+            newSystem.Type = "objectFactory";
+            newSystem.ObjFactStateProperties = new ObjectFactoryProperties();
+
+            if (numOfShapes == 1)
+            {
+               newSystem.ObjFactStateProperties.Body = shapeName;
+            }
+            else
+            {
+               newSystem.ObjFactStateProperties.Body = "notDefined";
+            }
+
+            newSysVm = new CoSystemViewModel(
+               SystemCollection,
+               this,
+               MainVm,
+               newSystem,
+               true);
+
+            ObjectFactoryPropertiesViewModel propVm = newSysVm.Properties as ObjectFactoryPropertiesViewModel;
+
+            if (numOfShapes == 1)
+            {
+               parentObjectOrigo = new Point(propVm.BodyObject.PosX, propVm.BodyObject.PosY);
+            }
+
+            // Shape point
+            Point shapeAOrigo = new Point(propVm.PosX, propVm.PosY);
+            shapeAOrigo.Offset(parentObjectOrigo.X, parentObjectOrigo.Y);
+            Point localAClickPoint = new Point();
+            localAClickPoint = (Point)(position - shapeAOrigo);
+
+            // Rotate point to shape rotation
+            if (numOfShapes > 0)
+            {
+               Point rotatedAClickPoint = CoordinateTransformations.LocalPointFromRotated(localAClickPoint, propVm.BodyObject.Angle);
+
+               propVm.PosX = rotatedAClickPoint.X;
+               propVm.PosY = rotatedAClickPoint.Y;
+            }
+            else
+            {
+               propVm.PosX = localAClickPoint.X;
+               propVm.PosY = localAClickPoint.Y;
+            }
+
+         }
+         else if (shapeType == LeftClickState.reentryFlameEmitter)
+         {
+            newSystem.Type = shapeType.ToString();
+            newSystem.ReentryFlameEmitterStateProperties = new ReentryFlameEmitterProperties();
+            newSystem.ReentryFlameEmitterStateProperties.BodyName = shapeName;
+
+            newSysVm = new CoSystemViewModel(
+               SystemCollection,
+               this,
+               MainVm,
+               newSystem,
+               true);
+
+            ReentryFlameEmitterPropertiesViewModel propVm = newSysVm.Properties as ReentryFlameEmitterPropertiesViewModel;
+
+            propVm.ConnectToShapes(ShapeCollection);
+
+            parentObjectOrigo = new Point(propVm.BodyObject.PosX, propVm.BodyObject.PosY);
+
+            // Shape point
+            Point shapeAOrigo = new Point(propVm.EmitterLineStartX, propVm.EmitterLineStartY);
+            shapeAOrigo.Offset(parentObjectOrigo.X, parentObjectOrigo.Y);
+            Point localAClickPoint = new Point();
+            localAClickPoint = (Point)(position - shapeAOrigo);
+
+            // Rotate point to shape rotation
+            Point rotatedAClickPoint = CoordinateTransformations.LocalPointFromRotated(localAClickPoint, propVm.BodyObject.Angle);
+
+            propVm.EmitterLineStartX = rotatedAClickPoint.X;
+            propVm.EmitterLineStartY = rotatedAClickPoint.Y;
+
+            propVm.EmitterLineEndX = propVm.EmitterLineStartX + 10;
+            propVm.EmitterLineEndY = propVm.EmitterLineStartY + 10;
+
+         }
+         else
+         {
+            newSystem.Type = shapeType.ToString();
+
+            if (shapeType == LeftClickState.gun)
+            {
+               newSystem.GunStateProperties = new GunProperties();
+               newSystem.GunStateProperties.BodyName = shapeName;
+            }
+            else if (shapeType == LeftClickState.flameEmitter)
+            {
+               newSystem.FlameEmitterStateProperties = new FlameEmitterProperties();
+               newSystem.FlameEmitterStateProperties.BodyName = shapeName;
+            }
+            else if (shapeType == LeftClickState.shield)
+            {
+               newSystem.ShieldStateProperties = new ShieldProperties();
+               newSystem.ShieldStateProperties.BodyName = shapeName;
+            }
+
+            newSysVm = new CoSystemViewModel(
+               SystemCollection,
+               this,
+               MainVm,
+               newSystem,
+               true);
+
+            BodyOriginSystemViewModel propVm = newSysVm.Properties as BodyOriginSystemViewModel;
+
+            propVm.ConnectToShapes(ShapeCollection);
+
+            parentObjectOrigo = new Point(propVm.BodyObject.PosX, propVm.BodyObject.PosY);
+
+            parentObjectOrigo = new Point(propVm.BodyObject.PosX, propVm.BodyObject.PosY);
+            
+            // Shape point
+            Point shapeAOrigo = new Point(propVm.SystemOriginX, propVm.SystemOriginY);
+            shapeAOrigo.Offset(parentObjectOrigo.X, parentObjectOrigo.Y);
+            Point localAClickPoint = new Point();
+            localAClickPoint = (Point)(position - shapeAOrigo);
+
+            // Rotate point to shape rotation
+            Point rotatedAClickPoint = CoordinateTransformations.LocalPointFromRotated(localAClickPoint, propVm.BodyObject.Angle);
+
+            propVm.SystemOriginX = rotatedAClickPoint.X;
+            propVm.SystemOriginY = rotatedAClickPoint.Y;
+
+         }
+
+         SystemCollection.Systems.Add(newSysVm);
+         ModelObject.Systems.Add(newSystem);
+
+         return newSysVm;
+      }
+
+      public LfDragablePointViewModel AddPoint(LfPolygonViewModel polyVm, Point position)
+      {
+         LfPolygonViewModel newPolygon = polyVm;
+         Point parentObjectOrigo = new Point(newPolygon.ParentVm.PosX, newPolygon.ParentVm.PosY);
+         Point shapeOrigo = new Point(newPolygon.PosX, newPolygon.PosY);
+         shapeOrigo.Offset(parentObjectOrigo.X, parentObjectOrigo.Y);
+         Point localClickPoint = new Point();
+         localClickPoint = (Point)(position - shapeOrigo);
+
+         LfDragablePointViewModel newPoint = newPolygon.AddPoint(localClickPoint);
+
+         return newPoint;
+      }
 
       public void InvalidateJoints()
       {

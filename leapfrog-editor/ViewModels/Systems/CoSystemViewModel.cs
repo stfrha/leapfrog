@@ -31,6 +31,8 @@ namespace LeapfrogEditor
 
       #region Constructors
 
+      // Note, the constructor below requires that the System model is defined
+      // complete with its type and its system property defined.
       public CoSystemViewModel(
          TreeViewViewModel treeParent, 
          CompoundObjectViewModel parentVm, 

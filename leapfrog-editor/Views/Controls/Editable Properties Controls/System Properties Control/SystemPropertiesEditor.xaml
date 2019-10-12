@@ -11,10 +11,13 @@
       <Border CornerRadius="5" BorderBrush="DarkGray" BorderThickness="2">
          <StackPanel Margin="2">
             <local:StringEditorControl Headline="Name" MyValue="{Binding Name, Mode=TwoWay}" />
+<!-- it should not be possible to change the system type, rather
+            it should be fixed. 
             <local:StringListSelectionEditorControl 
                Headline="System Type" 
                Strings="{Binding Systems}"
                SelectionIndex="{Binding SelectedSystemIndex, Mode=TwoWay}" />
+-->
             <ContentControl 
                DataContext="{Binding Properties}"
                Content="{Binding}">
