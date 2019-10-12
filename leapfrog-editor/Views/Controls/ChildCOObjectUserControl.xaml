@@ -77,7 +77,7 @@
       </DataTemplate>-->
    </UserControl.Resources>
    <Canvas x:Name="myCoUserControl" >
-      <ItemsControl ItemsSource="{Binding StateShapes.Shapes}">
+      <ItemsControl ItemsSource="{Binding ShapeCollection.Shapes}">
          <ItemsControl.ItemsPanel>
             <ItemsPanelTemplate>
                <Canvas/>
@@ -90,7 +90,7 @@
             </Style>
          </ItemsControl.ItemContainerStyle>
       </ItemsControl>
-      <ItemsControl ItemsSource="{Binding StateJoints.Joints}"
+      <ItemsControl ItemsSource="{Binding JointCollection.Joints}"
          Visibility="{Binding ShowJoints, ElementName=root, Converter={StaticResource BoolToVisibilityValueConverter}}" >
          <ItemsControl.ItemsPanel>
             <ItemsPanelTemplate>
@@ -98,7 +98,7 @@
             </ItemsPanelTemplate>
          </ItemsControl.ItemsPanel>
       </ItemsControl>
-      <ItemsControl ItemsSource="{Binding StateSystems.Systems}" 
+      <ItemsControl ItemsSource="{Binding SystemCollection.Systems}" 
          Visibility="{Binding ShowSystems, ElementName=root, Converter={StaticResource BoolToVisibilityValueConverter}}" >
          <ItemsControl.ItemsPanel>
             <ItemsPanelTemplate>

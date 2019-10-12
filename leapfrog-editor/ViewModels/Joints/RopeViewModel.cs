@@ -10,7 +10,7 @@ using System.Windows.Media;
 
 namespace LeapfrogEditor
 {
-   class RopeViewModel : WeldJointViewModel, IMainVmInterface
+   public class RopeViewModel : WeldJointViewModel, IMainVmInterface
    {
       #region Declarations
 
@@ -197,7 +197,7 @@ namespace LeapfrogEditor
 
       #region public Methods
 
-      public new void ConnectToShapes(StateShapeCollectionViewModel shapes)
+      public new void ConnectToShapes(ShapeCollectionViewModel shapes)
       {
          _aVm = ParentVm.FindShape(ModelObject.AName, shapes);
          if (_aVm == null)

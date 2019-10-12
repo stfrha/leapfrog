@@ -559,9 +559,9 @@ namespace LeapfrogEditor
          {
             FileCOViewModel fvm = EditedCpVm as FileCOViewModel;
 
-            EditedCpVm.GenerateTriangles();
+            fvm.GenerateTriangles();
 
-            EditedCpVm.ModelObject.WriteToFile(fvm.FullPathFileName);
+            fvm.ModelObject.WriteToFile(fvm.FullPathFileName);
 
             // Now, since we potentially have changed the contents of this file,
             // lets look if any object has this object as a child, in which case we 
@@ -596,19 +596,11 @@ namespace LeapfrogEditor
             if (sfd.ShowDialog() == true)
             {
                // Generate Triangles before saving
-               EditedCpVm.GenerateTriangles();
+               fvm.GenerateTriangles();
                fvm.FileName = sfd.SafeFileName;
-               EditedCpVm.ModelObject.WriteToFile(fvm.FullPathFileName);
+               fvm.ModelObject.WriteToFile(fvm.FullPathFileName);
             }
-
-
-            EditedCpVm.GenerateTriangles();
-
-            EditedCpVm.ModelObject.WriteToFile(fvm.FullPathFileName);
          }
-
-
-
       }
 
       bool CanSaveAsExecute(Object parameter)
@@ -939,7 +931,7 @@ namespace LeapfrogEditor
                   // Polygon has no more points, delete the polygon Shape
 
                   polyVm.ParentVm.ModelObject.RemoveShape(polyVm.ModelObject);
-                  polyVm.ParentVm.StateShapes.Shapes.Remove(polyVm);
+                  polyVm.ParentVm.ShapeCollection.Shapes.Remove(polyVm);
                }
 
                // Before we remove the point
@@ -955,7 +947,7 @@ namespace LeapfrogEditor
                CompoundObjectViewModel covm = jvm.ParentVm;
 
                covm.ModelObject.RemoveJoint(jvm.ModelObject);
-               covm.StateJoints.Joints.Remove(jvm);
+               covm.JointCollection.Joints.Remove(jvm);
 
             }
             SelectedJoints.Clear();
@@ -967,7 +959,7 @@ namespace LeapfrogEditor
             {
                CompoundObjectViewModel covm = svm.ParentVm;
 
-               covm.ModelObject.RemoveShape(svm.ModelObject);
+               //covm.ModelObject.RemoveShape(svm.ModelObject);
                covm.RemoveShape(svm);
 
             }
@@ -997,7 +989,7 @@ namespace LeapfrogEditor
             CompoundObjectViewModel covm = jvm.ParentVm;
 
             covm.ModelObject.RemoveJoint(jvm.ModelObject);
-            covm.StateJoints.Joints.Remove(jvm);
+            covm.JointCollection.Joints.Remove(jvm);
          }
 
          if (parameter is LfShapeViewModel)
@@ -1005,7 +997,7 @@ namespace LeapfrogEditor
             LfShapeViewModel svm = parameter as LfShapeViewModel;
             CompoundObjectViewModel covm = svm.ParentVm;
 
-            covm.ModelObject.RemoveShape(svm.ModelObject);
+            //covm.ModelObject.RemoveShape(svm.ModelObject);
             covm.RemoveShape(svm);
          }
 
@@ -1044,7 +1036,7 @@ namespace LeapfrogEditor
             CompoundObjectViewModel covm = sysVm.ParentVm as CompoundObjectViewModel;
 
             covm.ModelObject.Systems.Remove(sysVm.LocalModelObject);
-            covm.StateSystems.Systems.Remove(sysVm);
+            covm.SystemCollection.Systems.Remove(sysVm);
          }
 
          if (parameter is CoSystemViewModel)
@@ -1053,7 +1045,7 @@ namespace LeapfrogEditor
             CompoundObjectViewModel covm = sysVm.ParentVm as CompoundObjectViewModel;
 
             covm.ModelObject.Systems.Remove(sysVm.LocalModelObject);
-            covm.StateSystems.Systems.Remove(sysVm);
+            covm.SystemCollection.Systems.Remove(sysVm);
          }
       }
 
@@ -1085,9 +1077,9 @@ namespace LeapfrogEditor
 
       void AddChildObjectExecute(Object parameter)
       {
-         if (parameter is StateChildCollectionViewModel)
+         if (parameter is ChildCollectionViewModel)
          {
-            StateChildCollectionViewModel scvm = parameter as StateChildCollectionViewModel;
+            ChildCollectionViewModel scvm = parameter as ChildCollectionViewModel;
 
             ChildObject ch = new ChildObject();
             ChildObjectViewModel chvm = new ChildObjectViewModel(scvm, EditedCpVm, this, ch, true);
@@ -1120,7 +1112,7 @@ namespace LeapfrogEditor
             return false;
          }
 
-         if ((EditedCpVm != null) && ((parameter is StateChildCollectionViewModel) || (parameter is ChildObjectViewModel)))
+         if ((EditedCpVm != null) && ((parameter is ChildCollectionViewModel) || (parameter is ChildObjectViewModel)))
          {
             return true;
          }
@@ -1781,56 +1773,18 @@ namespace LeapfrogEditor
                (_LeftClickState == LeftClickState.dynamicBox) ||
                (_LeftClickState == LeftClickState.dynamicCircle) ||
                (_LeftClickState == LeftClickState.staticCircle) ||
-               (_LeftClickState == LeftClickState.spriteBox))
+               (_LeftClickState == LeftClickState.spriteBox) || 
+               (_LeftClickState == LeftClickState.staticPolygon) ||
+               (_LeftClickState == LeftClickState.dynamicPolygon) ||
+               (_LeftClickState == LeftClickState.spritePolygon) ||
+               (_LeftClickState == LeftClickState.staticBoxedSpritePolygon) ||
+               (_LeftClickState == LeftClickState.dynamicBoxedSpritePolygon))
             {
-               // The first point of this polygon will be the PosX and PosY of the 
-               // new shape, and thus, the first polygon vertex should be at 0,0.
-               Point parentOrigo = new Point(0, 0);
-               Point localClickPoint = new Point();
-               localClickPoint = (Point)(clickPoint - parentOrigo);
+               LfShapeViewModel newShapeVm = EditedCpVm.AddShape(_LeftClickState, clickPoint);
 
-               LfShape newShape = null;
-               LfShapeViewModel newShapeVm = null;
-
-               if (_LeftClickState == LeftClickState.staticBox)
+               if (newShapeVm != null)
                {
-                  newShape = new LfStaticBox();
-                  newShapeVm = new LfStaticBoxViewModel(EditedCpVm.StateShapes, EditedCpVm, this, (LfStaticBox)newShape);
-                  EditedCpVm.ModelObject.StaticBoxes.Add((LfStaticBox)newShape);
-               }
-               else if (_LeftClickState == LeftClickState.dynamicBox)
-               {
-                  newShape = new LfDynamicBox();
-                  newShapeVm = new LfDynamicBoxViewModel(EditedCpVm.StateShapes, EditedCpVm, this, (LfDynamicBox)newShape);
-                  EditedCpVm.ModelObject.DynamicBoxes.Add((LfDynamicBox)newShape);
-               }
-               else if (_LeftClickState == LeftClickState.staticCircle)
-               {
-                  newShape = new LfStaticCircle();
-                  newShapeVm = new LfStaticCircleViewModel(EditedCpVm.StateShapes, EditedCpVm, this, (LfStaticCircle)newShape);
-                  EditedCpVm.ModelObject.StaticCircles.Add((LfStaticCircle)newShape);
-               }
-               else if (_LeftClickState == LeftClickState.dynamicCircle)
-               {
-                  newShape = new LfDynamicCircle();
-                  newShapeVm = new LfDynamicCircleViewModel(EditedCpVm.StateShapes, EditedCpVm, this, (LfDynamicCircle)newShape);
-                  EditedCpVm.ModelObject.DynamicCircles.Add((LfDynamicCircle)newShape);
-               }
-               else if (_LeftClickState == LeftClickState.spriteBox)
-               {
-                  newShape = new LfSpriteBox();
-                  newShapeVm = new LfSpriteBoxViewModel(EditedCpVm.StateShapes, EditedCpVm, this, (LfSpriteBox)newShape);
-                  EditedCpVm.ModelObject.SpriteBoxes.Add((LfSpriteBox)newShape);
-               }
-
-               if ((newShape != null) && (newShapeVm != null))
-               {
-                  EditedCpVm.StateShapes.Shapes.Add(newShapeVm);
-
                   SelectedShapes.Add(newShapeVm);
-
-                  newShapeVm.PosX = localClickPoint.X;
-                  newShapeVm.PosY = localClickPoint.Y;
 
                   newShapeVm.IsSelected = true;
 
@@ -1839,135 +1793,25 @@ namespace LeapfrogEditor
                      selpoint.IsSelected = false;
                   }
                   _selectedPoints.Clear();
+
+                  if (newShapeVm is LfPolygonViewModel)
+                  {
+                     LfDragablePointViewModel newPoint = ((LfPolygonViewModel)newShapeVm).InsertPoint(new Point(0, 0), null);
+                     _selectedPoints.Add(newPoint);
+                     newPoint.IsSelected = true;
+                     _LeftClickState = LeftClickState.addPoint;
+                  }
+                  else
+                  {
+                     _LeftClickState = LeftClickState.none;
+                  }
                }
-
-               _LeftClickState = LeftClickState.none;
-
-            }
-            else if ((_LeftClickState == LeftClickState.staticPolygon) ||
-               (_LeftClickState == LeftClickState.dynamicPolygon) ||
-               (_LeftClickState == LeftClickState.spritePolygon))
-            {
-               // The first point of this polygon will be the PosX and PosY of the 
-               // new shape, and thus, the first polygon vertex should be at 0,0.
-               Point parentOrigo = new Point(0, 0);
-               Point localClickPoint = new Point();
-               localClickPoint = (Point)(clickPoint - parentOrigo);
-
-               LfScalableTexturePolygon newPolygon;
-               LfScalableTexturePolygonViewModel newPolygonVm;
-
-               if (_LeftClickState == LeftClickState.staticPolygon)
-               {
-                  newPolygon = new LfStaticPolygon();
-                  newPolygonVm = new LfStaticPolygonViewModel(EditedCpVm.StateShapes, EditedCpVm, this, (LfStaticPolygon)newPolygon);
-                  EditedCpVm.ModelObject.StaticPolygons.Add((LfStaticPolygon)newPolygon);
-               }
-               else if (_LeftClickState == LeftClickState.dynamicPolygon)
-               {
-                  newPolygon = new LfDynamicPolygon();
-                  newPolygonVm = new LfDynamicPolygonViewModel(EditedCpVm.StateShapes, EditedCpVm, this, (LfDynamicPolygon)newPolygon);
-                  EditedCpVm.ModelObject.DynamicPolygons.Add((LfDynamicPolygon)newPolygon);
-               }
-               else
-               {
-                  newPolygon = new LfSpritePolygon();
-                  newPolygonVm = new LfSpritePolygonViewModel(EditedCpVm.StateShapes, EditedCpVm, this, (LfSpritePolygon)newPolygon);
-                  EditedCpVm.ModelObject.SpritePolygons.Add((LfSpritePolygon)newPolygon);
-               }
-
-               newPolygon.PosX = localClickPoint.X;
-               newPolygon.PosY = localClickPoint.Y;
-
-               EditedCpVm.StateShapes.Shapes.Add(newPolygonVm);
-
-               SelectedShapes.Add(newPolygonVm);
-               newPolygonVm.IsSelected = true;
-
-               LfDragablePointViewModel newPoint = newPolygonVm.InsertPoint(new Point(0, 0), null);
-
-               foreach (LfDragablePointViewModel selpoint in _selectedPoints)
-               {
-                  selpoint.IsSelected = false;
-               }
-               _selectedPoints.Clear();
-
-               _selectedPoints.Add(newPoint);
-               newPoint.IsSelected = true;
-
-               _LeftClickState = LeftClickState.addPoint;
-
-            }
-            else if ((_LeftClickState == LeftClickState.staticBoxedSpritePolygon) ||
-               (_LeftClickState == LeftClickState.dynamicBoxedSpritePolygon))
-            {
-               // The first point of this polygon will be the PosX and PosY of the 
-               // new shape, and thus, the first polygon vertex should be at 0,0.
-               Point parentOrigo = new Point(0, 0);
-               Point localClickPoint = new Point();
-               localClickPoint = (Point)(clickPoint - parentOrigo);
-
-               LfStaticBoxedSpritePolygon newPolygon = null;
-               LfStaticBoxedSpritePolygonViewModel newPolygonVm = null;
-
-               if (_LeftClickState == LeftClickState.staticBoxedSpritePolygon)
-               {
-                  newPolygon = new LfStaticBoxedSpritePolygon();
-                  newPolygonVm = new LfStaticBoxedSpritePolygonViewModel(EditedCpVm.StateShapes, EditedCpVm, this, (LfStaticBoxedSpritePolygon)newPolygon);
-                  EditedCpVm.ModelObject.StaticBoxedSpritePolygons.Add((LfStaticBoxedSpritePolygon)newPolygon);
-               }
-               else
-               {
-                  newPolygon = new LfDynamicBoxedSpritePolygon();
-                  newPolygonVm = new LfDynamicBoxedSpritePolygonViewModel(EditedCpVm.StateShapes, EditedCpVm, this, (LfDynamicBoxedSpritePolygon)newPolygon);
-                  EditedCpVm.ModelObject.DynamicBoxedSpritePolygons.Add((LfDynamicBoxedSpritePolygon)newPolygon);
-               }
-
-               newPolygon.PosX = localClickPoint.X;
-               newPolygon.PosY = localClickPoint.Y;
-
-               EditedCpVm.StateShapes.Shapes.Add(newPolygonVm);
-
-               SelectedShapes.Add(newPolygonVm);
-               newPolygonVm.IsSelected = true;
-
-               LfDragablePointViewModel newPoint = newPolygonVm.InsertPoint(new Point(0, 0), null);
-
-               foreach (LfDragablePointViewModel selpoint in _selectedPoints)
-               {
-                  selpoint.IsSelected = false;
-               }
-               _selectedPoints.Clear();
-
-               _selectedPoints.Add(newPoint);
-               newPoint.IsSelected = true;
-
-               _LeftClickState = LeftClickState.addPoint;
-
             }
             else if ((_LeftClickState == LeftClickState.weldJoint) ||
                (_LeftClickState == LeftClickState.revoluteJoint) ||
                (_LeftClickState == LeftClickState.prismaticJoint))
             {
-               WeldJoint wj = null;
-
-               if (_LeftClickState == LeftClickState.weldJoint)
-               {
-                  wj = new WeldJoint();
-               }
-               else if (_LeftClickState == LeftClickState.revoluteJoint)
-               {
-                  wj = new RevoluteJoint();
-               }
-               else
-               {
-                  wj = new PrismaticJoint();
-               }
-
-               wj.AName = SelectedShapes[0].Name;
-               wj.BName = SelectedShapes[1].Name;
-
-               if (wj.AName == wj.BName)
+               if (SelectedShapes[0].Name == SelectedShapes[1].Name)
                {
                   MessageBox.Show("The selected shapes has the same name and thus a unambigous joint can not be created. Rename at least one of the shapes.", "Error Creating Joint", MessageBoxButton.OK, MessageBoxImage.Error);
 
@@ -1975,80 +1819,15 @@ namespace LeapfrogEditor
                   return true;
                }
 
-               WeldJointViewModel wjvm = null;
-
-               if (_LeftClickState == LeftClickState.weldJoint)
-               {
-                  wjvm = new WeldJointViewModel(EditedCpVm.StateJoints, EditedCpVm, this, wj);
-               }
-               else if (_LeftClickState == LeftClickState.revoluteJoint)
-               {
-                  wjvm = new RevoluteJointViewModel(EditedCpVm.StateJoints, EditedCpVm, this, (RevoluteJoint)wj);
-               }
-               else
-               {
-                  wjvm = new PrismaticJointViewModel(EditedCpVm.StateJoints, EditedCpVm, this, (PrismaticJoint)wj);
-               }
-
-               wjvm.ConnectToShapes(EditedCpVm.StateShapes);
-
-               Point parentObjectOrigo = new Point(0, 0);
-
-               // Shape A point
-               Point shapeAOrigo = new Point(wjvm.AShapeObject.PosX, wjvm.AShapeObject.PosY);
-               shapeAOrigo.Offset(parentObjectOrigo.X, parentObjectOrigo.Y);
-               Point localAClickPoint = new Point();
-               localAClickPoint = (Point)(clickPoint - shapeAOrigo);
-
-               // Rotate point to shape rotation
-//               Point rotatedAClickPoint = wjvm.AShapeObject.RotatedPointFromLocal(localAClickPoint);
-               Point rotatedAClickPoint = CoordinateTransformations.LocalPointFromRotated(localAClickPoint, wjvm.AShapeObject.Angle);
-
-               wjvm.AAnchorX = rotatedAClickPoint.X;
-               wjvm.AAnchorY = rotatedAClickPoint.Y;
-
-               // Shape B point
-               Point shapeBOrigo = new Point(wjvm.BShapeObject.PosX, wjvm.BShapeObject.PosY);
-               shapeBOrigo.Offset(parentObjectOrigo.X, parentObjectOrigo.Y);
-               Point localBClickPoint = new Point();
-               localBClickPoint = (Point)(clickPoint - shapeBOrigo);
-
-               // Rotate point to shape rotation
-//               Point rotatedBClickPoint = wjvm.BShapeObject.RotatedPointFromLocal(localBClickPoint);
-               Point rotatedBClickPoint = CoordinateTransformations.LocalPointFromRotated(localBClickPoint, wjvm.BShapeObject.Angle);
-
-               wjvm.BAnchorX = rotatedBClickPoint.X;
-               wjvm.BAnchorY = rotatedBClickPoint.Y;
-
-               EditedCpVm.StateJoints.Joints.Add(wjvm);
-
-               if (_LeftClickState == LeftClickState.weldJoint)
-               {
-                  EditedCpVm.ModelObject.WeldJoints.Add(wj);
-               }
-               else if (_LeftClickState == LeftClickState.revoluteJoint)
-               {
-                  EditedCpVm.ModelObject.RevoluteJoints.Add((RevoluteJoint)wj);
-               }
-               else
-               {
-                  EditedCpVm.ModelObject.PrismaticJoints.Add((PrismaticJoint)wj);
-               }
+               EditedCpVm.AddJoint(_LeftClickState, clickPoint, SelectedShapes[0].Name, SelectedShapes[1].Name);
 
                _LeftClickState = LeftClickState.none;
-
             }
             else if (_LeftClickState == LeftClickState.rope)
             {
-               Rope rp = new Rope();
-
-               rp.AName = SelectedShapes[0].Name;
-
                if (SelectedShapes.Count == 2)
                {
-                  rp.BName = SelectedShapes[1].Name;
-
-                  if (rp.AName == rp.BName)
+                  if (SelectedShapes[0].Name == SelectedShapes[1].Name)
                   {
                      MessageBox.Show("The selected shapes has the same name and thus a unambigous joint can not be created. Rename at least one of the shapes.", "Error Creating Joint", MessageBoxButton.OK, MessageBoxImage.Error);
 
@@ -2057,43 +1836,7 @@ namespace LeapfrogEditor
                   }
                }
 
-               // If there is no shape B, the rp.BName should be default "notDef"
-
-               RopeViewModel rpvm = new RopeViewModel(EditedCpVm.StateJoints, EditedCpVm, this, rp);
-
-               rpvm.ConnectToShapes(EditedCpVm.StateShapes);
-
-               Point parentObjectOrigo = new Point(0, 0);
-
-               // Shape A point
-               Point shapeAOrigo = new Point(rpvm.AShapeObject.PosX, rpvm.AShapeObject.PosY);
-               shapeAOrigo.Offset(parentObjectOrigo.X, parentObjectOrigo.Y);
-               Point localAClickPoint = new Point();
-               localAClickPoint = (Point)(clickPoint - shapeAOrigo);
-
-               // Rotate point to shape rotation
-               Point rotatedAClickPoint = CoordinateTransformations.LocalPointFromRotated(localAClickPoint, rpvm.AShapeObject.Angle);
-
-               rpvm.AAnchorX = rotatedAClickPoint.X;
-               rpvm.AAnchorY = rotatedAClickPoint.Y;
-
-               if (SelectedShapes.Count == 2)
-               {
-                  // Shape B point
-                  Point shapeBOrigo = new Point(rpvm.BShapeObject.PosX, rpvm.BShapeObject.PosY);
-                  shapeBOrigo.Offset(parentObjectOrigo.X, parentObjectOrigo.Y);
-                  Point localBClickPoint = new Point();
-                  localBClickPoint = (Point)(clickPoint - shapeBOrigo);
-
-                  // Rotate point to shape rotation
-                  Point rotatedBClickPoint = CoordinateTransformations.LocalPointFromRotated(localBClickPoint, rpvm.BShapeObject.Angle);
-
-                  rpvm.BAnchorX = rotatedBClickPoint.X;
-                  rpvm.BAnchorY = rotatedBClickPoint.Y;
-               }
-
-               EditedCpVm.StateJoints.Joints.Add(rpvm);
-               EditedCpVm.ModelObject.Ropes.Add(rp);
+               EditedCpVm.AddRope(clickPoint, SelectedShapes[0].Name, SelectedShapes[1].Name, SelectedShapes.Count);
 
                _LeftClickState = LeftClickState.none;
 
@@ -2107,7 +1850,7 @@ namespace LeapfrogEditor
                newSystem.ObjFactStateProperties.Body = SelectedShapes[0].Name;
 
                // Create new view model, will also create the properties vm and connect to bodý
-               CoSystemViewModel newSysVm = new CoSystemViewModel(EditedCpVm.StateSystems, EditedCpVm, this, newSystem, true);
+               CoSystemViewModel newSysVm = new CoSystemViewModel(EditedCpVm.SystemCollection, EditedCpVm, this, newSystem, true);
 
                ObjectFactoryPropertiesViewModel propVm = newSysVm.Properties as ObjectFactoryPropertiesViewModel;
 
@@ -2125,7 +1868,7 @@ namespace LeapfrogEditor
                propVm.PosX = rotatedAClickPoint.X;
                propVm.PosY = rotatedAClickPoint.Y;
 
-               EditedCpVm.StateSystems.Systems.Add(newSysVm);
+               EditedCpVm.SystemCollection.Systems.Add(newSysVm);
                EditedCpVm.ModelObject.Systems.Add(newSystem);
 
                newSysVm.IsSelected = true;
@@ -2159,11 +1902,11 @@ namespace LeapfrogEditor
                }
                
                // Create new view model, will also create the properties vm but does not connect to body
-               CoSystemViewModel newSysVm = new CoSystemViewModel(EditedCpVm.StateSystems, EditedCpVm, this, newSystem, true);
+               CoSystemViewModel newSysVm = new CoSystemViewModel(EditedCpVm.SystemCollection, EditedCpVm, this, newSystem, true);
 
                BodyOriginSystemViewModel propVm = newSysVm.Properties as BodyOriginSystemViewModel;
 
-               propVm.ConnectToShapes(EditedCpVm.StateShapes);
+               propVm.ConnectToShapes(EditedCpVm.ShapeCollection);
 
                Point parentObjectOrigo = new Point(0, 0);
 
@@ -2179,7 +1922,7 @@ namespace LeapfrogEditor
                propVm.SystemOriginX = rotatedAClickPoint.X;
                propVm.SystemOriginY = rotatedAClickPoint.Y;
 
-               EditedCpVm.StateSystems.Systems.Add(newSysVm);
+               EditedCpVm.SystemCollection.Systems.Add(newSysVm);
                EditedCpVm.ModelObject.Systems.Add(newSystem);
 
                newSysVm.IsSelected = true;
@@ -2197,11 +1940,11 @@ namespace LeapfrogEditor
                newSystem.ReentryFlameEmitterStateProperties.BodyName = SelectedShapes[0].Name;
 
                // Create new view model, will also create the properties vm but does not connect to body
-               CoSystemViewModel newSysVm = new CoSystemViewModel(EditedCpVm.StateSystems, EditedCpVm, this, newSystem, true);
+               CoSystemViewModel newSysVm = new CoSystemViewModel(EditedCpVm.SystemCollection, EditedCpVm, this, newSystem, true);
 
                ReentryFlameEmitterPropertiesViewModel propVm = newSysVm.Properties as ReentryFlameEmitterPropertiesViewModel;
 
-               propVm.ConnectToShapes(EditedCpVm.StateShapes);
+               propVm.ConnectToShapes(EditedCpVm.ShapeCollection);
 
                Point parentObjectOrigo = new Point(0, 0);
 
@@ -2220,7 +1963,7 @@ namespace LeapfrogEditor
                propVm.EmitterLineEndX = propVm.EmitterLineStartX + 10;
                propVm.EmitterLineEndY = propVm.EmitterLineStartY + 10;
 
-               EditedCpVm.StateSystems.Systems.Add(newSysVm);
+               EditedCpVm.SystemCollection.Systems.Add(newSysVm);
                EditedCpVm.ModelObject.Systems.Add(newSystem);
 
                newSysVm.IsSelected = true;
@@ -2487,7 +2230,7 @@ namespace LeapfrogEditor
             }
          }
 
-         foreach (object o in EditedCpVm.StateShapes.Shapes)
+         foreach (object o in EditedCpVm.ShapeCollection.Shapes)
          {
             if (o is LfShapeViewModel)
             {
@@ -2518,7 +2261,7 @@ namespace LeapfrogEditor
             }
          }
 
-         foreach (object o in EditedCpVm.StateJoints.Joints)
+         foreach (object o in EditedCpVm.JointCollection.Joints)
          {
             if (o is WeldJointViewModel)
             {
@@ -2535,7 +2278,7 @@ namespace LeapfrogEditor
             }
          }
 
-         foreach (object o in EditedCpVm.StateSystems.Systems)
+         foreach (object o in EditedCpVm.SystemCollection.Systems)
          {
             if (o is CoSystemViewModel)
             {

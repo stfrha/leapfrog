@@ -26,7 +26,7 @@ namespace LeapfrogEditor
 
       private int _selectedStateIndex = 0;
 
-      private ObservableCollection<StateCollectionViewModelBase> _treeCollection = new ObservableCollection<StateCollectionViewModelBase>();
+      private ObservableCollection<CollectionViewModelBase> _treeCollection = new ObservableCollection<CollectionViewModelBase>();
       #endregion
 
       #region Constructors

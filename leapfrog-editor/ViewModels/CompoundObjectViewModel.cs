@@ -28,14 +28,14 @@ namespace LeapfrogEditor
       private CoBehaviourViewModel _behaviour;
       private int _selectedBehaviourIndex = 0;
 
-      private StateShapeCollectionViewModel _shapes;
-      private StateJointCollectionViewModel _joints;
-      private StateSystemCollectionViewModel _systems;
+      private ShapeCollectionViewModel _shapes;
+      private JointCollectionViewModel _joints;
+      private SystemCollectionViewModel _systems;
 
-      private StateChildCollectionViewModel _childObjectsWithStates;
+      private ChildCollectionViewModel _childObjectsWithStates;
 //      private ObservableCollection<ObservableCollection<CompoundObjectViewModel>> _statesWithChildObjects = new ObservableCollection<ObservableCollection<CompoundObjectViewModel>>();
 
-      private ObservableCollection<StateCollectionViewModelBase> _treeCollection = new ObservableCollection<StateCollectionViewModelBase>();
+      private ObservableCollection<CollectionViewModelBase> _treeCollection = new ObservableCollection<CollectionViewModelBase>();
       #endregion
 
       #region Constructors
@@ -54,7 +54,7 @@ namespace LeapfrogEditor
 
          SelectedBehaviourIndex = Behaviours.IndexOf(ModelObject.Behaviour.Type);
 
-         ChildObjectsWithStates = new StateChildCollectionViewModel(treeParent, parentVm, MainVm);
+         ChildObjectsWithStates = new ChildCollectionViewModel(treeParent, parentVm, MainVm);
       }
 
       #endregion
@@ -141,38 +141,38 @@ namespace LeapfrogEditor
          }
       }
 
-      public StateShapeCollectionViewModel StateShapes
+      public ShapeCollectionViewModel ShapeCollection
       {
          get { return _shapes; }
          set
          {
             _shapes = value;
-            OnPropertyChanged("StateShapes");
+            OnPropertyChanged("ShapeCollection");
          }
       }
 
-      public StateJointCollectionViewModel StateJoints
+      public JointCollectionViewModel JointCollection
       {
          get { return _joints; }
          set
          {
             _joints = value;
-            OnPropertyChanged("StateJoints");
+            OnPropertyChanged("JointCollection");
          }
       }
 
-      public StateSystemCollectionViewModel StateSystems
+      public SystemCollectionViewModel SystemCollection
       {
          get { return _systems; }
          set
          {
             _systems = value;
-            OnPropertyChanged("StateSystems");
+            OnPropertyChanged("SystemCollection");
          }
       }
           
 
-      public StateChildCollectionViewModel ChildObjectsWithStates
+      public ChildCollectionViewModel ChildObjectsWithStates
       {
          get { return _childObjectsWithStates; }
          set
@@ -244,7 +244,7 @@ namespace LeapfrogEditor
 
 
 
-      public ObservableCollection<StateCollectionViewModelBase> TreeCollection
+      public ObservableCollection<CollectionViewModelBase> TreeCollection
       {
          get { return _treeCollection; }
          set { _treeCollection = value; }
@@ -275,6 +275,8 @@ namespace LeapfrogEditor
       {
          get
          {
+            // TODO: Should not this if statement be handled by the ChildCOViewModel
+            // which is derived from this class? Here we should always return 0.
             if (this is ChildCOViewModel)
             {
                // PosX and Y are overridden in ChildCOViewModel so
@@ -307,20 +309,23 @@ namespace LeapfrogEditor
       {
          get
          {
-            if (StateShapes == null) return new Rect(0, 0, 100, 100);
+            // TODO: Systems take up space on a object, but they are not
+            // part of the BoundingBox calculation. They assume they are
+            // but they are not. Add them here
 
-            List<LfShapeViewModel> c = StateShapes.Shapes.OfType<LfShapeViewModel>().ToList();
-
-            if ((c.Count == 0) && (ChildObjectsWithStates.Children.Count == 0))
-            {
-               return new Rect(0, 0, 100, 100);
-            }
+            // Remove below since the last check for empty bb handles it.
+            //if (ShapeCollection == null) return new Rect(0, 0, 100, 100);
+            //List<LfShapeViewModel> c = ShapeCollection.Shapes.OfType<LfShapeViewModel>().ToList();
+            //if ((c.Count == 0) && (ChildObjectsWithStates.Children.Count == 0))
+            //{
+            //   return new Rect(0, 0, 100, 100);
+            //}
 
             BoundingBoxRect bbr = new BoundingBoxRect();
 
-            if (StateShapes.Shapes.Count > 0)
+            if (ShapeCollection.Shapes.Count > 0)
             {
-               foreach (object o in StateShapes.Shapes)
+               foreach (object o in ShapeCollection.Shapes)
                {
                   if (o is LfShapeViewModel)
                   {
@@ -362,9 +367,9 @@ namespace LeapfrogEditor
 
       #region Private Methods
 
-      private StateShapeCollectionViewModel SetShapes(CompoundObject co, bool enabledChildren = true)
+      private ShapeCollectionViewModel SetShapes(CompoundObject co, bool enabledChildren = true)
       {
-         StateShapeCollectionViewModel shapes = new StateShapeCollectionViewModel(this, this, MainVm, enabledChildren);
+         ShapeCollectionViewModel shapes = new ShapeCollectionViewModel(this, this, MainVm, enabledChildren);
 
          foreach (LfSpriteBox sb in co.SpriteBoxes)
          {
@@ -465,9 +470,9 @@ namespace LeapfrogEditor
 
       }
 
-      private StateJointCollectionViewModel SetJoints(CompoundObject co, bool enabledChildren = true)
+      private JointCollectionViewModel SetJoints(CompoundObject co, bool enabledChildren = true)
       {
-         StateJointCollectionViewModel joints = new StateJointCollectionViewModel(this, this, MainVm, enabledChildren);
+         JointCollectionViewModel joints = new JointCollectionViewModel(this, this, MainVm, enabledChildren);
 
          foreach (WeldJoint wj in co.WeldJoints)
          {
@@ -496,9 +501,9 @@ namespace LeapfrogEditor
          return joints;
       }
 
-      private StateSystemCollectionViewModel SetSystems(CompoundObject co, bool enabledChildren = true)
+      private SystemCollectionViewModel SetSystems(CompoundObject co, bool enabledChildren = true)
       {
-         StateSystemCollectionViewModel systems = new StateSystemCollectionViewModel(this, this, MainVm, enabledChildren);
+         SystemCollectionViewModel systems = new SystemCollectionViewModel(this, this, MainVm, enabledChildren);
 
          foreach (CoSystem s in co.Systems)
          {
@@ -528,9 +533,9 @@ namespace LeapfrogEditor
 
       // All children CompoundObjectViewModels are created here. The constructor of the ChildObjectViewModel
       // creates a ChildObjectStatePropertiesViewModel which's constructor creates the CompoundObjectViewModel.
-      private StateChildCollectionViewModel SetChildren(CompoundObject ModelObject, bool enabledChildren = true)
+      private ChildCollectionViewModel SetChildren(CompoundObject ModelObject, bool enabledChildren = true)
       {
-         StateChildCollectionViewModel schcvm = new StateChildCollectionViewModel(this, this, MainVm, enabledChildren);
+         ChildCollectionViewModel schcvm = new ChildCollectionViewModel(this, this, MainVm, enabledChildren);
 
          foreach (ChildObject cho in ModelObject.ChildObjects)
          {
@@ -549,7 +554,7 @@ namespace LeapfrogEditor
       public void SetBehaviourPropertyInTreeView()
       {
          // Remove the current element (if any) in the TreeCollection that is of BehaviourViewModelBase
-         foreach (StateCollectionViewModelBase s in TreeCollection)
+         foreach (CollectionViewModelBase s in TreeCollection)
          {
             if (s is BehaviourViewModelBase)
             {
@@ -571,40 +576,120 @@ namespace LeapfrogEditor
 
          SetBehaviourPropertyInTreeView();
 
-         _treeCollection.Add(StateShapes);
-         _treeCollection.Add(StateJoints);
-         _treeCollection.Add(StateSystems);
+         _treeCollection.Add(ShapeCollection);
+         _treeCollection.Add(JointCollection);
+         _treeCollection.Add(SystemCollection);
          _treeCollection.Add(ChildObjectsWithStates);
+      }
+
+      public LfShapeViewModel AddShape(LeftClickState shapeType, Point position)
+      {
+         LfShape newShape = null;
+         LfShapeViewModel newShapeVm = null;
+
+
+         if (shapeType == LeftClickState.staticBox)
+         {
+            newShape = new LfStaticBox();
+            newShapeVm = new LfStaticBoxViewModel(ShapeCollection, this, MainVm, (LfStaticBox)newShape);
+            ModelObject.StaticBoxes.Add((LfStaticBox)newShape);
+         }
+         else if (shapeType == LeftClickState.dynamicBox)
+         {
+            newShape = new LfDynamicBox();
+            newShapeVm = new LfDynamicBoxViewModel(ShapeCollection, this, MainVm, (LfDynamicBox)newShape);
+            ModelObject.DynamicBoxes.Add((LfDynamicBox)newShape);
+         }
+         else if (shapeType == LeftClickState.staticCircle)
+         {
+            newShape = new LfStaticCircle();
+            newShapeVm = new LfStaticCircleViewModel(ShapeCollection, this, MainVm, (LfStaticCircle)newShape);
+            ModelObject.StaticCircles.Add((LfStaticCircle)newShape);
+         }
+         else if (shapeType == LeftClickState.dynamicCircle)
+         {
+            newShape = new LfDynamicCircle();
+            newShapeVm = new LfDynamicCircleViewModel(ShapeCollection, this, MainVm, (LfDynamicCircle)newShape);
+            ModelObject.DynamicCircles.Add((LfDynamicCircle)newShape);
+         }
+         else if (shapeType == LeftClickState.spriteBox)
+         {
+            newShape = new LfSpriteBox();
+            newShapeVm = new LfSpriteBoxViewModel(ShapeCollection, this, MainVm, (LfSpriteBox)newShape);
+            ModelObject.SpriteBoxes.Add((LfSpriteBox)newShape);
+         }
+         else if (shapeType == LeftClickState.staticPolygon)
+         {
+            newShape = new LfStaticPolygon();
+            newShapeVm = new LfStaticPolygonViewModel(ShapeCollection, this, MainVm, (LfStaticPolygon)newShape);
+            ModelObject.StaticPolygons.Add((LfStaticPolygon)newShape);
+
+         }
+         else if (shapeType == LeftClickState.dynamicPolygon)
+         {
+            newShape = new LfDynamicPolygon();
+            newShapeVm = new LfDynamicPolygonViewModel(ShapeCollection, this, MainVm, (LfDynamicPolygon)newShape);
+            ModelObject.DynamicPolygons.Add((LfDynamicPolygon)newShape);
+         }
+         else if (shapeType == LeftClickState.spritePolygon)
+         {
+            newShape = new LfSpritePolygon();
+            newShapeVm = new LfSpritePolygonViewModel(ShapeCollection, this, MainVm, (LfSpritePolygon)newShape);
+            ModelObject.SpritePolygons.Add((LfSpritePolygon)newShape);
+         }
+         else if (shapeType == LeftClickState.staticBoxedSpritePolygon)
+         {
+            newShape = new LfStaticBoxedSpritePolygon();
+            newShapeVm = new LfStaticBoxedSpritePolygonViewModel(ShapeCollection, this, MainVm, (LfStaticBoxedSpritePolygon)newShape);
+            ModelObject.StaticBoxedSpritePolygons.Add((LfStaticBoxedSpritePolygon)newShape);
+         }
+         else if (shapeType == LeftClickState.dynamicBoxedSpritePolygon)
+         {
+            newShape = new LfDynamicBoxedSpritePolygon();
+            newShapeVm = new LfDynamicBoxedSpritePolygonViewModel(ShapeCollection, this, MainVm, (LfDynamicBoxedSpritePolygon)newShape);
+            ModelObject.DynamicBoxedSpritePolygons.Add((LfDynamicBoxedSpritePolygon)newShape);
+         }
+
+         if (newShapeVm != null)
+         {
+            newShapeVm.PosX = position.X;
+            newShapeVm.PosY = position.Y;
+         }
+
+         ShapeCollection.Shapes.Add(newShapeVm);
+         
+         return newShapeVm;
+
       }
 
       public void RemoveShape(LfShapeViewModel svm)
       {
          // Check if there are any joints connected to this svm, if so, removed them
          // We may remove joints so we need a for loop here:
-         for (int i = StateJoints.Joints.Count - 1; i >= 0; i--)
+         for (int i = JointCollection.Joints.Count - 1; i >= 0; i--)
          {
             // Below will take care of all joints since they
             // all inherit from WeldJoint
-            if (StateJoints.Joints[i] is WeldJointViewModel)
+            if (JointCollection.Joints[i] is WeldJointViewModel)
             {
-               WeldJointViewModel joint = (WeldJointViewModel)StateJoints.Joints[i];
+               WeldJointViewModel joint = (WeldJointViewModel)JointCollection.Joints[i];
 
                if ((joint.AName == svm.Name) || (joint.BName == svm.Name))
                {
                   // Remove the joint
                   ModelObject.RemoveJoint(joint.ModelObject);
-                  StateJoints.Joints.RemoveAt(i);
+                  JointCollection.Joints.RemoveAt(i);
                }
             }
          }
 
          // Check if there are any systems connected to this svm, if so, removed them
          // We may remove systems so we need a for loop here:
-         for (int i = StateSystems.Systems.Count - 1; i >= 0; i--)
+         for (int i = SystemCollection.Systems.Count - 1; i >= 0; i--)
          {
-            if (StateSystems.Systems[i] is CoSystemViewModel)
+            if (SystemCollection.Systems[i] is CoSystemViewModel)
             {
-               CoSystemViewModel system = (CoSystemViewModel)StateSystems.Systems[i];
+               CoSystemViewModel system = (CoSystemViewModel)SystemCollection.Systems[i];
 
                string bodyName = "";
 
@@ -628,7 +713,7 @@ namespace LeapfrogEditor
                {
                   // Remove the system
                   ModelObject.Systems.Remove(system.LocalModelObject);
-                  StateSystems.Systems.RemoveAt(i);
+                  SystemCollection.Systems.RemoveAt(i);
                }
             }
          }
@@ -637,10 +722,10 @@ namespace LeapfrogEditor
          ModelObject.RemoveShape(svm.ModelObject);
 
          // Remove the shape viewmodel from this
-         StateShapes.Shapes.Remove(svm);
+         ShapeCollection.Shapes.Remove(svm);
 
          // If there are no more shapes in the CO, remove the CO
-         if (StateShapes.Shapes.Count == 0)
+         if (ShapeCollection.Shapes.Count == 0)
          {
             //ParentVm.StateChildObjects.Remove(this);
             //ParentVm.ModelObject.ChildObjectRefs(this.ChildObjectOfParent)
@@ -649,9 +734,132 @@ namespace LeapfrogEditor
          OnPropertyChanged("");
       }
 
+      public WeldJointViewModel AddJoint(LeftClickState shapeType, Point position, string shapeAName, string shapeBName )
+      {
+         WeldJoint wj = null;
+         WeldJointViewModel wjvm = null;
+
+         wj.AName = shapeAName;
+         wj.BName = shapeBName;
+
+         if (shapeType == LeftClickState.weldJoint)
+         {
+            wj = new WeldJoint();
+            wjvm = new WeldJointViewModel(JointCollection, this, MainVm, wj);
+            ModelObject.WeldJoints.Add(wjvm.ModelObject);
+         }
+         else if (shapeType == LeftClickState.revoluteJoint)
+         {
+            wj = new RevoluteJoint();
+            wjvm = new RevoluteJointViewModel(JointCollection, this, MainVm, (RevoluteJoint)wj);
+            ModelObject.RevoluteJoints.Add((RevoluteJoint)wjvm.ModelObject);
+         }
+         else if (shapeType == LeftClickState.prismaticJoint)
+         {
+            wj = new PrismaticJoint();
+            wjvm = new PrismaticJointViewModel(JointCollection, this, MainVm, (PrismaticJoint)wj);
+            ModelObject.PrismaticJoints.Add((PrismaticJoint)wjvm.ModelObject);
+         }
+
+
+
+         // TODO: Add me!!!!
+         // ModelObject.Ropes.Add((Rope)wjvm.ModelObject);
+
+         wjvm.ConnectToShapes(ShapeCollection);
+
+         Point parentObjectOrigo = new Point(0, 0);
+
+         // Shape A point
+         Point shapeAOrigo = new Point(wjvm.AShapeObject.PosX, wjvm.AShapeObject.PosY);
+         shapeAOrigo.Offset(parentObjectOrigo.X, parentObjectOrigo.Y);
+
+         Point localAClickPoint = new Point();
+         localAClickPoint = (Point)(position - shapeAOrigo);
+
+
+         // Rotate point to shape rotation
+         Point rotatedAClickPoint = CoordinateTransformations.LocalPointFromRotated(localAClickPoint, wjvm.AShapeObject.Angle);
+
+         wjvm.AAnchorX = rotatedAClickPoint.X;
+         wjvm.AAnchorY = rotatedAClickPoint.Y;
+
+         // Shape B point
+         Point shapeBOrigo = new Point(wjvm.BShapeObject.PosX, wjvm.BShapeObject.PosY);
+         shapeBOrigo.Offset(parentObjectOrigo.X, parentObjectOrigo.Y);
+         Point localBClickPoint = new Point();
+         localBClickPoint = (Point)(position - shapeBOrigo);
+
+         // Rotate point to shape rotation
+         //               Point rotatedBClickPoint = wjvm.BShapeObject.RotatedPointFromLocal(localBClickPoint);
+         Point rotatedBClickPoint = CoordinateTransformations.LocalPointFromRotated(localBClickPoint, wjvm.BShapeObject.Angle);
+
+         wjvm.BAnchorX = rotatedBClickPoint.X;
+         wjvm.BAnchorY = rotatedBClickPoint.Y;
+
+         JointCollection.Joints.Add(wjvm);
+
+         return wjvm;
+      }
+
+      public RopeViewModel AddRope(Point position, string shapeAName, string shapeBName, int numOfShapes)
+      {
+
+         Rope rp = new Rope();
+         RopeViewModel rpvm = new RopeViewModel(JointCollection, this, MainVm, rp);
+
+         rp.AName = shapeAName;
+
+         if (numOfShapes == 2)
+         {
+            rp.BName = shapeBName;
+         }
+
+
+         // If there is no shape B, the rp.BName should be default "notDef"
+
+         rpvm.ConnectToShapes(ShapeCollection);
+
+         Point parentObjectOrigo = new Point(0, 0);
+
+         // Shape A point
+         Point shapeAOrigo = new Point(rpvm.AShapeObject.PosX, rpvm.AShapeObject.PosY);
+         shapeAOrigo.Offset(parentObjectOrigo.X, parentObjectOrigo.Y);
+         Point localAClickPoint = new Point();
+         localAClickPoint = (Point)(position - shapeAOrigo);
+
+         // Rotate point to shape rotation
+         Point rotatedAClickPoint = CoordinateTransformations.LocalPointFromRotated(localAClickPoint, rpvm.AShapeObject.Angle);
+
+         rpvm.AAnchorX = rotatedAClickPoint.X;
+         rpvm.AAnchorY = rotatedAClickPoint.Y;
+
+         if (numOfShapes == 2)
+         {
+            // Shape B point
+            Point shapeBOrigo = new Point(rpvm.BShapeObject.PosX, rpvm.BShapeObject.PosY);
+            shapeBOrigo.Offset(parentObjectOrigo.X, parentObjectOrigo.Y);
+            Point localBClickPoint = new Point();
+            localBClickPoint = (Point)(position - shapeBOrigo);
+
+            // Rotate point to shape rotation
+            Point rotatedBClickPoint = CoordinateTransformations.LocalPointFromRotated(localBClickPoint, rpvm.BShapeObject.Angle);
+
+            rpvm.BAnchorX = rotatedBClickPoint.X;
+            rpvm.BAnchorY = rotatedBClickPoint.Y;
+         }
+
+         JointCollection.Joints.Add(rpvm);
+         ModelObject.Ropes.Add(rp);
+
+         return rpvm;
+      }
+
+
+
       public void InvalidateJoints()
       {
-         foreach (object o in StateJoints.Joints)
+         foreach (object o in JointCollection.Joints)
          {
             // Below will take care of all joints since they
             // all inherit from WeldJoint
@@ -675,7 +883,7 @@ namespace LeapfrogEditor
          }
       }
 
-      public LfShapeViewModel FindShape(string name, StateShapeCollectionViewModel shapes)
+      public LfShapeViewModel FindShape(string name, ShapeCollectionViewModel shapes)
       {
          foreach (object o in shapes.Shapes)
          {
@@ -796,9 +1004,9 @@ namespace LeapfrogEditor
             }
          }
 
-         if ((StateShapes != null) && (StateShapes.Shapes != null))
+         if ((ShapeCollection != null) && (ShapeCollection.Shapes != null))
          {
-            foreach (object o in StateShapes.Shapes)
+            foreach (object o in ShapeCollection.Shapes)
             {
                if (o is LfPolygonViewModel)
                {
@@ -816,9 +1024,9 @@ namespace LeapfrogEditor
             }
          }
 
-         if (StateJoints != null)
+         if (JointCollection != null)
          {
-            foreach (object o in StateJoints.Joints)
+            foreach (object o in JointCollection.Joints)
             {
                if (o is WeldJointViewModel)
                {
@@ -829,9 +1037,9 @@ namespace LeapfrogEditor
             }
          }
 
-         if (StateSystems != null)
+         if (SystemCollection != null)
          {
-            foreach (object o in StateSystems.Systems)
+            foreach (object o in SystemCollection.Systems)
             {
                if (o is CoSystemViewModel)
                {
@@ -957,7 +1165,7 @@ namespace LeapfrogEditor
 
       public void GenerateTriangles()
       {
-         foreach (object o in StateShapes.Shapes)
+         foreach (object o in ShapeCollection.Shapes)
          {
             if (o is LfPolygonViewModel)
             {
@@ -978,7 +1186,7 @@ namespace LeapfrogEditor
 
       public LfShapeViewModel FindBodyObject(string bodyName)
       {
-         foreach (object o in StateShapes.Shapes)
+         foreach (object o in ShapeCollection.Shapes)
          {
             if (o is LfShapeViewModel)
             {
@@ -996,7 +1204,7 @@ namespace LeapfrogEditor
 
       public void UpdateAnglePropertyOfSystems()
       {
-         foreach (object o in StateSystems.Systems)
+         foreach (object o in SystemCollection.Systems)
          {
             if (o is CoSystemViewModel)
             {

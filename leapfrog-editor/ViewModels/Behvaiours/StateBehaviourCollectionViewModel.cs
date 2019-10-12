@@ -14,7 +14,7 @@ using System.Windows.Media;
 
 namespace LeapfrogEditor
 {
-   public class StateBehaviourCollectionViewModel : StateCollectionViewModelBase
+   public class StateBehaviourCollectionViewModel : CollectionViewModelBase
    {
       #region Declarations
 

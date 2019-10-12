@@ -55,7 +55,7 @@ namespace LeapfrogEditor
 
             ModelObject.BodyName = value;
             OnPropertyChanged("BodyName");
-            ConnectToShapes(ParentVm.StateShapes);
+            ConnectToShapes(ParentVm.ShapeCollection);
             OnPropertyChanged("BodyObject");
          }
       }
@@ -115,7 +115,7 @@ namespace LeapfrogEditor
 
       #region public Methods
 
-      public void ConnectToShapes(StateShapeCollectionViewModel shapes)
+      public void ConnectToShapes(ShapeCollectionViewModel shapes)
       {
          _bodyVm = ParentVm.FindShape(ModelObject.BodyName, shapes);
          if (_bodyVm == null)

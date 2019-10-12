@@ -83,7 +83,7 @@ namespace LeapfrogEditor
 
             _modelObject.AName = value;
             OnPropertyChanged("AName");
-            ConnectToShapes(ParentVm.StateShapes);
+            ConnectToShapes(ParentVm.ShapeCollection);
             OnPropertyChanged("AShapeObject");
          }
       }
@@ -103,7 +103,7 @@ namespace LeapfrogEditor
             _modelObject.BName = value;
             OnPropertyChanged("BName");
             OnPropertyChanged("ShapeBExists");
-            ConnectToShapes(ParentVm.StateShapes);
+            ConnectToShapes(ParentVm.ShapeCollection);
             OnPropertyChanged("BShapeObject");
          }
       }
@@ -196,7 +196,7 @@ namespace LeapfrogEditor
 
       #region public Methods
 
-      public void ConnectToShapes(StateShapeCollectionViewModel shapes)
+      public void ConnectToShapes(ShapeCollectionViewModel shapes)
       {
          _aVm = ParentVm.FindShape(ModelObject.AName, shapes);
          if (_aVm == null)

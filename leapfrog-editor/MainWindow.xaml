@@ -237,22 +237,22 @@
                         </TextBlock.ContextMenu>
                      </TextBlock>
                   </HierarchicalDataTemplate>
-                  <HierarchicalDataTemplate DataType="{x:Type local:StateShapeCollectionViewModel}"
+                  <HierarchicalDataTemplate DataType="{x:Type local:ShapeCollectionViewModel}"
                      ItemsSource="{Binding Shapes}">
                      <TextBlock Margin="2"  Text="Shapes">
                      </TextBlock>
                   </HierarchicalDataTemplate>
-                  <HierarchicalDataTemplate DataType="{x:Type local:StateJointCollectionViewModel}"
+                  <HierarchicalDataTemplate DataType="{x:Type local:JointCollectionViewModel}"
                      ItemsSource="{Binding Joints}">
                      <TextBlock Margin="2"  Text="Joints">
                      </TextBlock>
                   </HierarchicalDataTemplate>
-                  <HierarchicalDataTemplate DataType="{x:Type local:StateSystemCollectionViewModel}"
+                  <HierarchicalDataTemplate DataType="{x:Type local:SystemCollectionViewModel}"
                      ItemsSource="{Binding Systems}">
                      <TextBlock Margin="2"  Text="Systems">
                      </TextBlock>
                   </HierarchicalDataTemplate>
-                  <HierarchicalDataTemplate DataType="{x:Type local:StateChildCollectionViewModel}"
+                  <HierarchicalDataTemplate DataType="{x:Type local:ChildCollectionViewModel}"
                      ItemsSource="{Binding Children}">
                      <TextBlock Margin="2"  Text="Child Objects">
                         <TextBlock.ContextMenu>
