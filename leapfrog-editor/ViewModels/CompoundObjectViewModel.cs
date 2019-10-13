@@ -1373,7 +1373,7 @@ namespace LeapfrogEditor
          return null;
       }
 
-      public void UpdateAnglePropertyOfSystems()
+      public void InvalidateSystemProperties()
       {
          foreach (object o in SystemCollection.Systems)
          {
