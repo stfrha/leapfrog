@@ -101,6 +101,7 @@
     <Compile Include="ViewModels\Child Objects\ChildCOViewModel.cs" />
     <Compile Include="ViewModels\FileCOViewModel.cs" />
     <Compile Include="ViewModels\DataBindingProxy.cs" />
+    <Compile Include="ViewModels\Interfaces\IEditableShapeInterface.cs" />
     <Compile Include="ViewModels\Interfaces\ISpawnObjectParentVmInterface.cs" />
     <Compile Include="ViewModels\Interfaces\IParentVmInterface.cs" />
     <Compile Include="ViewModels\Joints\JointCollectionViewModel.cs" />

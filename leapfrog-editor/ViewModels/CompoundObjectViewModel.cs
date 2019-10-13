@@ -863,57 +863,6 @@ namespace LeapfrogEditor
          }
       }
 
-      //public RopeViewModel AddRope(Point position, string shapeAName, string shapeBName, int numOfShapes)
-      //{
-
-      //   Rope rp = new Rope();
-      //   RopeViewModel rpvm = new RopeViewModel(JointCollection, this, MainVm, rp);
-
-      //   rp.AName = shapeAName;
-
-      //   if (numOfShapes == 2)
-      //   {
-      //      rp.BName = shapeBName;
-      //   }
-
-      //   // If there is no shape B, the rp.BName should be default "notDef"
-
-      //   rpvm.ConnectToShapes(ShapeCollection);
-
-      //   Point parentObjectOrigo = new Point(0, 0);
-
-      //   // Shape A point
-      //   Point shapeAOrigo = new Point(rpvm.AShapeObject.PosX, rpvm.AShapeObject.PosY);
-      //   shapeAOrigo.Offset(parentObjectOrigo.X, parentObjectOrigo.Y);
-      //   Point localAClickPoint = new Point();
-      //   localAClickPoint = (Point)(position - shapeAOrigo);
-
-      //   // Rotate point to shape rotation
-      //   Point rotatedAClickPoint = CoordinateTransformations.LocalPointFromRotated(localAClickPoint, rpvm.AShapeObject.Angle);
-
-      //   rpvm.AAnchorX = rotatedAClickPoint.X;
-      //   rpvm.AAnchorY = rotatedAClickPoint.Y;
-
-      //   if (numOfShapes == 2)
-      //   {
-      //      // Shape B point
-      //      Point shapeBOrigo = new Point(rpvm.BShapeObject.PosX, rpvm.BShapeObject.PosY);
-      //      shapeBOrigo.Offset(parentObjectOrigo.X, parentObjectOrigo.Y);
-      //      Point localBClickPoint = new Point();
-      //      localBClickPoint = (Point)(position - shapeBOrigo);
-
-      //      // Rotate point to shape rotation
-      //      Point rotatedBClickPoint = CoordinateTransformations.LocalPointFromRotated(localBClickPoint, rpvm.BShapeObject.Angle);
-
-      //      rpvm.BAnchorX = rotatedBClickPoint.X;
-      //      rpvm.BAnchorY = rotatedBClickPoint.Y;
-      //   }
-
-      //   JointCollection.Joints.Add(rpvm);
-      //   ModelObject.Ropes.Add(rp);
-
-      //   return rpvm;
-      //}
 
       public CoSystemViewModel AddSystem(
          LeftClickState shapeType, 
