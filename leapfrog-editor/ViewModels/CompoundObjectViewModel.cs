@@ -369,6 +369,7 @@ namespace LeapfrogEditor
 
       private ShapeCollectionViewModel SetShapes(CompoundObject co, bool enabledChildren = true)
       {
+         // Create a new collection, forgetting the old one.
          ShapeCollectionViewModel shapes = new ShapeCollectionViewModel(this, this, MainVm, enabledChildren);
 
          foreach (LfSpriteBox sb in co.SpriteBoxes)
@@ -472,6 +473,7 @@ namespace LeapfrogEditor
 
       private JointCollectionViewModel SetJoints(CompoundObject co, bool enabledChildren = true)
       {
+         // Create a new collection, forgetting the old one.
          JointCollectionViewModel joints = new JointCollectionViewModel(this, this, MainVm, enabledChildren);
 
          foreach (WeldJoint wj in co.WeldJoints)
@@ -503,6 +505,7 @@ namespace LeapfrogEditor
 
       private SystemCollectionViewModel SetSystems(CompoundObject co, bool enabledChildren = true)
       {
+         // Create a new collection, forgetting the old one.
          SystemCollectionViewModel systems = new SystemCollectionViewModel(this, this, MainVm, enabledChildren);
 
          foreach (CoSystem s in co.Systems)
@@ -571,6 +574,9 @@ namespace LeapfrogEditor
       }
 
       public void BuildTreeViewCollection()
+      // The _treeCollection is a collection of all specific object-type
+      // collections used to display a headline for all collections in the 
+      // tree view.
       {
          _treeCollection.Clear();
 
@@ -1079,14 +1085,14 @@ namespace LeapfrogEditor
       // with the necessary references. The ChildObjects are also added to the corresponding
       // state index in the StateChildObjects collection
       {
-//         _statesWithChildObjects.Clear();
-         _treeCollection.Clear();
-
+         // First create viewmodels for all model object
          _shapes = SetShapes(ModelObject, enabledChildren);
          _joints = SetJoints(ModelObject, enabledChildren);
          _systems = SetSystems(ModelObject, enabledChildren);
 
          // Only now is the Joints property valid for this state
+         // Connect joints to shape, creating the reference link
+         // that is defined by body names in xml file.
          foreach (object o in _joints.Joints)
          {
             if (o is WeldJointViewModel)
@@ -1107,6 +1113,8 @@ namespace LeapfrogEditor
          }
 
          // Only now is the Systems property valid for this state
+         // Connect systems to shapes, creating the reference link
+         // that is defined by body names in xml file.
          foreach (object o in _systems.Systems)
          {
             if (o is CoSystemViewModel)
@@ -1129,6 +1137,9 @@ namespace LeapfrogEditor
 
          ChildObjectsWithStates = SetChildren(ModelObject, enabledChildren);
 
+
+         // The TreeViewCollection holds the same objects of shapes, joints, systems
+         // etc, but in a hierarcichal structure of the tree view. 
          BuildTreeViewCollection();
       }
 
