@@ -9,10 +9,7 @@
   <packagedElement xmi:type="uml:Package" xmi:id="_O0IooOn9Eemi7d50AosZsw" name="Leapfrog Editor">
     <packagedElement xmi:type="uml:Package" xmi:id="_A3UZYOoGEemvha9jVSK0DA" name="Models">
       <packagedElement xmi:type="uml:Class" xmi:id="_yZcUMOn9Eemi7d50AosZsw" name="CompoundObject">
-        <ownedAttribute xmi:type="uml:Property" xmi:id="_9zcAYOn_Eemi7d50AosZsw" name="Shapes" type="_7KtDkOn_Eemi7d50AosZsw" aggregation="composite" association="_9zaLMOn_Eemi7d50AosZsw">
-          <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_9zcncOn_Eemi7d50AosZsw"/>
-          <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_9zcncen_Eemi7d50AosZsw" value="*"/>
-        </ownedAttribute>
+        <generalization xmi:type="uml:Generalization" xmi:id="_J8E_APQ5EemOsNuh9P5FNQ" general="_C8hL4PQ5EemOsNuh9P5FNQ"/>
         <ownedAttribute xmi:type="uml:Property" xmi:id="_KuTUUeoAEemi7d50AosZsw" name="Joints" type="_HrqpwOoAEemi7d50AosZsw" aggregation="composite" association="_KuSGMOoAEemi7d50AosZsw">
           <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_KuT7YOoAEemi7d50AosZsw"/>
           <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_KuUicOoAEemi7d50AosZsw" value="*"/>
@@ -55,7 +52,7 @@
         <eAnnotations xmi:type="ecore:EAnnotation" xmi:id="_9zbZUOn_Eemi7d50AosZsw" source="org.eclipse.papyrus">
           <details xmi:type="ecore:EStringToStringMapEntry" xmi:id="_9zbZUen_Eemi7d50AosZsw" key="nature" value="UML_Nature"/>
         </eAnnotations>
-        <ownedEnd xmi:type="uml:Property" xmi:id="_9zdOgOn_Eemi7d50AosZsw" name="compoundobject" type="_yZcUMOn9Eemi7d50AosZsw" association="_9zaLMOn_Eemi7d50AosZsw"/>
+        <ownedEnd xmi:type="uml:Property" xmi:id="_9zdOgOn_Eemi7d50AosZsw" name="compoundobject" type="_C8hL4PQ5EemOsNuh9P5FNQ" association="_9zaLMOn_Eemi7d50AosZsw"/>
       </packagedElement>
       <packagedElement xmi:type="uml:Class" xmi:id="_HrqpwOoAEemi7d50AosZsw" name="Joint"/>
       <packagedElement xmi:type="uml:Association" xmi:id="_KuSGMOoAEemi7d50AosZsw" memberEnd="_KuTUUeoAEemi7d50AosZsw _KuUiceoAEemi7d50AosZsw">
@@ -220,6 +217,7 @@
         </ownedAttribute>
       </packagedElement>
       <packagedElement xmi:type="uml:Class" xmi:id="_XjDRwOrHEemsCNlhZcC3rg" name="ParallaxBackground">
+        <generalization xmi:type="uml:Generalization" xmi:id="_K7GMAPQ5EemOsNuh9P5FNQ" general="_C8hL4PQ5EemOsNuh9P5FNQ"/>
         <ownedAttribute xmi:type="uml:Property" xmi:id="_0NZ9YOrHEemsCNlhZcC3rg" name="BackgroundName">
           <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#String"/>
         </ownedAttribute>
@@ -253,6 +251,7 @@
     <packagedElement xmi:type="uml:Package" xmi:id="_L54u8OoGEemvha9jVSK0DA" name="ViewModels">
       <packagedElement xmi:type="uml:Class" xmi:id="_oAmGgOn8Eemi7d50AosZsw" name="CompoundObjectViewModel" visibility="public">
         <generalization xmi:type="uml:Generalization" xmi:id="_auytsOoGEemvha9jVSK0DA" general="_VJw-4OoGEemvha9jVSK0DA"/>
+        <generalization xmi:type="uml:Generalization" xmi:id="__trjQPQ2EemOsNuh9P5FNQ" general="_vNNa0O61Eem7GZ8K4NqRiA"/>
         <ownedAttribute xmi:type="uml:Property" xmi:id="_4dhzAOn8Eemi7d50AosZsw" name="BoundingBox" type="_TN3B8On9Eemi7d50AosZsw"/>
         <ownedAttribute xmi:type="uml:Property" xmi:id="_vxYs0On9Eemi7d50AosZsw" name="Name">
           <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#String"/>
@@ -273,10 +272,6 @@
           <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_VfPDIOoHEemvha9jVSK0DA"/>
           <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_VfVJwOoHEemvha9jVSK0DA" value="*"/>
         </ownedAttribute>
-        <ownedAttribute xmi:type="uml:Property" xmi:id="_Z5Uo0uoHEemvha9jVSK0DA" name="ShapeCollection" type="__GA-YOoGEemvha9jVSK0DA" aggregation="composite" association="_Z5UBwOoHEemvha9jVSK0DA">
-          <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_Z5YTMOoHEemvha9jVSK0DA" value="1"/>
-          <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_Z5bWgOoHEemvha9jVSK0DA" value="1"/>
-        </ownedAttribute>
         <ownedAttribute xmi:type="uml:Property" xmi:id="_xhel4eoHEemvha9jVSK0DA" name="ChildObjectsWithStates" type="_r2s0YOoHEemvha9jVSK0DA" aggregation="composite" association="_xhdXwOoHEemvha9jVSK0DA">
           <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_xhkFcOoHEemvha9jVSK0DA" value="1"/>
           <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_xhoW4OoHEemvha9jVSK0DA" value="1"/>
@@ -291,14 +286,10 @@
         <ownedOperation xmi:type="uml:Operation" xmi:id="_MppzYOrUEemsCNlhZcC3rg" name="BuildViewModel"/>
         <ownedOperation xmi:type="uml:Operation" xmi:id="_R1wr4OrUEemsCNlhZcC3rg" name="GenerateTriangles"/>
         <ownedOperation xmi:type="uml:Operation" xmi:id="_4wNLYOuREemE6p1Lm6IdDw" name="BuildTreeViewCollection"/>
-        <ownedOperation xmi:type="uml:Operation" xmi:id="_BoU6QOugEemE6p1Lm6IdDw" name="AddShape"/>
         <ownedOperation xmi:type="uml:Operation" xmi:id="_C3A68OugEemE6p1Lm6IdDw" name="AddJoint"/>
         <ownedOperation xmi:type="uml:Operation" xmi:id="_EfJWYOugEemE6p1Lm6IdDw" name="AddSystem"/>
-        <ownedOperation xmi:type="uml:Operation" xmi:id="_9N-5gO2aEem0YYeDXwjvWA" name="RemoveShape"/>
         <ownedOperation xmi:type="uml:Operation" xmi:id="_wRiSwO3-EemFpZGU3aq0pw" name="InvalidateSystemProperties"/>
         <ownedOperation xmi:type="uml:Operation" xmi:id="_EO9DcO3_EemFpZGU3aq0pw" name="InvalidateJoints"/>
-        <ownedOperation xmi:type="uml:Operation" xmi:id="_YPA4cO3_EemFpZGU3aq0pw" name="GetScenePointFromCoPoint"/>
-        <ownedOperation xmi:type="uml:Operation" xmi:id="_ct6ssO3_EemFpZGU3aq0pw" name="GetCoPointFromScenePoint"/>
         <nestedClassifier xmi:type="uml:Association" xmi:id="_zd2iEOn-Eemi7d50AosZsw" memberEnd="_zd4-Uen-Eemi7d50AosZsw _zd6Mcen-Eemi7d50AosZsw">
           <eAnnotations xmi:type="ecore:EAnnotation" xmi:id="_zd4XQOn-Eemi7d50AosZsw" source="org.eclipse.papyrus">
             <details xmi:type="ecore:EStringToStringMapEntry" xmi:id="_zd4-UOn-Eemi7d50AosZsw" key="nature" value="UML_Nature"/>
@@ -357,7 +348,7 @@
         <eAnnotations xmi:type="ecore:EAnnotation" xmi:id="_Z5Uo0OoHEemvha9jVSK0DA" source="org.eclipse.papyrus">
           <details xmi:type="ecore:EStringToStringMapEntry" xmi:id="_Z5Uo0eoHEemvha9jVSK0DA" key="nature" value="UML_Nature"/>
         </eAnnotations>
-        <ownedEnd xmi:type="uml:Property" xmi:id="_Z5dywOoHEemvha9jVSK0DA" name="compoundobjectviewmodel" type="_oAmGgOn8Eemi7d50AosZsw" association="_Z5UBwOoHEemvha9jVSK0DA"/>
+        <ownedEnd xmi:type="uml:Property" xmi:id="_Z5dywOoHEemvha9jVSK0DA" name="compoundobjectviewmodel" type="_vNNa0O61Eem7GZ8K4NqRiA" association="_Z5UBwOoHEemvha9jVSK0DA"/>
       </packagedElement>
       <packagedElement xmi:type="uml:Class" xmi:id="_r2s0YOoHEemvha9jVSK0DA" name="ChildCollectionViewModel">
         <generalization xmi:type="uml:Generalization" xmi:id="_BismwOoIEemvha9jVSK0DA" general="_8y6d4OoHEemvha9jVSK0DA"/>
@@ -538,6 +529,7 @@
         </ownedAttribute>
       </packagedElement>
       <packagedElement xmi:type="uml:Class" xmi:id="_l5mrIOrIEemsCNlhZcC3rg" name="ParallaxBackgroundViewModel">
+        <generalization xmi:type="uml:Generalization" xmi:id="_AnvXwPQ3EemOsNuh9P5FNQ" general="_vNNa0O61Eem7GZ8K4NqRiA"/>
         <ownedAttribute xmi:type="uml:Property" xmi:id="_T4DfU-rKEemsCNlhZcC3rg" name="ModelObject" type="_XjDRwOrHEemsCNlhZcC3rg" aggregation="shared" association="_T4DfUOrKEemsCNlhZcC3rg">
           <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_T4DfVOrKEemsCNlhZcC3rg" value="1"/>
           <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_T4DfVerKEemsCNlhZcC3rg" value="1"/>
@@ -547,10 +539,6 @@
         </ownedAttribute>
         <ownedAttribute xmi:type="uml:Property" xmi:id="_Q2Mk8OrXEemsCNlhZcC3rg" name="ParallaxAmount">
           <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/EcorePrimitiveTypes.library.uml#EDouble"/>
-        </ownedAttribute>
-        <ownedAttribute xmi:type="uml:Property" xmi:id="_os5lo-2bEem0YYeDXwjvWA" name="ShapeCollection" type="__GA-YOoGEemvha9jVSK0DA" aggregation="composite" association="_os5loO2bEem0YYeDXwjvWA">
-          <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_os5lpO2bEem0YYeDXwjvWA" value="1"/>
-          <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_otCvkO2bEem0YYeDXwjvWA" value="1"/>
         </ownedAttribute>
       </packagedElement>
       <packagedElement xmi:type="uml:Class" xmi:id="_JFkpoOrJEemsCNlhZcC3rg" name="ScenePropertyCollectionViewModel"/>
@@ -658,12 +646,6 @@
         </eAnnotations>
         <ownedEnd xmi:type="uml:Property" xmi:id="_Cf0N0OueEemE6p1Lm6IdDw" name="shapescollectionviewmodel" type="__GA-YOoGEemvha9jVSK0DA" association="_CfjvIOueEemE6p1Lm6IdDw"/>
       </packagedElement>
-    </packagedElement>
-    <packagedElement xmi:type="uml:Association" xmi:id="_os5loO2bEem0YYeDXwjvWA" memberEnd="_os5lo-2bEem0YYeDXwjvWA _otMgkO2bEem0YYeDXwjvWA">
-      <eAnnotations xmi:type="ecore:EAnnotation" xmi:id="_os5loe2bEem0YYeDXwjvWA" source="org.eclipse.papyrus">
-        <details xmi:type="ecore:EStringToStringMapEntry" xmi:id="_os5lou2bEem0YYeDXwjvWA" key="nature" value="UML_Nature"/>
-      </eAnnotations>
-      <ownedEnd xmi:type="uml:Property" xmi:id="_otMgkO2bEem0YYeDXwjvWA" name="parallaxbackgroundviewmodel" type="_l5mrIOrIEemsCNlhZcC3rg" association="_os5loO2bEem0YYeDXwjvWA"/>
     </packagedElement>
     <packagedElement xmi:type="uml:Class" xmi:id="_KRDQIO38EemFpZGU3aq0pw" name="LfPointViewModel">
       <ownedAttribute xmi:type="uml:Property" xmi:id="_Zw1X4O38EemFpZGU3aq0pw" name="PosX">
@@ -804,13 +786,36 @@
       </eAnnotations>
       <ownedEnd xmi:type="uml:Property" xmi:id="_IFghce4DEemFpZGU3aq0pw" name="lfpolygonviewmodel" type="_MU_2IO4CEemFpZGU3aq0pw" association="_IFdeIO4DEemFpZGU3aq0pw"/>
     </packagedElement>
-    <packagedElement xmi:type="uml:Class" xmi:id="_vNNa0O61Eem7GZ8K4NqRiA" name="ShapeEditorViewModel">
+    <packagedElement xmi:type="uml:Class" xmi:id="_vNNa0O61Eem7GZ8K4NqRiA" name="CompoundShapesObjectViewModel">
+      <ownedAttribute xmi:type="uml:Property" xmi:id="_Z5Uo0uoHEemvha9jVSK0DA" name="ShapeCollection" type="__GA-YOoGEemvha9jVSK0DA" aggregation="composite" association="_Z5UBwOoHEemvha9jVSK0DA">
+        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_Z5YTMOoHEemvha9jVSK0DA" value="1"/>
+        <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_Z5bWgOoHEemvha9jVSK0DA" value="1"/>
+      </ownedAttribute>
+      <ownedAttribute xmi:type="uml:Property" xmi:id="_TYx04PQ3EemOsNuh9P5FNQ" name="BoundingBox" type="_TN3B8On9Eemi7d50AosZsw"/>
+      <ownedAttribute xmi:type="uml:Property" xmi:id="_TY3UcPQ3EemOsNuh9P5FNQ" name="Name">
+        <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#String"/>
+      </ownedAttribute>
+      <ownedAttribute xmi:type="uml:Property" xmi:id="_X6UbgPQ5EemOsNuh9P5FNQ" name="ModelBaseObject" type="_C8hL4PQ5EemOsNuh9P5FNQ" aggregation="shared" association="_X6KqgPQ5EemOsNuh9P5FNQ">
+        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_X6VCkPQ5EemOsNuh9P5FNQ" value="1"/>
+        <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_X6VCkfQ5EemOsNuh9P5FNQ" value="1"/>
+      </ownedAttribute>
       <ownedOperation xmi:type="uml:Operation" xmi:id="_Be0J8O62Eem7GZ8K4NqRiA" name="AddShape"/>
       <ownedOperation xmi:type="uml:Operation" xmi:id="_Be30UO62Eem7GZ8K4NqRiA" name="RemoveShape"/>
-      <ownedOperation xmi:type="uml:Operation" xmi:id="_Be6QkO62Eem7GZ8K4NqRiA" name="InvalidateSystemProperties"/>
-      <ownedOperation xmi:type="uml:Operation" xmi:id="_Be8s0O62Eem7GZ8K4NqRiA" name="InvalidateJoints"/>
       <ownedOperation xmi:type="uml:Operation" xmi:id="_Be_wIO62Eem7GZ8K4NqRiA" name="GetScenePointFromCoPoint"/>
       <ownedOperation xmi:type="uml:Operation" xmi:id="_BfDagO62Eem7GZ8K4NqRiA" name="GetCoPointFromScenePoint"/>
+    </packagedElement>
+    <packagedElement xmi:type="uml:Class" xmi:id="_C8hL4PQ5EemOsNuh9P5FNQ" name="CompoundShapesObject">
+      <ownedAttribute xmi:type="uml:Property" xmi:id="_9zcAYOn_Eemi7d50AosZsw" name="SpriteBoxes" type="_7KtDkOn_Eemi7d50AosZsw" aggregation="composite" association="_9zaLMOn_Eemi7d50AosZsw">
+        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_9zcncOn_Eemi7d50AosZsw"/>
+        <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_9zcncen_Eemi7d50AosZsw" value="*"/>
+      </ownedAttribute>
+      <ownedOperation xmi:type="uml:Operation" xmi:id="_Qfqn0PQ5EemOsNuh9P5FNQ" name="RemoveShape"/>
+    </packagedElement>
+    <packagedElement xmi:type="uml:Association" xmi:id="_X6KqgPQ5EemOsNuh9P5FNQ" visibility="protected" memberEnd="_X6UbgPQ5EemOsNuh9P5FNQ _X6VCkvQ5EemOsNuh9P5FNQ">
+      <eAnnotations xmi:type="ecore:EAnnotation" xmi:id="_X6TNYPQ5EemOsNuh9P5FNQ" source="org.eclipse.papyrus">
+        <details xmi:type="ecore:EStringToStringMapEntry" xmi:id="_X6TNYfQ5EemOsNuh9P5FNQ" key="nature" value="UML_Nature"/>
+      </eAnnotations>
+      <ownedEnd xmi:type="uml:Property" xmi:id="_X6VCkvQ5EemOsNuh9P5FNQ" name="shapeeditorviewmodel" type="_vNNa0O61Eem7GZ8K4NqRiA" association="_X6KqgPQ5EemOsNuh9P5FNQ"/>
     </packagedElement>
   </packagedElement>
 </uml:Model>
