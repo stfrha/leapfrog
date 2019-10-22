@@ -222,7 +222,7 @@
                      </TextBlock>
                   </HierarchicalDataTemplate>
                   <HierarchicalDataTemplate DataType="{x:Type local:ParallaxBackgroundViewModel}"
-                     ItemsSource="{Binding Shapes}">
+                     ItemsSource="{Binding ShapeCollection.Shapes}">
                      <TextBlock Margin="2"  Text="{Binding BackgroundName}">
                         <TextBlock.ContextMenu>
                            <ContextMenu>

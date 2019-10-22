@@ -178,7 +178,9 @@ namespace LeapfrogEditor
                _selectedStateIndex = value;
             }
 
-            ChildStateModelObject.State = MainVm.EditedCpVm.Behaviour.States[_selectedStateIndex].StateName;
+            CompoundObjectViewModel covm = MainVm.EditedCpVm as CompoundObjectViewModel;
+
+            ChildStateModelObject.State = covm.Behaviour.States[_selectedStateIndex].StateName;
 
             OnPropertyChanged("");
 
