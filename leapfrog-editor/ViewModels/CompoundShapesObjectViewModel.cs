@@ -39,6 +39,7 @@ namespace LeapfrogEditor
          bool enabled = true) :
          base(treeParent, parentVm, mainVm, enabled)
       {
+         _shapes = new ShapeCollectionViewModel(this, null, mainVm, enabled);
          ModelBaseObject = modelObject;
       }
 

@@ -103,7 +103,7 @@ namespace LeapfrogEditor
       private ObservableCollection<FileCOViewModel> _fileCollectionViewModel = new ObservableCollection<FileCOViewModel>();
 
       // Object VM that is being edited
-      private CompoundObjectViewModel _editedCpVm;
+      private CompoundShapesObjectViewModel _editedCpVm;
 
       private ObservableCollection<ChildObjectViewModel> _selectedChildObjects = new ObservableCollection<ChildObjectViewModel>();
       private ObservableCollection<ChildCOViewModel> _selectedChildObjectStateProperties = new ObservableCollection<ChildCOViewModel>();
@@ -174,7 +174,7 @@ namespace LeapfrogEditor
          set { _fileCollectionViewModel = value; }
       }
 
-      public CompoundObjectViewModel EditedCpVm
+      public CompoundShapesObjectViewModel EditedCpVm
       {
          get { return _editedCpVm; }
          set
@@ -900,7 +900,7 @@ namespace LeapfrogEditor
             bovm.SpawnParentModelObject.SpawnObjects.Add(newSo);
 
             // Then add and link ViewModel elements
-            SpawnObjectViewModel sovm = new SpawnObjectViewModel(bovm.ParentVm, EditedCpVm, this, bovm, newSo);
+            SpawnObjectViewModel sovm = new SpawnObjectViewModel(bovm.ParentVm, EditedCpVm as CompoundObjectViewModel, this, bovm, newSo);
             bovm.SpawnObjects.Add(sovm);
          }
       }
@@ -1089,9 +1089,10 @@ namespace LeapfrogEditor
             ChildCollectionViewModel scvm = parameter as ChildCollectionViewModel;
 
             ChildObject ch = new ChildObject();
-            ChildObjectViewModel chvm = new ChildObjectViewModel(scvm, EditedCpVm, this, ch, true);
+            ChildObjectViewModel chvm = new ChildObjectViewModel(scvm, EditedCpVm as CompoundObjectViewModel, this, ch, true);
 
-            EditedCpVm.ModelObject.ChildObjects.Add(ch);
+            CompoundObjectViewModel covm = EditedCpVm as CompoundObjectViewModel;
+            covm.ModelObject.ChildObjects.Add(ch);
             scvm.Children.Add(chvm);
          }
 
@@ -1105,7 +1106,7 @@ namespace LeapfrogEditor
             sp.Properties = new ChildObjectStateProperties();
             sp.Properties.CompObj = new CompoundObject();
 
-            ChildCOViewModel covm = new ChildCOViewModel(chvm, EditedCpVm, this, sp);
+            ChildCOViewModel covm = new ChildCOViewModel(chvm, EditedCpVm as CompoundObjectViewModel, this, sp);
             covm.BuildViewModel(true);
 
             chvm.StateProperties.Add(covm);
@@ -1119,7 +1120,7 @@ namespace LeapfrogEditor
             return false;
          }
 
-         if ((EditedCpVm != null) && ((parameter is ChildCollectionViewModel) || (parameter is ChildObjectViewModel)))
+         if ((EditedCpVm != null) && (EditedCpVm is CompoundObjectViewModel) && ((parameter is ChildCollectionViewModel) || (parameter is ChildObjectViewModel)))
          {
             return true;
          }
@@ -1821,6 +1822,8 @@ namespace LeapfrogEditor
             {
                string bName = "notDefined";
 
+               CompoundObjectViewModel covm = EditedCpVm as CompoundObjectViewModel;
+
                if (SelectedShapes.Count > 1)
                {
                   bName = SelectedShapes[1].Name;
@@ -1834,7 +1837,7 @@ namespace LeapfrogEditor
                   }
                }
 
-               WeldJointViewModel newJointVm = EditedCpVm.AddJoint(
+               WeldJointViewModel newJointVm = covm.AddJoint(
                   _LeftClickState, 
                   clickPoint, 
                   SelectedShapes[0].Name,
@@ -1859,12 +1862,14 @@ namespace LeapfrogEditor
             {
                string shapeName = "notDefined";
 
+               CompoundObjectViewModel covm = EditedCpVm as CompoundObjectViewModel;
+
                if (SelectedShapes.Count > 0)
                {
                   shapeName = SelectedShapes[0].Name;
                }
 
-               CoSystemViewModel newSysVm = EditedCpVm.AddSystem(
+               CoSystemViewModel newSysVm = covm.AddSystem(
                   _LeftClickState, 
                   clickPoint, 
                   shapeName,
@@ -2012,7 +2017,14 @@ namespace LeapfrogEditor
             return 0;
          }
 
-         return EditedCpVm.Behaviour.DisplayedStateIndex;
+         if (!(EditedCpVm is CompoundObjectViewModel))
+         {
+            return 0;
+         }
+
+         CompoundObjectViewModel covm = EditedCpVm as CompoundObjectViewModel;
+
+         return covm.Behaviour.DisplayedStateIndex;
 
       }
 
@@ -2023,7 +2035,14 @@ namespace LeapfrogEditor
             return null;
          }
 
-         return EditedCpVm.Behaviour.States[GetEditableCoBehaviourStateIndex()];
+         if (!(EditedCpVm is CompoundObjectViewModel))
+         {
+            return null;
+         }
+
+         CompoundObjectViewModel covm = EditedCpVm as CompoundObjectViewModel;
+
+         return covm.Behaviour.States[GetEditableCoBehaviourStateIndex()];
 
       }
 
@@ -2044,7 +2063,8 @@ namespace LeapfrogEditor
          FileCOViewModel fvm = GetFileViewModelOfChild(child);
          if ((fvm != null) && (fvm.Behaviour != null))
          {
-            return fvm.Behaviour.States.IndexOf(EditedCpVm.Behaviour.FindStateVM(state));
+            CompoundObjectViewModel covm = EditedCpVm as CompoundObjectViewModel;
+            return fvm.Behaviour.States.IndexOf(covm.Behaviour.FindStateVM(state));
          }
 
          return 0;
@@ -2073,36 +2093,6 @@ namespace LeapfrogEditor
          SelectedPoints.Clear();
          SelectedBackgrounds.Clear();
          EditableSpawnObject = null;
-
-         foreach (TreeViewViewModel tvvm in EditedCpVm.ChildObjectsWithStates.Children)
-         {
-            if (tvvm is ChildObjectViewModel)
-            {
-               ChildObjectViewModel covm = tvvm as ChildObjectViewModel;
-
-               if (AmISelectable(covm))
-               {
-                  // This is the child object of the object being edited, 
-                  if (covm.IsSelected)
-                  {
-                     SelectedChildObjects.Add(covm);
-                  }
-
-                  foreach (ChildCOViewModel chvm in covm.StateProperties)
-                  {
-                     if (chvm is ChildCOViewModel)
-                     {
-                        ChildCOViewModel cospvm = chvm as ChildCOViewModel;
-
-                        if (cospvm.IsSelected)
-                        {
-                           SelectedChildObjectStateProperties.Add(cospvm);
-                        }
-                     }
-                  }
-               }
-            }
-         }
 
          foreach (object o in EditedCpVm.ShapeCollection.Shapes)
          {
@@ -2135,122 +2125,29 @@ namespace LeapfrogEditor
             }
          }
 
-         foreach (object o in EditedCpVm.JointCollection.Joints)
+         if (EditedCpVm is CompoundObjectViewModel)
          {
-            if (o is WeldJointViewModel)
+            CompoundObjectViewModel covm = EditedCpVm as CompoundObjectViewModel;
+
+            foreach (TreeViewViewModel tvvm in covm.ChildObjectsWithStates.Children)
             {
-               WeldJointViewModel joint = o as WeldJointViewModel;
-
-               if (AmISelectable(joint))
-               {
-                  if (joint.IsSelected)
-                  {
-                     // This is the shape of the object being edited, 
-                     SelectedJoints.Add(joint);
-                  }
-               }
-            }
-         }
-
-         foreach (object o in EditedCpVm.SystemCollection.Systems)
-         {
-            if (o is CoSystemViewModel)
-            {
-               CoSystemViewModel system = o as CoSystemViewModel;
-
-               if (AmISelectable(system))
-               {
-                  if (system.IsSelected)
-                  {
-                     // This is the shape of the object being edited, 
-                     SelectedSystems.Add(system);
-                  }
-
-                  // Check if any spawn objects are selected in this system
-                  // and set EditableSpawnObject to it.
-                  // Note that this may be overwritten when spawn obejcts
-                  // are hunted in the BrakableObject behaviour.
-                  if (system.Type == "objectFactory")
-                  {
-                     ObjectFactoryPropertiesViewModel ofvm = system.Properties as ObjectFactoryPropertiesViewModel;
-
-                     foreach (SpawnObjectViewModel sovm in ofvm.SpawnObjects)
-                     {
-                        if (sovm.IsSelected)
-                        {
-                           EditableSpawnObject = sovm;
-                        }
-
-                        TreeViewViewModel tvvm = sovm.SpawnChildObject[0];
-
-                        if (tvvm is ChildObjectViewModel)
-                        {
-                           ChildObjectViewModel covm = tvvm as ChildObjectViewModel;
-
-                           if (AmISelectable(covm))
-                           {
-                              // This is the child object of the object being edited, 
-                              if (covm.IsSelected)
-                              {
-                                 SelectedChildObjects.Add(covm);
-                              }
-
-                              foreach (ChildCOViewModel chvm in covm.StateProperties)
-                              {
-                                 if (chvm is ChildCOViewModel)
-                                 {
-                                    ChildCOViewModel cospvm = chvm as ChildCOViewModel;
-
-                                    if (cospvm.IsSelected)
-                                    {
-                                       SelectedChildObjectStateProperties.Add(cospvm);
-                                    }
-                                 }
-                              }
-                           }
-                        }
-                     }
-                  }
-               }
-            }
-         }
-
-         // Now assess if the spawn object is selected.
-         // There can, potentially, multiple selected spawn object
-         // but it would not make sense, so let the last selected
-         // spawn object be the one to be edited.
-         // Also, spawn object can exists in breakable objects
-         // and object factories
-         if (EditedCpVm.Behaviour.BehaviourProperties is BreakableObjectPropertiesViewModel)
-         {
-            BreakableObjectPropertiesViewModel breakProp = EditedCpVm.Behaviour.BehaviourProperties as BreakableObjectPropertiesViewModel;
-
-            foreach (SpawnObjectViewModel sovm in breakProp.SpawnObjects)
-            {
-               if (sovm.IsSelected)
-               {
-                  EditableSpawnObject = sovm;
-               }
-
-               TreeViewViewModel tvvm = sovm.SpawnChildObject[0];
-
                if (tvvm is ChildObjectViewModel)
                {
-                  ChildObjectViewModel covm = tvvm as ChildObjectViewModel;
+                  ChildObjectViewModel chvm = tvvm as ChildObjectViewModel;
 
-                  if (AmISelectable(covm))
+                  if (AmISelectable(chvm))
                   {
                      // This is the child object of the object being edited, 
-                     if (covm.IsSelected)
+                     if (chvm.IsSelected)
                      {
-                        SelectedChildObjects.Add(covm);
+                        SelectedChildObjects.Add(chvm);
                      }
 
-                     foreach (ChildCOViewModel chvm in covm.StateProperties)
+                     foreach (ChildCOViewModel chcvm in chvm.StateProperties)
                      {
-                        if (chvm is ChildCOViewModel)
+                        if (chcvm is ChildCOViewModel)
                         {
-                           ChildCOViewModel cospvm = chvm as ChildCOViewModel;
+                           ChildCOViewModel cospvm = chcvm as ChildCOViewModel;
 
                            if (cospvm.IsSelected)
                            {
@@ -2261,27 +2158,150 @@ namespace LeapfrogEditor
                   }
                }
             }
-         }
 
-         // Now assess if the parallax background is selected.
-         if (EditedCpVm.Behaviour.BehaviourProperties is ScenePropertiesViewModel)
-         {
-            ScenePropertiesViewModel spvm = EditedCpVm.Behaviour.BehaviourProperties as ScenePropertiesViewModel;
-
-            foreach (ParallaxBackgroundViewModel pbvm in spvm.ParallaxBackgroundCollection.Backgrounds)
+            foreach (object o in covm.JointCollection.Joints)
             {
-               if (pbvm.IsSelected)
+               if (o is WeldJointViewModel)
                {
-                  SelectedBackgrounds.Add(pbvm);
+                  WeldJointViewModel joint = o as WeldJointViewModel;
+
+                  if (AmISelectable(joint))
+                  {
+                     if (joint.IsSelected)
+                     {
+                        // This is the shape of the object being edited, 
+                        SelectedJoints.Add(joint);
+                     }
+                  }
+               }
+            }
+
+            foreach (object o in covm.SystemCollection.Systems)
+            {
+               if (o is CoSystemViewModel)
+               {
+                  CoSystemViewModel system = o as CoSystemViewModel;
+
+                  if (AmISelectable(system))
+                  {
+                     if (system.IsSelected)
+                     {
+                        // This is the shape of the object being edited, 
+                        SelectedSystems.Add(system);
+                     }
+
+                     // Check if any spawn objects are selected in this system
+                     // and set EditableSpawnObject to it.
+                     // Note that this may be overwritten when spawn obejcts
+                     // are hunted in the BrakableObject behaviour.
+                     if (system.Type == "objectFactory")
+                     {
+                        ObjectFactoryPropertiesViewModel ofvm = system.Properties as ObjectFactoryPropertiesViewModel;
+
+                        foreach (SpawnObjectViewModel sovm in ofvm.SpawnObjects)
+                        {
+                           if (sovm.IsSelected)
+                           {
+                              EditableSpawnObject = sovm;
+                           }
+
+                           TreeViewViewModel tvvm = sovm.SpawnChildObject[0];
+
+                           if (tvvm is ChildObjectViewModel)
+                           {
+                              ChildObjectViewModel chvm = tvvm as ChildObjectViewModel;
+
+                              if (AmISelectable(chvm))
+                              {
+                                 // This is the child object of the object being edited, 
+                                 if (covm.IsSelected)
+                                 {
+                                    SelectedChildObjects.Add(chvm);
+                                 }
+
+                                 foreach (ChildCOViewModel chcvm in chvm.StateProperties)
+                                 {
+                                    if (chcvm is ChildCOViewModel)
+                                    {
+                                       ChildCOViewModel cospvm = chcvm as ChildCOViewModel;
+
+                                       if (cospvm.IsSelected)
+                                       {
+                                          SelectedChildObjectStateProperties.Add(cospvm);
+                                       }
+                                    }
+                                 }
+                              }
+                           }
+                        }
+                     }
+                  }
+               }
+            }
+
+            // Now assess if the spawn object is selected.
+            // There can, potentially, multiple selected spawn object
+            // but it would not make sense, so let the last selected
+            // spawn object be the one to be edited.
+            // Also, spawn object can exists in breakable objects
+            // and object factories
+            if (covm.Behaviour.BehaviourProperties is BreakableObjectPropertiesViewModel)
+            {
+               BreakableObjectPropertiesViewModel breakProp = covm.Behaviour.BehaviourProperties as BreakableObjectPropertiesViewModel;
+
+               foreach (SpawnObjectViewModel sovm in breakProp.SpawnObjects)
+               {
+                  if (sovm.IsSelected)
+                  {
+                     EditableSpawnObject = sovm;
+                  }
+
+                  TreeViewViewModel tvvm = sovm.SpawnChildObject[0];
+
+                  if (tvvm is ChildObjectViewModel)
+                  {
+                     ChildObjectViewModel chvm = tvvm as ChildObjectViewModel;
+
+                     if (AmISelectable(chvm))
+                     {
+                        // This is the child object of the object being edited, 
+                        if (covm.IsSelected)
+                        {
+                           SelectedChildObjects.Add(chvm);
+                        }
+
+                        foreach (ChildCOViewModel chcvm in chvm.StateProperties)
+                        {
+                           if (chcvm is ChildCOViewModel)
+                           {
+                              ChildCOViewModel cospvm = chcvm as ChildCOViewModel;
+
+                              if (cospvm.IsSelected)
+                              {
+                                 SelectedChildObjectStateProperties.Add(cospvm);
+                              }
+                           }
+                        }
+                     }
+                  }
+               }
+            }
+
+            // Now assess if the parallax background is selected.
+            if (covm.Behaviour.BehaviourProperties is ScenePropertiesViewModel)
+            {
+               ScenePropertiesViewModel spvm = covm.Behaviour.BehaviourProperties as ScenePropertiesViewModel;
+
+               foreach (ParallaxBackgroundViewModel pbvm in spvm.ParallaxBackgroundCollection.Backgrounds)
+               {
+                  if (pbvm.IsSelected)
+                  {
+                     SelectedBackgrounds.Add(pbvm);
+                  }
                }
             }
          }
-
-
       }
-
-
-      
 
       #endregion
 
@@ -2433,7 +2453,7 @@ namespace LeapfrogEditor
          FileCollectionViewModel.Add(newCpVm);
 
          EditedCpVm = newCpVm;
-         EditedCpVm.BuildViewModel();
+         (EditedCpVm as CompoundObjectViewModel).BuildViewModel();
          EditedCpVm.OnPropertyChanged("");
          OnPropertyChanged("");
 
