@@ -10,13 +10,11 @@ using System.Windows.Media;
 
 namespace LeapfrogEditor
 {
-   public class ParallaxBackgroundViewModel : TreeViewViewModel
+   public class ParallaxBackgroundViewModel : CompoundShapesObjectViewModel
    {
       #region Declarations
 
       private ParallaxBackground _modelObject;
-
-      private ShapeCollectionViewModel _shapes;
 
       #endregion
 
@@ -28,10 +26,14 @@ namespace LeapfrogEditor
          MainViewModel mainVm,
          ParallaxBackground modelObject,
          bool enabled = true) :
-         base(treeParent, parentVm, mainVm, enabled)
+         base(treeParent, parentVm, mainVm, modelObject, enabled)
       {
          ModelObject = modelObject;
 
+         // This class builds its view model from the model object automatically
+         // since there is no linkage between shapes and joints and systems
+         // The CompoundObjectViewModel does however use a BuildViewModel method
+         // which is called explicitly
          foreach (LfSpriteBox sb in ModelObject.SpriteBoxes)
          {
             LfSpriteBoxViewModel sbvm = new LfSpriteBoxViewModel(this, parentVm, mainVm, sb, false);
@@ -102,17 +104,6 @@ namespace LeapfrogEditor
          }
       }
 
-      public ShapeCollectionViewModel ShapeCollection
-      {
-         get { return _shapes; }
-         set
-         {
-            _shapes = value;
-            OnPropertyChanged("ShapeCollection");
-         }
-      }
-
-
       #endregion
 
       #region protected Methods
@@ -121,7 +112,7 @@ namespace LeapfrogEditor
 
       #region public Methods
 
-      public LfShapeViewModel AddShape(LeftClickState shapeType, Point position)
+      override public LfShapeViewModel AddShape(LeftClickState shapeType, Point position)
       {
          LfShape newShape = null;
          LfShapeViewModel newShapeVm = null;
@@ -130,13 +121,13 @@ namespace LeapfrogEditor
          if (shapeType == LeftClickState.spriteBox)
          {
             newShape = new LfSpriteBox();
-            newShapeVm = new LfSpriteBoxViewModel(ShapeCollection, this, MainVm, (LfSpriteBox)newShape);
+            newShapeVm = new LfSpriteBoxViewModel(ShapeCollection, null, MainVm, (LfSpriteBox)newShape);
             ModelObject.SpriteBoxes.Add((LfSpriteBox)newShape);
          }
          else if (shapeType == LeftClickState.spritePolygon)
          {
             newShape = new LfSpritePolygon();
-            newShapeVm = new LfSpritePolygonViewModel(ShapeCollection, this, MainVm, (LfSpritePolygon)newShape);
+            newShapeVm = new LfSpritePolygonViewModel(ShapeCollection, null, MainVm, (LfSpritePolygon)newShape);
             ModelObject.SpritePolygons.Add((LfSpritePolygon)newShape);
          }
 
@@ -152,7 +143,7 @@ namespace LeapfrogEditor
 
       }
 
-      public void RemoveShape(LfShapeViewModel svm)
+      override public void RemoveShape(LfShapeViewModel svm)
       {
          // Remove the shape model
          ModelObject.RemoveShape(svm.ModelObject);
@@ -160,70 +151,7 @@ namespace LeapfrogEditor
          // Remove the shape viewmodel from this
          ShapeCollection.Shapes.Remove(svm);
 
-         // If there are no more shapes in the CO, remove the CO
-         if (ShapeCollection.Shapes.Count == 0)
-         {
-            //ParentVm.StateChildObjects.Remove(this);
-            //ParentVm.ModelObject.ChildObjectRefs(this.ChildObjectOfParent)
-         }
-
          OnPropertyChanged("");
-      }
-
-      public LfDragablePointViewModel AddPoint(LfPolygonViewModel polyVm, Point position)
-      {
-         LfPolygonViewModel newPolygon = polyVm;
-         Point parentObjectOrigo = new Point(newPolygon.ParentVm.PosX, newPolygon.ParentVm.PosY);
-         Point shapeOrigo = new Point(newPolygon.PosX, newPolygon.PosY);
-         shapeOrigo.Offset(parentObjectOrigo.X, parentObjectOrigo.Y);
-         Point localClickPoint = new Point();
-         localClickPoint = (Point)(position - shapeOrigo);
-
-         LfDragablePointViewModel newPoint = newPolygon.AddPoint(localClickPoint);
-
-         return newPoint;
-      }
-
-      public LfShapeViewModel FindShape(string name, ShapeCollectionViewModel shapes)
-      {
-         foreach (object o in shapes.Shapes)
-         {
-            if (o is LfShapeViewModel)
-            {
-               LfShapeViewModel shape = (LfShapeViewModel)o;
-
-               if (shape.Name == name)
-               {
-                  return shape;
-               }
-            }
-         }
-
-         return null;
-      }
-
-
-      public void DeselectAllChildren()
-      {
-         if ((ShapeCollection != null) && (ShapeCollection.Shapes != null))
-         {
-            foreach (object o in ShapeCollection.Shapes)
-            {
-               if (o is LfPolygonViewModel)
-               {
-                  LfPolygonViewModel pvm = o as LfPolygonViewModel;
-
-                  pvm.DeselectAllPoints();
-                  pvm.IsSelected = false;
-               }
-               else if (o is LfShapeViewModel)
-               {
-                  LfShapeViewModel shape = o as LfShapeViewModel;
-
-                  shape.IsSelected = false;
-               }
-            }
-         }
       }
 
       #endregion

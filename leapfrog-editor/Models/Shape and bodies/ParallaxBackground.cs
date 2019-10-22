@@ -9,7 +9,7 @@ using System.Xml.Serialization;
 namespace LeapfrogEditor
 {
    [Serializable]
-   public class ParallaxBackground
+   public class ParallaxBackground : CompoundShapesObject
    {
       #region Declarations
 
@@ -47,21 +47,6 @@ namespace LeapfrogEditor
          get { return _backgroundName; }
          set { _backgroundName = value; }
       }
-
-      [XmlElement("spriteBox")]
-      public ObservableCollection<LfSpriteBox> SpriteBoxes
-      {
-         get { return _spriteBoxes; }
-         set { _spriteBoxes = value; }
-      }
-
-      [XmlElement("spritePolygon")]
-      public ObservableCollection<LfSpritePolygon> SpritePolygons
-      {
-         get { return _spritePolygons; }
-         set { _spritePolygons = value; }
-      }
-
 
       #endregion
 

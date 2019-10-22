@@ -152,16 +152,21 @@ namespace LeapfrogEditor
             _modelObject.Angle = value;
             OnPropertyChanged("Angle");
             OnPropertyChanged("BoundingBox");
-            ParentVm.InvalidateSystemProperties();
 
-            CompoundObjectViewModel p = ParentVm;
-
-            while (p != null)
+            if ((ParentVm != null) && (ParentVm is CompoundObjectViewModel))
             {
-               p.OnPropertyChanged("BoundingBox");
-               p.InvalidateJoints();
-               p = p.ParentVm;
+               ParentVm.InvalidateSystemProperties();
+
+               CompoundObjectViewModel p = ParentVm;
+
+               while (p != null)
+               {
+                  p.OnPropertyChanged("BoundingBox");
+                  p.InvalidateJoints();
+                  p = p.ParentVm;
+               }
             }
+
             InvalidateAll();
          }
       }

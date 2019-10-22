@@ -18,7 +18,7 @@ using System.Windows.Media;
 
 namespace LeapfrogEditor
 {   // used to be: ConditionalSelectTreeViewViewModel
-   public class CompoundObjectViewModel : TreeViewViewModel
+   public class CompoundObjectViewModel : CompoundShapesObjectViewModel
    {
       #region Declarations
 
@@ -46,7 +46,7 @@ namespace LeapfrogEditor
          MainViewModel mainVm, 
          CompoundObject modelObject,
          bool enabled = true) :
-         base(treeParent, parentVm, mainVm, enabled)
+         base(treeParent, parentVm, mainVm, modelObject, enabled)
       {
          ModelObject = modelObject;
 
@@ -117,7 +117,7 @@ namespace LeapfrogEditor
          }
       }
 
-      public virtual string Name
+      public override string Name
          // For a FileCOViewModel, this property supplies the file name and it can not be set.
          // The ChildCOViewModel overrides this Property to return the 
          // Child name  (and to be able to set it)
@@ -138,16 +138,6 @@ namespace LeapfrogEditor
          set
          {
             // Name of top level Compound Object can not be set
-         }
-      }
-
-      public ShapeCollectionViewModel ShapeCollection
-      {
-         get { return _shapes; }
-         set
-         {
-            _shapes = value;
-            OnPropertyChanged("ShapeCollection");
          }
       }
 
@@ -305,21 +295,13 @@ namespace LeapfrogEditor
          }
       }
 
-      public Rect BoundingBox
+      override public Rect BoundingBox
       {
          get
          {
             // TODO: Systems take up space on a object, but they are not
             // part of the BoundingBox calculation. They assume they are
             // but they are not. Add them here
-
-            // Remove below since the last check for empty bb handles it.
-            //if (ShapeCollection == null) return new Rect(0, 0, 100, 100);
-            //List<LfShapeViewModel> c = ShapeCollection.Shapes.OfType<LfShapeViewModel>().ToList();
-            //if ((c.Count == 0) && (ChildObjectsWithStates.Children.Count == 0))
-            //{
-            //   return new Rect(0, 0, 100, 100);
-            //}
 
             BoundingBoxRect bbr = new BoundingBoxRect();
 
@@ -588,7 +570,7 @@ namespace LeapfrogEditor
          _treeCollection.Add(ChildObjectsWithStates);
       }
 
-      public LfShapeViewModel AddShape(LeftClickState shapeType, Point position)
+      override public LfShapeViewModel AddShape(LeftClickState shapeType, Point position)
       {
          LfShape newShape = null;
          LfShapeViewModel newShapeVm = null;
@@ -668,7 +650,7 @@ namespace LeapfrogEditor
 
       }
 
-      public void RemoveShape(LfShapeViewModel svm)
+      override public void RemoveShape(LfShapeViewModel svm)
       {
          // Check if there are any joints connected to this svm, if so, removed them
          // We may remove joints so we need a for loop here:
@@ -1020,20 +1002,6 @@ namespace LeapfrogEditor
          return newSysVm;
       }
 
-      public LfDragablePointViewModel AddPoint(LfPolygonViewModel polyVm, Point position)
-      {
-         LfPolygonViewModel newPolygon = polyVm;
-         Point parentObjectOrigo = new Point(newPolygon.ParentVm.PosX, newPolygon.ParentVm.PosY);
-         Point shapeOrigo = new Point(newPolygon.PosX, newPolygon.PosY);
-         shapeOrigo.Offset(parentObjectOrigo.X, parentObjectOrigo.Y);
-         Point localClickPoint = new Point();
-         localClickPoint = (Point)(position - shapeOrigo);
-
-         LfDragablePointViewModel newPoint = newPolygon.AddPoint(localClickPoint);
-
-         return newPoint;
-      }
-
       public void InvalidateJoints()
       {
          foreach (object o in JointCollection.Joints)
@@ -1058,24 +1026,6 @@ namespace LeapfrogEditor
                spvm.OnPropertyChanged("");
             }
          }
-      }
-
-      public LfShapeViewModel FindShape(string name, ShapeCollectionViewModel shapes)
-      {
-         foreach (object o in shapes.Shapes)
-         {
-            if (o is LfShapeViewModel)
-            {
-               LfShapeViewModel shape = (LfShapeViewModel)o;
-
-               if (shape.Name == name)
-               {
-                  return shape;
-               }
-            }
-         }
-
-         return null;
       }
 
       public void BuildViewModel(bool enabledChildren = true)
@@ -1143,7 +1093,7 @@ namespace LeapfrogEditor
          BuildTreeViewCollection();
       }
 
-      public void DeselectAllChildren()
+      public override void DeselectAllChildren()
       {
          if ((Behaviour != null) && (Behaviour.BehaviourProperties != null))
          {
@@ -1312,40 +1262,8 @@ namespace LeapfrogEditor
          return shapePoint;
       }
 
-      // This method returns with the supplied point in the scene's coordinate system
-      // (Equal to the top level CompoundObject's coordinate system). 
-      // The point is converted to the parent's coordinate system and the method is then
-      // recursively called for the parent until the parent is null. In this case we are 
-      // at the top level CompoundObject which is the scene. Then we returns the point
-      public Point GetScenePointFromCoPoint(Point coPoint)
-      {
-         if (ParentVm != null)
-         {
-            Point parentPoint = ParentCoPoint(coPoint);
-            return GetScenePointFromCoPoint(parentPoint);
-         }
-         else
-         {
-            return coPoint;
-         }
-      }
 
-      public virtual Point GetCoPointFromScenePoint(Point scenePoint)
-      {
-         if (this is ChildCOViewModel)
-         {
-            ChildCOViewModel vm = this as ChildCOViewModel;
-
-            Point parentPoint = vm.CoPointFromParent(scenePoint);
-            return GetCoPointFromScenePoint(parentPoint);
-         }
-         else
-         {
-            return scenePoint;
-         }
-      }
-
-      public void GenerateTriangles()
+      public override void GenerateTriangles()
       {
          foreach (object o in ShapeCollection.Shapes)
          {
@@ -1364,24 +1282,6 @@ namespace LeapfrogEditor
                propvm.GenerateTriangles();
             }
          }
-      }
-
-      public LfShapeViewModel FindBodyObject(string bodyName)
-      {
-         foreach (object o in ShapeCollection.Shapes)
-         {
-            if (o is LfShapeViewModel)
-            {
-               LfShapeViewModel lsvm = o as LfShapeViewModel;
-
-               if (lsvm.Name == bodyName)
-               {
-                  return lsvm;
-               }
-            }
-         }
-
-         return null;
       }
 
       public void InvalidateSystemProperties()
