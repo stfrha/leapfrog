@@ -19,7 +19,6 @@ namespace LeapfrogEditor
       // The following fields are item 0 and item 1 in the PropertyCollection collection.
       // They exists to get easy access
       private ScenePropsStateCollectionViewModel _stateCollection;
-      private ScenePropsPBCollectionViewModel _pbCollection;
 
       private ObservableCollection<ScenePropertyCollectionBaseViewModel> _propertyCollection = new ObservableCollection<ScenePropertyCollectionBaseViewModel>();
 
@@ -60,22 +59,6 @@ namespace LeapfrogEditor
 
          // Add the state collection to the PropertyCollection
          _propertyCollection.Add(_stateCollection);
-
-         // Create the ScenePropsPBCollectionViewModel
-         _pbCollection = new ScenePropsPBCollectionViewModel(this, parentVm, mainVm, enabled);
-
-         // Now populate the _pbCollection with ParallaxBackgroundViewModels from 
-         // the source states
-         foreach (ParallaxBackground pb in ModelObject.Backgrounds)
-         {
-            ParallaxBackgroundViewModel pbvm = new ParallaxBackgroundViewModel(this, parentVm, mainVm, pb, enabled);
-            _pbCollection.Backgrounds.Add(pbvm);
-         }
-
-         // Add the background collection to the PropertyCollection
-         _propertyCollection.Add(_pbCollection);
-
-
       }
 
       #endregion
@@ -171,11 +154,6 @@ namespace LeapfrogEditor
       public ScenePropsStateCollectionViewModel StateCollection
       {
          get { return _stateCollection; }
-      }
-
-      public ScenePropsPBCollectionViewModel ParallaxBackgroundCollection
-      {
-         get { return _pbCollection; }
       }
 
       public ObservableCollection<StateViewModel> States

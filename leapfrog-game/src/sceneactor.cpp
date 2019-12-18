@@ -107,81 +107,79 @@ SceneActor* SceneActor::defineScene(
    }
 
 
-   // We attach the parallax backgrounds on the stage.
-   // This means that we need to reposition them in all
-   // updates. Which we would even if they were attached 
-   // to main actor (except for the 0% which would be
-   // static).
+   //// We attach the parallax backgrounds on the stage.
+   //// This means that we need to reposition them in all
+   //// updates. Which we would even if they were attached 
+   //// to main actor (except for the 0% which would be
+   //// static).
+   //for (auto pbIt = root.child("behaviour").child("sceneProperties").children("parallaxBackground").begin();
+   //   pbIt != root.child("behaviour").child("sceneProperties").children("parallaxBackground").end();
+   //   ++pbIt)
+   //{
+   //   ParallaxBackground newBackground(0.0f);
+   //   
+   //   newBackground.m_sprite = new Sprite();
+   //   newBackground.m_sprite->setSize(g_Layout.getStageBounds().getSize());
+   //   newBackground.m_sprite->setAnchor(0.0f, 0.0f);
+   //   newBackground.m_sprite->setTouchChildrenEnabled(false);
+   //   newBackground.m_parallaxAmount = pbIt->attribute("parallaxAmount").as_float(0.0f);
 
+   //   // z-level range from 20 (at 100% amount, i.e. static background,
+   //   // to 30 which is foreground
+   //   newBackground.m_sprite->setPriority(30.0f - newBackground.m_parallaxAmount * 10.0f); 
 
-   for (auto pbIt = root.child("behaviour").child("sceneProperties").children("parallaxBackground").begin();
-      pbIt != root.child("behaviour").child("sceneProperties").children("parallaxBackground").end();
-      ++pbIt)
-   {
-      ParallaxBackground newBackground(0.0f);
-      
-      newBackground.m_sprite = new Sprite();
-      newBackground.m_sprite->setSize(g_Layout.getStageBounds().getSize());
-      newBackground.m_sprite->setAnchor(0.0f, 0.0f);
-      newBackground.m_sprite->setTouchChildrenEnabled(false);
-      newBackground.m_parallaxAmount = pbIt->attribute("parallaxAmount").as_float(0.0f);
+   //   for (auto spIt = pbIt->children("spriteBox").begin();
+   //      spIt != pbIt->children("spriteBox").end();
+   //      ++spIt)
+   //   {
+   //      // Define sprite
+   //      spSprite sprite = new Sprite();
+   //      CompoundObject::doCommonShapeDefinitions(gameResources, sprite.get(), *spIt);
 
-      // z-level range from 20 (at 100% amount, i.e. static background,
-      // to 30 which is foreground
-      newBackground.m_sprite->setPriority(30.0f - newBackground.m_parallaxAmount * 10.0f); 
+   //      const ResAnim* an = sprite->getResAnim();
+   //      AnimationFrame anFr = an->getFrame(0);
+   //      Vector2 frS = anFr.getSize();
 
-      for (auto spIt = pbIt->children("spriteBox").begin();
-         spIt != pbIt->children("spriteBox").end();
-         ++spIt)
-      {
-         // Define sprite
-         spSprite sprite = new Sprite();
-         CompoundObject::doCommonShapeDefinitions(gameResources, sprite.get(), *spIt);
-
-         const ResAnim* an = sprite->getResAnim();
-         AnimationFrame anFr = an->getFrame(0);
-         Vector2 frS = anFr.getSize();
-
-         Vector2 wantedSize = Vector2(spIt->attribute("width").as_float(), spIt->attribute("height").as_float());
-         sprite->setScale(Vector2(wantedSize.x / frS.x, wantedSize.y / frS.y));
+   //      Vector2 wantedSize = Vector2(spIt->attribute("width").as_float(), spIt->attribute("height").as_float());
+   //      sprite->setScale(Vector2(wantedSize.x / frS.x, wantedSize.y / frS.y));
 
 
 
 
-         Vector2 newPos(spIt->attribute("posX").as_float(), spIt->attribute("posY").as_float());
-         sprite->setPosition(newPos);
-         sprite->setRotation(spIt->attribute("angle").as_float() * MATH_PI / 180.0f);
-         sprite->setAnchor(0.5f, 0.5f);
-         sprite->attachTo(newBackground.m_sprite);
-      }
+   //      Vector2 newPos(spIt->attribute("posX").as_float(), spIt->attribute("posY").as_float());
+   //      sprite->setPosition(newPos);
+   //      sprite->setRotation(spIt->attribute("angle").as_float() * MATH_PI / 180.0f);
+   //      sprite->setAnchor(0.5f, 0.5f);
+   //      sprite->attachTo(newBackground.m_sprite);
+   //   }
 
-      for (auto spIt = pbIt->children("spritePolygon").begin();
-         spIt != pbIt->children("spritePolygon").end();
-         ++spIt)
-      {
-         // Define sprite, which is a polygon, in this case
-         spPolygon sprite = new oxygine::Polygon();
+   //   for (auto spIt = pbIt->children("spritePolygon").begin();
+   //      spIt != pbIt->children("spritePolygon").end();
+   //      ++spIt)
+   //   {
+   //      // Define sprite, which is a polygon, in this case
+   //      spPolygon sprite = new oxygine::Polygon();
 
-         doCommonShapeDefinitions(gameResources, sprite.get(), *spIt);
+   //      doCommonShapeDefinitions(gameResources, sprite.get(), *spIt);
 
-         vector<Vector2> vertices(
-            distance(spIt->child("vertices").children("vertex").begin(), 
-               spIt->child("vertices").children("vertex").end()));
+   //      vector<Vector2> vertices(
+   //         distance(spIt->child("vertices").children("vertex").begin(), 
+   //            spIt->child("vertices").children("vertex").end()));
 
-         PolygonVertices::createSpritePolygon(sprite.get(), vertices, *spIt);
+   //      PolygonVertices::createSpritePolygon(sprite.get(), vertices, *spIt);
 
-         Vector2 newPos(spIt->attribute("posX").as_float(), spIt->attribute("posY").as_float());
-         sprite->setPosition(newPos);
-         sprite->setRotation(spIt->attribute("angle").as_float() * MATH_PI / 180.0f);
-         sprite->setAnchor(0.0f, 0.0f);
+   //      Vector2 newPos(spIt->attribute("posX").as_float(), spIt->attribute("posY").as_float());
+   //      sprite->setPosition(newPos);
+   //      sprite->setRotation(spIt->attribute("angle").as_float() * MATH_PI / 180.0f);
+   //      sprite->setAnchor(0.0f, 0.0f);
 
-         sprite->attachTo(newBackground.m_sprite);
-      }
+   //      sprite->attachTo(newBackground.m_sprite);
+   //   }
 
 
-      baseScene->m_parallaxBackgrounds.push_back(newBackground);
-      baseScene->addChild(newBackground.m_sprite);
-   }
+   //   baseScene->m_parallaxBackgrounds.push_back(newBackground);
+   //   baseScene->addChild(newBackground.m_sprite);
+   //}
 
 //
 //   newBackground.m_sprite = new Sprite();
@@ -263,6 +261,13 @@ SceneActor::SceneActor(
 
 SceneActor::~SceneActor()
 {
+}
+
+void SceneActor::addParallaxBackground(ParallaxBackground* background)
+{
+   m_parallaxBackgrounds.push_back(*background);
+   addChild(background->m_sprite);
+
 }
 
 void SceneActor::addBoundingBody(b2Body* body)

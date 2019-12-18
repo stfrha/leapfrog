@@ -186,7 +186,7 @@ void MessageDisplay::processFirstInQueue(void)
    style.hAlign = TextStyle::HorizontalAlign::HALIGN_LEFT;
    style.font = m_gameResources->getResFont("lf_font");
    style.color = Color::White;
-   style.fontSize = m_fontSize;
+   style.fontSize = (int)m_fontSize;
 
    msgTextField->setStyle(style);
    msgTextField->setSize(Vector2(m_messageDisplayWidth - 40.0f - 8.0f, 0));

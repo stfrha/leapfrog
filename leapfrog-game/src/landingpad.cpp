@@ -24,7 +24,7 @@ LandingPad::LandingPad(
    m_leftFootContact(false),
    m_rightFootContact(false)
 {
-	initCompoundObjectParts(gameResources, sceneParent, parentObject, world, pos, root, string(""), groupIndex);
+	initCompoundObjectParts(gameResources, sceneParent, sceneParent, parentObject, world, pos, root, string(""), groupIndex);
 
    // This CompoundObject is also an actor who normally has
    // a userData that points to its parent. However, the parent

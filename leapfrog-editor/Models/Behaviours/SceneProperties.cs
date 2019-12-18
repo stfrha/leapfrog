@@ -22,7 +22,6 @@ namespace LeapfrogEditor
       private bool _hasRightBoundary;
 
       private ObservableCollection<string> _states = new ObservableCollection<string>();
-      private ObservableCollection<ParallaxBackground> _backgrounds = new ObservableCollection<ParallaxBackground>();
 
 
       #endregion
@@ -92,13 +91,6 @@ namespace LeapfrogEditor
       {
          get { return _states; }
          set { _states = value; }
-      }
-
-      [XmlElement("parallaxBackground")]
-      public ObservableCollection<ParallaxBackground> Backgrounds
-      {
-         get { return _backgrounds; }
-         set { _backgrounds = value; }
       }
 
       #endregion

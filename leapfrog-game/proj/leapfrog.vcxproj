@@ -213,6 +213,7 @@
     <ClCompile Include="..\src\luainterface.cpp" />
     <ClCompile Include="..\src\magneticmine.cpp" />
     <ClCompile Include="..\src\messagedisplay.cpp" />
+    <ClCompile Include="..\src\parallaxbackground.cpp" />
     <ClCompile Include="..\src\pickupobject.cpp" />
     <ClCompile Include="..\src\steerableobject.cpp" />
     <ClCompile Include="..\src\landercontactlistener.cpp" />
@@ -318,6 +319,7 @@
     <ClInclude Include="..\src\luainterface.h" />
     <ClInclude Include="..\src\magneticmine.h" />
     <ClInclude Include="..\src\messagedisplay.h" />
+    <ClInclude Include="..\src\parallaxbackground.h" />
     <ClInclude Include="..\src\pickupobject.h" />
     <ClInclude Include="..\src\sceneactorevents.h" />
     <ClInclude Include="..\src\steerableobject.h" />

@@ -81,7 +81,7 @@ namespace LeapfrogEditor
          }
       }
 
-      public override string Name
+      override public string Name
       {
          get
          {

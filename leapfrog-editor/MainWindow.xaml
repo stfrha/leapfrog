@@ -209,34 +209,6 @@
                         </TextBlock.ContextMenu>
                      </TextBlock>
                   </HierarchicalDataTemplate>
-                  <HierarchicalDataTemplate DataType="{x:Type local:ScenePropsPBCollectionViewModel}"
-                     ItemsSource="{Binding Backgrounds}">
-                     <TextBlock Margin="2"  Text="Parallax Backgrounds">
-                        <TextBlock.ContextMenu>
-                           <ContextMenu>
-                              <MenuItem Header="Add Background [TODO: not implemented yet]" 
-                                 CommandParameter="{Binding}"
-                                 Command="{Binding Path=Data.OpenChildFile, Source={StaticResource DataContextProxy}}" />
-                           </ContextMenu>
-                        </TextBlock.ContextMenu>
-                     </TextBlock>
-                  </HierarchicalDataTemplate>
-                  <HierarchicalDataTemplate DataType="{x:Type local:ParallaxBackgroundViewModel}"
-                     ItemsSource="{Binding ShapeCollection.Shapes}">
-                     <TextBlock Margin="2"  Text="{Binding BackgroundName}">
-                        <TextBlock.ContextMenu>
-                           <ContextMenu>
-                              <MenuItem Header="Edit this Background [TODO: not implemented yet]" 
-                                 CommandParameter="{Binding}"
-                                 Command="{Binding Path=Data.DisplayState, Source={StaticResource DataContextProxy}}" />
-                              <Separator />
-                              <MenuItem Header="Delete Background [TODO: not implemented yet]" 
-                                 CommandParameter="{Binding}"
-                                 Command="{Binding Path=Data.OpenChildFile, Source={StaticResource DataContextProxy}}" />
-                           </ContextMenu>
-                        </TextBlock.ContextMenu>
-                     </TextBlock>
-                  </HierarchicalDataTemplate>
                   <HierarchicalDataTemplate DataType="{x:Type local:ShapeCollectionViewModel}"
                      ItemsSource="{Binding Shapes}">
                      <TextBlock Margin="2"  Text="Shapes">
@@ -461,8 +433,7 @@
                ChildObjectStateProperties="{Binding SelectedChildObjectStateProperties}"
                EditableShapes="{Binding SelectedShapes}"
                EditableJoints="{Binding SelectedJoints}"
-               EditableSystems="{Binding SelectedSystems}"
-               SelectedBackgrounds="{Binding SelectedBackgrounds }"/>
+               EditableSystems="{Binding SelectedSystems}" />
          </ScrollViewer>
       </Grid>
       <!--<StackPanel Grid.Row="0" HorizontalAlignment="Left" Orientation="Horizontal">

@@ -32,6 +32,7 @@ BreakableObject::BreakableObject(
    initCompoundObjectParts(
       gameResources,
       sceneParent,
+      sceneParent,
       parentObject,
       world,
       pos,

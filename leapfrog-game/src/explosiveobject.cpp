@@ -42,6 +42,7 @@ ExplosiveObject::ExplosiveObject(
    initCompoundObjectParts(
       gameResources,
       sceneParent,
+      sceneParent,
       parentObject,
       world,
       pos,

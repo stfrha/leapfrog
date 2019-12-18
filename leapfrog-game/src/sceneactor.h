@@ -8,22 +8,23 @@
 #include "physdispconvert.h"
 #include "spawnobject.h"
 #include "softboundary.h"
+#include "parallaxbackground.h"
 
 
 DECLARE_SMART(SceneActor, spSceneActor);
 
-class ParallaxBackground
-{
-public:
-   spSprite m_sprite;
-   float m_parallaxAmount;
-
-   ParallaxBackground(float parallaxAmount)
-   {
-      m_parallaxAmount = parallaxAmount;
-   }
-};
-
+//class ParallaxBackground
+//{
+//public:
+//   spSprite m_sprite;
+//   float m_parallaxAmount;
+//
+//   ParallaxBackground(float parallaxAmount)
+//   {
+//      m_parallaxAmount = parallaxAmount;
+//   }
+//};
+//
 class SceneActor : public CompoundObject
 {
 public:
@@ -115,6 +116,8 @@ public:
    b2World* getWorld(void);
    Resources* getResources(void);
    std::string* getInitialState(void);
+
+   void addParallaxBackground(ParallaxBackground* background);
 
    void addBoundingBody(b2Body* body);
    void removeBoundingBody(b2Body* body);

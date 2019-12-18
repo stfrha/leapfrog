@@ -18,7 +18,7 @@ using System.Windows.Media;
 
 namespace LeapfrogEditor
 {   // used to be: ConditionalSelectTreeViewViewModel
-   public class CompoundObjectViewModel : CompoundShapesObjectViewModel
+   public class CompoundObjectViewModel : TreeViewViewModel
    {
       #region Declarations
 
@@ -46,7 +46,7 @@ namespace LeapfrogEditor
          MainViewModel mainVm, 
          CompoundObject modelObject,
          bool enabled = true) :
-         base(treeParent, parentVm, mainVm, modelObject, enabled)
+         base(treeParent, parentVm, mainVm, enabled)
       {
          ModelObject = modelObject;
 
@@ -117,7 +117,7 @@ namespace LeapfrogEditor
          }
       }
 
-      public override string Name
+      virtual public string Name
          // For a FileCOViewModel, this property supplies the file name and it can not be set.
          // The ChildCOViewModel overrides this Property to return the 
          // Child name  (and to be able to set it)
@@ -138,6 +138,16 @@ namespace LeapfrogEditor
          set
          {
             // Name of top level Compound Object can not be set
+         }
+      }
+
+      public ShapeCollectionViewModel ShapeCollection
+      {
+         get { return _shapes; }
+         set
+         {
+            _shapes = value;
+            OnPropertyChanged("ShapeCollection");
          }
       }
 
@@ -180,6 +190,7 @@ namespace LeapfrogEditor
             {
                "notApplicable",
                "scene",
+               "parallaxBackground",
                "leapfrog",
                "launchSite",
                "landingPad",
@@ -295,7 +306,7 @@ namespace LeapfrogEditor
          }
       }
 
-      override public Rect BoundingBox
+      public Rect BoundingBox
       {
          get
          {
@@ -345,6 +356,27 @@ namespace LeapfrogEditor
          }
       }
 
+      public uint AggregatedZLevel
+      {
+         get
+         {
+            uint avgZL = 0;
+            uint i = 0;
+
+            foreach (LfShapeViewModel shape in ShapeCollection.Shapes)
+            {
+               avgZL += shape.ZLevel;
+               i++;
+            }
+
+            if (i > 0)
+            {
+               return avgZL / i;
+            }
+
+            return 0;
+         }
+      }
       #endregion
 
       #region Private Methods
@@ -570,7 +602,7 @@ namespace LeapfrogEditor
          _treeCollection.Add(ChildObjectsWithStates);
       }
 
-      override public LfShapeViewModel AddShape(LeftClickState shapeType, Point position)
+      public LfShapeViewModel AddShape(LeftClickState shapeType, Point position)
       {
          LfShape newShape = null;
          LfShapeViewModel newShapeVm = null;
@@ -650,7 +682,7 @@ namespace LeapfrogEditor
 
       }
 
-      override public void RemoveShape(LfShapeViewModel svm)
+      public void RemoveShape(LfShapeViewModel svm)
       {
          // Check if there are any joints connected to this svm, if so, removed them
          // We may remove joints so we need a for loop here:
@@ -1093,7 +1125,7 @@ namespace LeapfrogEditor
          BuildTreeViewCollection();
       }
 
-      public override void DeselectAllChildren()
+      public void DeselectAllChildren()
       {
          if ((Behaviour != null) && (Behaviour.BehaviourProperties != null))
          {
@@ -1122,16 +1154,6 @@ namespace LeapfrogEditor
                         }
                      }
                   }
-               }
-            }
-            else if (Behaviour.BehaviourProperties is ScenePropertiesViewModel)
-            {
-               // Deselect all the backgrounds
-               ScenePropertiesViewModel spvm = Behaviour.BehaviourProperties as ScenePropertiesViewModel;
-
-               foreach (ParallaxBackgroundViewModel pbvm in spvm.ParallaxBackgroundCollection.Backgrounds)
-               {
-                  pbvm.IsSelected = false;
                }
             }
          }
@@ -1263,7 +1285,7 @@ namespace LeapfrogEditor
       }
 
 
-      public override void GenerateTriangles()
+      public void GenerateTriangles()
       {
          foreach (object o in ShapeCollection.Shapes)
          {
@@ -1297,6 +1319,91 @@ namespace LeapfrogEditor
                   sysVm.Properties.OnPropertyChanged("");
                }
             }
+         }
+      }
+
+      public LfShapeViewModel FindBodyObject(string bodyName)
+      {
+         foreach (object o in ShapeCollection.Shapes)
+         {
+            if (o is LfShapeViewModel)
+            {
+               LfShapeViewModel lsvm = o as LfShapeViewModel;
+
+               if (lsvm.Name == bodyName)
+               {
+                  return lsvm;
+               }
+            }
+         }
+
+         return null;
+      }
+
+      public LfDragablePointViewModel AddPoint(LfPolygonViewModel polyVm, Point position)
+      {
+         LfPolygonViewModel newPolygon = polyVm;
+         Point parentObjectOrigo = new Point(newPolygon.ParentVm.PosX, newPolygon.ParentVm.PosY);
+         Point shapeOrigo = new Point(newPolygon.PosX, newPolygon.PosY);
+         shapeOrigo.Offset(parentObjectOrigo.X, parentObjectOrigo.Y);
+         Point localClickPoint = new Point();
+         localClickPoint = (Point)(position - shapeOrigo);
+
+         LfDragablePointViewModel newPoint = newPolygon.AddPoint(localClickPoint);
+
+         return newPoint;
+      }
+
+      public LfShapeViewModel FindShape(string name, ShapeCollectionViewModel shapes)
+      {
+         foreach (object o in shapes.Shapes)
+         {
+            if (o is LfShapeViewModel)
+            {
+               LfShapeViewModel shape = (LfShapeViewModel)o;
+
+               if (shape.Name == name)
+               {
+                  return shape;
+               }
+            }
+         }
+
+         return null;
+      }
+
+
+      // This method returns with the supplied point in the scene's coordinate system
+      // (Equal to the top level CompoundObject's coordinate system). 
+      // The point is converted to the parent's coordinate system and the method is then
+      // recursively called for the parent until the parent is null. In this case we are 
+      // at the top level CompoundObject which is the scene. Then we returns the point
+      public Point GetScenePointFromCoPoint(Point coPoint)
+      {
+         if ((ParentVm != null) && (ParentVm is CompoundObjectViewModel))
+         {
+            CompoundObjectViewModel covm = ParentVm as CompoundObjectViewModel;
+            Point parentPoint = covm.ParentCoPoint(coPoint);
+            return GetScenePointFromCoPoint(parentPoint);
+         }
+         else
+         {
+            return coPoint;
+         }
+      }
+
+      public virtual Point GetCoPointFromScenePoint(Point scenePoint)
+      {
+         if (this is ChildCOViewModel)
+         {
+            ChildCOViewModel vm = this as ChildCOViewModel;
+
+            Point parentPoint = vm.CoPointFromParent(scenePoint);
+            return GetCoPointFromScenePoint(parentPoint);
+         }
+         else
+         {
+            return scenePoint;
          }
       }
 

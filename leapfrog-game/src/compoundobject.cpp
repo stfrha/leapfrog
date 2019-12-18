@@ -13,12 +13,14 @@
 // CompoundObject
 #include "launchsite.h"
 #include "leapfrog.h"
+
 #include "breakableobject.h"
 #include "explosiveobject.h"
 #include "magneticmine.h"
 #include "steerableobject.h"
 #include "pickupobject.h"
 #include "landingpad.h"
+#include "parallaxbackground.h"
 #include "planetactor.h"
 #include "orbitscene.h"
 #include "system.h"
@@ -194,6 +196,7 @@ void CompoundObject::removeShape(Actor* removeMe)
     initCompoundObjectParts(
        gameResources,
        sceneParent,
+       sceneParent,
        parentObject,
        world,
        Vector2(0.0f, 0.0f),
@@ -245,6 +248,20 @@ CompoundObject* CompoundObject::initCompoundObject(
          groupIndex);
 
       sa->m_behaviourType = BehaviourEnum::scene;
+
+      return static_cast<CompoundObject*>(sa);
+   }
+   else if (behavStr == "parallaxBackground")
+   {
+      ParallaxBackground* sa = new ParallaxBackground(
+         gameResources,
+         sceneParent,
+         parentObject,
+         world,
+         root,
+         groupIndex);
+
+      sa->m_behaviourType = BehaviourEnum::parallaxBackground;
 
       return static_cast<CompoundObject*>(sa);
    }
@@ -395,6 +412,7 @@ CompoundObject* CompoundObject::initCompoundObject(
       co->initCompoundObjectParts(
          gameResources,
          sceneParent,
+         sceneParent,
          parentObject,
          world,
          pos,
@@ -410,6 +428,7 @@ CompoundObject* CompoundObject::initCompoundObject(
 
 bool CompoundObject::initCompoundObjectParts(
    oxygine::Resources& gameResources,
+   oxygine::Actor* parentActor,
    SceneActor* sceneParent,
    CompoundObject* parentObject,
    b2World* world,
@@ -440,7 +459,7 @@ bool CompoundObject::initCompoundObjectParts(
       ++it)
    {
       // define a object
-      defineSpriteBox(gameResources, sceneParent, this, pos, *it);
+      defineSpriteBox(gameResources, parentActor, this, pos, *it);
    }
 
    for (auto it = savedNode.children("spritePolygon").begin();
@@ -448,7 +467,7 @@ bool CompoundObject::initCompoundObjectParts(
       ++it)
    {
       // define a object
-      defineSpritePolygon(gameResources, sceneParent, this, pos, *it);
+      defineSpritePolygon(gameResources, parentActor, this, pos, *it);
    }
 
    for (auto it = savedNode.children("staticCircle").begin();
@@ -456,7 +475,7 @@ bool CompoundObject::initCompoundObjectParts(
       ++it)
    {
       // define a object
-      defineStaticCircle(gameResources, sceneParent, this, world, pos, *it, groupIndex);
+      defineStaticCircle(gameResources, parentActor, this, world, pos, *it, groupIndex);
    }
 
    for (auto it = savedNode.children("staticBox").begin();
@@ -464,7 +483,7 @@ bool CompoundObject::initCompoundObjectParts(
       ++it)
    {
       // define a object
-      defineStaticBox(gameResources, sceneParent, this, world, pos, *it, groupIndex);
+      defineStaticBox(gameResources, parentActor, this, world, pos, *it, groupIndex);
    }
 
    for (auto it = savedNode.children("staticPolygon").begin();
@@ -472,14 +491,14 @@ bool CompoundObject::initCompoundObjectParts(
       ++it)
    {
       // define a object
-      defineStaticPolygon(gameResources, sceneParent, this, world, pos, *it, groupIndex);
+      defineStaticPolygon(gameResources, parentActor, this, world, pos, *it, groupIndex);
    }
 
    for (auto it = savedNode.children("staticBoxedSpritePolygonBody").begin();
       it != savedNode.children("staticBoxedSpritePolygon").end();
       ++it)
    {
-      defineStaticBoxedSpritePolygon(gameResources, sceneParent, this, world, pos, *it, groupIndex);
+      defineStaticBoxedSpritePolygon(gameResources, parentActor, this, world, pos, *it, groupIndex);
    }
 
    for (auto it = savedNode.children("dynamicCircle").begin();
@@ -487,7 +506,7 @@ bool CompoundObject::initCompoundObjectParts(
       ++it)
    {
       // define a box object
-      defineDynamicCircle(gameResources, sceneParent, this, world, pos, *it, groupIndex);
+      defineDynamicCircle(gameResources, parentActor, this, world, pos, *it, groupIndex);
    }
 
    for (auto it = savedNode.children("dynamicBox").begin();
@@ -495,7 +514,7 @@ bool CompoundObject::initCompoundObjectParts(
       ++it)
    {
       // define a box object
-      defineDynamicBox(gameResources, sceneParent, this, world, pos, *it, groupIndex);
+      defineDynamicBox(gameResources, parentActor, this, world, pos, *it, groupIndex);
    }
 
    for (auto it = savedNode.children("dynamicPolygon").begin();
@@ -504,21 +523,21 @@ bool CompoundObject::initCompoundObjectParts(
    {
       // define a polygon object
       string a = (*it).attribute("name").as_string();
-      defineDynamicPolygon(gameResources, sceneParent, this, world, pos, *it, groupIndex);
+      defineDynamicPolygon(gameResources, parentActor, this, world, pos, *it, groupIndex);
    }
 
    for (auto it = savedNode.children("dynamicBoxedSpritePolygonBody").begin();
       it != savedNode.children("dynamicBoxedSpritePolygonBody").end();
       ++it)
    {
-      defineDynamicBoxedSpritePolygon(gameResources, sceneParent, this, world, pos, *it, groupIndex);
+      defineDynamicBoxedSpritePolygon(gameResources, parentActor, this, world, pos, *it, groupIndex);
    }
 
    for (auto it = savedNode.children("rope").begin();
       it != savedNode.children("rope").end();
       ++it)
    {
-      defineRope(gameResources, sceneParent, this, world, pos, *it);
+      defineRope(gameResources, parentActor, sceneParent, this, world, pos, *it);
    }
 
    for (auto it = savedNode.children("weldJoint").begin();
@@ -602,7 +621,7 @@ void CompoundObject::doPhysicalDefinitions(
 
 void CompoundObject::defineSpriteBox(
    oxygine::Resources& gameResources,
-   SceneActor* sceneParent,
+   Actor* parentActor,
    CompoundObject* parentObject,
    const oxygine::Vector2& pos,
    pugi::xml_node& objectNode)
@@ -615,13 +634,13 @@ void CompoundObject::defineSpriteBox(
    sprite->setSize(objectNode.attribute("width").as_float(), objectNode.attribute("height").as_float());
    sprite->setRotation(objectNode.attribute("angle").as_float() * MATH_PI / 180.0f);
    sprite->setAnchor(0.5f, 0.5f);
-   sprite->attachTo(sceneParent);
+   sprite->attachTo(parentActor);
    m_shapes.push_back(sprite.get());
 }
 
 void CompoundObject::defineSpritePolygon(
    oxygine::Resources& gameResources,
-   SceneActor* sceneParent,
+   Actor* parentActor,
    CompoundObject* parentObject,
    const oxygine::Vector2& pos,
    pugi::xml_node& objectNode)
@@ -639,13 +658,13 @@ void CompoundObject::defineSpritePolygon(
 
    PolygonVertices::createSpritePolygon(sprite.get(), vertices, objectNode);
 
-   sprite->attachTo(sceneParent);
+   sprite->attachTo(parentActor);
    m_shapes.push_back(sprite.get());
 }
 
 void CompoundObject::defineCircle(
    oxygine::Resources& gameResources,
-   SceneActor* sceneParent,
+   Actor* parentActor,
    CompoundObject* parentObject,
    b2World* world,
    const oxygine::Vector2& pos,
@@ -658,7 +677,7 @@ void CompoundObject::defineCircle(
    doCommonShapeDefinitions(gameResources, sprite.get(), objectNode);
    sprite->setSize(objectNode.attribute("radius").as_float() * 2.0f, objectNode.attribute("radius").as_float() * 2.0f);
    sprite->setAnchor(0.5f, 0.5f);
-   sprite->attachTo(sceneParent);
+   sprite->attachTo(parentActor);
    m_shapes.push_back(sprite.get());
 
    b2BodyDef bodyDef;
@@ -709,19 +728,19 @@ void CompoundObject::defineCircle(
 
 void CompoundObject::defineStaticCircle(
    oxygine::Resources& gameResources,
-   SceneActor* sceneParent,
+   Actor* parentActor,
    CompoundObject* parentObject,
    b2World* world,
    const oxygine::Vector2& pos,
    pugi::xml_node& objectNode,
    int groupIndex)
 {
-   defineCircle(gameResources, sceneParent, parentObject, world, pos, objectNode, groupIndex, true);
+   defineCircle(gameResources, parentActor, parentObject, world, pos, objectNode, groupIndex, true);
 }
 
 void CompoundObject::defineBox(
    Resources& gameResources,
-   SceneActor* sceneParent,
+   Actor* parentActor,
    CompoundObject* parentObject,
    b2World* world,
    const Vector2& pos,
@@ -736,7 +755,7 @@ void CompoundObject::defineBox(
 
    sprite->setSize(objectNode.attribute("width").as_float(), objectNode.attribute("height").as_float());
    sprite->setAnchor(0.5f, 0.5f);
-   sprite->attachTo(sceneParent);
+   sprite->attachTo(parentActor);
    m_shapes.push_back(sprite.get());
 
    b2BodyDef bodyDef;
@@ -787,20 +806,20 @@ void CompoundObject::defineBox(
 
 void CompoundObject::defineStaticBox(
    Resources& gameResources,
-   SceneActor* sceneParent,
+   Actor* parentActor,
    CompoundObject* parentObject,
    b2World* world,
    const Vector2& pos,
    xml_node& objectNode,
    int groupIndex)
 {
-   defineBox(gameResources, sceneParent, parentObject, world, pos, objectNode, groupIndex, true);
+   defineBox(gameResources, parentActor, parentObject, world, pos, objectNode, groupIndex, true);
 }
 
 
 void CompoundObject::defineStaticPolygon(
    Resources& gameResources, 
-   SceneActor* sceneParent,
+   Actor* parentActor,
    CompoundObject* parentObject,
    b2World* world,
    const Vector2& pos, 
@@ -823,7 +842,7 @@ void CompoundObject::defineStaticPolygon(
 
    PolygonVertices::createPolygonBorders(sprite.get(), gameResources, vertices, objectNode);
    
-   sprite->attachTo(sceneParent);
+   sprite->attachTo(parentActor);
    m_shapes.push_back(sprite.get());
 
    doCollisionDefinitions(fixture, objectNode, groupIndex);
@@ -846,7 +865,7 @@ void CompoundObject::defineStaticPolygon(
 
 void CompoundObject::defineBoxedSpritePolygon(
    Resources& gameResources,
-   SceneActor* sceneParent,
+   Actor* parentActor,
    CompoundObject* parentObject,
    b2World* world,
    const Vector2& pos,
@@ -861,7 +880,7 @@ void CompoundObject::defineBoxedSpritePolygon(
 
    sprite->setSize(objectNode.attribute("width").as_float(), objectNode.attribute("height").as_float());
    sprite->setAnchor(0.5f, 0.5f);
-   sprite->attachTo(sceneParent);
+   sprite->attachTo(parentActor);
    m_shapes.push_back(sprite.get());
 
    vector<Vector2> vertices(distance(objectNode.child("vertices").children("vertex").begin(), objectNode.child("vertices").children("vertex").end()));
@@ -898,43 +917,43 @@ void CompoundObject::defineBoxedSpritePolygon(
 
 void CompoundObject::defineStaticBoxedSpritePolygon(
    Resources& gameResources,
-   SceneActor* sceneParent,
+   Actor* parentActor,
    CompoundObject* parentObject,
    b2World* world,
    const Vector2& pos,
    xml_node& objectNode,
    int groupIndex)
 {
-   defineBoxedSpritePolygon(gameResources, sceneParent, parentObject, world, pos, objectNode, groupIndex, true);
+   defineBoxedSpritePolygon(gameResources, parentActor, parentObject, world, pos, objectNode, groupIndex, true);
 }
 
 void CompoundObject::defineDynamicCircle(
    Resources& gameResources,
-   SceneActor* sceneParent,
+   Actor* parentActor,
    CompoundObject* parentObject,
    b2World* world,
    const Vector2& pos,
    xml_node& objectNode,
    int groupIndex)
 {
-   defineCircle(gameResources, sceneParent, parentObject, world, pos, objectNode, groupIndex, false);
+   defineCircle(gameResources, parentActor, parentObject, world, pos, objectNode, groupIndex, false);
 }
 
 void CompoundObject::defineDynamicBox(
    Resources& gameResources, 
-   SceneActor* sceneParent,
+   Actor* parentActor,
    CompoundObject* parentObject,
    b2World* world,
    const Vector2& pos, 
    xml_node& objectNode,
    int groupIndex)
 {
-   defineBox(gameResources, sceneParent, parentObject, world, pos, objectNode, groupIndex, false);
+   defineBox(gameResources, parentActor, parentObject, world, pos, objectNode, groupIndex, false);
 }
 
 void CompoundObject::defineDynamicPolygon(
    Resources& gameResources, 
-   SceneActor* sceneParent,
+   Actor* parentActor,
    CompoundObject* parentObject,
    b2World* world,
    const Vector2& pos, 
@@ -956,7 +975,7 @@ void CompoundObject::defineDynamicPolygon(
 
    // Here I could probably generate borders to the sprite by calling PolygonVertices::createPolygonBorder
 
-   sprite->attachTo(sceneParent);
+   sprite->attachTo(parentActor);
    m_shapes.push_back(sprite.get());
 
    BodyUserData* bud = new BodyUserData();
@@ -982,19 +1001,20 @@ void CompoundObject::defineDynamicPolygon(
 
 void CompoundObject::defineDynamicBoxedSpritePolygon(
    Resources& gameResources,
-   SceneActor* sceneParent,
+   Actor* parentActor,
    CompoundObject* parentObject,
    b2World* world,
    const Vector2& pos,
    xml_node& objectNode,
    int groupIndex)
 {
-   defineBoxedSpritePolygon(gameResources, sceneParent, parentObject, world, pos, objectNode, groupIndex, false);
+   defineBoxedSpritePolygon(gameResources, parentActor, parentObject, world, pos, objectNode, groupIndex, false);
 }
 
 void CompoundObject::defineRope(
    Resources& gameResources,
-   SceneActor* sceneParent,
+   Actor* parentActor,
+   SceneActor* sceneActor,
    CompoundObject* parentObject,
    b2World* world,
    const Vector2& pos,
@@ -1004,7 +1024,7 @@ void CompoundObject::defineRope(
    // Otherwise all segments would hava a name.
    // This means there is now a way to create a CompoundObject
    // without a childObject element. But I think it is fine.
-   CompoundObject* newCo = new CompoundObject(sceneParent, parentObject);
+   CompoundObject* newCo = new CompoundObject(sceneActor, parentObject);
 
    newCo->setName(jointNode.attribute("name").as_string());
    int zLevel = jointNode.attribute("zLevel").as_int();
@@ -1080,7 +1100,7 @@ void CompoundObject::defineRope(
    b2Vec2 segmentPos = startPos + segmentLength * 0.5f * ropeDirection;
    object->setPosition(PhysDispConvert::convert(segmentPos, 1.0f));
    object->setRotation(ropeAngle);
-   object->attachTo(sceneParent);
+   object->attachTo(parentActor);
 
    // Define body of first segment
    b2BodyDef bodyDef;
@@ -1143,7 +1163,7 @@ void CompoundObject::defineRope(
       b2Vec2 segmentPos = startPos + segmentLength * (0.5f + i) * ropeDirection;
       object->setPosition(PhysDispConvert::convert(segmentPos, 1.0f));
       object->setRotation(ropeAngle);
-      object->attachTo(sceneParent);
+      object->attachTo(parentActor);
 
       // Define body of segment i
       b2BodyDef bodyDef;
@@ -1208,7 +1228,7 @@ void CompoundObject::defineRope(
       world->CreateJoint(&jointDef);
    }
 
-   newCo->attachTo(sceneParent);
+   newCo->attachTo(parentActor);
 
    m_children.push_back(newCo);
 }

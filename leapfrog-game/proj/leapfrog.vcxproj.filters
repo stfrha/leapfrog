@@ -414,6 +414,9 @@
     <ClCompile Include="..\src\luainterface.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\parallaxbackground.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\physdispconvert.h">
@@ -747,6 +750,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\src\sceneactorevents.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\parallaxbackground.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

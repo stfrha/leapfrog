@@ -105,6 +105,7 @@ PickupObject::PickupObject(
    initCompoundObjectParts(
       gameResources,
       sceneParent,
+      sceneParent,
       parentObject,
       world,
       pos,

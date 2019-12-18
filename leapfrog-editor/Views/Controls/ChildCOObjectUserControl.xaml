@@ -87,6 +87,7 @@
             <Style TargetType="ContentPresenter">
                <Setter Property="Canvas.Left" Value="{Binding PosX}"/>
                <Setter Property="Canvas.Top" Value="{Binding PosY}"/>
+               <Setter Property="Canvas.ZIndex" Value="{Binding ZLevel}"/>
             </Style>
          </ItemsControl.ItemContainerStyle>
       </ItemsControl>
@@ -97,6 +98,11 @@
                <Canvas/>
             </ItemsPanelTemplate>
          </ItemsControl.ItemsPanel>
+         <ItemsControl.ItemContainerStyle>
+            <Style TargetType="ContentPresenter">
+               <Setter Property="Canvas.ZIndex" Value="{Binding ZLevel}"/>
+            </Style>
+         </ItemsControl.ItemContainerStyle>
       </ItemsControl>
       <ItemsControl ItemsSource="{Binding SystemCollection.Systems}" 
          Visibility="{Binding ShowSystems, ElementName=root, Converter={StaticResource BoolToVisibilityValueConverter}}" >

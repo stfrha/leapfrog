@@ -39,6 +39,7 @@ public:
       notApplicable,
       scene,
       orbitScene,
+      parallaxBackground,
       leapfrog,
       launchSite,
       landingPad,
@@ -62,21 +63,21 @@ private:
 
    void defineSpriteBox(
       oxygine::Resources& gameResources,
-      SceneActor* sceneParent,
+      oxygine::Actor* parentActor,
       CompoundObject* parentObject,
       const oxygine::Vector2& pos,
       pugi::xml_node& objectNode);
 
    void defineSpritePolygon(
       oxygine::Resources& gameResources,
-      SceneActor* sceneParent,
+      oxygine::Actor* parentActor,
       CompoundObject* parentObject,
       const oxygine::Vector2& pos,
       pugi::xml_node& objectNode);
 
    void defineCircle(
       oxygine::Resources& gameResources,
-      SceneActor* sceneParent,
+      oxygine::Actor* parentActor,
       CompoundObject* parentObject,
       b2World* world,
       const oxygine::Vector2& pos,
@@ -86,7 +87,7 @@ private:
 
    void defineStaticCircle(
       oxygine::Resources& gameResources,
-      SceneActor* sceneParent,
+      oxygine::Actor* parentActor,
       CompoundObject* parentObject,
       b2World* world,
       const oxygine::Vector2& pos,
@@ -95,7 +96,7 @@ private:
 
    void defineBox(
       oxygine::Resources& gameResources,
-      SceneActor* sceneParent,
+      oxygine::Actor* parentActor,
       CompoundObject* parentObject,
       b2World* world,
       const oxygine::Vector2& pos,
@@ -105,7 +106,7 @@ private:
 
    void defineStaticBox(
       oxygine::Resources& gameResources, 
-      SceneActor* sceneParent,
+      oxygine::Actor* parentActor,
       CompoundObject* parentObject,
       b2World* world,
       const oxygine::Vector2& pos, 
@@ -114,7 +115,7 @@ private:
 
    void defineStaticPolygon(
       oxygine::Resources& gameResources, 
-      SceneActor* sceneParent,
+      oxygine::Actor* parentActor,
       CompoundObject* parentObject,
       b2World* world,
       const oxygine::Vector2& pos, 
@@ -123,7 +124,7 @@ private:
 
    void defineBoxedSpritePolygon(
       oxygine::Resources& gameResources,
-      SceneActor* sceneParent,
+      oxygine::Actor* parentActor,
       CompoundObject* parentObject,
       b2World* world,
       const oxygine::Vector2& pos,
@@ -133,7 +134,7 @@ private:
 
    void defineStaticBoxedSpritePolygon(
       oxygine::Resources& gameResources,
-      SceneActor* sceneParent,
+      oxygine::Actor* parentActor,
       CompoundObject* parentObject,
       b2World* world,
       const oxygine::Vector2& pos,
@@ -142,7 +143,7 @@ private:
 
    void defineDynamicCircle(
       oxygine::Resources& gameResources,
-      SceneActor* sceneParent,
+      oxygine::Actor* parentActor,
       CompoundObject* parentObject,
       b2World* world,
       const oxygine::Vector2& pos,
@@ -151,7 +152,7 @@ private:
 
    void defineDynamicBox(
       oxygine::Resources& gameResources, 
-      SceneActor* sceneParent,
+      oxygine::Actor* parentActor,
       CompoundObject* parentObject,
       b2World* world,
       const oxygine::Vector2& pos, 
@@ -160,7 +161,7 @@ private:
 
    void defineDynamicPolygon(
       oxygine::Resources& gameResources, 
-      SceneActor* sceneParent,
+      oxygine::Actor* parentActor,
       CompoundObject* parentObject,
       b2World* world,
       const oxygine::Vector2& pos, 
@@ -169,7 +170,7 @@ private:
 
    void defineDynamicBoxedSpritePolygon(
       oxygine::Resources& gameResources,
-      SceneActor* sceneParent,
+      oxygine::Actor* parentActor,
       CompoundObject* parentObject,
       b2World* world,
       const oxygine::Vector2& pos,
@@ -178,7 +179,8 @@ private:
 
    void defineRope(
       oxygine::Resources& gameResources,
-      SceneActor* sceneParent,
+      oxygine::Actor* parentActor,
+      SceneActor* sceneActor,
       CompoundObject* parentObject,
       b2World* world,
       const oxygine::Vector2& pos,
@@ -271,8 +273,13 @@ public:
       const std::string& fileName,
       const std::string& initialState);
 
+   // The parentActor is the actor that child sprites are
+   // attached to. Normally, this is the same as the sceneActor
+   // but in some instances, it is not. ParallaxBackground, for instance
+   // is another case
    bool initCompoundObjectParts(
       oxygine::Resources& gameResources,
+      oxygine::Actor* parentActor,
       SceneActor* sceneParent,
       CompoundObject* parentObject,
       b2World* world,

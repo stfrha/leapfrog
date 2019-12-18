@@ -34,7 +34,7 @@ SteerableObject::SteerableObject(
    m_slowTurningAfterHit(false),
    m_aimState(noAim)
 {
-   initCompoundObjectParts(gameResources, sceneActor, parentObject, world, pos, root, string(""), groupIndex);
+   initCompoundObjectParts(gameResources, sceneActor, sceneActor, parentObject, world, pos, root, string(""), groupIndex);
 
    readSteerableObjectNode(root.child("behaviour").child("steerableObjectProperties"));
 
