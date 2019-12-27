@@ -9,7 +9,6 @@
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
    <UserControl.Resources>
-      <local:EllipseCenterValueConverter x:Key="EllipseCenterValueConverter" />
       <local:TwiceDoubleValueConverter x:Key="TwiceDoubleValueConverter" />
       <local:TexturePathValueConverter x:Key="TexturePathValueConverter" />
       <local:NegativeValueConverter x:Key="NegativeValueConverter" />
@@ -37,19 +36,5 @@
             </TransformGroup>
          </Image.RenderTransform>
       </Image>
-      <Ellipse
-               Visibility="{Binding IsSelected, Converter={StaticResource BoolToVisibilityValueConverter}}"
-               Canvas.Left="{Binding Radius, Converter={StaticResource EllipseCenterValueConverter}}"
-               Canvas.Top="{Binding Radius, Converter={StaticResource EllipseCenterValueConverter}}"
-               Width="{Binding Radius, Converter={StaticResource TwiceDoubleValueConverter}}"
-               Height="{Binding Radius, Converter={StaticResource TwiceDoubleValueConverter}}"
-               StrokeThickness="{Binding ContentScale, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type ZoomAndPan:ZoomAndPanControl}}, Converter={StaticResource ZoomThicknessValueConverter}}"
-               Stroke="DarkBlue"
-               MouseDown="EllipseBorder_MouseDown"
-			      MouseUp="EllipseBorder_MouseUp"
-			      MouseMove="EllipseBorder_MouseMove"
-               Cursor="ScrollAll"
-               >
-      </Ellipse>
    </Canvas>
 </UserControl>

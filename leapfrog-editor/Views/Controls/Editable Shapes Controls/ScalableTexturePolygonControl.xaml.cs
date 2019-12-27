@@ -37,67 +37,6 @@ namespace LeapfrogEditor
          parentControl.GeneralMouse<LfShapeViewModel>(false, MouseEventObjectType.shape, sender, e);
       }
 
-      private void PolygonBorder_MouseDown(object sender, MouseButtonEventArgs e)
-      {
-         CompoundObjectUserControl parentControl = ParentalFinder.FindParent<CompoundObjectUserControl>(this);
-         parentControl.GeneralMouse<LfDragablePointViewModel>(true, MouseEventObjectType.dragablePolygonBorder, sender, e);
-      }
 
-      private void PolygonBorder_MouseUp(object sender, MouseButtonEventArgs e)
-      {
-         CompoundObjectUserControl parentControl = ParentalFinder.FindParent<CompoundObjectUserControl>(this);
-         parentControl.GeneralMouse<LfDragablePointViewModel>(false, MouseEventObjectType.dragablePolygonBorder, sender, e);
-
-      }
-
-      private void PolygonBorder_MouseMove(object sender, MouseEventArgs e)
-      {
-         CompoundObjectUserControl parentControl = ParentalFinder.FindParent<CompoundObjectUserControl>(this);
-         parentControl.GeneralMouseMove<IPositionInterface>(MouseEventObjectType.dragablePolygonBorder, sender, e);
-      }
-
-      private void DragablePoint_MouseDown(object sender, MouseButtonEventArgs e)
-      {
-         CompoundObjectUserControl parentControl = ParentalFinder.FindParent<CompoundObjectUserControl>(this);
-         parentControl.GeneralMouse<LfDragablePointViewModel>(true, MouseEventObjectType.dragablePoint, sender, e);
-      }
-
-      private void DragablePoint_MouseUp(object sender, MouseButtonEventArgs e)
-      {
-         CompoundObjectUserControl parentControl = ParentalFinder.FindParent<CompoundObjectUserControl>(this);
-         parentControl.GeneralMouse<LfDragablePointViewModel>(false, MouseEventObjectType.dragablePoint, sender, e);
-      }
-
-      private void DragablePoint_MouseMove(object sender, MouseEventArgs e)
-      {
-         CompoundObjectUserControl parentControl = ParentalFinder.FindParent<CompoundObjectUserControl>(this);
-         parentControl.GeneralMouseMove<IPositionInterface>(MouseEventObjectType.dragablePoint, sender, e);
-
-      }
-
-      private void LineCursorKeyDown(object sender, KeyEventArgs e)
-      {
-         if (sender is FrameworkElement)
-         {
-            FrameworkElement el = (FrameworkElement)sender;
-
-            if (Keyboard.IsKeyDown(Key.LeftCtrl) || Keyboard.IsKeyDown(Key.RightCtrl))
-               el.Cursor = Cursors.Pen;
-
-            e.Handled = true;
-         }
-      }
-
-      private void LineCursorKeyUp(object sender, KeyEventArgs e)
-      {
-         if (sender is FrameworkElement)
-         {
-            FrameworkElement el = (FrameworkElement)sender;
-
-            el.Cursor = null;
-
-            e.Handled = true;
-         }
-      }
    }
 }

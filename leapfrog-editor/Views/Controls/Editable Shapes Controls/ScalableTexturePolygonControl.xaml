@@ -11,11 +11,6 @@
    <UserControl.Resources>
       <local:TexturePathValueConverter x:Key="TexturePathValueConverter" />
       <local:TextureRectMultiValueConverter x:Key="TextureRectMultiValueConverter" />
-
-      <local:BoolToVisibilityValueConverter x:Key="BoolToVisibilityValueConverter" />
-      <local:ZoomThicknessValueConverter x:Key="ZoomThicknessValueConverter" />
-      <local:ZoomHandleSizeValueConverter x:Key="ZoomHandleSizeValueConverter" />
-      <local:ZoomHandleTranslateValueConverter x:Key="ZoomHandleTranslateValueConverter" />
    </UserControl.Resources>
    <Grid>
       <Polygon 
@@ -52,19 +47,5 @@
             </TransformGroup>
          </Polygon.RenderTransform>
       </Polygon>
-      <ContentControl
-         Content="{Binding}">
-         <ContentControl.Resources>
-            <DataTemplate DataType="{x:Type local:LfStaticPolygonViewModel}">
-               <local:DecoratedPolygonBorderControl />
-            </DataTemplate>
-            <DataTemplate DataType="{x:Type local:LfDynamicPolygonViewModel}">
-               <local:PolygonBorderControl />
-            </DataTemplate>
-            <DataTemplate DataType="{x:Type local:LfSpritePolygonViewModel}">
-               <local:PolygonBorderControl />
-            </DataTemplate>
-         </ContentControl.Resources>
-      </ContentControl>
    </Grid>
 </UserControl>

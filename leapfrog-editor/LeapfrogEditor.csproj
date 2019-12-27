@@ -245,9 +245,13 @@
     <Compile Include="Views\Controls\Editable Shapes Controls\BoxedSpritePolygonControl.xaml.cs">
       <DependentUpon>BoxedSpritePolygonControl.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Views\Controls\Editable Shapes Controls\BoxedSpritePolygonEditControl.xaml.cs" />
     <Compile Include="Views\Controls\Editable Shapes Controls\ParallaxBackgroundControl.xaml.cs">
       <DependentUpon>ParallaxBackgroundControl.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Views\Controls\Editable Shapes Controls\RotatableBoxEditControl.xaml.cs" />
+    <Compile Include="Views\Controls\Editable Shapes Controls\RotatableCircleEditControl.xaml.cs" />
+    <Compile Include="Views\Controls\Editable Shapes Controls\ScalableTexturePolygonEditControl.xaml.cs" />
     <Compile Include="Views\Controls\Editable Shapes Controls\Systems\ReentryFlameEmitterControl.xaml.cs">
       <DependentUpon>ReentryFlameEmitterControl.xaml</DependentUpon>
     </Compile>
@@ -551,9 +555,25 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
+    <Page Include="Views\Controls\Editable Shapes Controls\BoxedSpritePolygonEditControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>XamlIntelliSenseFileGenerator</Generator>
+    </Page>
     <Page Include="Views\Controls\Editable Shapes Controls\ParallaxBackgroundControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\Controls\Editable Shapes Controls\RotatableBoxEditControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>XamlIntelliSenseFileGenerator</Generator>
+    </Page>
+    <Page Include="Views\Controls\Editable Shapes Controls\RotatableCircleEditControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>XamlIntelliSenseFileGenerator</Generator>
+    </Page>
+    <Page Include="Views\Controls\Editable Shapes Controls\ScalableTexturePolygonEditControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>XamlIntelliSenseFileGenerator</Generator>
     </Page>
     <Page Include="Views\Controls\Editable Shapes Controls\Systems\ReentryFlameEmitterControl.xaml">
       <Generator>MSBuild:Compile</Generator>

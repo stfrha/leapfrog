@@ -37,22 +37,5 @@ namespace LeapfrogEditor
          parentControl.GeneralMouse<LfShapeViewModel>(false, MouseEventObjectType.shape, sender, e);
       }
 
-      private void EllipseBorder_MouseDown(object sender, MouseButtonEventArgs e)
-      {
-         CompoundObjectUserControl parentControl = ParentalFinder.FindParent<CompoundObjectUserControl>(this);
-         parentControl.GeneralMouse<LfStaticCircleViewModel>(true, MouseEventObjectType.dragableBorder, sender, e);
-      }
-
-      private void EllipseBorder_MouseUp(object sender, MouseButtonEventArgs e)
-      {
-         CompoundObjectUserControl parentControl = ParentalFinder.FindParent<CompoundObjectUserControl>(this);
-         parentControl.GeneralMouse<LfStaticCircleViewModel>(false, MouseEventObjectType.dragableBorder, sender, e);
-      }
-
-      private void EllipseBorder_MouseMove(object sender, MouseEventArgs e)
-      {
-         CompoundObjectUserControl parentControl = ParentalFinder.FindParent<CompoundObjectUserControl>(this);
-         parentControl.GeneralMouseMove<IPositionInterface>(MouseEventObjectType.dragableBorder, sender, e);
-      }
    }
 }

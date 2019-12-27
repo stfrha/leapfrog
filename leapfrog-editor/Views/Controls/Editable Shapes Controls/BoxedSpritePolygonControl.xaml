@@ -10,10 +10,6 @@
              d:DesignHeight="450" d:DesignWidth="800">
    <UserControl.Resources>
       <local:TexturePathValueConverter x:Key="TexturePathValueConverter" />
-      <local:BoolToVisibilityValueConverter x:Key="BoolToVisibilityValueConverter" />
-      <local:ZoomThicknessValueConverter x:Key="ZoomThicknessValueConverter" />
-      <local:ZoomHandleSizeValueConverter x:Key="ZoomHandleSizeValueConverter" />
-      <local:ZoomHandleTranslateValueConverter x:Key="ZoomHandleTranslateValueConverter" />
       <local:NegativeHalfValueConverter x:Key="NegativeHalfValueConverter" />
    </UserControl.Resources>
    <Canvas>
@@ -40,6 +36,5 @@
             </TransformGroup>
          </Image.RenderTransform>
       </Image>
-      <local:PolygonBorderControl />
    </Canvas>
 </UserControl>
