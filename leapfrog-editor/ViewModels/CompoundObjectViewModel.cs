@@ -24,6 +24,7 @@ namespace LeapfrogEditor
 
       private CompoundObject _modelObject;
 
+      private CompositeCollection _globalShapeCollection;
 
       private CoBehaviourViewModel _behaviour;
       private int _selectedBehaviourIndex = 0;
@@ -55,26 +56,46 @@ namespace LeapfrogEditor
          SelectedBehaviourIndex = Behaviours.IndexOf(ModelObject.Behaviour.Type);
 
          ChildObjectsWithStates = new ChildCollectionViewModel(treeParent, parentVm, MainVm);
+
+         _globalShapeCollection = new CompositeCollection()
+         {
+            new CollectionContainer { Collection = new ObservableCollection<LfSpriteBoxViewModel>() },
+            new CollectionContainer { Collection = new ObservableCollection<LfSpritePolygonViewModel>() },
+            new CollectionContainer { Collection = new ObservableCollection<LfStaticBoxViewModel>() },
+            new CollectionContainer { Collection = new ObservableCollection<LfStaticCircleViewModel>() },
+            new CollectionContainer { Collection = new ObservableCollection<LfStaticPolygonViewModel>() },
+            new CollectionContainer { Collection = new ObservableCollection<LfStaticBoxedSpritePolygonViewModel>() },
+            new CollectionContainer { Collection = new ObservableCollection<LfDynamicBoxViewModel>() },
+            new CollectionContainer { Collection = new ObservableCollection<LfDynamicCircleViewModel>() },
+            new CollectionContainer { Collection = new ObservableCollection<LfDynamicPolygonViewModel>() },
+            new CollectionContainer { Collection = new ObservableCollection<LfDynamicBoxedSpritePolygonViewModel>() },
+            new CollectionContainer { Collection = new ObservableCollection<WeldJointViewModel>() },
+            new CollectionContainer { Collection = new ObservableCollection<RevoluteJointViewModel>() },
+            new CollectionContainer { Collection = new ObservableCollection<PrismaticJointViewModel>() },
+            new CollectionContainer { Collection = new ObservableCollection<RopeViewModel>() },
+            new CollectionContainer { Collection = new ObservableCollection<CoSystemViewModel>() },
+         };
+
       }
 
       #endregion
 
       #region Properties
 
-/*
- * 
- * We need some new properties
- * 
- * Name -            this is the name of the ChildObject (if this is a child) or the 
- *                   file name (if this is a FileCOViewModel)
- * 
- * IsFileReference - true if this a ChidlObject that has a file reference. 
- *                   false, otherwise.
- *                   
- * FileName        - is the file reference of the ChildObject.stateProperties.file if
- *                   this is a ChildObject that has a file reference. If not, this is ""
- *                   
- */
+      /*
+       * 
+       * We need some new properties
+       * 
+       * Name -            this is the name of the ChildObject (if this is a child) or the 
+       *                   file name (if this is a FileCOViewModel)
+       * 
+       * IsFileReference - true if this a ChidlObject that has a file reference. 
+       *                   false, otherwise.
+       *                   
+       * FileName        - is the file reference of the ChildObject.stateProperties.file if
+       *                   this is a ChildObject that has a file reference. If not, this is ""
+       *                   
+       */
 
 
       //public ChildObject ChildObjectOfParent
@@ -95,6 +116,12 @@ namespace LeapfrogEditor
             _modelObject = value;
             OnPropertyChanged("");
          }
+      }
+
+      public CompositeCollection GlobalShapeCollection
+      {
+         get { return _globalShapeCollection; }
+         set { _globalShapeCollection = value; }
       }
 
       public bool NeedsGroupIndex
@@ -291,6 +318,34 @@ namespace LeapfrogEditor
          }
       }
 
+      public double AbsPosX
+      {
+         get
+         {
+            if ((this != MainVm.EditedCpVm) && (this is ChildCOViewModel))
+            {
+               ChildCOViewModel vm = this as ChildCOViewModel;
+
+               if (vm.Name == "testNet")
+               {
+                  int a = 10;
+
+               }
+
+               double parentPos = 0;
+
+               if (ParentVm != null)
+               {
+                  parentPos = ParentVm.AbsPosX;
+               }
+
+               return parentPos + vm.PosX;
+            }
+
+            return 0;
+         }
+      }
+
       public double PosY
       {
          get
@@ -300,6 +355,28 @@ namespace LeapfrogEditor
                ChildCOViewModel vm = this as ChildCOViewModel;
 
                return vm.PosY;
+            }
+
+            return 0;
+         }
+      }
+
+      public double AbsPosY
+      {
+         get
+         {
+            if ((this != MainVm.EditedCpVm) && (this is ChildCOViewModel))
+            {
+               ChildCOViewModel vm = this as ChildCOViewModel;
+
+               double parentPos = 0;
+
+               if (ParentVm != null)
+               {
+                  parentPos = ParentVm.AbsPosY;
+               }
+
+               return parentPos + vm.PosY;
             }
 
             return 0;
@@ -360,13 +437,26 @@ namespace LeapfrogEditor
       {
          get
          {
+            if (Behaviour.Type == "parallaxBackground")
+            {
+               return 0;
+
+            }
+
+
+
             uint avgZL = 0;
             uint i = 0;
 
-            foreach (LfShapeViewModel shape in ShapeCollection.Shapes)
+            foreach (object o in ShapeCollection.Shapes)
             {
-               avgZL += shape.ZLevel;
-               i++;
+               if (o is LfShapeViewModel)
+               {
+                  LfShapeViewModel shape = (LfShapeViewModel)o;
+
+                  avgZL += shape.ZLevel;
+                  i++;
+               }
             }
 
             if (i > 0)
@@ -1404,6 +1494,77 @@ namespace LeapfrogEditor
          else
          {
             return scenePoint;
+         }
+      }
+
+      public void BuildGlobalShapeCollection(string stateName, bool showJoints, bool showSystems, bool showBackgrounds)
+      {
+         GlobalShapeCollection.Clear();
+
+         foreach (Object o in ShapeCollection.Shapes)
+         {
+            if (o is LfShapeViewModel)
+            {
+               LfShapeViewModel svm = o as LfShapeViewModel;
+               GlobalShapeCollection.Add(svm);
+            }
+         }
+
+         if (showJoints)
+         {
+            foreach (Object o in JointCollection.Joints)
+            {
+               if (o is WeldJointViewModel)
+               {
+                  WeldJointViewModel wjvm = o as WeldJointViewModel;
+                  GlobalShapeCollection.Add(wjvm);
+               }
+            }
+         }
+
+         if (showSystems)
+         {
+            foreach (Object o in SystemCollection.Systems)
+            {
+               if (o is CoSystemViewModel)
+               {
+                  CoSystemViewModel svm = o as CoSystemViewModel;
+                  GlobalShapeCollection.Add(svm);
+               }
+            }
+         }
+
+         foreach (ChildObjectViewModel covm in ChildObjectsWithStates.Children)
+         {
+            covm.AddChildShapesToGlobalCollection(ref _globalShapeCollection, stateName);
+         }
+      }
+
+      public void UpdateChildrenAbsolutePos()
+      {
+         foreach (Object o in ShapeCollection.Shapes)
+         {
+            if (o is LfShapeViewModel)
+            {
+               LfShapeViewModel svm = o as LfShapeViewModel;
+               svm.OnPropertyChanged("AbsPosX");
+               svm.OnPropertyChanged("AbsPosY");
+            }
+         }
+
+         foreach (Object o in JointCollection.Joints)
+         {
+            if (o is WeldJointViewModel)
+            {
+               WeldJointViewModel wjvm = o as WeldJointViewModel;
+               wjvm.OnPropertyChanged("AbsPosX");
+               wjvm.OnPropertyChanged("AbsPosY");
+            }
+         }
+
+         foreach (ChildObjectViewModel covm in ChildObjectsWithStates.Children)
+         {
+            covm.UpdateChildrenAbsolutePos();
          }
       }
 

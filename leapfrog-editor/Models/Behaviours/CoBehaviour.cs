@@ -19,8 +19,8 @@ namespace LeapfrogEditor
       private ExplosiveObjectProperties _explosiveObjProps = new ExplosiveObjectProperties();
       private MagneticMineProperties _magneticMineProps = new MagneticMineProperties();
       private PickupObjectProperties _pickupProps = new PickupObjectProperties();
+      private ParallaxBackgroundProperties _backgroundProps = new ParallaxBackgroundProperties();
       private SceneProperties _sceneProperties = new SceneProperties();
-
 
       #endregion
 
@@ -101,6 +101,18 @@ namespace LeapfrogEditor
       public bool ShouldSerializePickupObjProps()
       {
          return (Type == "explosiveObject");
+      }
+
+      [XmlElement("parallaxBackgroundProperties")]
+      public ParallaxBackgroundProperties BackgroundProps
+      {
+         get { return _backgroundProps; }
+         set { _backgroundProps = value; }
+      }
+
+      public bool ShouldSerializeBackgroundProps()
+      {
+         return (Type == "parallaxBackground");
       }
 
 

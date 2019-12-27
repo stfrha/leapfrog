@@ -96,6 +96,7 @@ namespace LeapfrogEditor
 
             _modelObject.PosX = value;
             OnPropertyChanged("PosX");
+            OnPropertyChanged("AbsPosX");
             OnPropertyChanged("BoundingBox");
 
             CompoundObjectViewModel p = ParentVm;
@@ -106,6 +107,23 @@ namespace LeapfrogEditor
                p.InvalidateJoints();
                p = p.ParentVm;
             }
+         }
+      }
+
+      public double AbsPosX
+      {
+         get
+         {
+            double parentPos = 0;
+
+            if (ParentVm != null)
+            {
+               parentPos = ParentVm.AbsPosX;
+            }
+
+            if (_modelObject == null) return parentPos;
+
+            return parentPos + _modelObject.PosX;
          }
       }
 
@@ -124,6 +142,7 @@ namespace LeapfrogEditor
 
             _modelObject.PosY = value;
             OnPropertyChanged("PosY");
+            OnPropertyChanged("AbsPosY");
             OnPropertyChanged("BoundingBox");
 
             CompoundObjectViewModel p = ParentVm;
@@ -136,6 +155,29 @@ namespace LeapfrogEditor
             }
          }
       }
+
+      public double AbsPosY
+      {
+         get
+         {
+            if (Name == "testNetShape")
+            {
+               int a = 10;
+            }
+
+            double parentPos = 0;
+
+            if (ParentVm != null)
+            {
+               parentPos = ParentVm.AbsPosY;
+            }
+
+            if (_modelObject == null) return parentPos;
+
+            return parentPos + _modelObject.PosY;
+         }
+      }
+
 
       public double Angle
       {

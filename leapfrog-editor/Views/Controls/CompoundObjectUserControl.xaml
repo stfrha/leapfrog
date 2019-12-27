@@ -149,6 +149,21 @@
             </local:RotatableCircleControl.ContextMenu>
          </local:RotatableCircleControl>
       </DataTemplate>
+      <DataTemplate DataType="{x:Type local:ParallaxBackgroundViewModel}">
+         <local:ParallaxBackgroundControl>
+            <local:ParallaxBackgroundControl.ContextMenu>
+               <ContextMenu>
+                  <MenuItem Header="Locate in browser" 
+                                 CommandParameter="{Binding}"
+                                 Command="{Binding Path=Data.LocateInBrowser, Source={StaticResource DataContextProxy}}" />
+                  <Separator />
+                  <MenuItem Header="Delete" 
+                                 CommandParameter="{Binding}"
+                                 Command="{Binding Path=Data.DeleteThisObject, Source={StaticResource DataContextProxy}}" />
+               </ContextMenu>
+            </local:ParallaxBackgroundControl.ContextMenu>
+         </local:ParallaxBackgroundControl>
+      </DataTemplate>
       <DataTemplate DataType="{x:Type local:ChildObjectViewModel}">
          <ItemsControl ItemsSource="{Binding StateProperties}">
             <ItemsControl.ItemsPanel>
@@ -158,8 +173,8 @@
             </ItemsControl.ItemsPanel>
             <ItemsControl.ItemContainerStyle>
                <Style TargetType="ContentPresenter">
-                  <Setter Property="Canvas.Left" Value="{Binding PosX}"/>
-                  <Setter Property="Canvas.Top" Value="{Binding PosY}"/>
+                  <Setter Property="Canvas.Left" Value="{Binding AbsPosX}"/>
+                  <Setter Property="Canvas.Top" Value="{Binding AbsPosY}"/>
                </Style>
             </ItemsControl.ItemContainerStyle>
          </ItemsControl>
@@ -268,7 +283,7 @@
       </DataTemplate>
    </UserControl.Resources>
    <Canvas x:Name="myCoUserControl" >
-      <ItemsControl ItemsSource="{Binding ShapeCollection.Shapes}">
+      <ItemsControl ItemsSource="{Binding GlobalShapeCollection}">
          <ItemsControl.ItemsPanel>
             <ItemsPanelTemplate>
                <Canvas/>
@@ -276,32 +291,11 @@
          </ItemsControl.ItemsPanel>
          <ItemsControl.ItemContainerStyle>
             <Style TargetType="ContentPresenter">
-               <Setter Property="Canvas.Left" Value="{Binding PosX}"/>
-               <Setter Property="Canvas.Top" Value="{Binding PosY}"/>
+               <Setter Property="Canvas.Left" Value="{Binding AbsPosX}"/>
+               <Setter Property="Canvas.Top" Value="{Binding AbsPosY}"/>
                <Setter Property="Canvas.ZIndex" Value="{Binding ZLevel}"/>
             </Style>
          </ItemsControl.ItemContainerStyle>
-      </ItemsControl>
-      <ItemsControl ItemsSource="{Binding JointCollection.Joints}"
-         Visibility="{Binding ShowJoints, ElementName=root, Converter={StaticResource BoolToVisibilityValueConverter}}" >
-         <ItemsControl.ItemsPanel>
-            <ItemsPanelTemplate>
-               <Canvas/>
-            </ItemsPanelTemplate>
-         </ItemsControl.ItemsPanel>
-         <ItemsControl.ItemContainerStyle>
-            <Style TargetType="ContentPresenter">
-               <Setter Property="Canvas.ZIndex" Value="{Binding ZLevel}"/>
-            </Style>
-         </ItemsControl.ItemContainerStyle>
-      </ItemsControl>
-      <ItemsControl ItemsSource="{Binding SystemCollection.Systems}" 
-         Visibility="{Binding ShowSystems, ElementName=root, Converter={StaticResource BoolToVisibilityValueConverter}}" >
-         <ItemsControl.ItemsPanel>
-            <ItemsPanelTemplate>
-               <Canvas/>
-            </ItemsPanelTemplate>
-         </ItemsControl.ItemsPanel>
       </ItemsControl>
       <ItemsControl ItemsSource="{Binding ChildObjectsWithStates.Children}">
          <ItemsControl.ItemsPanel>
@@ -309,11 +303,6 @@
                <Canvas/>
             </ItemsPanelTemplate>
          </ItemsControl.ItemsPanel>
-         <ItemsControl.ItemContainerStyle>
-            <Style TargetType="ContentPresenter">
-               <Setter Property="Canvas.ZIndex" Value="{Binding AggregatedZLevel}"/>
-            </Style>
-         </ItemsControl.ItemContainerStyle>
       </ItemsControl>
    </Canvas>
 </UserControl>

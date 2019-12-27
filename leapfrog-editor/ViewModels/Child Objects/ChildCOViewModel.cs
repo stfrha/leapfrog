@@ -24,6 +24,8 @@ namespace LeapfrogEditor
 
       private TStateProperties<ChildObjectStateProperties> _childStateModelObject;
 
+      // This field (and prop) shows the state index that corresponds to the state name
+      // selected for this ChildCOViewModel
       private int _selectedStateIndex = 0;
 
       private ObservableCollection<CollectionViewModelBase> _treeCollection = new ObservableCollection<CollectionViewModelBase>();
@@ -186,8 +188,6 @@ namespace LeapfrogEditor
 
             ParentVm.DeselectAllChildren();
 
-
-
             CompoundObjectViewModel p = ParentVm;
 
             while ((p != null) && (p is ChildCOViewModel))
@@ -221,6 +221,7 @@ namespace LeapfrogEditor
             ChildStateModelObject.Properties.PosX = value;
 
             OnPropertyChanged("PosX");
+            OnPropertyChanged("AbsPosX");
             OnPropertyChanged("BoundingBox");
 
             CompoundObjectViewModel p = ParentVm;
@@ -230,8 +231,23 @@ namespace LeapfrogEditor
                p.OnPropertyChanged("BoundingBox");
                p = p.ParentVm;
             }
+
+             UpdateChildrenAbsolutePos();
          }
       }
+
+      //public new double AbsPosX
+      //{
+      //   get
+      //   {
+      //      if (this == MainVm.EditedCpVm)
+      //      {
+      //         return PosX;
+      //      }
+
+      //      return ParentVm.AbsPosX + PosX;
+      //   }
+      //}
 
       public new double PosY
       {
@@ -244,6 +260,7 @@ namespace LeapfrogEditor
             ChildStateModelObject.Properties.PosY = value;
 
             OnPropertyChanged("PosY");
+            OnPropertyChanged("AbsPosY");
             OnPropertyChanged("BoundingBox");
 
             CompoundObjectViewModel p = ParentVm;
@@ -253,52 +270,22 @@ namespace LeapfrogEditor
                p.OnPropertyChanged("BoundingBox");
                p = p.ParentVm;
             }
+
+            UpdateChildrenAbsolutePos();
          }
       }
 
-      //public Rect BoundingBox
+      //public new double AbsPosY
       //{
       //   get
       //   {
-      //      if (StateShapes == null) return new Rect(0, 0, 100, 100);
-
-      //      if ((StateShapes.Shapes.Count == 0) && (ChildObjectsWithStates.Children.Count == 0))
+      //      if (this == MainVm.EditedCpVm)
       //      {
-      //         return new Rect(0,0,0,0);
+      //         return PosY;
       //      }
 
-      //      BoundingBoxRect bbr = new BoundingBoxRect();
-
-      //      if (StateShapes.Shapes.Count > 0)
-      //      {
-      //         foreach (object o in StateShapes.Shapes)
-      //         {
-      //            if (o is LfShapeViewModel)
-      //            {
-      //               LfShapeViewModel shape = (LfShapeViewModel)o;
-
-      //               Rect cb = shape.BoundingBox;
-      //               cb.Offset(new Vector(shape.PosX, shape.PosY));
-      //               bbr.AddRect(cb);
-      //            }
-      //         }
-      //      }
-
-      //      if (ChildObjectsWithStates.Children.Count > 0)
-      //      {
-      //         // TODO: Expand this to work with all Displayed ChildObjects, the uncomment
-      //         //foreach (ChildCOViewModel child in ChildObjectsWithStates.Children)
-      //         //{
-      //         //   Rect cb = child.BoundingBox;
-      //         //   cb.Offset(new Vector(child.PosX, child.PosY));
-      //         //   bbr.AddRect(cb);
-      //         //}
-      //      }
-
-      //      return bbr.BoundingBox;
+      //      return ParentVm.AbsPosY + PosY;
       //   }
-      //   set
-      //   { }
       //}
 
       #endregion

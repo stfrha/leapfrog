@@ -21,29 +21,29 @@
          >
          <Line.X1>
             <MultiBinding Converter="{StaticResource RotatableBodyPointMultiConverter}" ConverterParameter="x">
-               <Binding Path="PosX" />
-               <Binding Path="PosY" />
+               <Binding Path="AbsPosX" />
+               <Binding Path="AbsPosY" />
                <Binding Path="Parent.Angle"/>
             </MultiBinding>
          </Line.X1>
          <Line.Y1>
             <MultiBinding Converter="{StaticResource RotatableBodyPointMultiConverter}" ConverterParameter="y">
-               <Binding Path="PosX" />
-               <Binding Path="PosY" />
+               <Binding Path="AbsPosX" />
+               <Binding Path="AbsPosY" />
                <Binding Path="Parent.Angle"/>
                <Binding />
             </MultiBinding>
          </Line.Y1>
          <Line.X2>
             <MultiBinding Converter="{StaticResource PreviousMultiRotatedTriangleVertexValueConverter}" ConverterParameter="x">
-               <Binding Path="PosX" />
+               <Binding Path="AbsPosX" />
                <Binding />
                <Binding Path="DataContext" RelativeSource="{RelativeSource AncestorType=ItemsControl}"/>
             </MultiBinding>
          </Line.X2>
          <Line.Y2>
             <MultiBinding Converter="{StaticResource PreviousMultiRotatedTriangleVertexValueConverter}" ConverterParameter="y">
-               <Binding Path="PosY" />
+               <Binding Path="AbsPosY" />
                <Binding />
                <Binding Path="DataContext" RelativeSource="{RelativeSource AncestorType=ItemsControl}"/>
             </MultiBinding>

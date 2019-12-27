@@ -47,6 +47,7 @@ namespace LeapfrogEditor
             new CollectionContainer { Collection = new ObservableCollection<LfDynamicCircleViewModel>() },
             new CollectionContainer { Collection = new ObservableCollection<LfDynamicPolygonViewModel>() },
             new CollectionContainer { Collection = new ObservableCollection<LfDynamicBoxedSpritePolygonViewModel>() },
+            new CollectionContainer { Collection = new ObservableCollection<ParallaxBackgroundViewModel>() },
          };
 
       }

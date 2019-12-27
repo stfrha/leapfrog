@@ -118,6 +118,7 @@ namespace LeapfrogEditor
 
             _modelObject.PosX = value;
             OnPropertyChanged("PosX");
+            OnPropertyChanged("AbsPosX");
             OnPropertyChanged("BoundingBox");
 
             CompoundObjectViewModel p = Parent;
@@ -131,6 +132,22 @@ namespace LeapfrogEditor
          }
       }
 
+      public double AbsPosX
+      {
+         get
+         {
+            double parentPos = 0;
+
+            if (ParentVm != null)
+            {
+               parentPos = ParentVm.AbsPosX;
+            }
+
+            if (_modelObject == null) return parentPos;
+
+            return parentPos + _modelObject.PosX;
+         }
+      }
 
       public double PosY
       {
@@ -146,6 +163,7 @@ namespace LeapfrogEditor
 
             _modelObject.PosY = value;
             OnPropertyChanged("PosY");
+            OnPropertyChanged("AbsPosY");
             OnPropertyChanged("BoundingBox");
 
             CompoundObjectViewModel p = Parent;
@@ -158,6 +176,25 @@ namespace LeapfrogEditor
             }
          }
       }
+
+      public double AbsPosY
+      {
+         get
+         {
+            double parentPos = 0;
+
+            if (ParentVm != null)
+            {
+               parentPos = ParentVm.AbsPosY;
+            }
+
+            if (_modelObject == null) return parentPos;
+
+            return parentPos + _modelObject.PosY;
+         }
+      }
+
+
 
       public double Width
       {

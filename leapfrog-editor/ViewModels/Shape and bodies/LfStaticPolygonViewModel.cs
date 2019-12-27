@@ -149,6 +149,7 @@ namespace LeapfrogEditor
             dpvm.OnPropertyChanged("");
          }
          OnPropertyChanged("Points");
+         OnPropertyChanged("AbsPoints");
 
       }
 

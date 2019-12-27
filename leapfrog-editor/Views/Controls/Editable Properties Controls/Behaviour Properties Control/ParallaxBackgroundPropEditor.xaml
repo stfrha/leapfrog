@@ -11,7 +11,6 @@
       <Border CornerRadius="5" BorderBrush="DarkGray" BorderThickness="2">
          <StackPanel Margin="2">
             <local:HeadlineControl Headline="Parallax Background Properties" />
-            <local:StringEditorControl Headline="Name" MyValue="{Binding BackgroundName, Mode=TwoWay}" />
             <local:DoubleEditorControl Headline="Parallax Amount" MyValue="{Binding ParallaxAmount, Mode=TwoWay}" />
          </StackPanel>
       </Border>

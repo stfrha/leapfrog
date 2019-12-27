@@ -26,8 +26,8 @@
             <MultiBinding Converter="{StaticResource AttachedBodyPointValueConverter}" ConverterParameter="x">
                <Binding Path="EmitterLineStartX" />
                <Binding Path="EmitterLineStartY" />
-               <Binding Path="BodyObject.PosX"/>
-               <Binding Path="BodyObject.PosY"/>
+               <Binding Path="BodyObject.AbsPosX"/>
+               <Binding Path="BodyObject.AbsPosY"/>
                <Binding Path="BodyObject.Angle"/>
             </MultiBinding>
          </Line.X1>
@@ -35,8 +35,8 @@
             <MultiBinding Converter="{StaticResource AttachedBodyPointValueConverter}" ConverterParameter="y">
                <Binding Path="EmitterLineStartX" />
                <Binding Path="EmitterLineStartY" />
-               <Binding Path="BodyObject.PosX"/>
-               <Binding Path="BodyObject.PosY"/>
+               <Binding Path="BodyObject.AbsPosX"/>
+               <Binding Path="BodyObject.AbsPosY"/>
                <Binding Path="BodyObject.Angle"/>
             </MultiBinding>
          </Line.Y1>
@@ -44,8 +44,8 @@
             <MultiBinding Converter="{StaticResource AttachedBodyPointValueConverter}" ConverterParameter="x">
                <Binding Path="EmitterLineEndX" />
                <Binding Path="EmitterLineEndY" />
-               <Binding Path="BodyObject.PosX"/>
-               <Binding Path="BodyObject.PosY"/>
+               <Binding Path="BodyObject.AbsPosX"/>
+               <Binding Path="BodyObject.AbsPosY"/>
                <Binding Path="BodyObject.Angle"/>
             </MultiBinding>
          </Line.X2>
@@ -53,8 +53,8 @@
             <MultiBinding Converter="{StaticResource AttachedBodyPointValueConverter}" ConverterParameter="y">
                <Binding Path="EmitterLineEndX" />
                <Binding Path="EmitterLineEndY" />
-               <Binding Path="BodyObject.PosX"/>
-               <Binding Path="BodyObject.PosY"/>
+               <Binding Path="BodyObject.AbsPosX"/>
+               <Binding Path="BodyObject.AbsPosY"/>
                <Binding Path="BodyObject.Angle"/>
             </MultiBinding>
          </Line.Y2>
@@ -70,8 +70,8 @@
                <Binding Path="EmitterLineEndX" />
                <Binding Path="EmitterLineEndY" />
                <Binding Path="Angle" />
-               <Binding Path="BodyObject.PosX"/>
-               <Binding Path="BodyObject.PosY"/>
+               <Binding Path="BodyObject.AbsPosX"/>
+               <Binding Path="BodyObject.AbsPosY"/>
                <Binding Path="BodyObject.Angle"/>
             </MultiBinding>
          </Line.X1>
@@ -82,8 +82,8 @@
                <Binding Path="EmitterLineEndX" />
                <Binding Path="EmitterLineEndY" />
                <Binding Path="Angle" />
-               <Binding Path="BodyObject.PosX"/>
-               <Binding Path="BodyObject.PosY"/>
+               <Binding Path="BodyObject.AbsPosX"/>
+               <Binding Path="BodyObject.AbsPosY"/>
                <Binding Path="BodyObject.Angle"/>
             </MultiBinding>
          </Line.Y1>
@@ -94,8 +94,8 @@
                <Binding Path="EmitterLineEndX" />
                <Binding Path="EmitterLineEndY" />
                <Binding Path="Angle" />
-               <Binding Path="BodyObject.PosX"/>
-               <Binding Path="BodyObject.PosY"/>
+               <Binding Path="BodyObject.AbsPosX"/>
+               <Binding Path="BodyObject.AbsPosY"/>
                <Binding Path="BodyObject.Angle"/>
             </MultiBinding>
          </Line.X2>
@@ -106,8 +106,8 @@
                <Binding Path="EmitterLineEndX" />
                <Binding Path="EmitterLineEndY" />
                <Binding Path="Angle" />
-               <Binding Path="BodyObject.PosX"/>
-               <Binding Path="BodyObject.PosY"/>
+               <Binding Path="BodyObject.AbsPosX"/>
+               <Binding Path="BodyObject.AbsPosY"/>
                <Binding Path="BodyObject.Angle"/>
             </MultiBinding>
          </Line.Y2>
@@ -125,8 +125,8 @@
             <MultiBinding Converter="{StaticResource AttachedBodyPointValueConverter}" ConverterParameter="x">
                <Binding Path="EmitterLineStartX" />
                <Binding Path="EmitterLineStartY" />
-               <Binding Path="BodyObject.PosX"/>
-               <Binding Path="BodyObject.PosY"/>
+               <Binding Path="BodyObject.AbsPosX"/>
+               <Binding Path="BodyObject.AbsPosY"/>
                <Binding Path="BodyObject.Angle"/>
             </MultiBinding>
          </Canvas.Left>
@@ -134,8 +134,8 @@
             <MultiBinding Converter="{StaticResource AttachedBodyPointValueConverter}" ConverterParameter="y">
                <Binding Path="EmitterLineStartX" />
                <Binding Path="EmitterLineStartY" />
-               <Binding Path="BodyObject.PosX"/>
-               <Binding Path="BodyObject.PosY"/>
+               <Binding Path="BodyObject.AbsPosX"/>
+               <Binding Path="BodyObject.AbsPosY"/>
                <Binding Path="BodyObject.Angle"/>
             </MultiBinding>
          </Canvas.Top>
@@ -169,8 +169,8 @@
             <MultiBinding Converter="{StaticResource AttachedBodyPointValueConverter}" ConverterParameter="x">
                <Binding Path="EmitterLineEndX" />
                <Binding Path="EmitterLineEndY" />
-               <Binding Path="BodyObject.PosX"/>
-               <Binding Path="BodyObject.PosY"/>
+               <Binding Path="BodyObject.AbsPosX"/>
+               <Binding Path="BodyObject.AbsPosY"/>
                <Binding Path="BodyObject.Angle"/>
             </MultiBinding>
          </Canvas.Left>
@@ -178,8 +178,8 @@
             <MultiBinding Converter="{StaticResource AttachedBodyPointValueConverter}" ConverterParameter="y">
                <Binding Path="EmitterLineEndX" />
                <Binding Path="EmitterLineEndY" />
-               <Binding Path="BodyObject.PosX"/>
-               <Binding Path="BodyObject.PosY"/>
+               <Binding Path="BodyObject.AbsPosX"/>
+               <Binding Path="BodyObject.AbsPosY"/>
                <Binding Path="BodyObject.Angle"/>
             </MultiBinding>
          </Canvas.Top>
@@ -213,8 +213,8 @@
                <Binding Path="EmitterLineEndX" />
                <Binding Path="EmitterLineEndY" />
                <Binding Path="Angle" />
-               <Binding Path="BodyObject.PosX"/>
-               <Binding Path="BodyObject.PosY"/>
+               <Binding Path="BodyObject.AbsPosX"/>
+               <Binding Path="BodyObject.AbsPosY"/>
                <Binding Path="BodyObject.Angle"/>
             </MultiBinding>
          </Canvas.Left>
@@ -225,8 +225,8 @@
                <Binding Path="EmitterLineEndX" />
                <Binding Path="EmitterLineEndY" />
                <Binding Path="Angle" />
-               <Binding Path="BodyObject.PosX"/>
-               <Binding Path="BodyObject.PosY"/>
+               <Binding Path="BodyObject.AbsPosX"/>
+               <Binding Path="BodyObject.AbsPosY"/>
                <Binding Path="BodyObject.Angle"/>
             </MultiBinding>
          </Canvas.Top>

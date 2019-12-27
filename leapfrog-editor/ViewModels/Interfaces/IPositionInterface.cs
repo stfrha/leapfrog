@@ -23,5 +23,15 @@ namespace LeapfrogEditor
          get;
          set;
       }
+
+      double AbsPosX
+      {
+         get;
+      }
+
+      double AbsPosY
+      {
+         get;
+      }
    }
 }

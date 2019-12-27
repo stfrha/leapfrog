@@ -280,7 +280,7 @@ namespace LeapfrogEditor
                Point pos = new Point((double)values[0], (double)values[1]);
                LfShapeViewModel shape = (LfShapeViewModel)values[2];
                Point rp = CoordinateTransformations.RotatedPointFromLocal(pos, shape.Angle);
-               rp.Offset(shape.PosX, shape.PosY);
+               rp.Offset(shape.AbsPosX, shape.AbsPosY);
 
                if (parameter as string == "x")
                {
@@ -299,7 +299,7 @@ namespace LeapfrogEditor
                LfShapeViewModel shape = (LfShapeViewModel)values[5];
                double length = (double)values[6];
                Point rp = CoordinateTransformations.RotatedPointFromLocal(pos, shape.Angle);
-               rp.Offset(shape.PosX, shape.PosY);
+               rp.Offset(shape.AbsPosX, shape.AbsPosY);
 
                rp.Y += length; 
 

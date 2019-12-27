@@ -1,0 +1,16 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<compoundObject>
+   <behaviour
+      type="parallaxBackground">
+      <parallaxBackgroundProperties
+         parallaxAmount="1" />
+   </behaviour>
+   <spriteBox
+      name="farBackground"
+      texture="night_sky"
+      posX="750"
+      posY="450"
+      width="1500"
+      height="900" 
+      angle="0" />
+</compoundObject>

@@ -1,23 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<compoundObject>
-   <behaviour
-      type="scene">
-      <sceneProperties
-         sceneType="ground"
-         width="1500"
-         height="900"
-         hasUpperBoundary="false"
-         hasLowerBoundary="true"
-         hasLeftBoundary="true"
-         hasRightBoundary="true" >
-         <states>
-           <state>default</state>
-           <state>groundState</state>
-           <state>landingState</state>
-         </states>
-      </sceneProperties>
-   </behaviour>
-   <staticBox
+<compoundObject
+  needsGroupIndex="false">
+  <staticBox
     name="ropeHolder"
     texture="lf_position"
     posX="200"
@@ -29,20 +13,6 @@
     collisionMask="65533"
     width="20"
     height="20" />
-  <dynamicBox
-    name="wrecker"
-    texture="crater_rock"
-    posX="230"
-    posY="235"
-    angle="0"
-    zLevel="192"
-    collisionEntity="notApplicable"
-    collisionCategory="1"
-    collisionMask="65533"
-    width="20"
-    height="20"
-    density="1"
-    friction="0" />
   <staticPolygon
     name="springHolder"
     texture="crater_rock"
@@ -928,6 +898,37 @@
         textureMeterHeight="0" />
     </border>
   </staticPolygon>
+  <dynamicBox
+    name="wrecker"
+    texture="crater_rock"
+    posX="230"
+    posY="235"
+    angle="0"
+    zLevel="192"
+    collisionEntity="notApplicable"
+    collisionCategory="1"
+    collisionMask="65533"
+    width="20"
+    height="20"
+    density="1"
+    friction="0" />
+  <behaviour
+    type="scene">
+    <sceneProperties
+      sceneType="ground"
+      width="1500"
+      height="900"
+      hasUpperBoundary="false"
+      hasLowerBoundary="true"
+      hasLeftBoundary="true"
+      hasRightBoundary="true">
+      <states>
+        <state>default</state>
+        <state>groundState</state>
+        <state>landingState</state>
+      </states>
+    </sceneProperties>
+  </behaviour>
   <rope
     name="rope1"
     objectAName="ropeHolder"
@@ -944,30 +945,36 @@
     collisionEntity="notApplicable"
     collisionCategory="33"
     collisionMask="65534" />
-   <childObject
-      name="night_sky_background">
-      <stateProperties
-         state="default">
-         <properties
-           file="night_sky_background.xml" />
-      </stateProperties>
-   </childObject>
-   <childObject
-      name="clouds_background">
-      <stateProperties
-         state="default">
-         <properties
-           file="clouds_background.xml" />
-      </stateProperties>
-   </childObject>
-   <childObject
-      name="inner_wall_background">
-      <stateProperties
-         state="default">
-         <properties
-           file="inner_wall_background.xml" />
-      </stateProperties>
-   </childObject>
+  <childObject
+    name="night_sky_background">
+    <stateProperties
+      state="default">
+      <properties
+        file="night_sky_background.xml"
+        posX="0"
+        posY="0" />
+    </stateProperties>
+  </childObject>
+  <childObject
+    name="clouds_background">
+    <stateProperties
+      state="default">
+      <properties
+        file="clouds_background.xml"
+        posX="0"
+        posY="0" />
+    </stateProperties>
+  </childObject>
+  <childObject
+    name="inner_wall_background">
+    <stateProperties
+      state="default">
+      <properties
+        file="inner_wall_background.xml"
+        posX="0"
+        posY="0" />
+    </stateProperties>
+  </childObject>
   <childObject
     name="machine1">
     <stateProperties
@@ -984,8 +991,8 @@
       state="default">
       <properties
         file="launch_site.xml"
-        posX="33.207673270720193"
-        posY="269.54479909141145" />
+        posX="30"
+        posY="270" />
     </stateProperties>
   </childObject>
   <childObject

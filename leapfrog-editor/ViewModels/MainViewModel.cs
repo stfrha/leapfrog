@@ -10,6 +10,7 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Shapes;
 using System.Xml;
@@ -161,7 +162,6 @@ namespace LeapfrogEditor
                Textures.Add(fname);
             }
          }
-
       }
 
       #endregion
@@ -183,6 +183,7 @@ namespace LeapfrogEditor
             OnPropertyChanged("EditedCpVm");
          }
       }
+
 
       public string WindowTitle
       {
@@ -258,6 +259,9 @@ namespace LeapfrogEditor
          {
             _showJoints = value;
             OnPropertyChanged("ShowJoints");
+
+            // Build global shape collection
+            EditedCpVm.BuildGlobalShapeCollection(GetEditableCoBehaviourStateName(), ShowJoints, ShowSystems, true);
          }
       }
 
@@ -268,6 +272,9 @@ namespace LeapfrogEditor
          {
             _showSystems = value;
             OnPropertyChanged("ShowSystems");
+
+            // Build global shape collection
+            EditedCpVm.BuildGlobalShapeCollection(GetEditableCoBehaviourStateName(), ShowJoints, ShowSystems, true);
          }
       }
 
@@ -278,6 +285,9 @@ namespace LeapfrogEditor
          {
             _showTriangles = value;
             OnPropertyChanged("ShowTriangles");
+
+            // Build global shape collection
+            EditedCpVm.BuildGlobalShapeCollection(GetEditableCoBehaviourStateName(), ShowJoints, ShowSystems, true);
          }
       }
 
@@ -347,6 +357,9 @@ namespace LeapfrogEditor
                EditedCpVm.OnPropertyChanged("");
                OnPropertyChanged("");
 
+               // Build global shape collection
+               EditedCpVm.BuildGlobalShapeCollection(GetEditableCoBehaviourStateName(), ShowJoints, ShowSystems, true);
+
                Rect bb = EditedCpVm.BoundingBox;
                ((MainWindow)System.Windows.Application.Current.MainWindow).ShowThisRect(bb);
 
@@ -403,6 +416,9 @@ namespace LeapfrogEditor
             EditedCpVm.OnPropertyChanged("");
             OnPropertyChanged("");
             DeselectAll();
+
+            // Build global shape collection
+            EditedCpVm.BuildGlobalShapeCollection(GetEditableCoBehaviourStateName(), ShowJoints, ShowSystems, true);
 
             Rect bb = EditedCpVm.BoundingBox;
             ((MainWindow)System.Windows.Application.Current.MainWindow).ShowThisRect(bb);
@@ -675,6 +691,7 @@ namespace LeapfrogEditor
             svm.SetOnDisplay();
 
             EditedCpVm.OnPropertyChanged("");
+            EditedCpVm.BuildGlobalShapeCollection(svm.StateName, ShowJoints, ShowSystems, true);
          }
       }
 
@@ -953,6 +970,7 @@ namespace LeapfrogEditor
             }
             SelectedJoints.Clear();
 
+            EditedCpVm.BuildGlobalShapeCollection(GetEditableCoBehaviourStateName(), ShowJoints, ShowSystems, true);
          }
          else if (SelectedShapes.Count > 0)
          {
@@ -963,6 +981,7 @@ namespace LeapfrogEditor
                //covm.ModelObject.RemoveShape(svm.ModelObject);
                covm.RemoveShape(svm);
 
+               EditedCpVm.BuildGlobalShapeCollection(GetEditableCoBehaviourStateName(), ShowJoints, ShowSystems, true);
             }
             SelectedShapes.Clear();
          }
@@ -984,6 +1003,14 @@ namespace LeapfrogEditor
 
       void DeleteThisObjectExecute(Object parameter)
       {
+         if (parameter is ParallaxBackgroundViewModel)
+         {
+            // Find the ChildCOViewModel that originated in the background
+            // and set parameter to this.
+            ParallaxBackgroundViewModel pbvm = parameter as ParallaxBackgroundViewModel;
+            parameter = pbvm.ParentCompoundObjectVm;
+         }
+
          if (parameter is WeldJointViewModel)
          {
             WeldJointViewModel jvm = parameter as WeldJointViewModel;
@@ -1048,6 +1075,8 @@ namespace LeapfrogEditor
             covm.ModelObject.Systems.Remove(sysVm.LocalModelObject);
             covm.SystemCollection.Systems.Remove(sysVm);
          }
+
+         EditedCpVm.BuildGlobalShapeCollection(GetEditableCoBehaviourStateName(), ShowJoints, ShowSystems, true);
       }
 
       bool CanDeleteThisObjectExecute(Object parameter)
@@ -1060,7 +1089,8 @@ namespace LeapfrogEditor
          if ((EditedCpVm != null) && ((parameter is LfShapeViewModel) || 
             (parameter is WeldJointViewModel) || (parameter is ChildCOViewModel) ||
             (parameter is ChildObjectViewModel) || (parameter is SpawnObjectViewModel) ||
-            (parameter is SystemViewModelBase) || (parameter is CoSystemViewModel)))
+            (parameter is SystemViewModelBase) || (parameter is CoSystemViewModel) ||
+            (parameter is ParallaxBackgroundViewModel)))
          {
             return true;
          }
@@ -1088,6 +1118,7 @@ namespace LeapfrogEditor
             CompoundObjectViewModel covm = EditedCpVm as CompoundObjectViewModel;
             covm.ModelObject.ChildObjects.Add(ch);
             scvm.Children.Add(chvm);
+            EditedCpVm.BuildGlobalShapeCollection(GetEditableCoBehaviourStateName(), ShowJoints, ShowSystems, true);
          }
 
          if (parameter is ChildObjectViewModel)
@@ -1104,6 +1135,7 @@ namespace LeapfrogEditor
             covm.BuildViewModel(true);
 
             chvm.StateProperties.Add(covm);
+            EditedCpVm.BuildGlobalShapeCollection(GetEditableCoBehaviourStateName(), ShowJoints, ShowSystems, true);
          }
       }
 
@@ -1132,6 +1164,14 @@ namespace LeapfrogEditor
 
       void LocateInBrowserExecute(Object parameter)
       {
+         if (parameter is ParallaxBackgroundViewModel)
+         {
+            // Find the ChildCOViewModel that originated in the background
+            // and set parameter to this.
+            ParallaxBackgroundViewModel pbvm = parameter as ParallaxBackgroundViewModel;
+            parameter = pbvm.ParentCompoundObjectVm;
+         }
+
          if (parameter is TreeViewViewModel)
          {
             TreeViewViewModel tvvm = parameter as TreeViewViewModel;
@@ -1789,6 +1829,8 @@ namespace LeapfrogEditor
                   }
                   _selectedPoints.Clear();
 
+                  EditedCpVm.BuildGlobalShapeCollection(GetEditableCoBehaviourStateName(), ShowJoints, ShowSystems, true);
+
                   if (newShapeVm is LfPolygonViewModel)
                   {
                      LfDragablePointViewModel newPoint = ((LfPolygonViewModel)newShapeVm).InsertPoint(new Point(0, 0), null);
@@ -1839,6 +1881,8 @@ namespace LeapfrogEditor
 
                newJointVm.IsSelected = true;
 
+               EditedCpVm.BuildGlobalShapeCollection(GetEditableCoBehaviourStateName(), ShowJoints, ShowSystems, true);
+
                _LeftClickState = LeftClickState.none;
             }
             else if ((_LeftClickState == LeftClickState.objectFactory) ||
@@ -1863,6 +1907,8 @@ namespace LeapfrogEditor
                   SelectedShapes.Count);
 
                newSysVm.IsSelected = true;
+
+               EditedCpVm.BuildGlobalShapeCollection(GetEditableCoBehaviourStateName(), ShowJoints, ShowSystems, true);
 
                _LeftClickState = LeftClickState.none;
 
@@ -2426,6 +2472,10 @@ namespace LeapfrogEditor
 
          EditedCpVm = newCpVm;
          (EditedCpVm as CompoundObjectViewModel).BuildViewModel();
+
+         // Build global shape collection
+         EditedCpVm.BuildGlobalShapeCollection(GetEditableCoBehaviourStateName(), ShowJoints, ShowSystems, true);
+
          EditedCpVm.OnPropertyChanged("");
          OnPropertyChanged("");
 
@@ -2435,6 +2485,13 @@ namespace LeapfrogEditor
 
          //((MainWindow)System.Windows.Application.Current.MainWindow).TheTreeView.
       }
+
+
+
+
+
+
+
 
       #endregion
    }

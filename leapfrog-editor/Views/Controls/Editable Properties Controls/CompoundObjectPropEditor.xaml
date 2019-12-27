@@ -39,6 +39,9 @@
                   <DataTemplate DataType="{x:Type local:PickupObjectPropertiesViewModel}">
                      <local:PickupBehaviourPropEditor />
                   </DataTemplate>
+                  <DataTemplate DataType="{x:Type local:ParallaxBackgroundPropertiesViewModel}">
+                     <local:ParallaxBackgroundPropEditor />
+                  </DataTemplate>
                   <DataTemplate x:Key="He1" >
                      <Label Content="Undef Properties" />
                   </DataTemplate>

@@ -104,6 +104,30 @@ namespace LeapfrogEditor
          set { _stateProperties = value; }
       }
 
+      public uint AggregatedZLevel
+      {
+         get
+         {
+            return StateProperties[0].AggregatedZLevel;
+
+            //uint avgZL = 0;
+            //uint i = 0;
+
+            //foreach (LfShapeViewModel shape in ShapeCollection.Shapes)
+            //{
+            //   avgZL += shape.ZLevel;
+            //   i++;
+            //}
+
+            //if (i > 0)
+            //{
+            //   return avgZL / i;
+            //}
+
+            //return 0;
+         }
+      }
+
       #endregion
 
       #region Private Methods
@@ -122,6 +146,59 @@ namespace LeapfrogEditor
             spvm.DeselectAllChildren();
          }
       }
+
+      public void AddChildShapesToGlobalCollection(ref CompositeCollection coll, string editedState)
+      {
+         foreach (ChildCOViewModel ccvm in StateProperties)
+         {
+            if (ccvm.State == editedState)
+            {
+               if (ccvm.Behaviour.BehaviourProperties is ParallaxBackgroundPropertiesViewModel)
+               {
+                  ParallaxBackgroundViewModel pbvm = new ParallaxBackgroundViewModel(ccvm, MainVm, ccvm.Behaviour.BehaviourProperties as ParallaxBackgroundPropertiesViewModel);
+
+                  foreach (Object o in ccvm.ShapeCollection.Shapes)
+                  {
+                     if (o is LfShapeViewModel)
+                     {
+                        LfShapeViewModel svm = o as LfShapeViewModel;
+                        pbvm.Shapes.Add(svm);
+                     }
+                  }
+
+                  coll.Add(pbvm);
+               }
+               else
+               {
+                  foreach (Object o in ccvm.ShapeCollection.Shapes)
+                  {
+                     if (o is LfShapeViewModel)
+                     {
+                        LfShapeViewModel svm = o as LfShapeViewModel;
+                        coll.Add(svm);
+                     }
+                  }
+
+                  if (ccvm != MainVm.EditedCpVm)
+                  {
+                     foreach (ChildObjectViewModel covm in ccvm.ChildObjectsWithStates.Children)
+                     {
+                        covm.AddChildShapesToGlobalCollection(ref coll, editedState);
+                     }
+                  }
+               }
+            }
+         }
+      }
+
+      public void UpdateChildrenAbsolutePos()
+      {
+         foreach (ChildCOViewModel ccvm in StateProperties)
+         {
+            ccvm.UpdateChildrenAbsolutePos();
+         }
+      }
+
 
       #endregion
 

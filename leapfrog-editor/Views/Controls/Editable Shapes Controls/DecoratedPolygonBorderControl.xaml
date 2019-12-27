@@ -39,8 +39,8 @@
                <Setter Property="Canvas.Left">
                   <Setter.Value>
                      <MultiBinding Converter="{StaticResource RotatableBodyPointMultiConverter}" ConverterParameter="x">
-                        <Binding Path="PosX" />
-                        <Binding Path="PosY" />
+                        <Binding Path="AbsPosX" />
+                        <Binding Path="AbsPosY" />
                         <Binding Path="Parent.Angle"/>
                      </MultiBinding>
                   </Setter.Value>
@@ -48,8 +48,8 @@
                <Setter Property="Canvas.Top">
                   <Setter.Value>
                      <MultiBinding Converter="{StaticResource RotatableBodyPointMultiConverter}" ConverterParameter="y">
-                        <Binding Path="PosX" />
-                        <Binding Path="PosY" />
+                        <Binding Path="AbsPosX" />
+                        <Binding Path="AbsPosY" />
                         <Binding Path="Parent.Angle"/>
                      </MultiBinding>
                   </Setter.Value>
@@ -61,22 +61,22 @@
                <Rectangle>
                   <Rectangle.Height>
                      <MultiBinding Converter="{StaticResource TextureBorderHeightMultiConverter}" >
-                        <Binding Path="PosX" />
-                        <Binding Path="PosY" />
+                        <Binding Path="AbsPosX" />
+                        <Binding Path="AbsPosY" />
                         <Binding />
                      </MultiBinding>
                   </Rectangle.Height>
                   <Rectangle.Width>
                      <MultiBinding Converter="{StaticResource TextureBorderWidthMultiConverter}" >
-                        <Binding Path="PosX" />
-                        <Binding Path="PosY" />
+                        <Binding Path="AbsPosX" />
+                        <Binding Path="AbsPosY" />
                         <Binding />
                      </MultiBinding>
                   </Rectangle.Width>
                   <Rectangle.Visibility>
                      <MultiBinding Converter="{StaticResource TextureBorderVisibilityMultiConverter}" >
-                        <Binding Path="PosX" />
-                        <Binding Path="PosY" />
+                        <Binding Path="AbsPosX" />
+                        <Binding Path="AbsPosY" />
                         <Binding />
                      </MultiBinding>
                   </Rectangle.Visibility>
@@ -89,15 +89,15 @@
                         AlignmentY="Top">
                         <ImageBrush.ImageSource>
                            <MultiBinding Converter="{StaticResource TextureBorderTexturePathMultiConverter}" >
-                              <Binding Path="PosX" />
-                              <Binding Path="PosY" />
+                              <Binding Path="AbsPosX" />
+                              <Binding Path="AbsPosY" />
                               <Binding />
                            </MultiBinding>
                         </ImageBrush.ImageSource>
                         <ImageBrush.Viewport>
                            <MultiBinding Converter="{StaticResource TextureBorderRectMultiValueConverter}" >
-                              <Binding Path="PosX" />
-                              <Binding Path="PosY" />
+                              <Binding Path="AbsPosX" />
+                              <Binding Path="AbsPosY" />
                               <Binding />
                            </MultiBinding>
                         </ImageBrush.Viewport>
@@ -108,15 +108,15 @@
                         <TranslateTransform x:Name="d2">
                            <TranslateTransform.X>
                               <MultiBinding Converter="{StaticResource TextureBorderOffsetMultiConverter}" ConverterParameter="x">
-                                 <Binding Path="PosX" />
-                                 <Binding Path="PosY" />
+                                 <Binding Path="AbsPosX" />
+                                 <Binding Path="AbsPosY" />
                                  <Binding />
                               </MultiBinding>
                            </TranslateTransform.X>
                            <TranslateTransform.Y>
                               <MultiBinding Converter="{StaticResource TextureBorderOffsetMultiConverter}" ConverterParameter="y">
-                                 <Binding Path="PosY" />
-                                 <Binding Path="PosY" />
+                                 <Binding Path="AbsPosY" />
+                                 <Binding Path="AbsPosY" />
                                  <Binding />
                               </MultiBinding>
                            </TranslateTransform.Y>
@@ -124,8 +124,8 @@
                         <RotateTransform x:Name="d1">
                            <RotateTransform.Angle>
                               <MultiBinding Converter="{StaticResource TextureBorderAngleMultiConverter}" >
-                                 <Binding Path="PosX" />
-                                 <Binding Path="PosY" />
+                                 <Binding Path="AbsPosX" />
+                                 <Binding Path="AbsPosY" />
                                  <Binding Path="Parent.Angle" />
                                  <Binding />
                               </MultiBinding>
@@ -186,30 +186,30 @@
                      Cursor="ScrollAll"    >
                      <Line.X1>
                         <MultiBinding Converter="{StaticResource RotatableBodyPointMultiConverter}" ConverterParameter="x">
-                           <Binding Path="PosX" />
-                           <Binding Path="PosY" />
+                           <Binding Path="AbsPosX" />
+                           <Binding Path="AbsPosY" />
                            <Binding Path="Parent.Angle"/>
                         </MultiBinding>
                      </Line.X1>
                      <Line.Y1>
                         <MultiBinding Converter="{StaticResource RotatableBodyPointMultiConverter}" ConverterParameter="y">
-                           <Binding Path="PosX" />
-                           <Binding Path="PosY" />
+                           <Binding Path="AbsPosX" />
+                           <Binding Path="AbsPosY" />
                            <Binding Path="Parent.Angle"/>
                         </MultiBinding>
                      </Line.Y1>
                      <Line.X2>
                         <MultiBinding Converter="{StaticResource PreviousRotatableBodyPointMultiConverter}" ConverterParameter="x">
-                           <Binding Path="PosX" />
-                           <Binding Path="PosY" />
+                           <Binding Path="AbsPosX" />
+                           <Binding Path="AbsPosY" />
                            <Binding Path="Parent.Angle"/>
                            <Binding />
                         </MultiBinding>
                      </Line.X2>
                      <Line.Y2>
                         <MultiBinding Converter="{StaticResource PreviousRotatableBodyPointMultiConverter}" ConverterParameter="y">
-                           <Binding Path="PosX" />
-                           <Binding Path="PosY" />
+                           <Binding Path="AbsPosX" />
+                           <Binding Path="AbsPosY" />
                            <Binding Path="Parent.Angle"/>
                            <Binding />
                         </MultiBinding>
@@ -235,8 +235,8 @@
                <Setter Property="Canvas.Left">
                   <Setter.Value>
                      <MultiBinding Converter="{StaticResource RotatableBodyPointMultiConverter}" ConverterParameter="x">
-                        <Binding Path="PosX" />
-                        <Binding Path="PosY" />
+                        <Binding Path="AbsPosX" />
+                        <Binding Path="AbsPosY" />
                         <Binding Path="Parent.Angle"/>
                      </MultiBinding>
                   </Setter.Value>
@@ -244,8 +244,8 @@
                <Setter Property="Canvas.Top">
                   <Setter.Value>
                      <MultiBinding Converter="{StaticResource RotatableBodyPointMultiConverter}" ConverterParameter="y">
-                        <Binding Path="PosX" />
-                        <Binding Path="PosY" />
+                        <Binding Path="AbsPosX" />
+                        <Binding Path="AbsPosY" />
                         <Binding Path="Parent.Angle"/>
                      </MultiBinding>
                   </Setter.Value>

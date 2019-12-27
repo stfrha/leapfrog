@@ -23,8 +23,8 @@
             <MultiBinding Converter="{StaticResource AttachedBodyPointValueConverter}" ConverterParameter="x">
                <Binding Path="AAnchorX" />
                <Binding Path="AAnchorY" />
-               <Binding Path="AShapeObject.PosX"/>
-               <Binding Path="AShapeObject.PosY"/>
+               <Binding Path="AShapeObject.AbsPosX"/>
+               <Binding Path="AShapeObject.AbsPosY"/>
                <Binding Path="AShapeObject.Angle"/>
             </MultiBinding>
          </Line.X1>
@@ -32,8 +32,8 @@
             <MultiBinding Converter="{StaticResource AttachedBodyPointValueConverter}" ConverterParameter="y">
                <Binding Path="AAnchorX" />
                <Binding Path="AAnchorY" />
-               <Binding Path="AShapeObject.PosX"/>
-               <Binding Path="AShapeObject.PosY"/>
+               <Binding Path="AShapeObject.AbsPosX"/>
+               <Binding Path="AShapeObject.AbsPosY"/>
                <Binding Path="AShapeObject.Angle"/>
             </MultiBinding>
          </Line.Y1>
@@ -41,8 +41,8 @@
             <MultiBinding Converter="{StaticResource AttachedBodyPointValueConverter}" ConverterParameter="x">
                <Binding Path="BAnchorX" />
                <Binding Path="BAnchorY" />
-               <Binding Path="BShapeObject.PosX"/>
-               <Binding Path="BShapeObject.PosY"/>
+               <Binding Path="BShapeObject.AbsPosX"/>
+               <Binding Path="BShapeObject.AbsPosY"/>
                <Binding Path="BShapeObject.Angle"/>
             </MultiBinding>
          </Line.X2>
@@ -50,8 +50,8 @@
             <MultiBinding Converter="{StaticResource AttachedBodyPointValueConverter}" ConverterParameter="y">
                <Binding Path="BAnchorX" />
                <Binding Path="BAnchorY" />
-               <Binding Path="BShapeObject.PosX"/>
-               <Binding Path="BShapeObject.PosY"/>
+               <Binding Path="BShapeObject.AbsPosX"/>
+               <Binding Path="BShapeObject.AbsPosY"/>
                <Binding Path="BShapeObject.Angle"/>
             </MultiBinding>
          </Line.Y2>
@@ -69,8 +69,8 @@
             <MultiBinding Converter="{StaticResource AttachedBodyPointValueConverter}" ConverterParameter="x">
                <Binding Path="AAnchorX" />
                <Binding Path="AAnchorY" />
-               <Binding Path="AShapeObject.PosX"/>
-               <Binding Path="AShapeObject.PosY"/>
+               <Binding Path="AShapeObject.AbsPosX"/>
+               <Binding Path="AShapeObject.AbsPosY"/>
                <Binding Path="AShapeObject.Angle"/>
             </MultiBinding>
          </Canvas.Left>
@@ -78,8 +78,8 @@
             <MultiBinding Converter="{StaticResource AttachedBodyPointValueConverter}" ConverterParameter="y">
                <Binding Path="AAnchorX" />
                <Binding Path="AAnchorY" />
-               <Binding Path="AShapeObject.PosX"/>
-               <Binding Path="AShapeObject.PosY"/>
+               <Binding Path="AShapeObject.AbsPosX"/>
+               <Binding Path="AShapeObject.AbsPosY"/>
                <Binding Path="AShapeObject.Angle"/>
             </MultiBinding>
          </Canvas.Top>
@@ -113,8 +113,8 @@
             <MultiBinding Converter="{StaticResource AttachedBodyPointValueConverter}" ConverterParameter="x">
                <Binding Path="BAnchorX" />
                <Binding Path="BAnchorY" />
-               <Binding Path="BShapeObject.PosX"/>
-               <Binding Path="BShapeObject.PosY"/>
+               <Binding Path="BShapeObject.AbsPosX"/>
+               <Binding Path="BShapeObject.AbsPosY"/>
                <Binding Path="BShapeObject.Angle"/>
             </MultiBinding>
          </Canvas.Left>
@@ -122,8 +122,8 @@
             <MultiBinding Converter="{StaticResource AttachedBodyPointValueConverter}" ConverterParameter="y">
                <Binding Path="BAnchorX" />
                <Binding Path="BAnchorY" />
-               <Binding Path="BShapeObject.PosX"/>
-               <Binding Path="BShapeObject.PosY"/>
+               <Binding Path="BShapeObject.AbsPosX"/>
+               <Binding Path="BShapeObject.AbsPosY"/>
                <Binding Path="BShapeObject.Angle"/>
             </MultiBinding>
          </Canvas.Top>

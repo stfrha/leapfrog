@@ -23,6 +23,7 @@ namespace LeapfrogEditor
       private MagneticMinePropertiesViewModel _magneticMineProperties;
       private PickupObjectPropertiesViewModel _pickupProperties;
       private ScenePropertiesViewModel _sceneProperties;
+      private ParallaxBackgroundPropertiesViewModel _backgroundProperties;
 
       private ObservableCollection<StateViewModel> _defaultStates = new ObservableCollection<StateViewModel>();
       private StateViewModel _defaultState = new StateViewModel(null, null, null, null, "default");
@@ -47,6 +48,7 @@ namespace LeapfrogEditor
          _explosiveObjProperties = new ExplosiveObjectPropertiesViewModel(treeParent, parentVm, mainVm, ModelObject.ExplosiveObjProps);
          _magneticMineProperties = new MagneticMinePropertiesViewModel(treeParent, parentVm, mainVm, ModelObject.MagneticMineProps);
          _pickupProperties = new PickupObjectPropertiesViewModel(treeParent, parentVm, mainVm, ModelObject.PickupObjProps);
+         _backgroundProperties = new ParallaxBackgroundPropertiesViewModel(treeParent, parentVm, mainVm, ModelObject.BackgroundProps);
          _defaultStates.Add(_defaultState);
       }
 
@@ -138,6 +140,10 @@ namespace LeapfrogEditor
             else if (Type == "pickupObject")
             {
                return _pickupProperties;
+            }
+            else if (Type == "parallaxBackground")
+            {
+               return _backgroundProperties;
             }
 
             return null;

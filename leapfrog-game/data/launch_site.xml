@@ -1,8 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <compoundObject
-   needsGroupIndex="false" >
-   <behaviour
-      type="launchSite" />
+  needsGroupIndex="false">
   <staticBox
     name="leftTower"
     texture="ls_tower"
@@ -176,6 +174,32 @@
         v2="12"
         v3="13" />
     </triangles>
+    <border
+      leftGroundAngle="0"
+      rightGroundAngle="0"
+      leftCeilingAngle="0"
+      rightCeilingAngle="0">
+      <groundBorder
+        texture="notDefined"
+        horisontalMeterOffset="0"
+        textureMeterWidth="0"
+        textureMeterHeight="0" />
+      <ceilingBorder
+        texture="notDefined"
+        horisontalMeterOffset="0"
+        textureMeterWidth="0"
+        textureMeterHeight="0" />
+      <leftWallBorder
+        texture="notDefined"
+        horisontalMeterOffset="0"
+        textureMeterWidth="0"
+        textureMeterHeight="0" />
+      <rightWallBorder
+        texture="notDefined"
+        horisontalMeterOffset="0"
+        textureMeterWidth="0"
+        textureMeterHeight="0" />
+    </border>
   </staticPolygon>
   <dynamicBox
     name="leftRest"
@@ -484,6 +508,8 @@
         v3="1" />
     </triangles>
   </dynamicBoxedSpritePolygonBody>
+  <behaviour
+    type="launchSite" />
   <weldJoint
     name="leftRestRightGliderJoint"
     objectAName="leftRest"
@@ -629,44 +655,43 @@
     lowerLimit="0"
     upperLimit="12.2"
     maxMotorForce="0" />
-   <system
-      type="flameEmitter"
-      name="boosterFlame">
-      <flameEmitterProperties
-         body="mainTank"
-         systemOriginX="0"
-         systemOriginY="28"
-         angle="90"
-         emitterWidth="12"
-         lifeTime="500"
-         impulseMagnitude="400"
-         radius="30" />
-   </system>
-   <system
-      type="flameEmitter"
-      name="rightFlame">
-      <flameEmitterProperties
-         body="rightSupportBooster"
-         systemOriginX="0"
-         systemOriginY="19"
-         angle="90"
-         emitterWidth="2"
-         lifeTime="500"
-         impulseMagnitude="400"
-         radius="10" />
-   </system>
-   <system
-      type="flameEmitter"
-      name="leftFlame">
-      <flameEmitterProperties
-         body="leftSupportBooster"
-         systemOriginX="0"
-         systemOriginY="19"
-         angle="90"
-         emitterWidth="2"
-         lifeTime="500"
-         impulseMagnitude="400"
-         radius="10" />
-   </system>
-
+  <system
+    name="boosterFlame"
+    type="flameEmitter">
+    <flameEmitterProperties
+      body="mainTank"
+      systemOriginX="0"
+      systemOriginY="28"
+      angle="90"
+      emitterWidth="12"
+      lifeTime="500"
+      impulseMagnitude="400"
+      radius="30" />
+  </system>
+  <system
+    name="rightFlame"
+    type="flameEmitter">
+    <flameEmitterProperties
+      body="rightSupportBooster"
+      systemOriginX="0"
+      systemOriginY="19"
+      angle="90"
+      emitterWidth="2"
+      lifeTime="500"
+      impulseMagnitude="400"
+      radius="10" />
+  </system>
+  <system
+    name="leftFlame"
+    type="flameEmitter">
+    <flameEmitterProperties
+      body="leftSupportBooster"
+      systemOriginX="0"
+      systemOriginY="19"
+      angle="90"
+      emitterWidth="2"
+      lifeTime="500"
+      impulseMagnitude="400"
+      radius="10" />
+  </system>
 </compoundObject>

@@ -21,7 +21,7 @@
       <Polygon 
                x:Name="stpvm"
                StrokeThickness="0"
-               Points="{Binding Points}"
+               Points="{Binding AbsPoints}"
 				   MouseDown="Shape_MouseDown"
 				   MouseUp="Shape_MouseUp">
          <Polygon.Fill>

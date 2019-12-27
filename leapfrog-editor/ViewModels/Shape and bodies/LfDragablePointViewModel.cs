@@ -74,6 +74,7 @@ namespace LeapfrogEditor
             if (Parent != null)
             {
                Parent.OnPropertyChanged("Points");
+               Parent.OnPropertyChanged("AbsPoints");
                Parent.OnPropertyChanged("BoundingBox");
 
                // We must also make sure that the previous point in the collection
@@ -85,10 +86,12 @@ namespace LeapfrogEditor
                   if (i < Parent.PointVms.Count() - 1)
                   {
                      Parent.PointVms[i + 1].OnPropertyChanged("PosX");
+                     Parent.PointVms[i + 1].OnPropertyChanged("AbsPosX");
                   }
                   else
                   {
                      Parent.PointVms[0].OnPropertyChanged("PosX");
+                     Parent.PointVms[0].OnPropertyChanged("AbsPosX");
                   }
                }
 
@@ -102,6 +105,24 @@ namespace LeapfrogEditor
             }
 
             OnPropertyChanged("PosX");
+            OnPropertyChanged("AbsPosX");
+         }
+      }
+
+      public double AbsPosX
+      {
+         get
+         {
+            double parentPos = 0;
+
+            if (ParentVm != null)
+            {
+               parentPos = ParentVm.AbsPosX;
+            }
+
+            if (_modelObject == null) return parentPos;
+
+            return /*parentPos + */_modelObject.PosX;
          }
       }
 
@@ -123,6 +144,7 @@ namespace LeapfrogEditor
             if (Parent != null)
             {
                Parent.OnPropertyChanged("Points");
+               Parent.OnPropertyChanged("AbsPoints");
                Parent.OnPropertyChanged("BoundingBox");
 
                // We must also make sure that the previous point in the collection
@@ -134,10 +156,12 @@ namespace LeapfrogEditor
                   if (i < Parent.PointVms.Count() - 1)
                   {
                      Parent.PointVms[i + 1].OnPropertyChanged("PosY");
+                     Parent.PointVms[i + 1].OnPropertyChanged("AbsPosY");
                   }
                   else
                   {
                      Parent.PointVms[0].OnPropertyChanged("PosY");
+                     Parent.PointVms[0].OnPropertyChanged("AbsPosY");
                   }
                }
 
@@ -151,8 +175,28 @@ namespace LeapfrogEditor
             }
 
             OnPropertyChanged("PosY");
+            OnPropertyChanged("AbsPosY");
          }
       }
+
+
+      public double AbsPosY
+      {
+         get
+         {
+            double parentPos = 0;
+
+            if (ParentVm != null)
+            {
+               parentPos = ParentVm.AbsPosY;
+            }
+
+            if (_modelObject == null) return parentPos;
+
+            return /* parentPos + */ _modelObject.PosY;
+         }
+      }
+
 
       public uint Id
       {

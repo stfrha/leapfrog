@@ -1,0 +1,44 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<compoundObject>
+   <behaviour
+      type="parallaxBackground">
+      <parallaxBackgroundProperties
+         parallaxAmount="0.2" />
+   </behaviour>
+   <spritePolygon
+    name="innerWall"
+    texture="concrete"
+    posX="100"
+    posY="100"
+    angle="0"
+    zLevel="0"
+    collisionEntity="notApplicable"
+    collisionCategory="1"
+    collisionMask="65534"
+    textureMeterWidth="600"
+    textureMeterHeight="423"
+    textureOffsetMeterX="0"
+    textureOffsetMeterY="0">
+    <vertices>
+      <vertex
+        id="1"
+        x="0"
+        y="0" />
+      <vertex
+        id="2"
+        x="1000"
+        y="0" />
+      <vertex
+        id="3"
+        x="500"
+        y="700" />
+    </vertices>
+    <triangles>
+      <triangle
+        id="1"
+        v1="3"
+        v2="2"
+        v3="1" />
+    </triangles>
+  </spritePolygon>
+</compoundObject>

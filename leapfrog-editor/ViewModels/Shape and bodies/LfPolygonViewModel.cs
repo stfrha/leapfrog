@@ -57,6 +57,24 @@ namespace LeapfrogEditor
 
       }
 
+      public PointCollection AbsPoints
+      {
+         get
+         {
+            PointCollection p = new PointCollection();
+
+            foreach (LfDragablePointViewModel dp in PointVms)
+            {
+               p.Add(new Point(dp.AbsPosX, dp.AbsPosY));
+            }
+
+            return p;
+         }
+         set
+         { }
+
+      }
+
       public ObservableCollection<LfDragablePointViewModel> PointVms
       {
          get { return _pointVms; }

@@ -30,8 +30,8 @@
             <MultiBinding Converter="{StaticResource AttachedBodyPointValueConverter}" ConverterParameter="x">
                <Binding Path="SystemOriginX" />
                <Binding Path="SystemOriginY" />
-               <Binding Path="BodyObject.PosX"/>
-               <Binding Path="BodyObject.PosY"/>
+               <Binding Path="BodyObject.AbsPosX"/>
+               <Binding Path="BodyObject.AbsPosY"/>
                <Binding Path="BodyObject.Angle"/>
             </MultiBinding>
          </Canvas.Left>
@@ -39,8 +39,8 @@
             <MultiBinding Converter="{StaticResource AttachedBodyPointValueConverter}" ConverterParameter="y">
                <Binding Path="SystemOriginX" />
                <Binding Path="SystemOriginY" />
-               <Binding Path="BodyObject.PosX"/>
-               <Binding Path="BodyObject.PosY"/>
+               <Binding Path="BodyObject.AbsPosX"/>
+               <Binding Path="BodyObject.AbsPosY"/>
                <Binding Path="BodyObject.Angle"/>
             </MultiBinding>
          </Canvas.Top>
@@ -63,8 +63,8 @@
             <MultiBinding Converter="{StaticResource AttachedBodyPointValueConverter}" ConverterParameter="x">
                <Binding Path="SystemOriginX" />
                <Binding Path="SystemOriginY" />
-               <Binding Path="BodyObject.PosX"/>
-               <Binding Path="BodyObject.PosY"/>
+               <Binding Path="BodyObject.AbsPosX"/>
+               <Binding Path="BodyObject.AbsPosY"/>
                <Binding Path="BodyObject.Angle"/>
             </MultiBinding>
          </Canvas.Left>
@@ -72,8 +72,8 @@
             <MultiBinding Converter="{StaticResource AttachedBodyPointValueConverter}" ConverterParameter="y">
                <Binding Path="SystemOriginX" />
                <Binding Path="SystemOriginY" />
-               <Binding Path="BodyObject.PosX"/>
-               <Binding Path="BodyObject.PosY"/>
+               <Binding Path="BodyObject.AbsPosX"/>
+               <Binding Path="BodyObject.AbsPosY"/>
                <Binding Path="BodyObject.Angle"/>
             </MultiBinding>
          </Canvas.Top>

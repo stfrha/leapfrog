@@ -108,6 +108,7 @@
     <Compile Include="ViewModels\Shape and bodies\BorderTextureViewModel.cs" />
     <Compile Include="ViewModels\Child Objects\SpawnObjectViewModel.cs" />
     <Compile Include="ViewModels\CollectionViewModelBase.cs" />
+    <Compile Include="ViewModels\Shape and bodies\ParallaxBackgroundViewModel.cs" />
     <Compile Include="ViewModels\Shape and bodies\ShapeCollectionViewModel.cs" />
     <Compile Include="ViewModels\Systems\BodyOriginSystemViewModel.cs" />
     <Compile Include="ViewModels\Systems\ReentryFlameEmitterPropertiesViewModel.cs" />
@@ -243,6 +244,9 @@
     </Compile>
     <Compile Include="Views\Controls\Editable Shapes Controls\BoxedSpritePolygonControl.xaml.cs">
       <DependentUpon>BoxedSpritePolygonControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Controls\Editable Shapes Controls\ParallaxBackgroundControl.xaml.cs">
+      <DependentUpon>ParallaxBackgroundControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\Controls\Editable Shapes Controls\Systems\ReentryFlameEmitterControl.xaml.cs">
       <DependentUpon>ReentryFlameEmitterControl.xaml</DependentUpon>
@@ -546,6 +550,10 @@
     <Page Include="Views\Controls\Editable Shapes Controls\BoxedSpritePolygonControl.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\Controls\Editable Shapes Controls\ParallaxBackgroundControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\Controls\Editable Shapes Controls\Systems\ReentryFlameEmitterControl.xaml">
       <Generator>MSBuild:Compile</Generator>

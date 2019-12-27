@@ -61,6 +61,15 @@ namespace LeapfrogEditor
          {
             _posX = value;
             OnPropertyChanged("PosX");
+            OnPropertyChanged("AbsPosX");
+         }
+      }
+
+      public double AbsPosX
+      {
+         get
+         {
+            return _posX;
          }
       }
 
@@ -75,6 +84,15 @@ namespace LeapfrogEditor
          {
             _posY = value;
             OnPropertyChanged("PosY");
+            OnPropertyChanged("AbsPos>Y");
+         }
+      }
+
+      public double AbsPosY
+      {
+         get
+         {
+            return _posY;
          }
       }
 

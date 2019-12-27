@@ -25,14 +25,19 @@
             <MultiBinding Converter="{StaticResource AttachedBodyPointValueConverter}" ConverterParameter="x">
                <Binding Path="AAnchorX" />
                <Binding Path="AAnchorY" />
-               <Binding Path="AShapeObject"/>
+               <Binding Path="AShapeObject.AbsPosX"/>
+               <Binding Path="AShapeObject.AbsPosY"/>
+               <Binding Path="AShapeObject.Angle"/>
+
             </MultiBinding>
          </Line.X1>
          <Line.Y1>
             <MultiBinding Converter="{StaticResource AttachedBodyPointValueConverter}" ConverterParameter="y">
                <Binding Path="AAnchorX" />
                <Binding Path="AAnchorY" />
-               <Binding Path="AShapeObject"/>
+               <Binding Path="AShapeObject.AbsPosX"/>
+               <Binding Path="AShapeObject.AbsPosY"/>
+               <Binding Path="AShapeObject.Angle"/>
             </MultiBinding>
          </Line.Y1>
          <Line.X2>
@@ -71,8 +76,8 @@
             <MultiBinding Converter="{StaticResource AttachedBodyPointValueConverter}" ConverterParameter="x">
                <Binding Path="AAnchorX" />
                <Binding Path="AAnchorY" />
-               <Binding Path="AShapeObject.PosX"/>
-               <Binding Path="AShapeObject.PosY"/>
+               <Binding Path="AShapeObject.AbsPosX"/>
+               <Binding Path="AShapeObject.AbsPosY"/>
                <Binding Path="AShapeObject.Angle"/>
             </MultiBinding>
          </Canvas.Left>
@@ -80,8 +85,8 @@
             <MultiBinding Converter="{StaticResource AttachedBodyPointValueConverter}" ConverterParameter="y">
                <Binding Path="AAnchorX" />
                <Binding Path="AAnchorY" />
-               <Binding Path="AShapeObject.PosX"/>
-               <Binding Path="AShapeObject.PosY"/>
+               <Binding Path="AShapeObject.AbsPosX"/>
+               <Binding Path="AShapeObject.AbsPosY"/>
                <Binding Path="AShapeObject.Angle"/>
             </MultiBinding>
          </Canvas.Top>
