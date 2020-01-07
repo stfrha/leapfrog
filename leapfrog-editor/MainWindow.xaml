@@ -75,6 +75,7 @@
                <MenuItem Header="Joints" IsCheckable="True" IsChecked="{Binding ShowJoints}" />
                <MenuItem Header="Systems" IsCheckable="True" IsChecked="{Binding ShowSystems}" />
                <MenuItem Header="Triangles" IsCheckable="True" IsChecked="{Binding ShowTriangles}" />
+               <MenuItem Header="Backgrounds" IsCheckable="True" IsChecked="{Binding ShowBackgrounds}" />
             </MenuItem>
             <MenuItem Header="Halt to debug" Command="{Binding DebugHalt}" />
          </MenuItem>

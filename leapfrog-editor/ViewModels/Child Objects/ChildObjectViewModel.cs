@@ -147,26 +147,29 @@ namespace LeapfrogEditor
          }
       }
 
-      public void AddChildShapesToGlobalCollection(ref CompositeCollection coll, string editedState)
+      public void AddChildShapesToGlobalCollection(ref CompositeCollection coll, string editedState, bool showBackground)
       {
          foreach (ChildCOViewModel ccvm in StateProperties)
          {
-            if (ccvm.State == editedState)
+            if ((ccvm.State == editedState) || (ccvm.State == "default"))
             {
                if (ccvm.Behaviour.BehaviourProperties is ParallaxBackgroundPropertiesViewModel)
                {
-                  ParallaxBackgroundViewModel pbvm = new ParallaxBackgroundViewModel(ccvm, MainVm, ccvm.Behaviour.BehaviourProperties as ParallaxBackgroundPropertiesViewModel);
-
-                  foreach (Object o in ccvm.ShapeCollection.Shapes)
+                  if (showBackground)
                   {
-                     if (o is LfShapeViewModel)
-                     {
-                        LfShapeViewModel svm = o as LfShapeViewModel;
-                        pbvm.Shapes.Add(svm);
-                     }
-                  }
+                     ParallaxBackgroundViewModel pbvm = new ParallaxBackgroundViewModel(ccvm, MainVm, ccvm.Behaviour.BehaviourProperties as ParallaxBackgroundPropertiesViewModel);
 
-                  coll.Add(pbvm);
+                     foreach (Object o in ccvm.ShapeCollection.Shapes)
+                     {
+                        if (o is LfShapeViewModel)
+                        {
+                           LfShapeViewModel svm = o as LfShapeViewModel;
+                           pbvm.Shapes.Add(svm);
+                        }
+                     }
+
+                     coll.Add(pbvm);
+                  }
                }
                else
                {
@@ -183,7 +186,7 @@ namespace LeapfrogEditor
                   {
                      foreach (ChildObjectViewModel covm in ccvm.ChildObjectsWithStates.Children)
                      {
-                        covm.AddChildShapesToGlobalCollection(ref coll, editedState);
+                        covm.AddChildShapesToGlobalCollection(ref coll, editedState, showBackground);
                      }
                   }
                }

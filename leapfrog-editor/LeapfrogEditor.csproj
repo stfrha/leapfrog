@@ -76,6 +76,7 @@
     <Compile Include="Models\SpawnObject.cs" />
     <Compile Include="Models\Systems\ShieldProperties.cs" />
     <Compile Include="Models\Systems\GunProperties.cs" />
+    <Compile Include="ValueConverters\TypeToVisibilityValueConverters.cs" />
     <Compile Include="ValueConverters\NegDoubleValueConverter.cs" />
     <Compile Include="ValueConverters\FlameEmitterValueConverters.cs" />
     <Compile Include="ValueConverters\ReentryFlameEmitterValueConverters.cs" />

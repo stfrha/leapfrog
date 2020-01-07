@@ -14,6 +14,8 @@
       <local:ZoomThicknessValueConverter x:Key="ZoomThicknessValueConverter" />
       <local:BoolToVisibilityValueConverter x:Key="BoolToVisibilityValueConverter" />
       <local:MatchingStateVisibilityConverter x:Key="MatchingStateVisibilityConverter" />
+      <local:DecoratedBorderPolygonToVisibilityValueConverter x:Key="DecoratedBorderPolygonToVisibilityValueConverter" />
+      <local:IsSceneToVisibilityValueConverter x:Key="IsSceneToVisibilityValueConverter" />
    </UserControl.Resources>
    <Canvas x:Name="myCoUserControl" >
       <!-- The first itemscontrol is for the images of the objects, like what is shown 
@@ -22,6 +24,12 @@
            images. -->
       <ItemsControl ItemsSource="{Binding GlobalShapeCollection}">
          <ItemsControl.Resources>
+            <!-- These empty data templates are needed to not display class name for such classes -->
+            <DataTemplate DataType="{x:Type local:WeldJointViewModel}" />
+            <DataTemplate DataType="{x:Type local:RevoluteJointViewModel}" />
+            <DataTemplate DataType="{x:Type local:PrismaticJointViewModel}" />
+            <DataTemplate DataType="{x:Type local:RopeViewModel}" />
+            <DataTemplate DataType="{x:Type local:CoSystemViewModel}" />
             <DataTemplate DataType="{x:Type local:LfScalableTexturePolygonViewModel}">
                <Grid>
                   <local:ScalableTexturePolygonControl>
@@ -37,14 +45,14 @@
                         </ContextMenu>
                      </local:ScalableTexturePolygonControl.ContextMenu>
                   </local:ScalableTexturePolygonControl>
-                  <ContentControl
-                     Content="{Binding}">
+                  <local:DecoratedPolygonBorderControl 
+                     Visibility="{Binding Converter={StaticResource DecoratedBorderPolygonToVisibilityValueConverter}}" />
+                  <!--<ContentControl Content="{Binding}">
                      <ContentControl.Resources>
                         <DataTemplate DataType="{x:Type local:LfStaticPolygonViewModel}">
-                           <local:DecoratedPolygonBorderControl />
                         </DataTemplate>
                      </ContentControl.Resources>
-                  </ContentControl>
+                  </ContentControl>-->
                </Grid>
             </DataTemplate>
             <DataTemplate DataType="{x:Type local:LfStaticBoxedSpritePolygonViewModel}">
@@ -141,6 +149,8 @@
            images. -->
       <ItemsControl ItemsSource="{Binding GlobalShapeCollection}">
          <ItemsControl.Resources>
+            <!-- These empty data templates are needed to not display class name for such classes -->
+            <DataTemplate DataType="{x:Type local:ParallaxBackgroundViewModel}" />
             <DataTemplate DataType="{x:Type local:WeldJointViewModel}">
                <local:WeldJointControl>
                   <local:WeldJointControl.ContextMenu>
@@ -355,7 +365,6 @@
             <Style TargetType="ContentPresenter">
                <Setter Property="Canvas.Left" Value="{Binding AbsPosX}"/>
                <Setter Property="Canvas.Top" Value="{Binding AbsPosY}"/>
-               <Setter Property="Canvas.ZIndex" Value="{Binding ZLevel}"/>
             </Style>
          </ItemsControl.ItemContainerStyle>
       </ItemsControl>
@@ -405,5 +414,73 @@
             </ItemsPanelTemplate>
          </ItemsControl.ItemsPanel>
       </ItemsControl>
+      <!-- Show limits of the scene (if this is a scene) and indicate 
+      with thickness if it is a push-back limit in the game -->
+      <Canvas IsHitTestVisible="False"
+         Visibility="{Binding Behaviour.BehaviourProperties, Converter={StaticResource IsSceneToVisibilityValueConverter}}">
+         <Line Stroke="Red" Opacity="0.5"
+            X1="0" Y1="0" 
+            X2="{Binding Behaviour.BehaviourProperties.Width}" 
+            Y2="0">
+            <Line.Style>
+               <Style TargetType="{x:Type Line}">
+                  <Setter Property="StrokeThickness" Value="5"/>
+                  <Style.Triggers>
+                     <DataTrigger Binding="{Binding Behaviour.BehaviourProperties.HasUpperBoundary}" Value="True">
+                        <Setter Property="StrokeThickness" Value="150"/>
+                     </DataTrigger>
+                  </Style.Triggers>
+               </Style>
+            </Line.Style>
+         </Line>
+         <Line Stroke="Red"  Opacity="0.5"
+            X1="0" Y1="0" X2="0" 
+            Y2="{Binding Behaviour.BehaviourProperties.Height}">
+            <Line.Style>
+               <Style TargetType="{x:Type Line}">
+                  <Setter Property="StrokeThickness" Value="5"/>
+                  <Style.Triggers>
+                     <DataTrigger Binding="{Binding Behaviour.BehaviourProperties.HasLeftBoundary}" Value="True">
+                        <Setter Property="StrokeThickness" Value="150"/>
+                     </DataTrigger>
+                  </Style.Triggers>
+               </Style>
+            </Line.Style>
+         </Line>
+         <Line Stroke="Red"  Opacity="0.5"
+            X1="{Binding Behaviour.BehaviourProperties.Width}" 
+            Y1="0" 
+            X2="{Binding Behaviour.BehaviourProperties.Width}" 
+            Y2="{Binding Behaviour.BehaviourProperties.Height}" >
+            <Line.Style>
+               <Style TargetType="{x:Type Line}">
+                  <Setter Property="StrokeThickness" Value="5"/>
+                  <Style.Triggers>
+                     <DataTrigger Binding="{Binding Behaviour.BehaviourProperties.HasRightBoundary}" Value="True">
+                        <Setter Property="StrokeThickness" Value="150"/>
+                     </DataTrigger>
+                  </Style.Triggers>
+               </Style>
+            </Line.Style>
+         </Line>
+         <Line Stroke="Red"  Opacity="0.5"
+            X1="0" 
+            Y1="{Binding Behaviour.BehaviourProperties.Height}" 
+            X2="{Binding Behaviour.BehaviourProperties.Width}" 
+            Y2="{Binding Behaviour.BehaviourProperties.Height}" >
+            <Line.Style>
+               <Style TargetType="{x:Type Line}">
+                  <Setter Property="StrokeThickness" Value="5"/>
+                  <Style.Triggers>
+                     <DataTrigger Binding="{Binding Behaviour.BehaviourProperties.HasLowerBoundary}" Value="True">
+                        <Setter Property="StrokeThickness" Value="150"/>
+                     </DataTrigger>
+                  </Style.Triggers>
+               </Style>
+            </Line.Style>
+         </Line>
+      </Canvas>
+
+
    </Canvas>
 </UserControl>

@@ -107,6 +107,7 @@ namespace LeapfrogEditor
       // Object VM that is being edited
       private CompoundObjectViewModel _editedCpVm;
 
+     
       private ObservableCollection<ChildObjectViewModel> _selectedChildObjects = new ObservableCollection<ChildObjectViewModel>();
       private ObservableCollection<ChildCOViewModel> _selectedChildObjectStateProperties = new ObservableCollection<ChildCOViewModel>();
       private ObservableCollection<LfShapeViewModel> _selectedShapes = new ObservableCollection<LfShapeViewModel>();
@@ -120,9 +121,10 @@ namespace LeapfrogEditor
 
       private LeftClickState _LeftClickState = LeftClickState.none;
 
-      private bool _showJoints;
-      private bool _showSystems;
-      private bool _showTriangles;
+      private bool _showJoints = false;
+      private bool _showSystems = false;
+      private bool _showTriangles = false;
+      private bool _showBackgrounds = true;
 
       private ObservableCollection<string> _textures = new ObservableCollection<string>();
 
@@ -184,7 +186,6 @@ namespace LeapfrogEditor
          }
       }
 
-
       public string WindowTitle
       {
          get
@@ -199,6 +200,7 @@ namespace LeapfrogEditor
             return EditedCpVm.Name;
          }
       }
+
 
       public ObservableCollection<ChildObjectViewModel> SelectedChildObjects
       {
@@ -261,7 +263,7 @@ namespace LeapfrogEditor
             OnPropertyChanged("ShowJoints");
 
             // Build global shape collection
-            EditedCpVm.BuildGlobalShapeCollection(GetEditableCoBehaviourStateName(), ShowJoints, ShowSystems, true);
+            EditedCpVm.BuildGlobalShapeCollection(GetEditableCoBehaviourStateName(), ShowJoints, ShowSystems, ShowBackgrounds);
          }
       }
 
@@ -274,9 +276,23 @@ namespace LeapfrogEditor
             OnPropertyChanged("ShowSystems");
 
             // Build global shape collection
-            EditedCpVm.BuildGlobalShapeCollection(GetEditableCoBehaviourStateName(), ShowJoints, ShowSystems, true);
+            EditedCpVm.BuildGlobalShapeCollection(GetEditableCoBehaviourStateName(), ShowJoints, ShowSystems, ShowBackgrounds);
          }
       }
+
+      public bool ShowBackgrounds
+      {
+         get { return _showBackgrounds; }
+         set
+         {
+            _showBackgrounds = value;
+            OnPropertyChanged("ShowBackgrounds");
+
+            // Build global shape collection
+            EditedCpVm.BuildGlobalShapeCollection(GetEditableCoBehaviourStateName(), ShowJoints, ShowSystems, ShowBackgrounds);
+         }
+      }
+
 
       public bool ShowTriangles
       {
@@ -287,7 +303,7 @@ namespace LeapfrogEditor
             OnPropertyChanged("ShowTriangles");
 
             // Build global shape collection
-            EditedCpVm.BuildGlobalShapeCollection(GetEditableCoBehaviourStateName(), ShowJoints, ShowSystems, true);
+            EditedCpVm.BuildGlobalShapeCollection(GetEditableCoBehaviourStateName(), ShowJoints, ShowSystems, ShowBackgrounds);
          }
       }
 
@@ -357,8 +373,9 @@ namespace LeapfrogEditor
                EditedCpVm.OnPropertyChanged("");
                OnPropertyChanged("");
 
+
                // Build global shape collection
-               EditedCpVm.BuildGlobalShapeCollection(GetEditableCoBehaviourStateName(), ShowJoints, ShowSystems, true);
+               EditedCpVm.BuildGlobalShapeCollection(GetEditableCoBehaviourStateName(), ShowJoints, ShowSystems, ShowBackgrounds);
 
                Rect bb = EditedCpVm.BoundingBox;
                ((MainWindow)System.Windows.Application.Current.MainWindow).ShowThisRect(bb);
@@ -390,7 +407,7 @@ namespace LeapfrogEditor
 
          if (ofd.ShowDialog() == true)
          {
-            OpenFileToEdit(System.IO.Path.GetFileName(ofd.FileName));
+            OpenFileToEdit(System.IO.Path.GetFileName(ofd.FileName), true);
          }
       }
 
@@ -418,7 +435,7 @@ namespace LeapfrogEditor
             DeselectAll();
 
             // Build global shape collection
-            EditedCpVm.BuildGlobalShapeCollection(GetEditableCoBehaviourStateName(), ShowJoints, ShowSystems, true);
+            EditedCpVm.BuildGlobalShapeCollection(GetEditableCoBehaviourStateName(), ShowJoints, ShowSystems, ShowBackgrounds);
 
             Rect bb = EditedCpVm.BoundingBox;
             ((MainWindow)System.Windows.Application.Current.MainWindow).ShowThisRect(bb);
@@ -468,7 +485,7 @@ namespace LeapfrogEditor
          {
             ChildCOViewModel covm = parameter as ChildCOViewModel;
 
-            OpenFileToEdit(covm.File);
+            OpenFileToEdit(covm.File, true);
          }
       }
 
@@ -691,7 +708,7 @@ namespace LeapfrogEditor
             svm.SetOnDisplay();
 
             EditedCpVm.OnPropertyChanged("");
-            EditedCpVm.BuildGlobalShapeCollection(svm.StateName, ShowJoints, ShowSystems, true);
+            EditedCpVm.BuildGlobalShapeCollection(svm.StateName, ShowJoints, ShowSystems, ShowBackgrounds);
          }
       }
 
@@ -970,7 +987,7 @@ namespace LeapfrogEditor
             }
             SelectedJoints.Clear();
 
-            EditedCpVm.BuildGlobalShapeCollection(GetEditableCoBehaviourStateName(), ShowJoints, ShowSystems, true);
+            EditedCpVm.BuildGlobalShapeCollection(GetEditableCoBehaviourStateName(), ShowJoints, ShowSystems, ShowBackgrounds);
          }
          else if (SelectedShapes.Count > 0)
          {
@@ -981,7 +998,7 @@ namespace LeapfrogEditor
                //covm.ModelObject.RemoveShape(svm.ModelObject);
                covm.RemoveShape(svm);
 
-               EditedCpVm.BuildGlobalShapeCollection(GetEditableCoBehaviourStateName(), ShowJoints, ShowSystems, true);
+               EditedCpVm.BuildGlobalShapeCollection(GetEditableCoBehaviourStateName(), ShowJoints, ShowSystems, ShowBackgrounds);
             }
             SelectedShapes.Clear();
          }
@@ -1076,7 +1093,7 @@ namespace LeapfrogEditor
             covm.SystemCollection.Systems.Remove(sysVm);
          }
 
-         EditedCpVm.BuildGlobalShapeCollection(GetEditableCoBehaviourStateName(), ShowJoints, ShowSystems, true);
+         EditedCpVm.BuildGlobalShapeCollection(GetEditableCoBehaviourStateName(), ShowJoints, ShowSystems, ShowBackgrounds);
       }
 
       bool CanDeleteThisObjectExecute(Object parameter)
@@ -1118,7 +1135,7 @@ namespace LeapfrogEditor
             CompoundObjectViewModel covm = EditedCpVm as CompoundObjectViewModel;
             covm.ModelObject.ChildObjects.Add(ch);
             scvm.Children.Add(chvm);
-            EditedCpVm.BuildGlobalShapeCollection(GetEditableCoBehaviourStateName(), ShowJoints, ShowSystems, true);
+            EditedCpVm.BuildGlobalShapeCollection(GetEditableCoBehaviourStateName(), ShowJoints, ShowSystems, ShowBackgrounds);
          }
 
          if (parameter is ChildObjectViewModel)
@@ -1135,7 +1152,7 @@ namespace LeapfrogEditor
             covm.BuildViewModel(true);
 
             chvm.StateProperties.Add(covm);
-            EditedCpVm.BuildGlobalShapeCollection(GetEditableCoBehaviourStateName(), ShowJoints, ShowSystems, true);
+            EditedCpVm.BuildGlobalShapeCollection(GetEditableCoBehaviourStateName(), ShowJoints, ShowSystems, ShowBackgrounds);
          }
       }
 
@@ -1829,7 +1846,7 @@ namespace LeapfrogEditor
                   }
                   _selectedPoints.Clear();
 
-                  EditedCpVm.BuildGlobalShapeCollection(GetEditableCoBehaviourStateName(), ShowJoints, ShowSystems, true);
+                  EditedCpVm.BuildGlobalShapeCollection(GetEditableCoBehaviourStateName(), ShowJoints, ShowSystems, ShowBackgrounds);
 
                   if (newShapeVm is LfPolygonViewModel)
                   {
@@ -1881,7 +1898,7 @@ namespace LeapfrogEditor
 
                newJointVm.IsSelected = true;
 
-               EditedCpVm.BuildGlobalShapeCollection(GetEditableCoBehaviourStateName(), ShowJoints, ShowSystems, true);
+               EditedCpVm.BuildGlobalShapeCollection(GetEditableCoBehaviourStateName(), ShowJoints, ShowSystems, ShowBackgrounds);
 
                _LeftClickState = LeftClickState.none;
             }
@@ -1908,7 +1925,7 @@ namespace LeapfrogEditor
 
                newSysVm.IsSelected = true;
 
-               EditedCpVm.BuildGlobalShapeCollection(GetEditableCoBehaviourStateName(), ShowJoints, ShowSystems, true);
+               EditedCpVm.BuildGlobalShapeCollection(GetEditableCoBehaviourStateName(), ShowJoints, ShowSystems, ShowBackgrounds);
 
                _LeftClickState = LeftClickState.none;
 
@@ -2448,7 +2465,7 @@ namespace LeapfrogEditor
 
       }
 
-      private void OpenFileToEdit(string fileName)
+      private void OpenFileToEdit(string fileName, bool exclusiveEdit)
       {
          // Lets first look to see if this file is not already openend
          FileCOViewModel fcovm = FindOpenedFile(fileName);
@@ -2457,41 +2474,26 @@ namespace LeapfrogEditor
          {
             // If file is already opened, we simply edit it
             EditedCpVm = fcovm;
-            EditedCpVm.OnPropertyChanged("");
-            OnPropertyChanged("");
+         }
+         else
+         {
+            FileCOViewModel newCpVm = OpenFile(fileName);
 
-            Rect bib = EditedCpVm.BoundingBox;
-            ((MainWindow)System.Windows.Application.Current.MainWindow).ShowThisRect(bib);
+            FileCollectionViewModel.Add(newCpVm);
 
-            return;
+            EditedCpVm = newCpVm;
          }
 
-         FileCOViewModel newCpVm = OpenFile(fileName);
-
-         FileCollectionViewModel.Add(newCpVm);
-
-         EditedCpVm = newCpVm;
          (EditedCpVm as CompoundObjectViewModel).BuildViewModel();
-
-         // Build global shape collection
-         EditedCpVm.BuildGlobalShapeCollection(GetEditableCoBehaviourStateName(), ShowJoints, ShowSystems, true);
+         EditedCpVm.BuildGlobalShapeCollection(GetEditableCoBehaviourStateName(), ShowJoints, ShowSystems, ShowBackgrounds);
 
          EditedCpVm.OnPropertyChanged("");
          OnPropertyChanged("");
 
-         Rect bb = EditedCpVm.BoundingBox;
-         ((MainWindow)System.Windows.Application.Current.MainWindow).ShowThisRect(bb);
+         Rect bib = EditedCpVm.BoundingBox;
+         ((MainWindow)System.Windows.Application.Current.MainWindow).ShowThisRect(bib);
 
-
-         //((MainWindow)System.Windows.Application.Current.MainWindow).TheTreeView.
       }
-
-
-
-
-
-
-
 
       #endregion
    }

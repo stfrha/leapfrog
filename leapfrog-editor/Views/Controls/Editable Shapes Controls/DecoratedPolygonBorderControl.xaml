@@ -9,21 +9,14 @@
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
    <UserControl.Resources>
-      <local:TexturePathValueConverter x:Key="TexturePathValueConverter" />
-      <local:TextureRectMultiValueConverter x:Key="TextureRectMultiValueConverter" />
-      <local:BoolToVisibilityValueConverter x:Key="BoolToVisibilityValueConverter" />
-      <local:ZoomThicknessValueConverter x:Key="ZoomThicknessValueConverter" />
-      <local:ZoomHandleSizeValueConverter x:Key="ZoomHandleSizeValueConverter" />
-      <local:ZoomHandleTranslateValueConverter x:Key="ZoomHandleTranslateValueConverter" />
       <local:RotatableBodyPointMultiConverter x:Key="RotatableBodyPointMultiConverter" />
-      <local:PreviousRotatableBodyPointMultiConverter x:Key="PreviousRotatableBodyPointMultiConverter" />
+      <local:TextureBorderHeightMultiConverter x:Key="TextureBorderHeightMultiConverter" />
       <local:TextureBorderWidthMultiConverter x:Key="TextureBorderWidthMultiConverter" />
+      <local:TextureBorderVisibilityMultiConverter x:Key="TextureBorderVisibilityMultiConverter" />
+      <local:TextureBorderTexturePathMultiConverter x:Key="TextureBorderTexturePathMultiConverter" />
+      <local:TextureBorderRectMultiValueConverter x:Key="TextureBorderRectMultiValueConverter" />
       <local:TextureBorderOffsetMultiConverter x:Key="TextureBorderOffsetMultiConverter" />
       <local:TextureBorderAngleMultiConverter x:Key="TextureBorderAngleMultiConverter" />
-      <local:TextureBorderTexturePathMultiConverter x:Key="TextureBorderTexturePathMultiConverter" />
-      <local:TextureBorderVisibilityMultiConverter x:Key="TextureBorderVisibilityMultiConverter" />
-      <local:TextureBorderHeightMultiConverter x:Key="TextureBorderHeightMultiConverter" />
-      <local:TextureBorderRectMultiValueConverter x:Key="TextureBorderRectMultiValueConverter" />
    </UserControl.Resources>
    <Grid>
       <!-- Below is the borders of the polygon. I.e. the border decorations used in the game -->

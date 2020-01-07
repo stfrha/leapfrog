@@ -31,7 +31,6 @@
                <Binding Path="AbsPosX" />
                <Binding Path="AbsPosY" />
                <Binding Path="Parent.Angle"/>
-               <Binding />
             </MultiBinding>
          </Line.Y1>
          <Line.X2>

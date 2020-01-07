@@ -1,15 +1,11 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<compoundObject>
-   <behaviour
-      type="parallaxBackground">
-      <parallaxBackgroundProperties
-         parallaxAmount="0.2" />
-   </behaviour>
-   <spritePolygon
+<compoundObject
+  needsGroupIndex="false">
+  <spritePolygon
     name="innerWall"
     texture="concrete"
-    posX="100"
-    posY="100"
+    posX="696.59995041776438"
+    posY="568.75710389967253"
     angle="0"
     zLevel="0"
     collisionEntity="notApplicable"
@@ -22,23 +18,37 @@
     <vertices>
       <vertex
         id="1"
-        x="0"
-        y="0" />
+        x="222.26561398965561"
+        y="548.77764257074818" />
       <vertex
         id="2"
-        x="1000"
-        y="0" />
+        x="206.60865574155378"
+        y="6.66479534650216" />
       <vertex
         id="3"
-        x="500"
-        y="700" />
+        x="969.31027229248684"
+        y="29.568316382329613" />
+      <vertex
+        id="4"
+        x="951.16178428639842"
+        y="522.19527130481583" />
     </vertices>
     <triangles>
       <triangle
         id="1"
+        v1="1"
+        v2="4"
+        v3="3" />
+      <triangle
+        id="2"
         v1="3"
         v2="2"
         v3="1" />
     </triangles>
   </spritePolygon>
+  <behaviour
+    type="parallaxBackground">
+    <parallaxBackgroundProperties
+      parallaxAmount="0.2" />
+  </behaviour>
 </compoundObject>

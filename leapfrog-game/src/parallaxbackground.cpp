@@ -29,7 +29,7 @@ ParallaxBackground::ParallaxBackground(
    readParallaxBackgroundObjectNode(root.child("behaviour").child("parallaxBackgroundProperties"));
 
    m_sprite = new Sprite();
-   m_sprite->setSize(g_Layout.getStageBounds().getSize());
+   m_sprite->setSize(g_Layout.getStageSize());
    m_sprite->setAnchor(0.0f, 0.0f);
    m_sprite->setTouchChildrenEnabled(false);
 

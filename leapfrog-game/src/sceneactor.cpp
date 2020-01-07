@@ -24,6 +24,11 @@ SceneActor* SceneActor::defineScene(
 {
    string sceneTypeStr = root.child("behaviour").child("sceneProperties").attribute("sceneType").as_string();
 
+   float width = root.child("behaviour").child("sceneProperties").attribute("width").as_float(1000.0f);
+   float height = root.child("behaviour").child("sceneProperties").attribute("height").as_float(500.0f);
+
+   g_Layout.initStageSize(Vector2(width, height), 150.0f);
+
    SceneActor* baseScene = NULL;
 
    if (sceneTypeStr == "ground")
@@ -54,11 +59,6 @@ SceneActor* SceneActor::defineScene(
    {
       return NULL;
    }
-
-   float width = root.child("behaviour").child("sceneProperties").attribute("width").as_float(1000.0f);
-   float height = root.child("behaviour").child("sceneProperties").attribute("height").as_float(500.0f);
-
-   g_Layout.initStageSize(Vector2(width, height), 150.0f);
 
    Vector2 size = Vector2(width, height);
 
@@ -267,7 +267,6 @@ void SceneActor::addParallaxBackground(ParallaxBackground* background)
 {
    m_parallaxBackgrounds.push_back(*background);
    addChild(background->m_sprite);
-
 }
 
 void SceneActor::addBoundingBody(b2Body* body)
@@ -470,14 +469,14 @@ void SceneActor::doUpdate(const UpdateState& us)
    // We dont want to be able to zoom out more than so that the whole
    // stage is visible, we dont want to see outside stage.
    
-   if (m_zoomScale * Scales::c_stageToViewPortScale < g_Layout.getViewPortBounds().x / g_Layout.getStageBounds().getWidth())
+   if (m_zoomScale * Scales::c_stageToViewPortScale < g_Layout.getViewPortBounds().x / g_Layout.getStageSize().x)
    {
-      m_zoomScale = g_Layout.getViewPortBounds().x / g_Layout.getStageBounds().getWidth() / Scales::c_stageToViewPortScale;
+      m_zoomScale = g_Layout.getViewPortBounds().x / g_Layout.getStageSize().x / Scales::c_stageToViewPortScale;
    }
 
-   if (m_zoomScale * Scales::c_stageToViewPortScale < g_Layout.getViewPortBounds().y / g_Layout.getStageBounds().getHeight())
+   if (m_zoomScale * Scales::c_stageToViewPortScale < g_Layout.getViewPortBounds().y / g_Layout.getStageSize().y)
    {
-      m_zoomScale = g_Layout.getViewPortBounds().y / g_Layout.getStageBounds().getHeight() / Scales::c_stageToViewPortScale;
+      m_zoomScale = g_Layout.getViewPortBounds().y / g_Layout.getStageSize().y / Scales::c_stageToViewPortScale;
    }
 
    m_stageToViewPortScale = m_zoomScale * Scales::c_stageToViewPortScale;
@@ -603,25 +602,45 @@ void SceneActor::doUpdate(const UpdateState& us)
       // However, the limit can be enabled or disabled
       if (m_panorateLimitEnabled)
       {
-         if ((g_Layout.getStageBounds().getRight() - panPos.x) * m_stageToViewPortScale < g_Layout.getViewPortBounds().x - m_wantedVpPos.x)
+         if ((g_Layout.getStageSize().x - panPos.x) * m_stageToViewPortScale < g_Layout.getViewPortBounds().x - m_wantedVpPos.x)
          {
-            panPos.x = g_Layout.getStageBounds().getRight() - (g_Layout.getViewPortBounds().x - m_wantedVpPos.x) / m_stageToViewPortScale;
+            panPos.x = g_Layout.getStageSize().x - (g_Layout.getViewPortBounds().x - m_wantedVpPos.x) / m_stageToViewPortScale;
          }
 
-         if ((panPos.x - g_Layout.getStageBounds().getLeft()) * m_stageToViewPortScale < m_wantedVpPos.x)
+         if ((panPos.x) * m_stageToViewPortScale < m_wantedVpPos.x)
          {
-            panPos.x = m_wantedVpPos.x / m_stageToViewPortScale + g_Layout.getStageBounds().getLeft();
+            panPos.x = m_wantedVpPos.x / m_stageToViewPortScale;
          }
 
-         if ((g_Layout.getStageBounds().getBottom() - panPos.y) * m_stageToViewPortScale < g_Layout.getViewPortBounds().y - m_wantedVpPos.y)
+         if ((g_Layout.getStageSize().y - panPos.y) * m_stageToViewPortScale < g_Layout.getViewPortBounds().y - m_wantedVpPos.y)
          {
-            panPos.y = g_Layout.getStageBounds().getBottom() - (g_Layout.getViewPortBounds().y - m_wantedVpPos.y) / m_stageToViewPortScale;
+            panPos.y = g_Layout.getStageSize().y - (g_Layout.getViewPortBounds().y - m_wantedVpPos.y) / m_stageToViewPortScale;
          }
 
-         if ((panPos.y - g_Layout.getStageBounds().getTop()) * m_stageToViewPortScale < m_wantedVpPos.y)
+         if ((panPos.y) * m_stageToViewPortScale < m_wantedVpPos.y)
          {
-            panPos.y = m_wantedVpPos.y / m_stageToViewPortScale + g_Layout.getStageBounds().getTop();
+            panPos.y = m_wantedVpPos.y / m_stageToViewPortScale;
          }
+
+         //if ((g_Layout.getStageBounds().getRight() - panPos.x) * m_stageToViewPortScale < g_Layout.getViewPortBounds().x - m_wantedVpPos.x)
+         //{
+         //   panPos.x = g_Layout.getStageBounds().getRight() - (g_Layout.getViewPortBounds().x - m_wantedVpPos.x) / m_stageToViewPortScale;
+         //}
+
+         //if ((panPos.x - g_Layout.getStageBounds().getLeft()) * m_stageToViewPortScale < m_wantedVpPos.x)
+         //{
+         //   panPos.x = m_wantedVpPos.x / m_stageToViewPortScale + g_Layout.getStageBounds().getLeft();
+         //}
+
+         //if ((g_Layout.getStageBounds().getBottom() - panPos.y) * m_stageToViewPortScale < g_Layout.getViewPortBounds().y - m_wantedVpPos.y)
+         //{
+         //   panPos.y = g_Layout.getStageBounds().getBottom() - (g_Layout.getViewPortBounds().y - m_wantedVpPos.y) / m_stageToViewPortScale;
+         //}
+
+         //if ((panPos.y - g_Layout.getStageBounds().getTop()) * m_stageToViewPortScale < m_wantedVpPos.y)
+         //{
+         //   panPos.y = m_wantedVpPos.y / m_stageToViewPortScale + g_Layout.getStageBounds().getTop();
+         //}
       }
 
       // stagePos is where I must position the pos (this object)
@@ -635,33 +654,28 @@ void SceneActor::doUpdate(const UpdateState& us)
       // Now scale and position the parallax backgrounds
       for (auto it = m_parallaxBackgrounds.begin(); it != m_parallaxBackgrounds.end(); ++it)
       {
-         //it->m_sprite->setSize(g_Layout.getViewPortBounds() / m_stageToViewPortScale);
-         //it->m_sprite->setPosition(-stagePos.x / m_stageToViewPortScale, -stagePos.y / m_stageToViewPortScale);
-
          // We now seek the size that makes the background image be the size of the parallax boundary
          // (i.e. vpBounds for amount = 0, and stageBounds for amount = 1) but expressed in stage coordinates
          // We want to scale the background to this and it will then be scaled back by the scale of stage to vp.
          // I.e. we want the size in stage coordinates, now it is in vp coordinates.
          
-         //Vector2 size = (g_Layout.getViewPortBounds() +
-         //   (g_Layout.getStageBounds().getSize() * m_stageToViewPortScale - g_Layout.getViewPortBounds()) * it->m_parallaxAmount)
-         //   / m_stageToViewPortScale;
-
          Vector2 vpBoundsInStage = g_Layout.getViewPortBounds() / m_stageToViewPortScale ;
 
          Vector2 size = (vpBoundsInStage +
-            (g_Layout.getStageBounds().getSize() - vpBoundsInStage) * (1.0f - it->m_parallaxAmount));
+            (g_Layout.getStageSize() - vpBoundsInStage) * (1.0f - it->m_parallaxAmount));
+         //Vector2 size = (vpBoundsInStage +
+         //   (g_Layout.getStageBounds().getSize() - vpBoundsInStage) * (1.0f - it->m_parallaxAmount));
+
 
          // Should not set size, should set scale
          // Original size is defined from xml, for example 1200,500. This should be scaled to xSize and ySize
          // So we get xScale and yScale from xScale = xSize / 1200
 
-         float xScale = size.x / g_Layout.getStageBounds().getWidth();
-         float yScale = size.y / g_Layout.getStageBounds().getHeight();
+         float xScale = size.x / g_Layout.getStageSize().x;
+         float yScale = size.y / g_Layout.getStageSize().y;
 
-         //it->m_sprite->setSize(xSize, ySize);
          it->m_sprite->setScale(xScale, yScale);
-         it->m_sprite->setPosition(-stagePos / m_stageToViewPortScale * it->m_parallaxAmount);
+         it->m_sprite->setPosition(-stagePos  / m_stageToViewPortScale * it->m_parallaxAmount);
 
       }
    }

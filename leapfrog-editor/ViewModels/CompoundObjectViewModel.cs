@@ -1536,7 +1536,7 @@ namespace LeapfrogEditor
 
          foreach (ChildObjectViewModel covm in ChildObjectsWithStates.Children)
          {
-            covm.AddChildShapesToGlobalCollection(ref _globalShapeCollection, stateName);
+            covm.AddChildShapesToGlobalCollection(ref _globalShapeCollection, stateName, showBackgrounds);
          }
       }
 
