@@ -30,7 +30,7 @@ FreeSpaceActor::FreeSpaceActor(
 
    m_world->SetContactListener(&m_contactListener);
 
-   initCompoundObjectParts(gameResources, this, this, NULL, world, Vector2(0.0f, 0.0f), root, initialState, groupIndex);
+   initCompoundObjectParts(gameResources, this, this, NULL, world, Vector2(0.0f, 0.0f), root, initialState, groupIndex, true);
 
    // Create background before the leapfrog
    generateBackground(gameResources);

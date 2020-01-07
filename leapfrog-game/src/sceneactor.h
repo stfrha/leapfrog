@@ -118,6 +118,7 @@ public:
    std::string* getInitialState(void);
 
    void addParallaxBackground(ParallaxBackground* background);
+   void addParallaxBackgroundSprite(oxygine::spSprite sp, float parallaxAmount);
 
    void addBoundingBody(b2Body* body);
    void removeBoundingBody(b2Body* body);

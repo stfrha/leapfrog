@@ -1,38 +1,50 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <compoundObject
   needsGroupIndex="false">
-   <spriteBox
-      name="farBackground"
-      texture="night_sky"
-      posX="750"
-      posY="450"
-      width="1500"
-      height="900" 
-      angle="0"
-      parallaxAmount="1" />
-   <spriteBox
-      name="cloud1"
-      texture="cloud"
-      posX="225"
-      posY="70"
-      width="250"
-      height="100"
-      angle="0" 
-      parallaxAmount="0.8" />
-   <spriteBox
-      name="cloud5"
-      texture="cloud"
-      posX="625"
-      posY="130"
-      width="250"
-      height="100"
-      angle="0"
-      parallaxAmount="0.8" />
+  <spriteBox
+    name="farBackground"
+    texture="night_sky"
+    posX="750"
+    posY="450"
+    angle="0"
+    zLevel="0"
+    collisionEntity="notApplicable"
+    collisionCategory="1"
+    collisionMask="65534"
+    width="1500"
+    height="900"
+    parallaxAmount="1" />
+  <spriteBox
+    name="cloud1"
+    texture="cloud"
+    posX="225"
+    posY="70"
+    angle="0"
+    zLevel="0"
+    collisionEntity="notApplicable"
+    collisionCategory="1"
+    collisionMask="65534"
+    width="250"
+    height="100"
+    parallaxAmount="0.8" />
+  <spriteBox
+    name="cloud5"
+    texture="cloud"
+    posX="625"
+    posY="130"
+    angle="0"
+    zLevel="0"
+    collisionEntity="notApplicable"
+    collisionCategory="1"
+    collisionMask="65534"
+    width="250"
+    height="100"
+    parallaxAmount="0.8" />
   <spritePolygon
     name="innerWall"
     texture="concrete"
-    posX="696.59995041776438"
-    posY="568.75710389967253"
+    posX="464.37424770232428"
+    posY="288.22845501942129"
     angle="0"
     zLevel="0"
     collisionEntity="notApplicable"
@@ -42,7 +54,7 @@
     textureMeterHeight="423"
     textureOffsetMeterX="0"
     textureOffsetMeterY="0"
-    parallaxAmount="0.2" >
+    parallaxAmount="0.2">
     <vertices>
       <vertex
         id="1"
@@ -51,15 +63,15 @@
       <vertex
         id="2"
         x="206.60865574155378"
-        y="6.66479534650216" />
+        y="19.669434698566874" />
       <vertex
         id="3"
         x="969.31027229248684"
-        y="29.568316382329613" />
+        y="44.430761356117273" />
       <vertex
         id="4"
-        x="951.16178428639842"
-        y="522.19527130481583" />
+        x="971.59764612535719"
+        y="550.06235563066866" />
     </vertices>
     <triangles>
       <triangle
@@ -1009,38 +1021,6 @@
     collisionEntity="notApplicable"
     collisionCategory="33"
     collisionMask="65534" />
-  <!--
-  <childObject
-    name="night_sky_background">
-    <stateProperties
-      state="default">
-      <properties
-        file="night_sky_background.xml"
-        posX="0"
-        posY="0" />
-    </stateProperties>
-  </childObject>
-  <childObject
-    name="clouds_background">
-    <stateProperties
-      state="default">
-      <properties
-        file="clouds_background.xml"
-        posX="0"
-        posY="0" />
-    </stateProperties>
-  </childObject>
-  <childObject
-    name="inner_wall_background">
-    <stateProperties
-      state="default">
-      <properties
-        file="inner_wall_background.xml"
-        posX="0"
-        posY="0" />
-    </stateProperties>
-  </childObject>
-  -->
   <childObject
     name="machine1">
     <stateProperties

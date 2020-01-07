@@ -251,20 +251,20 @@ CompoundObject* CompoundObject::initCompoundObject(
 
       return static_cast<CompoundObject*>(sa);
    }
-   else if (behavStr == "parallaxBackground")
-   {
-      ParallaxBackground* sa = new ParallaxBackground(
-         gameResources,
-         sceneParent,
-         parentObject,
-         world,
-         root,
-         groupIndex);
+   //else if (behavStr == "parallaxBackground")
+   //{
+   //   ParallaxBackground* sa = new ParallaxBackground(
+   //      gameResources,
+   //      sceneParent,
+   //      parentObject,
+   //      world,
+   //      root,
+   //      groupIndex);
 
-      sa->m_behaviourType = BehaviourEnum::parallaxBackground;
+   //   sa->m_behaviourType = BehaviourEnum::parallaxBackground;
 
-      return static_cast<CompoundObject*>(sa);
-   }
+   //   return static_cast<CompoundObject*>(sa);
+   //}
    else if (behavStr == "orbitScene")
    {
       OrbitScene* sa = new OrbitScene(
@@ -435,7 +435,8 @@ bool CompoundObject::initCompoundObjectParts(
    const Vector2& pos,
    const pugi::xml_node& root,
    const string& initialState,
-   int groupIndex)
+   int groupIndex,
+   bool parentIsScene)
 {
    // When defining childObjects that read from other XML-document
    // we somehow loose the pointer in this file,
@@ -459,7 +460,7 @@ bool CompoundObject::initCompoundObjectParts(
       ++it)
    {
       // define a object
-      defineSpriteBox(gameResources, parentActor, this, pos, *it);
+      defineSpriteBox(gameResources, parentActor, this, pos, *it, parentIsScene);
    }
 
    for (auto it = savedNode.children("spritePolygon").begin();
@@ -467,7 +468,7 @@ bool CompoundObject::initCompoundObjectParts(
       ++it)
    {
       // define a object
-      defineSpritePolygon(gameResources, parentActor, this, pos, *it);
+      defineSpritePolygon(gameResources, parentActor, this, pos, *it, parentIsScene);
    }
 
    for (auto it = savedNode.children("staticCircle").begin();
@@ -619,12 +620,18 @@ void CompoundObject::doPhysicalDefinitions(
    fixture->SetFriction(objectNode.attribute("friction").as_float(1.0f));
 }
 
+
+
+// A SpriteBox can be part of a parallax background. This is the case if 
+// the parallaxAmount is higher than 0 and the parent object is a CO with
+// behaviour set to scene. 
 void CompoundObject::defineSpriteBox(
    oxygine::Resources& gameResources,
    Actor* parentActor,
    CompoundObject* parentObject,
    const oxygine::Vector2& pos,
-   pugi::xml_node& objectNode)
+   pugi::xml_node& objectNode,
+   bool parentIsScene)
 {
    // Define sprite
    spSprite sprite = new Sprite();
@@ -634,8 +641,25 @@ void CompoundObject::defineSpriteBox(
    sprite->setSize(objectNode.attribute("width").as_float(), objectNode.attribute("height").as_float());
    sprite->setRotation(objectNode.attribute("angle").as_float() * MATH_PI / 180.0f);
    sprite->setAnchor(0.5f, 0.5f);
-   sprite->attachTo(parentActor);
    m_shapes.push_back(sprite.get());
+
+
+   if (parentIsScene)
+   {
+      float parallaxAmount = objectNode.attribute("parallaxAmount").as_float(0.0f);
+
+      if (parallaxAmount > 0.0f)
+      {
+         // We now know that parentObject is a scene and can thus cast it to this
+         SceneActor* sa = static_cast<SceneActor*>(parentObject);
+         sa->addParallaxBackgroundSprite(sprite, parallaxAmount);
+         return;
+      }
+   }
+
+   // If we get here, the parent wasn't a scene or the parallax amount was zero.
+   // In this case, we attach the sprite to the parent actor in the normal way.
+   sprite->attachTo(parentActor);
 }
 
 void CompoundObject::defineSpritePolygon(
@@ -643,7 +667,8 @@ void CompoundObject::defineSpritePolygon(
    Actor* parentActor,
    CompoundObject* parentObject,
    const oxygine::Vector2& pos,
-   pugi::xml_node& objectNode)
+   pugi::xml_node& objectNode,
+   bool parentIsScene)
 {
    // Define sprite, which is a polygon, in this case
    spPolygon sprite = new oxygine::Polygon();
@@ -653,13 +678,32 @@ void CompoundObject::defineSpritePolygon(
    // TODO: What about rotation?
 
    // TODO: And what about position?
-   
+   Vector2 newPos(pos.x + objectNode.attribute("posX").as_float(), pos.y + objectNode.attribute("posY").as_float());
+   sprite->setPosition(newPos);
+
    vector<Vector2> vertices(distance(objectNode.child("vertices").children("vertex").begin(), objectNode.child("vertices").children("vertex").end()));
 
    PolygonVertices::createSpritePolygon(sprite.get(), vertices, objectNode);
 
-   sprite->attachTo(parentActor);
    m_shapes.push_back(sprite.get());
+
+   if (parentIsScene)
+   {
+      float parallaxAmount = objectNode.attribute("parallaxAmount").as_float(0.0f);
+
+      if (parallaxAmount > 0.0f)
+      {
+         // We now know that parentObject is a scene and can thus cast it to this
+         SceneActor* sa = static_cast<SceneActor*>(parentObject);
+         sa->addParallaxBackgroundSprite(sprite, parallaxAmount);
+         return;
+      }
+   }
+
+   // If we get here, the parent wasn't a scene or the parallax amount was zero.
+   // In this case, we attach the sprite to the parent actor in the normal way.
+   sprite->attachTo(parentActor);
+
 }
 
 void CompoundObject::defineCircle(

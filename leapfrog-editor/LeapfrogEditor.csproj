@@ -54,7 +54,6 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="Models\Behaviours\ParallaxBackgroundProperties.cs" />
     <Compile Include="Models\Behaviours\PickupObjectProperties.cs" />
     <Compile Include="Models\Behaviours\MagneticMineProperties.cs" />
     <Compile Include="Models\Behaviours\ExplosiveObjectProperties.cs" />
@@ -89,7 +88,6 @@
     <Compile Include="ViewModels\Behvaiours\MagneticMinePropertiesViewModel.cs" />
     <Compile Include="ViewModels\Behvaiours\ExplosiveObjectPropertiesViewModel.cs" />
     <Compile Include="ViewModels\Behvaiours\CoBehaviourViewModel.cs" />
-    <Compile Include="ViewModels\Behvaiours\ParallaxBackgroundPropertiesViewModel.cs" />
     <Compile Include="ViewModels\Behvaiours\ScenePropsStateCollectionViewModel.cs" />
     <Compile Include="ViewModels\Behvaiours\StateBehaviourCollectionViewModel.cs" />
     <Compile Include="ViewModels\Behvaiours\ScenePropertiesViewModel.cs" />
@@ -109,7 +107,6 @@
     <Compile Include="ViewModels\Shape and bodies\BorderTextureViewModel.cs" />
     <Compile Include="ViewModels\Child Objects\SpawnObjectViewModel.cs" />
     <Compile Include="ViewModels\CollectionViewModelBase.cs" />
-    <Compile Include="ViewModels\Shape and bodies\ParallaxBackgroundViewModel.cs" />
     <Compile Include="ViewModels\Shape and bodies\ShapeCollectionViewModel.cs" />
     <Compile Include="ViewModels\Systems\BodyOriginSystemViewModel.cs" />
     <Compile Include="ViewModels\Systems\ReentryFlameEmitterPropertiesViewModel.cs" />
@@ -123,9 +120,6 @@
     <Compile Include="Views\Controls\ChildCOObjectUserControl.xaml.cs">
       <DependentUpon>ChildCOObjectUserControl.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\Controls\BackgroundControl.xaml.cs">
-      <DependentUpon>BackgroundControl.xaml</DependentUpon>
-    </Compile>
     <Compile Include="Views\Controls\Editable Properties Controls\Behaviour Properties Control\PickupBehaviourPropEditor.xaml.cs">
       <DependentUpon>PickupBehaviourPropEditor.xaml</DependentUpon>
     </Compile>
@@ -134,9 +128,6 @@
     </Compile>
     <Compile Include="Views\Controls\Editable Properties Controls\Behaviour Properties Control\ExplosiveBehaviourPropEditor.xaml.cs">
       <DependentUpon>ExplosiveBehaviourPropEditor.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Views\Controls\Editable Properties Controls\Behaviour Properties Control\ParallaxBackgroundPropEditor.xaml.cs">
-      <DependentUpon>ParallaxBackgroundPropEditor.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\Controls\Editable Properties Controls\Behaviour Properties Control\ScenePropEditor.xaml.cs">
       <DependentUpon>ScenePropEditor.xaml</DependentUpon>
@@ -412,10 +403,6 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Views\Controls\BackgroundControl.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
     <Page Include="Views\Controls\Editable Properties Controls\Behaviour Properties Control\PickupBehaviourPropEditor.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -425,10 +412,6 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="Views\Controls\Editable Properties Controls\Behaviour Properties Control\ExplosiveBehaviourPropEditor.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="Views\Controls\Editable Properties Controls\Behaviour Properties Control\ParallaxBackgroundPropEditor.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>

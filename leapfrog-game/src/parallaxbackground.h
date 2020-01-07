@@ -27,16 +27,12 @@ protected:
    b2World* m_world;
    SceneActor* m_sceneActor;
  
-   void readParallaxBackgroundObjectNode(const pugi::xml_node& node);
-
 public:
    ParallaxBackground(
       oxygine::Resources& gameResources,
       SceneActor* sceneParent,
-      CompoundObject* parentObject,
       b2World* world,
-      const pugi::xml_node& root,
-      int groupIndex);
+      float parallaxAmount);
 
 protected:
    void doUpdate(const oxygine::UpdateState& us);

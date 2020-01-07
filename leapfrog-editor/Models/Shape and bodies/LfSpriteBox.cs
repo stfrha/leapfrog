@@ -15,6 +15,7 @@ namespace LeapfrogEditor
 
       private double _width;
       private double _height;
+      private double _parallaxAmount;
 
       #endregion
 
@@ -24,6 +25,7 @@ namespace LeapfrogEditor
       {
          _width = 200;
          _height = 200;
+         _parallaxAmount = 0;
       }
 
       #endregion
@@ -42,6 +44,13 @@ namespace LeapfrogEditor
       {
          get { return _height; }
          set { _height = value; }
+      }
+
+      [XmlAttribute("parallaxAmount")]
+      public double ParallaxAmount
+      {
+         get { return _parallaxAmount; }
+         set { _parallaxAmount = value; }
       }
 
       #endregion

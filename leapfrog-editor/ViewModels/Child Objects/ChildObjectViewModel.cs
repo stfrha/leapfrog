@@ -153,25 +153,25 @@ namespace LeapfrogEditor
          {
             if ((ccvm.State == editedState) || (ccvm.State == "default"))
             {
-               if (ccvm.Behaviour.BehaviourProperties is ParallaxBackgroundPropertiesViewModel)
-               {
-                  if (showBackground)
-                  {
-                     ParallaxBackgroundViewModel pbvm = new ParallaxBackgroundViewModel(ccvm, MainVm, ccvm.Behaviour.BehaviourProperties as ParallaxBackgroundPropertiesViewModel);
+               //if (ccvm.Behaviour.BehaviourProperties is ParallaxBackgroundPropertiesViewModel)
+               //{
+               //   if (showBackground)
+               //   {
+               //      ParallaxBackgroundViewModel pbvm = new ParallaxBackgroundViewModel(ccvm, MainVm, ccvm.Behaviour.BehaviourProperties as ParallaxBackgroundPropertiesViewModel);
 
-                     foreach (Object o in ccvm.ShapeCollection.Shapes)
-                     {
-                        if (o is LfShapeViewModel)
-                        {
-                           LfShapeViewModel svm = o as LfShapeViewModel;
-                           pbvm.Shapes.Add(svm);
-                        }
-                     }
+               //      foreach (Object o in ccvm.ShapeCollection.Shapes)
+               //      {
+               //         if (o is LfShapeViewModel)
+               //         {
+               //            LfShapeViewModel svm = o as LfShapeViewModel;
+               //            pbvm.Shapes.Add(svm);
+               //         }
+               //      }
 
-                     coll.Add(pbvm);
-                  }
-               }
-               else
+               //      coll.Add(pbvm);
+               //   }
+               //}
+               //else
                {
                   foreach (Object o in ccvm.ShapeCollection.Shapes)
                   {

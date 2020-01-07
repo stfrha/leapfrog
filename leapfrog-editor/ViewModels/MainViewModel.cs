@@ -1020,14 +1020,6 @@ namespace LeapfrogEditor
 
       void DeleteThisObjectExecute(Object parameter)
       {
-         if (parameter is ParallaxBackgroundViewModel)
-         {
-            // Find the ChildCOViewModel that originated in the background
-            // and set parameter to this.
-            ParallaxBackgroundViewModel pbvm = parameter as ParallaxBackgroundViewModel;
-            parameter = pbvm.ParentCompoundObjectVm;
-         }
-
          if (parameter is WeldJointViewModel)
          {
             WeldJointViewModel jvm = parameter as WeldJointViewModel;
@@ -1106,8 +1098,7 @@ namespace LeapfrogEditor
          if ((EditedCpVm != null) && ((parameter is LfShapeViewModel) || 
             (parameter is WeldJointViewModel) || (parameter is ChildCOViewModel) ||
             (parameter is ChildObjectViewModel) || (parameter is SpawnObjectViewModel) ||
-            (parameter is SystemViewModelBase) || (parameter is CoSystemViewModel) ||
-            (parameter is ParallaxBackgroundViewModel)))
+            (parameter is SystemViewModelBase) || (parameter is CoSystemViewModel)))
          {
             return true;
          }
@@ -1181,14 +1172,6 @@ namespace LeapfrogEditor
 
       void LocateInBrowserExecute(Object parameter)
       {
-         if (parameter is ParallaxBackgroundViewModel)
-         {
-            // Find the ChildCOViewModel that originated in the background
-            // and set parameter to this.
-            ParallaxBackgroundViewModel pbvm = parameter as ParallaxBackgroundViewModel;
-            parameter = pbvm.ParentCompoundObjectVm;
-         }
-
          if (parameter is TreeViewViewModel)
          {
             TreeViewViewModel tvvm = parameter as TreeViewViewModel;

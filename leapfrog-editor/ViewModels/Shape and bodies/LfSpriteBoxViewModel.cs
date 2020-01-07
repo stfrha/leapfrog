@@ -95,6 +95,23 @@ namespace LeapfrogEditor
          }
       }
 
+      public double ParallaxAmount
+      {
+         get
+         {
+            if (LocalModelObject == null) return 0;
+
+            return LocalModelObject.ParallaxAmount;
+         }
+         set
+         {
+            if (LocalModelObject == null) return;
+
+            LocalModelObject.ParallaxAmount = value;
+            OnPropertyChanged("ParallaxAmount");
+         }
+      }
+
       public ObservableCollection<LfPointViewModel> PointVms
       {
          get { return _points; }

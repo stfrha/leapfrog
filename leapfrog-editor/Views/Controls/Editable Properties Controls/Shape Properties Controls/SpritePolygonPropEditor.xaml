@@ -19,6 +19,7 @@
             <local:DoubleEditorControl Headline="Texture Height" MyValue="{Binding TextureHeight, Mode=TwoWay}" />
             <local:DoubleEditorControl Headline="Texture Offset X" MyValue="{Binding TextureOffsetX, Mode=TwoWay}" />
             <local:DoubleEditorControl Headline="Texture Offset Y" MyValue="{Binding TextureOffsetY, Mode=TwoWay}" />
+            <local:DoubleEditorControl Headline="Parallax Amount" MyValue="{Binding ParallaxAmount, Mode=TwoWay}" />
             <local:ZLevelEditorControl Headline="Z-level" MyValue="{Binding ZLevel, Mode=TwoWay}" />
          </StackPanel>
       </Border>

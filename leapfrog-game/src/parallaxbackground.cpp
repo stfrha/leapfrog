@@ -15,19 +15,15 @@ using namespace pugi;
 ParallaxBackground::ParallaxBackground(
    Resources& gameResources,
    SceneActor* sceneParent,
-   CompoundObject* parentObject,
    b2World* world,
-   const xml_node& root,
-   int groupIndex) :
-   CompoundObject(sceneParent, parentObject),
+   float parallaxAmount) :
+   CompoundObject(sceneParent, sceneParent),
    m_gameResource(&gameResources),
    m_sceneActor(sceneParent),
-   m_world(world)
+   m_world(world),
+   m_parallaxAmount(parallaxAmount)
 {
    
-   //readParallaxBackgroundNode(root.child("behaviour").child("ParallaxBackgroundProperties"));
-   readParallaxBackgroundObjectNode(root.child("behaviour").child("parallaxBackgroundProperties"));
-
    m_sprite = new Sprite();
    m_sprite->setSize(g_Layout.getStageSize());
    m_sprite->setAnchor(0.0f, 0.0f);
@@ -37,16 +33,16 @@ ParallaxBackground::ParallaxBackground(
    // to 30 which is foreground
    m_sprite->setPriority(30.0f - m_parallaxAmount * 10.0f);
 
-   initCompoundObjectParts(
-      gameResources,
-      m_sprite.get(),
-      sceneParent,
-      parentObject,
-      world,
-      Vector2(0.0f, 0.0f),
-      root,
-      "",
-      groupIndex);
+   //initCompoundObjectParts(
+   //   gameResources,
+   //   m_sprite.get(),
+   //   sceneParent,
+   //   parentObject,
+   //   world,
+   //   Vector2(0.0f, 0.0f),
+   //   root,
+   //   "",
+   //   groupIndex);
 
    // This CompoundObject is also an actor who normally has
    // a userData that points to its parent. However, the parent
@@ -54,15 +50,7 @@ ParallaxBackground::ParallaxBackground(
    // member. The userData for this object should thus
    // be empty (=NULL)
    setUserData(NULL);
-
-   sceneParent->addParallaxBackground(this);
 }
-
-void ParallaxBackground::readParallaxBackgroundObjectNode(const pugi::xml_node& node)
-{
-   m_parallaxAmount = node.attribute("parallaxAmount").as_float(0.0f);
-}
-
 
 void ParallaxBackground::doUpdate(const oxygine::UpdateState& us)
 {

@@ -115,21 +115,6 @@
                   </local:RotatableCircleControl.ContextMenu>
                </local:RotatableCircleControl>
             </DataTemplate>
-            <DataTemplate DataType="{x:Type local:ParallaxBackgroundViewModel}">
-               <local:ParallaxBackgroundControl>
-                  <local:ParallaxBackgroundControl.ContextMenu>
-                     <ContextMenu>
-                        <MenuItem Header="Locate in browser" 
-                                 CommandParameter="{Binding}"
-                                 Command="{Binding Path=Data.LocateInBrowser, Source={StaticResource DataContextProxy}}" />
-                        <Separator />
-                        <MenuItem Header="Delete" 
-                                 CommandParameter="{Binding}"
-                                 Command="{Binding Path=Data.DeleteThisObject, Source={StaticResource DataContextProxy}}" />
-                     </ContextMenu>
-                  </local:ParallaxBackgroundControl.ContextMenu>
-               </local:ParallaxBackgroundControl>
-            </DataTemplate>
          </ItemsControl.Resources>
          <ItemsControl.ItemsPanel>
             <ItemsPanelTemplate>
@@ -150,7 +135,6 @@
       <ItemsControl ItemsSource="{Binding GlobalShapeCollection}">
          <ItemsControl.Resources>
             <!-- These empty data templates are needed to not display class name for such classes -->
-            <DataTemplate DataType="{x:Type local:ParallaxBackgroundViewModel}" />
             <DataTemplate DataType="{x:Type local:WeldJointViewModel}">
                <local:WeldJointControl>
                   <local:WeldJointControl.ContextMenu>

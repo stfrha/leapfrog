@@ -13,18 +13,27 @@ namespace LeapfrogEditor
    {
       #region Declarations
 
+      private double _parallaxAmount;
+
       #endregion
 
       #region Constructors
 
       public LfSpritePolygon()
       {
+         _parallaxAmount = 0;
       }
 
       #endregion
 
       #region Properties
 
+      [XmlAttribute("parallaxAmount")]
+      public double ParallaxAmount
+      {
+         get { return _parallaxAmount; }
+         set { _parallaxAmount = value; }
+      }
 
       #endregion
 

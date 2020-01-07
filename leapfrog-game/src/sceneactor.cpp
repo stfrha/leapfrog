@@ -105,112 +105,6 @@ SceneActor* SceneActor::defineScene(
       baseScene->addChild(sb);
       baseScene->m_boundaries.push_back(sb);
    }
-
-
-   //// We attach the parallax backgrounds on the stage.
-   //// This means that we need to reposition them in all
-   //// updates. Which we would even if they were attached 
-   //// to main actor (except for the 0% which would be
-   //// static).
-   //for (auto pbIt = root.child("behaviour").child("sceneProperties").children("parallaxBackground").begin();
-   //   pbIt != root.child("behaviour").child("sceneProperties").children("parallaxBackground").end();
-   //   ++pbIt)
-   //{
-   //   ParallaxBackground newBackground(0.0f);
-   //   
-   //   newBackground.m_sprite = new Sprite();
-   //   newBackground.m_sprite->setSize(g_Layout.getStageBounds().getSize());
-   //   newBackground.m_sprite->setAnchor(0.0f, 0.0f);
-   //   newBackground.m_sprite->setTouchChildrenEnabled(false);
-   //   newBackground.m_parallaxAmount = pbIt->attribute("parallaxAmount").as_float(0.0f);
-
-   //   // z-level range from 20 (at 100% amount, i.e. static background,
-   //   // to 30 which is foreground
-   //   newBackground.m_sprite->setPriority(30.0f - newBackground.m_parallaxAmount * 10.0f); 
-
-   //   for (auto spIt = pbIt->children("spriteBox").begin();
-   //      spIt != pbIt->children("spriteBox").end();
-   //      ++spIt)
-   //   {
-   //      // Define sprite
-   //      spSprite sprite = new Sprite();
-   //      CompoundObject::doCommonShapeDefinitions(gameResources, sprite.get(), *spIt);
-
-   //      const ResAnim* an = sprite->getResAnim();
-   //      AnimationFrame anFr = an->getFrame(0);
-   //      Vector2 frS = anFr.getSize();
-
-   //      Vector2 wantedSize = Vector2(spIt->attribute("width").as_float(), spIt->attribute("height").as_float());
-   //      sprite->setScale(Vector2(wantedSize.x / frS.x, wantedSize.y / frS.y));
-
-
-
-
-   //      Vector2 newPos(spIt->attribute("posX").as_float(), spIt->attribute("posY").as_float());
-   //      sprite->setPosition(newPos);
-   //      sprite->setRotation(spIt->attribute("angle").as_float() * MATH_PI / 180.0f);
-   //      sprite->setAnchor(0.5f, 0.5f);
-   //      sprite->attachTo(newBackground.m_sprite);
-   //   }
-
-   //   for (auto spIt = pbIt->children("spritePolygon").begin();
-   //      spIt != pbIt->children("spritePolygon").end();
-   //      ++spIt)
-   //   {
-   //      // Define sprite, which is a polygon, in this case
-   //      spPolygon sprite = new oxygine::Polygon();
-
-   //      doCommonShapeDefinitions(gameResources, sprite.get(), *spIt);
-
-   //      vector<Vector2> vertices(
-   //         distance(spIt->child("vertices").children("vertex").begin(), 
-   //            spIt->child("vertices").children("vertex").end()));
-
-   //      PolygonVertices::createSpritePolygon(sprite.get(), vertices, *spIt);
-
-   //      Vector2 newPos(spIt->attribute("posX").as_float(), spIt->attribute("posY").as_float());
-   //      sprite->setPosition(newPos);
-   //      sprite->setRotation(spIt->attribute("angle").as_float() * MATH_PI / 180.0f);
-   //      sprite->setAnchor(0.0f, 0.0f);
-
-   //      sprite->attachTo(newBackground.m_sprite);
-   //   }
-
-
-   //   baseScene->m_parallaxBackgrounds.push_back(newBackground);
-   //   baseScene->addChild(newBackground.m_sprite);
-   //}
-
-//
-//   newBackground.m_sprite = new Sprite();
-//   
-//   // Size should be a function of stage size, view port size 
-//   // and the parallax effect amount. For now, set it to view port size
-//
-//   newBackground.m_sprite->setResAnim(gameResources.getResAnim("night_sky"));
-//   newBackground.m_sprite->setTouchChildrenEnabled(false);
-//   newBackground.m_sprite->setAnchor(0.0f, 0.0f);
-//   newBackground.m_sprite->setPriority(26); // Far static background
-//                                            
-////   newBackground.m_sprite->setPosition(0.0f, 0.0f);
-////   newBackground.m_sprite->setSize(g_Layout.getViewPortBounds());
-//   newBackground.m_parallaxAmount = 0.0f;
-//   baseScene->m_parallaxBackgrounds.push_back(newBackground);
-//   baseScene->addChild(newBackground.m_sprite);
-//
-//
-//   newBackground.m_sprite = new Sprite();
-//
-//   newBackground.m_sprite->setResAnim(gameResources.getResAnim("cloud_sky"));
-//   newBackground.m_sprite->setTouchChildrenEnabled(false);
-//   newBackground.m_sprite->setAnchor(0.0f, 0.0f);
-//   newBackground.m_sprite->setPriority(28); 
-//   newBackground.m_parallaxAmount = 0.5f;
-//   baseScene->m_parallaxBackgrounds.push_back(newBackground);
-//   baseScene->addChild(newBackground.m_sprite);
-//
-
-
    return baseScene;
 }
 
@@ -261,6 +155,31 @@ SceneActor::SceneActor(
 
 SceneActor::~SceneActor()
 {
+}
+
+void SceneActor::addParallaxBackgroundSprite(spSprite sp, float parallaxAmount)
+{
+   // Check if there already is a background with the same parallax amount
+   for (auto it = m_parallaxBackgrounds.begin(); it != m_parallaxBackgrounds.end(); ++it)
+   {
+      if (fabs(it->m_parallaxAmount - parallaxAmount) < 0.000001)
+      {
+         // A background for this amount is already created, add the sprite to this
+         sp->attachTo(it->m_sprite);
+         return;
+      }
+   }
+
+   // If we get here (without returning earlier) there was no background with the
+   // same amount. Create a new one.
+   ParallaxBackground* sa = new ParallaxBackground(
+      *m_gameResources,
+      this,
+      m_world,
+      parallaxAmount);
+
+   addParallaxBackground(sa);
+   sp->attachTo(sa->m_sprite);
 }
 
 void SceneActor::addParallaxBackground(ParallaxBackground* background)

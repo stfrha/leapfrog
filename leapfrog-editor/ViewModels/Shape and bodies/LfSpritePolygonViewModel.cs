@@ -41,6 +41,23 @@ namespace LeapfrogEditor
 
       #region Properties
 
+      public double ParallaxAmount
+      {
+         get
+         {
+            if (LocalModelObject == null) return 0;
+
+            return LocalModelObject.ParallaxAmount;
+         }
+         set
+         {
+            if (LocalModelObject == null) return;
+
+            LocalModelObject.ParallaxAmount = value;
+            OnPropertyChanged("ParallaxAmount");
+         }
+      }
+
       public new LfSpritePolygon LocalModelObject
       {
          get { return (LfSpritePolygon)ModelObject; }

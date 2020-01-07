@@ -66,14 +66,16 @@ private:
       oxygine::Actor* parentActor,
       CompoundObject* parentObject,
       const oxygine::Vector2& pos,
-      pugi::xml_node& objectNode);
+      pugi::xml_node& objectNode,
+      bool parentIsScene = false);
 
    void defineSpritePolygon(
       oxygine::Resources& gameResources,
       oxygine::Actor* parentActor,
       CompoundObject* parentObject,
       const oxygine::Vector2& pos,
-      pugi::xml_node& objectNode);
+      pugi::xml_node& objectNode,
+      bool parentIsScene = false);
 
    void defineCircle(
       oxygine::Resources& gameResources,
@@ -286,7 +288,8 @@ public:
       const oxygine::Vector2& pos,
       const pugi::xml_node& objectNode,
       const std::string& initialState,
-      int groupIndex);
+      int groupIndex,
+      bool parentIsScene = false);
 
    CompoundObject* defineChildObject(
       oxygine::Resources& gameResources,
