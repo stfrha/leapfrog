@@ -16,6 +16,8 @@
       <local:MatchingStateVisibilityConverter x:Key="MatchingStateVisibilityConverter" />
       <local:DecoratedBorderPolygonToVisibilityValueConverter x:Key="DecoratedBorderPolygonToVisibilityValueConverter" />
       <local:IsSceneToVisibilityValueConverter x:Key="IsSceneToVisibilityValueConverter" />
+      <local:ParallaxSpriteScaleConverter x:Key="ParallaxSpriteScaleConverter" />
+      <local:ParallaxSpriteTranslateConverter x:Key="ParallaxSpriteTranslateConverter" />
    </UserControl.Resources>
    <Canvas x:Name="myCoUserControl" >
       <!-- The first itemscontrol is for the images of the objects, like what is shown 
@@ -30,6 +32,85 @@
             <DataTemplate DataType="{x:Type local:PrismaticJointViewModel}" />
             <DataTemplate DataType="{x:Type local:RopeViewModel}" />
             <DataTemplate DataType="{x:Type local:CoSystemViewModel}" />
+            <DataTemplate DataType="{x:Type local:LfSpritePolygonViewModel}">
+               <local:ScalableTexturePolygonControl>
+                  <local:ScalableTexturePolygonControl.ContextMenu>
+                     <ContextMenu>
+                        <MenuItem Header="Locate in browser" 
+                           CommandParameter="{Binding}"
+                           Command="{Binding Path=Data.LocateInBrowser, Source={StaticResource DataContextProxy}}" />
+                        <Separator />
+                        <MenuItem Header="Delete" 
+                           CommandParameter="{Binding}"
+                           Command="{Binding Path=Data.DeleteThisObject, Source={StaticResource DataContextProxy}}" />
+                     </ContextMenu>
+                  </local:ScalableTexturePolygonControl.ContextMenu>
+                  <local:ScalableTexturePolygonControl.RenderTransform>
+                     <TransformGroup>
+                        <ScaleTransform>
+                           <ScaleTransform.ScaleX>
+                              <MultiBinding Converter="{StaticResource ParallaxSpriteScaleConverter}" ConverterParameter="x" >
+                                 <Binding Path="AbsPosX" />
+                                 <Binding Path="AbsPosY" />
+                                 <Binding Path="ContentOffsetX" RelativeSource="{RelativeSource Mode=FindAncestor, AncestorType=ZoomAndPan:ZoomAndPanControl}" />
+                                 <Binding Path="ContentOffsetY" RelativeSource="{RelativeSource Mode=FindAncestor, AncestorType=ZoomAndPan:ZoomAndPanControl}" />
+                                 <Binding Path="ContentScale" RelativeSource="{RelativeSource Mode=FindAncestor, AncestorType=ZoomAndPan:ZoomAndPanControl}" />
+                                 <Binding Path="ActualWidth" RelativeSource="{RelativeSource Mode=FindAncestor, AncestorType=ZoomAndPan:ZoomAndPanControl}" />
+                                 <Binding Path="ActualHeight" RelativeSource="{RelativeSource Mode=FindAncestor, AncestorType=ZoomAndPan:ZoomAndPanControl}" />
+                                 <Binding Path="ParentVm.Behaviour.BehaviourProperties.Width" />
+                                 <Binding Path="ParentVm.Behaviour.BehaviourProperties.Height" />
+                                 <Binding Path="ParallaxAmount" />
+                              </MultiBinding>
+                           </ScaleTransform.ScaleX>
+                           <ScaleTransform.ScaleY>
+                              <MultiBinding Converter="{StaticResource ParallaxSpriteScaleConverter}" ConverterParameter="y" >
+                                 <Binding Path="AbsPosX" />
+                                 <Binding Path="AbsPosY" />
+                                 <Binding Path="ContentOffsetX" RelativeSource="{RelativeSource Mode=FindAncestor, AncestorType=ZoomAndPan:ZoomAndPanControl}" />
+                                 <Binding Path="ContentOffsetY" RelativeSource="{RelativeSource Mode=FindAncestor, AncestorType=ZoomAndPan:ZoomAndPanControl}" />
+                                 <Binding Path="ContentScale" RelativeSource="{RelativeSource Mode=FindAncestor, AncestorType=ZoomAndPan:ZoomAndPanControl}" />
+                                 <Binding Path="ActualWidth" RelativeSource="{RelativeSource Mode=FindAncestor, AncestorType=ZoomAndPan:ZoomAndPanControl}" />
+                                 <Binding Path="ActualHeight" RelativeSource="{RelativeSource Mode=FindAncestor, AncestorType=ZoomAndPan:ZoomAndPanControl}" />
+                                 <Binding Path="ParentVm.Behaviour.BehaviourProperties.Width" />
+                                 <Binding Path="ParentVm.Behaviour.BehaviourProperties.Height" />
+                                 <Binding Path="ParallaxAmount" />
+                              </MultiBinding>
+                           </ScaleTransform.ScaleY>
+                        </ScaleTransform>
+                        <TranslateTransform>
+                           <TranslateTransform.X>
+                              <MultiBinding Converter="{StaticResource ParallaxSpriteTranslateConverter}" ConverterParameter="x" >
+                                 <Binding Path="AbsPosX" />
+                                 <Binding Path="AbsPosY" />
+                                 <Binding Path="ContentOffsetX" RelativeSource="{RelativeSource Mode=FindAncestor, AncestorType=ZoomAndPan:ZoomAndPanControl}" />
+                                 <Binding Path="ContentOffsetY" RelativeSource="{RelativeSource Mode=FindAncestor, AncestorType=ZoomAndPan:ZoomAndPanControl}" />
+                                 <Binding Path="ContentScale" RelativeSource="{RelativeSource Mode=FindAncestor, AncestorType=ZoomAndPan:ZoomAndPanControl}" />
+                                 <Binding Path="ActualWidth" RelativeSource="{RelativeSource Mode=FindAncestor, AncestorType=ZoomAndPan:ZoomAndPanControl}" />
+                                 <Binding Path="ActualHeight" RelativeSource="{RelativeSource Mode=FindAncestor, AncestorType=ZoomAndPan:ZoomAndPanControl}" />
+                                 <Binding Path="ParentVm.Behaviour.BehaviourProperties.Width" />
+                                 <Binding Path="ParentVm.Behaviour.BehaviourProperties.Height" />
+                                 <Binding Path="ParallaxAmount" />
+                              </MultiBinding>
+                           </TranslateTransform.X>
+                           <TranslateTransform.Y>
+                              <MultiBinding Converter="{StaticResource ParallaxSpriteTranslateConverter}" ConverterParameter="y" >
+                                 <Binding Path="AbsPosX" />
+                                 <Binding Path="AbsPosY" />
+                                 <Binding Path="ContentOffsetX" RelativeSource="{RelativeSource Mode=FindAncestor, AncestorType=ZoomAndPan:ZoomAndPanControl}" />
+                                 <Binding Path="ContentOffsetY" RelativeSource="{RelativeSource Mode=FindAncestor, AncestorType=ZoomAndPan:ZoomAndPanControl}" />
+                                 <Binding Path="ContentScale" RelativeSource="{RelativeSource Mode=FindAncestor, AncestorType=ZoomAndPan:ZoomAndPanControl}" />
+                                 <Binding Path="ActualWidth" RelativeSource="{RelativeSource Mode=FindAncestor, AncestorType=ZoomAndPan:ZoomAndPanControl}" />
+                                 <Binding Path="ActualHeight" RelativeSource="{RelativeSource Mode=FindAncestor, AncestorType=ZoomAndPan:ZoomAndPanControl}" />
+                                 <Binding Path="ParentVm.Behaviour.BehaviourProperties.Width" />
+                                 <Binding Path="ParentVm.Behaviour.BehaviourProperties.Height" />
+                                 <Binding Path="ParallaxAmount" />
+                              </MultiBinding>
+                           </TranslateTransform.Y>
+                        </TranslateTransform>
+                     </TransformGroup>
+                  </local:ScalableTexturePolygonControl.RenderTransform>
+               </local:ScalableTexturePolygonControl>
+            </DataTemplate>
             <DataTemplate DataType="{x:Type local:LfScalableTexturePolygonViewModel}">
                <Grid>
                   <local:ScalableTexturePolygonControl>
@@ -98,6 +179,70 @@
                      Command="{Binding Path=Data.DeleteThisObject, Source={StaticResource DataContextProxy}}" />
                      </ContextMenu>
                   </local:RotatableBoxControl.ContextMenu>
+                  <local:RotatableBoxControl.RenderTransform>
+                     <TransformGroup>
+                        <ScaleTransform>
+                           <ScaleTransform.ScaleX>
+                              <MultiBinding Converter="{StaticResource ParallaxSpriteScaleConverter}" ConverterParameter="x" >
+                                 <Binding Path="AbsPosX" />
+                                 <Binding Path="AbsPosY" />
+                                 <Binding Path="ContentOffsetX" RelativeSource="{RelativeSource Mode=FindAncestor, AncestorType=ZoomAndPan:ZoomAndPanControl}" />
+                                 <Binding Path="ContentOffsetY" RelativeSource="{RelativeSource Mode=FindAncestor, AncestorType=ZoomAndPan:ZoomAndPanControl}" />
+                                 <Binding Path="ContentScale" RelativeSource="{RelativeSource Mode=FindAncestor, AncestorType=ZoomAndPan:ZoomAndPanControl}" />
+                                 <Binding Path="ActualWidth" RelativeSource="{RelativeSource Mode=FindAncestor, AncestorType=ZoomAndPan:ZoomAndPanControl}" />
+                                 <Binding Path="ActualHeight" RelativeSource="{RelativeSource Mode=FindAncestor, AncestorType=ZoomAndPan:ZoomAndPanControl}" />
+                                 <Binding Path="ParentVm.Behaviour.BehaviourProperties.Width" />
+                                 <Binding Path="ParentVm.Behaviour.BehaviourProperties.Height" />
+                                 <Binding Path="ParallaxAmount" />
+                              </MultiBinding>
+                           </ScaleTransform.ScaleX>
+                           <ScaleTransform.ScaleY>
+                              <MultiBinding Converter="{StaticResource ParallaxSpriteScaleConverter}" ConverterParameter="y" >
+                                 <Binding Path="AbsPosX" />
+                                 <Binding Path="AbsPosY" />
+                                 <Binding Path="ContentOffsetX" RelativeSource="{RelativeSource Mode=FindAncestor, AncestorType=ZoomAndPan:ZoomAndPanControl}" />
+                                 <Binding Path="ContentOffsetY" RelativeSource="{RelativeSource Mode=FindAncestor, AncestorType=ZoomAndPan:ZoomAndPanControl}" />
+                                 <Binding Path="ContentScale" RelativeSource="{RelativeSource Mode=FindAncestor, AncestorType=ZoomAndPan:ZoomAndPanControl}" />
+                                 <Binding Path="ActualWidth" RelativeSource="{RelativeSource Mode=FindAncestor, AncestorType=ZoomAndPan:ZoomAndPanControl}" />
+                                 <Binding Path="ActualHeight" RelativeSource="{RelativeSource Mode=FindAncestor, AncestorType=ZoomAndPan:ZoomAndPanControl}" />
+                                 <Binding Path="ParentVm.Behaviour.BehaviourProperties.Width" />
+                                 <Binding Path="ParentVm.Behaviour.BehaviourProperties.Height" />
+                                 <Binding Path="ParallaxAmount" />
+                              </MultiBinding>
+                           </ScaleTransform.ScaleY>
+                        </ScaleTransform>
+                        <TranslateTransform>
+                           <TranslateTransform.X>
+                              <MultiBinding Converter="{StaticResource ParallaxSpriteTranslateConverter}" ConverterParameter="x" >
+                                 <Binding Path="AbsPosX" />
+                                 <Binding Path="AbsPosY" />
+                                 <Binding Path="ContentOffsetX" RelativeSource="{RelativeSource Mode=FindAncestor, AncestorType=ZoomAndPan:ZoomAndPanControl}" />
+                                 <Binding Path="ContentOffsetY" RelativeSource="{RelativeSource Mode=FindAncestor, AncestorType=ZoomAndPan:ZoomAndPanControl}" />
+                                 <Binding Path="ContentScale" RelativeSource="{RelativeSource Mode=FindAncestor, AncestorType=ZoomAndPan:ZoomAndPanControl}" />
+                                 <Binding Path="ActualWidth" RelativeSource="{RelativeSource Mode=FindAncestor, AncestorType=ZoomAndPan:ZoomAndPanControl}" />
+                                 <Binding Path="ActualHeight" RelativeSource="{RelativeSource Mode=FindAncestor, AncestorType=ZoomAndPan:ZoomAndPanControl}" />
+                                 <Binding Path="ParentVm.Behaviour.BehaviourProperties.Width" />
+                                 <Binding Path="ParentVm.Behaviour.BehaviourProperties.Height" />
+                                 <Binding Path="ParallaxAmount" />
+                              </MultiBinding>
+                           </TranslateTransform.X>
+                           <TranslateTransform.Y>
+                              <MultiBinding Converter="{StaticResource ParallaxSpriteTranslateConverter}" ConverterParameter="y" >
+                                 <Binding Path="AbsPosX" />
+                                 <Binding Path="AbsPosY" />
+                                 <Binding Path="ContentOffsetX" RelativeSource="{RelativeSource Mode=FindAncestor, AncestorType=ZoomAndPan:ZoomAndPanControl}" />
+                                 <Binding Path="ContentOffsetY" RelativeSource="{RelativeSource Mode=FindAncestor, AncestorType=ZoomAndPan:ZoomAndPanControl}" />
+                                 <Binding Path="ContentScale" RelativeSource="{RelativeSource Mode=FindAncestor, AncestorType=ZoomAndPan:ZoomAndPanControl}" />
+                                 <Binding Path="ActualWidth" RelativeSource="{RelativeSource Mode=FindAncestor, AncestorType=ZoomAndPan:ZoomAndPanControl}" />
+                                 <Binding Path="ActualHeight" RelativeSource="{RelativeSource Mode=FindAncestor, AncestorType=ZoomAndPan:ZoomAndPanControl}" />
+                                 <Binding Path="ParentVm.Behaviour.BehaviourProperties.Width" />
+                                 <Binding Path="ParentVm.Behaviour.BehaviourProperties.Height" />
+                                 <Binding Path="ParallaxAmount" />
+                              </MultiBinding>
+                           </TranslateTransform.Y>
+                        </TranslateTransform>
+                     </TransformGroup>
+                  </local:RotatableBoxControl.RenderTransform>
                </local:RotatableBoxControl>
             </DataTemplate>
             <DataTemplate DataType="{x:Type local:LfStaticCircleViewModel}">

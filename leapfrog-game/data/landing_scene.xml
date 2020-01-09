@@ -17,8 +17,8 @@
   <spriteBox
     name="cloud1"
     texture="cloud"
-    posX="225"
-    posY="70"
+    posX="597.66864212455221"
+    posY="145.7852275962241"
     angle="0"
     zLevel="0"
     collisionEntity="notApplicable"
@@ -30,8 +30,8 @@
   <spriteBox
     name="cloud5"
     texture="cloud"
-    posX="625"
-    posY="130"
+    posX="828.7162539971896"
+    posY="175.88830294817262"
     angle="0"
     zLevel="0"
     collisionEntity="notApplicable"
@@ -58,20 +58,20 @@
     <vertices>
       <vertex
         id="1"
-        x="222.26561398965561"
-        y="548.77764257074818" />
+        x="287.9023864873"
+        y="594.22380110546942" />
       <vertex
         id="2"
-        x="206.60865574155378"
-        y="19.669434698566874" />
+        x="297.44507748524711"
+        y="82.035512950626071" />
       <vertex
         id="3"
-        x="969.31027229248684"
-        y="44.430761356117273" />
+        x="945.18886444284317"
+        y="70.36043436657701" />
       <vertex
         id="4"
-        x="971.59764612535719"
-        y="550.06235563066866" />
+        x="1030.0519366723229"
+        y="610.140376470606" />
     </vertices>
     <triangles>
       <triangle
