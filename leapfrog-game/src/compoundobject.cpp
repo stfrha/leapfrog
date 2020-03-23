@@ -148,6 +148,28 @@ void CompoundObject::removeShape(Actor* removeMe)
  }
 
  CompoundObject* CompoundObject::readDefinitionXmlFile(
+    Resources& gameResources,
+    SceneActor* sceneParent,
+    CompoundObject* parentObject,
+    b2World* world,
+    const Vector2& pos,
+    const string& fileName,
+    const string& initialState)
+ {
+    ox::file::buffer bf;
+    ox::file::read(fileName.c_str(), bf);
+
+    return readDefinitionXml(
+       gameResources,
+       sceneParent,
+       parentObject,
+       world,
+       pos,
+       &bf.data[0], bf.size(),
+       initialState);
+ }
+
+ CompoundObject* CompoundObject::readDefinitionXml(
    // TODO: This method should not be executed on an existing CO
    // because if the CO has a behaviour one of the behaviour classes
    // that inherits from CO should be created. Therefore this method
@@ -159,16 +181,14 @@ void CompoundObject::removeShape(Actor* removeMe)
    CompoundObject* parentObject,
    b2World* world,
    const Vector2& pos,
-   const string& fileName,
+   const void* buffer,
+   const size_t size,
    const string& initialState)
 {
-   ox::file::buffer bf;
-   ox::file::read(fileName.c_str(), bf);
-
    xml_document doc;
 
 //   xml_parse_result result = doc.load_file(fileName.c_str());
-   xml_parse_result result = doc.load_buffer(&bf.data[0], bf.size());
+   xml_parse_result result = doc.load_buffer(buffer, size);
 
    xml_node root = doc.child("compoundObject");
 

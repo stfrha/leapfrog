@@ -13,6 +13,12 @@ using namespace oxygine;
 using namespace std;
 using namespace pugi;
 
+ManualPan::ManualPan() :
+   m_manPanEnable(false),
+   m_manualPanPos(Vector2(0.0f, 0.0f))
+{
+
+}
 
 SceneActor* SceneActor::defineScene(
    Resources& gameResources,
@@ -105,6 +111,7 @@ SceneActor* SceneActor::defineScene(
       baseScene->addChild(sb);
       baseScene->m_boundaries.push_back(sb);
    }
+
    return baseScene;
 }
 
@@ -130,7 +137,11 @@ SceneActor::SceneActor(
    m_firePressed(false),
    m_zoomInPressed(false),
    m_zoomOutPressed(false),
-   m_panObject(NULL)
+   m_panButtonPressed(false),
+   m_manPanEnablePressed(false),
+   m_armManPanEnableChange(true),
+   m_panObject(NULL),
+   m_manualPan(NULL)
 {
 	setScale(m_stageToViewPortScale);
 
@@ -313,6 +324,12 @@ void SceneActor::setPanorateObject(CompoundObject* co)
    }
 }
 
+void SceneActor::setManualPan(ManualPan* mp)
+{
+   m_manualPan = mp;
+}
+
+
 void SceneActor::setZoom(float zoom)
 {
    m_zoomScale = zoom;
@@ -434,6 +451,25 @@ void SceneActor::doUpdate(const UpdateState& us)
       m_leapfrog->fireGun(false);
    }
 
+   if (m_manPanEnablePressed && m_armManPanEnableChange)
+   {
+      if (m_manualPan->m_manPanEnable)
+      {
+         m_manualPan->m_manPanEnable = false;
+      }
+      else
+      {
+         m_manualPan->m_manPanEnable = true;
+      }
+
+      m_armManPanEnableChange = false;
+   }
+
+   if (!m_manPanEnablePressed && !m_armManPanEnableChange)
+   {
+      m_armManPanEnableChange = true;
+   }
+
 
 	if (data[SDL_SCANCODE_0])
 	{
@@ -503,16 +539,25 @@ void SceneActor::doUpdate(const UpdateState& us)
 	// Pan object position in stage coordinates
    Vector2 panPos(0.0f, 0.0f);
 
-   if (m_panObject)
+   m_manualPan->m_manualPanPos += m_panVector;
+
+
+   if (m_manualPan->m_manPanEnable)
    {
-      panPos = m_panObject->getCompoundObjectPosition();
+      panPos = m_manualPan->m_manualPanPos;
    }
    else
-   {
-      panPos = m_leapfrog->getMainActor()->getPosition();
+   { 
+      if (m_panObject)
+      {
+         panPos = m_panObject->getCompoundObjectPosition();
+      }
+      else
+      {
+         panPos = m_leapfrog->getMainActor()->getPosition();
+      }
    }
-
-   
+      
    if (m_panorateMode != fix)
    {
       // Now stagePos is the position that makes the position of the 
@@ -560,6 +605,13 @@ void SceneActor::doUpdate(const UpdateState& us)
          //{
          //   panPos.y = m_wantedVpPos.y / m_stageToViewPortScale + g_Layout.getStageBounds().getTop();
          //}
+      }
+
+      // If pan position got out of bounds, the panPos was changed. We don't
+      // want the manualPanPos to wonder beyond that.
+      if (m_manualPan->m_manPanEnable)
+      {
+         m_manualPan->m_manualPanPos = panPos;
       }
 
       // stagePos is where I must position the pos (this object)

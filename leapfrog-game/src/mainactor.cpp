@@ -23,17 +23,26 @@
 using namespace oxygine;
 using namespace std;
 
-MainActor::MainActor() :
-   m_world(NULL),
+NextSceneDefinition::NextSceneDefinition() :
    m_nextSceneFile("landing_scene.xml"),
    m_armNextScene(true),
    m_nextSceneType(SceneActor::SceneTypeEnum::landing),
+   m_nextSceneState("default")
+{
+}
+
+MainActor::MainActor() :
+   m_world(NULL),
    m_turnRightTouchIndex(0),
    m_turnLeftTouchIndex(0),
    m_boosterTouchIndex(0),
    m_fireTouchIndex(0),
    m_zoomInTouchIndex(0),
-   m_zoomOutTouchIndex(0)
+   m_zoomOutTouchIndex(0),
+   m_panTouchIndex(0),
+   m_reloadTouchIndex(0),
+   m_reloadPressed(false),
+   m_reloadArm(true)
 {
    g_Layout.initLayout();
    
@@ -62,8 +71,12 @@ MainActor::MainActor() :
 
 	setSize(g_Layout.getViewPortBounds());
    
-   g_LuaInterface.determineNextScene("New Game", "", m_nextSceneFile, m_nextSceneState, m_nextSceneType);
-   m_armNextScene = true;
+   g_LuaInterface.determineNextScene(
+      "New Game", "", 
+      m_nextScene.m_nextSceneFile, 
+      m_nextScene.m_nextSceneState, 
+      m_nextScene.m_nextSceneType);
+   m_nextScene.m_armNextScene = true;
 
 
    //g_LuaInterface.determineNextScene("toDeepSpace", "", m_nextSceneFile, m_nextSceneState, m_nextSceneType);
@@ -127,8 +140,7 @@ void MainActor::startScene(void)
    // And then re-add those needed by main actor
    addTouchDownListener(CLOSURE(this, &MainActor::sceneDownHandler));
    addTouchUpListener(CLOSURE(this, &MainActor::sceneUpHandler));
-
-
+   addEventListener(TouchEvent::MOVE, (CLOSURE(this, &MainActor::panMoveHandler)));
 
    spClipRectActor window = new ClipRectActor();
 
@@ -136,17 +148,17 @@ void MainActor::startScene(void)
    window->setPosition(0.0f, 0.0f);
    addChild(window);
 
-   if ((m_nextSceneType == SceneActor::SceneTypeEnum::landing) || 
-      (m_nextSceneType == SceneActor::SceneTypeEnum::deepSpace))
+   if ((m_nextScene.m_nextSceneType == SceneActor::SceneTypeEnum::landing) ||
+      (m_nextScene.m_nextSceneType == SceneActor::SceneTypeEnum::deepSpace))
    {
       spSceneActor sceneObj = static_cast<SceneActor*>(CompoundObject::readDefinitionXmlFile(
-         m_gameResources,
-         NULL,
-         NULL,
-         m_world,
-         Vector2(0.0f, 0.0f),
-         m_nextSceneFile,
-         m_nextSceneState));
+            m_gameResources,
+            NULL,
+            NULL,
+            m_world,
+            Vector2(0.0f, 0.0f),
+            m_nextScene.m_nextSceneFile,
+            m_nextScene.m_nextSceneState));
 
       if (sceneObj == NULL)
       {
@@ -155,7 +167,7 @@ void MainActor::startScene(void)
 
       window->addChild(sceneObj);
 
-      if (m_nextSceneType == SceneActor::SceneTypeEnum::landing)
+      if (m_nextScene.m_nextSceneType == SceneActor::SceneTypeEnum::landing)
       {
          m_sceneObject = sceneObj.get();
          sceneObj->addEventListener(LandingActorTransitToDeepSpaceEvent::EVENT, CLOSURE(this, &MainActor::transitToDeepSpaceListner));
@@ -166,16 +178,16 @@ void MainActor::startScene(void)
          sceneObj->addEventListener(DeepSpaceSceneTransitToOrbitEvent::EVENT, CLOSURE(this, &MainActor::transitToOrbitListner));
       }
    }
-   else if (m_nextSceneType == SceneActor::SceneTypeEnum::orbit)
+   else if (m_nextScene.m_nextSceneType == SceneActor::SceneTypeEnum::orbit)
    {
-      spCompoundObject co = CompoundObject::readDefinitionXmlFile(
-         m_gameResources, 
-         NULL, 
-         NULL, 
-         m_world, 
-         Vector2(0.0f, 0.0f), 
-         m_nextSceneFile, 
-         m_nextSceneState);
+      spCompoundObject co = static_cast<SceneActor*>(CompoundObject::readDefinitionXmlFile(
+            m_gameResources,
+            NULL,
+            NULL,
+            m_world,
+            Vector2(0.0f, 0.0f),
+            m_nextScene.m_nextSceneFile,
+            m_nextScene.m_nextSceneState));
 
       window->addChild(co);
 
@@ -186,6 +198,8 @@ void MainActor::startScene(void)
    }
 
    m_sceneObject->connectToForeignObjects();
+
+   m_sceneObject->setManualPan(&m_manualPan);
 
    g_LuaInterface.setupMissionStateScene(m_sceneObject);
 
@@ -206,7 +220,7 @@ void MainActor::startScene(void)
       Vector2(g_Layout.getButtonWidth() * 2.0f, g_Layout.getButtonWidth() / 2.0f),
       g_Layout.getDefaultFontSize(),
       100.0f,
-      m_gameStatus->getShots(),
+      (float)m_gameStatus->getShots(),
       "Ammo:",
       GameStatusTypeEnum::shots);
 
@@ -218,7 +232,7 @@ void MainActor::startScene(void)
       Vector2(g_Layout.getButtonWidth() * 2.0f, g_Layout.getButtonWidth() / 2.0f),
       g_Layout.getDefaultFontSize(),
       100.0f,
-      m_gameStatus->getFuel(),
+      (float)m_gameStatus->getFuel(),
       "Fuel:",
       GameStatusTypeEnum::fuel);
 
@@ -230,7 +244,7 @@ void MainActor::startScene(void)
       Vector2(g_Layout.getButtonWidth() * 2.0f, g_Layout.getButtonWidth() / 2.0f),
       g_Layout.getDefaultFontSize(),
       100.0f,
-      m_gameStatus->getShield(),
+      (float)m_gameStatus->getShield(),
       "Shield:",
       GameStatusTypeEnum::shield);
 
@@ -242,7 +256,7 @@ void MainActor::startScene(void)
       Vector2(g_Layout.getButtonWidth() * 2.0f, g_Layout.getButtonWidth() / 2.0f),
       g_Layout.getDefaultFontSize(),
       100.0f,
-      m_gameStatus->getDamage(),
+      (float)m_gameStatus->getDamage(),
       "Damage:",
       GameStatusTypeEnum::damage);
 
@@ -258,7 +272,7 @@ void MainActor::startScene(void)
    // map
    m_sceneObject->registerObjectsToMap();
 
-   if (m_nextSceneType == SceneActor::SceneTypeEnum::landing)
+   if (m_nextScene.m_nextSceneType == SceneActor::SceneTypeEnum::landing)
    {
       shieldBar->setAlpha(128);
    }
@@ -266,6 +280,7 @@ void MainActor::startScene(void)
 
    createButtonOverlay();
 
+   setManualPanButtonState();
    //m_debugDraw = new Box2DDraw;
    //m_debugDraw->SetFlags(b2Draw::e_shapeBit | b2Draw::e_jointBit | b2Draw::e_pairBit | b2Draw::e_centerOfMassBit);
    //m_debugDraw->attachTo(m_sceneObject);
@@ -346,18 +361,18 @@ void MainActor::fadeFromLanding(void)
    fader->setSize(
       g_Layout.getViewPortBounds().x * m_sceneObject->getScale().x, 
       g_Layout.getViewPortBounds().y * m_sceneObject->getScale().y);
-   fader->setAlpha(0.0f);
+   fader->setAlpha(0);
    fader->setPriority(216);
    fader->attachTo(m_sceneObject);
-   spTween tween = fader->addTween(Actor::TweenAlpha(255.0f), 500);
+   spTween tween = fader->addTween(Actor::TweenAlpha(255), 500);
 
    tween->setDoneCallback(CLOSURE(this, &MainActor::goToDeepSpaceFader));
 }
 
 void MainActor::goToDeepSpaceFader(Event *ev)
 {
-   g_LuaInterface.determineNextScene("toDeepSpace", "", m_nextSceneFile, m_nextSceneState, m_nextSceneType);
-   m_armNextScene = true;
+   g_LuaInterface.determineNextScene("toDeepSpace", "", m_nextScene.m_nextSceneFile, m_nextScene.m_nextSceneState, m_nextScene.m_nextSceneType);
+   m_nextScene.m_armNextScene = true;
 
    //m_armNextScene = true;
    //m_nextSceneFile = "deep_space_scene.xml";
@@ -369,16 +384,16 @@ void MainActor::goToDeepSpaceFader(Event *ev)
    fader->setSize(
       g_Layout.getViewPortBounds().x * m_sceneObject->getScale().x, 
       g_Layout.getViewPortBounds().y * m_sceneObject->getScale().y);
-   fader->setAlpha(255.0f);
+   fader->setAlpha(255);
    fader->setPriority(216);
    fader->attachTo(m_sceneObject);
-   spTween tween = fader->addTween(Actor::TweenAlpha(0.0f), 1000);
+   spTween tween = fader->addTween(Actor::TweenAlpha(0), 1000);
 }
 
 void MainActor::transitToOrbitListner(Event *ev)
 {
-   g_LuaInterface.determineNextScene("toOrbit", "", m_nextSceneFile, m_nextSceneState, m_nextSceneType);
-   m_armNextScene = true;
+   g_LuaInterface.determineNextScene("toOrbit", "", m_nextScene.m_nextSceneFile, m_nextScene.m_nextSceneState, m_nextScene.m_nextSceneType);
+   m_nextScene.m_armNextScene = true;
 
    //m_armNextScene = true;
    //m_nextSceneFile = "orbit_scene.xml";
@@ -387,8 +402,8 @@ void MainActor::transitToOrbitListner(Event *ev)
 
 void MainActor::landingCompleteListner(oxygine::Event *ev)
 {
-   g_LuaInterface.determineNextScene("toLanding", "alphaCity", m_nextSceneFile, m_nextSceneState, m_nextSceneType);
-   m_armNextScene = true;
+   g_LuaInterface.determineNextScene("toLanding", "alphaCity", m_nextScene.m_nextSceneFile, m_nextScene.m_nextSceneState, m_nextScene.m_nextSceneType);
+   m_nextScene.m_armNextScene = true;
 
    //m_armNextScene = true;
    //m_nextSceneFile = "landing_scene.xml";
@@ -420,11 +435,77 @@ void MainActor::resourceDepletedHandler(oxygine::Event *ev)
    }
 }
 
+void MainActor::setManualPanButtonState(void)
+{
+   if (m_manualPan.m_manPanEnable)
+   {
+      m_manPanEnableSprite->setAlpha(255);
+      m_manPanSprite->setVisible(true);
+      m_reloadSprite->setVisible(true);
+   }
+   else
+   {
+      m_manPanEnableSprite->setAlpha(128);
+      m_manPanSprite->setVisible(false);
+      m_reloadSprite->setVisible(false);
+   }
+}
+
+void MainActor::fetchInternetScene(void)
+{
+   ox::HttpRequestTask::init();
+
+   ox::spHttpRequestTask task = ox::HttpRequestTask::create();
+   task->setUrl("http://www.fredrikhoffman.se/leapfrog/updated_scene.xml");
+   task->setFileName("updated_scene.xml");
+   task->addEventListener(HttpRequestTask::COMPLETE, CLOSURE(this, &MainActor::httpLoaded));
+   task->run();
+
+   //ox::HttpRequestTask::release();
+}
+
+void MainActor::httpLoaded(Event* event)
+{
+   ox::HttpRequestTask* task = safeCast<ox::HttpRequestTask*>(event->currentTarget.get());
+
+   //convert it to string and print
+   //std::string resp;
+   //resp.assign(response.begin(), response.end());
+
+   //ox::logs::messageln("server response: %s", resp.c_str());
+
+   // TODO: For now, this is hardcoded, but somhow, it needs to be configurable
+   m_nextScene.m_nextSceneType = SceneActor::SceneTypeEnum::landing;
+   m_nextScene.m_nextSceneState = "landingState";
+   m_nextScene.m_armNextScene = true;
+   m_nextScene.m_nextSceneFile = "../data-ram/updated_scene.xml";
+
+   ox::HttpRequestTask::release();
+
+
+}
+
 void MainActor::doUpdate(const UpdateState& us)
 {
-   if (m_armNextScene)
+   if (m_reloadArm && m_reloadPressed)
    {
-      m_armNextScene = false;
+      m_reloadArm = false;
+   }
+
+   if (!m_reloadArm && !m_reloadPressed)
+   {
+      m_reloadArm = true;
+
+      // Load scene from internet
+      fetchInternetScene();
+
+      return;
+   }
+
+   if (m_nextScene.m_armNextScene)
+   {
+      m_nextScene.m_armNextScene = false;
+
       startScene();
    }
    else
@@ -434,8 +515,8 @@ void MainActor::doUpdate(const UpdateState& us)
       if (data[SDL_SCANCODE_F1])
       {
          g_LuaInterface.forceCurrentScene("orbit_scene.xml");
-         g_LuaInterface.determineNextScene("toLanding", "alphaCity", m_nextSceneFile, m_nextSceneState, m_nextSceneType);
-         m_armNextScene = true;
+         g_LuaInterface.determineNextScene("toLanding", "alphaCity", m_nextScene.m_nextSceneFile, m_nextScene.m_nextSceneState, m_nextScene.m_nextSceneType);
+         m_nextScene.m_armNextScene = true;
      }
       else if (data[SDL_SCANCODE_F2])
       {
@@ -446,8 +527,8 @@ void MainActor::doUpdate(const UpdateState& us)
       else if (data[SDL_SCANCODE_F3])
       {
          g_LuaInterface.forceCurrentScene("deep_space_scene.xml");
-         g_LuaInterface.determineNextScene("toOrbit", "", m_nextSceneFile, m_nextSceneState, m_nextSceneType);
-         m_armNextScene = true;
+         g_LuaInterface.determineNextScene("toOrbit", "", m_nextScene.m_nextSceneFile, m_nextScene.m_nextSceneState, m_nextScene.m_nextSceneType);
+         m_nextScene.m_armNextScene = true;
       }
    }
 
@@ -465,12 +546,16 @@ void MainActor::createButtonOverlay(void)
    //float colSecondLast = colLast - buttonWidth;
 
    // Caluclate button geometrics
-   m_turnLeftButtonRect = Rect(0, g_Layout.getYFromBottom(1), g_Layout.getButtonWidth(), g_Layout.getButtonWidth());
+   m_turnLeftButtonRect = Rect(0.0f, g_Layout.getYFromBottom(1), g_Layout.getButtonWidth(), g_Layout.getButtonWidth());
    m_turnRightButtonRect = Rect(g_Layout.getButtonWidth(), g_Layout.getYFromBottom(0), g_Layout.getButtonWidth(), g_Layout.getButtonWidth());
    m_boosterButtonRect = Rect(g_Layout.getXFromRight(0), g_Layout.getYFromBottom(1), g_Layout.getButtonWidth(), g_Layout.getButtonWidth());
    m_fireButtonRect = Rect(g_Layout.getXFromRight(1), g_Layout.getYFromBottom(0), g_Layout.getButtonWidth(), g_Layout.getButtonWidth());
-   m_zoomInButtonRect = Rect(g_Layout.getXFromRight(1) - g_Layout.getButtonWidth() / 2.0f, 0, g_Layout.getButtonWidth(), g_Layout.getButtonWidth());
-   m_zoomOutButtonRect = Rect(g_Layout.getXFromRight(0), 0, g_Layout.getButtonWidth(), g_Layout.getButtonWidth());
+   m_zoomInButtonRect = Rect(g_Layout.getXFromRight(1) - g_Layout.getButtonWidth() / 2.0f, 0.0f, g_Layout.getButtonWidth(), g_Layout.getButtonWidth());
+   m_zoomOutButtonRect = Rect(g_Layout.getXFromRight(0), 0.0f, g_Layout.getButtonWidth(), g_Layout.getButtonWidth());
+   m_panButtonRect = Rect(g_Layout.getViewPortBounds().x / 2.0f - g_Layout.getButtonWidth() / 2.0f, g_Layout.getViewPortBounds().y / 2.0f  - g_Layout.getButtonWidth() / 2.0f, g_Layout.getButtonWidth(), g_Layout.getButtonWidth());
+   m_manPanEnableButtonRect = Rect(g_Layout.getXFromRight(3), 0.0f, g_Layout.getButtonWidth(), g_Layout.getButtonWidth());
+   m_reloadButtonRect = Rect(g_Layout.getXFromRight(4) - g_Layout.getButtonWidth() / 2.0f, 0.0f, g_Layout.getButtonWidth(), g_Layout.getButtonWidth());
+
 
    // Define sprites
    spSprite turnLeftButton = new Sprite();
@@ -520,6 +605,33 @@ void MainActor::createButtonOverlay(void)
    zoomInButton->setAnchor(0.0f, 0.0f);
    zoomInButton->setTouchEnabled(false);
    zoomInButton->attachTo(this);
+
+   m_manPanEnableSprite = new Sprite();
+   m_manPanEnableSprite->setResAnim(m_gameResources.getResAnim("pan_button"));
+   m_manPanEnableSprite->setSize(g_Layout.getButtonWidth(), g_Layout.getButtonWidth());
+   m_manPanEnableSprite->setPosition(m_manPanEnableButtonRect.getLeftTop());
+   m_manPanEnableSprite->setAnchor(0.0f, 0.0f);
+   m_manPanEnableSprite->setTouchEnabled(false);
+   m_manPanEnableSprite->attachTo(this);
+
+   m_manPanSprite = new Sprite();
+   m_manPanSprite->setResAnim(m_gameResources.getResAnim("pan_button"));
+   m_manPanSprite->setSize(g_Layout.getButtonWidth(), g_Layout.getButtonWidth());
+   m_manPanSprite->setPosition(m_panButtonRect.getLeftTop());
+   m_manPanSprite->setAnchor(0.0f, 0.0f);
+   m_manPanSprite->setTouchEnabled(false);
+   m_manPanSprite->attachTo(this);
+
+   m_reloadSprite = new Sprite();
+   m_reloadSprite->setResAnim(m_gameResources.getResAnim("reload_button"));
+   m_reloadSprite->setSize(g_Layout.getButtonWidth(), g_Layout.getButtonWidth());
+   m_reloadSprite->setPosition(m_reloadButtonRect.getLeftTop());
+   m_reloadSprite->setAnchor(0.0f, 0.0f);
+   m_reloadSprite->setTouchEnabled(false);
+   m_reloadSprite->attachTo(this);
+
+
+   
 }
 
 
@@ -528,7 +640,7 @@ void MainActor::sceneDownHandler(Event* event)
    TouchEvent* te = (TouchEvent*)event;
    Vector2 v = te->localPosition;
 
-   logs::messageln("Down with index: %d", te->index);
+   // logs::messageln("Down with index: %d", te->index);
 
    Point p = Point((int)v.x, (int)v.y);
 
@@ -561,6 +673,28 @@ void MainActor::sceneDownHandler(Event* event)
    {
       m_sceneObject->m_zoomOutPressed = true;
       m_zoomOutTouchIndex = te->index;
+   }
+   else if (m_manPanEnableButtonRect.pointIn(p))
+   {
+      m_sceneObject->m_manPanEnablePressed = true;
+      m_manPanEnableTouchIndex = te->index;
+   }
+   else if (m_panButtonRect.pointIn(p))
+   {
+      if (m_manualPan.m_manPanEnable)
+      {
+         m_sceneObject->m_panButtonPressed = true;
+         m_panTouchIndex = te->index;
+         m_panStartPos = v;
+      }
+   }
+   else if (m_reloadButtonRect.pointIn(p))
+   {
+      if (m_manualPan.m_manPanEnable)
+      {
+         m_reloadPressed = true;
+         m_reloadTouchIndex = te->index;
+      }
    }
 }
 
@@ -603,6 +737,34 @@ void MainActor::sceneUpHandler(Event* event)
    {
       m_sceneObject->m_zoomOutPressed = false;
       m_zoomOutTouchIndex = 0;
+   }
+   else if (te->index == m_manPanEnableTouchIndex)
+   {
+      m_sceneObject->m_manPanEnablePressed = false;
+      m_manPanEnableTouchIndex = 0;
+
+      setManualPanButtonState();
+   }
+   else if (te->index == m_panTouchIndex)
+   {
+      m_sceneObject->m_panButtonPressed = false;
+      m_sceneObject->m_panVector = Vector2(0.0f, 0.0f);
+      m_panTouchIndex = 0;
+   }
+   else if (te->index == m_reloadTouchIndex)
+   {
+      m_reloadPressed = false;
+      m_reloadTouchIndex = 0;
+   }
+}
+
+void MainActor::panMoveHandler(Event* event)
+{
+   TouchEvent* te = (TouchEvent*)event;
+
+   if (te->index == m_panTouchIndex)
+   {
+      m_sceneObject->m_panVector = (te->localPosition - m_panStartPos) / 8.0f;
    }
 }
 

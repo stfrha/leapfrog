@@ -10,21 +10,19 @@
 #include "softboundary.h"
 #include "parallaxbackground.h"
 
+class ManualPan
+{
+public:
+   ManualPan();
+
+   oxygine::Vector2  m_manualPanPos;
+   bool m_manPanEnable;
+};
+
+
 
 DECLARE_SMART(SceneActor, spSceneActor);
 
-//class ParallaxBackground
-//{
-//public:
-//   spSprite m_sprite;
-//   float m_parallaxAmount;
-//
-//   ParallaxBackground(float parallaxAmount)
-//   {
-//      m_parallaxAmount = parallaxAmount;
-//   }
-//};
-//
 class SceneActor : public CompoundObject
 {
 public:
@@ -56,8 +54,10 @@ public:
 
 private:
    spCompoundObject m_panObject;
+   bool m_armManPanEnableChange;
    std::vector<spSoftBoundary>   m_boundaries;
    std::vector<b2Body*>   m_boundedBodies;
+   ManualPan* m_manualPan;
 
    std::vector<ParallaxBackground> m_parallaxBackgrounds;
 
@@ -85,6 +85,8 @@ protected:
 public:
    const Vector2& getWantedVpPos() const; 
    void setWantedVpPos(const Vector2& pos);
+   void setManualPan(ManualPan* mp);
+
 
 	SceneActor(
       oxygine::Resources& gameResources, 
@@ -110,6 +112,9 @@ public:
    bool m_firePressed;
    bool m_zoomInPressed;
    bool m_zoomOutPressed;
+   bool m_panButtonPressed;
+   bool m_manPanEnablePressed;
+   oxygine::Vector2 m_panVector;
    spLeapFrog  m_leapfrog;
    HeadDownDisplay* m_map;
 

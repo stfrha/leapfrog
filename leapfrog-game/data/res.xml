@@ -2,7 +2,8 @@
 <resources>
 	<set path = "images" />
 	<atlas>
-		<image file="anim.png" cols = "8" />
+		<image file="pan_button.png"/>	
+		<image file="reload_button.png" />
 		<image file="button.png"/>		
 		<image file="booster_button.png"/>		
 		<image file="fire_button.png"/>		
@@ -62,7 +63,6 @@
 		<image file="neutral_stationary.png" rows="1" cols="2" />
 		<image file="night_sky.png"/>	  
 		<image file="cloud.png"/>	  
-		<image file="cloud_sky.png"/>	  
 	</atlas>
 	<atlas clamp2edge="false"> 
 		<image file="default.png" trim="false" extend="false"/>

@@ -255,6 +255,16 @@ public:
       const std::string& fileName,
       const std::string& initialState);
 
+   static CompoundObject* readDefinitionXml(
+      oxygine::Resources& gameResources,
+      SceneActor* sceneParent,
+      CompoundObject* parentObject,
+      b2World* world,
+      const oxygine::Vector2& pos,
+      const void* buffer,
+      const size_t size,
+      const std::string& initialState);
+
    static CompoundObject* initCompoundObject(
       oxygine::Resources& gameResources,
       SceneActor* sceneParent,
