@@ -658,31 +658,37 @@ namespace LeapfrogEditor
             string fullPath = System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
             string fullFileName = System.IO.Path.Combine(fullPath, s);
 
-            // Fortsätt här!!!!!
+            ChildObjectStateProperties childProps = new ChildObjectStateProperties();
 
-            //ChildObjectStateProperties childProps = new ChildObjectStateProperties();
+            childProps.File = fullFileName;
 
-            //childProps.File = fullFileName;
+            TStateProperties<ChildObjectStateProperties> newStateProp = new TStateProperties<ChildObjectStateProperties>();
+            newStateProp.State = "default";
+            newStateProp.Properties = childProps;
 
-            //TStateProperties<ChildObjectStateProperties> newStateProp = new TStateProperties<ChildObjectStateProperties>();
-            //newStateProp.State = "default";
-            //newStateProp.Properties = childProps;
+            CompoundObject newCp = CompoundObject.ReadFromFile(fullFileName);
 
-            //CompoundObject newCp = CompoundObject.ReadFromFile(fullFileName);
+            newStateProp.Properties.CompObj = newCp;
 
-            //newStateProp.Properties.CompObj = newCp;
+            ChildObject newChildObject = new ChildObject();
 
-            //ChildObject newChildObject = new ChildObject();
+            newChildObject.StateProperties.Add(newStateProp);
 
-            //newChildObject.StateProperties.Add(newStateProp);
+            CompoundObjectViewModel newCpVm = new CompoundObjectViewModel(null, null, this, newCp /*, newStateProp.Properties, newChildObject*/);
 
-            //CompoundObjectViewModel newCpVm = new CompoundObjectViewModel(null, null, this, newCp /*, newStateProp.Properties, newChildObject*/);
-            //newCpVm.BuildViewModel(newChildObject);
+            EditedCpVm.ModelObject.ChildObjects.Add(newChildObject);
 
-            //EditedCpVm.ModelObject.ChildObjects.Add(newChildObject);
-            //EditedCpVm.StateChildObjects.Children.Add(newCpVm);
-            //OnPropertyChanged("");
+            (EditedCpVm as CompoundObjectViewModel).BuildViewModel();
+
+            EditedCpVm.BuildGlobalShapeCollection(GetEditableCoBehaviourStateName(), ShowJoints, ShowSystems, ShowBackgrounds);
+
+            EditedCpVm.OnPropertyChanged("");
+            OnPropertyChanged("");
+
+            Rect bib = EditedCpVm.BoundingBox;
+            ((MainWindow)System.Windows.Application.Current.MainWindow).ShowThisRect(bib);
          }
+
       }
 
       bool CanImportCompoundObjectExecute(Object parameter)
