@@ -9,7 +9,7 @@
 #include "freespaceactor.h"
 
 // All behaviours of CompoundObjects
-// and thus can be instansiated as children to one
+// and thus can be instantiated as children to one
 // CompoundObject
 #include "launchsite.h"
 #include "leapfrog.h"
@@ -136,17 +136,6 @@ void CompoundObject::removeShape(Actor* removeMe)
 }
 
 
- CompoundObject* CompoundObject::initCompoundObjectTop(
-    oxygine::Resources& gameResources,
-    SceneActor* sceneParent,
-    CompoundObject* parentObject,
-    b2World* world,
-    const string& defXmlFileName,
-    const string& initialState)
- {
-    return readDefinitionXmlFile(gameResources, sceneParent, parentObject, world, Vector2(0.0f, 0.0f), defXmlFileName, initialState);
- }
-
  CompoundObject* CompoundObject::readDefinitionXmlFile(
     Resources& gameResources,
     SceneActor* sceneParent,
@@ -157,16 +146,23 @@ void CompoundObject::removeShape(Actor* removeMe)
     const string& initialState)
  {
     ox::file::buffer bf;
-    ox::file::read(fileName.c_str(), bf);
 
-    return readDefinitionXml(
-       gameResources,
-       sceneParent,
-       parentObject,
-       world,
-       pos,
-       &bf.data[0], bf.size(),
-       initialState);
+    if (ox::file::exists(fileName))
+    {
+       ox::file::read(fileName.c_str(), bf);
+
+       return readDefinitionXml(
+               gameResources,
+               sceneParent,
+               parentObject,
+               world,
+               pos,
+               &bf.data[0], bf.size(),
+               initialState);
+    }
+
+    return NULL;
+
  }
 
  CompoundObject* CompoundObject::readDefinitionXml(
@@ -187,8 +183,8 @@ void CompoundObject::removeShape(Actor* removeMe)
 {
    xml_document doc;
 
-//   xml_parse_result result = doc.load_file(fileName.c_str());
    xml_parse_result result = doc.load_buffer(buffer, size);
+   // TODO: Handle result
 
    xml_node root = doc.child("compoundObject");
 
@@ -208,8 +204,8 @@ void CompoundObject::removeShape(Actor* removeMe)
 
     xml_document doc;
 
-    //   xml_parse_result result = doc.load_file(fileName.c_str());
     xml_parse_result result = doc.load_buffer(&bf.data[0], bf.size());
+    // TODO: Handle result
 
     xml_node root = doc.child("compoundObject");
 
@@ -608,7 +604,7 @@ void CompoundObject::doCommonShapeDefinitions(
 {
    sprite->setResAnim(gameResources.getResAnim(objectNode.attribute("texture").as_string()));
    sprite->setName(objectNode.attribute("name").as_string());
-   sprite->setPriority(objectNode.attribute("zLevel").as_int());
+   sprite->setPriority((short)objectNode.attribute("zLevel").as_int());
    sprite->setTouchChildrenEnabled(false);
 }
 
@@ -618,16 +614,16 @@ void CompoundObject::doCollisionDefinitions(
    int groupIndex)
 {
    b2Filter filter;
-   filter.categoryBits = objectNode.attribute("collisionCategory").as_int();
-   filter.maskBits = objectNode.attribute("collisionMask").as_int();
+   filter.categoryBits = (uint16)objectNode.attribute("collisionCategory").as_int();
+   filter.maskBits = (uint16)objectNode.attribute("collisionMask").as_int();
    bool collideWithinGroup = objectNode.attribute("collideWithGroup").as_bool(false);
    if (collideWithinGroup)
    {
-      filter.groupIndex = groupIndex;
+      filter.groupIndex = (uint16)groupIndex;
    }
    else
    {
-      filter.groupIndex = -groupIndex;
+      filter.groupIndex = (int16)-groupIndex;
    }
    fixture->SetFilterData(filter);
 }

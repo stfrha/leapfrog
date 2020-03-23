@@ -478,7 +478,7 @@ void MainActor::httpLoaded(Event* event)
    m_nextScene.m_nextSceneType = SceneActor::SceneTypeEnum::landing;
    m_nextScene.m_nextSceneState = "landingState";
    m_nextScene.m_armNextScene = true;
-   m_nextScene.m_nextSceneFile = "../data-ram/updated_scene.xml";
+   m_nextScene.m_nextSceneFile = "updated_scene.xml";
 
    ox::HttpRequestTask::release();
 

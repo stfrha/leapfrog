@@ -238,14 +238,6 @@ public:
 
 // Static, public methods used to create new CO (or behaviour decendant of CO)
 
-   static CompoundObject* initCompoundObjectTop(
-	   oxygine::Resources& gameResources,
-      SceneActor* sceneParent,
-      CompoundObject* parentObject,
-	   b2World* world,
-	   const std::string& defXmlFileName,
-	   const std::string& initialState);
-
    static CompoundObject* readDefinitionXmlFile(
       oxygine::Resources& gameResources,
       SceneActor* sceneParent,
