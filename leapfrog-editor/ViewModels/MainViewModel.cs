@@ -6,6 +6,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Media;
+using System.Net;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
@@ -697,7 +698,40 @@ namespace LeapfrogEditor
          }
       }
 
-      
+
+      void PublishExecute(Object parameter)
+      {
+
+         // Generate Triangles before saving
+         if (EditedCpVm is FileCOViewModel)
+         {
+            FileCOViewModel fvm = EditedCpVm as FileCOViewModel;
+
+            // Generate Triangles before saving
+            fvm.GenerateTriangles();
+            fvm.ModelObject.WriteToFile("updated_scene.xml");
+
+            using (var client = new WebClient())
+            {
+               client.Credentials = new NetworkCredential("fredrikhoffman.se", "jessica21h");
+               client.UploadFile("ftp://ftp.fredrikhoffman.se/leapfrog/updated_scene.xml", WebRequestMethods.Ftp.UploadFile, "updated_scene.xml");
+            }
+
+         }
+      }
+
+      bool CanPublishExecute(Object parameter)
+      {
+         return (EditedCpVm is FileCOViewModel);
+      }
+
+      public ICommand Publish
+      {
+         get
+         {
+            return new MicroMvvm.RelayCommand<Object>(parameter => PublishExecute(parameter), parameter => CanPublishExecute(parameter));
+         }
+      }
 
       void DisplayStateExecute(Object parameter)
       {

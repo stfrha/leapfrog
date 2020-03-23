@@ -16,8 +16,6 @@
       <local:MatchingStateVisibilityConverter x:Key="MatchingStateVisibilityConverter" />
       <local:DecoratedBorderPolygonToVisibilityValueConverter x:Key="DecoratedBorderPolygonToVisibilityValueConverter" />
       <local:IsSceneToVisibilityValueConverter x:Key="IsSceneToVisibilityValueConverter" />
-      <local:ParallaxSpriteScaleConverter x:Key="ParallaxSpriteScaleConverter" />
-      <local:ParallaxSpriteTranslateConverter x:Key="ParallaxSpriteTranslateConverter" />
    </UserControl.Resources>
    <Canvas x:Name="myCoUserControl" >
       <!-- The first itemscontrol is for the images of the objects, like what is shown 
@@ -45,15 +43,11 @@
                            Command="{Binding Path=Data.DeleteThisObject, Source={StaticResource DataContextProxy}}" />
                      </ContextMenu>
                   </local:ScalableTexturePolygonControl.ContextMenu>
-                  <local:ScalableTexturePolygonControl.RenderTransform>
+                  <!--<local:ScalableTexturePolygonControl.RenderTransform>
                      <TransformGroup>
                         <ScaleTransform>
                            <ScaleTransform.ScaleX>
                               <MultiBinding Converter="{StaticResource ParallaxSpriteScaleConverter}" ConverterParameter="x" >
-                                 <Binding Path="AbsPosX" />
-                                 <Binding Path="AbsPosY" />
-                                 <Binding Path="ContentOffsetX" RelativeSource="{RelativeSource Mode=FindAncestor, AncestorType=ZoomAndPan:ZoomAndPanControl}" />
-                                 <Binding Path="ContentOffsetY" RelativeSource="{RelativeSource Mode=FindAncestor, AncestorType=ZoomAndPan:ZoomAndPanControl}" />
                                  <Binding Path="ContentScale" RelativeSource="{RelativeSource Mode=FindAncestor, AncestorType=ZoomAndPan:ZoomAndPanControl}" />
                                  <Binding Path="ActualWidth" RelativeSource="{RelativeSource Mode=FindAncestor, AncestorType=ZoomAndPan:ZoomAndPanControl}" />
                                  <Binding Path="ActualHeight" RelativeSource="{RelativeSource Mode=FindAncestor, AncestorType=ZoomAndPan:ZoomAndPanControl}" />
@@ -64,10 +58,6 @@
                            </ScaleTransform.ScaleX>
                            <ScaleTransform.ScaleY>
                               <MultiBinding Converter="{StaticResource ParallaxSpriteScaleConverter}" ConverterParameter="y" >
-                                 <Binding Path="AbsPosX" />
-                                 <Binding Path="AbsPosY" />
-                                 <Binding Path="ContentOffsetX" RelativeSource="{RelativeSource Mode=FindAncestor, AncestorType=ZoomAndPan:ZoomAndPanControl}" />
-                                 <Binding Path="ContentOffsetY" RelativeSource="{RelativeSource Mode=FindAncestor, AncestorType=ZoomAndPan:ZoomAndPanControl}" />
                                  <Binding Path="ContentScale" RelativeSource="{RelativeSource Mode=FindAncestor, AncestorType=ZoomAndPan:ZoomAndPanControl}" />
                                  <Binding Path="ActualWidth" RelativeSource="{RelativeSource Mode=FindAncestor, AncestorType=ZoomAndPan:ZoomAndPanControl}" />
                                  <Binding Path="ActualHeight" RelativeSource="{RelativeSource Mode=FindAncestor, AncestorType=ZoomAndPan:ZoomAndPanControl}" />
@@ -108,7 +98,7 @@
                            </TranslateTransform.Y>
                         </TranslateTransform>
                      </TransformGroup>
-                  </local:ScalableTexturePolygonControl.RenderTransform>
+                  </local:ScalableTexturePolygonControl.RenderTransform>-->
                </local:ScalableTexturePolygonControl>
             </DataTemplate>
             <DataTemplate DataType="{x:Type local:LfScalableTexturePolygonViewModel}">
@@ -179,15 +169,11 @@
                      Command="{Binding Path=Data.DeleteThisObject, Source={StaticResource DataContextProxy}}" />
                      </ContextMenu>
                   </local:RotatableBoxControl.ContextMenu>
-                  <local:RotatableBoxControl.RenderTransform>
+                  <!--<local:RotatableBoxControl.RenderTransform>
                      <TransformGroup>
                         <ScaleTransform>
                            <ScaleTransform.ScaleX>
                               <MultiBinding Converter="{StaticResource ParallaxSpriteScaleConverter}" ConverterParameter="x" >
-                                 <Binding Path="AbsPosX" />
-                                 <Binding Path="AbsPosY" />
-                                 <Binding Path="ContentOffsetX" RelativeSource="{RelativeSource Mode=FindAncestor, AncestorType=ZoomAndPan:ZoomAndPanControl}" />
-                                 <Binding Path="ContentOffsetY" RelativeSource="{RelativeSource Mode=FindAncestor, AncestorType=ZoomAndPan:ZoomAndPanControl}" />
                                  <Binding Path="ContentScale" RelativeSource="{RelativeSource Mode=FindAncestor, AncestorType=ZoomAndPan:ZoomAndPanControl}" />
                                  <Binding Path="ActualWidth" RelativeSource="{RelativeSource Mode=FindAncestor, AncestorType=ZoomAndPan:ZoomAndPanControl}" />
                                  <Binding Path="ActualHeight" RelativeSource="{RelativeSource Mode=FindAncestor, AncestorType=ZoomAndPan:ZoomAndPanControl}" />
@@ -198,10 +184,6 @@
                            </ScaleTransform.ScaleX>
                            <ScaleTransform.ScaleY>
                               <MultiBinding Converter="{StaticResource ParallaxSpriteScaleConverter}" ConverterParameter="y" >
-                                 <Binding Path="AbsPosX" />
-                                 <Binding Path="AbsPosY" />
-                                 <Binding Path="ContentOffsetX" RelativeSource="{RelativeSource Mode=FindAncestor, AncestorType=ZoomAndPan:ZoomAndPanControl}" />
-                                 <Binding Path="ContentOffsetY" RelativeSource="{RelativeSource Mode=FindAncestor, AncestorType=ZoomAndPan:ZoomAndPanControl}" />
                                  <Binding Path="ContentScale" RelativeSource="{RelativeSource Mode=FindAncestor, AncestorType=ZoomAndPan:ZoomAndPanControl}" />
                                  <Binding Path="ActualWidth" RelativeSource="{RelativeSource Mode=FindAncestor, AncestorType=ZoomAndPan:ZoomAndPanControl}" />
                                  <Binding Path="ActualHeight" RelativeSource="{RelativeSource Mode=FindAncestor, AncestorType=ZoomAndPan:ZoomAndPanControl}" />
@@ -242,7 +224,7 @@
                            </TranslateTransform.Y>
                         </TranslateTransform>
                      </TransformGroup>
-                  </local:RotatableBoxControl.RenderTransform>
+                  </local:RotatableBoxControl.RenderTransform>-->
                </local:RotatableBoxControl>
             </DataTemplate>
             <DataTemplate DataType="{x:Type local:LfStaticCircleViewModel}">

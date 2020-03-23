@@ -24,62 +24,75 @@
          <RowDefinition Height="25" />
          <RowDefinition Height="*" />
       </Grid.RowDefinitions>
-      <Menu Grid.Row="0" >
-         <MenuItem Header="File">
-            <MenuItem Header="New..." Command="{Binding New}" />
-            <MenuItem Header="Open..." Command="{Binding Reload}" />
-            <MenuItem Header="Save" Command="{Binding Save}" />
-            <MenuItem Header="Save As..." Command="{Binding SaveAs}" />
-            <Separator/>
-            <MenuItem Header="Exit" Click="HandleExitClick" />
-         </MenuItem>
-         <MenuItem Header="Edit">
-            <MenuItem Header="Add" >
-               <MenuItem Header="Sprite Box" Command="{Binding NewShape}" CommandParameter="spriteBox" />
-               <MenuItem Header="Sprite Polygon" Command="{Binding NewShape}" CommandParameter="spritePolygon"  />
-               <MenuItem Header="Static Circle" Command="{Binding NewShape}" CommandParameter="staticCircle"  />
-               <MenuItem Header="Dynamic Circle" Command="{Binding NewShape}" CommandParameter="dynamicCircle"  />
-               <MenuItem Header="Static Box" Command="{Binding NewShape}" CommandParameter="staticBox"  />
-               <MenuItem Header="Dynamic Box" Command="{Binding NewShape}" CommandParameter="dynamicBox"  />
-               <MenuItem Header="Static Polygon" Command="{Binding NewShape}" CommandParameter="staticPolygon"  />
-               <MenuItem Header="Dynamic Polygon" Command="{Binding NewShape}" CommandParameter="dynamicPolygon"  />
-               <MenuItem Header="Static Boxed Sprite Polygon" Command="{Binding NewShape}" CommandParameter="staticBoxedSpritePolygon"  />
-               <MenuItem Header="Dynamic Boxed Sprite Polygon" Command="{Binding NewShape}" CommandParameter="dynamicBoxedSpritePolygon"  />
-               <Separator />
-               <MenuItem Header="Weld Joint" Command="{Binding NewJoint}" CommandParameter="weldJoint"  />
-               <MenuItem Header="Revolute Joint" Command="{Binding NewJoint}" CommandParameter="revoluteJoint"  />
-               <MenuItem Header="Prismatic Joint" Command="{Binding NewJoint}" CommandParameter="prismaticJoint"  />
-               <MenuItem Header="Rope" Command="{Binding NewJoint}" CommandParameter="rope"  />
-               <Separator />
-               <MenuItem Header="Object Factory System" Command="{Binding NewSystem}" CommandParameter="objectFactory"  />
-               <MenuItem Header="Gun System" Command="{Binding NewSystem}" CommandParameter="gun"  />
-               <MenuItem Header="Shield System" Command="{Binding NewSystem}" CommandParameter="shield"  />
-               <MenuItem Header="Flame Emitter System" Command="{Binding NewSystem}" CommandParameter="flameEmitter"  />
-               <MenuItem Header="Reentry Flame Emitter System" Command="{Binding NewSystem}" CommandParameter="reentryFlameEmitter"  />
+      <Grid Grid.Row="0" >
+         <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="200" />
+         </Grid.ColumnDefinitions>
+         <Menu Grid.Column="0">
+            <MenuItem Header="File">
+               <MenuItem Header="New..." Command="{Binding New}" />
+               <MenuItem Header="Open..." Command="{Binding Reload}" />
+               <MenuItem Header="Save" Command="{Binding Save}" />
+               <MenuItem Header="Save As..." Command="{Binding SaveAs}" />
+               <Separator/>
+               <MenuItem Header="Exit" Click="HandleExitClick" />
             </MenuItem>
-            <MenuItem Header="Import">
-               <MenuItem Header="Compound Object" Command="{Binding ImportCompoundObject}" />
+            <MenuItem Header="Edit">
+               <MenuItem Header="Add" >
+                  <MenuItem Header="Sprite Box" Command="{Binding NewShape}" CommandParameter="spriteBox" />
+                  <MenuItem Header="Sprite Polygon" Command="{Binding NewShape}" CommandParameter="spritePolygon"  />
+                  <MenuItem Header="Static Circle" Command="{Binding NewShape}" CommandParameter="staticCircle"  />
+                  <MenuItem Header="Dynamic Circle" Command="{Binding NewShape}" CommandParameter="dynamicCircle"  />
+                  <MenuItem Header="Static Box" Command="{Binding NewShape}" CommandParameter="staticBox"  />
+                  <MenuItem Header="Dynamic Box" Command="{Binding NewShape}" CommandParameter="dynamicBox"  />
+                  <MenuItem Header="Static Polygon" Command="{Binding NewShape}" CommandParameter="staticPolygon"  />
+                  <MenuItem Header="Dynamic Polygon" Command="{Binding NewShape}" CommandParameter="dynamicPolygon"  />
+                  <MenuItem Header="Static Boxed Sprite Polygon" Command="{Binding NewShape}" CommandParameter="staticBoxedSpritePolygon"  />
+                  <MenuItem Header="Dynamic Boxed Sprite Polygon" Command="{Binding NewShape}" CommandParameter="dynamicBoxedSpritePolygon"  />
+                  <Separator />
+                  <MenuItem Header="Weld Joint" Command="{Binding NewJoint}" CommandParameter="weldJoint"  />
+                  <MenuItem Header="Revolute Joint" Command="{Binding NewJoint}" CommandParameter="revoluteJoint"  />
+                  <MenuItem Header="Prismatic Joint" Command="{Binding NewJoint}" CommandParameter="prismaticJoint"  />
+                  <MenuItem Header="Rope" Command="{Binding NewJoint}" CommandParameter="rope"  />
+                  <Separator />
+                  <MenuItem Header="Object Factory System" Command="{Binding NewSystem}" CommandParameter="objectFactory"  />
+                  <MenuItem Header="Gun System" Command="{Binding NewSystem}" CommandParameter="gun"  />
+                  <MenuItem Header="Shield System" Command="{Binding NewSystem}" CommandParameter="shield"  />
+                  <MenuItem Header="Flame Emitter System" Command="{Binding NewSystem}" CommandParameter="flameEmitter"  />
+                  <MenuItem Header="Reentry Flame Emitter System" Command="{Binding NewSystem}" CommandParameter="reentryFlameEmitter"  />
+               </MenuItem>
+               <MenuItem Header="Import">
+                  <MenuItem Header="Compound Object" Command="{Binding ImportCompoundObject}" />
+               </MenuItem>
+               <Separator/>
+               <MenuItem Header="Delete" Command="{Binding Delete}" />
             </MenuItem>
-            <Separator/>
-            <MenuItem Header="Delete" Command="{Binding Delete}" />
-         </MenuItem>
-         <MenuItem Header="View">
-            <MenuItem Header="Zoom">
-               <MenuItem Header="Zoom Fit"  />
-               <MenuItem Header="Zoom Actual Size" />
-               <MenuItem Header="Zoom In" />
-               <MenuItem Header="Zoom Out" />
+            <MenuItem Header="Publish">
+               <MenuItem Header="Publish Scene" Command="{Binding Publish}" >
+               </MenuItem>
             </MenuItem>
-            <MenuItem Header="Generate Triangles" Command="{Binding CreateTriangles}" />
-            <MenuItem Header="Show">
-               <MenuItem Header="Joints" IsCheckable="True" IsChecked="{Binding ShowJoints}" />
-               <MenuItem Header="Systems" IsCheckable="True" IsChecked="{Binding ShowSystems}" />
-               <MenuItem Header="Triangles" IsCheckable="True" IsChecked="{Binding ShowTriangles}" />
-               <MenuItem Header="Backgrounds" IsCheckable="True" IsChecked="{Binding ShowBackgrounds}" />
+            <MenuItem Header="View">
+               <MenuItem Header="Zoom">
+                  <MenuItem Header="Zoom Fit"  />
+                  <MenuItem Header="Zoom Actual Size" />
+                  <MenuItem Header="Zoom In" />
+                  <MenuItem Header="Zoom Out" />
+               </MenuItem>
+               <MenuItem Header="Generate Triangles" Command="{Binding CreateTriangles}" />
+               <MenuItem Header="Show">
+                  <MenuItem Header="Joints" IsCheckable="True" IsChecked="{Binding ShowJoints}" />
+                  <MenuItem Header="Systems" IsCheckable="True" IsChecked="{Binding ShowSystems}" />
+                  <MenuItem Header="Triangles" IsCheckable="True" IsChecked="{Binding ShowTriangles}" />
+                  <MenuItem Header="Backgrounds" IsCheckable="True" IsChecked="{Binding ShowBackgrounds}" />
+               </MenuItem>
+               <MenuItem Header="Halt to debug" Command="{Binding DebugHalt}" />
             </MenuItem>
-            <MenuItem Header="Halt to debug" Command="{Binding DebugHalt}" />
-         </MenuItem>
-      </Menu>
+         </Menu>
+         <Button Grid.Column="1" 
+            Content="Publish" 
+            Command="{Binding Publish}" />
+      </Grid>
       <Grid Grid.Row="1">
          <Grid.ColumnDefinitions>
             <ColumnDefinition Width="250" />
