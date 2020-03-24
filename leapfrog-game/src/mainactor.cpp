@@ -108,7 +108,11 @@ MainActor::~MainActor()
 
 void MainActor::startScene(void)
 {
-   // Remove listners for statusbars
+   // Clear all triggers and events from the current 
+   // actors before they are destroyed.
+   g_LuaInterface.clearAllTriggersAndEvents();
+
+   // Remove listners which includes scene transit events
    removeAllEventListeners();
 
    // Clean up current scene

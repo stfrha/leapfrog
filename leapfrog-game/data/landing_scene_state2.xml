@@ -1,10 +1,22 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <compoundObject>
+  <staticBox
+    name="springDestroyable"
+    texture="lf_position"
+    posX="788.23840289314512"
+    posY="437.28854045826745"
+    angle="0"
+    zLevel="192"
+    collisionEntity="destroyableObject"
+    collisionCategory="1"
+    collisionMask="65533"
+    width="10"
+    height="10" />
   <dynamicBox
     name="plank"
     texture="concrete"
-    posX="667.93849314015449"
-    posY="185.41396978024989"
+    posX="831.25615672621632"
+    posY="461.29980581764687"
     angle="29"
     zLevel="192"
     collisionEntity="notApplicable"
@@ -17,8 +29,8 @@
   <dynamicBox
     name="springWeight"
     texture="concrete"
-    posX="651.48863894401916"
-    posY="169.65053470367769"
+    posX="814.98287543503716"
+    posY="445.49397091451823"
     angle="29"
     zLevel="192"
     collisionEntity="notApplicable"
@@ -28,18 +40,6 @@
     height="10"
     density="1"
     friction="0" />
-  <staticBox
-    name="springDestroyable"
-    texture="lf_position"
-    posX="625.11145463894582"
-    posY="161.4572729849277"
-    angle="0"
-    zLevel="192"
-    collisionEntity="destroyableObject"
-    collisionCategory="1"
-    collisionMask="65533"
-    width="10"
-    height="10" />
   <weldJoint
     name="noJointName"
     objectAName="springWeight"
@@ -76,6 +76,7 @@
     name="asteroidField"
     type="objectFactory">
     <objectFactoryProperties
+      body="notDefined"
       posX="368.94376116632873"
       posY="67.132029854208866"
       width="10"
@@ -129,19 +130,10 @@
     <stateProperties
       state="default">
       <properties
-        posX="469.53851241055759"
-        posY="8.2864187818491626">
-        <compoundObject>
-          <behaviour
-            type="explosiveObject">
-            <explosiveObjectProperties
-              numOfParticles="40"
-              particleRadius="1"
-              blastPower="1000"
-              damageBulletEqv="1"
-              impactExplosion="true"
-              impactThreshold="2500" />
-          </behaviour>
+        posX="647.93139773027576"
+        posY="288.013186255211">
+        <compoundObject
+          needsGroupIndex="false">
           <dynamicBox
             name="bombBody"
             texture="bomb_crate"
@@ -156,6 +148,19 @@
             height="20"
             density="3"
             friction="1" />
+          <behaviour
+            type="explosiveObject">
+            <explosiveObjectProperties
+              numOfParticles="40"
+              particleRadius="1"
+              blastPower="1000" />
+            <pickupObjectProperties
+              pickupType="notDef"
+              amountType="notDefAmount"
+              amount="0"
+              amountMax="0"
+              amountMin="0" />
+          </behaviour>
         </compoundObject>
       </properties>
     </stateProperties>

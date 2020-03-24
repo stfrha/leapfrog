@@ -977,7 +977,7 @@
   <dynamicBox
     name="wrecker"
     texture="crater_rock"
-    posX="352.38464431010971"
+    posX="351.42411417846733"
     posY="315.6366114379698"
     angle="0"
     zLevel="192"
@@ -1005,6 +1005,38 @@
       </states>
     </sceneProperties>
   </behaviour>
+  <weldJoint
+    name="noJointName"
+    objectAName="springWeight"
+    objectBName="plank"
+    objectAAnchorX="-0.011118706305387992"
+    objectAAnchorY="5.1746795831890147"
+    objectBAnchorX="-21.978551850253766"
+    objectBAnchorY="-0.68233217477888575" />
+  <revoluteJoint
+    name="noJointName"
+    objectAName="springHolder"
+    objectBName="plank"
+    objectAAnchorX="5.291370673866254"
+    objectAAnchorY="-24.050963677123434"
+    objectBAnchorX="-0.1047338857955617"
+    objectBAnchorY="0.72199657104785464"
+    lockJoint="false"
+    useMotor="false"
+    motorSpeed="0"
+    maxMotorTorque="0" />
+  <revoluteJoint
+    name="noJointName"
+    objectAName="springDestroyable"
+    objectBName="plank"
+    objectAAnchorX="0.032617398948559639"
+    objectAAnchorY="-0.11420251524893388"
+    objectBAnchorX="-49.140878382052222"
+    objectBAnchorY="-0.29308232879679491"
+    lockJoint="false"
+    useMotor="false"
+    motorSpeed="0"
+    maxMotorTorque="0" />
   <rope
     name="rope1"
     objectAName="ropeHolder"
@@ -1027,8 +1059,8 @@
       state="default">
       <properties
         file="strange_machine.xml"
-        posX="507.31043720754633"
-        posY="149.67360420892672" />
+        posX="474.10424397783726"
+        posY="442.80413754704796" />
     </stateProperties>
   </childObject>
   <childObject
