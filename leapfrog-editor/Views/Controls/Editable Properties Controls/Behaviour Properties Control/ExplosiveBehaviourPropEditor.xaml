@@ -11,5 +11,8 @@
       <local:IntEditorControl Headline="Num. of particles" MyValue="{Binding NumOfParticles, Mode=TwoWay}" />
       <local:DoubleEditorControl Headline="Particle Radius" MyValue="{Binding ParticlesRadius, Mode=TwoWay}" />
       <local:DoubleEditorControl Headline="Blast Power" MyValue="{Binding BlastPower, Mode=TwoWay}" />
+      <local:DoubleEditorControl Headline="Bullet Eqv." MyValue="{Binding DamageBulletEqv, Mode=TwoWay}" />
+      <local:BoolEditorControl Headline="Impact Explosion" MyValue="{Binding ImpactExplosion, Mode=TwoWay}" />
+      <local:DoubleEditorControl Headline="Impact Thres." MyValue="{Binding ImpactThreshold, Mode=TwoWay}" />
    </StackPanel>
 </UserControl>

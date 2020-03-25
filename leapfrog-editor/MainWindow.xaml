@@ -267,6 +267,18 @@
                         </TextBlock.ContextMenu>
                      </TextBlock>
                   </HierarchicalDataTemplate>
+                  <HierarchicalDataTemplate DataType="{x:Type local:ImportedObjectCollectionViewModel}"
+                     ItemsSource="{Binding Children}">
+                     <TextBlock Margin="2"  Text="Imported Objects/Files">
+                        <TextBlock.ContextMenu>
+                           <ContextMenu>
+                              <MenuItem Header="Import Object" 
+                                 CommandParameter="{Binding}"
+                                 Command="{Binding Path=Data.ImportCompoundObject, Source={StaticResource DataContextProxy}}" />
+                           </ContextMenu>
+                        </TextBlock.ContextMenu>
+                     </TextBlock>
+                  </HierarchicalDataTemplate>
                   <HierarchicalDataTemplate DataType="{x:Type local:LfShapeViewModel}" >
                      <TextBlock Margin="2"  Text="{Binding Name}">
                         <TextBlock.ContextMenu>

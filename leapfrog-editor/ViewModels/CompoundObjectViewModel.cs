@@ -34,7 +34,9 @@ namespace LeapfrogEditor
       private SystemCollectionViewModel _systems;
 
       private ChildCollectionViewModel _childObjectsWithStates;
-//      private ObservableCollection<ObservableCollection<CompoundObjectViewModel>> _statesWithChildObjects = new ObservableCollection<ObservableCollection<CompoundObjectViewModel>>();
+
+      // There are no corresponding model class for imported objects
+      private ImportedObjectCollectionViewModel _importedObjects;
 
       private ObservableCollection<CollectionViewModelBase> _treeCollection = new ObservableCollection<CollectionViewModelBase>();
       #endregion
@@ -56,6 +58,8 @@ namespace LeapfrogEditor
          SelectedBehaviourIndex = Behaviours.IndexOf(ModelObject.Behaviour.Type);
 
          ChildObjectsWithStates = new ChildCollectionViewModel(treeParent, parentVm, MainVm);
+
+         ImportedObjects = new ImportedObjectCollectionViewModel(treeParent, parentVm, mainVm);
 
          _globalShapeCollection = new CompositeCollection()
          {
@@ -97,17 +101,6 @@ namespace LeapfrogEditor
        *                   
        */
 
-
-      //public ChildObject ChildObjectOfParent
-      //{
-      //   get { return _childObjectOfParent; }
-      //   set
-      //   {
-      //      _childObjectOfParent = value;
-      //      OnPropertyChanged("");
-      //   }
-      //}
-
       public CompoundObject ModelObject
       {
          get { return _modelObject; }
@@ -119,8 +112,21 @@ namespace LeapfrogEditor
       }
 
       public CompositeCollection GlobalShapeCollection
+      // The GlobalShapeCollection is the collection of all shapes in one single
+      // heap, used to be able to handle z-level in the view. If this is a imported
+      // file, we want to display all shapes, even those of the top-level scene 
+      // and all currently imported files. Thus, in this case, we expose the top-level
+      // parent's GLobalShapeCollection instead of the local one.
       {
-         get { return _globalShapeCollection; }
+         get
+         {
+            if (AmIAnImportedFile())
+            {
+               return TopParentOfImporedFiles().GlobalShapeCollection;
+            }
+
+            return _globalShapeCollection;
+         }
          set { _globalShapeCollection = value; }
       }
 
@@ -207,6 +213,21 @@ namespace LeapfrogEditor
             _childObjectsWithStates = value;
             OnPropertyChanged("ChildObjectsWithStates");
          }
+      }
+
+      public ImportedObjectCollectionViewModel ImportedObjects
+      {
+         get { return _importedObjects; }
+         set
+         {
+            _importedObjects = value;
+            OnPropertyChanged("ImportedObjects");
+         }
+      }
+
+      public bool IsImportedFile
+      {
+         get { return AmIAnImportedFile(); }
       }
 
       public List<string> Behaviours
@@ -421,6 +442,15 @@ namespace LeapfrogEditor
                         bbr.AddRect(cb);
                      }
                   }
+               }
+            }
+
+            if (ImportedObjects.Children.Count > 0)
+            {
+               foreach (CompoundObjectViewModel covm in ImportedObjects.Children)
+               {
+                  Rect cb = covm.BoundingBox;
+                  bbr.AddRect(cb);
                }
             }
 
@@ -654,6 +684,42 @@ namespace LeapfrogEditor
          return schcvm;
       }
 
+
+      private bool AmIAnImportedFile()
+      // This method returns true if this object is the root of a imported file.
+      // It is exposed on the IsImportedFile attribute publiclly. It is also used
+      // internally for special handling where needed. For instance, when 
+      // commanded to generate the global shape collection, it relays the command
+      // to the top-level CO (that is not an imported file).
+      {
+         if (ParentVm == null)
+         {
+            return false;
+         }
+
+         return ParentVm.IsObjectImported(this);
+      }
+
+      private CompoundObjectViewModel TopParentOfImporedFiles()
+      // This method returns true if this is not a imported files.
+      // If it is an imported file, it calls the same method recursively
+      // on its ParentVm. Eventually, the top-most parent that is not an
+      // Imported file will be returned. When the global shape collection 
+      // is to be built, this is the parent that shall build the collection.
+      {
+         if (!AmIAnImportedFile())
+         {
+            return this;
+         }
+
+         if (ParentVm != null)
+         {
+            return ParentVm.TopParentOfImporedFiles();
+         }
+
+         return this;
+      }
+
       #endregion
 
       #region Public Methods
@@ -690,6 +756,7 @@ namespace LeapfrogEditor
          _treeCollection.Add(JointCollection);
          _treeCollection.Add(SystemCollection);
          _treeCollection.Add(ChildObjectsWithStates);
+         _treeCollection.Add(ImportedObjects);
       }
 
       public LfShapeViewModel AddShape(LeftClickState shapeType, Point position)
@@ -1151,11 +1218,14 @@ namespace LeapfrogEditor
       }
 
       public void BuildViewModel(bool enabledChildren = true)
-      // This method connects references in the COVM. At the creation of the COVM
-      // the ModelObject, ModelObjectProperties, ParentVm and ChildObjectOfParent is defined.
+      // This method creates view model objects for all model objects in the collection
+      // of the ModelObject instance of this view model. It then connects references in the 
+      // COVM. At the creation of the COVM the ModelObject, ModelObjectProperties, ParentVm 
+      // and ChildObjectOfParent is defined.
       // Here we build the shape, joint and system collections and connect those objects 
       // with the necessary references. The ChildObjects are also added to the corresponding
       // state index in the StateChildObjects collection
+      // TODO: Here the imported objects (files) need to be handled. 
       {
          // First create viewmodels for all model object
          _shapes = SetShapes(ModelObject, enabledChildren);
@@ -1499,14 +1569,25 @@ namespace LeapfrogEditor
 
       public void BuildGlobalShapeCollection(string stateName, bool showJoints, bool showSystems, bool showBackgrounds)
       {
+         if (AmIAnImportedFile())
+         {
+            TopParentOfImporedFiles().BuildGlobalShapeCollection(stateName, showJoints, showSystems, showBackgrounds);
+            return;
+         }
+
          GlobalShapeCollection.Clear();
 
+         AddShapesToGlobalCollection(ref _globalShapeCollection, stateName, showJoints, showSystems, showBackgrounds);
+      }
+
+      public void AddShapesToGlobalCollection(ref CompositeCollection coll, string editedState, bool showJoints, bool showSystems, bool showBackgrounds)
+      {
          foreach (Object o in ShapeCollection.Shapes)
          {
             if (o is LfShapeViewModel)
             {
                LfShapeViewModel svm = o as LfShapeViewModel;
-               GlobalShapeCollection.Add(svm);
+               coll.Add(svm);
             }
          }
 
@@ -1517,7 +1598,7 @@ namespace LeapfrogEditor
                if (o is WeldJointViewModel)
                {
                   WeldJointViewModel wjvm = o as WeldJointViewModel;
-                  GlobalShapeCollection.Add(wjvm);
+                  coll.Add(wjvm);
                }
             }
          }
@@ -1529,14 +1610,19 @@ namespace LeapfrogEditor
                if (o is CoSystemViewModel)
                {
                   CoSystemViewModel svm = o as CoSystemViewModel;
-                  GlobalShapeCollection.Add(svm);
+                  coll.Add(svm);
                }
             }
          }
 
          foreach (ChildObjectViewModel covm in ChildObjectsWithStates.Children)
          {
-            covm.AddChildShapesToGlobalCollection(ref _globalShapeCollection, stateName, showBackgrounds);
+            covm.AddChildShapesToGlobalCollection(ref coll, editedState, showJoints, showSystems, showBackgrounds);
+         }
+
+         foreach (CompoundObjectViewModel covm in ImportedObjects.Children)
+         {
+            covm.AddShapesToGlobalCollection(ref coll, editedState, showJoints, showSystems, showBackgrounds);
          }
       }
 
@@ -1562,10 +1648,28 @@ namespace LeapfrogEditor
             }
          }
 
+         // TODO: Why not systems??
+
          foreach (ChildObjectViewModel covm in ChildObjectsWithStates.Children)
          {
             covm.UpdateChildrenAbsolutePos();
          }
+      }
+
+      public bool IsObjectImported(CompoundObjectViewModel covm)
+      // This method returns true if covm is part of the ImportedObjects collection
+      // Otherwise, it returns false. If the object is a child, this is evidence that
+      // covm is a ImportedObject. 
+      {
+         foreach (CompoundObjectViewModel covmit in _importedObjects.Children)
+         {
+            if (covm == covmit)
+            {
+               return true;
+            }
+         }
+
+         return false;
       }
 
       #endregion

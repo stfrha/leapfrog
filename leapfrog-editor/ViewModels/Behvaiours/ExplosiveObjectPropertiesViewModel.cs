@@ -71,6 +71,34 @@ namespace LeapfrogEditor
          }
       }
 
+      public double DamageBulletEqv
+      {
+         get { return LocalModelObject.DamageBulletEqv; }
+         set
+         {
+            LocalModelObject.DamageBulletEqv = value;
+            OnPropertyChanged("DamageBulletEqv");
+         }
+      }
+      public bool ImpactExplosion
+      {
+         get { return LocalModelObject.ImpactExplosion; }
+         set
+         {
+            LocalModelObject.ImpactExplosion = value;
+            OnPropertyChanged("ImpactExplosion");
+         }
+      }
+      public double ImpactThreshold
+      {
+         get { return LocalModelObject.ImpactThreshold; }
+         set
+         {
+            LocalModelObject.ImpactThreshold = value;
+            OnPropertyChanged("ImpactThreshold");
+         }
+      }
+
       #endregion
 
       #region private Methods

@@ -658,27 +658,13 @@ namespace LeapfrogEditor
             string fullPath = System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
             string fullFileName = System.IO.Path.Combine(fullPath, s);
 
-            ChildObjectStateProperties childProps = new ChildObjectStateProperties();
-
-            childProps.File = fullFileName;
-
-            TStateProperties<ChildObjectStateProperties> newStateProp = new TStateProperties<ChildObjectStateProperties>();
-            newStateProp.State = "default";
-            newStateProp.Properties = childProps;
-
             CompoundObject newCp = CompoundObject.ReadFromFile(fullFileName);
 
-            newStateProp.Properties.CompObj = newCp;
+            FileCOViewModel newCpVm = new FileCOViewModel(EditedCpVm.ImportedObjects, EditedCpVm, this, fileName, newCp);
 
-            ChildObject newChildObject = new ChildObject();
+            newCpVm.BuildViewModel();
 
-            newChildObject.StateProperties.Add(newStateProp);
-
-            CompoundObjectViewModel newCpVm = new CompoundObjectViewModel(null, null, this, newCp /*, newStateProp.Properties, newChildObject*/);
-
-            EditedCpVm.ModelObject.ChildObjects.Add(newChildObject);
-
-            (EditedCpVm as CompoundObjectViewModel).BuildViewModel();
+            EditedCpVm.ImportedObjects.Children.Add(newCpVm);
 
             EditedCpVm.BuildGlobalShapeCollection(GetEditableCoBehaviourStateName(), ShowJoints, ShowSystems, ShowBackgrounds);
 

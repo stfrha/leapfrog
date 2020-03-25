@@ -147,31 +147,12 @@ namespace LeapfrogEditor
          }
       }
 
-      public void AddChildShapesToGlobalCollection(ref CompositeCollection coll, string editedState, bool showBackground)
+      public void AddChildShapesToGlobalCollection(ref CompositeCollection coll, string editedState, bool showJoints, bool showSystems, bool showBackgrounds)
       {
          foreach (ChildCOViewModel ccvm in StateProperties)
          {
             if ((ccvm.State == editedState) || (ccvm.State == "default"))
             {
-               //if (ccvm.Behaviour.BehaviourProperties is ParallaxBackgroundPropertiesViewModel)
-               //{
-               //   if (showBackground)
-               //   {
-               //      ParallaxBackgroundViewModel pbvm = new ParallaxBackgroundViewModel(ccvm, MainVm, ccvm.Behaviour.BehaviourProperties as ParallaxBackgroundPropertiesViewModel);
-
-               //      foreach (Object o in ccvm.ShapeCollection.Shapes)
-               //      {
-               //         if (o is LfShapeViewModel)
-               //         {
-               //            LfShapeViewModel svm = o as LfShapeViewModel;
-               //            pbvm.Shapes.Add(svm);
-               //         }
-               //      }
-
-               //      coll.Add(pbvm);
-               //   }
-               //}
-               //else
                {
                   foreach (Object o in ccvm.ShapeCollection.Shapes)
                   {
@@ -182,11 +163,36 @@ namespace LeapfrogEditor
                      }
                   }
 
+                  if (showJoints)
+                  {
+                     foreach (Object o in ccvm.JointCollection.Joints)
+                     {
+                        if (o is WeldJointViewModel)
+                        {
+                           WeldJointViewModel wjvm = o as WeldJointViewModel;
+                           coll.Add(wjvm);
+                        }
+                     }
+                  }
+
+                  if (showSystems)
+                  {
+                     foreach (Object o in ccvm.SystemCollection.Systems)
+                     {
+                        if (o is CoSystemViewModel)
+                        {
+                           CoSystemViewModel svm = o as CoSystemViewModel;
+                           coll.Add(svm);
+                        }
+                     }
+                  }
+
+
                   if (ccvm != MainVm.EditedCpVm)
                   {
                      foreach (ChildObjectViewModel covm in ccvm.ChildObjectsWithStates.Children)
                      {
-                        covm.AddChildShapesToGlobalCollection(ref coll, editedState, showBackground);
+                        covm.AddChildShapesToGlobalCollection(ref coll, editedState, showJoints, showSystems, showBackgrounds);
                      }
                   }
                }
