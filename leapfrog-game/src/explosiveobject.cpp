@@ -74,7 +74,7 @@ void ExplosiveObject::readExplosiveObjectNode(const pugi::xml_node& node)
    m_blastPower = node.attribute("blastPower").as_float(0.0f);
    m_damageBulletEqv = node.attribute("damageBulletEqv").as_float(1.0f);
    m_impactExplosion = node.attribute("impactExplosion").as_bool(false);
-   m_impactThreshold = node.attribute("impactThreshold").as_float(0.0f);
+   m_impactThreshold = node.attribute("impactThreshold").as_float(1000.0f);
 }
 
 

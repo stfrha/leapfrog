@@ -1,10 +1,11 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<compoundObject>
+<compoundObject
+  needsGroupIndex="false">
   <staticBox
     name="springDestroyable"
     texture="lf_position"
-    posX="788.23840289314512"
-    posY="437.28854045826745"
+    posX="787.80376018424658"
+    posY="436.97243666997781"
     angle="0"
     zLevel="192"
     collisionEntity="destroyableObject"
@@ -40,6 +41,8 @@
     height="10"
     density="1"
     friction="0" />
+  <behaviour
+    type="notApplicable" />
   <weldJoint
     name="noJointName"
     objectAName="springWeight"
@@ -130,8 +133,8 @@
     <stateProperties
       state="default">
       <properties
-        posX="647.93139773027576"
-        posY="288.013186255211">
+        posX="434.128001962452"
+        posY="535.99400985902787">
         <compoundObject
           needsGroupIndex="false">
           <dynamicBox
@@ -153,7 +156,10 @@
             <explosiveObjectProperties
               numOfParticles="40"
               particleRadius="1"
-              blastPower="1000" />
+              blastPower="1000"
+              damageBulletEqv="1"
+              impactExplosion="true"
+              impactThreshold="2500" />
             <pickupObjectProperties
               pickupType="notDef"
               amountType="notDefAmount"
