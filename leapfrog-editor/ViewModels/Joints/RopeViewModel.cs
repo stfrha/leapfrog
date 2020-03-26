@@ -197,9 +197,9 @@ namespace LeapfrogEditor
 
       #region public Methods
 
-      public new void ConnectToShapes(ShapeCollectionViewModel shapes)
+      public new void ConnectToShapes(CompositeCollection coll)
       {
-         _aVm = ParentVm.FindShape(ModelObject.AName, shapes);
+         _aVm = ParentVm.FindShape(ModelObject.AName, coll);
          if (_aVm == null)
          {
             MessageBox.Show("The shape A pointed to by " + ModelObject.Name + " does not exists in CO " + ParentVm.Name, "Error parsing file", MessageBoxButton.OK, MessageBoxImage.Error);
@@ -207,7 +207,7 @@ namespace LeapfrogEditor
 
          if (ModelObject.BName != "notDef")
          {
-            _bVm = ParentVm.FindShape(ModelObject.BName, shapes);
+            _bVm = ParentVm.FindShape(ModelObject.BName, coll);
             if (_bVm == null)
             {
                MessageBox.Show("The shape B pointed to by " + ModelObject.Name + " does not exists in CO " + ParentVm.Name, "Error parsing file", MessageBoxButton.OK, MessageBoxImage.Error);

@@ -83,7 +83,7 @@ namespace LeapfrogEditor
 
             _modelObject.AName = value;
             OnPropertyChanged("AName");
-            ConnectToShapes(ParentVm.ShapeCollection);
+            ConnectToShapes(ParentVm.ShapeCollection.Shapes);
             OnPropertyChanged("AShapeObject");
          }
       }
@@ -103,7 +103,7 @@ namespace LeapfrogEditor
             _modelObject.BName = value;
             OnPropertyChanged("BName");
             OnPropertyChanged("ShapeBExists");
-            ConnectToShapes(ParentVm.ShapeCollection);
+            ConnectToShapes(ParentVm.ShapeCollection.Shapes);
             OnPropertyChanged("BShapeObject");
          }
       }
@@ -196,15 +196,15 @@ namespace LeapfrogEditor
 
       #region public Methods
 
-      public void ConnectToShapes(ShapeCollectionViewModel shapes)
+      public void ConnectToShapes(CompositeCollection coll)
       {
-         _aVm = ParentVm.FindShape(ModelObject.AName, shapes);
+         _aVm = ParentVm.FindShape(ModelObject.AName, coll);
          if (_aVm == null)
          {
             MessageBox.Show("The shape A pointed to by " + ModelObject.Name + " does not exists in CO " + ParentVm.Name, "Error parsing file", MessageBoxButton.OK, MessageBoxImage.Error);
          }
 
-         _bVm = ParentVm.FindShape(ModelObject.BName, shapes);
+         _bVm = ParentVm.FindShape(ModelObject.BName, coll);
          if (_bVm == null)
          {
             MessageBox.Show("The shape B pointed to by " + ModelObject.Name + " does not exists in CO " + ParentVm.Name, "Error parsing file", MessageBoxButton.OK, MessageBoxImage.Error);

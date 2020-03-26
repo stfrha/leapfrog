@@ -935,7 +935,7 @@ namespace LeapfrogEditor
 
             // If there is no shape B, the rp.BName should be default "notDef"
 
-            rpvm.ConnectToShapes(ShapeCollection);
+            rpvm.ConnectToShapes(ShapeCollection.Shapes);
 
             Point parentObjectOrigo = new Point(0, 0);
 
@@ -1003,7 +1003,7 @@ namespace LeapfrogEditor
                ModelObject.PrismaticJoints.Add((PrismaticJoint)wjvm.ModelObject);
             }
 
-            wjvm.ConnectToShapes(ShapeCollection);
+            wjvm.ConnectToShapes(ShapeCollection.Shapes);
 
             Point parentObjectOrigo = new Point(0, 0);
 
@@ -1116,7 +1116,7 @@ namespace LeapfrogEditor
 
             ReentryFlameEmitterPropertiesViewModel propVm = newSysVm.Properties as ReentryFlameEmitterPropertiesViewModel;
 
-            propVm.ConnectToShapes(ShapeCollection);
+            propVm.ConnectToShapes(ShapeCollection.Shapes);
 
             parentObjectOrigo = new Point(propVm.BodyObject.PosX, propVm.BodyObject.PosY);
 
@@ -1165,7 +1165,7 @@ namespace LeapfrogEditor
 
             BodyOriginSystemViewModel propVm = newSysVm.Properties as BodyOriginSystemViewModel;
 
-            propVm.ConnectToShapes(ShapeCollection);
+            propVm.ConnectToShapes(ShapeCollection.Shapes);
 
             parentObjectOrigo = new Point(propVm.BodyObject.PosX, propVm.BodyObject.PosY);
 
@@ -1232,10 +1232,81 @@ namespace LeapfrogEditor
          _joints = SetJoints(ModelObject, enabledChildren);
          _systems = SetSystems(ModelObject, enabledChildren);
 
+         ChildObjectsWithStates = SetChildren(ModelObject, enabledChildren);
+
+
+         // The TreeViewCollection holds the same objects of shapes, joints, systems
+         // etc, but in a hierarcichal structure of the tree view. 
+         BuildTreeViewCollection();
+      }
+
+      public void BuildGlobalShapeCollection(string stateName, bool showJoints, bool showSystems, bool showBackgrounds)
+      {
+         if (AmIAnImportedFile())
+         {
+            TopParentOfImporedFiles().BuildGlobalShapeCollection(stateName, showJoints, showSystems, showBackgrounds);
+            return;
+         }
+
+         GlobalShapeCollection.Clear();
+
+         AddShapesToGlobalCollection(ref _globalShapeCollection, stateName, showJoints, showSystems, showBackgrounds);
+
+         ConnectNamedObjects(_globalShapeCollection);
+      }
+
+      public void AddShapesToGlobalCollection(ref CompositeCollection coll, string editedState, bool showJoints, bool showSystems, bool showBackgrounds)
+      {
+         foreach (Object o in ShapeCollection.Shapes)
+         {
+            if (o is LfShapeViewModel)
+            {
+               LfShapeViewModel svm = o as LfShapeViewModel;
+               coll.Add(svm);
+            }
+         }
+
+         if (showJoints)
+         {
+            foreach (Object o in JointCollection.Joints)
+            {
+               if (o is WeldJointViewModel)
+               {
+                  WeldJointViewModel wjvm = o as WeldJointViewModel;
+                  coll.Add(wjvm);
+               }
+            }
+         }
+
+         if (showSystems)
+         {
+            foreach (Object o in SystemCollection.Systems)
+            {
+               if (o is CoSystemViewModel)
+               {
+                  CoSystemViewModel svm = o as CoSystemViewModel;
+                  coll.Add(svm);
+               }
+            }
+         }
+
+         foreach (ChildObjectViewModel covm in ChildObjectsWithStates.Children)
+         {
+            covm.AddChildShapesToGlobalCollection(ref coll, editedState, showJoints, showSystems, showBackgrounds);
+         }
+
+         foreach (CompoundObjectViewModel covm in ImportedObjects.Children)
+         {
+            covm.AddShapesToGlobalCollection(ref coll, editedState, showJoints, showSystems, showBackgrounds);
+         }
+      }
+
+      public void ConnectNamedObjects(CompositeCollection coll)
+      {
          // Only now is the Joints property valid for this state
          // Connect joints to shape, creating the reference link
          // that is defined by body names in xml file.
-         foreach (object o in _joints.Joints)
+         foreach (object o in coll)
          {
             if (o is WeldJointViewModel)
             {
@@ -1243,13 +1314,13 @@ namespace LeapfrogEditor
                {
                   RopeViewModel joint = (RopeViewModel)o;
 
-                  joint.ConnectToShapes(_shapes);
+                  joint.ConnectToShapes(coll);
                }
                else
                {
                   WeldJointViewModel joint = (WeldJointViewModel)o;
 
-                  joint.ConnectToShapes(_shapes);
+                  joint.ConnectToShapes(coll);
                }
             }
          }
@@ -1257,7 +1328,7 @@ namespace LeapfrogEditor
          // Only now is the Systems property valid for this state
          // Connect systems to shapes, creating the reference link
          // that is defined by body names in xml file.
-         foreach (object o in _systems.Systems)
+         foreach (object o in coll)
          {
             if (o is CoSystemViewModel)
             {
@@ -1266,23 +1337,18 @@ namespace LeapfrogEditor
                if (sys.Properties is BodyOriginSystemViewModel)
                {
                   BodyOriginSystemViewModel sysProp = sys.Properties as BodyOriginSystemViewModel;
-                  sysProp.ConnectToShapes(_shapes);
+                  sysProp.ConnectToShapes(coll);
                }
 
                if (sys.Properties is ReentryFlameEmitterPropertiesViewModel)
                {
                   ReentryFlameEmitterPropertiesViewModel sysProp = sys.Properties as ReentryFlameEmitterPropertiesViewModel;
-                  sysProp.ConnectToShapes(_shapes);
+                  sysProp.ConnectToShapes(coll);
                }
             }
          }
 
-         ChildObjectsWithStates = SetChildren(ModelObject, enabledChildren);
 
-
-         // The TreeViewCollection holds the same objects of shapes, joints, systems
-         // etc, but in a hierarcichal structure of the tree view. 
-         BuildTreeViewCollection();
       }
 
       public void DeselectAllChildren()
@@ -1514,9 +1580,9 @@ namespace LeapfrogEditor
          return newPoint;
       }
 
-      public LfShapeViewModel FindShape(string name, ShapeCollectionViewModel shapes)
+      public LfShapeViewModel FindShape(string name, CompositeCollection objects)
       {
-         foreach (object o in shapes.Shapes)
+         foreach (object o in objects)
          {
             if (o is LfShapeViewModel)
             {
@@ -1564,65 +1630,6 @@ namespace LeapfrogEditor
          else
          {
             return scenePoint;
-         }
-      }
-
-      public void BuildGlobalShapeCollection(string stateName, bool showJoints, bool showSystems, bool showBackgrounds)
-      {
-         if (AmIAnImportedFile())
-         {
-            TopParentOfImporedFiles().BuildGlobalShapeCollection(stateName, showJoints, showSystems, showBackgrounds);
-            return;
-         }
-
-         GlobalShapeCollection.Clear();
-
-         AddShapesToGlobalCollection(ref _globalShapeCollection, stateName, showJoints, showSystems, showBackgrounds);
-      }
-
-      public void AddShapesToGlobalCollection(ref CompositeCollection coll, string editedState, bool showJoints, bool showSystems, bool showBackgrounds)
-      {
-         foreach (Object o in ShapeCollection.Shapes)
-         {
-            if (o is LfShapeViewModel)
-            {
-               LfShapeViewModel svm = o as LfShapeViewModel;
-               coll.Add(svm);
-            }
-         }
-
-         if (showJoints)
-         {
-            foreach (Object o in JointCollection.Joints)
-            {
-               if (o is WeldJointViewModel)
-               {
-                  WeldJointViewModel wjvm = o as WeldJointViewModel;
-                  coll.Add(wjvm);
-               }
-            }
-         }
-
-         if (showSystems)
-         {
-            foreach (Object o in SystemCollection.Systems)
-            {
-               if (o is CoSystemViewModel)
-               {
-                  CoSystemViewModel svm = o as CoSystemViewModel;
-                  coll.Add(svm);
-               }
-            }
-         }
-
-         foreach (ChildObjectViewModel covm in ChildObjectsWithStates.Children)
-         {
-            covm.AddChildShapesToGlobalCollection(ref coll, editedState, showJoints, showSystems, showBackgrounds);
-         }
-
-         foreach (CompoundObjectViewModel covm in ImportedObjects.Children)
-         {
-            covm.AddShapesToGlobalCollection(ref coll, editedState, showJoints, showSystems, showBackgrounds);
          }
       }
 

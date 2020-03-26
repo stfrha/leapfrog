@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Data;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 
@@ -55,7 +56,7 @@ namespace LeapfrogEditor
 
             ModelObject.BodyName = value;
             OnPropertyChanged("BodyName");
-            ConnectToShapes(ParentVm.ShapeCollection);
+            ConnectToShapes(ParentVm.ShapeCollection.Shapes);
             OnPropertyChanged("BodyObject");
          }
       }
@@ -115,9 +116,9 @@ namespace LeapfrogEditor
 
       #region public Methods
 
-      public void ConnectToShapes(ShapeCollectionViewModel shapes)
+      public void ConnectToShapes(CompositeCollection coll)
       {
-         _bodyVm = ParentVm.FindShape(ModelObject.BodyName, shapes);
+         _bodyVm = ParentVm.FindShape(ModelObject.BodyName, coll);
          if (_bodyVm == null)
          {
             MessageBox.Show("The shape pointed to by " + ModelObject.BodyName + " does not exists in CO " + ParentVm.Name, "Error parsing file", MessageBoxButton.OK, MessageBoxImage.Error);
