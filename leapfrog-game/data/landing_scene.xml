@@ -1027,8 +1027,8 @@
       state="default">
       <properties
         file="strange_machine.xml"
-        posX="474.10424397783726"
-        posY="442.80413754704796" />
+        posX="196.90185855717272"
+        posY="301.81326910033067" />
     </stateProperties>
   </childObject>
   <childObject
@@ -1047,8 +1047,8 @@
       state="default">
       <properties
         file="landing_pad.xml"
-        posX="1197.9000066222068"
-        posY="417.76453739413637" />
+        posX="440.2054322870278"
+        posY="542.80403235730068" />
     </stateProperties>
   </childObject>
   <childObject
@@ -1057,8 +1057,8 @@
       state="landingState">
       <properties
         file="leapfrog_reentry.xml"
-        posX="706.11033798598032"
-        posY="246.94526653847811" />
+        posX="537.19860737896806"
+        posY="481.56945402130646" />
     </stateProperties>
     <stateProperties
       state="groundState">

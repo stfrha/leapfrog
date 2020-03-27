@@ -1,5 +1,6 @@
 
 #include "explosiveobject.h"
+#include "explosiveobjectevents.h"
 
 #include "bodyuserdata.h"
 #include "sceneactor.h"
@@ -112,6 +113,9 @@ void ExplosiveObject::doUpdate(const oxygine::UpdateState& us)
 
       if (m_blastProgress > m_blastDuration)
       {
+         ExplosiveObjectExplodedEvent event;
+         dispatchEvent(&event);
+
          for (auto it = m_blastParticleBodies.begin(); it != m_blastParticleBodies.end(); ++it)
          {
             m_world->DestroyBody(*it);

@@ -755,5 +755,11 @@
     <ClInclude Include="..\src\parallaxbackground.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="..\src\explosiveobjectevents.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\breakableobjectevents.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

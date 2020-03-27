@@ -14,67 +14,104 @@ function setupMissionStateScene()
 
    if currentState == "state1" then
       if currentScene == "landing_scene.xml" then
-         -- Add objects from file mission-state-scene xml file (can it be incorporated into this script?)
-            -- In this case, there is nothing extra to load
-         -- Register all triggers required for this mission-state-scene
-         c_registerPropertyTrigger("leapfrog1", 1, 3, "insideRange", 200, 400);
-         
-         -- Register all events required for this mission-state-scene
-         c_registerEventHandler("leapfrog1", "OpTr", 1, 3)
+         -- Register event for landing on landingPad1
+         c_registerEventHandler("landing_pad1", "LpLL", 0, 0)
 
-      elseif currentScene == "deep_space_scene.xml" then
-
-      elseif currentScene == "orbit_scene.xml" then
-
+         -- Play dialog
+         c_addDialogMessage("Hello. Try to land on the landingpad, to your left.", "DEBUG", true, 0, 0)
       end
 
    elseif currentState == "state2" then
-
       if currentScene == "landing_scene.xml" then
-         c_addDialogMessage("I got to state2", "DEBUG", true, 0, 0)
          c_addMissionStateSceneObjects("landing_scene_state2.xml")
-         c_registerPropertyTrigger("leapfrog1", 1, 3, "insideRange", 410, 500);
-         c_registerEventHandler("leapfrog1", "OpTr", 1, 3)
-
-      elseif currentScene == "deep_space_scene.xml" then
-      
-      elseif currentScene == "orbit_scene.xml" then
-      
+         c_registerEventHandler("landing_pad1", "LpTO", 0, 0)
       end
+
+   elseif currentState == "state3" then
+      if currentScene == "landing_scene.xml" then
+         c_registerEventHandler("springHolder", "BrBR", 0, 0)
+      end
+
+   elseif currentState == "state4" then
+      if currentScene == "landing_scene.xml" then
+         c_registerEventHandler("bomb1", "ExEX", 0, 0)
+      end
+
+
    end
 end
 
 function missionStateSceneEventHandler(eventId, actorName, parameter1)
    if currentState == "state1" then
       if currentScene == "landing_scene.xml" then
-         if actorName == "leapfrog1" then
-            if eventId == "OpTr" then
+         if actorName == "landing_pad1" then
+            if eventId == "LpLL" then
                
-               if parameter1 == 3 then
+               -- Play dialog
+               c_addDialogMessage("Welcome to the landing pad. Let me fill you up. A new obstacle has arrived in the grotto. Check it out.", "DEBUG", true, 0, 0)
 
-                  -- Play dialog
-                  
-                  c_addDialogMessage("I am handling the event", "DEBUG", true, 0, 0)
-
-                  currentState = "state2"
-                  
-                  -- Clear triggers and event handler
-                  c_clearAllTriggersAndEvents()
-                  
-                  setupMissionStateScene()
-               end
+               currentState = "state2"
+               
+               -- Clear triggers and event handler
+               c_clearAllTriggersAndEvents()
+               
+               setupMissionStateScene()
             end 
          end
-      elseif currentScene == "deep_space_scene.xml" then
-      elseif currentScene == "orbit_scene.xml" then
       end
 
    elseif currentState == "state2" then
-
       if currentScene == "landing_scene.xml" then
-      elseif currentScene == "deep_space_scene.xml" then
-      elseif currentScene == "orbit_scene.xml" then
-      
+         if actorName == "landing_pad1" then
+            if eventId == "LpTO" then
+               
+               -- Play dialog
+               c_addDialogMessage("That's right. Git yourself over there.", "DEBUG", true, 0, 0)
+
+               currentState = "state3"
+               
+               -- Clear triggers and event handler
+               c_clearAllTriggersAndEvents()
+               
+               setupMissionStateScene()
+            end 
+         end
+      end
+
+   elseif currentState == "state3" then
+      if currentScene == "landing_scene.xml" then
+         if actorName == "springHolder" then
+            if eventId == "BrBR" then
+               
+               -- Play dialog
+               c_addDialogMessage("Good job, the spring is free. Now destroy the bomb.", "DEBUG", true, 0, 0)
+
+               currentState = "state4"
+               
+               -- Clear triggers and event handler
+               c_clearAllTriggersAndEvents()
+               
+               setupMissionStateScene()
+            end 
+         end
+      end
+
+   elseif currentState == "state4" then
+      if currentScene == "landing_scene.xml" then
+         if actorName == "bomb1" then
+            if eventId == "ExEX" then
+               
+               -- Play dialog
+               c_addDialogMessage("Mission Complete!!!", "DEBUG", true, 0, 0)
+
+               currentState = "state5"
+               
+               -- Clear triggers and event handler
+               c_clearAllTriggersAndEvents()
+               
+               setupMissionStateScene()
+            end 
+         end
       end
    end
 end

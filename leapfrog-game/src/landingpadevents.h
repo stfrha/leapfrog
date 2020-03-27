@@ -11,3 +11,9 @@ public:
    LandingPadLeapfrogLandedEvent(void) :Event(EVENT) {}
 };
 
+class LandingPadLeapfrogTakeOffEvent : public oxygine::Event
+{
+public:
+   enum { EVENT = eventID('L', 'p', 'T', 'O') };
+   LandingPadLeapfrogTakeOffEvent(void) :Event(EVENT) {}
+};

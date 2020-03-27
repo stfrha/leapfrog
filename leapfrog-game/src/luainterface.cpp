@@ -141,7 +141,11 @@ void luaEventListner(oxygine::Event *ev)
 
       g_LuaInterface.missionStateSceneEventHandler(
          eventType, actorName, propTrigEv->m_propertyId);
-
+   }
+   else
+   {
+      g_LuaInterface.missionStateSceneEventHandler(
+         eventType, actorName, 0);
    }
 }
 

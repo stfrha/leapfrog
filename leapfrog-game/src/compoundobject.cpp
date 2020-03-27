@@ -52,8 +52,8 @@ CompoundObject::~CompoundObject()
 	//m_boxedSprites.clear();
 	//m_polygonSprites.clear();
 	//m_staticPolygons.clear();
-	m_namedJoints.clear();
-	m_children.clear();
+	//m_namedJoints.clear();
+	//m_children.clear();
 }
 
 CompoundObject* CompoundObject::getParentObject()

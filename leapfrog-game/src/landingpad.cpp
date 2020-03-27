@@ -1,5 +1,6 @@
 
 #include "landingpad.h"
+#include "landingpadevents.h"
 
 #include "sceneactor.h"
 
@@ -22,7 +23,9 @@ LandingPad::LandingPad(
    int groupIndex) :
    CompoundObject(sceneParent, parentObject),
    m_leftFootContact(false),
-   m_rightFootContact(false)
+   m_rightFootContact(false),
+   m_state(LandingPadState::unstable),
+   m_stableTicks(0)
 {
 	initCompoundObjectParts(gameResources, sceneParent, sceneParent, parentObject, world, pos, root, string(""), groupIndex);
 
@@ -69,15 +72,56 @@ void LandingPad::leapfrogFootLift(b2Contact* contact, bool leftFoot, LeapFrog* l
 
 void LandingPad::doUpdate(const UpdateState &us)
 {
-   if (m_leftFootContact && m_rightFootContact)
+   switch (m_state)
    {
-      // Start timer and at the end of that, if both feet still
-      // are in contact, send event for Leapfrog has landed.
-      logs::messageln("Landing Pad landing stable");
-      if (m_latestLeapfrog->m_gameStatus->getFuel() < 100.0f)
+   case LandingPadState::unstable:
+
+      if (!m_leftFootContact && !m_rightFootContact)
       {
-         m_latestLeapfrog->m_gameStatus->deltaFuel(0.2);
+         m_stableTicks++;
+
+         if (m_stableTicks > 15)
+         {
+            m_state = LandingPadState::stableAir;
+            LandingPadLeapfrogTakeOffEvent event;
+            dispatchEvent(&event);
+         }
       }
+      else if (m_leftFootContact && m_rightFootContact)
+      {
+         m_stableTicks++;
+
+         if (m_stableTicks > 15)
+         {
+            m_state = LandingPadState::stableLand;
+            LandingPadLeapfrogLandedEvent event;
+            dispatchEvent(&event);
+         }
+      }
+      break;
+
+   case LandingPadState::stableAir:
+
+      if (m_leftFootContact || m_rightFootContact)
+      {
+         m_stableTicks = 0;
+         m_state = LandingPadState::unstable;
+      }
+      break;
+
+   case LandingPadState::stableLand:
+
+      if (!m_leftFootContact || !m_rightFootContact)
+      {
+         m_stableTicks = 0;
+         m_state = LandingPadState::unstable;
+
+         if (m_latestLeapfrog->m_gameStatus->getFuel() < 100.0f)
+         {
+            m_latestLeapfrog->m_gameStatus->deltaFuel(0.2f);
+         }
+      }
+      break;
    }
 }
 

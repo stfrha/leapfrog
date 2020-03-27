@@ -299,12 +299,14 @@
     <ClInclude Include="..\src\blastparticle.h" />
     <ClInclude Include="..\src\bodyuserdata.h" />
     <ClInclude Include="..\src\breakableobject.h" />
+    <ClInclude Include="..\src\breakableobjectevents.h" />
     <ClInclude Include="..\src\bullet.h" />
     <ClInclude Include="..\src\collisionentity.h" />
     <ClInclude Include="..\src\compoundobject.h" />
     <ClInclude Include="..\src\compoundobjectevents.h" />
     <ClInclude Include="..\src\deepspacesceneevents.h" />
     <ClInclude Include="..\src\explosiveobject.h" />
+    <ClInclude Include="..\src\explosiveobjectevents.h" />
     <ClInclude Include="..\src\flameemitter.h" />
     <ClInclude Include="..\src\flameparticle.h" />
     <ClInclude Include="..\src\flamesmokeparticle.h" />

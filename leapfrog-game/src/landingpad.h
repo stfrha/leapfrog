@@ -24,9 +24,18 @@ public:
 		lfLanded = 1
 	};
 
+   enum LandingPadState
+   {
+      unstable,
+      stableLand,
+      stableAir
+   };
+
 private:
    bool m_leftFootContact;
    bool m_rightFootContact;
+   int m_stableTicks;
+   LandingPadState m_state;
 
    LeapFrog* m_latestLeapfrog;
 

@@ -1,5 +1,6 @@
 
 #include "breakableobject.h"
+#include "breakableobjectevents.h"
 
 #include "sceneactor.h"
 #include "freespaceactor.h"
@@ -153,6 +154,9 @@ void BreakableObject::damageCollision(b2Contact* contact, float bulletEqvDamage)
 
       spawnBreakableObjects();
 
+      BreakableObjectBreakEvent event;
+      dispatchEvent(&event);
+
       collisionBlast(contact, false);
    }
    else
@@ -180,22 +184,27 @@ void BreakableObject::spawnBreakableObjects(void)
          Vector2(2.0f, 2.0f),
          m_spawnObjects);
 
-      return;
    }
-
-   Vector2 center = getCompoundObjectPosition();
-   float radius = m_shapes[0]->getWidth() / 4;
-
-   for (int i = 0; i < m_numberOfSpawns; i++)
+   else
    {
-      float angle = (i / (float)m_numberOfSpawns) * 2.0f * MATH_PI;
-      Vector2 rayDir(sinf(angle), cosf(angle));
-      Vector2 spawnPos = rayDir * radius + center;
+      Vector2 center = getCompoundObjectPosition();
+      float radius = m_shapes[0]->getWidth() / 4;
 
-      m_sceneActor->addObjectToSpawnList(
-         1,
-         spawnPos,
-         Vector2(2.0f, 2.0f),
-         m_spawnObjects);
+      for (int i = 0; i < m_numberOfSpawns; i++)
+      {
+         float angle = (i / (float)m_numberOfSpawns) * 2.0f * MATH_PI;
+         Vector2 rayDir(sinf(angle), cosf(angle));
+         Vector2 spawnPos = rayDir * radius + center;
+
+         m_sceneActor->addObjectToSpawnList(
+            1,
+            spawnPos,
+            Vector2(2.0f, 2.0f),
+            m_spawnObjects);
+      }
    }
+
+   BreakableObjectNewObjectSpawnedEvent event;
+   dispatchEvent(&event);
+
 }
