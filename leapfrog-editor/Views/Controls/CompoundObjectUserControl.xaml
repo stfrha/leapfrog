@@ -367,12 +367,12 @@
                <Canvas/>
             </ItemsPanelTemplate>
          </ItemsControl.ItemsPanel>
-         <!--<ItemsControl.ItemContainerStyle>
+         <ItemsControl.ItemContainerStyle>
             <Style TargetType="ContentPresenter">
                <Setter Property="Canvas.Left" Value="{Binding AbsPosX}"/>
                <Setter Property="Canvas.Top" Value="{Binding AbsPosY}"/>
             </Style>
-         </ItemsControl.ItemContainerStyle>-->
+         </ItemsControl.ItemContainerStyle>
       </ItemsControl>
       <!-- This third itemscontrol is for borders around child objects. -->
       <ItemsControl ItemsSource="{Binding ChildObjectsWithStates.Children}">
