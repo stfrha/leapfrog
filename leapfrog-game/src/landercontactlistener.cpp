@@ -156,7 +156,7 @@ void LanderContactListener::PostSolve(b2Contact* contact, const b2ContactImpulse
       }
       else
       {
-         explosive->hitImpulse(impulse);
+         explosive->hitImpulse(impulse, leapfrog != NULL);
       }
    }
 

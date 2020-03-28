@@ -14,22 +14,28 @@ function setupMissionStateScene()
 
    if currentState == "state1" then
       if currentScene == "landing_scene.xml" then
+
          -- Register event for landing on landingPad1
          c_registerEventHandler("landing_pad1", "LpLL", 0, 0)
 
          -- Play dialog
-         c_addDialogMessage("Hello. Try to land on the landingpad, to your left.", "DEBUG", true, 0, 0)
+         c_addDialogMessage("Hello. Try to land on the landing pad, to your left.", "DEBUG", true, 0, 0)
       end
 
    elseif currentState == "state2" then
       if currentScene == "landing_scene.xml" then
          c_addMissionStateSceneObjects("landing_scene_state2.xml")
          c_registerEventHandler("landing_pad1", "LpTO", 0, 0)
+         -- Play dialog
+         c_addDialogMessage("Try not to explode the bomd, just yet.", "DEBUG", true, 0, 0)
+         -- Set bomb to be very in-sensitivity
+         c_setObjectProperty("bomb1", 0, 250000)
+
       end
 
    elseif currentState == "state3" then
       if currentScene == "landing_scene.xml" then
-         c_registerEventHandler("springHolder", "BrBR", 0, 0)
+         c_registerEventHandler("coDestroyable", "BrBR", 0, 0)
       end
 
    elseif currentState == "state4" then
@@ -80,12 +86,15 @@ function missionStateSceneEventHandler(eventId, actorName, parameter1)
 
    elseif currentState == "state3" then
       if currentScene == "landing_scene.xml" then
-         if actorName == "springHolder" then
+         if actorName == "coDestroyable" then
             if eventId == "BrBR" then
                
                -- Play dialog
                c_addDialogMessage("Good job, the spring is free. Now destroy the bomb.", "DEBUG", true, 0, 0)
-
+               
+               -- Set bomb to more sensitivity
+               c_setObjectProperty("bomb1", 0, 2500)
+               
                currentState = "state4"
                
                -- Clear triggers and event handler

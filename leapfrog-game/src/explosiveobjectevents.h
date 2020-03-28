@@ -10,3 +10,5 @@ public:
    enum { EVENT = eventID('E', 'x', 'E', 'X') };
    ExplosiveObjectExplodedEvent(void) :Event(EVENT) {}
 };
+
+

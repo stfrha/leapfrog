@@ -24,6 +24,17 @@ class ExplosiveObject : public CompoundObject
 {
 private:
 
+   /*
+   Lets define properties:
+   Prop     Description
+   0     =  Impulse threshold
+   */
+
+   enum properties
+   {
+      implThreshold = 0
+   };
+
    enum ExplosionState
    {
       idle,
@@ -51,7 +62,6 @@ protected:
    float m_blastPower;
    float m_damageBulletEqv;
    bool m_impactExplosion;
-   float m_impactThreshold;
 
    void readExplosiveObjectNode(const pugi::xml_node& node);
    void doExplosion(void);
@@ -71,7 +81,7 @@ public:
 
    void triggerExplosion(void);
    float getDamageBulletEqv(void);
-   void hitImpulse(const b2ContactImpulse* impulse);
+   void hitImpulse(const b2ContactImpulse* impulse, bool leapfrog = false);
 
 protected:
    void doUpdate(const oxygine::UpdateState& us);

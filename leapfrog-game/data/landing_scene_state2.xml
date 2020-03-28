@@ -53,7 +53,7 @@
     maxMotorTorque="0" />
   <revoluteJoint
     name="noJointName"
-    objectAName="springDestroyable"
+    objectAName="coDestroyable.springDestroyable"
     objectBName="plank"
     objectAAnchorX="0.032617398948559639"
     objectAAnchorY="-0.11420251524893388"
@@ -107,12 +107,12 @@
     </stateProperties>
   </childObject>
   <childObject
-    name="springHolder">
+    name="coDestroyable">
     <stateProperties
       state="default">
       <properties
          posX="787.80376018424658"
-         posY="436.97243666997781"
+         posY="436.97243666997781">
          <compoundObject
             needsGroupIndex="false">
             <staticBox
@@ -122,7 +122,7 @@
                posY="0"
                angle="0"
                zLevel="192"
-               collisionEntity="destroyableObject"
+               collisionEntity="breakableObject"
                collisionCategory="1"
                collisionMask="65533"
                width="10"
@@ -130,7 +130,7 @@
           <behaviour
             type="breakableObject">
             <breakableObjectProperties
-               breakBulletDamage="1"
+               breakBulletDamage="3"
                numberOfSpawns="0">
           </behaviour>
         </compoundObject>

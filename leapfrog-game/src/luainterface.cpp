@@ -212,9 +212,19 @@ static int c_registerEventHandler(lua_State *L)
 
    CompoundObject* actor = g_LuaInterface.getSceneActor()->getObject(actorName);
 
-   int i = actor->addEventListener(eventType, luaEventListner);
+   if (actor != NULL)
+   {
+      int i = actor->addEventListener(eventType, luaEventListner);
 
-   g_LuaInterface.registerHandlerHandle(actor, i);
+      g_LuaInterface.registerHandlerHandle(actor, i);
+
+   }
+   else
+   {
+      std::string msg = "ERROR: The object " + actorName + " could not be found when registratimg event handler. ";
+
+      g_MessageDisplay->initMessage(true, msg.c_str(), "ERROR");
+   }
 
    return 0;
 }
@@ -262,6 +272,22 @@ static int c_setPanningObject(lua_State *L)
    SceneActor* scene = g_LuaInterface.getSceneActor();
 
    scene->setPanorateObject(scene->getObject(objectName));
+
+   return 0;
+}
+
+static int c_setObjectProperty(lua_State *L)
+{
+   std::string objectName = lua_tostring(L, 1);
+   int propId = lua_tointeger(L, 2);
+   float value = lua_tonumber(L, 3);
+
+   CompoundObject* obj = g_LuaInterface.getSceneActor()->getObject(objectName);
+
+   if (obj != NULL)
+   {
+      obj->setProperty(propId, value);
+   }
 
    return 0;
 }
@@ -329,6 +355,7 @@ void LuaInterface::initLuaInterface(void)
    lua_register(m_L, "c_addMissionStateSceneObjects", c_addMissionStateSceneObjects);
    lua_register(m_L, "c_addDialogMessage", c_addDialogMessage);
    lua_register(m_L, "c_setPanningObject", c_setPanningObject);
+   lua_register(m_L, "c_setObjectProperty", c_setObjectProperty);
 
    
 }

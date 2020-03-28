@@ -145,7 +145,7 @@ void BreakableObject::damageCollision(b2Contact* contact, float bulletEqvDamage)
    bool shattered = false;
 
    // Take damage
-   m_gameStatus->deltaDamage(25.0f * bulletEqvDamage);
+   m_gameStatus->deltaDamage(bulletEqvDamage);
 
    if (m_gameStatus->getDamage() >= m_breakAtDamage)
    {

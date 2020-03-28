@@ -32,12 +32,13 @@ ExplosiveObject::ExplosiveObject(
    m_blastPower(5000.0f),
    m_damageBulletEqv(1.0f),
    m_impactExplosion(false),
-   m_impactThreshold(0.0f),
    m_state(ExplosionState::idle),
    m_explosionAnimation(NULL)
 {
-   
-   //readExplosiveObjectNode(root.child("behaviour").child("explosiveObjectProperties"));
+
+   // Register all properties:
+   m_properties.push_back(ObjectProperty(this, NULL, 0, 1000.0f)); // impact threshold, default to 1000
+
    readExplosiveObjectNode(propNode);
 
    initCompoundObjectParts(
@@ -66,6 +67,7 @@ ExplosiveObject::ExplosiveObject(
 
       setAllBodiesToBounding(spaceActor);
    }
+
 }
 
 void ExplosiveObject::readExplosiveObjectNode(const pugi::xml_node& node)
@@ -75,7 +77,8 @@ void ExplosiveObject::readExplosiveObjectNode(const pugi::xml_node& node)
    m_blastPower = node.attribute("blastPower").as_float(0.0f);
    m_damageBulletEqv = node.attribute("damageBulletEqv").as_float(1.0f);
    m_impactExplosion = node.attribute("impactExplosion").as_bool(false);
-   m_impactThreshold = node.attribute("impactThreshold").as_float(1000.0f);
+   float impactThreshold = node.attribute("impactThreshold").as_float(1000.0f);
+   m_properties[implThreshold].setProperty(impactThreshold);
 }
 
 
@@ -226,7 +229,7 @@ float ExplosiveObject::getDamageBulletEqv(void)
    return m_damageBulletEqv * decay;
 }
 
-void ExplosiveObject::hitImpulse(const b2ContactImpulse* impulse)
+void ExplosiveObject::hitImpulse(const b2ContactImpulse* impulse, bool leapfrog)
 {
    float normalImpulses = 0.0f;
 
@@ -235,7 +238,7 @@ void ExplosiveObject::hitImpulse(const b2ContactImpulse* impulse)
       normalImpulses += impulse->normalImpulses[i];
    }
 
-   if (normalImpulses > m_impactThreshold)
+   if (normalImpulses > m_properties[implThreshold].getProperty())
    {
       triggerExplosion();
    }
