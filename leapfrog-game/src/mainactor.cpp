@@ -633,9 +633,7 @@ void MainActor::createButtonOverlay(void)
    m_reloadSprite->setAnchor(0.0f, 0.0f);
    m_reloadSprite->setTouchEnabled(false);
    m_reloadSprite->attachTo(this);
-
-
-   
+  
 }
 
 
