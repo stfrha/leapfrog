@@ -12,8 +12,8 @@ class StatusBar : public oxygine::Actor
 {
 private:
    SceneActor* m_sceneActor;
-   oxygine::Actor* m_eventActor;
-   oxygine::ProgressBar* m_progressBar;
+   oxygine::spActor m_eventActor;
+   oxygine::spProgressBar m_progressBar;
    std::string m_headline;
    float m_maxProgess;
    GameStatusTypeEnum m_statusType;
@@ -25,7 +25,7 @@ public:
       SceneActor* sceneActor,
       const oxygine::Vector2 & pos,
       const oxygine::Vector2 & size,
-      const float fontSize,
+      const int fontSize,
       const float maxProgress,
       const float initialProgress,
       std::string headline,
@@ -38,3 +38,38 @@ public:
 protected:
 	void doUpdate(const oxygine::UpdateState& us);
 };
+
+
+DECLARE_SMART(StatusLiteral, spStatusLiteral);
+
+class StatusLiteral : public oxygine::Actor
+{
+private:
+   SceneActor * m_sceneActor;
+   oxygine::spActor m_eventActor;
+   oxygine::spTextField m_tf;
+   std::string m_headline;
+   GameStatusTypeEnum m_statusType;
+
+public:
+   StatusLiteral(
+      oxygine::Resources& gameResources,
+      oxygine::Actor* eventActor,
+      SceneActor* sceneActor,
+      const oxygine::Vector2 & pos,
+      const oxygine::Vector2 & size,
+      const int fontSize,
+      const int initialLiteral,
+      std::string headline,
+      GameStatusTypeEnum statusType);
+
+   void disconnectListner(void);
+   void statusChangedListner(oxygine::Event *ev);
+   void dummyListner(oxygine::Event *ev);
+   void setLiteral(int value);
+
+protected:
+   void doUpdate(const oxygine::UpdateState& us);
+};
+
+

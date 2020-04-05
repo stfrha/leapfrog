@@ -71,41 +71,52 @@ void MessageDisplay::initialiseMessageDisplay(
    m_messageActor->setPosition(0.0f, 0.0f);
    m_messageActor->attachTo(mdFrame);
 
-   spColorRectSprite theBar = new ColorRectSprite();
-   theBar->setAnchor(0.0f, 0.0f);
-   theBar->setSize(m_messageDisplayWidth, m_messageDisplayHeight);
-   theBar->setPosition(0.0f, 0.0f);
-   theBar->setColor(Color::Fuchsia);
-   theBar->setAlpha(32);
-   theBar->attachTo(mdFrame);
+   spBox9Sprite hej = new Box9Sprite();
+   hej->setResAnim(m_gameResources->getResAnim("display_thin"));
+   hej->setVerticalMode(Box9Sprite::STRETCHING);
+   hej->setHorizontalMode(Box9Sprite::STRETCHING);
+   hej->setSize(m_messageDisplayWidth, m_messageDisplayHeight);
+   hej->setAnchor(0.0f, 0.0f);
+   hej->setPosition(0.0f, 0.0f);
+   hej->setGuides(8, 120, 8, 120);
+   hej->setTouchEnabled(false);
+   hej->attachTo(mdFrame);
 
-   spColorRectSprite top = new ColorRectSprite();
-   top->setColor(Color::Fuchsia);
-   top->setAnchor(0.0f, 0.0f);
-   top->setSize(m_messageDisplayWidth, thickness);
-   top->setPosition(0.0f, 0.0f);
-   top->attachTo(mdFrame);
+   //spColorRectSprite theBar = new ColorRectSprite();
+   //theBar->setAnchor(0.0f, 0.0f);
+   //theBar->setSize(m_messageDisplayWidth, m_messageDisplayHeight);
+   //theBar->setPosition(0.0f, 0.0f);
+   //theBar->setColor(Color::Fuchsia);
+   //theBar->setAlpha(32);
+   //theBar->attachTo(mdFrame);
 
-   spColorRectSprite bottom = new ColorRectSprite();
-   bottom->setColor(Color::Fuchsia);
-   bottom->setAnchor(0.0f, 0.0f);
-   bottom->setSize(m_messageDisplayWidth, thickness);
-   bottom->setPosition(0.0f, m_messageDisplayHeight - thickness);
-   bottom->attachTo(mdFrame);
+   //spColorRectSprite top = new ColorRectSprite();
+   //top->setColor(Color::Fuchsia);
+   //top->setAnchor(0.0f, 0.0f);
+   //top->setSize(m_messageDisplayWidth, thickness);
+   //top->setPosition(0.0f, 0.0f);
+   //top->attachTo(mdFrame);
 
-   spColorRectSprite left = new ColorRectSprite();
-   left->setColor(Color::Fuchsia);
-   left->setAnchor(0.0f, 0.0f);
-   left->setSize(thickness, m_messageDisplayHeight);
-   left->setPosition(0.0f, 0.0f);
-   left->attachTo(mdFrame);
+   //spColorRectSprite bottom = new ColorRectSprite();
+   //bottom->setColor(Color::Fuchsia);
+   //bottom->setAnchor(0.0f, 0.0f);
+   //bottom->setSize(m_messageDisplayWidth, thickness);
+   //bottom->setPosition(0.0f, m_messageDisplayHeight - thickness);
+   //bottom->attachTo(mdFrame);
 
-   spColorRectSprite right = new ColorRectSprite();
-   right->setColor(Color::Fuchsia);
-   right->setAnchor(0.0f, 0.0f);
-   right->setSize(thickness, m_messageDisplayHeight);
-   right->setPosition(m_messageDisplayWidth - thickness, 0.0f);
-   right->attachTo(mdFrame);
+   //spColorRectSprite left = new ColorRectSprite();
+   //left->setColor(Color::Fuchsia);
+   //left->setAnchor(0.0f, 0.0f);
+   //left->setSize(thickness, m_messageDisplayHeight);
+   //left->setPosition(0.0f, 0.0f);
+   //left->attachTo(mdFrame);
+
+   //spColorRectSprite right = new ColorRectSprite();
+   //right->setColor(Color::Fuchsia);
+   //right->setAnchor(0.0f, 0.0f);
+   //right->setSize(thickness, m_messageDisplayHeight);
+   //right->setPosition(m_messageDisplayWidth - thickness, 0.0f);
+   //right->attachTo(mdFrame);
 
 }
 
@@ -193,6 +204,8 @@ void MessageDisplay::processFirstInQueue(void)
    msgTextField->setAnchor(0.0f, 0.0f);
    msgTextField->setPosition(8.0f, 8.0f);
    msgTextField->setText(m_messageQueue[0].m_message);
+   msgTextField->setColor(g_Layout.getPhosphorColor());
+
 
    const Rect& rect = msgTextField->getTextRect();
 

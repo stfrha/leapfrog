@@ -22,6 +22,10 @@ private:
    float m_boundaryWidth;
    float m_buttonWidth;
    float m_defaultFontSize;
+   float m_ddpi;
+   float m_hdpi;
+   float m_vdpi;
+
 
 public:
 	Layout();
@@ -39,6 +43,10 @@ public:
    oxygine::Vector2 getStageSize(void);
    oxygine::RectF getStageBounds(void);
    float getBoundaryWidth();
+   oxygine::Color getPhosphorColor(void);
+   float getHorizontalDpi(void);
+   float getVerticalDpi(void);
+   float getMaxDpi(void);
 };
 
 extern Layout g_Layout;

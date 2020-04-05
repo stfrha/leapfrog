@@ -220,7 +220,7 @@ void MainActor::startScene(void)
       m_gameResources,
       this,
       m_sceneObject,
-      Vector2(g_Layout.getXFromRight(1), g_Layout.getYFromTop(2)),
+      Vector2(g_Layout.getXFromRight(1), g_Layout.getYFromTop(1)),
       Vector2(g_Layout.getButtonWidth() * 2.0f, g_Layout.getButtonWidth() / 2.0f),
       g_Layout.getDefaultFontSize(),
       100.0f,
@@ -232,7 +232,7 @@ void MainActor::startScene(void)
       m_gameResources,
       this,
       m_sceneObject,
-      Vector2(g_Layout.getXFromRight(1), g_Layout.getYFromTop(2) + g_Layout.getButtonWidth() / 2.0f + 2.0f),
+      Vector2(g_Layout.getXFromRight(1), g_Layout.getYFromTop(1) + g_Layout.getButtonWidth() / 2.0f + 2.0f),
       Vector2(g_Layout.getButtonWidth() * 2.0f, g_Layout.getButtonWidth() / 2.0f),
       g_Layout.getDefaultFontSize(),
       100.0f,
@@ -244,7 +244,7 @@ void MainActor::startScene(void)
       m_gameResources,
       this,
       m_sceneObject,
-      Vector2(g_Layout.getXFromRight(1), g_Layout.getYFromTop(2) + g_Layout.getButtonWidth() / 2.0f * 2.0f + 2.0f),
+      Vector2(g_Layout.getXFromRight(1), g_Layout.getYFromTop(1) + g_Layout.getButtonWidth() / 2.0f * 2.0f + 2.0f),
       Vector2(g_Layout.getButtonWidth() * 2.0f, g_Layout.getButtonWidth() / 2.0f),
       g_Layout.getDefaultFontSize(),
       100.0f,
@@ -256,13 +256,24 @@ void MainActor::startScene(void)
       m_gameResources,
       this,
       m_sceneObject,
-      Vector2(g_Layout.getXFromRight(1), g_Layout.getYFromTop(2) + g_Layout.getButtonWidth() / 2.0f * 3.0f + 2.0f),
+      Vector2(g_Layout.getXFromRight(1), g_Layout.getYFromTop(1) + g_Layout.getButtonWidth() / 2.0f * 3.0f + 2.0f),
       Vector2(g_Layout.getButtonWidth() * 2.0f, g_Layout.getButtonWidth() / 2.0f),
       g_Layout.getDefaultFontSize(),
       100.0f,
       (float)m_gameStatus->getDamage(),
       "Damage:",
       GameStatusTypeEnum::damage);
+
+   spStatusLiteral creditBar = new StatusLiteral(
+      m_gameResources,
+      this,
+      m_sceneObject,
+      Vector2(g_Layout.getXFromRight(1), g_Layout.getYFromTop(1) + g_Layout.getButtonWidth() / 2.0f * 4.0f + 2.0f),
+      Vector2(g_Layout.getButtonWidth() * 2.0f, g_Layout.getButtonWidth() / 2.0f),
+      g_Layout.getDefaultFontSize(),
+      (float)m_gameStatus->getCredits(),
+      "Credits:",
+      GameStatusTypeEnum::credits);
 
    addEventListener(StatusResourceDepletedEvent::EVENT, CLOSURE(this, &MainActor::resourceDepletedHandler));
 
@@ -285,6 +296,8 @@ void MainActor::startScene(void)
    createButtonOverlay();
 
    setManualPanButtonState();
+
+
    //m_debugDraw = new Box2DDraw;
    //m_debugDraw->SetFlags(b2Draw::e_shapeBit | b2Draw::e_jointBit | b2Draw::e_pairBit | b2Draw::e_centerOfMassBit);
    //m_debugDraw->attachTo(m_sceneObject);
@@ -446,12 +459,16 @@ void MainActor::setManualPanButtonState(void)
       m_manPanEnableSprite->setAlpha(255);
       m_manPanSprite->setVisible(true);
       m_reloadSprite->setVisible(true);
+      m_zoomInSprite->setVisible(true);
+      m_zoomOutSprite->setVisible(true);
    }
    else
    {
       m_manPanEnableSprite->setAlpha(128);
       m_manPanSprite->setVisible(false);
       m_reloadSprite->setVisible(false);
+      m_zoomInSprite->setVisible(false);
+      m_zoomOutSprite->setVisible(false);
    }
 }
 
@@ -554,11 +571,12 @@ void MainActor::createButtonOverlay(void)
    m_turnRightButtonRect = Rect(g_Layout.getButtonWidth(), g_Layout.getYFromBottom(0), g_Layout.getButtonWidth(), g_Layout.getButtonWidth());
    m_boosterButtonRect = Rect(g_Layout.getXFromRight(0), g_Layout.getYFromBottom(1), g_Layout.getButtonWidth(), g_Layout.getButtonWidth());
    m_fireButtonRect = Rect(g_Layout.getXFromRight(1), g_Layout.getYFromBottom(0), g_Layout.getButtonWidth(), g_Layout.getButtonWidth());
+
+   m_manPanEnableButtonRect = Rect(g_Layout.getXFromRight(0), 0.0f, g_Layout.getButtonWidth(), g_Layout.getButtonWidth());
    m_zoomInButtonRect = Rect(g_Layout.getXFromRight(1) - g_Layout.getButtonWidth() / 2.0f, 0.0f, g_Layout.getButtonWidth(), g_Layout.getButtonWidth());
-   m_zoomOutButtonRect = Rect(g_Layout.getXFromRight(0), 0.0f, g_Layout.getButtonWidth(), g_Layout.getButtonWidth());
-   m_panButtonRect = Rect(g_Layout.getViewPortBounds().x / 2.0f - g_Layout.getButtonWidth() / 2.0f, g_Layout.getViewPortBounds().y / 2.0f  - g_Layout.getButtonWidth() / 2.0f, g_Layout.getButtonWidth(), g_Layout.getButtonWidth());
-   m_manPanEnableButtonRect = Rect(g_Layout.getXFromRight(3), 0.0f, g_Layout.getButtonWidth(), g_Layout.getButtonWidth());
+   m_zoomOutButtonRect = Rect(g_Layout.getXFromRight(3), 0.0f, g_Layout.getButtonWidth(), g_Layout.getButtonWidth());
    m_reloadButtonRect = Rect(g_Layout.getXFromRight(4) - g_Layout.getButtonWidth() / 2.0f, 0.0f, g_Layout.getButtonWidth(), g_Layout.getButtonWidth());
+   m_panButtonRect = Rect(g_Layout.getViewPortBounds().x / 2.0f - g_Layout.getButtonWidth() / 2.0f, g_Layout.getViewPortBounds().y / 2.0f - g_Layout.getButtonWidth() / 2.0f, g_Layout.getButtonWidth(), g_Layout.getButtonWidth());
 
 
    // Define sprites
@@ -594,21 +612,21 @@ void MainActor::createButtonOverlay(void)
    thursterButton->setTouchEnabled(false);
    thursterButton->attachTo(this);
 
-   spSprite zoomOutButton = new Sprite();
-   zoomOutButton->setResAnim(m_gameResources.getResAnim("zoom_out_button"));
-   zoomOutButton->setSize(g_Layout.getButtonWidth(), g_Layout.getButtonWidth());
-   zoomOutButton->setPosition(m_zoomOutButtonRect.getLeftTop());
-   zoomOutButton->setAnchor(0.0f, 0.0f);
-   zoomOutButton->setTouchEnabled(false);
-   zoomOutButton->attachTo(this);
+   m_zoomOutSprite = new Sprite();
+   m_zoomOutSprite->setResAnim(m_gameResources.getResAnim("zoom_out_button"));
+   m_zoomOutSprite->setSize(g_Layout.getButtonWidth(), g_Layout.getButtonWidth());
+   m_zoomOutSprite->setPosition(m_zoomOutButtonRect.getLeftTop());
+   m_zoomOutSprite->setAnchor(0.0f, 0.0f);
+   m_zoomOutSprite->setTouchEnabled(false);
+   m_zoomOutSprite->attachTo(this);
 
-   spSprite zoomInButton = new Sprite();
-   zoomInButton->setResAnim(m_gameResources.getResAnim("zoom_in_button"));
-   zoomInButton->setSize(g_Layout.getButtonWidth(), g_Layout.getButtonWidth());
-   zoomInButton->setPosition(m_zoomInButtonRect.getLeftTop());
-   zoomInButton->setAnchor(0.0f, 0.0f);
-   zoomInButton->setTouchEnabled(false);
-   zoomInButton->attachTo(this);
+   m_zoomInSprite = new Sprite();
+   m_zoomInSprite->setResAnim(m_gameResources.getResAnim("zoom_in_button"));
+   m_zoomInSprite->setSize(g_Layout.getButtonWidth(), g_Layout.getButtonWidth());
+   m_zoomInSprite->setPosition(m_zoomInButtonRect.getLeftTop());
+   m_zoomInSprite->setAnchor(0.0f, 0.0f);
+   m_zoomInSprite->setTouchEnabled(false);
+   m_zoomInSprite->attachTo(this);
 
    m_manPanEnableSprite = new Sprite();
    m_manPanEnableSprite->setResAnim(m_gameResources.getResAnim("pan_button"));
@@ -634,6 +652,28 @@ void MainActor::createButtonOverlay(void)
    m_reloadSprite->setTouchEnabled(false);
    m_reloadSprite->attachTo(this);
   
+   //spBox9Sprite hej = new Box9Sprite();
+   //hej->setResAnim(m_gameResources.getResAnim("box9a"));
+   //hej->setVerticalMode(Box9Sprite::TILING);
+   //hej->setHorizontalMode(Box9Sprite::TILING);
+   //hej->setSize(512.0f, 256.0f);
+   //hej->setPosition(700.0f, 250.0f);
+   //hej->setAnchor(0.0f, 0.0f);
+   //hej->setGuides(40, 160, 40, 160);
+   //hej->setTouchEnabled(false);
+   //hej->attachTo(this);
+
+   //spBox9Sprite hej2 = new Box9Sprite();
+   //hej2->setResAnim(m_gameResources.getResAnim("box9a"));
+   //hej2->setVerticalMode(Box9Sprite::STRETCHING);
+   //hej2->setHorizontalMode(Box9Sprite::STRETCHING);
+   //hej2->setSize(512, 256.0f);
+   //hej2->setPosition(700.0f, 530.0f);
+   //hej2->setAnchor(0.0f, 0.0f);
+   //hej->setGuides(40, 160, 40, 160);
+   //hej2->setTouchEnabled(false);
+   //hej2->attachTo(this);
+
 }
 
 
@@ -668,13 +708,19 @@ void MainActor::sceneDownHandler(Event* event)
    }
    else if (m_zoomInButtonRect.pointIn(p))
    {
-      m_sceneObject->m_zoomInPressed = true;
-      m_zoomInTouchIndex = te->index;
+      if (m_manualPan.m_manPanEnable)
+      {
+         m_sceneObject->m_zoomInPressed = true;
+         m_zoomInTouchIndex = te->index;
+      }
    }
    else if (m_zoomOutButtonRect.pointIn(p))
    {
-      m_sceneObject->m_zoomOutPressed = true;
-      m_zoomOutTouchIndex = te->index;
+      if (m_manualPan.m_manPanEnable)
+      {
+         m_sceneObject->m_zoomOutPressed = true;
+         m_zoomOutTouchIndex = te->index;
+      }
    }
    else if (m_manPanEnableButtonRect.pointIn(p))
    {

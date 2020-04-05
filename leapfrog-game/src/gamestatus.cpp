@@ -13,7 +13,7 @@ GameStatus::GameStatus()
    m_fuel = 100.0f;
    m_shield = 100.0f;
    m_damage = 0.0f;
-   m_credits = 248;
+   m_credits = 20;
    m_statusEventOriginator = NULL;
 }
 

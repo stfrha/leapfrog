@@ -80,6 +80,9 @@ void LandingPad::doUpdate(const UpdateState &us)
       {
          m_stableTicks++;
 
+         logs::messageln("Tick: %d", m_stableTicks);
+
+
          if (m_stableTicks > 15)
          {
             m_state = LandingPadState::stableAir;
@@ -91,12 +94,18 @@ void LandingPad::doUpdate(const UpdateState &us)
       {
          m_stableTicks++;
 
+         logs::messageln("Tick: %d", m_stableTicks);
+
          if (m_stableTicks > 15)
          {
             m_state = LandingPadState::stableLand;
             LandingPadLeapfrogLandedEvent event;
             dispatchEvent(&event);
          }
+      }
+      else
+      {
+         m_stableTicks = 0;
       }
       break;
 
@@ -116,11 +125,17 @@ void LandingPad::doUpdate(const UpdateState &us)
          m_stableTicks = 0;
          m_state = LandingPadState::unstable;
 
-         if (m_latestLeapfrog->m_gameStatus->getFuel() < 100.0f)
+      }
+      else
+      {
+         if ((m_latestLeapfrog->m_gameStatus->getFuel() < 100.0f) && (m_latestLeapfrog->m_gameStatus->getCredits() > 0))
          {
             m_latestLeapfrog->m_gameStatus->deltaFuel(0.2f);
+            m_latestLeapfrog->m_gameStatus->deltaCredits(-1);
          }
       }
+
+
       break;
    }
 }

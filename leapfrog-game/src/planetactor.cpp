@@ -249,32 +249,42 @@ void PlanetActor::orbitEstablished(void)
    float barInsideFrameWidth = barWidth - barHeight * 0.008f;
    float barInsideFrameHeight = barHeight - barHeight * 0.008f;
 
-   spColorRectSprite burnFrame = new ColorRectSprite();
+   spBox9Sprite burnFrame = new Box9Sprite();
+   burnFrame->setVerticalMode(Box9Sprite::STRETCHING);
+   burnFrame->setHorizontalMode(Box9Sprite::STRETCHING);
    burnFrame->setAnchor(0.5f, 0.5f);
    burnFrame->setSize(barWidth, barHeight);
-   burnFrame->setColor(Color::Fuchsia);
+   burnFrame->setResAnim(m_gameResources->getResAnim("display_thin"));
    burnFrame->setPosition(barHorCenter, barVertCenter);
+   burnFrame->setGuides(8, 120, 8, 120);
    burnFrame->attachTo(m_parentObject);
 
-   spColorRectSprite burnHaze = new ColorRectSprite();
-   burnHaze->setAnchor(0.5f, 0.5f);
-   burnHaze->setSize(barInsideFrameWidth, barInsideFrameHeight);
-   burnHaze->setColor(Color::Purple);
-   burnHaze->setPosition(barHorCenter, barVertCenter);
-   burnHaze->attachTo(m_parentObject);
+   //spBox9Sprite burnHaze = new Box9Sprite();
+   //burnHaze->setVerticalMode(Box9Sprite::STRETCHING);
+   //burnHaze->setHorizontalMode(Box9Sprite::STRETCHING);
+   //burnHaze->setResAnim(m_gameResources->getResAnim("display_thin"));
+   //burnHaze->setGuides(8, 120, 8, 120);
+   //burnHaze->setAnchor(0.5f, 0.5f);
+   //burnHaze->setSize(barInsideFrameWidth, barInsideFrameHeight);
+   //burnHaze->setColor(Color::Purple);
+   //burnHaze->setPosition(barHorCenter, barVertCenter);
+   //burnHaze->setAlpha(64);
+   //burnHaze->attachTo(m_parentObject);
 
-   spColorRectSprite safeZoom = new ColorRectSprite();
+   spBox9Sprite safeZoom = new Box9Sprite();
+   safeZoom->setVerticalMode(Box9Sprite::STRETCHING);
+   safeZoom->setHorizontalMode(Box9Sprite::STRETCHING);
+   safeZoom->setResAnim(m_gameResources->getResAnim("display_thin"));
+   safeZoom->setGuides(8, 120, 8, 120);
    safeZoom->setAnchor(0.5f, 0.5f);
    safeZoom->setSize(barInsideFrameWidth, barSafeZoneHeight);
-   safeZoom->setColor(Color::Fuchsia);
    safeZoom->setPosition(barHorCenter, barCaretVertCenter);
-   safeZoom->setAlpha(96);
    safeZoom->attachTo(m_parentObject);
 
    m_burnIndicator = new ProgressBar();
    m_burnIndicator->setAnchor(0.5f, 0.5f);
+   m_burnIndicator->setResAnim(m_gameResources->getResAnim("progress_bar"));
    m_burnIndicator->setSize(barInsideFrameWidth, barInsideFrameHeight);
-   m_burnIndicator->setColor(Color::Fuchsia);
    m_burnIndicator->setDirection(ProgressBar::dir_90);
    m_burnIndicator->setPosition(barHorCenter, barVertCenter);
    m_burnIndicator->attachTo(m_parentObject);

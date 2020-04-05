@@ -19,22 +19,20 @@ void Layout::initLayout(void)
 
    // Find the button width in inces and make sure it is not smaller 
    // than 1 cm = 0.4 inch
-   float ddpi, hdpi, vdpi;
-
-   if (SDL_GetDisplayDPI(0, &ddpi, &hdpi, &vdpi) == 0)
+   if (SDL_GetDisplayDPI(0, &m_ddpi, &m_hdpi, &m_vdpi) == 0)
    {
-      float inchButtonWidth = m_buttonWidth / hdpi;
+      float inchButtonWidth = m_buttonWidth / m_hdpi;
 
       if (inchButtonWidth < 0.4f)
       {
-         m_buttonWidth = hdpi * 0.4f;
+         m_buttonWidth = m_hdpi * 0.4f;
       }
 
-      float inchButtonHeight = m_buttonWidth / vdpi;
+      float inchButtonHeight = m_buttonWidth / m_vdpi;
 
       if (inchButtonHeight < 0.4f)
       {
-         m_buttonWidth = vdpi * 0.4f;
+         m_buttonWidth = m_vdpi * 0.4f;
       }
    }
 
@@ -105,4 +103,24 @@ RectF Layout::getStageBounds(void)
 float Layout::getBoundaryWidth()
 {
    return m_boundaryWidth;
+}
+
+Color Layout::getPhosphorColor(void)
+{
+   return oxygine::Color(0x55d400ff);
+}
+
+float Layout::getHorizontalDpi(void)
+{
+   return m_hdpi;
+}
+
+float Layout::getVerticalDpi(void)
+{
+   return m_vdpi;
+}
+
+float Layout::getMaxDpi(void)
+{
+   return fmax(m_hdpi, m_vdpi);
 }

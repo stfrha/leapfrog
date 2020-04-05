@@ -1,9 +1,10 @@
 #include <algorithm>
 
-#include "steerableobject.h"
+#include "freespaceactor.h"
 #include "deepspacesceneevents.h"
 
-#include "freespaceactor.h"
+#include "steerableobject.h"
+
 #include "bodyuserdata.h"
 
 
@@ -14,10 +15,11 @@ using namespace pugi;
 FreeSpaceActor::FreeSpaceActor(
    Resources& gameResources,
    b2World* world,
+   float zoom,
    xml_node& root,
    const string& initialState,
    int groupIndex) :
-   SceneActor(gameResources, world, 0.4f, initialState),
+   SceneActor(gameResources, world, zoom, initialState),
    m_inOrbitField(false),
    m_state(insertBurn),
    m_stateChangeTime(0)

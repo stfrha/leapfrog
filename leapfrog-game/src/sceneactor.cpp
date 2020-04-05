@@ -37,16 +37,19 @@ SceneActor* SceneActor::defineScene(
 
    SceneActor* baseScene = NULL;
 
+   // Calc zoom scale: Formula empirically found to be nice
+   float zoomScale = g_Layout.getViewPortBounds().x / 3840.0f;
+
    if (sceneTypeStr == "ground")
    {
-      LandingActor* landingScene = new LandingActor(gameResources, world, root, initialState, groupIndex);
+      LandingActor* landingScene = new LandingActor(gameResources, world, zoomScale, root, initialState, groupIndex);
 
       baseScene = static_cast<SceneActor*>(landingScene);
 
    }
    else if (sceneTypeStr == "space")
    {
-      FreeSpaceActor* spaceScene = new FreeSpaceActor(gameResources, world, root, initialState, groupIndex);
+      FreeSpaceActor* spaceScene = new FreeSpaceActor(gameResources, world, zoomScale, root, initialState, groupIndex);
 
       baseScene = static_cast<SceneActor*>(spaceScene);
    }
@@ -395,11 +398,14 @@ void SceneActor::doUpdate(const UpdateState& us)
 	if (data[SDL_SCANCODE_KP_PLUS] || m_zoomInPressed)
 	{
 		m_zoomScale *= 1.1f;
+      logs::messageln("Zoom: %f, view width: %f, hor dpi: %f, view height: %f, vert dpi: %f", m_zoomScale, g_Layout.getViewPortBounds().x, g_Layout.getHorizontalDpi(), g_Layout.getViewPortBounds().y, g_Layout.getVerticalDpi());
+
 	}
 	else if (data[SDL_SCANCODE_KP_MINUS] || m_zoomOutPressed)
 	{
 		m_zoomScale *= 0.9f;
-	}
+      logs::messageln("Zoom: %f, view width: %f, hor dpi: %f, view height: %f, vert dpi: %f", m_zoomScale, g_Layout.getViewPortBounds().x, g_Layout.getHorizontalDpi(), g_Layout.getViewPortBounds().y, g_Layout.getVerticalDpi());
+   }
 
 
    // We dont want to be able to zoom out more than so that the whole

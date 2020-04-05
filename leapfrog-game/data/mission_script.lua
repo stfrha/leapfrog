@@ -12,6 +12,9 @@ currentState = "state1"
 -- It does all setup for that scene in this mission state
 function setupMissionStateScene()
 
+   -- Clear triggers and event handler
+   c_clearAllTriggersAndEvents()
+
    if currentState == "state1" then
       if currentScene == "landing_scene.xml" then
 
@@ -26,6 +29,7 @@ function setupMissionStateScene()
       if currentScene == "landing_scene.xml" then
          c_addMissionStateSceneObjects("landing_scene_state2.xml")
          c_registerEventHandler("landing_pad1", "LpTO", 0, 0)
+         c_registerEventHandler("bomb1", "ExEX", 0, 0)
          -- Play dialog
          c_addDialogMessage("Try not to explode the bomd, just yet.", "DEBUG", true, 0, 0)
          -- Set bomb to be very in-sensitivity
@@ -36,6 +40,7 @@ function setupMissionStateScene()
    elseif currentState == "state3" then
       if currentScene == "landing_scene.xml" then
          c_registerEventHandler("coDestroyable", "BrBR", 0, 0)
+         c_registerEventHandler("bomb1", "ExEX", 0, 0)
       end
 
    elseif currentState == "state4" then
@@ -50,58 +55,63 @@ end
 function missionStateSceneEventHandler(eventId, actorName, parameter1)
    if currentState == "state1" then
       if currentScene == "landing_scene.xml" then
-         if actorName == "landing_pad1" then
-            if eventId == "LpLL" then
-               
-               -- Play dialog
-               c_addDialogMessage("Welcome to the landing pad. Let me fill you up. A new obstacle has arrived in the grotto. Check it out.", "DEBUG", true, 0, 0)
+         if actorName == "landing_pad1" and eventId == "LpLL" then
+            
+            -- Play dialog
+            c_addDialogMessage("Welcome to the landing pad. Let me fill you up. A new obstacle has arrived in the grotto. Check it out.", "DEBUG", true, 0, 0)
 
-               currentState = "state2"
-               
-               -- Clear triggers and event handler
-               c_clearAllTriggersAndEvents()
-               
-               setupMissionStateScene()
-            end 
+            currentState = "state2"
+            
+            setupMissionStateScene()
          end
       end
 
    elseif currentState == "state2" then
       if currentScene == "landing_scene.xml" then
-         if actorName == "landing_pad1" then
-            if eventId == "LpTO" then
+         if actorName == "landing_pad1" and eventId == "LpTO" then
                
-               -- Play dialog
-               c_addDialogMessage("That's right. Git yourself over there.", "DEBUG", true, 0, 0)
+            -- Play dialog
+            c_addDialogMessage("That's right. Git yourself over there.", "DEBUG", true, 0, 0)
 
-               currentState = "state3"
-               
-               -- Clear triggers and event handler
-               c_clearAllTriggersAndEvents()
-               
-               setupMissionStateScene()
-            end 
+            currentState = "state3"
+            
+            setupMissionStateScene()
          end
+         
+         if actorName == "bomb1" and eventId == "ExEX" then
+               
+            -- Play dialog
+            c_addDialogMessage("You exploded the bomb too early. Mission FAIL!!!", "DEBUG", true, 0, 0)
+
+            currentState = "state5"
+            
+            setupMissionStateScene()
+         end
+
       end
 
    elseif currentState == "state3" then
       if currentScene == "landing_scene.xml" then
-         if actorName == "coDestroyable" then
-            if eventId == "BrBR" then
+         if actorName == "coDestroyable" and eventId == "BrBR" then
+            -- Play dialog
+            c_addDialogMessage("Good job, the spring is free. Now destroy the bomb.", "DEBUG", true, 0, 0)
+            
+            -- Set bomb to more sensitivity
+            c_setObjectProperty("bomb1", 0, 2500)
+            
+            currentState = "state4"
+            
+            setupMissionStateScene()
+         end
+         
+         if actorName == "bomb1" and eventId == "ExEX" then
                
-               -- Play dialog
-               c_addDialogMessage("Good job, the spring is free. Now destroy the bomb.", "DEBUG", true, 0, 0)
-               
-               -- Set bomb to more sensitivity
-               c_setObjectProperty("bomb1", 0, 2500)
-               
-               currentState = "state4"
-               
-               -- Clear triggers and event handler
-               c_clearAllTriggersAndEvents()
-               
-               setupMissionStateScene()
-            end 
+            -- Play dialog
+            c_addDialogMessage("You exploded the bomb too early. Mission FAIL!!!", "DEBUG", true, 0, 0)
+
+            currentState = "state5"
+            
+            setupMissionStateScene()
          end
       end
 
@@ -114,9 +124,6 @@ function missionStateSceneEventHandler(eventId, actorName, parameter1)
                c_addDialogMessage("Mission Complete!!!", "DEBUG", true, 0, 0)
 
                currentState = "state5"
-               
-               -- Clear triggers and event handler
-               c_clearAllTriggersAndEvents()
                
                setupMissionStateScene()
             end 

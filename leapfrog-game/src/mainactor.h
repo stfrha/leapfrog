@@ -38,6 +38,8 @@ private:
 
    SceneActor* m_sceneObject;
 
+   spSprite m_zoomInSprite;
+   spSprite m_zoomOutSprite;
    spSprite m_manPanEnableSprite;
    spSprite m_manPanSprite;
    spSprite m_reloadSprite;
