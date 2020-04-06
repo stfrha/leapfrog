@@ -98,7 +98,11 @@ public:
    void removeMeFromMap(oxygine::spActor removeMe);
    void removeMeFromMap(int itemId);
 
+   // Fast version, caller must have remembered the item idenitfier.
    void setState(int itemId, MapItem::MapItemStateEnum state);
+
+   // Slow version, the item is looked up
+   void setState(oxygine::spActor actor, MapItem::MapItemStateEnum state);
 
 protected:
 	void doUpdate(const oxygine::UpdateState& us);

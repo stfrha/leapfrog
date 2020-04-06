@@ -25,6 +25,9 @@
     <Filter Include="LUA">
       <UniqueIdentifier>{1d4edfda-005b-40cf-88ae-c1348d3ddb9d}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Events">
+      <UniqueIdentifier>{de6d241b-2896-4cd5-9b65-80c0053f03ae}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\src\main.cpp">
@@ -500,29 +503,14 @@
     <ClInclude Include="..\src\launchsite.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\leapfrogevents.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\src\landercontactlistener.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\src\landingpad.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\landingpadevents.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\launchsiteevents.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\src\flamesmokeparticle.h">
       <Filter>Particles</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\landingactorevents.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\deepspacesceneevents.h">
-      <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\src\orbitwindow.h">
       <Filter>Header Files</Filter>
@@ -531,12 +519,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\src\orbitspacescene.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\orbitspacesceneevents.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\orbitsceneevents.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\src\objectfactory.h">
@@ -549,9 +531,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\src\gamestatus.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\gamestatusevents.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\src\steeringmanager.h">
@@ -746,20 +725,50 @@
     <ClInclude Include="..\src\pickupobject.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\compoundobjectevents.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\sceneactorevents.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\src\parallaxbackground.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\explosiveobjectevents.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\src\breakableobjectevents.h">
-      <Filter>Header Files</Filter>
+      <Filter>Events</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\compoundobjectevents.h">
+      <Filter>Events</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\deepspacesceneevents.h">
+      <Filter>Events</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\explosiveobjectevents.h">
+      <Filter>Events</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\gamestatusevents.h">
+      <Filter>Events</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\landingactorevents.h">
+      <Filter>Events</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\landingpadevents.h">
+      <Filter>Events</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\launchsiteevents.h">
+      <Filter>Events</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\leapfrogevents.h">
+      <Filter>Events</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\orbitsceneevents.h">
+      <Filter>Events</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\orbitspacesceneevents.h">
+      <Filter>Events</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\pickupobjectevents.h">
+      <Filter>Events</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\sceneactorevents.h">
+      <Filter>Events</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\objectpropertyevents.h">
+      <Filter>Events</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

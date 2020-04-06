@@ -24,7 +24,7 @@ SteerableObject::SteerableObject(
    m_gameResource(&gameResources),
    m_world(world),
    m_sceneActor(sceneActor),
-   m_state(fix),
+//   m_state(fix),
    m_bodyToBoosterAngle(0.0f),
    m_maxBoosterForce(0.0f),
    m_maxSpeed(0.0f),
@@ -32,7 +32,10 @@ SteerableObject::SteerableObject(
    m_linearDamping(1.0f),
    m_boosterScale(0.0f),
    m_slowTurningAfterHit(false),
-   m_aimState(noAim)
+   m_aimState(noAim),
+   m_shield(NULL),
+   m_gun(NULL),
+   m_boosterFlame(NULL)
 {
    initCompoundObjectParts(gameResources, sceneActor, sceneActor, parentObject, world, pos, root, string(""), groupIndex);
 
@@ -54,12 +57,22 @@ SteerableObject::SteerableObject(
 
    m_gun = static_cast<Gun*>(getSystem("gun"));
 
+   m_shield = static_cast<Shield*>(getSystem("shield"));
+
    attachTo(m_sceneActor);
 
    m_steeringManager = new SteeringManager(m_body);
    m_steeringManager->m_wanderAngle = m_bodyToBoosterAngle;
 
    m_body->SetLinearDamping(m_linearDamping);
+
+   // Register all properties:
+   m_properties.push_back(ObjectProperty(this, NULL, 0, 4.0f)); // Mode, default to wander-hunt
+   m_properties.push_back(ObjectProperty(this, NULL, 1, 0.0f, true)); // xPos
+   m_properties.push_back(ObjectProperty(this, NULL, 2, 0.0f, true)); // yPos
+   m_properties.push_back(ObjectProperty(this, NULL, 3, 0.0f, true)); // Seek xPos
+   m_properties.push_back(ObjectProperty(this, NULL, 4, 0.0f, true)); // Seek yPos
+
 }
 
 void SteerableObject::readSteerableObjectNode(pugi::xml_node node)
@@ -68,12 +81,12 @@ void SteerableObject::readSteerableObjectNode(pugi::xml_node node)
    
    string st = node.attribute("steeringState").as_string();
 
-   if (st == "wander") m_state = wander;
-   else if (st == "seek") m_state = seek;
-   else if (st == "pursuit") m_state = pursuit;
-   else if (st == "flee") m_state = flee;
-   else if (st == "wanderHunt") m_state = wanderHunt;
-   else m_state = fix;
+   if (st == "wander") m_properties[SteerableObjectPropertyEnum::state].setProperty(wander);
+   else if (st == "seek") m_properties[SteerableObjectPropertyEnum::state].setProperty(seek);
+   else if (st == "pursuit") m_properties[SteerableObjectPropertyEnum::state].setProperty(pursuit);
+   else if (st == "flee") m_properties[SteerableObjectPropertyEnum::state].setProperty(flee);
+   else if (st == "wanderHunt") m_properties[SteerableObjectPropertyEnum::state].setProperty(wanderHunt);
+   else m_properties[SteerableObjectPropertyEnum::state].setProperty(fix);
 
    m_bodyToBoosterAngle = node.attribute("bodyToBoosterAngle").as_float(0.0f) * MATH_PI / 180.0f;
    m_seekPoint.x = node.attribute("seekTargetX").as_float(0.0f);
@@ -98,9 +111,14 @@ void SteerableObject::connectToForeignObjects(void)
 
 void SteerableObject::doUpdate(const oxygine::UpdateState& us)
 {
-   b2Vec2 steeringVelChange(0.0f, 0.0f);
+   b2Vec2 pos = m_body->GetPosition();
+   m_properties[SteerableObjectPropertyEnum::xPos].setProperty(pos.x);
+   m_properties[SteerableObjectPropertyEnum::yPos].setProperty(pos.y);
 
-   switch (m_state)
+
+   b2Vec2 steeringVelChange(0.0f, 0.0f);
+   int state = (int)m_properties[SteerableObjectPropertyEnum::state].getProperty();
+   switch (state)
    {
    case fix:
       break;
@@ -549,3 +567,23 @@ void SteerableObject::registerToMap(void)
       MapItem::MapItemStateEnum::hollow);
 }
 
+void SteerableObject::initGameStatus(Actor* statusEventOriginator)
+{
+   m_gameStatus = new GameStatus();
+
+   ObjectProperty* ammo = new ObjectProperty(this, NULL, 5, 0.0f);
+   ObjectProperty* shield = new ObjectProperty(this, NULL, 6, 0.0f);
+   ObjectProperty* fuel = new ObjectProperty(this, NULL, 7, 0.0f);
+   ObjectProperty* credits = new ObjectProperty(this, NULL, 8, 0.0f);
+   ObjectProperty* damage = new ObjectProperty(this, NULL, 9, 0.0f);
+
+   m_gameStatus->initGameStatus(statusEventOriginator, ammo, shield, fuel, credits, damage);
+
+   m_properties.push_back(*ammo);
+   m_properties.push_back(*shield);
+   m_properties.push_back(*fuel);
+   m_properties.push_back(*credits);
+   m_properties.push_back(*damage);
+
+   m_gameStatus->registerShieldObject(m_shield.get());
+}

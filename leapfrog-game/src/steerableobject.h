@@ -9,6 +9,7 @@
 #include "steeringmanager.h"
 #include "flameemitter.h"
 #include "gun.h"
+#include "shield.h"
 
 class SceneActor;
 class AsteroidField;
@@ -18,6 +19,21 @@ DECLARE_SMART(SteerableObject, spSteerableObject);
 class SteerableObject : public CompoundObject
 {
 public:
+
+   enum SteerableObjectPropertyEnum
+   {
+      state,
+      xPos,
+      yPos,
+      seekXPos,
+      seekYPos,
+      ammo,
+      shield,
+      fuel,
+      credits,
+      damage
+   };
+
    enum LaunchStateEnum
    {
       start,
@@ -56,7 +72,7 @@ private:
    int m_headDownDisplayItemId;
 
 
-   SteeringStateEnum m_state;
+//   SteeringStateEnum m_state; now a property
    b2Vec2 m_seekPoint;
    b2Body* m_targetBody;
    std::string m_targetBodyStr;
@@ -83,6 +99,7 @@ private:
 public:
    spFlameEmitter m_boosterFlame;
    spGun m_gun;
+   spShield m_shield;
 
 	SteerableObject(
       oxygine::Resources& gameResources, 
@@ -98,6 +115,7 @@ public:
 
    // Specialisation of map registration
    void registerToMap(void) override;
+   void initGameStatus(oxygine::Actor* statusEventOriginator) override;
    void connectToForeignObjects(void) override;
 
 protected:

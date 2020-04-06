@@ -93,15 +93,25 @@ public:
    2     =  State (read only)
    3     =  X-pos (read only)
    4     =  Y-pos (read only)
+   5     =  Ammo
+   6     =  Shield
+   7     =  Fuel
+   8     =  Credits
+   9     =  Damage
    */
 
-   enum properties
+   enum LeapfroPropertiesEnum
    {
       propMode    = 0,
       propEnv     = 1,
       propState   = 2,
       propXPos    = 3,
-      propYPos    = 4
+      propYPos    = 4,
+      ammo        = 5,
+      shield      = 6,
+      fuel        = 7,
+      credits     = 8,
+      damage      = 9
    };
 
 private:
@@ -221,8 +231,7 @@ public:
    
    // Leapfrog specialisation of map registration
    void registerToMap(void) override;
-//   void initGameStatus(spGameStatus status) override;
-   void initGameStatus(spGameStatus status);
+   void initGameStatus(oxygine::Actor* statusEventOriginator) override;
 
    void dumpPart(std::string name, b2Body* body, b2Body* mainBody);
    void dumpParts(void);

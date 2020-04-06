@@ -258,6 +258,8 @@ int HeadDownDisplay::addMeToMap(
    spActor actor,
    MapItem::MapItemStateEnum state)
 {
+   // Check that this actor has not been added before.
+   // If so, just change state.
 
    spMapItem mi = new MapItem(
       m_gameResources,
@@ -314,6 +316,19 @@ void HeadDownDisplay::setState(int itemId, MapItem::MapItemStateEnum state)
       }
    }
 }
+
+void HeadDownDisplay::setState(oxygine::spActor actor, MapItem::MapItemStateEnum state)
+{
+   for (auto it = m_mapActors.begin(); it != m_mapActors.end(); ++it)
+   {
+      if ((*it)->getActor() == actor)
+      {
+         (*it)->setState(state);
+         return;
+      }
+   }
+}
+
 
 void HeadDownDisplay::doUpdate(const oxygine::UpdateState& us)
 {

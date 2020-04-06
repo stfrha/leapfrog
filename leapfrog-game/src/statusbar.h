@@ -15,6 +15,7 @@ private:
    oxygine::spActor m_eventActor;
    oxygine::spProgressBar m_progressBar;
    std::string m_headline;
+   int m_propertyId;
    float m_maxProgess;
    GameStatusTypeEnum m_statusType;
 
@@ -23,6 +24,7 @@ public:
       oxygine::Resources& gameResources,
       oxygine::Actor* eventActor,
       SceneActor* sceneActor,
+      int propertyId,
       const oxygine::Vector2 & pos,
       const oxygine::Vector2 & size,
       const int fontSize,
@@ -48,6 +50,7 @@ private:
    SceneActor * m_sceneActor;
    oxygine::spActor m_eventActor;
    oxygine::spTextField m_tf;
+   int m_propertyId;
    std::string m_headline;
    GameStatusTypeEnum m_statusType;
 
@@ -56,6 +59,7 @@ public:
       oxygine::Resources& gameResources,
       oxygine::Actor* eventActor,
       SceneActor* sceneActor,
+      int propertyId,
       const oxygine::Vector2 & pos,
       const oxygine::Vector2 & size,
       const int fontSize,

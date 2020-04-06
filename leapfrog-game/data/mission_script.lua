@@ -18,8 +18,14 @@ function setupMissionStateScene()
    if currentState == "state1" then
       if currentScene == "landing_scene.xml" then
 
+         -- Start timer, will send LuTO event when timed out 
+         state1Timer = c_startSceneTimer(240)
+         
          -- Register event for landing on landingPad1
          c_registerEventHandler("landing_pad1", "LpLL", 0, 0)
+         
+         -- Set state of next mission objective
+         c_setObjectMapState("landing_pad1", "landingPad1", 1)
 
          -- Play dialog
          c_addDialogMessage("Hello. Try to land on the landing pad, to your left.", "DEBUG", true, 0, 0)
@@ -30,6 +36,10 @@ function setupMissionStateScene()
          c_addMissionStateSceneObjects("landing_scene_state2.xml")
          c_registerEventHandler("landing_pad1", "LpTO", 0, 0)
          c_registerEventHandler("bomb1", "ExEX", 0, 0)
+
+         -- Set state of next mission objective
+         c_setObjectMapState("landing_pad1", "landingPad1", 0)
+
          -- Play dialog
          c_addDialogMessage("Try not to explode the bomd, just yet.", "DEBUG", true, 0, 0)
          -- Set bomb to be very in-sensitivity
@@ -55,6 +65,12 @@ end
 function missionStateSceneEventHandler(eventId, actorName, parameter1)
    if currentState == "state1" then
       if currentScene == "landing_scene.xml" then
+         if eventId == "ScTO" and parameter1 == state1Timer then
+
+            -- Play dialog
+            c_addDialogMessage("The landing pad is the filled square on your map. Get there!", "DEBUG", true, 0, 0)
+        
+         end
          if actorName == "landing_pad1" and eventId == "LpLL" then
             
             -- Play dialog
@@ -71,10 +87,12 @@ function missionStateSceneEventHandler(eventId, actorName, parameter1)
          if actorName == "landing_pad1" and eventId == "LpTO" then
                
             -- Play dialog
-            c_addDialogMessage("That's right. Git yourself over there.", "DEBUG", true, 0, 0)
+            c_addDialogMessage("That's right. Get yourself over there.", "DEBUG", true, 0, 0)
 
             currentState = "state3"
-            
+            credits = c_getObjectProperty("leapfrog1", 8)
+            c_setObjectProperty("leapfrog1", 8, credits + 400)
+
             setupMissionStateScene()
          end
          
@@ -125,6 +143,9 @@ function missionStateSceneEventHandler(eventId, actorName, parameter1)
 
                currentState = "state5"
                
+               credits = c_getObjectProperty("leapfrog1", 8)
+               c_setObjectProperty("leapfrog1", 8, credits + 20)
+
                setupMissionStateScene()
             end 
          end

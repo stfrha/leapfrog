@@ -63,7 +63,7 @@ protected:
    float m_damageBulletEqv;
    bool m_impactExplosion;
 
-   void readExplosiveObjectNode(const pugi::xml_node& node);
+   void readExplosiveObjectNode(const pugi::xml_node& node, float& impactThreshold);
    void doExplosion(void);
    void startAnimation(b2Vec2 pos);
 

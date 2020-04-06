@@ -152,7 +152,7 @@
               bouncy="false" />
           </system>
           <system
-            name="hammerShield"
+            name="shield"
             type="shield">
             <shieldProperties
               body="mainBody"

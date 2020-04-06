@@ -39,7 +39,10 @@ ExplosiveObject::ExplosiveObject(
    // Register all properties:
    m_properties.push_back(ObjectProperty(this, NULL, 0, 1000.0f)); // impact threshold, default to 1000
 
-   readExplosiveObjectNode(propNode);
+   // Cannot set property before this is attaced to scene, since setting it will send 
+   // an event too early.
+   float impactThreshold;
+   readExplosiveObjectNode(propNode, impactThreshold);
 
    initCompoundObjectParts(
       gameResources,
@@ -53,6 +56,9 @@ ExplosiveObject::ExplosiveObject(
       groupIndex);
 
    attachTo(m_sceneActor);
+
+   // Now that we are attached to the tree, we can set the property
+   m_properties[implThreshold].setProperty(impactThreshold);
 
    // This CompoundObject is also an actor who normally has
    // a userData that points to its parent. However, the parent
@@ -70,15 +76,14 @@ ExplosiveObject::ExplosiveObject(
 
 }
 
-void ExplosiveObject::readExplosiveObjectNode(const pugi::xml_node& node)
+void ExplosiveObject::readExplosiveObjectNode(const pugi::xml_node& node, float& impactThreshold)
 {
    m_numOfParticles = node.attribute("numOfParticles").as_int(0);
    m_particlesRadius = node.attribute("particleRadius").as_float(0.0f);
    m_blastPower = node.attribute("blastPower").as_float(0.0f);
    m_damageBulletEqv = node.attribute("damageBulletEqv").as_float(1.0f);
    m_impactExplosion = node.attribute("impactExplosion").as_bool(false);
-   float impactThreshold = node.attribute("impactThreshold").as_float(1000.0f);
-   m_properties[implThreshold].setProperty(impactThreshold);
+   impactThreshold = node.attribute("impactThreshold").as_float(1000.0f);
 }
 
 

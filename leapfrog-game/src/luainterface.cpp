@@ -2,6 +2,7 @@
 
 #include "messagedisplay.h"
 #include "objectproperty.h"
+#include "sceneactorevents.h"
 
 using namespace oxygine;
 
@@ -141,6 +142,14 @@ void luaEventListner(oxygine::Event *ev)
 
       g_LuaInterface.missionStateSceneEventHandler(
          eventType, actorName, propTrigEv->m_propertyId);
+   }
+   else if (ev->type == eventID('S', 'c', 'T', 'O'))
+   {
+      SceneTimeoutEvent* toEv = static_cast<SceneTimeoutEvent*>(ev);
+
+      g_LuaInterface.missionStateSceneEventHandler(
+         eventType, actorName, toEv->m_timerId);
+      
    }
    else
    {
@@ -286,11 +295,72 @@ static int c_setObjectProperty(lua_State *L)
 
    if (obj != NULL)
    {
-      obj->setProperty(propId, value);
+      obj->extSetProperty(propId, value);
    }
 
    return 0;
 }
+
+static int c_getObjectProperty(lua_State *L)
+{
+   std::string objectName = lua_tostring(L, 1);
+   int propId = lua_tointeger(L, 2);
+
+   CompoundObject* obj = g_LuaInterface.getSceneActor()->getObject(objectName);
+
+   float value = 0.0f;
+
+   if (obj != NULL)
+   {
+      value = obj->getProperty(propId);
+   }
+
+   /* push the property value */
+   lua_pushnumber(L, value);
+
+   return 1;
+}
+
+static int c_setObjectMapState(lua_State *L)
+{
+   std::string objectName = lua_tostring(L, 1);
+   std::string actorName = lua_tostring(L, 2);
+   int itemState = lua_tointeger(L, 3);
+
+   CompoundObject* obj = g_LuaInterface.getSceneActor()->getObject(objectName);
+
+   if (obj != NULL)
+   {
+      spActor act = obj->getActor(actorName);
+
+      if (act != NULL)
+      {
+         g_HeadDownDisplay->setState(act, (MapItem::MapItemStateEnum)itemState);
+      }
+   }
+
+   return 0;
+}
+
+static int c_startSceneTimer(lua_State *L)
+{
+   int numOfTicks = lua_tointeger(L, 1);
+
+   int timerId = g_LuaInterface.getSceneActor()->createSceneTimer(numOfTicks);
+
+   oxygine::eventType eventType = eventID('S', 'c', 'T', 'O');
+
+   int i = g_LuaInterface.getSceneActor()->addEventListener(eventType, luaEventListner);
+
+   g_LuaInterface.registerHandlerHandle(g_LuaInterface.getSceneActor(), i);
+
+
+   /* push the property value */
+   lua_pushnumber(L, timerId);
+
+   return 1;
+}
+
 
 
 static int average(lua_State *L)
@@ -356,8 +426,10 @@ void LuaInterface::initLuaInterface(void)
    lua_register(m_L, "c_addDialogMessage", c_addDialogMessage);
    lua_register(m_L, "c_setPanningObject", c_setPanningObject);
    lua_register(m_L, "c_setObjectProperty", c_setObjectProperty);
+   lua_register(m_L, "c_getObjectProperty", c_getObjectProperty);
+   lua_register(m_L, "c_setObjectMapState", c_setObjectMapState);
+   lua_register(m_L, "c_startSceneTimer", c_startSceneTimer);
 
-   
 }
 
 //void LuaInterface::setSceneActor(SceneActor* sceneActor)

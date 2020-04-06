@@ -95,4 +95,5 @@ public:
    void unregisterPropertyEventTrigger(int eventId);
    void registerDualPropEventTrigger(DualPropEventTrigger* trigger);
 	void unregisterDualPropEventTrigger(DualPropEventTrigger* trigger);
+   void registerPropertySetEvent(oxygine::Event* extSetPropEvent);
 };

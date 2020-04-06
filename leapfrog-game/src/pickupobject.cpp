@@ -1,5 +1,6 @@
 
 #include "pickupobject.h"
+#include "pickupobjectevents.h"
 
 #include "sceneactor.h"
 #include "freespaceactor.h"

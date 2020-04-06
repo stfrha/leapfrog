@@ -321,8 +321,10 @@
     <ClInclude Include="..\src\luainterface.h" />
     <ClInclude Include="..\src\magneticmine.h" />
     <ClInclude Include="..\src\messagedisplay.h" />
+    <ClInclude Include="..\src\objectpropertyevents.h" />
     <ClInclude Include="..\src\parallaxbackground.h" />
     <ClInclude Include="..\src\pickupobject.h" />
+    <ClInclude Include="..\src\pickupobjectevents.h" />
     <ClInclude Include="..\src\sceneactorevents.h" />
     <ClInclude Include="..\src\steerableobject.h" />
     <ClInclude Include="..\src\landercontactlistener.h" />

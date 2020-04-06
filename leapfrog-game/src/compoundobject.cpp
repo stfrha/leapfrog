@@ -353,7 +353,7 @@ CompoundObject* CompoundObject::initCompoundObject(
          groupIndex);
 
       bo->m_behaviourType = BehaviourEnum::breakableObject;
-      bo->initGameStatus(new GameStatus());
+      bo->initGameStatus(NULL);
 
       return static_cast<CompoundObject*>(bo);
    }
@@ -401,7 +401,7 @@ CompoundObject* CompoundObject::initCompoundObject(
          groupIndex);
 
       so->m_behaviourType = BehaviourEnum::steerableObject;
-      so->initGameStatus(new GameStatus());
+      so->initGameStatus(NULL);
 
       return static_cast<CompoundObject*>(so);
    }
@@ -1786,9 +1786,9 @@ void CompoundObject::connectToForeignObjects(void)
 // link individual resources to the associated 
 // systems. So that the game status gets a link
 // to the Shield system object.
-void CompoundObject::initGameStatus(spGameStatus status)
+void CompoundObject::initGameStatus(oxygine::Actor* statusEventOriginator)
 {
-   m_gameStatus = status;
+   m_gameStatus = NULL;
 }
 
 
@@ -1814,7 +1814,12 @@ void CompoundObject::setProperty(int propId, float value)
 
 void CompoundObject::extSetProperty(int propId, float value)
 {
-   setProperty(propId, value);
+   ObjectProperty* p = getProp(propId);
+   if (p)
+   {
+      p->extSetProperty(value);
+   }
+
    setPropertyImpl(propId, value);
 }
 
@@ -1918,7 +1923,6 @@ void CompoundObject::setAllBodiesToBounding(FreeSpaceActor* actor)
 
 // Base implementation of this does nothing. Overloaded 
 // can optionally implement a specilised version of this
-void CompoundObject::registerToMap(void) 
+void CompoundObject::registerToMap(void)
 {
-   return;
 }

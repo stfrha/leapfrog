@@ -22,8 +22,7 @@ BreakableObject::BreakableObject(
    CompoundObject(sceneParent, parentObject),
    m_gameResource(&gameResources),
    m_sceneActor(sceneParent),
-   m_world(world),
-   m_damage(0)
+   m_world(world)
 {
    readBreakableObjectNode(root.child("behaviour").child("breakableObjectProperties"));
    m_spawnObjects = new SpawnObjectList();
@@ -207,4 +206,17 @@ void BreakableObject::spawnBreakableObjects(void)
    BreakableObjectNewObjectSpawnedEvent event;
    dispatchEvent(&event);
 
+}
+
+void BreakableObject::initGameStatus(Actor* statusEventOriginator)
+{
+   m_gameStatus = new GameStatus();
+
+   ObjectProperty* damage = new ObjectProperty(this, NULL, 0, 0.0f);
+
+   m_gameStatus->initGameStatus(statusEventOriginator, NULL, NULL, NULL, NULL, damage);
+
+   m_properties.push_back(*damage);
+
+   m_gameStatus->registerShieldObject(NULL);
 }

@@ -3,6 +3,9 @@
 #include "objectproperty.h"
 #include "compoundobject.h"
 
+#include "objectpropertyevents.h"
+
+
 using namespace oxygine;
 using namespace std;
 
@@ -73,7 +76,13 @@ ObjectProperty::~ObjectProperty()
 
 void ObjectProperty::setProperty(float value)
 {
-	m_value = value;
+   m_value = value;
+
+   if (m_object != NULL)
+   {
+      ObjectPropertyChangedEvent ev(m_id, this);
+      m_object->dispatchEvent(&ev);
+   }
 
    // Handeling an even may cause it to be removed as a trigger from this 
    // list which would invalidate the iterator. Therefore we build a list of
@@ -108,8 +117,7 @@ void ObjectProperty::extSetProperty(float value)
    {
       setProperty(value);
 
-      //test if event is set, and only dispatch event in that case
-      if (m_extSetPropEvent)
+      if ((m_extSetPropEvent != NULL) && (m_object != NULL))
       {
          m_object->dispatchEvent(m_extSetPropEvent);
       }
@@ -160,6 +168,12 @@ void ObjectProperty::unregisterDualPropEventTrigger(DualPropEventTrigger* trigge
 			m_dualEventTriggers.end(), trigger), 
 		m_dualEventTriggers.end());
 }
+
+void ObjectProperty::registerPropertySetEvent(Event* extSetPropEvent)
+{
+   m_extSetPropEvent = extSetPropEvent;
+}
+
 
 DualPropEventTrigger::DualPropEventTrigger() :
    m_eventId(0),

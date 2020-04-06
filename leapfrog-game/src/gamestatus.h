@@ -4,18 +4,18 @@
 
 DECLARE_SMART(GameStatus, spGameStatus)
 
-
+class ObjectProperty;
 class Shield;
 
 // Needs to be an ref_counter to send events
 class GameStatus : public oxygine::ref_counter
 {
 private:
-   int m_ammo;
-   float m_shield;
-   float m_fuel;
-   int m_credits;
-   float m_damage;
+   ObjectProperty* m_ammo;
+   ObjectProperty* m_shield;
+   ObjectProperty* m_fuel;
+   ObjectProperty* m_credits;
+   ObjectProperty* m_damage;
 
    Shield* m_shieldObj;
 
@@ -27,7 +27,13 @@ private:
 public:
 	GameStatus();
 
-   void initGameStatus(oxygine::Actor* originator);
+   void initGameStatus(
+      oxygine::Actor* originator,
+      ObjectProperty* ammoProp,
+      ObjectProperty* shieldProp,
+      ObjectProperty* fuelProp,
+      ObjectProperty* creditsProp,
+      ObjectProperty* damageProp);
 
    int getShots(void);
    void  deltaShots(int shots);

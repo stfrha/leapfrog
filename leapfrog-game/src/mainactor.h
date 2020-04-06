@@ -73,7 +73,7 @@ private:
    bool m_reloadPressed;
    bool m_reloadArm;
 
-   spGameStatus m_gameStatus;
+   //spGameStatus m_gameStatus;
 
    NextSceneDefinition m_nextScene;
 

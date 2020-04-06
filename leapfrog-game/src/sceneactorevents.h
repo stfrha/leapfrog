@@ -13,3 +13,15 @@ public:
       m_panningObject(panningObject)
    {}
 };
+
+class SceneTimeoutEvent : public oxygine::Event
+{
+public:
+   enum { EVENT = eventID('S', 'c', 'T', 'O') };
+   int m_timerId;
+
+   SceneTimeoutEvent(int id) :
+      Event(EVENT),
+      m_timerId(id)
+   {}
+};

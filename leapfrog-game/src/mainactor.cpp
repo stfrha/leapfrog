@@ -49,8 +49,6 @@ MainActor::MainActor() :
 	//load xml file with resources definition
 	m_gameResources.loadXML("res.xml");
 
-   m_gameStatus = new GameStatus();
-
    g_LuaInterface.initLuaInterface();
 
    g_HeadDownDisplay = new HeadDownDisplay();
@@ -67,7 +65,7 @@ MainActor::MainActor() :
 
    // Here the game status should probably be read from file
 
-   m_gameStatus->initGameStatus(this);
+   //m_gameStatus->initGameStatus(this);
 
 	setSize(g_Layout.getViewPortBounds());
    
@@ -205,73 +203,80 @@ void MainActor::startScene(void)
 
    m_sceneObject->setManualPan(&m_manualPan);
 
-   g_LuaInterface.setupMissionStateScene(m_sceneObject);
-
    // Init game status in leapfrog object
    CompoundObject* leapfrog = m_sceneObject->getObject("leapfrog1");
 
    if (leapfrog != NULL)
    {
-      leapfrog->initGameStatus(m_gameStatus);
+      leapfrog->initGameStatus(this);
+   }
+   else
+   {
+      // We should terminate here since there is unclear what to do if leapfrog is not in da house
    }
 
 
    spStatusBar shotsBar = new StatusBar(
       m_gameResources,
-      this,
+      leapfrog,
       m_sceneObject,
+      5,
       Vector2(g_Layout.getXFromRight(1), g_Layout.getYFromTop(1)),
       Vector2(g_Layout.getButtonWidth() * 2.0f, g_Layout.getButtonWidth() / 2.0f),
       g_Layout.getDefaultFontSize(),
       100.0f,
-      (float)m_gameStatus->getShots(),
+      (float)leapfrog->m_gameStatus->getShots(),
       "Ammo:",
       GameStatusTypeEnum::shots);
 
    spStatusBar fuelBar = new StatusBar(
       m_gameResources,
-      this,
+      leapfrog,
       m_sceneObject,
+      7,
       Vector2(g_Layout.getXFromRight(1), g_Layout.getYFromTop(1) + g_Layout.getButtonWidth() / 2.0f + 2.0f),
       Vector2(g_Layout.getButtonWidth() * 2.0f, g_Layout.getButtonWidth() / 2.0f),
       g_Layout.getDefaultFontSize(),
       100.0f,
-      (float)m_gameStatus->getFuel(),
+      (float)leapfrog->m_gameStatus->getFuel(),
       "Fuel:",
       GameStatusTypeEnum::fuel);
 
    spStatusBar shieldBar = new StatusBar(
       m_gameResources,
-      this,
+      leapfrog,
       m_sceneObject,
+      6,
       Vector2(g_Layout.getXFromRight(1), g_Layout.getYFromTop(1) + g_Layout.getButtonWidth() / 2.0f * 2.0f + 2.0f),
       Vector2(g_Layout.getButtonWidth() * 2.0f, g_Layout.getButtonWidth() / 2.0f),
       g_Layout.getDefaultFontSize(),
       100.0f,
-      (float)m_gameStatus->getShield(),
+      (float)leapfrog->m_gameStatus->getShield(),
       "Shield:",
       GameStatusTypeEnum::shield);
 
    spStatusBar damageBar = new StatusBar(
       m_gameResources,
-      this,
+      leapfrog,
       m_sceneObject,
+      9,
       Vector2(g_Layout.getXFromRight(1), g_Layout.getYFromTop(1) + g_Layout.getButtonWidth() / 2.0f * 3.0f + 2.0f),
       Vector2(g_Layout.getButtonWidth() * 2.0f, g_Layout.getButtonWidth() / 2.0f),
       g_Layout.getDefaultFontSize(),
       100.0f,
-      (float)m_gameStatus->getDamage(),
+      (float)leapfrog->m_gameStatus->getDamage(),
       "Damage:",
       GameStatusTypeEnum::damage);
 
    spStatusLiteral creditBar = new StatusLiteral(
       m_gameResources,
-      this,
+      leapfrog,
       m_sceneObject,
+      8,
       Vector2(g_Layout.getXFromRight(1), g_Layout.getYFromTop(1) + g_Layout.getButtonWidth() / 2.0f * 4.0f + 2.0f),
       Vector2(g_Layout.getButtonWidth() * 2.0f, g_Layout.getButtonWidth() / 2.0f),
       g_Layout.getDefaultFontSize(),
-      (float)m_gameStatus->getCredits(),
+      (float)leapfrog->m_gameStatus->getCredits(),
       "Credits:",
       GameStatusTypeEnum::credits);
 
@@ -292,6 +297,7 @@ void MainActor::startScene(void)
       shieldBar->setAlpha(128);
    }
 
+   g_LuaInterface.setupMissionStateScene(m_sceneObject);
 
    createButtonOverlay();
 

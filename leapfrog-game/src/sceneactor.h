@@ -19,6 +19,18 @@ public:
    bool m_manPanEnable;
 };
 
+class SceneTimer
+{
+public:
+   int m_id;
+   int m_timeOutNumOfTicks;
+   int m_ticks;
+
+public:
+   SceneTimer(int id, int timeOutNumOfTicks);
+   bool tickTimer(void);
+};
+
 
 
 DECLARE_SMART(SceneActor, spSceneActor);
@@ -58,6 +70,8 @@ private:
    std::vector<spSoftBoundary>   m_boundaries;
    std::vector<b2Body*>   m_boundedBodies;
    ManualPan* m_manualPan;
+   std::vector<SceneTimer> m_timers;
+   int m_timerIdCounter;
 
    std::vector<ParallaxBackground> m_parallaxBackgrounds;
 
@@ -144,11 +158,13 @@ public:
    
    void registerObjectsToMap(void);
 
-  void takeControlOfLeapfrog(bool control);
+   int createSceneTimer(int numOfTicks);
+   
+   void takeControlOfLeapfrog(bool control);
 
-  SceneActor::SceneTypeEnum getSceneType(void);
+   SceneActor::SceneTypeEnum getSceneType(void);
 
-  typedef Property2Args<float, oxygine::Vector2, const oxygine::Vector2&, SceneActor, &SceneActor::getWantedVpPos, &SceneActor::setWantedVpPos>  TweenWantedVpPos;
+   typedef Property2Args<float, oxygine::Vector2, const oxygine::Vector2&, SceneActor, &SceneActor::getWantedVpPos, &SceneActor::setWantedVpPos>  TweenWantedVpPos;
 
 
 protected:
@@ -156,5 +172,6 @@ protected:
 
    void sweepKillList(void);
    void sweepSpawnList(void);
+   void removeTimer(int id);
 
 };

@@ -31,9 +31,6 @@ private:
    int m_breakAtDamage;
    int m_numberOfSpawns;
 
-   int m_damage;
-
-
    void readBreakableObjectNode(const pugi::xml_node& node);
    void spawnBreakableObjects(void);
 
@@ -51,6 +48,8 @@ public:
 
    void collisionBlast(b2Contact* contact, bool small = true);
    void damageCollision(b2Contact* contact, float bulletEqvDamage);
+   void initGameStatus(oxygine::Actor* statusEventOriginator) override;
+
 
 protected:
 	void doUpdate(const oxygine::UpdateState& us);

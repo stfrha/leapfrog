@@ -20,6 +20,21 @@ ManualPan::ManualPan() :
 
 }
 
+SceneTimer::SceneTimer(int id, int timeOutNumOfTicks) :
+   m_id(id),
+   m_timeOutNumOfTicks(timeOutNumOfTicks),
+   m_ticks(0)
+{
+}
+
+bool SceneTimer::tickTimer(void)
+// Returns true if the timer timed out
+{
+   m_ticks++;
+   return (m_ticks > m_timeOutNumOfTicks);
+}
+
+
 SceneActor* SceneActor::defineScene(
    Resources& gameResources,
    CompoundObject* parentObject,
@@ -144,7 +159,8 @@ SceneActor::SceneActor(
    m_manPanEnablePressed(false),
    m_armManPanEnableChange(true),
    m_panObject(NULL),
-   m_manualPan(NULL)
+   m_manualPan(NULL),
+   m_timerIdCounter(0)
 {
 	setScale(m_stageToViewPortScale);
 
@@ -375,6 +391,22 @@ void SceneActor::registerObjectsToMap(void)
    }
 }
 
+int SceneActor::createSceneTimer(int numOfTicks)
+{
+   int myId = m_timerIdCounter;
+   SceneTimer timer(m_timerIdCounter++, numOfTicks);
+
+   if (m_timerIdCounter > 32000)
+   {
+      m_timerIdCounter = 0;
+   }
+
+
+   m_timers.push_back(timer);
+
+   return myId;
+}
+
 void SceneActor::takeControlOfLeapfrog(bool control)
 {
    m_externalControl = control;
@@ -382,6 +414,27 @@ void SceneActor::takeControlOfLeapfrog(bool control)
 
 void SceneActor::doUpdate(const UpdateState& us)
 {
+   // Handle timers
+   vector<int> removeIds;
+
+   for (auto it = m_timers.begin(); it != m_timers.end(); ++it)
+   {
+      if (it->tickTimer())
+      {
+         removeIds.push_back(it->m_id);
+
+         SceneTimeoutEvent ev(it->m_id);
+         m_sceneActor->dispatchEvent(&ev);
+
+      }
+   }
+
+   // Remove all timers that timed out
+   for (auto it = removeIds.begin(); it != removeIds.end(); ++it)
+   {
+      removeTimer(*it);
+   }
+
    testForBoundaryRepel();
 
 	//in real project you should make steps with fixed dt, check box2d documentation
@@ -716,4 +769,16 @@ void SceneActor::sweepSpawnList(void)
    }
 
    m_spawnInstructions.clear();
+}
+
+void SceneActor::removeTimer(int id)
+{
+   for (auto it = m_timers.begin(); it != m_timers.end(); ++it)
+   {
+      if (it->m_id == id)
+      {
+         m_timers.erase(it);
+         break;
+      }
+   }
 }

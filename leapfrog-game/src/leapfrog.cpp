@@ -1,15 +1,15 @@
+#include "leapfrog.h"
+#include "leapfrogevents.h"
+
 #include "physdispconvert.h"
 #include "scales.h"
 
 #include "SDL.h"
 #include "SDL_keyboard.h"
 
-#include "leapfrog.h"
 #include "shield.h"
 
 #include "sceneactor.h"
-
-#include "leapfrogevents.h"
 
 #include "gamestatus.h"
 
@@ -18,6 +18,8 @@
 
 #include "blastemitter.h"
 #include "headdowndisplay.h"
+
+#include "gamestatusevents.h"
 
 
 using namespace oxygine;
@@ -187,7 +189,7 @@ void LeapFrog::setModePropHandler(oxygine::Event *ev)
 {
    dumpParts();
 
-   float value = m_properties[propMode].getProperty();
+   float value = m_properties[LeapfroPropertiesEnum::propMode].getProperty();
    
    if ((value > -0.5) && (value < 0.5))
    {
@@ -213,7 +215,7 @@ void LeapFrog::setModePropHandler(oxygine::Event *ev)
 
 void LeapFrog::setEnvPropHandler(oxygine::Event *ev)
 {
-   float value = m_properties[propMode].getProperty();
+   float value = m_properties[LeapfroPropertiesEnum::propMode].getProperty();
 
    goToEnvironment(static_cast<EnvironmentEnum>((int)value));
 }
@@ -231,8 +233,8 @@ void LeapFrog::doUpdate(const UpdateState &us)
 
 //   logs::messageln("(%f,%f)", pos.x, pos.y);
 
-   m_properties[propXPos].setProperty(pos.x);
-   m_properties[propYPos].setProperty(pos.y);
+   m_properties[LeapfroPropertiesEnum::propXPos].setProperty(pos.x);
+   m_properties[LeapfroPropertiesEnum::propYPos].setProperty(pos.y);
 
    float angle = 0.0f;
    b2Vec2 boostForce = b2Vec2(0.0f, 0.0f);
@@ -565,13 +567,13 @@ void LeapFrog::setHoldAngle(float angle)
    m_wantedAngle = angle;
 
    m_state = LFS_HOLD_ANGLE;
-   m_properties[propState].setProperty((float)m_state);
+   m_properties[LeapfroPropertiesEnum::propState].setProperty((float)m_state);
 }
 
 void LeapFrog::releaseHoldAngle(void)
 {
    m_state = LFS_NORMAL;
-   m_properties[propState].setProperty((float)m_state);
+   m_properties[LeapfroPropertiesEnum::propState].setProperty((float)m_state);
 }
 
 void LeapFrog::breakJoints(void)
@@ -629,9 +631,9 @@ void LeapFrog::breakJoints(void)
 void LeapFrog::goToMode(LeapFrogModeEnum mode)
 {
    m_modeInTransit = true;
-   m_properties[propState].setProperty((float)m_state);
+   m_properties[LeapfroPropertiesEnum::propState].setProperty((float)m_state);
    m_mode = mode;
-   m_properties[propMode].setProperty((float)m_mode);
+   m_properties[LeapfroPropertiesEnum::propMode].setProperty((float)m_mode);
 
    unlockJoints();
 
@@ -737,7 +739,7 @@ void LeapFrog::modeReached(void)
    }
 
    m_modeInTransit = false;
-   m_properties[propState].setProperty((float)m_state);
+   m_properties[LeapfroPropertiesEnum::propState].setProperty((float)m_state);
 
    LeapfrogModeReachedEvent event("Test");
    dispatchEvent(&event);
@@ -1243,9 +1245,33 @@ void LeapFrog::registerToMap(void)
       MapItem::MapItemStateEnum::filled);
 }
 
-void LeapFrog::initGameStatus(spGameStatus status)
+void LeapFrog::initGameStatus(Actor* statusEventOriginator)
 {
-   m_gameStatus = status;
+   m_gameStatus = new GameStatus();
+
+   // The event to send on property change must contain a pointer to the ObjectProperty.
+   // The ObjectProperty is created without an event (set to NULL) and the event is 
+   // then defined with the registerPropertySetEvent method
+
+   ObjectProperty ammo(this, NULL, 5, 0.0f);
+   ObjectProperty shield(this, NULL, 6, 0.0f);
+   ObjectProperty fuel(this, NULL, 7, 0.0f);
+   ObjectProperty credits(this, NULL, 8, 0.0f);
+   ObjectProperty damage(this, NULL, 9, 0.0f);
+   
+   m_properties.push_back(ammo);
+   m_properties.push_back(shield);
+   m_properties.push_back(fuel);
+   m_properties.push_back(credits);
+   m_properties.push_back(damage);
+
+   m_gameStatus->initGameStatus(
+      statusEventOriginator, 
+      &m_properties[LeapfroPropertiesEnum::ammo], 
+      &m_properties[LeapfroPropertiesEnum::shield],
+      &m_properties[LeapfroPropertiesEnum::fuel],
+      &m_properties[LeapfroPropertiesEnum::credits],
+      &m_properties[LeapfroPropertiesEnum::damage]);
 
    m_gameStatus->registerShieldObject(m_shield.get());
 }

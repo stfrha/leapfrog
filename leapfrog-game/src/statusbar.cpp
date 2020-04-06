@@ -2,6 +2,7 @@
 #include "gamestatus.h"
 #include "sceneactor.h"
 #include "gamestatusevents.h"
+#include "objectpropertyevents.h"
 #include "leapfrogevents.h"
 #include "layout.h"
 
@@ -12,6 +13,7 @@ StatusBar::StatusBar(
    Resources& gameResources,
    oxygine::Actor* eventActor,
    SceneActor* sceneActor,
+   int propertyId,
    const Vector2& pos,
    const Vector2& size,
    const int fontSize,
@@ -21,6 +23,7 @@ StatusBar::StatusBar(
    GameStatusTypeEnum statusType) :
    m_sceneActor(sceneActor),
    m_eventActor(eventActor),
+   m_propertyId(propertyId),
    m_maxProgess(maxProgress),
    m_headline(headline),
    m_statusType(statusType)
@@ -111,12 +114,13 @@ StatusBar::StatusBar(
    m_progressBar->setDirection(ProgressBar::direction::dir_0);
    m_progressBar->setProgress(initialProgress/maxProgress);
 
-   m_eventActor->addEventListener(StatusChangedEvent::EVENT, CLOSURE(this, &StatusBar::statusChangedListner));
+//   m_eventActor->addEventListener(StatusChangedEvent::EVENT, CLOSURE(this, &StatusBar::statusChangedListner));
+   m_eventActor->addEventListener(ObjectPropertyChangedEvent::EVENT, CLOSURE(this, &StatusBar::statusChangedListner));
 }
 
 void StatusBar::disconnectListner(void)
 {
-   m_eventActor->removeEventListener(StatusChangedEvent::EVENT);
+   m_eventActor->removeEventListener(ObjectPropertyChangedEvent::EVENT);
 }
 
 void StatusBar::doUpdate(const oxygine::UpdateState& us)
@@ -125,11 +129,11 @@ void StatusBar::doUpdate(const oxygine::UpdateState& us)
 
 void StatusBar::statusChangedListner(Event *ev)
 {
-   StatusChangedEvent* e = (StatusChangedEvent*)ev;
+   ObjectPropertyChangedEvent* e = (ObjectPropertyChangedEvent*)ev;
 
-   if (e->m_type == m_statusType)
+   if (e->m_propId == m_propertyId)
    {
-      m_progressBar->setProgress(e->m_value / e->m_max);
+      m_progressBar->setProgress(e->m_property->getProperty() / m_maxProgess);
    }
 }
 
@@ -143,6 +147,7 @@ StatusLiteral::StatusLiteral(
    Resources& gameResources,
    oxygine::Actor* eventActor,
    SceneActor* sceneActor,
+   int propertyId,
    const Vector2& pos,
    const Vector2& size,
    const int fontSize,
@@ -151,6 +156,7 @@ StatusLiteral::StatusLiteral(
    GameStatusTypeEnum statusType) :
    m_sceneActor(sceneActor),
    m_eventActor(eventActor),
+   m_propertyId(propertyId),
    m_headline(headline),
    m_statusType(statusType)
 {
@@ -199,7 +205,7 @@ StatusLiteral::StatusLiteral(
    theBar->setPosition(-2.0f, size.y / 2.0f);
    theBar->attachTo(this);
 
-   m_eventActor->addEventListener(StatusChangedEvent::EVENT, CLOSURE(this, &StatusLiteral::statusChangedListner));
+   m_eventActor->addEventListener(ObjectPropertyChangedEvent::EVENT, CLOSURE(this, &StatusLiteral::statusChangedListner));
 }
 
 void StatusLiteral::setLiteral(int value)
@@ -215,16 +221,16 @@ void StatusLiteral::doUpdate(const oxygine::UpdateState& us)
 
 void StatusLiteral::disconnectListner(void)
 {
-   m_eventActor->removeEventListener(StatusChangedEvent::EVENT);
+   m_eventActor->removeEventListener(ObjectPropertyChangedEvent::EVENT);
 }
 
 void StatusLiteral::statusChangedListner(Event *ev)
 {
-   StatusChangedEvent* e = (StatusChangedEvent*)ev;
+   ObjectPropertyChangedEvent* e = (ObjectPropertyChangedEvent*)ev;
 
-   if (e->m_type == m_statusType)
+   if (e->m_propId == m_propertyId)
    {
-      setLiteral(e->m_value);
+      setLiteral((int)e->m_property->getProperty());
    }
 }
 

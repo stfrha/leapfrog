@@ -317,7 +317,7 @@ public:
       pugi::xml_node& objectNode);
 
 
-   void initGameStatus(spGameStatus status);
+   virtual void initGameStatus(oxygine::Actor* statusEventOriginator);
 
 
    CompoundObject* getParentObject();
