@@ -232,7 +232,7 @@ static int c_registerEventHandler(lua_State *L)
    {
       std::string msg = "ERROR: The object " + actorName + " could not be found when registratimg event handler. ";
 
-      g_MessageDisplay->initMessage(true, msg.c_str(), "ERROR");
+      g_MessageDisplay->initMessage(true, msg.c_str(), "ERROR", 0, 0);
    }
 
    return 0;
@@ -269,7 +269,7 @@ static int c_addDialogMessage(lua_State *L)
    int preDelay = lua_tointeger(L, 4);
    int postDelay = lua_tointeger(L, 5);
 
-   g_MessageDisplay->initMessage(leftSide, message.c_str(), sender.c_str());
+   g_MessageDisplay->initMessage(leftSide, message.c_str(), sender.c_str(), preDelay, postDelay);
 
    return 0;
 }
@@ -383,7 +383,7 @@ static int average(lua_State *L)
       sum += lua_tonumber(L, i);
    }
 
-   g_MessageDisplay->initMessage(true, "Hello, this is from a function called by a LUA script!", "LUA");
+   g_MessageDisplay->initMessage(true, "Hello, this is from a function called by a LUA script!", "LUA", 0, 0);
 
    /* push the average */
    lua_pushnumber(L, sum / n);

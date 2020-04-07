@@ -17,10 +17,14 @@ spMessageDisplay g_MessageDisplay;
 MessageItem::MessageItem(
    string message,
    string sender,
-   bool leftBubble) :
+   bool leftBubble,
+   int preWait,
+   int postWait) :
    m_message(message),
    m_sender(sender),
-   m_leftBubble(leftBubble)
+   m_leftBubble(leftBubble),
+   m_preWait(preWait),
+   m_postWait(postWait)
 {
 
 }
@@ -28,12 +32,27 @@ MessageItem::MessageItem(
 
 MessageDisplay::MessageDisplay()  :
    m_state(idle),
-   m_noMessagesYet(true)
+   m_noPreviousMessages(true)
 {
 }
 
 void MessageDisplay::clearMessageDisplay(void)
 {
+   m_noPreviousMessages = true;
+   m_messageQueue.clear();
+
+   // Clear the m_messageActor from bubble actors
+   spActor actor = m_messageActor->getFirstChild();
+
+   while (actor)
+   {
+      spActor next = actor->getNextSibling();
+      if (actor.get() != NULL)
+      {
+         actor->detach();
+      }
+      actor = next;
+   }
 }
 
 
@@ -82,42 +101,6 @@ void MessageDisplay::initialiseMessageDisplay(
    hej->setTouchEnabled(false);
    hej->attachTo(mdFrame);
 
-   //spColorRectSprite theBar = new ColorRectSprite();
-   //theBar->setAnchor(0.0f, 0.0f);
-   //theBar->setSize(m_messageDisplayWidth, m_messageDisplayHeight);
-   //theBar->setPosition(0.0f, 0.0f);
-   //theBar->setColor(Color::Fuchsia);
-   //theBar->setAlpha(32);
-   //theBar->attachTo(mdFrame);
-
-   //spColorRectSprite top = new ColorRectSprite();
-   //top->setColor(Color::Fuchsia);
-   //top->setAnchor(0.0f, 0.0f);
-   //top->setSize(m_messageDisplayWidth, thickness);
-   //top->setPosition(0.0f, 0.0f);
-   //top->attachTo(mdFrame);
-
-   //spColorRectSprite bottom = new ColorRectSprite();
-   //bottom->setColor(Color::Fuchsia);
-   //bottom->setAnchor(0.0f, 0.0f);
-   //bottom->setSize(m_messageDisplayWidth, thickness);
-   //bottom->setPosition(0.0f, m_messageDisplayHeight - thickness);
-   //bottom->attachTo(mdFrame);
-
-   //spColorRectSprite left = new ColorRectSprite();
-   //left->setColor(Color::Fuchsia);
-   //left->setAnchor(0.0f, 0.0f);
-   //left->setSize(thickness, m_messageDisplayHeight);
-   //left->setPosition(0.0f, 0.0f);
-   //left->attachTo(mdFrame);
-
-   //spColorRectSprite right = new ColorRectSprite();
-   //right->setColor(Color::Fuchsia);
-   //right->setAnchor(0.0f, 0.0f);
-   //right->setSize(thickness, m_messageDisplayHeight);
-   //right->setPosition(m_messageDisplayWidth - thickness, 0.0f);
-   //right->attachTo(mdFrame);
-
 }
 
 void MessageDisplay::doUpdate(const oxygine::UpdateState& us)
@@ -125,40 +108,74 @@ void MessageDisplay::doUpdate(const oxygine::UpdateState& us)
    // We only handle idle state here. The other states
    // are active during tween animation and the end of 
    // tween handlers will set state back to idel (eventually).
-   if (m_state == idle)
+
+   switch (m_state)
    {
+   case idle:
       if (m_messageQueue.size() > 0)
       {
-         processFirstInQueue();
-
-         if (m_noMessagesYet)
+         if ((m_messageQueue[0].m_preWait > 0))
          {
-            m_noMessagesYet = false;
-
-            m_state = newBubbleAnimation;
-
-            startMessageAnimation();
+            m_ticks = 0;
+            m_state = preWait;
          }
          else
          {
-            // New message but there are already old messages on display
-            // we need to move old messages to make space for the new
-            startTransit();
-
-            m_state = inTransit;
+            prepareFirstInQueue();
          }
       }
+      break;
+
+   case preWait:
+      m_ticks++;
+      if (m_ticks > m_messageQueue[0].m_preWait)
+      {
+         prepareFirstInQueue();
+      }
+      break;
+   case postWait:
+      m_ticks++;
+      if (m_ticks > m_messageQueue[0].m_postWait)
+      {
+         m_state = idle;
+         m_messageQueue.erase(m_messageQueue.begin());
+      }
+      break;
    }
 }
 
 void MessageDisplay::initMessage(
    bool leftBubble,
    const char* messageString,
-   const char* senderString)
+   const char* senderString,
+   int preWait,
+   int postWait)
 {
-   MessageItem newMessage(messageString, senderString, leftBubble);
+   MessageItem newMessage(messageString, senderString, leftBubble, preWait, postWait);
 
    m_messageQueue.push_back(newMessage);
+}
+
+void MessageDisplay::prepareFirstInQueue(void)
+{
+   processFirstInQueue();
+
+   if (m_noPreviousMessages)
+   {
+      m_noPreviousMessages = false;
+
+      m_state = newBubbleAnimation;
+
+      startMessageAnimation();
+   }
+   else
+   {
+      // New message but there are already old messages on display
+      // we need to move old messages to make space for the new
+      startTransit();
+
+      m_state = inTransit;
+   }
 }
 
 void MessageDisplay::processFirstInQueue(void)
@@ -280,6 +297,15 @@ void MessageDisplay::atTransitFinished(oxygine::Event* event)
 
 void MessageDisplay::atNewBubbleFinished(oxygine::Event* event)
 {
-   m_messageQueue.erase(m_messageQueue.begin());
-   m_state = idle;
+   if (m_messageQueue[0].m_postWait > 0)
+   {
+      m_ticks = 0;
+      m_state = postWait;
+   }
+   else
+   {
+      m_state = idle;
+      m_messageQueue.erase(m_messageQueue.begin());
+   }
+
 }

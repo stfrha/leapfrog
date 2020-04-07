@@ -17,11 +17,15 @@ public:
    std::string m_sender;
    bool m_leftBubble;
    bool m_inTransit;
+   int m_preWait;
+   int m_postWait;
 
    MessageItem(
       std::string message,
       std::string sender,
-      bool leftBubble);
+      bool leftBubble,
+      int preWait,
+      int postWait);
 };
 
 class MessageDisplay : public oxygine::Actor
@@ -30,8 +34,10 @@ public:
    enum MsgDispStateEnum
    {
       idle,
+      preWait,
       inTransit,
-      newBubbleAnimation
+      newBubbleAnimation,
+      postWait
    };
 
 private:
@@ -44,7 +50,8 @@ private:
 
    std::vector<MessageItem> m_messageQueue;
    MsgDispStateEnum m_state;
-   bool m_noMessagesYet;
+   int m_ticks;
+   bool m_noPreviousMessages;
    oxygine::spBox9Sprite m_newBubble;
    float m_newMessageHeight;
 
@@ -63,8 +70,11 @@ public:
    void initMessage(
       bool leftBubble,
       const char* messageString,
-      const char* senderString);
+      const char* senderString,
+      int preWait,
+      int postWait);
 
+   void prepareFirstInQueue(void);
    void processFirstInQueue(void);
    void startMessageAnimation(void);
    void startTransit(void);
