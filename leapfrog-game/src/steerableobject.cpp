@@ -39,6 +39,15 @@ SteerableObject::SteerableObject(
 {
    initCompoundObjectParts(gameResources, sceneActor, sceneActor, parentObject, world, pos, root, string(""), groupIndex);
 
+   attachTo(m_sceneActor);
+
+   // Register all properties:
+   m_properties.push_back(ObjectProperty(this, NULL, 0, 4.0f)); // Mode, default to wander-hunt
+   m_properties.push_back(ObjectProperty(this, NULL, 1, 0.0f, true)); // xPos
+   m_properties.push_back(ObjectProperty(this, NULL, 2, 0.0f, true)); // yPos
+   m_properties.push_back(ObjectProperty(this, NULL, 3, 0.0f, true)); // Seek xPos
+   m_properties.push_back(ObjectProperty(this, NULL, 4, 0.0f, true)); // Seek yPos
+
    readSteerableObjectNode(root.child("behaviour").child("steerableObjectProperties"));
 
    m_body = getBody("mainBody");
@@ -59,19 +68,11 @@ SteerableObject::SteerableObject(
 
    m_shield = static_cast<Shield*>(getSystem("shield"));
 
-   attachTo(m_sceneActor);
-
    m_steeringManager = new SteeringManager(m_body);
    m_steeringManager->m_wanderAngle = m_bodyToBoosterAngle;
 
    m_body->SetLinearDamping(m_linearDamping);
 
-   // Register all properties:
-   m_properties.push_back(ObjectProperty(this, NULL, 0, 4.0f)); // Mode, default to wander-hunt
-   m_properties.push_back(ObjectProperty(this, NULL, 1, 0.0f, true)); // xPos
-   m_properties.push_back(ObjectProperty(this, NULL, 2, 0.0f, true)); // yPos
-   m_properties.push_back(ObjectProperty(this, NULL, 3, 0.0f, true)); // Seek xPos
-   m_properties.push_back(ObjectProperty(this, NULL, 4, 0.0f, true)); // Seek yPos
 
 }
 
