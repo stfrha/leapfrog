@@ -11,6 +11,7 @@
 		<image file="turn_right_button.png"/>		
 		<image file="zoom_in_button.png"/>		
 		<image file="zoom_out_button.png"/>		
+      
 		<image file="lf_body.png"/>		
 		<image file="lf_boost.png"/>		
 		<image file="lf_small_leg.png"/>		
@@ -18,6 +19,14 @@
 		<image file="lf_foot.png"/>		
 		<image file="lf_right_steer.png"/>		
 		<image file="lf_left_steer.png"/>		
+
+		<image file="main_body2.png"/>		
+		<image file="small_leg2.png"/>		
+		<image file="big_leg2.png"/>		
+		<image file="foot2.png"/>		
+		<image file="right_steer2.png"/>		
+		<image file="left_steer2.png"/>		
+
 		<image file="ground.png"/>		
 		<image file="flame_particle.png"/>		
 		<image file="white_circle.png"/>	

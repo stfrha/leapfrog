@@ -90,11 +90,6 @@ LeapFrog::LeapFrog(
 
    JointUserData* jd;
 
-   // Booster joint is not used, no need to remember it.
-	m_boostJoint = static_cast<b2WeldJoint*>(getJoint("boostJoint"));
-   jd = new JointUserData(false);
-   m_boostJoint->SetUserData(jd);
-
    m_rightSteerJoint = static_cast<b2WeldJoint*>(getJoint("rightSteerJoint"));
    jd = new JointUserData(false);
    m_rightSteerJoint->SetUserData(jd);
