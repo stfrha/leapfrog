@@ -1,27 +1,11 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <compoundObject
-   needsGroupIndex="true" >
-   <behaviour
-      type="leapfrog" />
-  <dynamicBox
-    name="lfBooster"
-    texture="lf_boost"
-    posX="0"
-    posY="5.6"
-    angle="0"
-    zLevel="128"
-    collisionEntity="lfBooster"
-    collisionCategory="1"
-    collisionMask="65533"
-    width="4"
-    height="1.6"
-    density="5"
-    friction="1" />
+  needsGroupIndex="true">
   <dynamicBox
     name="lfRightSteer"
-    texture="lf_right_steer"
+    texture="right_steer2"
     posX="7.1278013782695782"
-    posY="11.471120551307877"
+    posY="11.552500759641134"
     angle="2.3"
     zLevel="128"
     collisionEntity="lfSteerBooster"
@@ -33,9 +17,9 @@
     friction="1" />
   <dynamicBox
     name="lfLeftSteer"
-    texture="lf_left_steer"
-    posX="-7.3226433020069637"
-    posY="11.454008761747446"
+    texture="left_steer2"
+    posX="-7.6537802174256742"
+    posY="11.362026285242109"
     angle="2.3"
     zLevel="128"
     collisionEntity="lfSteerBooster"
@@ -47,11 +31,11 @@
     friction="1" />
   <dynamicBoxedSpritePolygonBody
     name="lfLeftBigLeg"
-    texture="lf_big_leg"
-    posX="-5.8"
-    posY="6.9"
+    texture="big_leg2"
+    posX="-6.116315377475348"
+    posY="6.802672191546117"
     angle="66.7"
-    zLevel="128"
+    zLevel="129"
     collisionEntity="lfBigLeg"
     collisionCategory="1"
     collisionMask="65533"
@@ -92,11 +76,11 @@
   </dynamicBoxedSpritePolygonBody>
   <dynamicBoxedSpritePolygonBody
     name="lfRightBigLeg"
-    texture="lf_big_leg"
+    texture="big_leg2"
     posX="5.84"
-    posY="6.9"
+    posY="6.9813802083332579"
     angle="-65"
-    zLevel="128"
+    zLevel="129"
     collisionEntity="lfBigLeg"
     collisionCategory="1"
     collisionMask="65533"
@@ -137,9 +121,9 @@
   </dynamicBoxedSpritePolygonBody>
   <dynamicBoxedSpritePolygonBody
     name="lfLeftSmallLeg"
-    texture="lf_small_leg"
-    posX="-8.576652063754409"
-    posY="10.015330412750927"
+    texture="small_leg2"
+    posX="-8.90778897917312"
+    posY="9.923347936245591"
     angle="2.3"
     zLevel="128"
     collisionEntity="lfSmallLeg"
@@ -182,9 +166,9 @@
   </dynamicBoxedSpritePolygonBody>
   <dynamicBoxedSpritePolygonBody
     name="lfRightSmallLeg"
-    texture="lf_small_leg"
+    texture="small_leg2"
     posX="8.4566808269617013"
-    posY="10.101078070422545"
+    posY="10.182458278755803"
     angle="1.72"
     zLevel="128"
     collisionEntity="lfSmallLeg"
@@ -227,35 +211,35 @@
   </dynamicBoxedSpritePolygonBody>
   <dynamicBoxedSpritePolygonBody
     name="lfLeftFoot"
-    texture="lf_foot"
-    posX="-8.668634540259518"
-    posY="12.969339174498373"
+    texture="foot2"
+    posX="-8.9931047890115678"
+    posY="12.144023364659688"
     angle="0"
-    zLevel="128"
+    zLevel="127"
     collisionEntity="lfLeftFoot"
     collisionCategory="1"
     collisionMask="65533"
     width="4"
-    height="0.6"
+    height="12"
     density="5"
     friction="1">
     <vertices>
       <vertex
         id="1"
-        x="-1.4"
-        y="0.3" />
+        x="-1.6799999999999726"
+        y="0.593333333333294" />
       <vertex
         id="2"
-        x="1.4"
-        y="0.3" />
+        x="1.6799999999999726"
+        y="0.593333333333294" />
       <vertex
         id="3"
-        x="2"
-        y="-0.3" />
+        x="2.0199999999999818"
+        y="0.31999999999989087" />
       <vertex
         id="4"
-        x="-2"
-        y="-0.3" />
+        x="-2.0066666666666606"
+        y="0.31999999999989087" />
     </vertices>
     <triangles>
       <triangle
@@ -272,35 +256,35 @@
   </dynamicBoxedSpritePolygonBody>
   <dynamicBoxedSpritePolygonBody
     name="lfRightFoot"
-    texture="lf_foot"
-    posX="8.3844822052315067"
-    posY="13.043319173038299"
+    texture="foot2"
+    posX="8.404431255854206"
+    posY="12.394012711919913"
     angle="0"
-    zLevel="128"
+    zLevel="127"
     collisionEntity="lfRightFoot"
     collisionCategory="1"
     collisionMask="65533"
     width="4"
-    height="0.6"
+    height="12"
     density="5"
     friction="1">
     <vertices>
       <vertex
         id="1"
-        x="-1.4"
-        y="0.3" />
+        x="-1.6363129244133687"
+        y="0.617800139728206" />
       <vertex
         id="2"
-        x="1.4"
-        y="0.3" />
+        x="1.685205253602271"
+        y="0.62594886125980342" />
       <vertex
         id="3"
-        x="2"
-        y="-0.3" />
+        x="1.8940666200903706"
+        y="0.29485667179910707" />
       <vertex
         id="4"
-        x="-2"
-        y="-0.3" />
+        x="-1.99185127846863"
+        y="0.28670795026773704" />
     </vertices>
     <triangles>
       <triangle
@@ -317,75 +301,87 @@
   </dynamicBoxedSpritePolygonBody>
   <dynamicBoxedSpritePolygonBody
     name="lfMainBody"
-    texture="lf_body"
-    posX="0"
-    posY="0"
+    texture="main_body2"
+    posX="-0.12165976056735417"
+    posY="0.9002822281997851"
     angle="0"
     zLevel="128"
     collisionEntity="leapfrog"
     collisionCategory="1"
     collisionMask="65533"
     width="9"
-    height="9.6"
+    height="11.2"
     density="5"
     friction="1">
     <vertices>
       <vertex
         id="1"
         x="-4.5"
-        y="4.8" />
+        y="3.7050621548924481" />
       <vertex
         id="2"
-        x="4.5"
-        y="4.8" />
+        x="-4.235345123332813"
+        y="5.489580850388931" />
       <vertex
         id="3"
-        x="2.5"
-        y="-3.7" />
+        x="4.305344383092006"
+        y="5.578622467631976" />
       <vertex
         id="4"
-        x="1.5"
-        y="-4.8" />
+        x="4.4511617811863218"
+        y="3.5673566334224898" />
       <vertex
         id="5"
-        x="-1.5"
-        y="-4.8" />
+        x="2.5219972375602993"
+        y="-4.989593462015546" />
       <vertex
         id="6"
-        x="-2.5"
-        y="-3.7" />
+        x="2.1399723756030653"
+        y="-5.5232918967383737" />
+      <vertex
+        id="7"
+        x="-2.1263015652773447"
+        y="-5.5519558009653336" />
+      <vertex
+        id="8"
+        x="-2.5199999999999818"
+        y="-5.0802546038027687" />
     </vertices>
     <triangles>
       <triangle
         id="1"
-        v1="6"
+        v1="8"
         v2="1"
         v3="2" />
       <triangle
         id="2"
-        v1="6"
+        v1="8"
         v2="2"
         v3="3" />
       <triangle
         id="3"
-        v1="6"
+        v1="8"
         v2="3"
         v3="4" />
       <triangle
         id="4"
-        v1="4"
+        v1="8"
+        v2="4"
+        v3="5" />
+      <triangle
+        id="5"
+        v1="8"
         v2="5"
         v3="6" />
+      <triangle
+        id="6"
+        v1="6"
+        v2="7"
+        v3="8" />
     </triangles>
   </dynamicBoxedSpritePolygonBody>
-  <weldJoint
-    name="boostJoint"
-    objectAName="lfMainBody"
-    objectBName="lfBooster"
-    objectAAnchorX="0"
-    objectAAnchorY="4.8"
-    objectBAnchorX="0"
-    objectBAnchorY="-0.8" />
+  <behaviour
+    type="leapfrog" />
   <weldJoint
     name="rightSteerJoint"
     objectAName="lfRightSmallLeg"
@@ -406,8 +402,8 @@
     name="rightLegJoint"
     objectAName="lfMainBody"
     objectBName="lfRightBigLeg"
-    objectAAnchorX="3.3"
-    objectAAnchorY="5.8"
+    objectAAnchorX="3.4703236647942957"
+    objectAAnchorY="4.92404972391414"
     objectBAnchorX="0"
     objectBAnchorY="-2.75"
     lockJoint="true"
@@ -418,8 +414,8 @@
     name="leftLegJoint"
     objectAName="lfMainBody"
     objectBName="lfLeftBigLeg"
-    objectAAnchorX="-3.3"
-    objectAAnchorY="5.8"
+    objectAAnchorX="-3.470323664794523"
+    objectAAnchorY="4.8023899633465588"
     objectBAnchorX="0"
     objectBAnchorY="-2.75"
     lockJoint="true"
@@ -456,8 +452,8 @@
     objectBName="lfRightFoot"
     objectAAnchorX="0"
     objectAAnchorY="2.05"
-    objectBAnchorX="0"
-    objectBAnchorY="-0.9"
+    objectBAnchorX="-0.0081487215315974026"
+    objectBAnchorY="-0.15846634063418608"
     lockJoint="true"
     useMotor="false"
     motorSpeed="0"
@@ -469,121 +465,116 @@
     objectAAnchorX="0"
     objectAAnchorY="2.05"
     objectBAnchorX="0"
-    objectBAnchorY="-0.9"
+    objectBAnchorY="-0.16666666666665153"
     lockJoint="true"
     useMotor="false"
     motorSpeed="0"
     maxMotorTorque="0" />
-   <system
-      type="gun"
-      name="lfGun">
-      <gunProperties
-         body="lfMainBody"
-         systemOriginX="0"
-         systemOriginY="-4"
-         angle="-90"
-         fireRate="4"
-         lifeTime="2000"
-         impulseMagnitude="10000"
-         bouncy="false" />
-   </system>
-   <system
-      type="flameEmitter"
-      name="boosterFlame">
-      <flameEmitterProperties
-         body="lfBooster"
-         systemOriginX="0"
-         systemOriginY="3"
-         angle="90"
-         emitterWidth="4"
-         lifeTime="250"
-         impulseMagnitude="70"
-         radius="10" />
-   </system>
-   <system
-      type="flameEmitter"
-      name="leftSteeringFlame">
-      <flameEmitterProperties
-         body="lfLeftSteer"
-         systemOriginX="1"
-         systemOriginY="0"
-         angle="0"
-         emitterWidth="1"
-         lifeTime="125"
-         impulseMagnitude="35"
-         radius="5" />
-   </system>
-   <system
-      type="flameEmitter"
-      name="rightSteeringFlame">
-      <flameEmitterProperties
-         body="lfRightSteer"
-         systemOriginX="-1"
-         systemOriginY="0"
-         angle="180"
-         emitterWidth="1"
-         lifeTime="125"
-         impulseMagnitude="35"
-         radius="5" />
-   </system>
-   <system
-      type="reentryFlameEmitter"
-      name="leftReentryFlame">
-      <reentryFlameEmitterProperties
-         body="lfBooster"
-         emitterLineStartX="-8.0"
-         emitterLineStartY="1.7"
-         emitterLineEndX="-2.0"
-         emitterLineEndY="1.7"
-         systemOriginX="22"
-         systemOriginY="0"
-         angle="90"
-         intensity="4.0"
-         lifeTime="500"
-         maxWidth="0.1"
-         maxHeight="5.0" />
-   </system>
-   <system
-      type="reentryFlameEmitter"
-      name="centerReentryFlame">
-      <reentryFlameEmitterProperties
-         body="lfBooster"
-         emitterLineStartX="-2.0"
-         emitterLineStartY="1.7"
-         emitterLineEndX="2.0"
-         emitterLineEndY="1.7"
-         systemOriginX="22"
-         systemOriginY="0"
-         angle="90"
-         intensity="4.0"
-         lifeTime="500"
-         maxWidth="0.1"
-         maxHeight="5.0" />
-   </system>
-   <system
-      type="reentryFlameEmitter"
-      name="rightReentryFlame">
-      <reentryFlameEmitterProperties
-         body="lfBooster"
-         emitterLineStartX="2.0"
-         emitterLineStartY="1.7"
-         emitterLineEndX="8.0"
-         emitterLineEndY="1.7"
-         systemOriginX="22"
-         systemOriginY="0"
-         angle="90"
-         intensity="4.0"
-         lifeTime="500"
-         maxWidth="0.1"
-         maxHeight="5.0" />
-   </system>
-   <system
-      type="shield"
-      name="lfShield">
-      <shieldProperties
-         body="lfMainBody"
-         systemOriginX="0"
-         systemOriginY="1.0"
-         radius="16" />
-   </system>
+  <system
+    name="lfGun"
+    type="gun">
+    <gunProperties
+      body="lfMainBody"
+      systemOriginX="0"
+      systemOriginY="-4"
+      angle="-90"
+      fireRate="4"
+      lifeTime="2000"
+      impulseMagnitude="10000"
+      bouncy="false" />
+  </system>
+  <system
+    name="boosterFlame"
+    type="flameEmitter">
+    <flameEmitterProperties
+      body="lfMainBody"
+      systemOriginX="0"
+      systemOriginY="7.1301811044302212"
+      angle="90"
+      emitterWidth="4"
+      lifeTime="250"
+      impulseMagnitude="70"
+      radius="10" />
+  </system>
+  <system
+    name="leftSteeringFlame"
+    type="flameEmitter">
+    <flameEmitterProperties
+      body="lfLeftSteer"
+      systemOriginX="1.3320457088790558"
+      systemOriginY="-0.013336333315335198"
+      angle="0"
+      emitterWidth="1"
+      lifeTime="125"
+      impulseMagnitude="35"
+      radius="5" />
+  </system>
+  <system
+    name="rightSteeringFlame"
+    type="flameEmitter">
+    <flameEmitterProperties
+      body="lfRightSteer"
+      systemOriginX="-1.3813860006209766"
+      systemOriginY="-0.032193577479357388"
+      angle="180"
+      emitterWidth="1"
+      lifeTime="125"
+      impulseMagnitude="35"
+      radius="5" />
+  </system>
+  <system
+    name="lfShield"
+    type="shield">
+    <shieldProperties
+      body="lfMainBody"
+      systemOriginX="0"
+      systemOriginY="1"
+      radius="16"
+      zLevel="147" />
+  </system>
+  <system
+    name="leftReentryFlame"
+    type="reentryFlameEmitter">
+    <reentryFlameEmitterProperties
+      body="lfMainBody"
+      emitterLineStartX="-9.7090404570055853"
+      emitterLineStartY="5.6402877203185655"
+      emitterLineEndX="-2.3560500952094117"
+      emitterLineEndY="5.8539177774443489"
+      angle="90"
+      intensity="4"
+      lifeTime="500"
+      maxWidth="0.1"
+      maxHeight="5" />
+  </system>
+  <system
+    name="centerReentryFlame"
+    type="reentryFlameEmitter">
+    <reentryFlameEmitterProperties
+      body="lfMainBody"
+      emitterLineStartX="-2.3323134221952841"
+      emitterLineStartY="5.8776544504580217"
+      emitterLineEndX="2.450996787265467"
+      emitterLineEndY="5.8776544504582491"
+      angle="90"
+      intensity="4"
+      lifeTime="500"
+      maxWidth="0.1"
+      maxHeight="5" />
+  </system>
+  <system
+    name="rightReentryFlame"
+    type="reentryFlameEmitter">
+    <reentryFlameEmitterProperties
+      body="lfMainBody"
+      emitterLineStartX="2.450996787265467"
+      emitterLineStartY="5.9251277964860494"
+      emitterLineEndX="9.8039871490614132"
+      emitterLineEndY="5.3791843171647544"
+      angle="90"
+      intensity="4"
+      lifeTime="500"
+      maxWidth="0.1"
+      maxHeight="5" />
+  </system>
 </compoundObject>
