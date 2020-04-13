@@ -3,7 +3,7 @@
   needsGroupIndex="true">
   <dynamicBox
     name="lfRightSteer"
-    texture="right_steer2"
+    texture="lf_right_steer"
     posX="3.3874999999999544"
     posY="3.2249999999998638"
     angle="-101"
@@ -17,7 +17,7 @@
     friction="1" />
   <dynamicBox
     name="lfLeftSteer"
-    texture="left_steer2"
+    texture="lf_left_steer"
     posX="3.4125000000000454"
     posY="-3.2999999999999092"
     angle="284"
@@ -31,7 +31,7 @@
     friction="1" />
   <dynamicBoxedSpritePolygonBody
     name="lfLeftBigLeg"
-    texture="big_leg2"
+    texture="lf_big_leg"
     posX="-3.05859375"
     posY="-3.03671875"
     angle="275"
@@ -76,7 +76,7 @@
   </dynamicBoxedSpritePolygonBody>
   <dynamicBoxedSpritePolygonBody
     name="lfRightBigLeg"
-    texture="big_leg2"
+    texture="lf_big_leg"
     posX="-3.05859375"
     posY="3.03671875"
     angle="-95"
@@ -121,7 +121,7 @@
   </dynamicBoxedSpritePolygonBody>
   <dynamicBoxedSpritePolygonBody
     name="lfLeftSmallLeg"
-    texture="small_leg2"
+    texture="lf_small_leg"
     posX="1.75"
     posY="-2.3649460819533035"
     angle="283"
@@ -166,7 +166,7 @@
   </dynamicBoxedSpritePolygonBody>
   <dynamicBoxedSpritePolygonBody
     name="lfRightSmallLeg"
-    texture="small_leg2"
+    texture="lf_small_leg"
     posX="1.7959912382527818"
     posY="2.337973714757891"
     angle="-103"
@@ -211,7 +211,7 @@
   </dynamicBoxedSpritePolygonBody>
   <dynamicBoxedSpritePolygonBody
     name="lfLeftFoot"
-    texture="foot2"
+    texture="lf_foot"
     posX="3.5326912489337703"
     posY="-1.8452283976117543"
     angle="395"
@@ -226,20 +226,20 @@
     <vertices>
       <vertex
         id="1"
-        x="-1.4937213540783247"
-        y="0.56057208946564929" />
+        x="-1.5328976978691309"
+        y="0.60158202228616364" />
       <vertex
         id="2"
-        x="1.5155912025629339"
-        y="0.51148370488802342" />
+        x="1.6723343962413064"
+        y="0.61898472436994878" />
       <vertex
         id="3"
-        x="2.1636053248755913"
-        y="0.23526795439356921" />
+        x="2.0606504594530755"
+        y="0.32093608883647634" />
       <vertex
         id="4"
-        x="-1.9432334135501237"
-        y="0.24509468079599495" />
+        x="-1.9140661723926475"
+        y="0.30614172814065016" />
     </vertices>
     <triangles>
       <triangle
@@ -256,9 +256,9 @@
   </dynamicBoxedSpritePolygonBody>
   <dynamicBoxedSpritePolygonBody
     name="lfRightFoot"
-    texture="foot2"
-    posX="3.5326912489337703"
-    posY="1.3794606491045216"
+    texture="lf_foot"
+    posX="3.6327959327408736"
+    posY="1.6019155020095242"
     angle="-218"
     zLevel="127"
     collisionEntity="lfRightFoot"
@@ -271,20 +271,20 @@
     <vertices>
       <vertex
         id="1"
-        x="-1.4897920137132283"
-        y="0.26362209070218312" />
+        x="-1.4999304202929937"
+        y="0.43919561860474726" />
       <vertex
         id="2"
-        x="1.7490125513323078"
-        y="0.28558843649956966" />
+        x="1.7087456289753089"
+        y="0.40939306204082848" />
       <vertex
         id="3"
-        x="2.1523803735916789"
-        y="-0.062733852981409141" />
+        x="2.1178644412370811"
+        y="0.10790882744191244" />
       <vertex
         id="4"
-        x="-1.8826852198975748"
-        y="-0.039467146572357878" />
+        x="-1.981568888762582"
+        y="0.12323083555989932" />
     </vertices>
     <triangles>
       <triangle
@@ -301,16 +301,16 @@
   </dynamicBoxedSpritePolygonBody>
   <dynamicBoxedSpritePolygonBody
     name="lfMainBody"
-    texture="main_body2"
-    posX="-0.83838194731310978"
-    posY="0.013307649957141621"
+    texture="lf_body"
+    posX="-0.8198379525179007"
+    posY="-0.014161713358362249"
     angle="90"
     zLevel="129"
     collisionEntity="leapfrog"
     collisionCategory="1"
     collisionMask="65533"
-    width="9"
-    height="11.2"
+    width="11.2"
+    height="12"
     density="5"
     friction="1">
     <vertices>
@@ -452,8 +452,8 @@
     objectBName="lfRightFoot"
     objectAAnchorX="0"
     objectAAnchorY="2.05"
-    objectBAnchorX="0.10551589302204135"
-    objectBAnchorY="-0.58113484667419213"
+    objectBAnchorX="0.035663885789687669"
+    objectBAnchorY="-0.31106506648444338"
     lockJoint="true"
     useMotor="false"
     motorSpeed="0"
@@ -489,7 +489,7 @@
     <flameEmitterProperties
       body="lfMainBody"
       systemOriginX="0.066538249786844944"
-      systemOriginY="8.5892129820888385"
+      systemOriginY="8.9774849288035057"
       angle="90"
       emitterWidth="4"
       lifeTime="250"
@@ -501,8 +501,8 @@
     type="flameEmitter">
     <flameEmitterProperties
       body="lfLeftSteer"
-      systemOriginX="1"
-      systemOriginY="0"
+      systemOriginX="1.7926153399591185"
+      systemOriginY="-0.030888549660561114"
       angle="0"
       emitterWidth="1"
       lifeTime="125"
@@ -514,8 +514,8 @@
     type="flameEmitter">
     <flameEmitterProperties
       body="lfRightSteer"
-      systemOriginX="-1"
-      systemOriginY="0"
+      systemOriginX="-1.8884302443324692"
+      systemOriginY="-0.0078853812485637845"
       angle="180"
       emitterWidth="1"
       lifeTime="125"

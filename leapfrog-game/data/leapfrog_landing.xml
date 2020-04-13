@@ -3,7 +3,7 @@
   needsGroupIndex="true">
   <dynamicBox
     name="lfRightSteer"
-    texture="right_steer2"
+    texture="lf_right_steer"
     posX="7.1278013782695782"
     posY="11.552500759641134"
     angle="2.3"
@@ -17,7 +17,7 @@
     friction="1" />
   <dynamicBox
     name="lfLeftSteer"
-    texture="left_steer2"
+    texture="lf_left_steer"
     posX="-7.6537802174256742"
     posY="11.362026285242109"
     angle="2.3"
@@ -31,7 +31,7 @@
     friction="1" />
   <dynamicBoxedSpritePolygonBody
     name="lfLeftBigLeg"
-    texture="big_leg2"
+    texture="lf_big_leg"
     posX="-6.116315377475348"
     posY="6.802672191546117"
     angle="66.7"
@@ -76,7 +76,7 @@
   </dynamicBoxedSpritePolygonBody>
   <dynamicBoxedSpritePolygonBody
     name="lfRightBigLeg"
-    texture="big_leg2"
+    texture="lf_big_leg"
     posX="5.84"
     posY="6.9813802083332579"
     angle="-65"
@@ -121,7 +121,7 @@
   </dynamicBoxedSpritePolygonBody>
   <dynamicBoxedSpritePolygonBody
     name="lfLeftSmallLeg"
-    texture="small_leg2"
+    texture="lf_small_leg"
     posX="-8.90778897917312"
     posY="9.923347936245591"
     angle="2.3"
@@ -166,7 +166,7 @@
   </dynamicBoxedSpritePolygonBody>
   <dynamicBoxedSpritePolygonBody
     name="lfRightSmallLeg"
-    texture="small_leg2"
+    texture="lf_small_leg"
     posX="8.4566808269617013"
     posY="10.182458278755803"
     angle="1.72"
@@ -211,7 +211,7 @@
   </dynamicBoxedSpritePolygonBody>
   <dynamicBoxedSpritePolygonBody
     name="lfLeftFoot"
-    texture="foot2"
+    texture="lf_foot"
     posX="-8.9931047890115678"
     posY="12.144023364659688"
     angle="0"
@@ -256,7 +256,7 @@
   </dynamicBoxedSpritePolygonBody>
   <dynamicBoxedSpritePolygonBody
     name="lfRightFoot"
-    texture="foot2"
+    texture="lf_foot"
     posX="8.404431255854206"
     posY="12.394012711919913"
     angle="0"
@@ -301,7 +301,7 @@
   </dynamicBoxedSpritePolygonBody>
   <dynamicBoxedSpritePolygonBody
     name="lfMainBody"
-    texture="main_body2"
+    texture="lf_body"
     posX="-0.12165976056735417"
     posY="0.9002822281997851"
     angle="0"
@@ -309,8 +309,8 @@
     collisionEntity="leapfrog"
     collisionCategory="1"
     collisionMask="65533"
-    width="9"
-    height="11.2"
+    width="11.2"
+    height="12"
     density="5"
     friction="1">
     <vertices>
@@ -332,8 +332,8 @@
         y="3.5673566334224898" />
       <vertex
         id="5"
-        x="2.5219972375602993"
-        y="-4.989593462015546" />
+        x="2.9255206787977386"
+        y="-4.1113365604987395" />
       <vertex
         id="6"
         x="2.1399723756030653"
@@ -344,8 +344,8 @@
         y="-5.5519558009653336" />
       <vertex
         id="8"
-        x="-2.5199999999999818"
-        y="-5.0802546038027687" />
+        x="-2.9235234412374211"
+        y="-4.0833143372162342" />
     </vertices>
     <triangles>
       <triangle
