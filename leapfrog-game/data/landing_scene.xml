@@ -40,6 +40,19 @@
     width="250"
     height="100"
     parallaxAmount="0.8" />
+  <spriteBox
+    name="noName"
+    texture="silo_home"
+    posX="450.48409627165256"
+    posY="666.46662225009459"
+    angle="0"
+    zLevel="40"
+    collisionEntity="notApplicable"
+    collisionCategory="1"
+    collisionMask="65534"
+    width="128"
+    height="44"
+    parallaxAmount="0" />
   <spritePolygon
     name="innerWall"
     texture="grotto_light"
@@ -170,97 +183,6 @@
   <spritePolygon
     name="noName"
     texture="grotto_light"
-    posX="108.8957708035814"
-    posY="785.68116698723225"
-    angle="0"
-    zLevel="0"
-    collisionEntity="notApplicable"
-    collisionCategory="1"
-    collisionMask="65534"
-    textureMeterWidth="150"
-    textureMeterHeight="150"
-    textureOffsetMeterX="25"
-    textureOffsetMeterY="0"
-    parallaxAmount="0.5">
-    <vertices>
-      <vertex
-        id="1"
-        x="0"
-        y="0" />
-      <vertex
-        id="2"
-        x="114.63849702968219"
-        y="-258.58307600680291" />
-      <vertex
-        id="3"
-        x="205.14257363206343"
-        y="-262.03085035355934" />
-      <vertex
-        id="4"
-        x="240.48226068632675"
-        y="-315.47135272829883" />
-      <vertex
-        id="5"
-        x="291.33693230099789"
-        y="-343.05354750235847" />
-      <vertex
-        id="6"
-        x="324.09078859519286"
-        y="-302.54219892795982" />
-      <vertex
-        id="7"
-        x="342.19160391566811"
-        y="-175.83649168462671" />
-      <vertex
-        id="8"
-        x="379.25517814331079"
-        y="-118.94821496312898" />
-      <vertex
-        id="9"
-        x="511.13254690677968"
-        y="-3.4477743467568871" />
-    </vertices>
-    <triangles>
-      <triangle
-        id="1"
-        v1="1"
-        v2="9"
-        v3="8" />
-      <triangle
-        id="2"
-        v1="1"
-        v2="8"
-        v3="7" />
-      <triangle
-        id="3"
-        v1="1"
-        v2="7"
-        v3="6" />
-      <triangle
-        id="4"
-        v1="1"
-        v2="6"
-        v3="5" />
-      <triangle
-        id="5"
-        v1="5"
-        v2="4"
-        v3="3" />
-      <triangle
-        id="6"
-        v1="1"
-        v2="5"
-        v3="3" />
-      <triangle
-        id="7"
-        v1="3"
-        v2="2"
-        v3="1" />
-    </triangles>
-  </spritePolygon>
-  <spritePolygon
-    name="noName"
-    texture="grotto_light"
     posX="568.311702509001"
     posY="506.41144489988528"
     angle="0"
@@ -276,16 +198,16 @@
     <vertices>
       <vertex
         id="1"
-        x="0"
-        y="0" />
+        x="-0.43694762842051205"
+        y="69.47467291883504" />
       <vertex
         id="2"
-        x="-62.059938241632608"
-        y="108.60489192285695" />
+        x="-24.482442197482669"
+        y="112.97436820706025" />
       <vertex
         id="3"
-        x="-76.712979215351424"
-        y="148.25429691056706" />
+        x="-45.252749969086381"
+        y="172.72336410210664" />
       <vertex
         id="4"
         x="-193.07536341841251"
@@ -300,16 +222,16 @@
         y="213.762009498957" />
       <vertex
         id="7"
-        x="43.95912292115645"
-        y="50.854671614671133" />
+        x="73.6715616537399"
+        y="101.97754413985149" />
       <vertex
         id="8"
-        x="31.891912707505526"
-        y="6.8955486935146837" />
+        x="49.369817844319186"
+        y="65.0095832734205" />
       <vertex
         id="9"
-        x="19.824702493854602"
-        y="-12.067210213650924" />
+        x="25.505021663318985"
+        y="57.844410333604174" />
     </vertices>
     <triangles>
       <triangle
@@ -894,13 +816,13 @@
       leftCeilingAngle="-135"
       rightCeilingAngle="135">
       <groundBorder
-        texture="grotto_border"
+        texture="grotto_floor"
         horisontalMeterOffset="2"
         textureMeterWidth="128"
         textureMeterHeight="10" />
       <ceilingBorder
-        texture="notDefined"
-        horisontalMeterOffset="2"
+        texture="grotto_roof"
+        horisontalMeterOffset="4"
         textureMeterWidth="128"
         textureMeterHeight="10" />
       <leftWallBorder
@@ -960,16 +882,16 @@
         y="-285.91299509528426" />
       <vertex
         id="8"
-        x="685.79789795214765"
-        y="-292.91466594219128" />
+        x="685.57273598059192"
+        y="-292.82806518390043" />
       <vertex
         id="9"
-        x="641.72855791573056"
-        y="-292.91466594219128" />
+        x="641.39120433909011"
+        y="-292.61948156263088" />
       <vertex
         id="10"
-        x="374.91625123966378"
-        y="-94.098089067425917" />
+        x="375.06218154786029"
+        y="-91.033552595302353" />
       <vertex
         id="11"
         x="171.69024612360045"
@@ -1046,10 +968,10 @@
       leftCeilingAngle="-135"
       rightCeilingAngle="135">
       <groundBorder
-        texture="grotto_border"
-        horisontalMeterOffset="2"
-        textureMeterWidth="128"
-        textureMeterHeight="10" />
+        texture="grotto_floor"
+        horisontalMeterOffset="4"
+        textureMeterWidth="256"
+        textureMeterHeight="25" />
       <ceilingBorder
         texture="notDefined"
         horisontalMeterOffset="2"

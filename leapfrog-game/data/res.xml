@@ -131,6 +131,15 @@
 	<atlas clamp2edge="false"> 
 		<image file="concrete.png" trim="false" extend="false"/>
 	</atlas>		
+	<atlas clamp2edge="false"> 
+		<image file="silo_home.png" trim="false" extend="false"/>
+	</atlas>		
+	<atlas clamp2edge="false"> 
+		<image file="grotto_floor.png" trim="false" extend="false"/>
+	</atlas>		
+	<atlas clamp2edge="false"> 
+		<image file="grotto_roof.png" trim="false" extend="false"/>
+	</atlas>		
 	<set path = "fonts" />
 	<font file="main.fnt" />	
 	<font file="lf_font.fnt" />	
