@@ -106,17 +106,17 @@ void LaunchSite::doUpdate(const UpdateState &us)
       if (us.time >= m_stateStartTime + 2000)
       {
          m_grabLeapfrogJointDef1 = new b2RevoluteJointDef;
-         m_grabLeapfrogJointDef1->bodyA = m_leapFrog->getBody("lfBooster");
+         m_grabLeapfrogJointDef1->bodyA = m_leapFrog->getBody("lfMainBody");
          m_grabLeapfrogJointDef1->bodyB = m_grabberBody;
-         m_grabLeapfrogJointDef1->localAnchorA.Set(-1.85f, 0.8f);
+         m_grabLeapfrogJointDef1->localAnchorA.Set(-1.85f, 5.64f);
          m_grabLeapfrogJointDef1->localAnchorB.Set(-1.85f, -6.1f);
          m_grabLeapfrogJointDef1->collideConnected = false;
          m_grabLeapfrogJoint1 = (b2RevoluteJoint*)m_world->CreateJoint(m_grabLeapfrogJointDef1);
 
          m_grabLeapfrogJointDef2 = new b2RevoluteJointDef;
-         m_grabLeapfrogJointDef2->bodyA = m_leapFrog->getBody("lfBooster");
+         m_grabLeapfrogJointDef2->bodyA = m_leapFrog->getBody("lfMainBody");
          m_grabLeapfrogJointDef2->bodyB = m_grabberBody;
-         m_grabLeapfrogJointDef2->localAnchorA.Set(1.85f, 0.8f);
+         m_grabLeapfrogJointDef2->localAnchorA.Set(1.85f, 5.64f);
          m_grabLeapfrogJointDef2->localAnchorB.Set(1.85f, -6.1f);
          m_grabLeapfrogJointDef2->collideConnected = false;
          m_grabLeapfrogJoint2 = (b2RevoluteJoint*)m_world->CreateJoint(m_grabLeapfrogJointDef2);
