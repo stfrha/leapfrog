@@ -41,7 +41,7 @@
     height="100"
     parallaxAmount="0.8" />
   <spriteBox
-    name="noName"
+    name="siloHome"
     texture="silo_home"
     posX="450.48409627165256"
     posY="666.46662225009459"
@@ -183,8 +183,8 @@
   <spritePolygon
     name="noName"
     texture="grotto_light"
-    posX="568.311702509001"
-    posY="506.41144489988528"
+    posX="288.84813975206634"
+    posY="507.205375475899"
     angle="0"
     zLevel="0"
     collisionEntity="notApplicable"
@@ -314,148 +314,6 @@
     <triangles>
       <triangle
         id="1"
-        v1="3"
-        v2="2"
-        v3="1" />
-    </triangles>
-    <border
-      leftGroundAngle="0"
-      rightGroundAngle="0"
-      leftCeilingAngle="0"
-      rightCeilingAngle="0">
-      <groundBorder
-        texture="notDefined"
-        horisontalMeterOffset="0"
-        textureMeterWidth="0"
-        textureMeterHeight="0" />
-      <ceilingBorder
-        texture="notDefined"
-        horisontalMeterOffset="0"
-        textureMeterWidth="0"
-        textureMeterHeight="0" />
-      <leftWallBorder
-        texture="notDefined"
-        horisontalMeterOffset="0"
-        textureMeterWidth="0"
-        textureMeterHeight="0" />
-      <rightWallBorder
-        texture="notDefined"
-        horisontalMeterOffset="0"
-        textureMeterWidth="0"
-        textureMeterHeight="0" />
-    </border>
-  </staticPolygon>
-  <staticPolygon
-    name="counterClockwise"
-    texture="grotto"
-    posX="406.23742774971424"
-    posY="581.32734897575847"
-    angle="0"
-    zLevel="166"
-    collisionEntity="notApplicable"
-    collisionCategory="1"
-    collisionMask="65533"
-    textureMeterWidth="200"
-    textureMeterHeight="200"
-    textureOffsetMeterX="0"
-    textureOffsetMeterY="0">
-    <vertices>
-      <vertex
-        id="1"
-        x="0"
-        y="0" />
-      <vertex
-        id="2"
-        x="70"
-        y="-1" />
-      <vertex
-        id="3"
-        x="70"
-        y="-35" />
-      <vertex
-        id="4"
-        x="-5"
-        y="-35" />
-    </vertices>
-    <triangles>
-      <triangle
-        id="1"
-        v1="4"
-        v2="1"
-        v3="2" />
-      <triangle
-        id="2"
-        v1="2"
-        v2="3"
-        v3="4" />
-    </triangles>
-    <border
-      leftGroundAngle="0"
-      rightGroundAngle="0"
-      leftCeilingAngle="0"
-      rightCeilingAngle="0">
-      <groundBorder
-        texture="notDefined"
-        horisontalMeterOffset="0"
-        textureMeterWidth="0"
-        textureMeterHeight="0" />
-      <ceilingBorder
-        texture="notDefined"
-        horisontalMeterOffset="0"
-        textureMeterWidth="0"
-        textureMeterHeight="0" />
-      <leftWallBorder
-        texture="notDefined"
-        horisontalMeterOffset="0"
-        textureMeterWidth="0"
-        textureMeterHeight="0" />
-      <rightWallBorder
-        texture="notDefined"
-        horisontalMeterOffset="0"
-        textureMeterWidth="0"
-        textureMeterHeight="0" />
-    </border>
-  </staticPolygon>
-  <staticPolygon
-    name="clockwise"
-    texture="grotto"
-    posX="507.23742774971424"
-    posY="532.32734897575847"
-    angle="0"
-    zLevel="166"
-    collisionEntity="notApplicable"
-    collisionCategory="1"
-    collisionMask="65533"
-    textureMeterWidth="200"
-    textureMeterHeight="200"
-    textureOffsetMeterX="0"
-    textureOffsetMeterY="0">
-    <vertices>
-      <vertex
-        id="1"
-        x="0"
-        y="0" />
-      <vertex
-        id="2"
-        x="61.996813402787211"
-        y="0.51115309024589806" />
-      <vertex
-        id="3"
-        x="60"
-        y="35" />
-      <vertex
-        id="4"
-        x="5"
-        y="32" />
-    </vertices>
-    <triangles>
-      <triangle
-        id="1"
-        v1="1"
-        v2="4"
-        v3="3" />
-      <triangle
-        id="2"
         v1="3"
         v2="2"
         v3="1" />
@@ -1213,6 +1071,113 @@
         textureMeterHeight="0" />
     </border>
   </staticPolygon>
+  <staticPolygon
+    name="homeGround"
+    texture="transparent"
+    posX="373.7475961985333"
+    posY="689.3154944319831"
+    angle="0"
+    zLevel="169"
+    collisionEntity="notApplicable"
+    collisionCategory="1"
+    collisionMask="65533"
+    textureMeterWidth="200"
+    textureMeterHeight="200"
+    textureOffsetMeterX="0"
+    textureOffsetMeterY="0">
+    <vertices>
+      <vertex
+        id="1"
+        x="65.164967978938421"
+        y="-6.1040602916982607" />
+      <vertex
+        id="2"
+        x="86.221348533788387"
+        y="-10.211781132001761" />
+      <vertex
+        id="3"
+        x="123.17402570226568"
+        y="-6.6126903312706418" />
+      <vertex
+        id="4"
+        x="170.31332919961233"
+        y="0.70060305551169222" />
+      <vertex
+        id="5"
+        x="90.552944924882922"
+        y="19.792036318204282" />
+      <vertex
+        id="6"
+        x="-2.4521106942906954"
+        y="21.368393193105931" />
+      <vertex
+        id="7"
+        x="10.676875419633689"
+        y="5.30867681944892" />
+      <vertex
+        id="8"
+        x="12.986519854330254"
+        y="-3.7649263168586913" />
+    </vertices>
+    <triangles>
+      <triangle
+        id="1"
+        v1="1"
+        v2="8"
+        v3="7" />
+      <triangle
+        id="2"
+        v1="1"
+        v2="7"
+        v3="6" />
+      <triangle
+        id="3"
+        v1="1"
+        v2="6"
+        v3="5" />
+      <triangle
+        id="4"
+        v1="1"
+        v2="5"
+        v3="4" />
+      <triangle
+        id="5"
+        v1="1"
+        v2="4"
+        v3="3" />
+      <triangle
+        id="6"
+        v1="3"
+        v2="2"
+        v3="1" />
+    </triangles>
+    <border
+      leftGroundAngle="0"
+      rightGroundAngle="0"
+      leftCeilingAngle="0"
+      rightCeilingAngle="0">
+      <groundBorder
+        texture="notDefined"
+        horisontalMeterOffset="0"
+        textureMeterWidth="0"
+        textureMeterHeight="0" />
+      <ceilingBorder
+        texture="notDefined"
+        horisontalMeterOffset="0"
+        textureMeterWidth="0"
+        textureMeterHeight="0" />
+      <leftWallBorder
+        texture="notDefined"
+        horisontalMeterOffset="0"
+        textureMeterWidth="0"
+        textureMeterHeight="0" />
+      <rightWallBorder
+        texture="notDefined"
+        horisontalMeterOffset="0"
+        textureMeterWidth="0"
+        textureMeterHeight="0" />
+    </border>
+  </staticPolygon>
   <dynamicBox
     name="wrecker"
     texture="crater_rock"
@@ -1281,16 +1246,6 @@
     </stateProperties>
   </childObject>
   <childObject
-    name="landing_pad1">
-    <stateProperties
-      state="default">
-      <properties
-        file="landing_pad.xml"
-        posX="440.2054322870278"
-        posY="542.80403235730068" />
-    </stateProperties>
-  </childObject>
-  <childObject
     name="leapfrog1">
     <stateProperties
       state="landingState">
@@ -1305,6 +1260,33 @@
         file="leapfrog_landing.xml"
         posX="1199.1870434607911"
         posY="400.59147968916619" />
+    </stateProperties>
+  </childObject>
+  <childObject
+    name="landing_pad1">
+    <stateProperties
+      state="default">
+      <properties
+        posX="415.23595638880357"
+        posY="683.74305055573268">
+        <compoundObject
+          needsGroupIndex="false">
+          <staticBox
+            name="landingPad1"
+            texture="transparent"
+            posX="0"
+            posY="0"
+            angle="0"
+            zLevel="0"
+            collisionEntity="landingPad"
+            collisionCategory="1"
+            collisionMask="65533"
+            width="50"
+            height="25" />
+          <behaviour
+            type="landingPad" />
+        </compoundObject>
+      </properties>
     </stateProperties>
   </childObject>
 </compoundObject>

@@ -68,8 +68,8 @@
     <stateProperties
       state="default">
       <properties
-        posX="541.84002940202936"
-        posY="522.45948546870045">
+        posX="533.63686005365832"
+        posY="675.59639132795223">
         <compoundObject
           needsGroupIndex="false">
           <dynamicBox
@@ -142,8 +142,8 @@
     <stateProperties
       state="default">
       <properties
-        posX="782.4321837974195"
-        posY="486.02226771301684">
+        posX="788.10165695753983"
+        posY="484.60489942298682">
         <compoundObject
           needsGroupIndex="true">
           <dynamicCircle
