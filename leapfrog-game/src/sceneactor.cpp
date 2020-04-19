@@ -40,7 +40,6 @@ SceneActor* SceneActor::defineScene(
    CompoundObject* parentObject,
    b2World* world,
    pugi::xml_node& root,
-   const string& initialState,
    int groupIndex)
 {
    string sceneTypeStr = root.child("behaviour").child("sceneProperties").attribute("sceneType").as_string();
@@ -57,14 +56,14 @@ SceneActor* SceneActor::defineScene(
 
    if (sceneTypeStr == "ground")
    {
-      LandingActor* landingScene = new LandingActor(gameResources, world, zoomScale, root, initialState, groupIndex);
+      LandingActor* landingScene = new LandingActor(gameResources, world, zoomScale, root, groupIndex);
 
       baseScene = static_cast<SceneActor*>(landingScene);
 
    }
    else if (sceneTypeStr == "space")
    {
-      FreeSpaceActor* spaceScene = new FreeSpaceActor(gameResources, world, zoomScale, root, initialState, groupIndex);
+      FreeSpaceActor* spaceScene = new FreeSpaceActor(gameResources, world, zoomScale, root, groupIndex);
 
       baseScene = static_cast<SceneActor*>(spaceScene);
    }
@@ -74,7 +73,6 @@ SceneActor* SceneActor::defineScene(
          gameResources,
          world, 
          root, 
-         initialState,
          groupIndex);
 
       baseScene = static_cast<SceneActor*>(orbitScene);
@@ -136,10 +134,8 @@ SceneActor* SceneActor::defineScene(
 SceneActor::SceneActor(
    Resources& gameResources, 
    b2World* world, 
-   float zoomScale, 
-   const std::string& initialState) :
+   float zoomScale) :
    CompoundObject(this, NULL),
-   m_initialState(initialState),
    m_gameResources(&gameResources),
    m_world(world),
    m_zoomScale(zoomScale),
@@ -284,11 +280,6 @@ b2World* SceneActor::getWorld(void)
 Resources* SceneActor::getResources(void)
 {
    return m_gameResources;
-}
-
-string* SceneActor::getInitialState(void)
-{
-   return &m_initialState;
 }
 
 void SceneActor::setPanorateMode(PanorateModeEnum mode)
@@ -762,8 +753,7 @@ void SceneActor::sweepSpawnList(void)
             this,
             m_world,
             Vector2(posX, posY),
-            *spawnNode,
-            "");
+            *spawnNode);
 
       }
    }

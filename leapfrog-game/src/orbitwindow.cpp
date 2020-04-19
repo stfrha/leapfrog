@@ -45,8 +45,7 @@ OrbitWindow::OrbitWindow(
       NULL,
       world,
       Vector2(0.0f, 0.0f),
-      spaceSceneFile,
-      string("default")));
+      spaceSceneFile));
 
    sceneObj->setZoom(spaceZoomScale);
 

@@ -255,8 +255,7 @@ static int c_addMissionStateSceneObjects(lua_State *L)
       scene,
       NULL,
       scene->getWorld(),
-      missionStateSceneAdditionsFileName,
-      *scene->getInitialState());
+      missionStateSceneAdditionsFileName);
    
    return 0;
 }

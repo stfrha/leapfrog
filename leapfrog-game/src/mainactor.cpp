@@ -159,8 +159,7 @@ void MainActor::startScene(void)
             NULL,
             m_world,
             Vector2(0.0f, 0.0f),
-            m_nextScene.m_nextSceneFile,
-            m_nextScene.m_nextSceneState));
+            m_nextScene.m_nextSceneFile));
 
       if (sceneObj == NULL)
       {
@@ -188,8 +187,7 @@ void MainActor::startScene(void)
             NULL,
             m_world,
             Vector2(0.0f, 0.0f),
-            m_nextScene.m_nextSceneFile,
-            m_nextScene.m_nextSceneState));
+            m_nextScene.m_nextSceneFile));
 
       window->addChild(co);
 

@@ -75,7 +75,7 @@ LeapFrog::LeapFrog(
    m_wantedAngle(0.0f),
    m_modeInTransit(false)
 {
-	initCompoundObjectParts(gameResources, sceneParent, sceneParent, parentObject, world, pos, root, string(""), groupIndex);
+	initCompoundObjectParts(gameResources, sceneParent, sceneParent, parentObject, world, pos, root, groupIndex);
 
    m_mainActor = getActor("lfMainBody");
    m_lfRightBigLeg = static_cast<Sprite*>(getActor("lfRightBigLeg").get());

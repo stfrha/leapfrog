@@ -29,7 +29,7 @@ LaunchSite::LaunchSite(
    m_angleHoldDuration(16000)
 
 {
-	initCompoundObjectParts(gameResources, sceneParent, sceneParent, parentObject, world, pos, root, string(""), groupIndex);
+	initCompoundObjectParts(gameResources, sceneParent, sceneParent, parentObject, world, pos, root, groupIndex);
 
    m_leftFootRestJoint = (b2RevoluteJoint*)getJoint("leftRestJoint");
    m_rightFootRestJoint = (b2RevoluteJoint*)getJoint("rightRestJoint");

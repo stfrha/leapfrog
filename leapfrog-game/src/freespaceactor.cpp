@@ -17,9 +17,8 @@ FreeSpaceActor::FreeSpaceActor(
    b2World* world,
    float zoom,
    xml_node& root,
-   const string& initialState,
    int groupIndex) :
-   SceneActor(gameResources, world, zoom, initialState),
+   SceneActor(gameResources, world, zoom),
    m_inOrbitField(false),
    m_state(insertBurn),
    m_stateChangeTime(0)
@@ -32,7 +31,7 @@ FreeSpaceActor::FreeSpaceActor(
 
    m_world->SetContactListener(&m_contactListener);
 
-   initCompoundObjectParts(gameResources, this, this, NULL, world, Vector2(0.0f, 0.0f), root, initialState, groupIndex, true);
+   initCompoundObjectParts(gameResources, this, this, NULL, world, Vector2(0.0f, 0.0f), root, groupIndex, true);
 
    // Create background before the leapfrog
    generateBackground(gameResources);

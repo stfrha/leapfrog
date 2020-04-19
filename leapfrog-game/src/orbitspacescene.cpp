@@ -14,9 +14,8 @@ OrbitSpaceScene::OrbitSpaceScene(
    Resources& gameResources,
    b2World* world,
    xml_node& root,
-   const string& initialState,
    int groupIndex) :
-	SceneActor(gameResources, world, 0.4f, initialState),
+	SceneActor(gameResources, world, 0.4f),
    m_state(enteringOrbit),
    m_stateStartTime(0)
 {
@@ -29,7 +28,7 @@ OrbitSpaceScene::OrbitSpaceScene(
 //   m_world->SetContactListener(&m_contactListener);
 
 //   readDefinitionXmlFile(gameResources, this, NULL, m_world, Vector2(0.0f, 0.0f), fileName, initialState);
-   initCompoundObjectParts(gameResources, this, this, this, world, Vector2(0.0f, 0.0f), root, initialState, groupIndex, true);
+   initCompoundObjectParts(gameResources, this, this, this, world, Vector2(0.0f, 0.0f), root, groupIndex, true);
 
    // Create background before the leapfrog
    // generateBackground(gameResources);

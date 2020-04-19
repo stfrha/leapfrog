@@ -1,7 +1,5 @@
 #include <algorithm>
 
-#include "Box2D/Box2D.h"
-
 #include "compoundobject.h"
 #include "compoundobjectevents.h"
 
@@ -13,7 +11,6 @@
 // CompoundObject
 #include "launchsite.h"
 #include "leapfrog.h"
-
 #include "breakableobject.h"
 #include "explosiveobject.h"
 #include "magneticmine.h"
@@ -24,6 +21,7 @@
 #include "planetactor.h"
 #include "orbitscene.h"
 #include "system.h"
+
 
 #include "polygonvertices.h"
 #include "bodyuserdata.h"
@@ -142,8 +140,7 @@ void CompoundObject::removeShape(Actor* removeMe)
     CompoundObject* parentObject,
     b2World* world,
     const Vector2& pos,
-    const string& fileName,
-    const string& initialState)
+    const string& fileName)
  {
     ox::file::buffer bf;
 
@@ -157,8 +154,7 @@ void CompoundObject::removeShape(Actor* removeMe)
                parentObject,
                world,
                pos,
-               &bf.data[0], bf.size(),
-               initialState);
+               &bf.data[0], bf.size());
     }
 
     return NULL;
@@ -178,8 +174,7 @@ void CompoundObject::removeShape(Actor* removeMe)
    b2World* world,
    const Vector2& pos,
    const void* buffer,
-   const size_t size,
-   const string& initialState)
+   const size_t size)
 {
    xml_document doc;
 
@@ -188,7 +183,7 @@ void CompoundObject::removeShape(Actor* removeMe)
 
    xml_node root = doc.child("compoundObject");
 
-   return initCompoundObject(gameResources, sceneParent, parentObject, world, pos, root, initialState);
+   return initCompoundObject(gameResources, sceneParent, parentObject, world, pos, root);
 }
 
  void CompoundObject::addObjectsFromXmlFile(
@@ -196,8 +191,7 @@ void CompoundObject::removeShape(Actor* removeMe)
     SceneActor* sceneParent,
     CompoundObject* parentObject,
     b2World* world,
-    const std::string& fileName,
-    const std::string& initialState)
+    const std::string& fileName)
  {
     ox::file::buffer bf;
     ox::file::read(fileName.c_str(), bf);
@@ -217,7 +211,6 @@ void CompoundObject::removeShape(Actor* removeMe)
        world,
        Vector2(0.0f, 0.0f),
        root,
-       string(""),
        0);
  }
 
@@ -233,8 +226,7 @@ CompoundObject* CompoundObject::initCompoundObject(
    CompoundObject* parentObject,
    b2World* world,
    const Vector2& pos,
-   xml_node& root,
-   const string& initialState)
+   xml_node& root)
 {
    // Check if this object needs a groupIndex for collisions
    bool needsGroupIndex = root.attribute("needsGroupIndex").as_bool(false);
@@ -260,7 +252,6 @@ CompoundObject* CompoundObject::initCompoundObject(
          parentObject,
          world,
          root,
-         initialState,
          groupIndex);
 
       sa->m_behaviourType = BehaviourEnum::scene;
@@ -288,7 +279,6 @@ CompoundObject* CompoundObject::initCompoundObject(
          parentObject,
          world,
          root,
-         initialState,
          groupIndex);
 
       sa->m_behaviourType = BehaviourEnum::orbitScene;
@@ -433,7 +423,6 @@ CompoundObject* CompoundObject::initCompoundObject(
          world,
          pos,
          root,
-         string(""),
          groupIndex);
 
       return co;
@@ -450,7 +439,6 @@ bool CompoundObject::initCompoundObjectParts(
    b2World* world,
    const Vector2& pos,
    const pugi::xml_node& root,
-   const string& initialState,
    int groupIndex,
    bool parentIsScene)
 {
@@ -468,7 +456,7 @@ bool CompoundObject::initCompoundObjectParts(
       it != savedNode.children("childObject").end();
       ++it)
    {
-      defineChildObject(gameResources, sceneParent, this, world, pos, *it, initialState);
+      defineChildObject(gameResources, sceneParent, this, world, pos, *it);
    }
 
    for (auto it = savedNode.children("spriteBox").begin();
@@ -1299,36 +1287,21 @@ CompoundObject* CompoundObject::defineChildObject(
    CompoundObject* parentObject,
    b2World* world,
    const Vector2& pos, 
-   xml_node& objectNode,
-   const string& initialState)
+   xml_node& objectNode)
 {
-   xml_node stateNode;
-
-   if (!getStateNode(objectNode, initialState, stateNode))
-   {
-      return NULL;
-   }
-
-   xml_node propNode = stateNode.child("properties");
-
-   if (propNode.empty())
-   {
-      return NULL;
-   }
-
    Vector2 objPos = Vector2(
-      propNode.attribute("posX").as_float(),
-      propNode.attribute("posY").as_float());
+      objectNode.attribute("posX").as_float(),
+      objectNode.attribute("posY").as_float());
 
    objPos += pos;
 
-   string fileName = propNode.attribute("file").as_string("notApplicable");
+   string fileName = objectNode.attribute("file").as_string("notApplicable");
 
    CompoundObject* co = NULL;
 
    if (fileName == "notApplicable")
    {
-      xml_node coNode = propNode.child("compoundObject");
+      xml_node coNode = objectNode.child("compoundObject");
 
       if (coNode.empty())
       {
@@ -1342,8 +1315,7 @@ CompoundObject* CompoundObject::defineChildObject(
          parentObject,
          world,
          objPos,
-         coNode,
-         initialState);
+         coNode);
    }
    else
    {
@@ -1354,8 +1326,7 @@ CompoundObject* CompoundObject::defineChildObject(
          parentObject,
          world,
          objPos,
-         fileName,
-         initialState);
+         fileName);
    }
 
    if (co)
@@ -1369,35 +1340,6 @@ CompoundObject* CompoundObject::defineChildObject(
    }
 
    return co;
-}
-
-bool CompoundObject::getStateNode(xml_node& objectNode, const string& initialState, xml_node& stateNode)
-{
-   // Iterate the stateProperties of the node, looking for state attributes
-   // that matches the supplied initialState. If initialState is empty,
-   // the first stateProperty is used. If no match, look again but this 
-   // time, return if a stateProperty with state: "default" exists
-
-   for (auto it = objectNode.children("stateProperties").begin(); it != objectNode.children("stateProperties").end(); ++it)
-   {
-      if ((initialState == "") || (it->attribute("state").as_string() == initialState))
-      {
-         stateNode = *it;
-         return true;
-      }
-   }
-
-   for (auto it = objectNode.children("stateProperties").begin(); it != objectNode.children("stateProperties").end(); ++it)
-   {
-      string s = it->attribute("state").as_string();
-      if (s == "default")
-      {
-         stateNode = *it;
-         return true;
-      }
-   }
-
-   return false;
 }
 
 

@@ -43,7 +43,6 @@ public:
       CompoundObject* parentObject,
       b2World* world,
       pugi::xml_node& root,
-      const std::string& initialState,
       int groupIndex);
    
 protected:

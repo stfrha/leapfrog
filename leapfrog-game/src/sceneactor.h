@@ -94,7 +94,6 @@ protected:
    bool m_panorateLimitEnabled;
    bool m_externalControl;
    SceneTypeEnum m_sceneType;
-   std::string m_initialState;
 
 public:
    const Vector2& getWantedVpPos() const; 
@@ -105,8 +104,7 @@ public:
 	SceneActor(
       oxygine::Resources& gameResources, 
       b2World* world, 
-      float zoomScale,
-      const std::string& initialState);
+      float zoomScale);
    ~SceneActor();
 
    static SceneActor* defineScene(
@@ -114,7 +112,6 @@ public:
       CompoundObject* parentObject,
       b2World* world,
       pugi::xml_node& root,
-      const std::string& initialState,
       int groupIndex);
 
    //float m_sceneWidth;
@@ -134,7 +131,6 @@ public:
 
    b2World* getWorld(void);
    Resources* getResources(void);
-   std::string* getInitialState(void);
 
    void addParallaxBackground(ParallaxBackground* background);
    void addParallaxBackgroundSprite(oxygine::spSprite sp, float parallaxAmount);

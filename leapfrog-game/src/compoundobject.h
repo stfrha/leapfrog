@@ -211,8 +211,6 @@ private:
 
    virtual void setPropertyImpl(int propId, float value);
 
-   bool getStateNode(pugi::xml_node& objectNode, const std::string& initialState, pugi::xml_node& stateNode);
-
 protected:
    SceneActor * m_sceneActor;
    CompoundObject * m_parentObject;
@@ -244,8 +242,7 @@ public:
       CompoundObject* parentObject,
       b2World* world,
       const oxygine::Vector2& pos,
-      const std::string& fileName,
-      const std::string& initialState);
+      const std::string& fileName);
 
    static CompoundObject* readDefinitionXml(
       oxygine::Resources& gameResources,
@@ -254,8 +251,7 @@ public:
       b2World* world,
       const oxygine::Vector2& pos,
       const void* buffer,
-      const size_t size,
-      const std::string& initialState);
+      const size_t size);
 
    static CompoundObject* initCompoundObject(
       oxygine::Resources& gameResources,
@@ -263,8 +259,7 @@ public:
       CompoundObject* parentObject,
       b2World* world,
       const oxygine::Vector2& pos,
-      pugi::xml_node& objectNode,
-      const std::string& initialState);
+      pugi::xml_node& objectNode);
 
 
 
@@ -274,8 +269,7 @@ public:
       SceneActor* sceneParent,
       CompoundObject* parentObject,
       b2World* world,
-      const std::string& fileName,
-      const std::string& initialState);
+      const std::string& fileName);
 
    // The parentActor is the actor that child sprites are
    // attached to. Normally, this is the same as the sceneActor
@@ -289,7 +283,6 @@ public:
       b2World* world,
       const oxygine::Vector2& pos,
       const pugi::xml_node& objectNode,
-      const std::string& initialState,
       int groupIndex,
       bool parentIsScene = false);
 
@@ -299,8 +292,7 @@ public:
       CompoundObject* parentObject,
       b2World* world,
       const oxygine::Vector2& pos,
-      pugi::xml_node& objectNode,
-      const std::string& initialState);
+      pugi::xml_node& objectNode);
 
    static void doCommonShapeDefinitions(
       oxygine::Resources& gameResources,

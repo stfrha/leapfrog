@@ -37,7 +37,6 @@ BreakableObject::BreakableObject(
       world,
       pos,
       root,
-      "",
       groupIndex);
 
    attachTo(m_sceneActor);

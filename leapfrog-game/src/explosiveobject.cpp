@@ -52,7 +52,6 @@ ExplosiveObject::ExplosiveObject(
       world,
       pos,
       root,
-      "",
       groupIndex);
 
    attachTo(m_sceneActor);

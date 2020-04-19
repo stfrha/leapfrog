@@ -111,7 +111,6 @@ PickupObject::PickupObject(
       world,
       pos,
       root,
-      "",
       groupIndex);
 
    attachTo(m_sceneActor);

@@ -1202,11 +1202,6 @@
       hasLowerBoundary="true"
       hasLeftBoundary="true"
       hasRightBoundary="true">
-      <states>
-        <state>default</state>
-        <state>groundState</state>
-        <state>landingState</state>
-      </states>
     </sceneProperties>
   </behaviour>
   <rope
@@ -1225,53 +1220,28 @@
     collisionEntity="notApplicable"
     collisionCategory="33"
     collisionMask="65534" />
-  <childObject
-    name="machine1">
-    <stateProperties
-      state="default">
-      <properties
-        file="strange_machine.xml"
-        posX="376.11720175893953"
-        posY="292.05208483008192" />
-    </stateProperties>
-  </childObject>
-  <childObject
-    name="launchSite1">
-    <stateProperties
-      state="default">
-      <properties
-        file="launch_site.xml"
-        posX="122.21347591965764"
-        posY="627.58336773289375" />
-    </stateProperties>
-  </childObject>
-  <childObject
-    name="leapfrog1">
-    <stateProperties
-      state="landingState">
-      <properties
-        file="leapfrog_reentry.xml"
-        posX="537.19860737896806"
-        posY="481.56945402130646" />
-    </stateProperties>
-    <stateProperties
-      state="groundState">
-      <properties
-        file="leapfrog_landing.xml"
-        posX="1199.1870434607911"
-        posY="400.59147968916619" />
-    </stateProperties>
-  </childObject>
-  <childObject
-    name="landing_pad1">
-    <stateProperties
-      state="default">
-      <properties
-        posX="415.23595638880357"
-        posY="683.74305055573268">
-        <compoundObject
-          needsGroupIndex="false">
-          <staticBox
+   <childObject
+      name="machine1"
+      file="strange_machine.xml"
+      posX="376.11720175893953"
+      posY="292.05208483008192" />
+   <childObject
+      name="launchSite1"
+      file="launch_site.xml"
+      posX="122.21347591965764"
+      posY="627.58336773289375" />
+   <childObject
+      name="leapfrog1"
+      file="leapfrog_reentry.xml"
+      posX="537.19860737896806"
+      posY="481.56945402130646" />
+   <childObject
+      name="landing_pad1"
+      posX="415.23595638880357"
+      posY="683.74305055573268">
+      <compoundObject
+         needsGroupIndex="false">
+         <staticBox
             name="landingPad1"
             texture="transparent"
             posX="0"
@@ -1283,10 +1253,8 @@
             collisionMask="65533"
             width="50"
             height="25" />
-          <behaviour
+         <behaviour
             type="landingPad" />
-        </compoundObject>
-      </properties>
-    </stateProperties>
-  </childObject>
+      </compoundObject>
+   </childObject>
 </compoundObject>

@@ -27,7 +27,7 @@ LandingPad::LandingPad(
    m_state(LandingPadState::unstable),
    m_stableTicks(0)
 {
-	initCompoundObjectParts(gameResources, sceneParent, sceneParent, parentObject, world, pos, root, string(""), groupIndex);
+	initCompoundObjectParts(gameResources, sceneParent, sceneParent, parentObject, world, pos, root, groupIndex);
 
    // This CompoundObject is also an actor who normally has
    // a userData that points to its parent. However, the parent

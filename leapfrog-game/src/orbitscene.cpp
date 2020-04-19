@@ -5,7 +5,6 @@
 #include "orbitspacescene.h"
 #include "planetactor.h"
 #include "leapfrog.h"
-#include "orbitspacescene.h"
 #include "orbitwindow.h"
 #include "orbitscene.h"
 #include "layout.h"
@@ -19,7 +18,6 @@ OrbitScene::OrbitScene(
    CompoundObject* parentObject,
    b2World* world,
    xml_node& root,
-   const std::string& initialState,
    int groupIndex) :
       CompoundObject(NULL, parentObject),
       m_state(enteringOrbit)

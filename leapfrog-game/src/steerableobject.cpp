@@ -37,7 +37,7 @@ SteerableObject::SteerableObject(
    m_gun(NULL),
    m_boosterFlame(NULL)
 {
-   initCompoundObjectParts(gameResources, sceneActor, sceneActor, parentObject, world, pos, root, string(""), groupIndex);
+   initCompoundObjectParts(gameResources, sceneActor, sceneActor, parentObject, world, pos, root, groupIndex);
 
    attachTo(m_sceneActor);
 
