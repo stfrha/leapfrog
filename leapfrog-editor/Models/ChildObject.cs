@@ -26,7 +26,7 @@ namespace LeapfrogEditor
       public ChildObject()
       {
          _name = "noName";
-
+         //CompObj = new CompoundObject();
       }
 
       #endregion

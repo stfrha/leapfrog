@@ -143,6 +143,25 @@
                         </TextBlock.ContextMenu>
                      </TextBlock>
                   </HierarchicalDataTemplate>
+                  <HierarchicalDataTemplate DataType="{x:Type local:CompoundObjectViewModel}"
+                     ItemsSource="{Binding TreeCollection}">
+                     <TextBlock Margin="2"  Text="Hej på dig">
+                        <TextBlock.ContextMenu>
+                           <ContextMenu>
+                              <MenuItem Header="Edit this file" 
+                                 CommandParameter="{Binding}"
+                                 Command="{Binding Path=Data.ChangeEditableObject, Source={StaticResource DataContextProxy}}" />
+                              <MenuItem Header="Save" 
+                                 CommandParameter="{Binding}"
+                                 Command="{Binding Path=Data.SaveThisObject, Source={StaticResource DataContextProxy}}" />
+                              <Separator />
+                              <MenuItem Header="Close..." 
+                                 CommandParameter="{Binding}"
+                                 Command="{Binding Path=Data.CloseThisFile, Source={StaticResource DataContextProxy}}" />
+                           </ContextMenu>
+                        </TextBlock.ContextMenu>
+                     </TextBlock>
+                  </HierarchicalDataTemplate>
                   <HierarchicalDataTemplate DataType="{x:Type local:SteerableObjectPropertiesViewModel}"
                      ItemsSource="{Binding TreeCollection}">
                      <TextBlock Margin="2"  Text="Steerable Object Behaviour Properties">
@@ -233,7 +252,7 @@
                      </TextBlock>
                   </HierarchicalDataTemplate>
                   <HierarchicalDataTemplate DataType="{x:Type local:ChildObjectViewModel}"
-                     ItemsSource="{Binding StateProperties}">
+                     ItemsSource="{Binding CompObj}">
                      <TextBlock Margin="2"  Text="{Binding Name}">
                         <TextBlock.ContextMenu>
                            <ContextMenu>

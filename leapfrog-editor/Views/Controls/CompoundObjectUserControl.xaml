@@ -377,7 +377,7 @@
       <ItemsControl ItemsSource="{Binding ChildObjectCollection.Children}">
          <ItemsControl.Resources>
             <DataTemplate DataType="{x:Type local:ChildObjectViewModel}">
-               <ItemsControl ItemsSource="{Binding StateProperties}">
+               <ItemsControl ItemsSource="{Binding CompObj}">
                   <ItemsControl.ItemsPanel>
                      <ItemsPanelTemplate>
                         <Canvas/>
