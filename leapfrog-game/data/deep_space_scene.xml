@@ -28,54 +28,34 @@
       <spawnObject
         probabilityFactor="1">
         <childObject
-          name="largeAsteroid">
-          <stateProperties
-            state="default">
-            <properties
-              file="large_asteroid.xml"
-              posX="0"
-              posY="0" />
-          </stateProperties>
-        </childObject>
+            name="largeAsteroid"
+            file="large_asteroid.xml"
+            posX="0"
+            posY="0" />
       </spawnObject>
       <spawnObject
         probabilityFactor="1">
         <childObject
-          name="mediumAsteroid">
-          <stateProperties
-            state="default">
-            <properties
-              file="medium_asteroid.xml"
-              posX="0"
-              posY="0" />
-          </stateProperties>
-        </childObject>
+            name="mediumAsteroid"
+            file="medium_asteroid.xml"
+            posX="0"
+            posY="0" />
       </spawnObject>
       <spawnObject
         probabilityFactor="1">
         <childObject
-          name="smallAsteroid">
-          <stateProperties
-            state="default">
-            <properties
-              file="small_asteroid.xml"
-              posX="0"
-              posY="0" />
-          </stateProperties>
-        </childObject>
+           name="smallAsteroid"
+           file="small_asteroid.xml"
+           posX="0"
+           posY="0" />
       </spawnObject>
     </objectFactoryProperties>
   </system>
   <childObject
-    name="asteroid1">
-    <stateProperties
-      state="default">
-      <properties
-        file="large_asteroid.xml"
-        posX="500"
-        posY="240" />
-    </stateProperties>
-  </childObject>
+      name="asteroid1"
+      file="large_asteroid.xml"
+      posX="500"
+      posY="240" />
   <childObject
       name="leapfrog1"
       file="leapfrog_deep_space.xml"

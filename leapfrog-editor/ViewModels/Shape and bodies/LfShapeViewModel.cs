@@ -160,11 +160,6 @@ namespace LeapfrogEditor
       {
          get
          {
-            if (Name == "testNetShape")
-            {
-               int a = 10;
-            }
-
             double parentPos = 0;
 
             if (ParentVm != null)

@@ -143,25 +143,6 @@
                         </TextBlock.ContextMenu>
                      </TextBlock>
                   </HierarchicalDataTemplate>
-                  <HierarchicalDataTemplate DataType="{x:Type local:ChildCOViewModel}"
-                     ItemsSource="{Binding TreeCollection}">
-                     <TextBlock Margin="2"  Text="{Binding DispName}">
-                        <TextBlock.ContextMenu>
-                           <ContextMenu>
-                              <MenuItem Header="Open Object File" 
-                                 CommandParameter="{Binding}"
-                                 Command="{Binding Path=Data.OpenChildFile, Source={StaticResource DataContextProxy}}" />
-                              <MenuItem Header="Edit this object" 
-                                 CommandParameter="{Binding}"
-                                 Command="{Binding Path=Data.ChangeEditableObject, Source={StaticResource DataContextProxy}}" />
-                              <Separator />
-                              <MenuItem Header="Delete" 
-                                 CommandParameter="{Binding}"
-                                 Command="{Binding Path=Data.DeleteThisObject, Source={StaticResource DataContextProxy}}" />
-                           </ContextMenu>
-                        </TextBlock.ContextMenu>
-                     </TextBlock>
-                  </HierarchicalDataTemplate>
                   <HierarchicalDataTemplate DataType="{x:Type local:SteerableObjectPropertiesViewModel}"
                      ItemsSource="{Binding TreeCollection}">
                      <TextBlock Margin="2"  Text="Steerable Object Behaviour Properties">
@@ -196,7 +177,7 @@
                      <TextBlock Margin="2"  Text="Scene Properties">
                      </TextBlock>
                   </HierarchicalDataTemplate>
-                  <HierarchicalDataTemplate DataType="{x:Type local:ScenePropsStateCollectionViewModel}"
+                  <!--<HierarchicalDataTemplate DataType="{x:Type local:ScenePropsStateCollectionViewModel}"
                      ItemsSource="{Binding States}">
                      <TextBlock Margin="2"  Text="States">
                         <TextBlock.ContextMenu>
@@ -207,8 +188,8 @@
                            </ContextMenu>
                         </TextBlock.ContextMenu>
                      </TextBlock>
-                  </HierarchicalDataTemplate>
-                  <HierarchicalDataTemplate DataType="{x:Type local:StateViewModel}">
+                  </HierarchicalDataTemplate>-->
+                  <!--<HierarchicalDataTemplate DataType="{x:Type local:StateViewModel}">
                      <TextBlock Margin="2"  Text="{Binding StateIndicator}">
                         <TextBlock.ContextMenu>
                            <ContextMenu>
@@ -222,7 +203,7 @@
                            </ContextMenu>
                         </TextBlock.ContextMenu>
                      </TextBlock>
-                  </HierarchicalDataTemplate>
+                  </HierarchicalDataTemplate>-->
                   <HierarchicalDataTemplate DataType="{x:Type local:ShapeCollectionViewModel}"
                      ItemsSource="{Binding Shapes}">
                      <TextBlock Margin="2"  Text="Shapes">
@@ -456,7 +437,6 @@
                EditableCompoundObject="{Binding EditedCpVm}"
                EditableSpawnObject="{Binding EditableSpawnObject}"
                SelectedChildren="{Binding SelectedChildObjects}"
-               ChildObjectStateProperties="{Binding SelectedChildObjectStateProperties}"
                EditableShapes="{Binding SelectedShapes}"
                EditableJoints="{Binding SelectedJoints}"
                EditableSystems="{Binding SelectedSystems}" />

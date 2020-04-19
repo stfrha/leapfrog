@@ -75,9 +75,9 @@
         <ownedAttribute xmi:type="uml:Property" xmi:id="_CuL7wOoDEemvha9jVSK0DA" name="Type">
           <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#String"/>
         </ownedAttribute>
-        <ownedAttribute xmi:type="uml:Property" xmi:id="_K0YxYOoEEemvha9jVSK0DA" name="StateProperties" type="_cjo20OoDEemvha9jVSK0DA" aggregation="composite" association="_K0W8MOoEEemvha9jVSK0DA">
-          <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_K0ZYcOoEEemvha9jVSK0DA"/>
-          <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_K0ZYceoEEemvha9jVSK0DA" value="*"/>
+        <ownedAttribute xmi:type="uml:Property" xmi:id="_cRRfAuoEEemvha9jVSK0DA" name="CompObj" type="_yZcUMOn9Eemi7d50AosZsw" aggregation="composite" association="_cRQ38OoEEemvha9jVSK0DA">
+          <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_cRSGEOoEEemvha9jVSK0DA" value="1"/>
+          <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_cRSGEeoEEemvha9jVSK0DA" value="1"/>
         </ownedAttribute>
         <ownedOperation xmi:type="uml:Operation" xmi:id="_eazrYOrVEemsCNlhZcC3rg" name="Add"/>
       </packagedElement>
@@ -106,16 +106,6 @@
         <ownedAttribute xmi:type="uml:Property" xmi:id="_2vMkwOoDEemvha9jVSK0DA" name="PosY">
           <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/EcorePrimitiveTypes.library.uml#EDouble"/>
         </ownedAttribute>
-        <ownedAttribute xmi:type="uml:Property" xmi:id="_cRRfAuoEEemvha9jVSK0DA" name="CompObj" type="_yZcUMOn9Eemi7d50AosZsw" aggregation="composite" association="_cRQ38OoEEemvha9jVSK0DA">
-          <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_cRSGEOoEEemvha9jVSK0DA" value="1"/>
-          <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_cRSGEeoEEemvha9jVSK0DA" value="1"/>
-        </ownedAttribute>
-      </packagedElement>
-      <packagedElement xmi:type="uml:Association" xmi:id="_K0W8MOoEEemvha9jVSK0DA" memberEnd="_K0YxYOoEEemvha9jVSK0DA _K0Z_gOoEEemvha9jVSK0DA">
-        <eAnnotations xmi:type="ecore:EAnnotation" xmi:id="_K0YKUOoEEemvha9jVSK0DA" source="org.eclipse.papyrus">
-          <details xmi:type="ecore:EStringToStringMapEntry" xmi:id="_K0YKUeoEEemvha9jVSK0DA" key="nature" value="UML_Nature"/>
-        </eAnnotations>
-        <ownedEnd xmi:type="uml:Property" xmi:id="_K0Z_gOoEEemvha9jVSK0DA" name="childobject" type="_qWAh4OoAEemvha9jVSK0DA" association="_K0W8MOoEEemvha9jVSK0DA"/>
       </packagedElement>
       <packagedElement xmi:type="uml:Association" xmi:id="_VAc8wOoEEemvha9jVSK0DA" memberEnd="_VAeK4OoEEemvha9jVSK0DA _VAex8eoEEemvha9jVSK0DA">
         <eAnnotations xmi:type="ecore:EAnnotation" xmi:id="_VAdj0OoEEemvha9jVSK0DA" source="org.eclipse.papyrus">
@@ -127,7 +117,7 @@
         <eAnnotations xmi:type="ecore:EAnnotation" xmi:id="_cRRfAOoEEemvha9jVSK0DA" source="org.eclipse.papyrus">
           <details xmi:type="ecore:EStringToStringMapEntry" xmi:id="_cRRfAeoEEemvha9jVSK0DA" key="nature" value="UML_Nature"/>
         </eAnnotations>
-        <ownedEnd xmi:type="uml:Property" xmi:id="_cRStIOoEEemvha9jVSK0DA" name="childobjectstateproperties" type="_p45nwOoDEemvha9jVSK0DA" association="_cRQ38OoEEemvha9jVSK0DA"/>
+        <ownedEnd xmi:type="uml:Property" xmi:id="_cRStIOoEEemvha9jVSK0DA" name="childobjectstateproperties" type="_qWAh4OoAEemvha9jVSK0DA" association="_cRQ38OoEEemvha9jVSK0DA"/>
       </packagedElement>
       <packagedElement xmi:type="uml:Class" xmi:id="_r9_2kOoEEemvha9jVSK0DA" name="CoBehaviour">
         <ownedAttribute xmi:type="uml:Property" xmi:id="_uI_oEOrAEemsCNlhZcC3rg" name="Type">
@@ -374,9 +364,18 @@
         <ownedAttribute xmi:type="uml:Property" xmi:id="_f1KfsOoIEemvha9jVSK0DA" name="Name">
           <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#String"/>
         </ownedAttribute>
-        <ownedAttribute xmi:type="uml:Property" xmi:id="_syIscOoIEemvha9jVSK0DA" name="StateProperties" type="_ovv1EOoIEemvha9jVSK0DA" aggregation="composite" association="_syG3QOoIEemvha9jVSK0DA">
-          <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_syJTgOoIEemvha9jVSK0DA"/>
-          <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_syJ6kOoIEemvha9jVSK0DA" value="*"/>
+        <ownedAttribute xmi:type="uml:Property" xmi:id="_SCPs8OoJEemvha9jVSK0DA" name="PosX">
+          <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/EcorePrimitiveTypes.library.uml#EDouble"/>
+        </ownedAttribute>
+        <ownedAttribute xmi:type="uml:Property" xmi:id="_SCWaoOoJEemvha9jVSK0DA" name="PosY">
+          <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/EcorePrimitiveTypes.library.uml#EDouble"/>
+        </ownedAttribute>
+        <ownedAttribute xmi:type="uml:Property" xmi:id="_X7uBwOoJEemvha9jVSK0DA" name="File">
+          <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#String"/>
+        </ownedAttribute>
+        <ownedAttribute xmi:type="uml:Property" xmi:id="_hX3wEIJMEeq45OHjW6N80w" name="CompObj" type="_oAmGgOn8Eemi7d50AosZsw" aggregation="composite" association="_hX2h8IJMEeq45OHjW6N80w">
+          <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_hX3wEYJMEeq45OHjW6N80w" value="1"/>
+          <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_hX4XIIJMEeq45OHjW6N80w" value="1"/>
         </ownedAttribute>
       </packagedElement>
       <packagedElement xmi:type="uml:Association" xmi:id="_NsfqIOoIEemvha9jVSK0DA" memberEnd="_Nsg4QeoIEemvha9jVSK0DA _NshfUeoIEemvha9jVSK0DA">
@@ -392,21 +391,11 @@
         <ownedEnd xmi:type="uml:Property" xmi:id="_Wbh20eoIEemvha9jVSK0DA" name="childobjectviewmodel" type="_JTXGsOoIEemvha9jVSK0DA" association="_WbfakOoIEemvha9jVSK0DA"/>
       </packagedElement>
       <packagedElement xmi:type="uml:Class" xmi:id="_ovv1EOoIEemvha9jVSK0DA" name="ChildCOViewModel">
-        <generalization xmi:type="uml:Generalization" xmi:id="_RzoMsOoKEemvha9jVSK0DA" general="_oAmGgOn8Eemi7d50AosZsw"/>
         <ownedAttribute xmi:type="uml:Property" xmi:id="_2MypAeoIEemvha9jVSK0DA" name="ChildStateModelObject" type="_cjo20OoDEemvha9jVSK0DA" aggregation="shared" association="_2Mwz0OoIEemvha9jVSK0DA">
           <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_2MzQEOoIEemvha9jVSK0DA" value="1"/>
           <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_2Mz3IOoIEemvha9jVSK0DA" value="1"/>
         </ownedAttribute>
         <ownedAttribute xmi:type="uml:Property" xmi:id="_8tWL8OoIEemvha9jVSK0DA" name="Name">
-          <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#String"/>
-        </ownedAttribute>
-        <ownedAttribute xmi:type="uml:Property" xmi:id="_SCPs8OoJEemvha9jVSK0DA" name="PosX">
-          <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/EcorePrimitiveTypes.library.uml#EDouble"/>
-        </ownedAttribute>
-        <ownedAttribute xmi:type="uml:Property" xmi:id="_SCWaoOoJEemvha9jVSK0DA" name="PosY">
-          <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/EcorePrimitiveTypes.library.uml#EDouble"/>
-        </ownedAttribute>
-        <ownedAttribute xmi:type="uml:Property" xmi:id="_X7uBwOoJEemvha9jVSK0DA" name="File">
           <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#String"/>
         </ownedAttribute>
         <ownedAttribute xmi:type="uml:Property" xmi:id="_xorAwOoMEemvha9jVSK0DA" name="SelectedStateIndex">
@@ -415,12 +404,6 @@
         <ownedAttribute xmi:type="uml:Property" xmi:id="_A9RzQOoNEemvha9jVSK0DA" name="State">
           <type xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#String"/>
         </ownedAttribute>
-      </packagedElement>
-      <packagedElement xmi:type="uml:Association" xmi:id="_syG3QOoIEemvha9jVSK0DA" memberEnd="_syIscOoIEemvha9jVSK0DA _syKhoOoIEemvha9jVSK0DA">
-        <eAnnotations xmi:type="ecore:EAnnotation" xmi:id="_syIFYOoIEemvha9jVSK0DA" source="org.eclipse.papyrus">
-          <details xmi:type="ecore:EStringToStringMapEntry" xmi:id="_syIFYeoIEemvha9jVSK0DA" key="nature" value="UML_Nature"/>
-        </eAnnotations>
-        <ownedEnd xmi:type="uml:Property" xmi:id="_syKhoOoIEemvha9jVSK0DA" name="childobjectviewmodel" type="_JTXGsOoIEemvha9jVSK0DA" association="_syG3QOoIEemvha9jVSK0DA"/>
       </packagedElement>
       <packagedElement xmi:type="uml:Association" xmi:id="_2Mwz0OoIEemvha9jVSK0DA" memberEnd="_2MypAeoIEemvha9jVSK0DA _2Mz3IeoIEemvha9jVSK0DA">
         <eAnnotations xmi:type="ecore:EAnnotation" xmi:id="_2MyB8OoIEemvha9jVSK0DA" source="org.eclipse.papyrus">
@@ -817,5 +800,11 @@
       </eAnnotations>
       <ownedEnd xmi:type="uml:Property" xmi:id="_X6VCkvQ5EemOsNuh9P5FNQ" name="shapeeditorviewmodel" type="_vNNa0O61Eem7GZ8K4NqRiA" association="_X6KqgPQ5EemOsNuh9P5FNQ"/>
     </packagedElement>
+  </packagedElement>
+  <packagedElement xmi:type="uml:Association" xmi:id="_hX2h8IJMEeq45OHjW6N80w" memberEnd="_hX3wEIJMEeq45OHjW6N80w _hX4XIYJMEeq45OHjW6N80w">
+    <eAnnotations xmi:type="ecore:EAnnotation" xmi:id="_hX3JAIJMEeq45OHjW6N80w" source="org.eclipse.papyrus">
+      <details xmi:type="ecore:EStringToStringMapEntry" xmi:id="_hX3JAYJMEeq45OHjW6N80w" key="nature" value="UML_Nature"/>
+    </eAnnotations>
+    <ownedEnd xmi:type="uml:Property" xmi:id="_hX4XIYJMEeq45OHjW6N80w" name="childobjectviewmodel" type="_JTXGsOoIEemvha9jVSK0DA" association="_hX2h8IJMEeq45OHjW6N80w"/>
   </packagedElement>
 </uml:Model>

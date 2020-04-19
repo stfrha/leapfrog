@@ -37,8 +37,8 @@ namespace LeapfrogEditor
 
       // Following is special cases for landing scenes. Maybe these will be specialised 
       // xml files with specialised format. Or behaviours of a CompoundObject
-      private ObservableCollection<PlanetActorRef> _planetActors = new ObservableCollection<PlanetActorRef>();
-      private ObservableCollection<ClippedWindowRef> _clippedWindows = new ObservableCollection<ClippedWindowRef>();
+      //private ObservableCollection<PlanetActorRef> _planetActors = new ObservableCollection<PlanetActorRef>();
+      //private ObservableCollection<ClippedWindowRef> _clippedWindows = new ObservableCollection<ClippedWindowRef>();
 
       #endregion
 
@@ -111,22 +111,22 @@ namespace LeapfrogEditor
       // Following is special cases for landing scenes. Maybe these will be specialised 
       // xml files with specialised format.
 
-      [XmlElement("planetActor")]
-      public ObservableCollection<PlanetActorRef> PlanetActors
-      {
-         get { return _planetActors; }
-         set { _planetActors = value; }
-      }
+      //[XmlElement("planetActor")]
+      //public ObservableCollection<PlanetActorRef> PlanetActors
+      //{
+      //   get { return _planetActors; }
+      //   set { _planetActors = value; }
+      //}
 
-      // At serialisation of a parent CompoundObject this collection
-      // is read. Once read, the spaceSceneFile is used to create 
-      // a child CompoundObject.
-      [XmlElement("clippedWindow")]
-      public ObservableCollection<ClippedWindowRef> ClippedWindows
-      {
-         get { return _clippedWindows; }
-         set { _clippedWindows = value; }
-      }
+      //// At serialisation of a parent CompoundObject this collection
+      //// is read. Once read, the spaceSceneFile is used to create 
+      //// a child CompoundObject.
+      //[XmlElement("clippedWindow")]
+      //public ObservableCollection<ClippedWindowRef> ClippedWindows
+      //{
+      //   get { return _clippedWindows; }
+      //   set { _clippedWindows = value; }
+      //}
 
       #endregion
 
@@ -137,27 +137,23 @@ namespace LeapfrogEditor
          // Iterate ChildObjects to load all child objects
          foreach (ChildObject cor in ChildObjects)
          {
-            // Iterate all state properties
-            foreach (TStateProperties<ChildObjectStateProperties> sp in cor.StateProperties)
+            // Only read files if the child object is referenced from a 
+            // separate file, otherwise the serialization will already have
+            // populated the child object.
+            if ((cor.File != "") && (cor.CompObj == null))
             {
-               // Only read files if the child object is referenced from a 
-               // separate file, otherwise the serialization will already have
-               // populated the child object.
-               if ((sp.Properties.File != "") && (sp.Properties.CompObj == null))
-               {
-                  string newFile = System.IO.Path.Combine(path, sp.Properties.File);
+               string newFile = System.IO.Path.Combine(path, cor.File);
 
-                  CompoundObject childCo = CompoundObject.ReadFromFile(newFile);
+               CompoundObject childCo = CompoundObject.ReadFromFile(newFile);
 
-                  sp.Properties.CompObj = childCo;
+               cor.CompObj = childCo;
 
-               }
-               else
-               {
-                  //...however, the child objects may have behaviours or systems that
-                  // has spawn objects or child objects that need to be loaded
-                  sp.Properties.CompObj.AnalyseForChildFiles(path);
-               }
+            }
+            else
+            {
+               //...however, the child objects may have behaviours or systems that
+               // has spawn objects or child objects that need to be loaded
+               cor.CompObj.AnalyseForChildFiles(path);
             }
          }
 
@@ -168,26 +164,17 @@ namespace LeapfrogEditor
             {
                ChildObject cor = so.MyChildObject;
 
-               // Iterate all state properties
-               foreach (TStateProperties<ChildObjectStateProperties> sp in cor.StateProperties)
+               // Only read files if the child object is referenced from a 
+               // separate file, otherwise the serialization will already have
+               // populated the child object.
+               if ((cor.File != "") && (cor.CompObj == null))
                {
-                  // There may be null child objects and those will have a properties 
-                  // set to null. Ignore these.
-                  if (sp.Properties != null)
-                  {
-                     // Only read files if the child object is referenced from a 
-                     // separate file, otherwise the serialization will already have
-                     // populated the child object.
-                     if ((sp.Properties.File != "") && (sp.Properties.CompObj == null))
-                     {
-                        string newFile = System.IO.Path.Combine(path, sp.Properties.File);
+                  string newFile = System.IO.Path.Combine(path, cor.File);
 
-                        CompoundObject childCo = CompoundObject.ReadFromFile(newFile);
+                  CompoundObject childCo = CompoundObject.ReadFromFile(newFile);
 
-                        sp.Properties.CompObj = childCo;
+                  cor.CompObj = childCo;
 
-                     }
-                  }
                }
             }
          }
@@ -202,39 +189,35 @@ namespace LeapfrogEditor
                {
                   ChildObject cor = so.MyChildObject;
 
-                  // Iterate all state properties
-                  foreach (TStateProperties<ChildObjectStateProperties> sp in cor.StateProperties)
+                  // Only read files if the child object is referenced from a 
+                  // separate file, otherwise the serialization will already have
+                  // populated the child object.
+                  if ((cor.File != "") && (cor.CompObj == null))
                   {
-                     // Only read files if the child object is referenced from a 
-                     // separate file, otherwise the serialization will already have
-                     // populated the child object.
-                     if ((sp.Properties.File != "") && (sp.Properties.CompObj == null))
-                     {
-                        string newFile = System.IO.Path.Combine(path, sp.Properties.File);
+                     string newFile = System.IO.Path.Combine(path, cor.File);
 
-                        CompoundObject childCo = CompoundObject.ReadFromFile(newFile);
+                     CompoundObject childCo = CompoundObject.ReadFromFile(newFile);
 
-                        sp.Properties.CompObj = childCo;
+                     cor.CompObj = childCo;
 
-                     }
                   }
                }
             }
          }
 
-         // Iterate ClippedWindows to load all each child objects
-         foreach (ClippedWindowRef cwr in ClippedWindows)
-         {
-            // Iterate all state properties
-            foreach (TStateProperties<ClippedWindowProperties> sp in cwr.StateProperties)
-            {
-               string newFile = System.IO.Path.Combine(path, sp.Properties.SpaceSceneFile);
+         //// Iterate ClippedWindows to load all each child objects
+         //foreach (ClippedWindowRef cwr in ClippedWindows)
+         //{
+         //   // Iterate all state properties
+         //   foreach (TStateProperties<ClippedWindowProperties> sp in cwr.StateProperties)
+         //   {
+         //      string newFile = System.IO.Path.Combine(path, sp.Properties.SpaceSceneFile);
 
-               CompoundObject childCo = CompoundObject.ReadFromFile(newFile);
+         //      CompoundObject childCo = CompoundObject.ReadFromFile(newFile);
 
-               sp.Properties.CompObj = childCo;
-            }
-         }
+         //      sp.Properties.CompObj = childCo;
+         //   }
+         //}
       }
 
       public static CompoundObject ReadFromFile(string fileName)
@@ -279,16 +262,16 @@ namespace LeapfrogEditor
          XmlWriter writer = XmlWriter.Create(fs, settings);
          ser.Serialize(writer, this, ns);
 
-         // Iterate ClippedWindowProperties to save all space scenes as child objects
-         foreach (ClippedWindowRef cw in ClippedWindows)
-         {
-            foreach (TStateProperties<ClippedWindowProperties> sp in cw.StateProperties)
-            {
-               string newFile = System.IO.Path.Combine(path, sp.Properties.SpaceSceneFile);
+         //// Iterate ClippedWindowProperties to save all space scenes as child objects
+         //foreach (ClippedWindowRef cw in ClippedWindows)
+         //{
+         //   foreach (TStateProperties<ClippedWindowProperties> sp in cw.StateProperties)
+         //   {
+         //      string newFile = System.IO.Path.Combine(path, sp.Properties.SpaceSceneFile);
 
-               sp.Properties.CompObj.WriteToFile(newFile);
-            }
-         }
+         //      sp.Properties.CompObj.WriteToFile(newFile);
+         //   }
+         //}
 
          fs.Close();
       }

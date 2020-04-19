@@ -24,9 +24,6 @@ namespace LeapfrogEditor
       private PickupObjectPropertiesViewModel _pickupProperties;
       private ScenePropertiesViewModel _sceneProperties;
 
-      private ObservableCollection<StateViewModel> _defaultStates = new ObservableCollection<StateViewModel>();
-      private StateViewModel _defaultState = new StateViewModel(null, null, null, null, "default");
-
 
       #endregion
 
@@ -47,7 +44,6 @@ namespace LeapfrogEditor
          _explosiveObjProperties = new ExplosiveObjectPropertiesViewModel(treeParent, parentVm, mainVm, ModelObject.ExplosiveObjProps);
          _magneticMineProperties = new MagneticMinePropertiesViewModel(treeParent, parentVm, mainVm, ModelObject.MagneticMineProps);
          _pickupProperties = new PickupObjectPropertiesViewModel(treeParent, parentVm, mainVm, ModelObject.PickupObjProps);
-         _defaultStates.Add(_defaultState);
       }
 
       #endregion
@@ -80,36 +76,6 @@ namespace LeapfrogEditor
       // meaningfull content. For all other behaviour types, index 0 is returned
       // and the property can not be set.
 
-      public int DisplayedStateIndex
-      {
-         get
-         {
-            if (Type == "scene")
-            {
-               return _sceneProperties.DisplayedStateIndex;
-            }
-
-            return 0;
-         }
-      }
-
-      public ObservableCollection<StateViewModel> States
-      {
-         get
-         {
-            if (Type == "scene")
-            {
-               return _sceneProperties.States;
-            }
-
-            ObservableCollection<StateViewModel> svms = new ObservableCollection<StateViewModel>();
-
-            StateViewModel svm = new StateViewModel(null, null, null, null, "default");
-            svms.Add(svm);
-
-            return svms;
-         }
-      }
 
       public BehaviourViewModelBase BehaviourProperties
       {
@@ -156,24 +122,24 @@ namespace LeapfrogEditor
 
       #region public Methods
 
-      public StateViewModel FindStateVM(string stateName)
-      {
-         if (Type != "scene")
-         {
-            return _defaultState;
-         }
+      //public StateViewModel FindStateVM(string stateName)
+      //{
+      //   if (Type != "scene")
+      //   {
+      //      return _defaultState;
+      //   }
 
-         foreach (StateViewModel svm in States)
-         {
-            if (svm.StateName == stateName)
-            {
-               return svm;
-            }
-         }
+      //   foreach (StateViewModel svm in States)
+      //   {
+      //      if (svm.StateName == stateName)
+      //      {
+      //         return svm;
+      //      }
+      //   }
 
-         return null;
+      //   return null;
 
-      }
+      //}
 
       #endregion
    }

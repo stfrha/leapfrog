@@ -19,12 +19,12 @@ using System.Windows.Media;
 namespace LeapfrogEditor
 {
    // Used to be ConditionalSelectTreeViewViewModel
-   public class ChildObjectViewModel : TreeViewViewModel
+   public class ChildObjectViewModel : TreeViewViewModel, IPositionInterface
    {
       #region Declarations
 
       private ChildObject _modelObject;
-      private ObservableCollection<ChildCOViewModel> _stateProperties = new ObservableCollection<ChildCOViewModel>();
+      private CompoundObjectViewModel _compObj;
       
       #endregion
 
@@ -40,26 +40,15 @@ namespace LeapfrogEditor
       {
          ModelObject = modelObject;
 
-         foreach (TStateProperties<ChildObjectStateProperties> cosp in ModelObject.StateProperties)
-         {
-            if (cosp.Properties != null)
-            {
-               ChildCOViewModel cospvm = new ChildCOViewModel(this, parentVm, mainVm, cosp, enabled);
-               StateProperties.Add(cospvm);
+         CompObj = new CompoundObjectViewModel(this, parentVm, mainVm, _modelObject.CompObj, enabled);
 
-               // Since this COVM is the child of another COVM we need to check if the COVM
-               // is a reference to a file or not. If it is, the children of the COVM shall 
-               // not be selectable, i.e. they shall be disabled. If it it is not a file ref
-               // it shall be selectable.
-               if (cospvm.IsFileReferenceChild)
-               {
-                  cospvm.BuildViewModel(false);
-               }
-               else
-               {
-                  cospvm.BuildViewModel(true);
-               }
-            }
+         if (IsFileReferenceChild)
+         {
+            CompObj.BuildViewModel(false);
+         }
+         else
+         {
+            CompObj.BuildViewModel(true);
          }
       }
 
@@ -89,42 +78,137 @@ namespace LeapfrogEditor
             {
                TreeParent.OnPropertyChanged("");
             }
-
-            foreach (ChildCOViewModel covm in StateProperties)
-            {
-               covm.OnPropertyChanged("Name");
-               covm.OnPropertyChanged("DispName");
-            }
          }
       }
 
-      public ObservableCollection<ChildCOViewModel> StateProperties
+      public string File
       {
-         get { return _stateProperties; }
-         set { _stateProperties = value; }
+         get { return _modelObject.File; }
+         set
+         {
+            _modelObject.File = value;
+            OnPropertyChanged("File");
+            OnPropertyChanged("DispName");
+            OnPropertyChanged("IsFileReferenceChild");
+         }
+      }
+
+      public double PosX
+      {
+         get
+         {
+            return _modelObject.PosX;
+         }
+         set
+         {
+            _modelObject.PosX = value;
+
+            OnPropertyChanged("PosX");
+            OnPropertyChanged("AbsPosX");
+            OnPropertyChanged("BoundingBox");
+
+            CompoundObjectViewModel p = ParentVm;
+
+            while (p != null)
+            {
+               p.OnPropertyChanged("BoundingBox");
+               p = p.ParentVm;
+            }
+
+            UpdateChildrenAbsolutePos();
+         }
+      }
+
+      public double AbsPosX
+      {
+         get
+         {
+            double parentPos = 0;
+
+            if (ParentVm != null)
+            {
+               parentPos = ParentVm.AbsPosX;
+            }
+
+            return parentPos + PosX;
+         }
+      }
+
+
+      public double PosY
+      {
+         get
+         {
+            return _modelObject.PosY;
+         }
+         set
+         {
+            _modelObject.PosY = value;
+
+            OnPropertyChanged("PosY");
+            OnPropertyChanged("AbsPosY");
+            OnPropertyChanged("BoundingBox");
+
+            CompoundObjectViewModel p = ParentVm;
+
+            while (p != null)
+            {
+               p.OnPropertyChanged("BoundingBox");
+               p = p.ParentVm;
+            }
+
+            UpdateChildrenAbsolutePos();
+         }
+      }
+
+      public double AbsPosY
+      {
+         get
+         {
+            double parentPos = 0;
+
+            if (ParentVm != null)
+            {
+               parentPos = ParentVm.AbsPosY;
+            }
+
+            return parentPos + PosY;
+         }
+      }
+
+
+      public CompoundObjectViewModel CompObj
+      {
+         get
+         {
+            return _compObj;
+         }
+         set
+         {
+            _compObj = value;
+            OnPropertyChanged("CompObj");
+         }
+      }
+
+      public bool IsFileReferenceChild
+      {
+         get
+         {
+            if ((File != "") && (File != "undef_file.xml"))
+            {
+               return true;
+            }
+
+            return false;
+         }
       }
 
       public uint AggregatedZLevel
       {
          get
          {
-            return StateProperties[0].AggregatedZLevel;
+            return CompObj.AggregatedZLevel;
 
-            //uint avgZL = 0;
-            //uint i = 0;
-
-            //foreach (LfShapeViewModel shape in ShapeCollection.Shapes)
-            //{
-            //   avgZL += shape.ZLevel;
-            //   i++;
-            //}
-
-            //if (i > 0)
-            //{
-            //   return avgZL / i;
-            //}
-
-            //return 0;
          }
       }
 
@@ -140,71 +224,95 @@ namespace LeapfrogEditor
 
       public void DeselectAllChildren()
       {
-         foreach (ChildCOViewModel spvm in StateProperties)
-         {
-            spvm.IsSelected = false;
-            spvm.DeselectAllChildren();
-         }
+         CompObj.DeselectAllChildren();
+         CompObj.IsSelected = false;
       }
 
-      public void AddChildShapesToGlobalCollection(ref CompositeCollection coll, string editedState, bool showJoints, bool showSystems, bool showBackgrounds)
+      public void AddChildShapesToGlobalCollection(ref CompositeCollection coll, bool showJoints, bool showSystems, bool showBackgrounds)
       {
-         foreach (ChildCOViewModel ccvm in StateProperties)
+
+         foreach (Object o in CompObj.ShapeCollection.Shapes)
          {
-            if ((ccvm.State == editedState) || (ccvm.State == "default"))
+            if (o is LfShapeViewModel)
             {
+               LfShapeViewModel svm = o as LfShapeViewModel;
+               coll.Add(svm);
+            }
+         }
+
+         if (showJoints)
+         {
+            foreach (Object o in CompObj.JointCollection.Joints)
+            {
+               if (o is WeldJointViewModel)
                {
-                  foreach (Object o in ccvm.ShapeCollection.Shapes)
-                  {
-                     if (o is LfShapeViewModel)
-                     {
-                        LfShapeViewModel svm = o as LfShapeViewModel;
-                        coll.Add(svm);
-                     }
-                  }
-
-                  if (showJoints)
-                  {
-                     foreach (Object o in ccvm.JointCollection.Joints)
-                     {
-                        if (o is WeldJointViewModel)
-                        {
-                           WeldJointViewModel wjvm = o as WeldJointViewModel;
-                           coll.Add(wjvm);
-                        }
-                     }
-                  }
-
-                  if (showSystems)
-                  {
-                     foreach (Object o in ccvm.SystemCollection.Systems)
-                     {
-                        if (o is CoSystemViewModel)
-                        {
-                           CoSystemViewModel svm = o as CoSystemViewModel;
-                           coll.Add(svm);
-                        }
-                     }
-                  }
-
-
-                  if (ccvm != MainVm.EditedCpVm)
-                  {
-                     foreach (ChildObjectViewModel covm in ccvm.ChildObjectsWithStates.Children)
-                     {
-                        covm.AddChildShapesToGlobalCollection(ref coll, editedState, showJoints, showSystems, showBackgrounds);
-                     }
-                  }
+                  WeldJointViewModel wjvm = o as WeldJointViewModel;
+                  coll.Add(wjvm);
                }
+            }
+         }
+
+         if (showSystems)
+         {
+            foreach (Object o in CompObj.SystemCollection.Systems)
+            {
+               if (o is CoSystemViewModel)
+               {
+                  CoSystemViewModel svm = o as CoSystemViewModel;
+                  coll.Add(svm);
+               }
+            }
+         }
+
+
+         if (CompObj != MainVm.EditedCpVm)
+         {
+            foreach (ChildObjectViewModel covm in CompObj.ChildObjectCollection.Children)
+            {
+               covm.AddChildShapesToGlobalCollection(ref coll, showJoints, showSystems, showBackgrounds);
             }
          }
       }
 
       public void UpdateChildrenAbsolutePos()
       {
-         foreach (ChildCOViewModel ccvm in StateProperties)
+         CompObj.UpdateChildrenAbsolutePos();
+      }
+
+      // This method returns with the supplied point (expressed in this CompoundObject's
+      // coordinate system) converted to the parent CompoundObjects coordinate system.
+      // This is done by adding the Position of this CompoundObject.
+      public Point ParentCoPoint(Point coPoint)
+      {
+         Point parentPoint = coPoint;
+
+         parentPoint.Offset(PosX, PosY);
+
+         return parentPoint;
+      }
+
+      // This method returns with the supplied point (expressed in the parent of this 
+      // CompoundObject's coordinate system) converted to this CompoundObjects coordinate system.
+      // This is done by subtracting the parentPoint with the position of this CompoundObject.
+      public Point CoPointFromParent(Point parentPoint)
+      {
+         Point coPoint = parentPoint;
+
+         coPoint.Offset(-PosX, -PosY);
+
+         return coPoint;
+      }
+
+      public  Point GetCoPointFromScenePoint(Point scenePoint)
+      {
+         if (ParentVm != null)
          {
-            ccvm.UpdateChildrenAbsolutePos();
+            Point parentPoint = CoPointFromParent(scenePoint);
+            return GetCoPointFromScenePoint(parentPoint);
+         }
+         else
+         {
+            return scenePoint;
          }
       }
 

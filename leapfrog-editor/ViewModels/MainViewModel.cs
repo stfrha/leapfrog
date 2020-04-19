@@ -110,7 +110,7 @@ namespace LeapfrogEditor
 
      
       private ObservableCollection<ChildObjectViewModel> _selectedChildObjects = new ObservableCollection<ChildObjectViewModel>();
-      private ObservableCollection<ChildCOViewModel> _selectedChildObjectStateProperties = new ObservableCollection<ChildCOViewModel>();
+//      private ObservableCollection<ChildCOViewModel> _selectedChildObjectStateProperties = new ObservableCollection<ChildCOViewModel>();
       private ObservableCollection<LfShapeViewModel> _selectedShapes = new ObservableCollection<LfShapeViewModel>();
       private ObservableCollection<WeldJointViewModel> _selectedJoints = new ObservableCollection<WeldJointViewModel>();
       private ObservableCollection<CoSystemViewModel> _selectedSystems = new ObservableCollection<CoSystemViewModel>();
@@ -209,11 +209,11 @@ namespace LeapfrogEditor
          set { _selectedChildObjects = value; }
       }
 
-      public ObservableCollection<ChildCOViewModel> SelectedChildObjectStateProperties
-      {
-         get { return _selectedChildObjectStateProperties; }
-         set { _selectedChildObjectStateProperties = value; }
-      }
+      //public ObservableCollection<ChildCOViewModel> SelectedChildObjectStateProperties
+      //{
+      //   get { return _selectedChildObjectStateProperties; }
+      //   set { _selectedChildObjectStateProperties = value; }
+      //}
 
       public ObservableCollection<LfShapeViewModel> SelectedShapes
       {
@@ -264,7 +264,7 @@ namespace LeapfrogEditor
             OnPropertyChanged("ShowJoints");
 
             // Build global shape collection
-            EditedCpVm.BuildGlobalShapeCollection(GetEditableCoBehaviourStateName(), ShowJoints, ShowSystems, ShowBackgrounds);
+            EditedCpVm.BuildGlobalShapeCollection(ShowJoints, ShowSystems, ShowBackgrounds);
          }
       }
 
@@ -277,7 +277,7 @@ namespace LeapfrogEditor
             OnPropertyChanged("ShowSystems");
 
             // Build global shape collection
-            EditedCpVm.BuildGlobalShapeCollection(GetEditableCoBehaviourStateName(), ShowJoints, ShowSystems, ShowBackgrounds);
+            EditedCpVm.BuildGlobalShapeCollection(ShowJoints, ShowSystems, ShowBackgrounds);
          }
       }
 
@@ -290,7 +290,7 @@ namespace LeapfrogEditor
             OnPropertyChanged("ShowBackgrounds");
 
             // Build global shape collection
-            EditedCpVm.BuildGlobalShapeCollection(GetEditableCoBehaviourStateName(), ShowJoints, ShowSystems, ShowBackgrounds);
+            EditedCpVm.BuildGlobalShapeCollection(ShowJoints, ShowSystems, ShowBackgrounds);
          }
       }
 
@@ -304,7 +304,7 @@ namespace LeapfrogEditor
             OnPropertyChanged("ShowTriangles");
 
             // Build global shape collection
-            EditedCpVm.BuildGlobalShapeCollection(GetEditableCoBehaviourStateName(), ShowJoints, ShowSystems, ShowBackgrounds);
+            EditedCpVm.BuildGlobalShapeCollection(ShowJoints, ShowSystems, ShowBackgrounds);
          }
       }
 
@@ -352,17 +352,11 @@ namespace LeapfrogEditor
                string fullPath = System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
                string fullFileName = System.IO.Path.Combine(fullPath, s);
 
-               ChildObjectStateProperties cosp = new ChildObjectStateProperties();
-               cosp.File = fullFileName;
-
-               TStateProperties<ChildObjectStateProperties>  newStateProp = new TStateProperties<ChildObjectStateProperties>();
-               newStateProp.Properties = cosp;
+               ChildObject newChildObject = new ChildObject();
+               newChildObject.File = fullFileName;
 
                CompoundObject newCP = new CompoundObject();
-               newStateProp.Properties.CompObj = newCP;
-
-               ChildObject newChildObject = new ChildObject();
-               newChildObject.StateProperties.Add(newStateProp);
+               newChildObject.CompObj = newCP;
 
                FileCOViewModel newCpVm = new FileCOViewModel(null, null, this, fileName, newCP);
 
@@ -376,7 +370,7 @@ namespace LeapfrogEditor
 
 
                // Build global shape collection
-               EditedCpVm.BuildGlobalShapeCollection(GetEditableCoBehaviourStateName(), ShowJoints, ShowSystems, ShowBackgrounds);
+               EditedCpVm.BuildGlobalShapeCollection(ShowJoints, ShowSystems, ShowBackgrounds);
 
                Rect bb = EditedCpVm.BoundingBox;
                ((MainWindow)System.Windows.Application.Current.MainWindow).ShowThisRect(bb);
@@ -436,7 +430,7 @@ namespace LeapfrogEditor
             DeselectAll();
 
             // Build global shape collection
-            EditedCpVm.BuildGlobalShapeCollection(GetEditableCoBehaviourStateName(), ShowJoints, ShowSystems, ShowBackgrounds);
+            EditedCpVm.BuildGlobalShapeCollection(ShowJoints, ShowSystems, ShowBackgrounds);
 
             Rect bb = EditedCpVm.BoundingBox;
             ((MainWindow)System.Windows.Application.Current.MainWindow).ShowThisRect(bb);
@@ -453,20 +447,18 @@ namespace LeapfrogEditor
             return true;
          }
 
-         if (parameter is ChildCOViewModel)
-         {
-            ChildCOViewModel covm = parameter as ChildCOViewModel;
+         // TODO: We want to select ChildObject for editing, not sure how, yet...
 
-            if (!covm.IsFileReferenceChild)
-            {
-               return true;
-            }
+         //if (parameter is ChildCOViewModel)
+         //{
+         //   ChildCOViewModel covm = parameter as ChildCOViewModel;
 
-            //if ((covm.ModelObjectProperties.File == "") || (covm.ModelObjectProperties.File == "undef_file.xml"))
-            //{
-            //   return true;
-            //}
-         }
+         //   if (!covm.IsFileReferenceChild)
+         //   {
+         //      return true;
+         //   }
+
+         //}
 
          return false;
       }
@@ -482,9 +474,9 @@ namespace LeapfrogEditor
       void OpenChildFileExecute(Object parameter)
       {
          // What object is we pointing at?
-         if (parameter is ChildCOViewModel)
+         if (parameter is ChildObjectViewModel)
          {
-            ChildCOViewModel covm = parameter as ChildCOViewModel;
+            ChildObjectViewModel covm = parameter as ChildObjectViewModel;
 
             OpenFileToEdit(covm.File, true);
          }
@@ -492,17 +484,17 @@ namespace LeapfrogEditor
 
       bool CanOpenChildFileExecute(Object parameter)
       {
-         if (parameter is ChildCOViewModel)
+         if (parameter is ChildObjectViewModel)
          {
-            ChildCOViewModel covm = parameter as ChildCOViewModel;
+            ChildObjectViewModel covm = parameter as ChildObjectViewModel;
 
-            if (covm == EditedCpVm)
-            {
-               // We dont want to reopen the file that is already open
-               // TODO: We need to iterate the file list to know if this 
-               // file is open
-               return false;
-            }
+            //if (covm == EditedCpVm)
+            //{
+            //   // We dont want to reopen the file that is already open
+            //   // TODO: We need to iterate the file list to know if this 
+            //   // file is open
+            //   return false;
+            //}
 
             return (covm.IsFileReferenceChild);
          }
@@ -666,7 +658,7 @@ namespace LeapfrogEditor
 
             EditedCpVm.ImportedObjects.Children.Add(newCpVm);
 
-            EditedCpVm.BuildGlobalShapeCollection(GetEditableCoBehaviourStateName(), ShowJoints, ShowSystems, ShowBackgrounds);
+            EditedCpVm.BuildGlobalShapeCollection(ShowJoints, ShowSystems, ShowBackgrounds);
 
             EditedCpVm.OnPropertyChanged("");
             OnPropertyChanged("");
@@ -725,41 +717,41 @@ namespace LeapfrogEditor
          }
       }
 
-      void DisplayStateExecute(Object parameter)
-      {
-         if (parameter is StateViewModel)
-         {
-            StateViewModel svm = parameter as StateViewModel;
+      //void DisplayStateExecute(Object parameter)
+      //{
+      //   if (parameter is StateViewModel)
+      //   {
+      //      StateViewModel svm = parameter as StateViewModel;
 
-            svm.SetOnDisplay();
+      //      svm.SetOnDisplay();
 
-            EditedCpVm.OnPropertyChanged("");
-            EditedCpVm.BuildGlobalShapeCollection(svm.StateName, ShowJoints, ShowSystems, ShowBackgrounds);
-         }
-      }
+      //      EditedCpVm.OnPropertyChanged("");
+      //      EditedCpVm.BuildGlobalShapeCollection(svm.StateName, ShowJoints, ShowSystems, ShowBackgrounds);
+      //   }
+      //}
 
-      bool CanDisplayStateExecute(Object parameter)
-      {
-         if (parameter is StateViewModel)
-         {
-            StateViewModel svm = parameter as StateViewModel;
+      //bool CanDisplayStateExecute(Object parameter)
+      //{
+      //   if (parameter is StateViewModel)
+      //   {
+      //      StateViewModel svm = parameter as StateViewModel;
 
-            if (!svm.IsOnDisplay)
-            {
-               return true;
-            }
-         }
+      //      if (!svm.IsOnDisplay)
+      //      {
+      //         return true;
+      //      }
+      //   }
 
-         return false;
-      }
+      //   return false;
+      //}
 
-      public ICommand DisplayState
-      {
-         get
-         {
-            return new MicroMvvm.RelayCommand<Object>(parameter => DisplayStateExecute(parameter), parameter => CanDisplayStateExecute(parameter));
-         }
-      }
+      //public ICommand DisplayState
+      //{
+      //   get
+      //   {
+      //      return new MicroMvvm.RelayCommand<Object>(parameter => DisplayStateExecute(parameter), parameter => CanDisplayStateExecute(parameter));
+      //   }
+      //}
 
       void SetShapeWidthExecute(Object parameter)
       {
@@ -942,14 +934,9 @@ namespace LeapfrogEditor
             SpawnObject newSo = new SpawnObject();
             ChildObject cho = new ChildObject();
             newSo.MyChildObject = cho;
-            TStateProperties<ChildObjectStateProperties> sp = new TStateProperties<ChildObjectStateProperties>();
-            cho.StateProperties.Add(sp);
-
-            ChildObjectStateProperties cosp = new ChildObjectStateProperties();
-            sp.Properties = cosp;
 
             CompoundObject co = new CompoundObject();
-            cosp.CompObj = co;
+            cho.CompObj = co;
 
             bovm.SpawnParentModelObject.SpawnObjects.Add(newSo);
 
@@ -1013,7 +1000,7 @@ namespace LeapfrogEditor
             }
             SelectedJoints.Clear();
 
-            EditedCpVm.BuildGlobalShapeCollection(GetEditableCoBehaviourStateName(), ShowJoints, ShowSystems, ShowBackgrounds);
+            EditedCpVm.BuildGlobalShapeCollection(ShowJoints, ShowSystems, ShowBackgrounds);
          }
          else if (SelectedShapes.Count > 0)
          {
@@ -1024,7 +1011,7 @@ namespace LeapfrogEditor
                //covm.ModelObject.RemoveShape(svm.ModelObject);
                covm.RemoveShape(svm);
 
-               EditedCpVm.BuildGlobalShapeCollection(GetEditableCoBehaviourStateName(), ShowJoints, ShowSystems, ShowBackgrounds);
+               EditedCpVm.BuildGlobalShapeCollection(ShowJoints, ShowSystems, ShowBackgrounds);
             }
             SelectedShapes.Clear();
          }
@@ -1064,22 +1051,13 @@ namespace LeapfrogEditor
             covm.RemoveShape(svm);
          }
 
-         if (parameter is ChildCOViewModel)
-         {
-            ChildCOViewModel chvm = parameter as ChildCOViewModel;
-            ChildObjectViewModel covm = chvm.TreeParent as ChildObjectViewModel;
-
-            covm.ModelObject.StateProperties.Remove(chvm.ChildStateModelObject);
-            covm.StateProperties.Remove(chvm);
-         }
-
          if (parameter is ChildObjectViewModel)
          {
             ChildObjectViewModel chvm = parameter as ChildObjectViewModel;
             CompoundObjectViewModel covm = chvm.ParentVm as CompoundObjectViewModel;
 
             covm.ModelObject.ChildObjects.Remove(chvm.ModelObject);
-            covm.ChildObjectsWithStates.Children.Remove(chvm);
+            covm.ChildObjectCollection.Children.Remove(chvm);
          }
 
          if (parameter is SpawnObjectViewModel)
@@ -1111,7 +1089,7 @@ namespace LeapfrogEditor
             covm.SystemCollection.Systems.Remove(sysVm);
          }
 
-         EditedCpVm.BuildGlobalShapeCollection(GetEditableCoBehaviourStateName(), ShowJoints, ShowSystems, ShowBackgrounds);
+         EditedCpVm.BuildGlobalShapeCollection(ShowJoints, ShowSystems, ShowBackgrounds);
       }
 
       bool CanDeleteThisObjectExecute(Object parameter)
@@ -1122,7 +1100,7 @@ namespace LeapfrogEditor
          }
 
          if ((EditedCpVm != null) && ((parameter is LfShapeViewModel) || 
-            (parameter is WeldJointViewModel) || (parameter is ChildCOViewModel) ||
+            (parameter is WeldJointViewModel) || (parameter is ChildObjectViewModel) ||
             (parameter is ChildObjectViewModel) || (parameter is SpawnObjectViewModel) ||
             (parameter is SystemViewModelBase) || (parameter is CoSystemViewModel)))
          {
@@ -1152,25 +1130,25 @@ namespace LeapfrogEditor
             CompoundObjectViewModel covm = EditedCpVm as CompoundObjectViewModel;
             covm.ModelObject.ChildObjects.Add(ch);
             scvm.Children.Add(chvm);
-            EditedCpVm.BuildGlobalShapeCollection(GetEditableCoBehaviourStateName(), ShowJoints, ShowSystems, ShowBackgrounds);
+            EditedCpVm.BuildGlobalShapeCollection(ShowJoints, ShowSystems, ShowBackgrounds);
          }
 
-         if (parameter is ChildObjectViewModel)
-         {
-            ChildObjectViewModel chvm = parameter as ChildObjectViewModel;
+         //if (parameter is ChildObjectViewModel)
+         //{
+         //   ChildObjectViewModel chvm = parameter as ChildObjectViewModel;
 
-            TStateProperties<ChildObjectStateProperties> sp = new TStateProperties<ChildObjectStateProperties>();
-            chvm.ModelObject.StateProperties.Add(sp);
+         //   TStateProperties<ChildObjectStateProperties> sp = new TStateProperties<ChildObjectStateProperties>();
+         //   chvm.ModelObject.StateProperties.Add(sp);
 
-            sp.Properties = new ChildObjectStateProperties();
-            sp.Properties.CompObj = new CompoundObject();
+         //   sp.Properties = new ChildObjectStateProperties();
+         //   sp.Properties.CompObj = new CompoundObject();
 
-            ChildCOViewModel covm = new ChildCOViewModel(chvm, EditedCpVm as CompoundObjectViewModel, this, sp);
-            covm.BuildViewModel(true);
+         //   ChildCOViewModel covm = new ChildCOViewModel(chvm, EditedCpVm as CompoundObjectViewModel, this, sp);
+         //   covm.BuildViewModel(true);
 
-            chvm.StateProperties.Add(covm);
-            EditedCpVm.BuildGlobalShapeCollection(GetEditableCoBehaviourStateName(), ShowJoints, ShowSystems, ShowBackgrounds);
-         }
+         //   chvm.StateProperties.Add(covm);
+         //   EditedCpVm.BuildGlobalShapeCollection(GetEditableCoBehaviourStateName(), ShowJoints, ShowSystems, ShowBackgrounds);
+         //}
       }
 
       bool CanAddChildObjectExecute(Object parameter)
@@ -1403,7 +1381,7 @@ namespace LeapfrogEditor
                   shape.PosY += dragVector.Y;
                }
 
-               foreach (IPositionInterface child in SelectedChildObjectStateProperties)
+               foreach (IPositionInterface child in SelectedChildObjects)
                {
                   child.PosX += dragVector.X;
                   child.PosY += dragVector.Y;
@@ -1855,7 +1833,7 @@ namespace LeapfrogEditor
                   }
                   _selectedPoints.Clear();
 
-                  EditedCpVm.BuildGlobalShapeCollection(GetEditableCoBehaviourStateName(), ShowJoints, ShowSystems, ShowBackgrounds);
+                  EditedCpVm.BuildGlobalShapeCollection(ShowJoints, ShowSystems, ShowBackgrounds);
 
                   if (newShapeVm is LfPolygonViewModel)
                   {
@@ -1907,7 +1885,7 @@ namespace LeapfrogEditor
 
                newJointVm.IsSelected = true;
 
-               EditedCpVm.BuildGlobalShapeCollection(GetEditableCoBehaviourStateName(), ShowJoints, ShowSystems, ShowBackgrounds);
+               EditedCpVm.BuildGlobalShapeCollection(ShowJoints, ShowSystems, ShowBackgrounds);
 
                _LeftClickState = LeftClickState.none;
             }
@@ -1934,7 +1912,7 @@ namespace LeapfrogEditor
 
                newSysVm.IsSelected = true;
 
-               EditedCpVm.BuildGlobalShapeCollection(GetEditableCoBehaviourStateName(), ShowJoints, ShowSystems, ShowBackgrounds);
+               EditedCpVm.BuildGlobalShapeCollection(ShowJoints, ShowSystems, ShowBackgrounds);
 
                _LeftClickState = LeftClickState.none;
 
@@ -2069,65 +2047,65 @@ namespace LeapfrogEditor
          return (me.ParentVm == EditedCpVm);
       }
 
-      public int GetEditableCoBehaviourStateIndex()
-      {
-         if (EditedCpVm == null)
-         {
-            return 0;
-         }
+      //public int GetEditableCoBehaviourStateIndex()
+      //{
+      //   if (EditedCpVm == null)
+      //   {
+      //      return 0;
+      //   }
 
-         if (!(EditedCpVm is CompoundObjectViewModel))
-         {
-            return 0;
-         }
+      //   if (!(EditedCpVm is CompoundObjectViewModel))
+      //   {
+      //      return 0;
+      //   }
 
-         CompoundObjectViewModel covm = EditedCpVm as CompoundObjectViewModel;
+      //   CompoundObjectViewModel covm = EditedCpVm as CompoundObjectViewModel;
 
-         return covm.Behaviour.DisplayedStateIndex;
+      //   return covm.Behaviour.DisplayedStateIndex;
 
-      }
+      //}
 
-      public StateViewModel GetEditableCoBehaviourState()
-      {
-         if (EditedCpVm == null)
-         {
-            return null;
-         }
+      //public StateViewModel GetEditableCoBehaviourState()
+      //{
+      //   if (EditedCpVm == null)
+      //   {
+      //      return null;
+      //   }
 
-         if (!(EditedCpVm is CompoundObjectViewModel))
-         {
-            return null;
-         }
+      //   if (!(EditedCpVm is CompoundObjectViewModel))
+      //   {
+      //      return null;
+      //   }
 
-         CompoundObjectViewModel covm = EditedCpVm as CompoundObjectViewModel;
+      //   CompoundObjectViewModel covm = EditedCpVm as CompoundObjectViewModel;
 
-         return covm.Behaviour.States[GetEditableCoBehaviourStateIndex()];
+      //   return covm.Behaviour.States[GetEditableCoBehaviourStateIndex()];
 
-      }
+      //}
 
-      public string GetEditableCoBehaviourStateName()
-      {
-         StateViewModel svm = GetEditableCoBehaviourState();
+      //public string GetEditableCoBehaviourStateName()
+      //{
+      //   StateViewModel svm = GetEditableCoBehaviourState();
 
-         if (svm != null)
-         {
-            return svm.StateName;
-         }
+      //   if (svm != null)
+      //   {
+      //      return svm.StateName;
+      //   }
 
-         return "#Error should not reach here#";
-      }
+      //   return "#Error should not reach here#";
+      //}
 
-      public int GetEditableCoBehaviourIndexOf(IParentInterface child, string state)
-      {
-         FileCOViewModel fvm = GetFileViewModelOfChild(child);
-         if ((fvm != null) && (fvm.Behaviour != null))
-         {
-            CompoundObjectViewModel covm = EditedCpVm as CompoundObjectViewModel;
-            return fvm.Behaviour.States.IndexOf(covm.Behaviour.FindStateVM(state));
-         }
+      //public int GetEditableCoBehaviourIndexOf(IParentInterface child, string state)
+      //{
+      //   FileCOViewModel fvm = GetFileViewModelOfChild(child);
+      //   if ((fvm != null) && (fvm.Behaviour != null))
+      //   {
+      //      CompoundObjectViewModel covm = EditedCpVm as CompoundObjectViewModel;
+      //      return fvm.Behaviour.States.IndexOf(covm.Behaviour.FindStateVM(state));
+      //   }
 
-         return 0;
-      }
+      //   return 0;
+      //}
 
       public FileCOViewModel GetFileViewModelOfChild(IParentInterface child)
       {
@@ -2145,7 +2123,7 @@ namespace LeapfrogEditor
          // the selection collection of different types
 
          SelectedChildObjects.Clear();
-         SelectedChildObjectStateProperties.Clear();
+         SelectedChildObjects.Clear();
          SelectedShapes.Clear();
          SelectedJoints.Clear();
          SelectedSystems.Clear();
@@ -2187,7 +2165,7 @@ namespace LeapfrogEditor
          {
             CompoundObjectViewModel covm = EditedCpVm as CompoundObjectViewModel;
 
-            foreach (TreeViewViewModel tvvm in covm.ChildObjectsWithStates.Children)
+            foreach (TreeViewViewModel tvvm in covm.ChildObjectCollection.Children)
             {
                if (tvvm is ChildObjectViewModel)
                {
@@ -2201,18 +2179,18 @@ namespace LeapfrogEditor
                         SelectedChildObjects.Add(chvm);
                      }
 
-                     foreach (ChildCOViewModel chcvm in chvm.StateProperties)
-                     {
-                        if (chcvm is ChildCOViewModel)
-                        {
-                           ChildCOViewModel cospvm = chcvm as ChildCOViewModel;
+                     //foreach (ChildCOViewModel chcvm in chvm.StateProperties)
+                     //{
+                     //   if (chcvm is ChildCOViewModel)
+                     //   {
+                     //      ChildCOViewModel cospvm = chcvm as ChildCOViewModel;
 
-                           if (cospvm.IsSelected)
-                           {
-                              SelectedChildObjectStateProperties.Add(cospvm);
-                           }
-                        }
-                     }
+                     //      if (cospvm.IsSelected)
+                     //      {
+                     //         SelectedChildObjectStateProperties.Add(cospvm);
+                     //      }
+                     //   }
+                     //}
                   }
                }
             }
@@ -2277,18 +2255,18 @@ namespace LeapfrogEditor
                                     SelectedChildObjects.Add(chvm);
                                  }
 
-                                 foreach (ChildCOViewModel chcvm in chvm.StateProperties)
-                                 {
-                                    if (chcvm is ChildCOViewModel)
-                                    {
-                                       ChildCOViewModel cospvm = chcvm as ChildCOViewModel;
+                                 //foreach (ChildObjectViewModel chcvm in chvm.Chil)
+                                 //{
+                                 //   if (chcvm is ChildObjectViewModel)
+                                 //   {
+                                 //      ChildObjectViewModel cospvm = chcvm as ChildObjectViewModel;
 
-                                       if (cospvm.IsSelected)
-                                       {
-                                          SelectedChildObjectStateProperties.Add(cospvm);
-                                       }
-                                    }
-                                 }
+                                 //      if (cospvm.IsSelected)
+                                 //      {
+                                 //         SelectedChildObjects.Add(cospvm);
+                                 //      }
+                                 //   }
+                                 //}
                               }
                            }
                         }
@@ -2328,18 +2306,18 @@ namespace LeapfrogEditor
                            SelectedChildObjects.Add(chvm);
                         }
 
-                        foreach (ChildCOViewModel chcvm in chvm.StateProperties)
-                        {
-                           if (chcvm is ChildCOViewModel)
-                           {
-                              ChildCOViewModel cospvm = chcvm as ChildCOViewModel;
+                        //foreach (ChildCOViewModel chcvm in chvm.StateProperties)
+                        //{
+                        //   if (chcvm is ChildCOViewModel)
+                        //   {
+                        //      ChildCOViewModel cospvm = chcvm as ChildCOViewModel;
 
-                              if (cospvm.IsSelected)
-                              {
-                                 SelectedChildObjectStateProperties.Add(cospvm);
-                              }
-                           }
-                        }
+                        //      if (cospvm.IsSelected)
+                        //      {
+                        //         SelectedChildObjectStateProperties.Add(cospvm);
+                        //      }
+                        //   }
+                        //}
                      }
                   }
                }
@@ -2455,17 +2433,10 @@ namespace LeapfrogEditor
          string fullPath = System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
          string fullFileName = System.IO.Path.Combine(fullPath, s);
 
-         ChildObjectStateProperties cosp = new ChildObjectStateProperties();
-         cosp.File = fullFileName;
-
-         TStateProperties<ChildObjectStateProperties> newStateProp = new TStateProperties<ChildObjectStateProperties>();
-         newStateProp.Properties = cosp;
+         ChildObject newChildObject = new ChildObject();
 
          CompoundObject newCP = CompoundObject.ReadFromFile(fullFileName);
-         newStateProp.Properties.CompObj = newCP;
-
-         ChildObject newChildObject = new ChildObject();
-         newChildObject.StateProperties.Add(newStateProp);
+         newChildObject.CompObj = newCP;
          newChildObject.Name = fileName;
 
          FileCOViewModel newCpVm = new FileCOViewModel(null, null, this, fileName, newCP);
@@ -2494,7 +2465,7 @@ namespace LeapfrogEditor
          }
 
          (EditedCpVm as CompoundObjectViewModel).BuildViewModel();
-         EditedCpVm.BuildGlobalShapeCollection(GetEditableCoBehaviourStateName(), ShowJoints, ShowSystems, ShowBackgrounds);
+         EditedCpVm.BuildGlobalShapeCollection(ShowJoints, ShowSystems, ShowBackgrounds);
 
          EditedCpVm.OnPropertyChanged("");
          OnPropertyChanged("");

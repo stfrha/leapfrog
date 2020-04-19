@@ -81,24 +81,19 @@
     <Compile Include="ValueConverters\FlameEmitterValueConverters.cs" />
     <Compile Include="ValueConverters\ReentryFlameEmitterValueConverters.cs" />
     <Compile Include="ValueConverters\ToCollectionValueConverter.cs" />
-    <Compile Include="ValueConverters\MatchingStateVisibilityConverter.cs" />
     <Compile Include="ValueConverters\TextureBorderValueConverters.cs" />
-    <Compile Include="ValueConverters\StatePropertiesHeadlineConverter.cs" />
     <Compile Include="ViewModels\Behvaiours\BehaviourViewModelBase.cs" />
     <Compile Include="ViewModels\Behvaiours\PickupObjectPropertiesViewModel.cs" />
     <Compile Include="ViewModels\Behvaiours\MagneticMinePropertiesViewModel.cs" />
     <Compile Include="ViewModels\Behvaiours\ExplosiveObjectPropertiesViewModel.cs" />
     <Compile Include="ViewModels\Behvaiours\CoBehaviourViewModel.cs" />
-    <Compile Include="ViewModels\Behvaiours\ScenePropsStateCollectionViewModel.cs" />
     <Compile Include="ViewModels\Behvaiours\StateBehaviourCollectionViewModel.cs" />
     <Compile Include="ViewModels\Behvaiours\ScenePropertiesViewModel.cs" />
     <Compile Include="ViewModels\Behvaiours\ScenePropertyCollectionBaseViewModel.cs" />
     <Compile Include="ViewModels\Behvaiours\SteerableObjectPropertiesViewModel.cs" />
     <Compile Include="ViewModels\Behvaiours\BreakableObjectPropertiesViewModel.cs" />
-    <Compile Include="ViewModels\Behvaiours\StateViewModel.cs" />
     <Compile Include="ViewModels\Child Objects\ChildCollectionViewModel.cs" />
     <Compile Include="ViewModels\Child Objects\ChildObjectViewModel.cs" />
-    <Compile Include="ViewModels\Child Objects\ChildCOViewModel.cs" />
     <Compile Include="ViewModels\FileCOViewModel.cs" />
     <Compile Include="ViewModels\DataBindingProxy.cs" />
     <Compile Include="ViewModels\Imported Objects\ImportedObjectCollectionViewModel.cs" />
@@ -204,16 +199,9 @@
       <DependentUpon>CompoundObjectPropEditor.xaml</DependentUpon>
     </Compile>
     <Compile Include="Models\Joints\Rope.cs" />
-    <Compile Include="Models\TO BE REMOVED\ObjectFactoryRef.cs" />
     <Compile Include="Models\Systems\ObjectFactoryProperties.cs" />
     <Compile Include="Models\CollisionEntity.cs" />
-    <Compile Include="Models\Scenes\LandingSite.cs" />
-    <Compile Include="Models\ClippedWindowProperties.cs" />
-    <Compile Include="Models\Scenes\PlanetActorProperties.cs" />
-    <Compile Include="Models\ClippedWindowRef.cs" />
-    <Compile Include="Models\Scenes\PlanetActorRef.cs" />
     <Compile Include="Models\Joints\RevoluteJoint.cs" />
-    <Compile Include="Models\TStateProperties.cs" />
     <Compile Include="Models\ZLevelItem.cs" />
     <Compile Include="Models\CollisionEntities.cs" />
     <Compile Include="Models\ZLevels.cs" />
@@ -305,9 +293,6 @@
     <Compile Include="Views\Controls\Editable Properties Controls\Primitives\HeightEditorControl.xaml.cs">
       <DependentUpon>HeightEditorControl.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\Controls\Editable Properties Controls\Primitives\CoStateEditorControl.xaml.cs">
-      <DependentUpon>CoStateEditorControl.xaml</DependentUpon>
-    </Compile>
     <Compile Include="Views\Controls\Editable Properties Controls\Primitives\WidthEditorControl.xaml.cs">
       <DependentUpon>WidthEditorControl.xaml</DependentUpon>
     </Compile>
@@ -349,7 +334,6 @@
     <Compile Include="Models\Shape and bodies\LfStaticCircle.cs" />
     <Compile Include="Models\Shape and bodies\LfStaticBoxedSpritePolygon.cs" />
     <Compile Include="Models\Shape and bodies\LfSpritePolygon.cs" />
-    <Compile Include="Models\ChildObjectStateProperties.cs" />
     <Compile Include="Models\Shape and bodies\LfScalableTexturePolygon.cs" />
     <Compile Include="Models\Shape and bodies\LfShape.cs" />
     <Compile Include="Models\Shape and bodies\LfStaticBox.cs" />
@@ -633,10 +617,6 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Views\Controls\Editable Properties Controls\Primitives\CoStateEditorControl.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
     <Page Include="Views\Controls\Editable Properties Controls\Primitives\WidthEditorControl.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -747,7 +727,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="ViewModels\Scenes\" />
+    <Folder Include="Models\TO BE REMOVED\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

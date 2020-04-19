@@ -11,7 +11,6 @@
              >
    <UserControl.Resources>
       <local:DebugDummyConverter x:Key="DebugDummyConverter" />
-      <local:StatePropertiesHeadlineConverter x:Key="StatePropertiesHeadlineConverter" />
    </UserControl.Resources>
    <StackPanel>
       <ContentControl
@@ -50,7 +49,7 @@
             </ItemsPanelTemplate>
          </ItemsControl.ItemsPanel>
       </ItemsControl>
-      <ItemsControl 
+      <!--<ItemsControl 
          ItemsSource="{Binding ChildObjectStateProperties, ElementName=root}"
          Margin="2" >
          <ItemsControl.Resources>
@@ -64,7 +63,7 @@
                <StackPanel />
             </ItemsPanelTemplate>
          </ItemsControl.ItemsPanel>
-      </ItemsControl>
+      </ItemsControl>-->
       <ItemsControl 
          ItemsSource="{Binding EditableShapes, ElementName=root}"
          Margin="2">

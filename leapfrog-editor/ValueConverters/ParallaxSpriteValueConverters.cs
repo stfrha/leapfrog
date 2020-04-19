@@ -149,7 +149,6 @@ namespace LeapfrogEditor
                // In the game, there is a zoom-factor between stage and view port, m_stageToViewPortScale. In the editor 
                // there is a zoom-factor for the view, contentScale. These are not the same zoom-factors. At this time
                // lets set the m_stageToViewPortScale to 1.0. 
-               double stageToViewPortScale = 1.0;
                double panPosXSc = vpCenterPosXSc;
                double panPosYSc = vpCenterPosYSc;
                double wantedPosXVp = vpWidthVpc / 2.0;

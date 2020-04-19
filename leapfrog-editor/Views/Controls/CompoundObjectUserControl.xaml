@@ -13,7 +13,6 @@
          Data="{Binding DataContext, RelativeSource={RelativeSource FindAncestor, AncestorType=Window}}" />
       <local:ZoomThicknessValueConverter x:Key="ZoomThicknessValueConverter" />
       <local:BoolToVisibilityValueConverter x:Key="BoolToVisibilityValueConverter" />
-      <local:MatchingStateVisibilityConverter x:Key="MatchingStateVisibilityConverter" />
       <local:DecoratedBorderPolygonToVisibilityValueConverter x:Key="DecoratedBorderPolygonToVisibilityValueConverter" />
       <local:IsSceneToVisibilityValueConverter x:Key="IsSceneToVisibilityValueConverter" />
    </UserControl.Resources>
@@ -375,7 +374,7 @@
          </ItemsControl.ItemContainerStyle>
       </ItemsControl>
       <!-- This third itemscontrol is for borders around child objects. -->
-      <ItemsControl ItemsSource="{Binding ChildObjectsWithStates.Children}">
+      <ItemsControl ItemsSource="{Binding ChildObjectCollection.Children}">
          <ItemsControl.Resources>
             <DataTemplate DataType="{x:Type local:ChildObjectViewModel}">
                <ItemsControl ItemsSource="{Binding StateProperties}">
@@ -391,27 +390,6 @@
                      </Style>
                   </ItemsControl.ItemContainerStyle>
                </ItemsControl>
-            </DataTemplate>
-            <DataTemplate DataType="{x:Type local:ChildCOViewModel}">
-               <local:ChildCOObjectUserControl>
-                  <local:ChildCOObjectUserControl.Visibility>
-                     <MultiBinding Converter="{StaticResource MatchingStateVisibilityConverter}" >
-                        <Binding Path="ObjectState" />
-                        <Binding Path="DispState" />
-                     </MultiBinding>
-                  </local:ChildCOObjectUserControl.Visibility>
-                  <local:ChildCOObjectUserControl.ContextMenu>
-                     <ContextMenu>
-                        <MenuItem Header="Locate in browser" 
-                     CommandParameter="{Binding}"
-                     Command="{Binding Path=Data.LocateInBrowser, Source={StaticResource DataContextProxy}}" />
-                        <Separator />
-                        <MenuItem Header="Delete" 
-                                 CommandParameter="{Binding}"
-                                 Command="{Binding Path=Data.DeleteThisObject, Source={StaticResource DataContextProxy}}" />
-                     </ContextMenu>
-                  </local:ChildCOObjectUserControl.ContextMenu>
-               </local:ChildCOObjectUserControl>
             </DataTemplate>
          </ItemsControl.Resources>
          <ItemsControl.ItemsPanel>

@@ -12,10 +12,6 @@ namespace LeapfrogEditor
    {
       #region Declarations
 
-      private string _file = "undef_file.xml";
-      private double _posX = 0;
-      private double _posY = 0;
-      private CompoundObject _compObj = null;
 
       #endregion
 
