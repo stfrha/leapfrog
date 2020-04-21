@@ -447,18 +447,16 @@ namespace LeapfrogEditor
             return true;
          }
 
-         // TODO: We want to select ChildObject for editing, not sure how, yet...
+         if (parameter is ChildCOViewModel)
+         {
+            ChildCOViewModel covm = parameter as ChildCOViewModel;
 
-         //if (parameter is ChildCOViewModel)
-         //{
-         //   ChildCOViewModel covm = parameter as ChildCOViewModel;
+            if (!covm.IsFileReferenceChild)
+            {
+               return true;
+            }
 
-         //   if (!covm.IsFileReferenceChild)
-         //   {
-         //      return true;
-         //   }
-
-         //}
+         }
 
          return false;
       }
@@ -474,9 +472,9 @@ namespace LeapfrogEditor
       void OpenChildFileExecute(Object parameter)
       {
          // What object is we pointing at?
-         if (parameter is ChildObjectViewModel)
+         if (parameter is ChildCOViewModel)
          {
-            ChildObjectViewModel covm = parameter as ChildObjectViewModel;
+            ChildCOViewModel covm = parameter as ChildCOViewModel;
 
             OpenFileToEdit(covm.File, true);
          }
@@ -484,9 +482,9 @@ namespace LeapfrogEditor
 
       bool CanOpenChildFileExecute(Object parameter)
       {
-         if (parameter is ChildObjectViewModel)
+         if (parameter is ChildCOViewModel)
          {
-            ChildObjectViewModel covm = parameter as ChildObjectViewModel;
+            ChildCOViewModel covm = parameter as ChildCOViewModel;
 
             //if (covm == EditedCpVm)
             //{

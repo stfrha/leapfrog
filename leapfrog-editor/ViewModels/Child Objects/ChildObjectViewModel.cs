@@ -24,7 +24,8 @@ namespace LeapfrogEditor
       #region Declarations
 
       private ChildObject _modelObject;
-      private CompoundObjectViewModel _compObj;
+      private ChildCOViewModel _compObj;
+      private ObservableCollection<ChildCOViewModel> _co = new ObservableCollection<ChildCOViewModel>();
       
       #endregion
 
@@ -40,7 +41,9 @@ namespace LeapfrogEditor
       {
          ModelObject = modelObject;
 
-         CompObj = new CompoundObjectViewModel(this, parentVm, mainVm, _modelObject.CompObj, enabled);
+         CompObj = new ChildCOViewModel(this, parentVm, mainVm, _modelObject.CompObj, enabled);
+         _co.Clear();
+         _co.Add(CompObj);
 
          if (IsFileReferenceChild)
          {
@@ -64,6 +67,12 @@ namespace LeapfrogEditor
             _modelObject = value;
             OnPropertyChanged("");
          }
+      }
+
+      public ObservableCollection<ChildCOViewModel> Co
+      {
+         get { return _co; }
+         set { _co = value; }
       }
 
       public string Name
@@ -177,7 +186,7 @@ namespace LeapfrogEditor
       }
 
 
-      public CompoundObjectViewModel CompObj
+      public ChildCOViewModel CompObj
       {
          get
          {
@@ -186,6 +195,8 @@ namespace LeapfrogEditor
          set
          {
             _compObj = value;
+            _co.Clear();
+            _co.Add(_compObj);
             OnPropertyChanged("CompObj");
          }
       }

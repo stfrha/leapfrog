@@ -143,21 +143,21 @@
                         </TextBlock.ContextMenu>
                      </TextBlock>
                   </HierarchicalDataTemplate>
-                  <HierarchicalDataTemplate DataType="{x:Type local:CompoundObjectViewModel}"
+                  <HierarchicalDataTemplate DataType="{x:Type local:ChildCOViewModel}"
                      ItemsSource="{Binding TreeCollection}">
-                     <TextBlock Margin="2"  Text="Hej på dig">
+                     <TextBlock Margin="2"  Text="{Binding DispName}">
                         <TextBlock.ContextMenu>
                            <ContextMenu>
-                              <MenuItem Header="Edit this file" 
+                              <MenuItem Header="Open Object File" 
+                                 CommandParameter="{Binding}"
+                                 Command="{Binding Path=Data.OpenChildFile, Source={StaticResource DataContextProxy}}" />
+                              <MenuItem Header="Edit this object" 
                                  CommandParameter="{Binding}"
                                  Command="{Binding Path=Data.ChangeEditableObject, Source={StaticResource DataContextProxy}}" />
-                              <MenuItem Header="Save" 
-                                 CommandParameter="{Binding}"
-                                 Command="{Binding Path=Data.SaveThisObject, Source={StaticResource DataContextProxy}}" />
                               <Separator />
-                              <MenuItem Header="Close..." 
+                              <MenuItem Header="Delete" 
                                  CommandParameter="{Binding}"
-                                 Command="{Binding Path=Data.CloseThisFile, Source={StaticResource DataContextProxy}}" />
+                                 Command="{Binding Path=Data.DeleteThisObject, Source={StaticResource DataContextProxy}}" />
                            </ContextMenu>
                         </TextBlock.ContextMenu>
                      </TextBlock>
@@ -252,7 +252,7 @@
                      </TextBlock>
                   </HierarchicalDataTemplate>
                   <HierarchicalDataTemplate DataType="{x:Type local:ChildObjectViewModel}"
-                     ItemsSource="{Binding CompObj}">
+                     ItemsSource="{Binding Co}">
                      <TextBlock Margin="2"  Text="{Binding Name}">
                         <TextBlock.ContextMenu>
                            <ContextMenu>

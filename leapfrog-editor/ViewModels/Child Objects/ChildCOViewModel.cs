@@ -11,24 +11,21 @@ using System.Windows.Media;
 
 
 /*
- * The ChildCOViewModel encompass the CompoundObject (incl its states, and behaviour) 
- * as well as all the ChildObjects of all states
+ * The ChildCOViewModel encompass the CompoundObject (incl its behaviour) 
+ * but provides a way to add extra behaviour. The CHildCOViewModel can 
+ * relate to a ChildObject that is either a file reference or a child object
+ * that is a CompoundObject defined in the parenting XML-file. 
  */
 
 
 namespace LeapfrogEditor
-{   // used to be: ConditionalSelectTreeViewViewModel
+{   
    public class ChildCOViewModel : CompoundObjectViewModel, IPositionInterface
    {
       #region Declarations
 
-      private TStateProperties<ChildObjectStateProperties> _childStateModelObject;
+      //private ObservableCollection<CollectionViewModelBase> _treeCollection = new ObservableCollection<CollectionViewModelBase>();
 
-      // This field (and prop) shows the state index that corresponds to the state name
-      // selected for this ChildCOViewModel
-      private int _selectedStateIndex = 0;
-
-      private ObservableCollection<CollectionViewModelBase> _treeCollection = new ObservableCollection<CollectionViewModelBase>();
       #endregion
 
       #region Constructors
@@ -37,21 +34,10 @@ namespace LeapfrogEditor
          TreeViewViewModel treeParent,
          CompoundObjectViewModel parentVm,
          MainViewModel mainVm,
-         TStateProperties<ChildObjectStateProperties> childStateModelObject,
+         CompoundObject compoundObject,
          bool enabled = true) :
-         base(treeParent, parentVm, mainVm, childStateModelObject.Properties.CompObj)
+         base(treeParent, parentVm, mainVm, compoundObject)
       {
-         ChildStateModelObject = childStateModelObject;
-
-         // Below we need to find the top level behavior. Must get it from the MainViewModel!
-         int i = MainVm.GetEditableCoBehaviourIndexOf(this, ChildStateModelObject.State);
-
-         if (i < 0)
-         {
-            i = 0;
-         }
-
-         SelectedStateIndex = i;
       }
 
       #endregion
@@ -72,16 +58,6 @@ namespace LeapfrogEditor
        *                   this is a ChildObject that has a file reference. If not, this is ""
        *                   
        */
-
-      public TStateProperties<ChildObjectStateProperties> ChildStateModelObject
-      {
-         get { return _childStateModelObject; }
-         set
-         {
-            _childStateModelObject = value;
-            OnPropertyChanged("");
-         }
-      }
 
       override public string Name
       {
@@ -114,10 +90,6 @@ namespace LeapfrogEditor
       {
          get
          {
-            string stateRef = "";
-
-            stateRef = " - " + State;
-
             string fileRef = "";
 
             if ((File != "") && (File != "undef_file.xml"))
@@ -125,7 +97,7 @@ namespace LeapfrogEditor
                fileRef = " - " + File;
             }
 
-            return Name + stateRef + fileRef;
+            return Name + " - " + fileRef;
          }
       }
 
@@ -143,70 +115,31 @@ namespace LeapfrogEditor
          }
       }
 
-      public string ObjectState
-      {
-         get
-         {
-            return State;
-         }
-      }
-
-      public string State
-      {
-         get { return ChildStateModelObject.State; }
-      }
-
-      public int SelectedStateIndex
-      {
-         get
-         {
-            return _selectedStateIndex;
-         }
-         set
-         {
-            int prevI = _selectedStateIndex;
-
-            if (prevI == value)
-            {
-               return;
-            }
-
-            if ((value == -1) || (value > ParentVm.Behaviour.States.Count - 1))
-            {
-               _selectedStateIndex = 0;
-            }
-            else
-            {
-               _selectedStateIndex = value;
-            }
-
-            CompoundObjectViewModel covm = MainVm.EditedCpVm as CompoundObjectViewModel;
-
-            ChildStateModelObject.State = covm.Behaviour.States[_selectedStateIndex].StateName;
-
-            OnPropertyChanged("");
-
-            ParentVm.DeselectAllChildren();
-
-            CompoundObjectViewModel p = ParentVm;
-
-            while ((p != null) && (p is ChildCOViewModel))
-            {
-               p.OnPropertyChanged("BoundingBox");
-               p = p.ParentVm;
-            }
-         }
-      }
-
       public string File
       {
-         get { return ChildStateModelObject.Properties.File; }
+         get
+         {
+            if ((TreeParent != null) && (TreeParent is ChildObjectViewModel))
+            {
+               ChildObjectViewModel covm = TreeParent as ChildObjectViewModel;
+
+               return covm.File;
+            }
+
+            return "Error resolving file name";
+         }
          set
          {
-            ChildStateModelObject.Properties.File = value;
-            OnPropertyChanged("File");
-            OnPropertyChanged("DispName");
-            OnPropertyChanged("IsFileReferenceChild");
+            if ((TreeParent != null) && (TreeParent is ChildObjectViewModel))
+            {
+               ChildObjectViewModel covm = TreeParent as ChildObjectViewModel;
+
+               covm.File = value;
+               OnPropertyChanged("File");
+               OnPropertyChanged("DispName");
+               OnPropertyChanged("IsFileReferenceChild");
+               covm.OnPropertyChanged("File");
+            }
          }
       }
 
@@ -214,79 +147,75 @@ namespace LeapfrogEditor
       {
          get
          {
-            return ChildStateModelObject.Properties.PosX;
+            if ((TreeParent != null) && (TreeParent is ChildObjectViewModel))
+            {
+               ChildObjectViewModel covm = TreeParent as ChildObjectViewModel;
+               return covm.PosX;
+            }
+
+            return 0;
+
          }
          set
          {
-            ChildStateModelObject.Properties.PosX = value;
-
-            OnPropertyChanged("PosX");
-            OnPropertyChanged("AbsPosX");
-            OnPropertyChanged("BoundingBox");
-
-            CompoundObjectViewModel p = ParentVm;
-
-            while ((p != null) && (p is ChildCOViewModel))
+            if ((TreeParent != null) && (TreeParent is ChildObjectViewModel))
             {
-               p.OnPropertyChanged("BoundingBox");
-               p = p.ParentVm;
+               ChildObjectViewModel covm = TreeParent as ChildObjectViewModel;
+               covm.PosX = value;
+
+               OnPropertyChanged("PosX");
+               OnPropertyChanged("AbsPosX");
+               OnPropertyChanged("BoundingBox");
+
+               CompoundObjectViewModel p = ParentVm;
+
+               while ((p != null) && (p is ChildCOViewModel))
+               {
+                  p.OnPropertyChanged("BoundingBox");
+                  p = p.ParentVm;
+               }
+
+               UpdateChildrenAbsolutePos();
             }
 
-             UpdateChildrenAbsolutePos();
          }
       }
-
-      //public new double AbsPosX
-      //{
-      //   get
-      //   {
-      //      if (this == MainVm.EditedCpVm)
-      //      {
-      //         return PosX;
-      //      }
-
-      //      return ParentVm.AbsPosX + PosX;
-      //   }
-      //}
 
       public new double PosY
       {
          get
          {
-            return ChildStateModelObject.Properties.PosY;
+            if ((TreeParent != null) && (TreeParent is ChildObjectViewModel))
+            {
+               ChildObjectViewModel covm = TreeParent as ChildObjectViewModel;
+               return covm.PosY;
+            }
+
+            return 0;
          }
          set
          {
-            ChildStateModelObject.Properties.PosY = value;
+            if ((TreeParent != null) && (TreeParent is ChildObjectViewModel))
+            {
+               ChildObjectViewModel covm = TreeParent as ChildObjectViewModel;
+               covm.PosY = value;
 
-            OnPropertyChanged("PosY");
-            OnPropertyChanged("AbsPosY");
-            OnPropertyChanged("BoundingBox");
+               OnPropertyChanged("PosY");
+               OnPropertyChanged("AbsPosY");
+               OnPropertyChanged("BoundingBox");
 
-            CompoundObjectViewModel p = ParentVm;
+               CompoundObjectViewModel p = ParentVm;
 
-            while ((p != null) && (p is ChildCOViewModel))
-            { 
-               p.OnPropertyChanged("BoundingBox");
-               p = p.ParentVm;
+               while ((p != null) && (p is ChildCOViewModel))
+               {
+                  p.OnPropertyChanged("BoundingBox");
+                  p = p.ParentVm;
+               }
+
+               UpdateChildrenAbsolutePos();
             }
-
-            UpdateChildrenAbsolutePos();
          }
       }
-
-      //public new double AbsPosY
-      //{
-      //   get
-      //   {
-      //      if (this == MainVm.EditedCpVm)
-      //      {
-      //         return PosY;
-      //      }
-
-      //      return ParentVm.AbsPosY + PosY;
-      //   }
-      //}
 
       #endregion
 
