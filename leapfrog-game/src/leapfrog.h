@@ -154,7 +154,6 @@ private:
 
 	b2World * m_world;
 	b2Body* m_mainBody;
-   b2Body* m_boostBody;
 	b2Body* m_rightBigLegBody;
 	b2Body* m_leftBigLegBody;
 	b2Body* m_rightSteerBody;

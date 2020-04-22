@@ -84,7 +84,6 @@ LeapFrog::LeapFrog(
    m_rightBigLegBody = ActorUserData::getBody(m_lfRightBigLeg->getUserData());
    m_leftBigLegBody = ActorUserData::getBody(m_lfLeftBigLeg->getUserData());
 
-	m_boostBody = getBody("lfBooster");
 	m_rightSteerBody = getBody("lfRightSteer");
 	m_leftSteerBody = getBody("lfLeftSteer");
 
@@ -1130,7 +1129,6 @@ void LeapFrog::dumpPart(std::string name, b2Body* body, b2Body* mainBody)
 void LeapFrog::dumpParts(void)
 {
    dumpPart("Main Body:", m_mainBody, m_mainBody);
-   dumpPart("Booster:", m_boostBody, m_mainBody);
    dumpPart("Right Big leg:", m_rightBigLegBody, m_mainBody);
    dumpPart("Left Big leg:", m_leftBigLegBody, m_mainBody);
    dumpPart("Right Small leg:", getBody("lfRightSmallLeg"), m_mainBody);

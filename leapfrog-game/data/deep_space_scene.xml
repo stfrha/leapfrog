@@ -17,7 +17,7 @@
     name="asteroidField"
     type="objectFactory">
     <objectFactoryProperties
-      body="notDefined"
+      body="notApplicable"
       posX="484.91492450774194"
       posY="58.284384068435429"
       width="20"
@@ -192,7 +192,7 @@
                bouncy="false" />
          </system>
          <system
-            name="hammerShield"
+            name="shield"
             type="shield">
             <shieldProperties
                body="mainBody"

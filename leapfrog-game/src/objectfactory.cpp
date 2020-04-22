@@ -46,7 +46,7 @@ void ObjectFactory::readObjectFactoryNode(const xml_node& objectNode)
    m_interval = 1.0f / objectNode.attribute("intensity").as_float() * 1000.0f;
    m_fieldLifetime = objectNode.attribute("lifeTime").as_int();
 
-   string body = objectNode.attribute("body").as_string();
+   string body = objectNode.attribute("body").as_string("notApplicable");
    
    if ((body != "") && (body != "notApplicable"))
    {

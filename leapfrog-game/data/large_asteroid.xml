@@ -4,166 +4,141 @@
    <behaviour
       type="breakableObject">
       <breakableObjectProperties
-         breakBulletDamage="100"
+         breakBulletDamage="10"
          numberOfSpawns="3">
          <spawnObject
-            probabilityFactor="72">
+            probabilityFactor="32">
             <childObject
-               name="mediumAsteroid">
-               <stateProperties
-                  state="default">
-                  <properties
-                     posX="0"
-                     posY="0" 
-                     file="medium_asteroid.xml" />
-               </stateProperties>
-            </childObject>
+               name="mediumAsteroid"
+               posX="0"
+               posY="0" 
+               file="medium_asteroid.xml" />
          </spawnObject>
          <spawnObject
             probabilityFactor="1">
            <childObject
-             name="coinPu1">
-             <stateProperties
-               state="default">
-               <properties
-                   posX="0"
-                   posY="0" >
-                 <compoundObject 
-                    needsGroupIndex="true">
-                   <behaviour
-                     type="pickupObject">
-                     <pickupObjectProperties
-                       pickupType="resourceCoin"
-                       amountType="random"
-                       amountMax="50"
-                       amountMin="10" />
-                   </behaviour>
-                   <dynamicCircle
-                       name="coinPuBody"
-                       texture="coin_power_up"
-                       posX="0"
-                       posY="0"
-                       angle="-17"
-                       zLevel="160"
-                       collisionEntity="pickup"
-                       collisionCategory="1"
-                       collisionMask="65533"
-                       radius="7"
-                       density="1"
-                       friction="0" />
-                 </compoundObject>
-               </properties>
-             </stateProperties>
-           </childObject>
-         </spawnObject>
-         <spawnObject
-            probabilityFactor="1">
-           <childObject
-             name="fuelPu1">
-             <stateProperties
-               state="default">
-               <properties
-                   posX="0"
-                   posY="0" >
-                 <compoundObject 
-                    needsGroupIndex="true">
-                   <behaviour
-                     type="pickupObject">
-                     <pickupObjectProperties
-                       pickupType="resourceFuel"
-                       amountType="random"
-                       amountMax="50"
-                       amountMin="10" />
-                   </behaviour>
-                   <dynamicCircle
-                       name="fuelPuBody"
-                       texture="fuel_power_up"
-                       posX="0"
-                       posY="0"
-                       angle="-17"
-                       zLevel="160"
-                       collisionEntity="pickup"
-                       collisionCategory="1"
-                       collisionMask="65533"
-                       radius="7"
-                       density="1"
-                       friction="0" />
-                 </compoundObject>
-               </properties>
-             </stateProperties>
-           </childObject>
-         </spawnObject>
-         <spawnObject
-            probabilityFactor="1">
-           <childObject
-             name="ammoPu1">
-             <stateProperties
-               state="default">
-               <properties
+             name="coinPu1"
+             posX="0"
+             posY="0" >
+           <compoundObject 
+              needsGroupIndex="true">
+             <behaviour
+               type="pickupObject">
+               <pickupObjectProperties
+                 pickupType="resourceCoin"
+                 amountType="random"
+                 amountMax="50"
+                 amountMin="10" />
+             </behaviour>
+             <dynamicCircle
+                 name="coinPuBody"
+                 texture="coin_power_up"
                  posX="0"
-                 posY="0" >
-                 <compoundObject 
-                    needsGroupIndex="true">
-                   <behaviour
-                     type="pickupObject">
-                     <pickupObjectProperties
-                       pickupType="resourceAmmo"
-                       amountType="random"
-                       amountMax="50"
-                       amountMin="10" />
-                   </behaviour>
-                   <dynamicCircle
-                       name="ammoPuBody"
-                       texture="ammo_power_up"
-                       posX="0"
-                       posY="0"
-                       angle="-17"
-                       zLevel="160"
-                       collisionEntity="pickup"
-                       collisionCategory="1"
-                       collisionMask="65533"
-                       radius="7"
-                       density="1"
-                       friction="0" />
-                 </compoundObject>
-               </properties>
-             </stateProperties>
+                 posY="0"
+                 angle="-17"
+                 zLevel="160"
+                 collisionEntity="pickup"
+                 collisionCategory="1"
+                 collisionMask="65533"
+                 radius="7"
+                 density="1"
+                 friction="0" />
+           </compoundObject>
            </childObject>
          </spawnObject>
          <spawnObject
             probabilityFactor="1">
            <childObject
-             name="shieldPu1">
-             <stateProperties
-               state="default">
-               <properties
-                   posX="0"
-                   posY="0" >
-                 <compoundObject 
-                    needsGroupIndex="true">
-                   <behaviour
-                     type="pickupObject">
-                     <pickupObjectProperties
-                       pickupType="resourceShield"
-                       amountType="fix"
-                       amount="100" />
-                   </behaviour>
-                   <dynamicCircle
-                       name="shieldPuBody"
-                       texture="shield_power_up"
-                       posX="0"
-                       posY="0"
-                       angle="-17"
-                       zLevel="160"
-                       collisionEntity="pickup"
-                       collisionCategory="1"
-                       collisionMask="65533"
-                       radius="7"
-                       density="1"
-                       friction="0" />
-                 </compoundObject>
-               </properties>
-             </stateProperties>
+             name="fuelPu1"
+             posX="0"
+             posY="0" >
+           <compoundObject 
+              needsGroupIndex="true">
+             <behaviour
+               type="pickupObject">
+               <pickupObjectProperties
+                 pickupType="resourceFuel"
+                 amountType="random"
+                 amountMax="50"
+                 amountMin="10" />
+             </behaviour>
+             <dynamicCircle
+                 name="fuelPuBody"
+                 texture="fuel_power_up"
+                 posX="0"
+                 posY="0"
+                 angle="-17"
+                 zLevel="160"
+                 collisionEntity="pickup"
+                 collisionCategory="1"
+                 collisionMask="65533"
+                 radius="7"
+                 density="1"
+                 friction="0" />
+           </compoundObject>
+           </childObject>
+         </spawnObject>
+         <spawnObject
+            probabilityFactor="1">
+           <childObject
+             name="ammoPu1"
+             posX="0"
+             posY="0" >
+           <compoundObject 
+              needsGroupIndex="true">
+             <behaviour
+               type="pickupObject">
+               <pickupObjectProperties
+                 pickupType="resourceAmmo"
+                 amountType="random"
+                 amountMax="50"
+                 amountMin="10" />
+             </behaviour>
+             <dynamicCircle
+                 name="ammoPuBody"
+                 texture="ammo_power_up"
+                 posX="0"
+                 posY="0"
+                 angle="-17"
+                 zLevel="160"
+                 collisionEntity="pickup"
+                 collisionCategory="1"
+                 collisionMask="65533"
+                 radius="7"
+                 density="1"
+                 friction="0" />
+           </compoundObject>
+           </childObject>
+         </spawnObject>
+         <spawnObject
+            probabilityFactor="1">
+           <childObject
+             name="shieldPu1"
+             posX="0"
+             posY="0" >
+           <compoundObject 
+              needsGroupIndex="true">
+             <behaviour
+               type="pickupObject">
+               <pickupObjectProperties
+                 pickupType="resourceShield"
+                 amountType="fix"
+                 amount="100" />
+             </behaviour>
+             <dynamicCircle
+                 name="shieldPuBody"
+                 texture="shield_power_up"
+                 posX="0"
+                 posY="0"
+                 angle="-17"
+                 zLevel="160"
+                 collisionEntity="pickup"
+                 collisionCategory="1"
+                 collisionMask="65533"
+                 radius="7"
+                 density="1"
+                 friction="0" />
+           </compoundObject>
            </childObject>
          </spawnObject>
       </breakableObjectProperties>

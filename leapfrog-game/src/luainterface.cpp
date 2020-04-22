@@ -260,6 +260,34 @@ static int c_addMissionStateSceneObjects(lua_State *L)
    return 0;
 }
 
+static int c_addPositionedChildObject(lua_State *L)
+{
+   std::string childObjectFileName = lua_tostring(L, 1);
+   std::string objectName = lua_tostring(L, 2);
+   oxygine::Vector2 objPos;
+   objPos.x = lua_tonumber(L, 3);
+   objPos.y = lua_tonumber(L, 4);
+
+   SceneActor* scene = g_LuaInterface.getSceneActor();
+
+   // Create and define the child by reading the file
+   CompoundObject* co = CompoundObject::readDefinitionXmlFile(
+      *scene->getResources(),
+      scene,
+      NULL,
+      scene->getWorld(),
+      objPos,
+      childObjectFileName);
+
+   if (co)
+   {
+      scene->m_children.push_back(static_cast<CompoundObject*>(co));
+      co->setName(objectName);
+   }
+
+   return 0;
+}
+
 static int c_addDialogMessage(lua_State *L)
 {
    std::string message = lua_tostring(L, 1);
@@ -422,6 +450,7 @@ void LuaInterface::initLuaInterface(void)
    lua_register(m_L, "c_registerEventHandler", c_registerEventHandler);
    lua_register(m_L, "c_clearAllTriggersAndEvents", c_clearAllTriggersAndEvents);
    lua_register(m_L, "c_addMissionStateSceneObjects", c_addMissionStateSceneObjects);
+   lua_register(m_L, "c_addPositionedChildObject", c_addPositionedChildObject);
    lua_register(m_L, "c_addDialogMessage", c_addDialogMessage);
    lua_register(m_L, "c_setPanningObject", c_setPanningObject);
    lua_register(m_L, "c_setObjectProperty", c_setObjectProperty);

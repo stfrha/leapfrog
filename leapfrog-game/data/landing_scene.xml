@@ -1202,6 +1202,7 @@
       hasLowerBoundary="true"
       hasLeftBoundary="true"
       hasRightBoundary="true">
+      <states />
     </sceneProperties>
   </behaviour>
   <rope
@@ -1220,41 +1221,41 @@
     collisionEntity="notApplicable"
     collisionCategory="33"
     collisionMask="65534" />
-   <childObject
-      name="machine1"
-      file="strange_machine.xml"
-      posX="376.11720175893953"
-      posY="292.05208483008192" />
-   <childObject
-      name="launchSite1"
-      file="launch_site.xml"
-      posX="122.21347591965764"
-      posY="627.58336773289375" />
-   <childObject
-      name="leapfrog1"
-      file="leapfrog_reentry.xml"
-      posX="537.19860737896806"
-      posY="481.56945402130646" />
-   <childObject
-      name="landing_pad1"
-      posX="415.23595638880357"
-      posY="683.74305055573268">
-      <compoundObject
-         needsGroupIndex="false">
-         <staticBox
-            name="landingPad1"
-            texture="transparent"
-            posX="0"
-            posY="0"
-            angle="0"
-            zLevel="0"
-            collisionEntity="landingPad"
-            collisionCategory="1"
-            collisionMask="65533"
-            width="50"
-            height="25" />
-         <behaviour
-            type="landingPad" />
-      </compoundObject>
-   </childObject>
+  <childObject
+    name="machine1"
+    file="strange_machine.xml"
+    posX="376.11720175893953"
+    posY="292.05208483008192" />
+  <childObject
+    name="launchSite1"
+    file="launch_site.xml"
+    posX="122.21347591965764"
+    posY="627.58336773289375" />
+  <childObject
+    name="leapfrog1"
+    file="leapfrog_reentry.xml"
+    posX="537.19860737896806"
+    posY="481.56945402130646" />
+  <childObject
+    name="landing_pad1"
+    posX="415.23595638880357"
+    posY="683.74305055573268">
+    <compoundObject
+      needsGroupIndex="false">
+      <staticBox
+        name="landingPad1"
+        texture="transparent"
+        posX="0"
+        posY="0"
+        angle="0"
+        zLevel="0"
+        collisionEntity="landingPad"
+        collisionCategory="1"
+        collisionMask="65533"
+        width="50"
+        height="25" />
+      <behaviour
+        type="landingPad" />
+    </compoundObject>
+  </childObject>
 </compoundObject>

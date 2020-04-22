@@ -103,6 +103,11 @@ void SteerableObject::connectToForeignObjects(void)
 {
    m_targetBody = m_sceneActor->getBody(m_targetBodyStr);
 
+   if (m_targetBody == NULL)
+   {
+      logs::messageln("Steerable object did not find the target bode: %s", m_targetBodyStr.c_str());
+   }
+
    for (auto it = m_children.begin(); it != m_children.end(); ++it)
    {
       (*it)->connectToForeignObjects();

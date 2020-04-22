@@ -34,6 +34,7 @@ function setupMissionStateScene()
    elseif currentState == "state2" then
       if currentScene == "landing_scene.xml" then
          c_addMissionStateSceneObjects("landing_scene_state2.xml")
+         
          c_registerEventHandler("landing_pad1", "LpTO", 0, 0)
          c_registerEventHandler("bomb1", "ExEX", 0, 0)
 
@@ -69,7 +70,8 @@ function missionStateSceneEventHandler(eventId, actorName, parameter1)
 
             -- Play dialog
             c_addDialogMessage("The landing pad is the filled square on your map. Get there!", "DEBUG", true, 0, 0)
-        
+            c_addPositionedChildObject("medium_asteroid.xml", "dummy1", 500, 500)
+
          end
          if actorName == "landing_pad1" and eventId == "LpLL" then
             
