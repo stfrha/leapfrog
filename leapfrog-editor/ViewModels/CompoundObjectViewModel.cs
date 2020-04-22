@@ -334,15 +334,26 @@ namespace LeapfrogEditor
          {
             if (this != MainVm.EditedCpVm)
             {
-               double parentPos = 0;
-
-               if (ParentVm != null)
+               if ((TreeParent != null) && (TreeParent is ChildObjectViewModel))
                {
-                  parentPos = ParentVm.AbsPosX;
-               }
+                  ChildObjectViewModel covm = TreeParent as ChildObjectViewModel;
 
-               return parentPos + PosX;
+                  return covm.AbsPosX;
+               }
             }
+
+
+            //if (this != MainVm.EditedCpVm)
+            //{
+            //   double parentPos = 0;
+
+            //   if (ParentVm != null)
+            //   {
+            //      parentPos = ParentVm.AbsPosX;
+            //   }
+
+            //   return parentPos + PosX;
+            //}
 
             return 0;
          }
@@ -362,15 +373,25 @@ namespace LeapfrogEditor
          {
             if (this != MainVm.EditedCpVm)
             {
-               double parentPos = 0;
-
-               if (ParentVm != null)
+               if ((TreeParent != null) && (TreeParent is ChildObjectViewModel))
                {
-                  parentPos = ParentVm.AbsPosY;
-               }
+                  ChildObjectViewModel covm = TreeParent as ChildObjectViewModel;
 
-               return parentPos + PosY;
+                  return covm.AbsPosY;
+               }
             }
+
+            //if (this != MainVm.EditedCpVm)
+            //{
+            //   double parentPos = 0;
+
+            //   if (ParentVm != null)
+            //   {
+            //      parentPos = ParentVm.AbsPosY;
+            //   }
+
+            //   return parentPos + PosY;
+            //}
 
             return 0;
          }

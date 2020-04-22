@@ -136,9 +136,6 @@
     <Compile Include="Views\Controls\Editable Properties Controls\Behaviour Properties Control\BreakabkeBehaviourPropEditor.xaml.cs">
       <DependentUpon>BreakabkeBehaviourPropEditor.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\Controls\Editable Properties Controls\ChildObjectStatePropEditor.xaml.cs">
-      <DependentUpon>ChildObjectStatePropEditor.xaml</DependentUpon>
-    </Compile>
     <Compile Include="Views\Controls\Editable Properties Controls\ChildObjectPropEditor.xaml.cs">
       <DependentUpon>ChildObjectPropEditor.xaml</DependentUpon>
     </Compile>
@@ -411,10 +408,6 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="Views\Controls\Editable Properties Controls\Behaviour Properties Control\BreakabkeBehaviourPropEditor.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="Views\Controls\Editable Properties Controls\ChildObjectStatePropEditor.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>

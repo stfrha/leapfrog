@@ -116,6 +116,8 @@ namespace LeapfrogEditor
             OnPropertyChanged("AbsPosX");
             OnPropertyChanged("BoundingBox");
 
+            CompObj.OnPropertyChanged("AbsPosX");
+
             CompoundObjectViewModel p = ParentVm;
 
             while (p != null)
@@ -157,6 +159,8 @@ namespace LeapfrogEditor
             OnPropertyChanged("PosY");
             OnPropertyChanged("AbsPosY");
             OnPropertyChanged("BoundingBox");
+
+            CompObj.OnPropertyChanged("AbsPosY");
 
             CompoundObjectViewModel p = ParentVm;
 

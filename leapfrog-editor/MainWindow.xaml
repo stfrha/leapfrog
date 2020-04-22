@@ -196,33 +196,6 @@
                      <TextBlock Margin="2"  Text="Scene Properties">
                      </TextBlock>
                   </HierarchicalDataTemplate>
-                  <!--<HierarchicalDataTemplate DataType="{x:Type local:ScenePropsStateCollectionViewModel}"
-                     ItemsSource="{Binding States}">
-                     <TextBlock Margin="2"  Text="States">
-                        <TextBlock.ContextMenu>
-                           <ContextMenu>
-                              <MenuItem Header="Add State [TODO: not implemented yet]" 
-                                 CommandParameter="{Binding}"
-                                 Command="{Binding Path=Data.OpenChildFile, Source={StaticResource DataContextProxy}}" />
-                           </ContextMenu>
-                        </TextBlock.ContextMenu>
-                     </TextBlock>
-                  </HierarchicalDataTemplate>-->
-                  <!--<HierarchicalDataTemplate DataType="{x:Type local:StateViewModel}">
-                     <TextBlock Margin="2"  Text="{Binding StateIndicator}">
-                        <TextBlock.ContextMenu>
-                           <ContextMenu>
-                              <MenuItem Header="Display this State" 
-                                 CommandParameter="{Binding}"
-                                 Command="{Binding Path=Data.DisplayState, Source={StaticResource DataContextProxy}}" />
-                              <Separator />
-                              <MenuItem Header="Delete State [TODO: not implemented yet]" 
-                                 CommandParameter="{Binding}"
-                                 Command="{Binding Path=Data.OpenChildFile, Source={StaticResource DataContextProxy}}" />
-                           </ContextMenu>
-                        </TextBlock.ContextMenu>
-                     </TextBlock>
-                  </HierarchicalDataTemplate>-->
                   <HierarchicalDataTemplate DataType="{x:Type local:ShapeCollectionViewModel}"
                      ItemsSource="{Binding Shapes}">
                      <TextBlock Margin="2"  Text="Shapes">
@@ -243,10 +216,12 @@
                      <TextBlock Margin="2"  Text="Child Objects">
                         <TextBlock.ContextMenu>
                            <ContextMenu>
-                              <Separator />
-                              <MenuItem Header="Add Child Object" 
+                              <MenuItem Header="Add Embedded Child Object" 
                                  CommandParameter="{Binding}"
                                  Command="{Binding Path=Data.AddChildObject, Source={StaticResource DataContextProxy}}" />
+                              <MenuItem Header="Add External Child Object file" 
+                                 CommandParameter="{Binding}"
+                                 Command="{Binding Path=Data.AddChildObjectFile, Source={StaticResource DataContextProxy}}" />
                            </ContextMenu>
                         </TextBlock.ContextMenu>
                      </TextBlock>
@@ -256,10 +231,6 @@
                      <TextBlock Margin="2"  Text="{Binding Name}">
                         <TextBlock.ContextMenu>
                            <ContextMenu>
-                              <MenuItem Header="Add Child Object for a Scene state" 
-                                 CommandParameter="{Binding}"
-                                 Command="{Binding Path=Data.AddChildObject, Source={StaticResource DataContextProxy}}" />
-                              <Separator />
                               <MenuItem Header="Delete" 
                                  CommandParameter="{Binding}"
                                  Command="{Binding Path=Data.DeleteThisObject, Source={StaticResource DataContextProxy}}" />
@@ -423,10 +394,7 @@
                            <ContentControl.Resources>
                               <DataTemplate DataType="{x:Type local:CompoundObjectViewModel}">
                                  <local:CompoundObjectUserControl 
-                                    EnableContextMenues="False"
-                                    ShowJoints="{Binding DataContext.ShowJoints, RelativeSource={RelativeSource AncestorType={x:Type Window}}}"
-                                    ShowTriangles="{Binding DataContext.ShowTriangles, RelativeSource={RelativeSource AncestorType={x:Type Window}}}" 
-                                    ShowSystems="{Binding DataContext.ShowSystems, RelativeSource={RelativeSource AncestorType={x:Type Window}}}" />
+                                    ShowTriangles="{Binding DataContext.ShowTriangles, RelativeSource={RelativeSource AncestorType={x:Type Window}}}"  />
                               </DataTemplate>
                            </ContentControl.Resources>
                         </ContentControl>

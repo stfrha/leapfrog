@@ -377,7 +377,7 @@
       <ItemsControl ItemsSource="{Binding ChildObjectCollection.Children}">
          <ItemsControl.Resources>
             <DataTemplate DataType="{x:Type local:ChildObjectViewModel}">
-               <ItemsControl ItemsSource="{Binding CompObj}">
+               <ItemsControl ItemsSource="{Binding Co}">
                   <ItemsControl.ItemsPanel>
                      <ItemsPanelTemplate>
                         <Canvas/>
@@ -391,6 +391,22 @@
                   </ItemsControl.ItemContainerStyle>
                </ItemsControl>
             </DataTemplate>
+            <DataTemplate DataType="{x:Type local:ChildCOViewModel}">
+               <local:ChildCOObjectUserControl>
+                  <local:ChildCOObjectUserControl.ContextMenu>
+                     <ContextMenu>
+                        <MenuItem Header="Locate in browser" 
+                     CommandParameter="{Binding}"
+                     Command="{Binding Path=Data.LocateInBrowser, Source={StaticResource DataContextProxy}}" />
+                        <Separator />
+                        <MenuItem Header="Delete" 
+                                 CommandParameter="{Binding}"
+                                 Command="{Binding Path=Data.DeleteThisObject, Source={StaticResource DataContextProxy}}" />
+                     </ContextMenu>
+                  </local:ChildCOObjectUserControl.ContextMenu>
+               </local:ChildCOObjectUserControl>
+            </DataTemplate>
+
          </ItemsControl.Resources>
          <ItemsControl.ItemsPanel>
             <ItemsPanelTemplate>

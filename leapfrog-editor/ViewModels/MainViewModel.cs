@@ -1123,6 +1123,7 @@ namespace LeapfrogEditor
             ChildCollectionViewModel scvm = parameter as ChildCollectionViewModel;
 
             ChildObject ch = new ChildObject();
+            ch.CompObj = new CompoundObject();
             ChildObjectViewModel chvm = new ChildObjectViewModel(scvm, EditedCpVm as CompoundObjectViewModel, this, ch, true);
 
             CompoundObjectViewModel covm = EditedCpVm as CompoundObjectViewModel;
@@ -1130,23 +1131,6 @@ namespace LeapfrogEditor
             scvm.Children.Add(chvm);
             EditedCpVm.BuildGlobalShapeCollection(ShowJoints, ShowSystems, ShowBackgrounds);
          }
-
-         //if (parameter is ChildObjectViewModel)
-         //{
-         //   ChildObjectViewModel chvm = parameter as ChildObjectViewModel;
-
-         //   TStateProperties<ChildObjectStateProperties> sp = new TStateProperties<ChildObjectStateProperties>();
-         //   chvm.ModelObject.StateProperties.Add(sp);
-
-         //   sp.Properties = new ChildObjectStateProperties();
-         //   sp.Properties.CompObj = new CompoundObject();
-
-         //   ChildCOViewModel covm = new ChildCOViewModel(chvm, EditedCpVm as CompoundObjectViewModel, this, sp);
-         //   covm.BuildViewModel(true);
-
-         //   chvm.StateProperties.Add(covm);
-         //   EditedCpVm.BuildGlobalShapeCollection(GetEditableCoBehaviourStateName(), ShowJoints, ShowSystems, ShowBackgrounds);
-         //}
       }
 
       bool CanAddChildObjectExecute(Object parameter)
@@ -1169,6 +1153,64 @@ namespace LeapfrogEditor
          get
          {
             return new MicroMvvm.RelayCommand<Object>(parameter => AddChildObjectExecute(parameter), parameter => CanAddChildObjectExecute(parameter));
+         }
+      }
+
+      void AddChildObjectFileExecute(Object parameter)
+      {
+         if (parameter is ChildCollectionViewModel)
+         {
+            ChildCollectionViewModel scvm = parameter as ChildCollectionViewModel;
+
+            OpenFileDialog ofd = new OpenFileDialog();
+
+            ofd.Filter = "Child object files (*.xml)|*.xml|All files (*.*)|*.*";
+            ofd.CheckFileExists = true;
+
+            if (ofd.ShowDialog() == true)
+            {
+               string s = GlobalConstants.DataDirectory + System.IO.Path.GetFileName(ofd.FileName);
+               string fullPath = System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
+               string fullFileName = System.IO.Path.Combine(fullPath, s);
+
+               ChildObject ch = new ChildObject();
+               ch.File = System.IO.Path.GetFileName(ofd.FileName);
+               ch.CompObj = CompoundObject.ReadFromFile(fullFileName);
+               ChildObjectViewModel chvm = new ChildObjectViewModel(scvm, EditedCpVm as CompoundObjectViewModel, this, ch, true);
+               chvm.CompObj.BuildViewModel(true);
+
+               CompoundObjectViewModel covm = EditedCpVm as CompoundObjectViewModel;
+               covm.ModelObject.ChildObjects.Add(ch);
+               scvm.Children.Add(chvm);
+               EditedCpVm.BuildGlobalShapeCollection(ShowJoints, ShowSystems, ShowBackgrounds);
+
+
+
+               //OpenFileToEdit(System.IO.Path.GetFileName(ofd.FileName), true);
+            }
+         }
+      }
+
+      bool CanAddChildObjectFileExecute(Object parameter)
+      {
+         if (parameter == null)
+         {
+            return false;
+         }
+
+         if ((EditedCpVm != null) && (EditedCpVm is CompoundObjectViewModel) && ((parameter is ChildCollectionViewModel) || (parameter is ChildObjectViewModel)))
+         {
+            return true;
+         }
+
+         return false;
+      }
+
+      public ICommand AddChildObjectFile
+      {
+         get
+         {
+            return new MicroMvvm.RelayCommand<Object>(parameter => AddChildObjectFileExecute(parameter), parameter => CanAddChildObjectFileExecute(parameter));
          }
       }
 
@@ -1662,6 +1704,13 @@ namespace LeapfrogEditor
                      }
 
                      shvm.ParentVm.IsSelected = true;
+
+                     // Also select the ChildObjectViewModel associated to the ChildCOViewModel
+                     if (shvm.ParentVm.TreeParent is ChildObjectViewModel)
+                     {
+                        ChildObjectViewModel chvm = shvm.ParentVm.TreeParent as ChildObjectViewModel;
+                        chvm.IsSelected = true;
+                     }
                   }
 
                   // If we pressed right click to select, we want to the rest
@@ -2120,7 +2169,6 @@ namespace LeapfrogEditor
          // Here we assess the current selection and updates 
          // the selection collection of different types
 
-         SelectedChildObjects.Clear();
          SelectedChildObjects.Clear();
          SelectedShapes.Clear();
          SelectedJoints.Clear();

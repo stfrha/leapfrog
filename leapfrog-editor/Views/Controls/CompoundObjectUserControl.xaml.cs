@@ -44,50 +44,7 @@ namespace LeapfrogEditor
       {
          InitializeComponent();
 
-         //CollectionView myCollectionView = (CollectionView)CollectionViewSource.GetDefaultView(jointItems.Items);
-         //((INotifyCollectionChanged)myCollectionView).CollectionChanged += new NotifyCollectionChangedEventHandler(DataGrid_CollectionChanged);
-
-         //var dpd = DependencyPropertyDescriptor.FromProperty(ItemsControl.ItemsSourceProperty, typeof(ItemsControl));
-         //if (dpd != null)
-         //{
-         //   dpd.AddValueChanged(jointItems, ThisIsCalledWhenPropertyIsChanged);
-         //}
       }
-
-
-
-      public bool EnableContextMenues
-      {
-         get { return (bool)GetValue(EnableContextMenuesProperty); }
-         set { SetValue(EnableContextMenuesProperty, value); }
-      }
-
-      // Using a DependencyProperty as the backing store for EnableContextMenues.  This enables animation, styling, binding, etc...
-      public static readonly DependencyProperty EnableContextMenuesProperty =
-          DependencyProperty.Register("EnableContextMenues", typeof(bool), typeof(CompoundObjectUserControl), new PropertyMetadata(true));
-
-      
-      public bool ShowJoints
-      {
-         get { return (bool)GetValue(ShowJointsProperty); }
-         set { SetValue(ShowJointsProperty, value); }
-      }
-
-      // Using a DependencyProperty as the backing store for ShowJoints.  This enables animation, styling, binding, etc...
-      public static readonly DependencyProperty ShowJointsProperty =
-          DependencyProperty.Register("ShowJoints", typeof(bool), typeof(CompoundObjectUserControl), new PropertyMetadata(false));
-
-      public bool ShowSystems
-      {
-         get { return (bool)GetValue(ShowSystemsProperty); }
-         set { SetValue(ShowSystemsProperty, value); }
-      }
-
-      // Using a DependencyProperty as the backing store for ShowSystems.  This enables animation, styling, binding, etc...
-      public static readonly DependencyProperty ShowSystemsProperty =
-          DependencyProperty.Register("ShowSystems", typeof(bool), typeof(CompoundObjectUserControl), new PropertyMetadata(false));
-
-
 
 
       public bool ShowTriangles
@@ -247,84 +204,20 @@ namespace LeapfrogEditor
          GeneralMouseMove<IPositionInterface>(MouseEventObjectType.dragableBorder, sender, e);
       }
 
-      private void CompoundObject_MouseDown(object sender, MouseButtonEventArgs e)
+      protected void CompoundObject_MouseDown(object sender, MouseButtonEventArgs e)
       {
          GeneralMouse<CompoundObjectViewModel>(true, MouseEventObjectType.compoundObjectBoundaryBox, sender, e);
       }
 
-      private void CompoundObject_MouseUp(object sender, MouseButtonEventArgs e)
+      protected void CompoundObject_MouseUp(object sender, MouseButtonEventArgs e)
       {
          GeneralMouse<CompoundObjectViewModel>(false, MouseEventObjectType.compoundObjectBoundaryBox, sender, e);
       }
 
-      private void CompoundObject_MouseMove(object sender, MouseEventArgs e)
+      protected void CompoundObject_MouseMove(object sender, MouseEventArgs e)
       {
          GeneralMouseMove<IPositionInterface>(MouseEventObjectType.compoundObjectBoundaryBox, sender, e);
       }
 
-      private void OnContextMenuOpening(object sender, ContextMenuEventArgs e)
-      {
-         // By not doing anything here, can we prevent the context menu?
-      }
-
-      //private void OnDataContextChanged(object sender, DependencyPropertyChangedEventArgs e)
-      //{
-      //   // Here I want to disable the Context menu of all children
-      //   for (int i = 0; i < jointItems.Items.Count; i++)
-      //   {
-      //      UIElement element = jointItems.ItemContainerGenerator.ContainerFromIndex(i) as UIElement;
-
-      //      int a = 10;
-      //   }
-
-      //}
-
-      //private void OnSourceUpdated(object sender, DataTransferEventArgs e)
-      //{
-      //   // Here I want to disable the Context menu of all children
-      //   for (int i = 0; i < jointItems.Items.Count; i++)
-      //   {
-      //      UIElement element = jointItems.ItemContainerGenerator.ContainerFromIndex(i) as UIElement;
-
-      //      int a = 10;
-      //   }
-      //}
-
-      //private void ThisIsCalledWhenPropertyIsChanged(object sender, EventArgs e)
-      //{
-      //   // Here I want to disable the Context menu of all children
-
-      //   for (int i = 0; i < jointItems.Items.Count; i++)
-      //   {
-      //      var t = jointItems.ItemContainerGenerator.ContainerFromIndex(i);
-
-      //      UIElement element = jointItems.ItemContainerGenerator.ContainerFromIndex(i) as UIElement;
-
-      //      int a = 10;
-      //   }
-      //}
-
-      //private void DataGrid_CollectionChanged(object sender, EventArgs e)
-      //{
-      //   // Here I want to disable the Context menu of all children
-      //   for (int i = 0; i < jointItems.Items.Count; i++)
-      //   {
-      //      var t = jointItems.ItemContainerGenerator.ContainerFromIndex(i);
-      //      if (t == null)
-      //      {
-      //         jointItems.UpdateLayout();
-      //         t = jointItems.ItemContainerGenerator.ContainerFromIndex(i);
-      //      }
-      //      if (t is FrameworkElement)
-      //      {
-      //         FrameworkElement element = t as FrameworkElement;
-
-      //         element.ContextMenu = null;
-
-      //         int a = 10;
-
-      //      }
-      //   }
-      //}
    }
 }

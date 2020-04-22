@@ -97,7 +97,7 @@ namespace LeapfrogEditor
                fileRef = " - " + File;
             }
 
-            return Name + " - " + fileRef;
+            return Name + fileRef;
          }
       }
 
@@ -143,6 +143,10 @@ namespace LeapfrogEditor
          }
       }
 
+      // For a ChildCOViewModel, the pos and abs pos is the same as the parenting ChildObjectViewModel
+      // The resolvation of the abspos is done ChilcObjectViewModel. If we update the pos of this object,
+      // we should change the pos of the parent ChildObjectViewModel
+
       public new double PosX
       {
          get
@@ -181,6 +185,25 @@ namespace LeapfrogEditor
          }
       }
 
+      //public new double AbsPosX
+      //{
+      //   get
+      //   {
+      //      if (this != MainVm.EditedCpVm)
+      //      {
+      //         if ((TreeParent != null) && (TreeParent is ChildObjectViewModel))
+      //         {
+      //            ChildObjectViewModel covm = TreeParent as ChildObjectViewModel;
+
+      //            return covm.AbsPosX;
+      //         }
+      //      }
+
+      //      return 0;
+      //   }
+      //}
+
+
       public new double PosY
       {
          get
@@ -216,6 +239,26 @@ namespace LeapfrogEditor
             }
          }
       }
+
+      //public new double AbsPosY
+      //{
+      //   get
+      //   {
+      //      if (this != MainVm.EditedCpVm)
+      //      {
+      //         if ((TreeParent != null) && (TreeParent is ChildObjectViewModel))
+      //         {
+      //            ChildObjectViewModel covm = TreeParent as ChildObjectViewModel;
+
+      //            return covm.AbsPosY;
+      //         }
+      //      }
+
+      //      return 0;
+      //   }
+      //}
+
+
 
       #endregion
 

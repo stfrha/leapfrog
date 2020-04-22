@@ -12,6 +12,9 @@
          <StackPanel Margin="2">
             <local:HeadlineControl Headline="{Binding Headline, ElementName=root}" />
             <local:StringEditorControl Headline="Name" MyValue="{Binding Name, Mode=TwoWay}" />
+            <local:DoubleEditorControl Headline="PosX" MyValue="{Binding PosX, Mode=TwoWay}" />
+            <local:DoubleEditorControl Headline="PosY" MyValue="{Binding PosY, Mode=TwoWay}" />
+            <local:StringEditorControl Headline="File" MyValue="{Binding File, Mode=TwoWay}" />
          </StackPanel>
       </Border>
    </DockPanel>
