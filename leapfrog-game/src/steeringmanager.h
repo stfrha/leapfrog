@@ -75,4 +75,6 @@ public:
    WanderHunterState getWanderHunterState(void);
    bool getWanderHunterStateChanged(void);
 
+   void resetStateChangeClock(const oxygine::UpdateState& us);
+
 };

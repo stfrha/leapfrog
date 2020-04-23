@@ -755,7 +755,7 @@ void MainActor::sceneUpHandler(Event* event)
 {
    TouchEvent* te = (TouchEvent*)event;
 
-   logs::messageln("Up with index: %d", te->index);
+   //logs::messageln("Up with index: %d", te->index);
 
    // Vector2 v = te->localPosition;
    // Point p = Point((int)v.x, (int)v.y);
@@ -825,7 +825,7 @@ void MainActor::sceneMoveHandler(Event* event)
    TouchEvent* te = (TouchEvent*)event;
    Vector2 v = te->localPosition;
 
-   logs::messageln("Move with index: %d", te->index);
+   //logs::messageln("Move with index: %d", te->index);
 
 }
 

@@ -70,6 +70,7 @@ private:
    AimStateEnum m_aimState;
    oxygine::timeMS m_aimStateStartTime;
    int m_headDownDisplayItemId;
+   bool m_armClockReset;
 
 
 //   SteeringStateEnum m_state; now a property

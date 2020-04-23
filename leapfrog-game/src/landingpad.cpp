@@ -80,7 +80,7 @@ void LandingPad::doUpdate(const UpdateState &us)
       {
          m_stableTicks++;
 
-         logs::messageln("Tick: %d", m_stableTicks);
+         //logs::messageln("Tick: %d", m_stableTicks);
 
 
          if (m_stableTicks > 15)
@@ -94,7 +94,7 @@ void LandingPad::doUpdate(const UpdateState &us)
       {
          m_stableTicks++;
 
-         logs::messageln("Tick: %d", m_stableTicks);
+         //logs::messageln("Tick: %d", m_stableTicks);
 
          if (m_stableTicks > 15)
          {

@@ -35,7 +35,8 @@ SteerableObject::SteerableObject(
    m_aimState(noAim),
    m_shield(NULL),
    m_gun(NULL),
-   m_boosterFlame(NULL)
+   m_boosterFlame(NULL),
+   m_armClockReset(true)
 {
    initCompoundObjectParts(gameResources, sceneActor, sceneActor, parentObject, world, pos, root, groupIndex);
 
@@ -117,6 +118,13 @@ void SteerableObject::connectToForeignObjects(void)
 
 void SteerableObject::doUpdate(const oxygine::UpdateState& us)
 {
+   // Do a one-time clock synch
+   if (m_armClockReset)
+   {
+      m_armClockReset = false;
+      m_steeringManager->resetStateChangeClock(us);
+   }
+
    b2Vec2 pos = m_body->GetPosition();
    m_properties[SteerableObjectPropertyEnum::xPos].setProperty(pos.x);
    m_properties[SteerableObjectPropertyEnum::yPos].setProperty(pos.y);

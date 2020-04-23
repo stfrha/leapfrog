@@ -554,7 +554,7 @@ b2Vec2 SteeringManager::doWanderHunt(const UpdateState& us, b2Body* target, floa
          }
       }
 
-      logs::messageln("Wander");
+      //logs::messageln("Wander");
 
       return doWander(wanderVel);
       
@@ -599,7 +599,7 @@ b2Vec2 SteeringManager::doWanderHunt(const UpdateState& us, b2Body* target, floa
          return doWander(wanderVel);
       }
 
-      logs::messageln("Seeking");
+      //logs::messageln("Seeking");
 
       return doSeek(m_lastKnowTargetPos, seekVel);
 
@@ -626,7 +626,7 @@ b2Vec2 SteeringManager::doWanderHunt(const UpdateState& us, b2Body* target, floa
       }
       else
       {
-         logs::messageln("Pursuit");
+         //logs::messageln("Pursuit");
 
          m_lastKnowTargetPos = target->GetPosition();
          return doPursuit(target, pursuitVel);
@@ -652,4 +652,9 @@ SteeringManager::WanderHunterState SteeringManager::getWanderHunterState(void)
 bool SteeringManager::getWanderHunterStateChanged(void)
 {
    return m_wanderHunterStateChanged;
+}
+
+void SteeringManager::resetStateChangeClock(const UpdateState& us)
+{
+   m_stateStartTime = us.time;
 }
