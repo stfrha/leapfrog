@@ -78,9 +78,6 @@
     <ClCompile Include="..\src\planetactor.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\reentrysceneactor.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\src\blastemitter.cpp">
       <Filter>Particles</Filter>
     </ClCompile>
@@ -468,9 +465,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\src\planetactor.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\reentrysceneactor.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\src\blastparticle.h">

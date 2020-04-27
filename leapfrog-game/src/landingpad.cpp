@@ -39,6 +39,11 @@ LandingPad::LandingPad(
    // Here we attach Launch Site object to tree so it gets updates etc.
    attachTo(sceneParent);
 
+   // Register leapfrog on map
+   g_HeadDownDisplay->addMeToMap(
+      MapItem::MapItemTypeEnum::neutralStationary,
+      getActor("landingPad1"),
+      MapItem::MapItemStateEnum::hollow);
 
 }
 
@@ -138,13 +143,5 @@ void LandingPad::doUpdate(const UpdateState &us)
 
       break;
    }
-}
-
-void LandingPad::registerToMap(void)
-{
-   g_HeadDownDisplay->addMeToMap(
-      MapItem::MapItemTypeEnum::neutralStationary, 
-      getActor("landingPad1"), 
-      MapItem::MapItemStateEnum::hollow);
 }
 

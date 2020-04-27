@@ -26,8 +26,8 @@ LaunchSite::LaunchSite(
    m_leftFootContact(false),
    m_rightFootContact(false),
    m_angleHoldStartTime(0),
-   m_angleHoldDuration(16000)
-
+   m_angleHoldDuration(16000),
+   m_armInitialRegistration(true)
 {
 	initCompoundObjectParts(gameResources, sceneParent, sceneParent, parentObject, world, pos, root, groupIndex);
 
@@ -85,10 +85,25 @@ LaunchSite::LaunchSite(
    // be empty (=NULL)
    setUserData(NULL);
 
+   // Register launch site on map
+   g_HeadDownDisplay->addMeToMap(
+      MapItem::MapItemTypeEnum::neutralStationary,
+      m_tankActor,
+      MapItem::MapItemStateEnum::hollow);
 }
 
 void LaunchSite::doUpdate(const UpdateState &us)
 {
+   // Register Launchsite in various places. But only the very first update
+   if (m_armInitialRegistration)
+   {
+      m_armInitialRegistration = false;
+
+      // Register launch site at scene
+      m_sceneActor->startLaunchSiteInScene(getName());
+   }
+
+
    switch (m_state)
    {
    case idle:
@@ -323,7 +338,7 @@ void LaunchSite::leapfrogFootTouch(b2Contact* contact, bool leftFoot)
    {
       // Start timer and at the end of that, if both feet still
       // are in contact, send event for Leapfrog has landed.
-      LaunchSiteLeapfrogLandedEvent event;
+      LaunchSiteLeapfrogLandedEvent event(this);
       dispatchEvent(&event);
    }
 }
@@ -432,13 +447,5 @@ void LaunchSite::updateHoldAngle(timeMS now)
          m_mainTankBody->SetAngularVelocity(-magAngVel);
       }
    }
-}
-
-void LaunchSite::registerToMap(void)
-{
-   g_HeadDownDisplay->addMeToMap(
-      MapItem::MapItemTypeEnum::neutralStationary, 
-      m_tankActor, 
-      MapItem::MapItemStateEnum::hollow);
 }
 

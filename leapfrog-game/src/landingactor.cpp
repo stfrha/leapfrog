@@ -32,29 +32,18 @@ LandingActor::LandingActor(
 
    initCompoundObjectParts(gameResources, this, this, NULL, world, Vector2(0.0f, 0.0f), root, groupIndex, true);
 
-   m_leapfrog = static_cast<LeapFrog*>(getObject("leapfrog1"));
-
-   if (m_leapfrog != NULL)
-   {
-      m_leapfrog->goToEnvironment(ENV_GROUND);
-      m_leapfrog->goToMode(LFM_LANDING);
-   }
-
-   m_launchSite = static_cast<LaunchSite*>(getObject("launchSite1"));
-
-   if (m_launchSite != NULL)
-   {
-      m_launchSite->addEventListener(LaunchSiteLeapfrogLandedEvent::EVENT, CLOSURE(this, &LandingActor::leapfrogLandedOnLaunchSiteHandler));
-      m_launchSite->addEventListener(LaunchSequenceCompleteEvent::EVENT, CLOSURE(this, &LandingActor::transitToDeepSpace));
-   }
-
 }
 
 void LandingActor::leapfrogLandedOnLaunchSiteHandler(oxygine::Event *ev)
 {
    logs::messageln("Launch Site landing stable");
 
-   m_launchSite->startLaunchSequence(m_leapfrog.get());
+   if (m_leapfrog != NULL)
+   {
+      LaunchSiteLeapfrogLandedEvent* lsev = (LaunchSiteLeapfrogLandedEvent*)ev;
+      LaunchSite* sender = lsev->m_launchSite;
+      sender->startLaunchSequence(m_leapfrog.get());
+   }
 }
 
 void LandingActor::transitToDeepSpace(oxygine::Event *ev)
@@ -64,3 +53,28 @@ void LandingActor::transitToDeepSpace(oxygine::Event *ev)
 }
 
 
+void LandingActor::startLeapfrogInScene(void)
+{
+   // Must run base class implementation first
+   SceneActor::startLeapfrogInScene();
+
+   if (m_leapfrog != NULL)
+   {
+      m_leapfrog->goToEnvironment(ENV_GROUND);
+      m_leapfrog->goToMode(LFM_LANDING);
+   }
+}
+
+
+// TODO: This should probably be more general. 
+// For instance, to allow multiple Launch-sites
+void LandingActor::startLaunchSiteInScene(string name)
+{
+   LaunchSite* ls = static_cast<LaunchSite*>(getObject(name));
+
+   if (ls != NULL)
+   {
+      ls->addEventListener(LaunchSiteLeapfrogLandedEvent::EVENT, CLOSURE(this, &LandingActor::leapfrogLandedOnLaunchSiteHandler));
+      ls->addEventListener(LaunchSequenceCompleteEvent::EVENT, CLOSURE(this, &LandingActor::transitToDeepSpace));
+   }
+}

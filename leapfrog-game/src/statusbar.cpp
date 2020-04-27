@@ -115,12 +115,18 @@ StatusBar::StatusBar(
    m_progressBar->setProgress(initialProgress/maxProgress);
 
 //   m_eventActor->addEventListener(StatusChangedEvent::EVENT, CLOSURE(this, &StatusBar::statusChangedListner));
-   m_eventActor->addEventListener(ObjectPropertyChangedEvent::EVENT, CLOSURE(this, &StatusBar::statusChangedListner));
+   if (m_eventActor != NULL)
+   {
+      m_eventActor->addEventListener(ObjectPropertyChangedEvent::EVENT, CLOSURE(this, &StatusBar::statusChangedListner));
+   }
 }
 
 void StatusBar::disconnectListner(void)
 {
-   m_eventActor->removeEventListener(ObjectPropertyChangedEvent::EVENT);
+   if (m_eventActor != NULL)
+   {
+      m_eventActor->removeEventListener(ObjectPropertyChangedEvent::EVENT);
+   }
 }
 
 void StatusBar::doUpdate(const oxygine::UpdateState& us)
@@ -205,7 +211,10 @@ StatusLiteral::StatusLiteral(
    theBar->setPosition(-2.0f, size.y / 2.0f);
    theBar->attachTo(this);
 
-   m_eventActor->addEventListener(ObjectPropertyChangedEvent::EVENT, CLOSURE(this, &StatusLiteral::statusChangedListner));
+   if (m_eventActor != NULL)
+   {
+      m_eventActor->addEventListener(ObjectPropertyChangedEvent::EVENT, CLOSURE(this, &StatusLiteral::statusChangedListner));
+   }
 }
 
 void StatusLiteral::setLiteral(int value)
@@ -221,7 +230,10 @@ void StatusLiteral::doUpdate(const oxygine::UpdateState& us)
 
 void StatusLiteral::disconnectListner(void)
 {
-   m_eventActor->removeEventListener(ObjectPropertyChangedEvent::EVENT);
+   if (m_eventActor != NULL)
+   {
+      m_eventActor->removeEventListener(ObjectPropertyChangedEvent::EVENT);
+   }
 }
 
 void StatusLiteral::statusChangedListner(Event *ev)

@@ -9,6 +9,7 @@
 
 #include "shield.h"
 
+#include "mainactor.h"
 #include "sceneactor.h"
 
 #include "gamestatus.h"
@@ -73,14 +74,15 @@ LeapFrog::LeapFrog(
    m_gameResources(&gameResources),
    m_state(LFS_NORMAL),
    m_wantedAngle(0.0f),
-   m_modeInTransit(false)
+   m_modeInTransit(false),
+   m_armInitialRegistration(true)
 {
 	initCompoundObjectParts(gameResources, sceneParent, sceneParent, parentObject, world, pos, root, groupIndex);
 
-   m_mainActor = getActor("lfMainBody");
+   m_leapfrogActor = getActor("lfMainBody");
    m_lfRightBigLeg = static_cast<Sprite*>(getActor("lfRightBigLeg").get());
    m_lfLeftBigLeg = static_cast<Sprite*>(getActor("lfLeftBigLeg").get());
-   m_mainBody = ActorUserData::getBody(m_mainActor->getUserData());
+   m_mainBody = ActorUserData::getBody(m_leapfrogActor->getUserData());
    m_rightBigLegBody = ActorUserData::getBody(m_lfRightBigLeg->getUserData());
    m_leftBigLegBody = ActorUserData::getBody(m_lfLeftBigLeg->getUserData());
 
@@ -164,8 +166,10 @@ LeapFrog::LeapFrog(
    addEventListener(LeapfrogExtSetModeEvent::EVENT, CLOSURE(this, &LeapFrog::setModePropHandler));
    addEventListener(LeapfrogExtSetEnvEvent::EVENT, CLOSURE(this, &LeapFrog::setEnvPropHandler));
 
+
    // Here we attach Leapfrog object to tree so it gets updates etc.
    attachTo(sceneParent);
+
    setWeakJoints();
 
    // This CompoundObject is also an actor who normally has
@@ -176,6 +180,14 @@ LeapFrog::LeapFrog(
    setUserData(NULL);
 
    m_sceneActor->addBoundingBody(m_mainBody);
+
+   // Register leapfrog on map
+   g_HeadDownDisplay->addMeToMap(
+      MapItem::MapItemTypeEnum::me,
+      m_leapfrogActor,
+      MapItem::MapItemStateEnum::filled);
+
+
 
 }
 
@@ -216,11 +228,31 @@ void LeapFrog::setEnvPropHandler(oxygine::Event *ev)
 
 oxygine::Actor* LeapFrog::getMainActor(void)
 {
-   return m_mainActor.get();
+   return m_leapfrogActor.get();
 }
 
 void LeapFrog::doUpdate(const UpdateState &us)
 {
+   // Register Leapfrog in various places. But only the very first update
+   if (m_armInitialRegistration)
+   {
+      m_armInitialRegistration = false;
+      
+      // Start leapfrog handling in scene
+      m_sceneActor->startLeapfrogInScene();
+
+
+      // Register leapfrog to connect (and create) status bars
+      MainActor* ma = (MainActor*)(getStage()->getFirstChild().get());
+      if (ma != NULL)
+      {
+         // Init game status in leapfrog object
+         initGameStatus(ma);
+
+         ma->registerLeapfrog(this);
+      }
+   }
+
    // Update properties with the values that where determined by 
    // the physics engine
    b2Vec2 pos = m_mainBody->GetPosition();
@@ -1230,13 +1262,6 @@ void LeapFrog::footOnLandingPad(bool resting)
    }
 }
 
-void LeapFrog::registerToMap(void)
-{
-   g_HeadDownDisplay->addMeToMap(
-      MapItem::MapItemTypeEnum::me, 
-      m_mainActor,
-      MapItem::MapItemStateEnum::filled);
-}
 
 void LeapFrog::initGameStatus(Actor* statusEventOriginator)
 {

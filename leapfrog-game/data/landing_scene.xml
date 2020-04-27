@@ -1229,8 +1229,8 @@
   <childObject
     name="launchSite1"
     file="launch_site.xml"
-    posX="122.21347591965764"
-    posY="627.58336773289375" />
+    posX="153"
+    posY="627" />
   <childObject
     name="leapfrog1"
     file="leapfrog_reentry.xml"

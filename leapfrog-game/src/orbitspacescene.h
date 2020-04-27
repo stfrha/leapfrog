@@ -11,6 +11,7 @@ class OrbitSpaceScene : public SceneActor
 public:
    enum States
    {
+      waitForLeapfrog,     // Leapfrog has not yet been added to the scene
       enteringOrbit,       // Leapfrog is accelerating to orbit, background is moving 
       slowToStop,          // background is slowing down and leapfrog also using the damping
       turnBooster,         // Fire steering booster and start to turn leapfrog
@@ -36,6 +37,8 @@ public:
       b2World* world,
       pugi::xml_node& root,
       int groupIndex);
+
+   void startLeapfrogInScene(void);
 
 protected:
    void doUpdate(const oxygine::UpdateState &us);

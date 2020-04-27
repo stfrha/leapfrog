@@ -13,6 +13,21 @@ using namespace oxygine;
 spHeadDownDisplay g_HeadDownDisplay;
 
 MapItem::MapItem(
+   MapItemTypeEnum type,
+   MapItemStateEnum state,
+   int id,
+   oxygine::spActor actor) :
+   m_itemId(id),
+   m_type(type),
+   m_state(state),
+   m_parentMap(NULL),
+   m_realActor(actor)
+{
+   int a = 10;
+}
+
+
+MapItem::MapItem(
    oxygine::Resources* gameResources,
    HeadDownDisplay* hddMapActor,
    MapItemTypeEnum type,
@@ -22,11 +37,11 @@ MapItem::MapItem(
    float scale) :
    m_itemId(id),
    m_type(type),
+   m_state(state),
    m_parentMap(hddMapActor),
    m_realActor(actor)
-
 {
-   switch (type)
+   switch (m_type)
    {
    case MapItemTypeEnum::me:
       m_resAnim = gameResources->getResAnim("friendly_moving");
@@ -51,7 +66,7 @@ MapItem::MapItem(
       break;
    }
 
-   setState(state);
+   setState(m_state);
 
    setPriority(231);
    setTouchChildrenEnabled(false);
@@ -63,6 +78,52 @@ MapItem::MapItem(
    setScale(scale);
    attachTo(hddMapActor);
 }
+
+void MapItem::addToMapActor(
+   oxygine::Resources* gameResources,
+   HeadDownDisplay* hddMapActor,
+   float scale)
+{
+   m_parentMap = hddMapActor;
+
+   switch (m_type)
+   {
+   case MapItemTypeEnum::me:
+      m_resAnim = gameResources->getResAnim("friendly_moving");
+      break;
+   case MapItemTypeEnum::friendlyMoving:
+      m_resAnim = gameResources->getResAnim("friendly_moving");
+      break;
+   case MapItemTypeEnum::friendlyStationary:
+      m_resAnim = gameResources->getResAnim("friendly_stationary");
+      break;
+   case MapItemTypeEnum::enemyMoving:
+      m_resAnim = gameResources->getResAnim("enemy_moving");
+      break;
+   case MapItemTypeEnum::enemyStationary:
+      m_resAnim = gameResources->getResAnim("enemy_stationary");
+      break;
+   case MapItemTypeEnum::neutralMoving:
+      m_resAnim = gameResources->getResAnim("neutral_moving");
+      break;
+   case MapItemTypeEnum::neutralStationary:
+      m_resAnim = gameResources->getResAnim("neutral_stationary");
+      break;
+   }
+
+   setState(m_state);
+
+   setPriority(231);
+   setTouchChildrenEnabled(false);
+
+   setPosition(m_realActor->getPosition());
+   setSize(10.0f, 10.0f);
+   setAnchor(0.5f, 0.5f);
+   setAlpha(128);
+   setScale(scale);
+   attachTo(hddMapActor);
+}
+
 
 MapItem::MapItemTypeEnum MapItem::getType(void)
 {
@@ -134,7 +195,8 @@ void MapItem::doUpdate(const oxygine::UpdateState& us)
 
 
 HeadDownDisplay::HeadDownDisplay() :
-   m_itemIdRepository(0)
+   m_itemIdRepository(0),
+   m_actorExists(false)
 {
 }
 
@@ -158,6 +220,8 @@ void HeadDownDisplay::clearMap(void)
 
    // vector is of type spActor so clearing it will delete all items
    m_mapActors.clear();
+
+   m_actorExists = false;
 
 }
 
@@ -209,48 +273,15 @@ void HeadDownDisplay::initialiseMap(
    hej->setTouchEnabled(false);
    hej->attachTo(this);
 
-   //spActor hddFrame = new Actor();
-   //hddFrame->setAnchor(0.0f, 0.0f);
-   //hddFrame->setSize(m_sceneWidth, m_sceneHeight);
-   //hddFrame->setPosition(0.0f, 0.0f);
-   //hddFrame->attachTo(this);
+   m_actorExists = true;
 
-   //spColorRectSprite theBar = new ColorRectSprite();
-   //theBar->setAnchor(0.0f, 0.0f);
-   //theBar->setSize(m_sceneWidth, m_sceneHeight);
-   //theBar->setPosition(0.0f, 0.0f);
-   //theBar->setColor(Color::Fuchsia);
-   //theBar->setAlpha(32);
-   //theBar->attachTo(hddFrame);
-
-   //spColorRectSprite top = new ColorRectSprite();
-   //top->setColor(Color::Fuchsia);
-   //top->setAnchor(0.0f, 0.0f);
-   //top->setSize(m_sceneWidth, thickness);
-   //top->setPosition(0.0f, 0.0f);
-   //top->attachTo(hddFrame);
-
-   //spColorRectSprite bottom = new ColorRectSprite();
-   //bottom->setColor(Color::Fuchsia);
-   //bottom->setAnchor(0.0f, 0.0f);
-   //bottom->setSize(m_sceneWidth, thickness);
-   //bottom->setPosition(0.0f, bottomRight.y - thickness);
-   //bottom->attachTo(hddFrame);
-
-   //spColorRectSprite left = new ColorRectSprite();
-   //left->setColor(Color::Fuchsia);
-   //left->setAnchor(0.0f, 0.0f);
-   //left->setSize(thickness, m_sceneHeight);
-   //left->setPosition(0.0f, 0.0f);
-   //left->attachTo(hddFrame);
-
-   //spColorRectSprite right = new ColorRectSprite();
-   //right->setColor(Color::Fuchsia);
-   //right->setAnchor(0.0f, 0.0f);
-   //right->setSize(thickness, m_sceneHeight);
-   //right->setPosition(bottomRight.x - thickness, 0.0f);
-   //right->attachTo(hddFrame);
-
+   // Some map items has already been added as the xml-file was read
+   // but they are not yet attached to the map (since it was just
+   // created, how could they?). Now it is time to add them.
+   for (auto it = m_mapActors.begin(); it != m_mapActors.end(); ++it)
+   {
+      (*it)->addToMapActor(m_gameResources, this, m_itemScale);
+   }
 }
 
 int HeadDownDisplay::addMeToMap(
@@ -261,15 +292,24 @@ int HeadDownDisplay::addMeToMap(
    // Check that this actor has not been added before.
    // If so, just change state.
 
-   spMapItem mi = new MapItem(
-      m_gameResources,
-      this,
-      type,
-      state,
-      m_itemIdRepository,
-      actor,
-      m_itemScale);
-
+   // We need to know if the map actor exists 
+   // or not. 
+   spMapItem mi;
+   if (m_actorExists)
+   {
+       mi = new MapItem(
+         m_gameResources,
+         this,
+         type,
+         state,
+         m_itemIdRepository,
+         actor,
+         m_itemScale);
+   }
+   else
+   {
+      mi = new MapItem(type, state, m_itemIdRepository, actor);
+   }
 
    m_mapActors.push_back(mi);
 

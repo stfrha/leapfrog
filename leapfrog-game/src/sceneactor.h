@@ -87,7 +87,6 @@ protected:
    float	m_stageToViewPortScale;
    float	m_physToStageScale;
    b2World * m_world;
-   spLaunchSite m_launchSite;
    std::vector<oxygine::spActor> m_deathList;
    std::vector<spSpawnInstruction> m_spawnInstructions;
    PanorateModeEnum m_panorateMode;
@@ -152,10 +151,11 @@ public:
       oxygine::Vector2 widthHeight,
       spSpawnObjectList spawnSource);
    
-   void registerObjectsToMap(void);
-
    int createSceneTimer(int numOfTicks);
-   
+
+   virtual void startLeapfrogInScene(void);
+   virtual void startLaunchSiteInScene(std::string name);
+
    void takeControlOfLeapfrog(bool control);
 
    SceneActor::SceneTypeEnum getSceneType(void);

@@ -116,6 +116,8 @@ public:
 	MainActor();
 	~MainActor();
 
+   void registerLeapfrog(LeapFrog* leapfrog);
+
    // Below is the interface to the game manager (LUA script enginge)
    // "std::string object" are on the form "objectA.objectAsB.objectBsC" in the hierarcical 
    // CompoundObject structure

@@ -235,7 +235,6 @@
     <ClCompile Include="..\src\polygonvertices.cpp" />
     <ClCompile Include="..\src\reentryflameemitter.cpp" />
     <ClCompile Include="..\src\reentryflameparticle.cpp" />
-    <ClCompile Include="..\src\reentrysceneactor.cpp" />
     <ClCompile Include="..\src\scales.cpp" />
     <ClCompile Include="..\src\sceneactor.cpp" />
     <ClCompile Include="..\src\shield.cpp" />
@@ -351,7 +350,6 @@
     <ClInclude Include="..\src\polygonvertices.h" />
     <ClInclude Include="..\src\reentryflameemitter.h" />
     <ClInclude Include="..\src\reentryflameparticle.h" />
-    <ClInclude Include="..\src\reentrysceneactor.h" />
     <ClInclude Include="..\src\scales.h" />
     <ClInclude Include="..\src\sceneactor.h" />
     <ClInclude Include="..\src\shield.h" />

@@ -38,4 +38,7 @@ public:
       pugi::xml_node& root,
       int groupIndex);
 
+   void startLeapfrogInScene(void);
+   void startLaunchSiteInScene(std::string name);
+
 };

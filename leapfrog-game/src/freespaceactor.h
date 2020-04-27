@@ -11,6 +11,7 @@ class FreeSpaceActor : public SceneActor
 public:
    enum States
    {
+      waitForLeapfrog,
       insertBurn,
       operate
    };
@@ -37,6 +38,7 @@ public:
       int groupIndex);
 
 
+   void startLeapfrogInScene(void);
 
 protected:
    void doUpdate(const oxygine::UpdateState &us);

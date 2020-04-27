@@ -70,6 +70,7 @@ function missionStateSceneEventHandler(eventId, actorName, parameter1)
 
             -- Play dialog
             c_addDialogMessage("The landing pad is the filled square on your map. Get there!", "DEBUG", true, 0, 0)
+            c_addPositionedChildObject("leapfrog_reentry.xml", "leapfrog1", 537, 481)
             c_addPositionedChildObject("medium_asteroid.xml", "dummy1", 500, 500)
 
          end

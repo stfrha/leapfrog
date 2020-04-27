@@ -128,6 +128,7 @@ private:
    LeapFrogStateEnum m_state;
    LeapFrogModeEnum  m_mode;
    EnvironmentEnum m_environment;
+   bool m_armInitialRegistration;
    bool	m_mainBoosterFire;
    int	m_steeringBoosterFire;
    bool  m_boostFireLastUpdate;
@@ -159,7 +160,7 @@ private:
 	b2Body* m_rightSteerBody;
 	b2Body* m_leftSteerBody;
 
-   oxygine::spActor m_mainActor;
+   oxygine::spActor m_leapfrogActor;
    oxygine::Sprite* m_lfRightBigLeg;
    oxygine::Sprite* m_lfLeftBigLeg;
 
@@ -228,8 +229,6 @@ public:
    void releaseHoldAngle(void);
    void breakJoints(void);
    
-   // Leapfrog specialisation of map registration
-   void registerToMap(void) override;
    void initGameStatus(oxygine::Actor* statusEventOriginator) override;
 
    void dumpPart(std::string name, b2Body* body, b2Body* mainBody);

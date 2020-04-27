@@ -16,7 +16,7 @@ OrbitSpaceScene::OrbitSpaceScene(
    xml_node& root,
    int groupIndex) :
 	SceneActor(gameResources, world, 0.4f),
-   m_state(enteringOrbit),
+   m_state(waitForLeapfrog),
    m_stateStartTime(0)
 {
    m_sceneType = orbit;
@@ -33,15 +33,7 @@ OrbitSpaceScene::OrbitSpaceScene(
    // Create background before the leapfrog
    // generateBackground(gameResources);
 
-   m_leapfrog = static_cast<LeapFrog*>(getObject("leapfrog1"));
-   m_leapfrog->goToEnvironment(ENV_ORBIT);
-   m_leapfrog->setHoldAngle(MATH_PI / 2.0f);
 
-   takeControlOfLeapfrog(true);
-
-   CompoundObject* co = m_leapfrog->getObject("lfMainBody");
-   m_leapfrogBody = m_leapfrog->getBody("lfMainBody");
- 
    spSprite background = new Sprite();
    background->setResAnim(gameResources.getResAnim("starfield"));
    background->setSize(800.0f, 300.0f);
@@ -60,18 +52,19 @@ void OrbitSpaceScene::doUpdate(const oxygine::UpdateState &us)
 {
    SceneActor::doUpdate(us);
 
-   // Below will be done one time at the first update
-   // so we know the time at the start of the state machine
-   // We perform some initial work that should only be done
-   // one time
-   if (m_stateStartTime == 0)
-   {
-      m_stateStartTime = us.time;
-      m_leapfrog->fireMainBooster(true);
-   }
-
    switch (m_state)
    {
+   case waitForLeapfrog:
+      
+      if (m_leapfrog != NULL)
+      {
+         takeControlOfLeapfrog(true);
+         m_stateStartTime = us.time;
+         m_state = enteringOrbit;
+         m_leapfrog->fireMainBooster(true);
+      }
+      break;
+
    case enteringOrbit:
 
       if (us.time >= m_stateStartTime + 4000)
@@ -126,3 +119,19 @@ void OrbitSpaceScene::atOrbitEstablished(Event* event)
    m_leapfrog->fireSteeringBooster(-1);
    m_state = turnBooster;
 }
+
+void OrbitSpaceScene::startLeapfrogInScene(void)
+{
+   // Must run base class implementation first
+   SceneActor::startLeapfrogInScene();
+
+   if (m_leapfrog != NULL)
+   {
+      m_leapfrog->goToEnvironment(ENV_ORBIT);
+      m_leapfrog->setHoldAngle(MATH_PI / 2.0f);
+      CompoundObject* co = m_leapfrog->getObject("lfMainBody");
+      m_leapfrogBody = m_leapfrog->getBody("lfMainBody");
+   }
+}
+
+

@@ -76,6 +76,7 @@ private:
    LaunchStateEnum m_state;
    oxygine::timeMS m_stateStartTime;
    int m_countdownCounter;
+   bool m_armInitialRegistration;
 
    b2RevoluteJoint* m_leftFootRestJoint;
    b2RevoluteJoint* m_rightFootRestJoint;
@@ -127,9 +128,6 @@ public:
    void leapfrogFootLift(b2Contact* contact, bool leftFoot);
 
    void startLaunchSequence(LeapFrog* leapFrog);
-
-   // Specialisation of map registration
-   void registerToMap(void) override;
 
 protected:
    void doUpdate(const oxygine::UpdateState &us);

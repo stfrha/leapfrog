@@ -201,82 +201,6 @@ void MainActor::startScene(void)
 
    m_sceneObject->setManualPan(&m_manualPan);
 
-   // Init game status in leapfrog object
-   CompoundObject* leapfrog = m_sceneObject->getObject("leapfrog1");
-
-   if (leapfrog != NULL)
-   {
-      leapfrog->initGameStatus(this);
-   }
-   else
-   {
-      // We should terminate here since there is unclear what to do if leapfrog is not in da house
-   }
-
-
-   spStatusBar shotsBar = new StatusBar(
-      m_gameResources,
-      leapfrog,
-      m_sceneObject,
-      5,
-      Vector2(g_Layout.getXFromRight(1), g_Layout.getYFromTop(1)),
-      Vector2(g_Layout.getButtonWidth() * 2.0f, g_Layout.getButtonWidth() / 2.0f),
-      g_Layout.getDefaultFontSize(),
-      100.0f,
-      (float)leapfrog->m_gameStatus->getShots(),
-      "Ammo:",
-      GameStatusTypeEnum::shots);
-
-   spStatusBar fuelBar = new StatusBar(
-      m_gameResources,
-      leapfrog,
-      m_sceneObject,
-      7,
-      Vector2(g_Layout.getXFromRight(1), g_Layout.getYFromTop(1) + g_Layout.getButtonWidth() / 2.0f + 2.0f),
-      Vector2(g_Layout.getButtonWidth() * 2.0f, g_Layout.getButtonWidth() / 2.0f),
-      g_Layout.getDefaultFontSize(),
-      100.0f,
-      (float)leapfrog->m_gameStatus->getFuel(),
-      "Fuel:",
-      GameStatusTypeEnum::fuel);
-
-   spStatusBar shieldBar = new StatusBar(
-      m_gameResources,
-      leapfrog,
-      m_sceneObject,
-      6,
-      Vector2(g_Layout.getXFromRight(1), g_Layout.getYFromTop(1) + g_Layout.getButtonWidth() / 2.0f * 2.0f + 2.0f),
-      Vector2(g_Layout.getButtonWidth() * 2.0f, g_Layout.getButtonWidth() / 2.0f),
-      g_Layout.getDefaultFontSize(),
-      100.0f,
-      (float)leapfrog->m_gameStatus->getShield(),
-      "Shield:",
-      GameStatusTypeEnum::shield);
-
-   spStatusBar damageBar = new StatusBar(
-      m_gameResources,
-      leapfrog,
-      m_sceneObject,
-      9,
-      Vector2(g_Layout.getXFromRight(1), g_Layout.getYFromTop(1) + g_Layout.getButtonWidth() / 2.0f * 3.0f + 2.0f),
-      Vector2(g_Layout.getButtonWidth() * 2.0f, g_Layout.getButtonWidth() / 2.0f),
-      g_Layout.getDefaultFontSize(),
-      100.0f,
-      (float)leapfrog->m_gameStatus->getDamage(),
-      "Damage:",
-      GameStatusTypeEnum::damage);
-
-   spStatusLiteral creditBar = new StatusLiteral(
-      m_gameResources,
-      leapfrog,
-      m_sceneObject,
-      8,
-      Vector2(g_Layout.getXFromRight(1), g_Layout.getYFromTop(1) + g_Layout.getButtonWidth() / 2.0f * 4.0f + 2.0f),
-      Vector2(g_Layout.getButtonWidth() * 2.0f, g_Layout.getButtonWidth() / 2.0f),
-      g_Layout.getDefaultFontSize(),
-      (float)leapfrog->m_gameStatus->getCredits(),
-      "Credits:",
-      GameStatusTypeEnum::credits);
 
    addEventListener(StatusResourceDepletedEvent::EVENT, CLOSURE(this, &MainActor::resourceDepletedHandler));
 
@@ -285,15 +209,6 @@ void MainActor::startScene(void)
       m_sceneObject,
       Vector2(0.0f, 0.0f),
       m_sceneObject->getSize());
-
-   // Now that the map is initialised, we tell child objects to register on the 
-   // map
-   m_sceneObject->registerObjectsToMap();
-
-   if (m_nextScene.m_nextSceneType == SceneActor::SceneTypeEnum::landing)
-   {
-      shieldBar->setAlpha(128);
-   }
 
    g_LuaInterface.setupMissionStateScene(m_sceneObject);
 
@@ -440,9 +355,12 @@ void MainActor::resourceDepletedHandler(oxygine::Event *ev)
    {
    case fuel:
       // Stop current burning 
-      m_sceneObject->m_leapfrog->m_boosterFlame->stopEmitter();
-      m_sceneObject->m_leapfrog->m_leftSteerFlame->stopEmitter();
-      m_sceneObject->m_leapfrog->m_rightSteerFlame->stopEmitter();
+      if (m_sceneObject->m_leapfrog != NULL)
+      {
+         m_sceneObject->m_leapfrog->m_boosterFlame->stopEmitter();
+         m_sceneObject->m_leapfrog->m_leftSteerFlame->stopEmitter();
+         m_sceneObject->m_leapfrog->m_rightSteerFlame->stopEmitter();
+      }
 
       break;
    case credits:
@@ -848,4 +766,97 @@ void MainActor::recursiveRemoveChildren(spActor& parent)
 
       child = copy->getNextSibling();
    }
+}
+
+void MainActor::registerLeapfrog(LeapFrog* leapfrog)
+{
+   if (leapfrog == NULL)
+   {
+      return;
+   }
+
+   float initShots = 100.0f;
+   float initFuel = 100.0f;
+   float initShield = 100.0f;
+   float initDamage = 100.0f;
+   float initCredits = 0.0f;
+
+   if (leapfrog != NULL)
+   {
+      initShots = (float)leapfrog->m_gameStatus->getShots();
+      initFuel = (float)leapfrog->m_gameStatus->getFuel();
+      initShield = (float)leapfrog->m_gameStatus->getShield();
+      initDamage = (float)leapfrog->m_gameStatus->getDamage();
+      initCredits = (float)leapfrog->m_gameStatus->getCredits();
+   }
+
+   spStatusBar shotsBar = new StatusBar(
+      m_gameResources,
+      leapfrog,
+      m_sceneObject,
+      5,
+      Vector2(g_Layout.getXFromRight(1), g_Layout.getYFromTop(1)),
+      Vector2(g_Layout.getButtonWidth() * 2.0f, g_Layout.getButtonWidth() / 2.0f),
+      g_Layout.getDefaultFontSize(),
+      100.0f,
+      initShots,
+      "Ammo:",
+      GameStatusTypeEnum::shots);
+
+   spStatusBar fuelBar = new StatusBar(
+      m_gameResources,
+      leapfrog,
+      m_sceneObject,
+      7,
+      Vector2(g_Layout.getXFromRight(1), g_Layout.getYFromTop(1) + g_Layout.getButtonWidth() / 2.0f + 2.0f),
+      Vector2(g_Layout.getButtonWidth() * 2.0f, g_Layout.getButtonWidth() / 2.0f),
+      g_Layout.getDefaultFontSize(),
+      100.0f,
+      initFuel,
+      "Fuel:",
+      GameStatusTypeEnum::fuel);
+
+   spStatusBar shieldBar = new StatusBar(
+      m_gameResources,
+      leapfrog,
+      m_sceneObject,
+      6,
+      Vector2(g_Layout.getXFromRight(1), g_Layout.getYFromTop(1) + g_Layout.getButtonWidth() / 2.0f * 2.0f + 2.0f),
+      Vector2(g_Layout.getButtonWidth() * 2.0f, g_Layout.getButtonWidth() / 2.0f),
+      g_Layout.getDefaultFontSize(),
+      100.0f,
+      initShield,
+      "Shield:",
+      GameStatusTypeEnum::shield);
+
+   spStatusBar damageBar = new StatusBar(
+      m_gameResources,
+      leapfrog,
+      m_sceneObject,
+      9,
+      Vector2(g_Layout.getXFromRight(1), g_Layout.getYFromTop(1) + g_Layout.getButtonWidth() / 2.0f * 3.0f + 2.0f),
+      Vector2(g_Layout.getButtonWidth() * 2.0f, g_Layout.getButtonWidth() / 2.0f),
+      g_Layout.getDefaultFontSize(),
+      100.0f,
+      initDamage,
+      "Damage:",
+      GameStatusTypeEnum::damage);
+
+   spStatusLiteral creditBar = new StatusLiteral(
+      m_gameResources,
+      leapfrog,
+      m_sceneObject,
+      8,
+      Vector2(g_Layout.getXFromRight(1), g_Layout.getYFromTop(1) + g_Layout.getButtonWidth() / 2.0f * 4.0f + 2.0f),
+      Vector2(g_Layout.getButtonWidth() * 2.0f, g_Layout.getButtonWidth() / 2.0f),
+      g_Layout.getDefaultFontSize(),
+      initCredits,
+      "Credits:",
+      GameStatusTypeEnum::credits);
+
+   if (m_nextScene.m_nextSceneType == SceneActor::SceneTypeEnum::landing)
+   {
+      shieldBar->setAlpha(128);
+   }
+
 }

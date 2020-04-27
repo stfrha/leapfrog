@@ -239,6 +239,7 @@ void SceneActor::testForBoundaryRepel(void)
    }
 }
 
+// TODO: Below must be made more general. We need to check for transitions of all corners
 bool SceneActor::isInsideOrbitField(b2Body* body)
 {
    SoftBoundary* lower = NULL;
@@ -374,14 +375,6 @@ void SceneActor::addObjectToSpawnList(
    m_spawnInstructions.push_back(spi);
 }
 
-void SceneActor::registerObjectsToMap(void)
-{
-   for (auto it = m_children.begin(); it != m_children.end(); ++it)
-   {
-      (*it)->registerToMap();
-   }
-}
-
 int SceneActor::createSceneTimer(int numOfTicks)
 {
    int myId = m_timerIdCounter;
@@ -467,38 +460,74 @@ void SceneActor::doUpdate(const UpdateState& us)
 
    m_stageToViewPortScale = m_zoomScale * Scales::c_stageToViewPortScale;
 
-   if (!m_externalControl)
+   if (m_leapfrog != NULL)
    {
-      if (data[SDL_SCANCODE_W] || m_boosterPressed)
+      if (!m_externalControl)
       {
-         m_leapfrog->fireMainBooster(true);
+         if (data[SDL_SCANCODE_W] || m_boosterPressed)
+         {
+            m_leapfrog->fireMainBooster(true);
+         }
+         else
+         {
+            m_leapfrog->fireMainBooster(false);
+         }
+
+         if (data[SDL_SCANCODE_A] || m_turnLeftPressed)
+         {
+            m_leapfrog->fireSteeringBooster(-1);
+         }
+         else if (data[SDL_SCANCODE_D] || m_turnRightPressed)
+         {
+            m_leapfrog->fireSteeringBooster(1);
+         }
+         else
+         {
+            m_leapfrog->fireSteeringBooster(0);
+         }
+      }
+
+      if (data[SDL_SCANCODE_RETURN] || m_firePressed)
+      {
+         m_leapfrog->fireGun(true);
       }
       else
       {
-         m_leapfrog->fireMainBooster(false);
+         m_leapfrog->fireGun(false);
       }
 
-      if (data[SDL_SCANCODE_A] || m_turnLeftPressed)
+      if (data[SDL_SCANCODE_0])
       {
-         m_leapfrog->fireSteeringBooster(-1);
+         m_leapfrog->goToMode(LFM_RESET);
       }
-      else if (data[SDL_SCANCODE_D] || m_turnRightPressed)
+      else if (data[SDL_SCANCODE_1])
       {
-         m_leapfrog->fireSteeringBooster(1);
+         m_leapfrog->goToMode(LFM_LANDING);
       }
-      else
+      else if (data[SDL_SCANCODE_2])
       {
-         m_leapfrog->fireSteeringBooster(0);
+         m_leapfrog->goToMode(LFM_DEEP_SPACE);
       }
-   }
+      else if (data[SDL_SCANCODE_3])
+      {
+         m_leapfrog->goToMode(LFM_REENTRY);
+      }
 
-   if (data[SDL_SCANCODE_RETURN] || m_firePressed)
-   {
-      m_leapfrog->fireGun(true);
-   }
-   else
-   {
-      m_leapfrog->fireGun(false);
+
+      if (data[SDL_SCANCODE_KP_9])
+      {
+         m_leapfrog->fireReentryFlames(true);
+      }
+      else if (data[SDL_SCANCODE_KP_8])
+      {
+         m_leapfrog->fireReentryFlames(false);
+      }
+
+      if (data[SDL_SCANCODE_P])
+      {
+         m_leapfrog->dumpParts();
+      }
+
    }
 
    if (m_manPanEnablePressed && m_armManPanEnableChange)
@@ -520,38 +549,6 @@ void SceneActor::doUpdate(const UpdateState& us)
       m_armManPanEnableChange = true;
    }
 
-
-	if (data[SDL_SCANCODE_0])
-	{
-		m_leapfrog->goToMode(LFM_RESET);
-	}
-	else if (data[SDL_SCANCODE_1])
-	{
-		m_leapfrog->goToMode(LFM_LANDING);
-	}
-	else if (data[SDL_SCANCODE_2])
-	{
-		m_leapfrog->goToMode(LFM_DEEP_SPACE);
-	}
-	else if (data[SDL_SCANCODE_3])
-	{
-		m_leapfrog->goToMode(LFM_REENTRY);
-	}
-
-
-   if (data[SDL_SCANCODE_KP_9])
-   {
-      m_leapfrog->fireReentryFlames(true);
-   }
-   else if (data[SDL_SCANCODE_KP_8])
-   {
-      m_leapfrog->fireReentryFlames(false);
-   }
-
-   if (data[SDL_SCANCODE_P])
-   {
-      m_leapfrog->dumpParts();
-   }
 
 
 	//update each body position on display
@@ -602,10 +599,11 @@ void SceneActor::doUpdate(const UpdateState& us)
       {
          panPos = m_panObject->getCompoundObjectPosition();
       }
-      else
+      else if (m_leapfrog != NULL)
       {
          panPos = m_leapfrog->getMainActor()->getPosition();
       }
+
    }
       
    if (m_panorateMode != fix)
@@ -771,4 +769,22 @@ void SceneActor::removeTimer(int id)
          break;
       }
    }
+}
+
+void SceneActor::startLeapfrogInScene(void)
+// This is the base implementation of starting the leapfrog in 
+// the scene. Scenes can be loaded without leapfrog and it can 
+// be added at a later time in a mission or a cut-scene. 
+{
+   m_leapfrog = static_cast<LeapFrog*>(getObject("leapfrog1"));
+}
+
+void SceneActor::startLaunchSiteInScene(std::string name)
+// This is the base implementation of starting a launchsite in 
+// the scene. Scenes can be loaded without launchsites and it can 
+// be added at a later time in a mission or a cut-scene. 
+// So far, the base method does nothing. All is in the overidden
+// methods.
+{
+
 }

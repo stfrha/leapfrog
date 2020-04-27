@@ -39,9 +39,28 @@ private:
    MapItemTypeEnum m_type;
    oxygine::spActor m_realActor;
    HeadDownDisplay* m_parentMap;
+   MapItem::MapItemStateEnum m_state;
    int m_itemId;
 
 public:
+   // There are two constructors.
+   // The first one is for 
+   // creating map items without adding them 
+   // to the map actor (just inserting them
+   // in the collection of items). This is done when scene
+   // files are read and all objects are created. At this
+   // time there is no map yet. Some function needs to 
+   // iterate the map item collection and add them all
+   // to the map when it is created
+   // The other is complete and used when obejcts are 
+   // added at a later time, by the lua-script. At this
+   // time the map actor will exist
+   MapItem(
+      MapItemTypeEnum type,
+      MapItemStateEnum state,
+      int id,
+      oxygine::spActor actor);
+
    MapItem(
       oxygine::Resources* gameResources,
       HeadDownDisplay* hddMapActor,
@@ -49,6 +68,11 @@ public:
       MapItemStateEnum state,
       int id,
       oxygine::spActor actor,
+      float scale);
+
+   void addToMapActor(
+      oxygine::Resources* gameResources,
+      HeadDownDisplay* hddMapActor,
       float scale);
 
    MapItemTypeEnum getType(void);
@@ -67,6 +91,7 @@ DECLARE_SMART(HeadDownDisplay, spHeadDownDisplay);
 class HeadDownDisplay : public oxygine::Actor
 {
 private:
+   bool m_actorExists;
    oxygine::Resources* m_gameResources;
    SceneActor* m_sceneActor;
    std::vector<spMapItem> m_mapActors;

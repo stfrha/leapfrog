@@ -20,7 +20,8 @@ FreeSpaceActor::FreeSpaceActor(
    int groupIndex) :
    SceneActor(gameResources, world, zoom),
    m_inOrbitField(false),
-   m_state(insertBurn),
+   m_state(waitForLeapfrog),
+   m_leapfrogBody(NULL),
    m_stateChangeTime(0)
 {
    m_sceneType = deepSpace;
@@ -36,16 +37,6 @@ FreeSpaceActor::FreeSpaceActor(
    // Create background before the leapfrog
    generateBackground(gameResources);
 
-   m_leapfrog = static_cast<LeapFrog*>(getObject("leapfrog1"));
-//   setPanorateObject(getObject("hammer1"));
-
-
-   if (m_leapfrog != NULL)
-   {
-      m_leapfrogBody = m_leapfrog->getBody("lfMainBody");
-      m_leapfrog->goToEnvironment(ENV_DEEP_SPACE);
-
-   }
 
 
 }
@@ -54,56 +45,60 @@ void FreeSpaceActor::doUpdate(const oxygine::UpdateState &us)
 {
    SceneActor::doUpdate(us);
 
-   if (m_stateChangeTime == 0)
+   // TODO: This is a "burn-into-space" animation, it should only run
+   // if ascending from launch, So it must be executed on command.
+   switch (m_state)
    {
-      m_stateChangeTime = us.time;
-      m_leapfrog->fireMainBooster(true);
-      takeControlOfLeapfrog(true);
-   }
-   else
-   {
-      switch (m_state)
+   case waitForLeapfrog:
+      if (m_leapfrog != NULL)
       {
-      case insertBurn:
-         if (us.time > m_stateChangeTime + 1000)
-         {
-            m_state = operate;
-            m_stateChangeTime = us.time;
-            m_leapfrog->fireMainBooster(false);
-            takeControlOfLeapfrog(false);
-         }
-
-         break;
-      case operate:
-         // Do nothing special here
-         break;
+         m_stateChangeTime = us.time;
+         m_leapfrog->fireMainBooster(true);
+         takeControlOfLeapfrog(true);
+         m_state = insertBurn;
       }
+      break;
+   case insertBurn:
+      if (us.time > m_stateChangeTime + 1000)
+      {
+         m_state = operate;
+         m_stateChangeTime = us.time;
+         m_leapfrog->fireMainBooster(false);
+         takeControlOfLeapfrog(false);
+      }
+
+      break;
+   case operate:
+      // Do nothing special here
+      break;
    }
 
-
-   if (m_inOrbitField)
+   if (m_leapfrogBody != NULL)
    {
-      if (isInsideOrbitField(m_leapfrogBody))
+      if (m_inOrbitField)
       {
-         if (us.time > m_enteredOrbitFieldAtTime + 2500)
+         if (isInsideOrbitField(m_leapfrogBody))
          {
-            // Go to Orbit scene
-            DeepSpaceSceneTransitToOrbitEvent event;
-            dispatchEvent(&event);
+            if (us.time > m_enteredOrbitFieldAtTime + 2500)
+            {
+               // Go to Orbit scene
+               DeepSpaceSceneTransitToOrbitEvent event;
+               dispatchEvent(&event);
+            }
+         }
+         else
+         {
+            m_inOrbitField = false;
+            m_enteredOrbitFieldAtTime = us.time;
          }
       }
       else
       {
-         m_inOrbitField = false;
-         m_enteredOrbitFieldAtTime = us.time;
-      }
-   }
-   else
-   {
-      if (isInsideOrbitField(m_leapfrogBody))
-      {
-         m_inOrbitField = true;
-         m_enteredOrbitFieldAtTime = us.time;
+         if (isInsideOrbitField(m_leapfrogBody))
+         {
+            m_inOrbitField = true;
+            m_enteredOrbitFieldAtTime = us.time;
+         }
       }
    }
 }
@@ -125,3 +120,17 @@ void FreeSpaceActor::generateBackground(Resources& gameResources)
    }
 
 }
+
+void FreeSpaceActor::startLeapfrogInScene(void)
+{
+   // Must run base class implementation first
+   SceneActor::startLeapfrogInScene();
+
+   if (m_leapfrog != NULL)
+   {
+      m_leapfrogBody = m_leapfrog->getBody("lfMainBody");
+      m_leapfrog->goToEnvironment(ENV_DEEP_SPACE);
+   }
+}
+
+

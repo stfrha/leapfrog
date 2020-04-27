@@ -13,27 +13,27 @@ using namespace oxygine;
 MainActor* mainActor;
 
 
-void onEvent(Event* ev)
-{
-   SDL_Event *event = (SDL_Event*)ev->userData;
-
-   if (event->type != SDL_KEYDOWN)
-      return;
-
-
-   //switch (event->key.keysym.scancode)
-   //{
-   //case SDL_SCANCODE_F1:
-   //   mainActor->changeToMode(landing);
-   //   break;
-   //case SDL_SCANCODE_F2:
-   //   mainActor->changeToMode(deepSpace);
-   //   break;
-   //case SDL_SCANCODE_F3:
-   //   mainActor->changeToMode(orbit);
-   //   break;
-   //}
-}
+//void onEvent(Event* ev)
+//{
+//   SDL_Event *event = (SDL_Event*)ev->userData;
+//
+//   if (event->type != SDL_KEYDOWN)
+//      return;
+//
+//
+//   //switch (event->key.keysym.scancode)
+//   //{
+//   //case SDL_SCANCODE_F1:
+//   //   mainActor->changeToMode(landing);
+//   //   break;
+//   //case SDL_SCANCODE_F2:
+//   //   mainActor->changeToMode(deepSpace);
+//   //   break;
+//   //case SDL_SCANCODE_F3:
+//   //   mainActor->changeToMode(orbit);
+//   //   break;
+//   //}
+//}
 
 
 void example_preinit() {}
@@ -48,7 +48,7 @@ void example_init()
    //and add it to Stage as child
    getStage()->addChild(mainActor);
 
-   core::getDispatcher()->addEventListener(oxygine::core::EVENT_SYSTEM, onEvent);
+   //core::getDispatcher()->addEventListener(oxygine::core::EVENT_SYSTEM, onEvent);
 
 }
 
