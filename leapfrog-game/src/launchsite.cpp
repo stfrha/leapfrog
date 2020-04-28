@@ -62,21 +62,12 @@ LaunchSite::LaunchSite(
    // Here we attach Launch Site object to tree so it gets updates etc.
    attachTo(sceneParent);
 
-   m_properties.push_back(ObjectProperty(this, NULL, 2, 0.0f, true)); // State
+   m_properties.push_back(ObjectProperty(this, NULL, 0, 0.0f, true)); // State
+   m_properties.push_back(ObjectProperty(this, new LaunchSiteExtTriggerLaunchEvent, 1, 0.0f)); // Trigger launch property
+
+   addEventListener(LaunchSiteExtTriggerLaunchEvent::EVENT, CLOSURE(this, &LaunchSite::setLaunchTriggerProperty));
 
    b2PrismaticJoint* grabberJoint = (b2PrismaticJoint*)getJoint("grabberSpringJoint");
-
-   //logs::messageln("Grabber translation: %f", grabberJoint->GetJointTranslation());
-   //logs::messageln("Grabber lower limit: %f", grabberJoint->GetLowerLimit());
-   //logs::messageln("Grabber upper limit: %f", grabberJoint->GetUpperLimit());
-   //if (grabberJoint->IsLimitEnabled())
-   //{
-   //   logs::messageln("Grabber limit enabled");
-   //}
-   //else
-   //{
-   //   logs::messageln("Grabber limit disabled");
-   //}
 
    // This CompoundObject is also an actor who normally has
    // a userData that points to its parent. However, the parent
@@ -90,6 +81,8 @@ LaunchSite::LaunchSite(
       MapItem::MapItemTypeEnum::neutralStationary,
       m_tankActor,
       MapItem::MapItemStateEnum::hollow);
+
+
 }
 
 void LaunchSite::doUpdate(const UpdateState &us)
@@ -261,7 +254,7 @@ void LaunchSite::doUpdate(const UpdateState &us)
          m_world->DestroyJoint(m_rightSupportBoosterJoint);
          //m_leftBoosterBody->ApplyAngularImpulse(-10000000.0f / 180.0f * MATH_PI, true);
          //m_leftBoosterBody->ApplyAngularImpulse(10000000.0f / 180.0f * MATH_PI, true);
-         m_leftBoosterBody->ApplyLinearImpulse(b2Vec2(-5000.0f, -1500.0f), b2Vec2(0.0f, -8.0f), true);
+         m_leftBoosterBody->ApplyLinearImpulse(b2Vec2(-2000.0f, -3500.0f), b2Vec2(0.0f, -8.0f), true);
          m_rightBoosterBody->ApplyLinearImpulse(b2Vec2(1000.0f, 50.0f), b2Vec2(0.0f, -8.0f), true);
 
          m_stateStartTime = us.time;
@@ -323,27 +316,38 @@ void LaunchSite::doUpdate(const UpdateState &us)
    }
 }
 
-void LaunchSite::leapfrogFootTouch(b2Contact* contact, bool leftFoot)
+void LaunchSite::leapfrogFootTouch(b2Contact* contact, bool leftFoot, LeapFrog* leapfrog)
 {
-   if (leftFoot)
+   m_leapFrog = leapfrog;
+
+   // We only allow landing before the launch has started
+   if (m_state != idle)
    {
-      m_leftFootContact = true;
-   }
-   else
-   {
-      m_rightFootContact = true;
+      return;
    }
 
-   if (m_leftFootContact && m_rightFootContact)
+   if (m_leapFrog != NULL)
    {
-      // Start timer and at the end of that, if both feet still
-      // are in contact, send event for Leapfrog has landed.
-      LaunchSiteLeapfrogLandedEvent event(this);
-      dispatchEvent(&event);
+      if (leftFoot)
+      {
+         m_leftFootContact = true;
+      }
+      else
+      {
+         m_rightFootContact = true;
+      }
+
+      if (m_leftFootContact && m_rightFootContact)
+      {
+         // Start timer and at the end of that, if both feet still
+         // are in contact, send event for Leapfrog has landed.
+         LaunchSiteLeapfrogLandedEvent event(this);
+         dispatchEvent(&event);
+      }
    }
 }
 
-void LaunchSite::leapfrogFootLift(b2Contact* contact, bool leftFoot)
+void LaunchSite::leapfrogFootLift(b2Contact* contact, bool leftFoot, LeapFrog* leapfrog)
 {
    if (leftFoot)
    {
@@ -355,13 +359,12 @@ void LaunchSite::leapfrogFootLift(b2Contact* contact, bool leftFoot)
    }
 }
 
-void LaunchSite::startLaunchSequence(LeapFrog* leapFrog)
+void LaunchSite::startLaunchSequence(void)
 {
    // We do only want to start sequence once, so check that it is not 
    // already started.
    if (m_state == idle)
    {
-      m_leapFrog = leapFrog;
       m_state = leapfrogLanded;
       m_properties[state].setProperty((float)m_state);
    }
@@ -403,6 +406,12 @@ void LaunchSite::countDownFadeInComplete(Event *event)
    spTween tween = ta->addTween(Actor::TweenAlpha(0), 1500);
 
    tween->detachWhenDone();
+}
+
+
+void LaunchSite::setLaunchTriggerProperty(Event *event)
+{
+   startLaunchSequence();
 }
 
 void LaunchSite::updateHoldAngle(timeMS now)

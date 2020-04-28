@@ -286,64 +286,20 @@ void MainActor::sendEvent(int eventId)
 
 void MainActor::transitToDeepSpaceListner(Event *ev)
 {
-   fadeFromLanding();
-}
-
-void MainActor::fadeFromLanding(void)
-{
-   spColorRectSprite fader = new ColorRectSprite();
-   fader->setColor(Color::White);
-   fader->setPosition(m_sceneObject->getPosition());
-   fader->setSize(
-      g_Layout.getViewPortBounds().x * m_sceneObject->getScale().x, 
-      g_Layout.getViewPortBounds().y * m_sceneObject->getScale().y);
-   fader->setAlpha(0);
-   fader->setPriority(216);
-   fader->attachTo(m_sceneObject);
-   spTween tween = fader->addTween(Actor::TweenAlpha(255), 500);
-
-   tween->setDoneCallback(CLOSURE(this, &MainActor::goToDeepSpaceFader));
-}
-
-void MainActor::goToDeepSpaceFader(Event *ev)
-{
    g_LuaInterface.determineNextScene("toDeepSpace", "", m_nextScene.m_nextSceneFile, m_nextScene.m_nextSceneState, m_nextScene.m_nextSceneType);
    m_nextScene.m_armNextScene = true;
-
-   //m_armNextScene = true;
-   //m_nextSceneFile = "deep_space_scene.xml";
-   //m_nextSceneType = SceneActor::SceneTypeEnum::deepSpace;
-
-   spColorRectSprite fader = new ColorRectSprite();
-   fader->setColor(Color::White);
-   fader->setPosition(m_sceneObject->getPosition().x - 200.0f, m_sceneObject->getPosition().y + 200.0f);
-   fader->setSize(
-      g_Layout.getViewPortBounds().x * m_sceneObject->getScale().x, 
-      g_Layout.getViewPortBounds().y * m_sceneObject->getScale().y);
-   fader->setAlpha(255);
-   fader->setPriority(216);
-   fader->attachTo(m_sceneObject);
-   spTween tween = fader->addTween(Actor::TweenAlpha(0), 1000);
 }
 
 void MainActor::transitToOrbitListner(Event *ev)
 {
    g_LuaInterface.determineNextScene("toOrbit", "", m_nextScene.m_nextSceneFile, m_nextScene.m_nextSceneState, m_nextScene.m_nextSceneType);
    m_nextScene.m_armNextScene = true;
-
-   //m_armNextScene = true;
-   //m_nextSceneFile = "orbit_scene.xml";
-   //m_nextSceneType = SceneActor::SceneTypeEnum::orbit;
 }
 
 void MainActor::landingCompleteListner(oxygine::Event *ev)
 {
    g_LuaInterface.determineNextScene("toLanding", "alphaCity", m_nextScene.m_nextSceneFile, m_nextScene.m_nextSceneState, m_nextScene.m_nextSceneType);
    m_nextScene.m_armNextScene = true;
-
-   //m_armNextScene = true;
-   //m_nextSceneFile = "landing_scene.xml";
-   //m_nextSceneType = SceneActor::SceneTypeEnum::landing;
 }
 
 void MainActor::resourceDepletedHandler(oxygine::Event *ev)
@@ -464,7 +420,8 @@ void MainActor::doUpdate(const UpdateState& us)
       else if (data[SDL_SCANCODE_F2])
       {
          g_LuaInterface.forceCurrentScene("landing_scene.xml");
-         fadeFromLanding();
+         g_LuaInterface.determineNextScene("toDeepSpace", "", m_nextScene.m_nextSceneFile, m_nextScene.m_nextSceneState, m_nextScene.m_nextSceneType);
+         m_nextScene.m_armNextScene = true;
 
       }
       else if (data[SDL_SCANCODE_F3])
@@ -480,14 +437,6 @@ void MainActor::doUpdate(const UpdateState& us)
 
 void MainActor::createButtonOverlay(void)
 {
-   //float division = 8.0f;
-   //float buttonWidth = (getStage()->getSize()).y / division;
-   //float halfButtonWidth = buttonWidth / 2;
-   //float bottomRow = (getStage()->getSize()).y - buttonWidth;
-   //float aboveBottomRow = bottomRow - buttonWidth;
-   //float colLast = (getStage()->getSize()).x - buttonWidth;
-   //float colSecondLast = colLast - buttonWidth;
-
    // Caluclate button geometrics
    m_turnLeftButtonRect = Rect(0.0f, g_Layout.getYFromBottom(1), g_Layout.getButtonWidth(), g_Layout.getButtonWidth());
    m_turnRightButtonRect = Rect(g_Layout.getButtonWidth(), g_Layout.getYFromBottom(0), g_Layout.getButtonWidth(), g_Layout.getButtonWidth());

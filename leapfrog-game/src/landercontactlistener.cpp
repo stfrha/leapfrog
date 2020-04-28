@@ -264,11 +264,11 @@ void LanderContactListener::LeapfrogFeetContactHandler(b2Contact* contact, bool 
    {
       if (begin)
       {
-         launchSite->leapfrogFootTouch(contact, leapfrogLeftFoot);
+         launchSite->leapfrogFootTouch(contact, leapfrogLeftFoot, leapfrog);
       }
       else
       {
-         launchSite->leapfrogFootLift(contact, leapfrogLeftFoot);
+         launchSite->leapfrogFootLift(contact, leapfrogLeftFoot, leapfrog);
       }
    }
 

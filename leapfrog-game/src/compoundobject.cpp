@@ -1737,7 +1737,7 @@ void CompoundObject::initGameStatus(oxygine::Actor* statusEventOriginator)
 
 ObjectProperty* CompoundObject::getProp(int propId)
 {
-   if ((propId > 0) && ((unsigned int)propId < m_properties.size()))
+   if ((propId >= 0) && ((unsigned int)propId < m_properties.size()))
    {
       return &(m_properties[propId]);
    }

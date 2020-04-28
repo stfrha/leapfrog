@@ -15,12 +15,25 @@ function setupMissionStateScene()
    -- Clear triggers and event handler
    c_clearAllTriggersAndEvents()
 
+   -- Regardless of state, we always want to listen to leapfrog has landed 
+   -- on the launch site
+   if currentScene == "landing_scene.xml" then
+         -- Register event for landing on launchsite 1
+         c_registerEventHandler("launchSite1", "LsLL", 0, 0)
+   end
+
    if currentState == "state1" then
       if currentScene == "landing_scene.xml" then
 
          -- Start timer, will send LuTO event when timed out 
          state1Timer = c_startSceneTimer(240)
+
+         -- Initialise leapfrog as descenting
+         c_addPositionedChildObject("leapfrog_reentry.xml", "leapfrog1", 220, 510)
          
+         -- Reconfigure leapfrog to landing mode
+         c_setObjectProperty("leapfrog1", 0, 2)
+
          -- Register event for landing on landingPad1
          c_registerEventHandler("landing_pad1", "LpLL", 0, 0)
          
@@ -64,13 +77,23 @@ function setupMissionStateScene()
 end
 
 function missionStateSceneEventHandler(eventId, actorName, parameter1)
+
+   -- Regardless of state, we always want to listen to leapfrog has landed 
+   -- on the launch site
+   if currentScene == "landing_scene.xml" then
+         if eventId == "LsLL" then
+            c_addDialogMessage("You will now be launched into deep space.", "DEBUG", true, 0, 0)
+            c_setObjectProperty("launchSite1", 1, 0)
+         end
+   end
+
+
    if currentState == "state1" then
       if currentScene == "landing_scene.xml" then
          if eventId == "ScTO" and parameter1 == state1Timer then
 
             -- Play dialog
             c_addDialogMessage("The landing pad is the filled square on your map. Get there!", "DEBUG", true, 0, 0)
-            c_addPositionedChildObject("leapfrog_reentry.xml", "leapfrog1", 537, 481)
             c_addPositionedChildObject("medium_asteroid.xml", "dummy1", 500, 500)
 
          end

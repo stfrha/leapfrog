@@ -3,8 +3,10 @@
 #include "marker.h"
 #include "launchsite.h"
 #include "compoundobject.h"
+#include "layout.h"
 #include "leapfrogevents.h"
 #include "launchsiteevents.h"
+
 
 using namespace oxygine;
 using namespace std;
@@ -34,34 +36,43 @@ LandingActor::LandingActor(
 
 }
 
-void LandingActor::leapfrogLandedOnLaunchSiteHandler(oxygine::Event *ev)
+void LandingActor::runFadeOut(void)
 {
-   logs::messageln("Launch Site landing stable");
+   spColorRectSprite fader = new ColorRectSprite();
+   fader->setColor(Color::White);
+   fader->setPosition(Vector2(0.0f, 0.0f));
+   fader->setSize(g_Layout.getStageSize());
+   fader->setAlpha(255);
+   fader->setPriority(255);
+   fader->attachTo(this);
+   spTween tween = fader->addTween(Actor::TweenAlpha(255), 1000);
 
-   if (m_leapfrog != NULL)
-   {
-      LaunchSiteLeapfrogLandedEvent* lsev = (LaunchSiteLeapfrogLandedEvent*)ev;
-      LaunchSite* sender = lsev->m_launchSite;
-      sender->startLaunchSequence(m_leapfrog.get());
-   }
+   tween->setDoneCallback(CLOSURE(this, &LandingActor::fadeOutComplete));
+   tween->detachWhenDone();
 }
 
+
+
 void LandingActor::transitToDeepSpace(oxygine::Event *ev)
+{
+   runFadeOut();
+}
+
+void LandingActor::fadeOutComplete(Event *ev)
 {
    LandingActorTransitToDeepSpaceEvent event;
    dispatchEvent(&event);
 }
 
 
-void LandingActor::startLeapfrogInScene(void)
+void LandingActor::startLeapfrogInScene(string name)
 {
    // Must run base class implementation first
-   SceneActor::startLeapfrogInScene();
+   SceneActor::startLeapfrogInScene(name);
 
    if (m_leapfrog != NULL)
    {
       m_leapfrog->goToEnvironment(ENV_GROUND);
-      m_leapfrog->goToMode(LFM_LANDING);
    }
 }
 
@@ -74,7 +85,6 @@ void LandingActor::startLaunchSiteInScene(string name)
 
    if (ls != NULL)
    {
-      ls->addEventListener(LaunchSiteLeapfrogLandedEvent::EVENT, CLOSURE(this, &LandingActor::leapfrogLandedOnLaunchSiteHandler));
       ls->addEventListener(LaunchSequenceCompleteEvent::EVENT, CLOSURE(this, &LandingActor::transitToDeepSpace));
    }
 }

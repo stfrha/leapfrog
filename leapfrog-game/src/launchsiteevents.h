@@ -18,6 +18,13 @@ class LaunchSequenceCompleteEvent : public oxygine::Event
 {
 public:
    enum { EVENT = eventID('L', 's', 'S', 'C') };
-   LaunchSequenceCompleteEvent(void) :Event(EVENT) {}
+   LaunchSequenceCompleteEvent(void) : Event(EVENT) {}
+};
+
+class LaunchSiteExtTriggerLaunchEvent : public oxygine::Event
+{
+public:
+   enum { EVENT = eventID('L', 's', 'x', 'L') };
+   LaunchSiteExtTriggerLaunchEvent(void) : Event(EVENT) {}
 };
 

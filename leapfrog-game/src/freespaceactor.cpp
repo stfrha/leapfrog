@@ -4,6 +4,7 @@
 #include "deepspacesceneevents.h"
 
 #include "steerableobject.h"
+#include "layout.h"
 
 #include "bodyuserdata.h"
 
@@ -20,7 +21,7 @@ FreeSpaceActor::FreeSpaceActor(
    int groupIndex) :
    SceneActor(gameResources, world, zoom),
    m_inOrbitField(false),
-   m_state(waitForLeapfrog),
+   m_state(firstUpdate),
    m_leapfrogBody(NULL),
    m_stateChangeTime(0)
 {
@@ -49,6 +50,10 @@ void FreeSpaceActor::doUpdate(const oxygine::UpdateState &us)
    // if ascending from launch, So it must be executed on command.
    switch (m_state)
    {
+   case firstUpdate:
+      runFadeIn();
+      m_state = waitForLeapfrog;
+      break;
    case waitForLeapfrog:
       if (m_leapfrog != NULL)
       {
@@ -103,6 +108,21 @@ void FreeSpaceActor::doUpdate(const oxygine::UpdateState &us)
    }
 }
 
+void FreeSpaceActor::runFadeIn(void)
+{
+   spColorRectSprite fader = new ColorRectSprite();
+   fader->setColor(Color::White);
+   fader->setPosition(Vector2(0.0f, 0.0f));
+   fader->setSize(g_Layout.getStageSize());
+   fader->setAlpha(255);
+   fader->setPriority(255);
+   fader->attachTo(this);
+   spTween tween = fader->addTween(Actor::TweenAlpha(0), 1000);
+   tween->detachWhenDone();
+
+}
+
+
 void FreeSpaceActor::generateBackground(Resources& gameResources)
 {
    for (int x = 0; x < 6; x++)
@@ -121,10 +141,10 @@ void FreeSpaceActor::generateBackground(Resources& gameResources)
 
 }
 
-void FreeSpaceActor::startLeapfrogInScene(void)
+void FreeSpaceActor::startLeapfrogInScene(string name)
 {
    // Must run base class implementation first
-   SceneActor::startLeapfrogInScene();
+   SceneActor::startLeapfrogInScene(name);
 
    if (m_leapfrog != NULL)
    {

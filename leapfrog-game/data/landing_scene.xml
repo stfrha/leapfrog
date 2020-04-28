@@ -1231,11 +1231,12 @@
     file="launch_site.xml"
     posX="153"
     posY="627" />
-  <childObject
+<!--  <childObject
     name="leapfrog1"
     file="leapfrog_reentry.xml"
     posX="537.19860737896806"
     posY="481.56945402130646" />
+    -->
   <childObject
     name="landing_pad1"
     posX="415.23595638880357"

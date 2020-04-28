@@ -74,7 +74,10 @@ SteerableObject::SteerableObject(
 
    m_body->SetLinearDamping(m_linearDamping);
 
-
+   m_headDownDisplayItemId = g_HeadDownDisplay->addMeToMap(
+      MapItem::MapItemTypeEnum::enemyMoving,
+      getActor("mainBody"),
+      MapItem::MapItemStateEnum::hollow);
 }
 
 void SteerableObject::readSteerableObjectNode(pugi::xml_node node)
@@ -571,14 +574,6 @@ void SteerableObject::hitByBullet(b2Contact* contact, float bulletEqvDamage)
    if (m_gameStatus) m_gameStatus->deltaDamage(25.0f);
 
    evaluateDamage();
-}
-
-void SteerableObject::registerToMap(void)
-{
-   m_headDownDisplayItemId = g_HeadDownDisplay->addMeToMap(
-      MapItem::MapItemTypeEnum::enemyMoving, 
-      getActor("mainBody"),
-      MapItem::MapItemStateEnum::hollow);
 }
 
 void SteerableObject::initGameStatus(Actor* statusEventOriginator)

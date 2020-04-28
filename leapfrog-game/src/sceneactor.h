@@ -153,7 +153,7 @@ public:
    
    int createSceneTimer(int numOfTicks);
 
-   virtual void startLeapfrogInScene(void);
+   virtual void startLeapfrogInScene(std::string name);
    virtual void startLaunchSiteInScene(std::string name);
 
    void takeControlOfLeapfrog(bool control);

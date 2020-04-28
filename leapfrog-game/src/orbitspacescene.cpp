@@ -120,10 +120,10 @@ void OrbitSpaceScene::atOrbitEstablished(Event* event)
    m_state = turnBooster;
 }
 
-void OrbitSpaceScene::startLeapfrogInScene(void)
+void OrbitSpaceScene::startLeapfrogInScene(string name)
 {
    // Must run base class implementation first
-   SceneActor::startLeapfrogInScene();
+   SceneActor::startLeapfrogInScene(name);
 
    if (m_leapfrog != NULL)
    {

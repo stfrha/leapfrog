@@ -111,7 +111,9 @@ private:
 
 
    void showCountdownNumber(int n);
+   
    void countDownFadeInComplete(oxygine::Event *event);
+   void setLaunchTriggerProperty(oxygine::Event *ev);
    void updateHoldAngle(oxygine::timeMS now);
 
 public:
@@ -124,10 +126,10 @@ public:
       pugi::xml_node& root,
       int groupIndex);
 
-   void leapfrogFootTouch(b2Contact* contact, bool leftFoot);
-   void leapfrogFootLift(b2Contact* contact, bool leftFoot);
+   void leapfrogFootTouch(b2Contact* contact, bool leftFoot, LeapFrog* leapfrog);
+   void leapfrogFootLift(b2Contact* contact, bool leftFoot, LeapFrog* leapfrog);
 
-   void startLaunchSequence(LeapFrog* leapFrog);
+   void startLaunchSequence(void);
 
 protected:
    void doUpdate(const oxygine::UpdateState &us);

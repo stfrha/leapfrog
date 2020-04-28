@@ -188,6 +188,13 @@ LeapFrog::LeapFrog(
       MapItem::MapItemStateEnum::filled);
 
 
+   // Register leapfrog to connect (and create) status bars
+   MainActor* ma = (MainActor*)(getStage()->getFirstChild().get());
+   if (ma != NULL)
+   {
+      // Init game status in leapfrog object
+      initGameStatus(ma);
+   }
 
 }
 
@@ -239,16 +246,12 @@ void LeapFrog::doUpdate(const UpdateState &us)
       m_armInitialRegistration = false;
       
       // Start leapfrog handling in scene
-      m_sceneActor->startLeapfrogInScene();
+      m_sceneActor->startLeapfrogInScene(getName());
 
-
-      // Register leapfrog to connect (and create) status bars
+      // Register leapfrog to create status bars
       MainActor* ma = (MainActor*)(getStage()->getFirstChild().get());
       if (ma != NULL)
       {
-         // Init game status in leapfrog object
-         initGameStatus(ma);
-
          ma->registerLeapfrog(this);
       }
    }

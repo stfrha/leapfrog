@@ -11,6 +11,7 @@ class FreeSpaceActor : public SceneActor
 public:
    enum States
    {
+      firstUpdate,
       waitForLeapfrog,
       insertBurn,
       operate
@@ -27,6 +28,8 @@ private:
 
    FreeSpaceContactListener   m_contactListener;
 
+   void runFadeIn(void);
+
 public:
    b2Body * m_leapfrogBody;
 
@@ -38,7 +41,7 @@ public:
       int groupIndex);
 
 
-   void startLeapfrogInScene(void);
+   void startLeapfrogInScene(std::string name);
 
 protected:
    void doUpdate(const oxygine::UpdateState &us);

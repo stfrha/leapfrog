@@ -25,7 +25,11 @@ private:
 
 
 
-   void leapfrogLandedOnLaunchSiteHandler(oxygine::Event *ev);
+
+
+//   void leapfrogLandedOnLaunchSiteHandler(oxygine::Event *ev);
+   void runFadeOut(void);
+   void fadeOutComplete(oxygine::Event *ev);
    void transitToDeepSpace(oxygine::Event *ev);
 
 
@@ -38,7 +42,7 @@ public:
       pugi::xml_node& root,
       int groupIndex);
 
-   void startLeapfrogInScene(void);
+   void startLeapfrogInScene(std::string name);
    void startLaunchSiteInScene(std::string name);
 
 };

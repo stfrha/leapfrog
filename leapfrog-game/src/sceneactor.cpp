@@ -771,15 +771,18 @@ void SceneActor::removeTimer(int id)
    }
 }
 
-void SceneActor::startLeapfrogInScene(void)
+void SceneActor::startLeapfrogInScene(string name)
 // This is the base implementation of starting the leapfrog in 
 // the scene. Scenes can be loaded without leapfrog and it can 
 // be added at a later time in a mission or a cut-scene. 
 {
-   m_leapfrog = static_cast<LeapFrog*>(getObject("leapfrog1"));
+   if (m_leapfrog == NULL)
+   {
+      m_leapfrog = static_cast<LeapFrog*>(getObject(name));
+   }
 }
 
-void SceneActor::startLaunchSiteInScene(std::string name)
+void SceneActor::startLaunchSiteInScene(string name)
 // This is the base implementation of starting a launchsite in 
 // the scene. Scenes can be loaded without launchsites and it can 
 // be added at a later time in a mission or a cut-scene. 

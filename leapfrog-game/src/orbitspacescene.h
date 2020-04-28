@@ -38,7 +38,7 @@ public:
       pugi::xml_node& root,
       int groupIndex);
 
-   void startLeapfrogInScene(void);
+   void startLeapfrogInScene(std::string name);
 
 protected:
    void doUpdate(const oxygine::UpdateState &us);

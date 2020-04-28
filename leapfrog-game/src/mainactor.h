@@ -78,10 +78,8 @@ private:
    NextSceneDefinition m_nextScene;
 
    void transitToDeepSpaceListner(oxygine::Event *ev);
-   void fadeFromLanding(void);
    void transitToOrbitListner(oxygine::Event *ev);
    void landingCompleteListner(oxygine::Event *ev);
-   void goToDeepSpaceFader(Event *ev);
    void resourceDepletedHandler(oxygine::Event *ev);
    void setManualPanButtonState(void);
    void fetchInternetScene(void);
