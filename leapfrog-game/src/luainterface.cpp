@@ -1,5 +1,6 @@
 #include "luainterface.h"
 
+#include "mainactor.h"
 #include "messagedisplay.h"
 #include "objectproperty.h"
 #include "sceneactorevents.h"
@@ -163,6 +164,24 @@ void luaEventListner(oxygine::Event *ev)
 // ------------------------------------------------------------------------
 // The functions we'll call from the lua script 
 // ------------------------------------------------------------------------
+static int c_startScene(lua_State *L)
+{
+   std::string nextScene = lua_tostring(L, 1);
+   int sceneTypeInt = lua_tointeger(L, 2);
+
+
+   MainActor* ma = g_LuaInterface.getMainActor();
+
+   if (ma != NULL)
+   {
+      ma->armScene(nextScene, sceneTypeInt);
+   }
+
+   return 0;
+}
+
+
+
 static int c_registerPropertyTrigger(lua_State *L)
 {
    std::string actorName = lua_tostring(L, 1);
@@ -423,12 +442,16 @@ static int average(lua_State *L)
 // The LUA interface implementation
 
 
-LuaInterface::LuaInterface() : m_sceneActor(NULL)
+LuaInterface::LuaInterface() : 
+   m_sceneActor(NULL),
+   m_mainActor(NULL)
 {
 }
 
-void LuaInterface::initLuaInterface(void)
+void LuaInterface::initLuaInterface(MainActor* mainActor)
 {
+   m_mainActor = mainActor;
+
    // initialize Lua 
    m_L = luaL_newstate();
    luaL_openlibs(m_L);
@@ -442,6 +465,7 @@ void LuaInterface::initLuaInterface(void)
    result = luaL_loadbuffer(m_L, reinterpret_cast<char*>(&m_sceneNavigatorScriptBuffer[0]), m_sceneNavigatorScriptBuffer.size(), "mission_script");
    result = lua_pcall(m_L, 0, 0, 0);
 
+   lua_register(m_L, "c_startScene", c_startScene);
    lua_register(m_L, "c_registerPropertyTrigger", c_registerPropertyTrigger);
    lua_register(m_L, "c_registerEventHandler", c_registerEventHandler);
    lua_register(m_L, "c_clearAllTriggersAndEvents", c_clearAllTriggersAndEvents);
@@ -464,6 +488,11 @@ void LuaInterface::initLuaInterface(void)
 SceneActor* LuaInterface::getSceneActor(void)
 {
    return m_sceneActor;
+}
+
+MainActor* LuaInterface::getMainActor(void)
+{
+   return m_mainActor;
 }
 
 
@@ -496,92 +525,106 @@ void LuaInterface::clearAllTriggersAndEvents(void)
    m_triggerHandles.clear();
 }
 
-void LuaInterface::forceCurrentScene(const std::string& newCurrentScene)
+void LuaInterface::lua_startInitialScene(void)
 {
-   int a1 = lua_getglobal(m_L, "forceCurrentScene");
+   int a1 = lua_getglobal(m_L, "lua_startInitialScene");
+   int result = lua_pcall(m_L, 0, 0, 0);
+}
+
+void LuaInterface::lua_forceCurrentScene(const std::string& newCurrentScene)
+{
+   int a1 = lua_getglobal(m_L, "lua_forceCurrentScene");
    lua_pushstring(m_L, newCurrentScene.c_str());
-   lua_pcall(m_L, 1, 0, 0);
+   int result = lua_pcall(m_L, 1, 0, 0);
 }
 
-
-
-int LuaInterface::determineNextScene(
-   const std::string& entryType,
-   const std::string& entryParameter,
-   std::string& nextSceneFileName,
-   std::string& nextSceneState,
-   SceneActor::SceneTypeEnum& type)
+int LuaInterface::lua_sceneExitHandler(SceneActor::SceneTypeEnum exitSceneType, int exitHow)
 {
-   int a1 = lua_getglobal(m_L, "determineNextScene");
-   lua_pushstring(m_L, entryType.c_str());
-   lua_pushstring(m_L, entryParameter.c_str());
-
-   // do the call (2 arguments, 2 result) 
-   int result = lua_pcall(m_L, 2, 3, 0);
-
-   if (result != 0)
-   {
-      // Something went wrong
-      //return -1;
-   }
-
-   // retrieve result 
-   if (!lua_isstring(m_L, -1))
-   {
-      // Wrong return type
-      //return -2;
-   }
-
-   if (!lua_isstring(m_L, -2))
-   {
-      // Wrong return type
-      //return -3;
-   }
-
-   std::string sceneType  = std::string(lua_tostring(m_L, -1));
-   lua_pop(m_L, 1);  
-
-   nextSceneState = std::string(lua_tostring(m_L, -1));
-   lua_pop(m_L, 1);  
-
-   nextSceneFileName = std::string(lua_tostring(m_L, -1));
-   lua_pop(m_L, 1);  
-
-   if (sceneType == "landing")
-   {
-      type = SceneActor::SceneTypeEnum::landing;
-   }
-   else if (sceneType == "deepSpace")
-   {
-      type = SceneActor::SceneTypeEnum::deepSpace;
-   }
-   else if (sceneType == "orbit")
-   {
-      type = SceneActor::SceneTypeEnum::orbit;
-   }
-   else if (sceneType == "hyperSpace")
-   {
-      type = SceneActor::SceneTypeEnum::hyperSpace;
-   }
-
-
+   int a1 = lua_getglobal(m_L, "lua_sceneExitHandler");
+   lua_pushinteger(m_L, static_cast<int>(exitSceneType));
+   lua_pushinteger(m_L, exitHow);
+   // do the call (2 arguments, 0 result) 
+   int result = lua_pcall(m_L, 2, 0, 0);
    return 0;
-
 }
+
+
+//int LuaInterface::determineNextScene(
+//   const std::string& entryType,
+//   const std::string& entryParameter,
+//   std::string& nextSceneFileName,
+//   std::string& nextSceneState,
+//   SceneActor::SceneTypeEnum& type)
+//{
+//   int a1 = lua_getglobal(m_L, "determineNextScene");
+//   lua_pushstring(m_L, entryType.c_str());
+//   lua_pushstring(m_L, entryParameter.c_str());
+//
+//   // do the call (2 arguments, 3 result) 
+//   int result = lua_pcall(m_L, 2, 3, 0);
+//
+//   if (result != 0)
+//   {
+//      // Something went wrong
+//      //return -1;
+//   }
+//
+//   // retrieve result 
+//   if (!lua_isstring(m_L, -1))
+//   {
+//      // Wrong return type
+//      //return -2;
+//   }
+//
+//   if (!lua_isstring(m_L, -2))
+//   {
+//      // Wrong return type
+//      //return -3;
+//   }
+//
+//   std::string sceneType  = std::string(lua_tostring(m_L, -1));
+//   lua_pop(m_L, 1);  
+//
+//   nextSceneState = std::string(lua_tostring(m_L, -1));
+//   lua_pop(m_L, 1);  
+//
+//   nextSceneFileName = std::string(lua_tostring(m_L, -1));
+//   lua_pop(m_L, 1);  
+//
+//   if (sceneType == "landing")
+//   {
+//      type = SceneActor::SceneTypeEnum::landing;
+//   }
+//   else if (sceneType == "deepSpace")
+//   {
+//      type = SceneActor::SceneTypeEnum::deepSpace;
+//   }
+//   else if (sceneType == "orbit")
+//   {
+//      type = SceneActor::SceneTypeEnum::orbit;
+//   }
+//   else if (sceneType == "hyperSpace")
+//   {
+//      type = SceneActor::SceneTypeEnum::hyperSpace;
+//   }
+//
+//
+//   return 0;
+//}
 
 void LuaInterface::setupMissionStateScene(SceneActor* sceneActor)
 {
    // This makes sure that the latest scene actor ís used, do not remove it
    m_sceneActor = sceneActor;
 
-   int a1 = lua_getglobal(m_L, "setupMissionStateScene");
+   int a1 = lua_getglobal(m_L, "lua_setupMissionStateScene");
    int result = lua_pcall(m_L, 0, 0, 0);
 }
 
 
 void LuaInterface::missionStateSceneEventHandler(std::string eventId, std::string actorName, int parameter)
 {
-   int a1 = lua_getglobal(m_L, "missionStateSceneEventHandler");
+   int a1 = lua_getglobal(m_L, "lua_missionStateSceneEventHandler");
    lua_pushstring(m_L, eventId.c_str());
    lua_pushstring(m_L, actorName.c_str());
    lua_pushinteger(m_L, parameter);

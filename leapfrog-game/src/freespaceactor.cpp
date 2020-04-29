@@ -87,7 +87,7 @@ void FreeSpaceActor::doUpdate(const oxygine::UpdateState &us)
             if (us.time > m_enteredOrbitFieldAtTime + 2500)
             {
                // Go to Orbit scene
-               DeepSpaceSceneTransitToOrbitEvent event;
+               ExitDeepSpaceSceneEvent event(3);
                dispatchEvent(&event);
             }
          }

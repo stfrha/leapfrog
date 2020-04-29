@@ -4,10 +4,16 @@
 
 // Events that is fired for special conditions
 
-class LandingActorTransitToDeepSpaceEvent : public oxygine::Event
+// Parameter int is "leaving how":
+// 1 = deep space
+// Transition between ground-scenes are triggered by triggered events
+
+
+class ExitLandingSceneEvent : public oxygine::Event
 {
 public:
    enum { EVENT = eventID('L', 'a', 'T', 'D') };
-   LandingActorTransitToDeepSpaceEvent(void) :Event(EVENT) {}
+   int m_parameter;
+   ExitLandingSceneEvent(int parameter) : Event(EVENT), m_parameter(parameter) {}
 };
 

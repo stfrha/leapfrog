@@ -4,10 +4,17 @@
 
 // Events that is fired for special conditions
 
-class DeepSpaceSceneTransitToOrbitEvent : public oxygine::Event
+// Parameter int is "leaving how":
+// 1 = upper right
+// 2 = upper left
+// 3 = lower right
+// 4 = lower left
+
+class ExitDeepSpaceSceneEvent : public oxygine::Event
 {
 public:
    enum { EVENT = eventID('D', 's', 'T', 'O') };
-   DeepSpaceSceneTransitToOrbitEvent(void) :Event(EVENT) {}
+   int m_parameter;
+   ExitDeepSpaceSceneEvent(int parameter) : Event(EVENT), m_parameter(parameter) {}
 };
 

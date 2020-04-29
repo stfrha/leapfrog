@@ -4,77 +4,76 @@
 currentScene = "New Game"
 gameProgress = 0
 
-
--- entryType is: toLanding, toDeepSpace, toOrbit, toHyperspace
--- entryParameter is additional information related to an enty
-function determineNextScene(entryType, entryParameter)
-   local nextScene = ""
-   local sceneType = ""
-   local sceneState = ""
-   
+function lua_startInitialScene()
    if currentScene == "New Game" then
-      nextScene = "landing_scene.xml"
-      sceneType = "landing"
-      sceneState = "landingState"
---      nextScene = "deep_space_scene.xml"
---      sceneType = "deepSpace"
---      sceneState = "default"
-   
-   elseif currentScene == "landing_scene.xml" then
-      if entryType == "toDeepSpace" then
-         nextScene = "deep_space_scene.xml"
-         sceneType = "deepSpace"
-         sceneState = "default"
-      else
-         nextScene = "Current scene is " .. currentScene .. ", could not find currentState"
-         sceneType = ""
-         sceneState = "entryType is: " .. entryType .. " and it was not found"
-      end
+      currentScene = "landing_scene.xml"
+      sceneType = 0
+      
+      c_startScene(currentScene, sceneType)
 
-   elseif currentScene == "orbit_scene.xml" then
-      if entryType == "toLanding" then
-         if entryParameter == "alphaCity" then
-            nextScene = "landing_scene.xml"
-            sceneType = "landing"
-            sceneState = "landingState"
-         elseif entryParameter == "goldMine" then
-            nextScene = "mine_scene.xml"
-            sceneType = "landing"
-            sceneState = "landingState"
-         else
-            nextScene = "Current scene is " .. currentScene .. ", could not find currentState"
-            sceneType = ""
-            sceneState = "entryType is: " .. entryType .. " and it was not found"
-         end 
-      end
-
-   elseif currentScene == "deep_space_scene.xml" then
-      if entryType == "toOrbit" then
-         nextScene = "orbit_scene.xml"
-         sceneType = "orbit"
-         sceneState = "default"
-      elseif entryType == "toHyperspace" then
-         nextScene = "hyper_scene.xml"
-         sceneType = "hyperSpace"
-         sceneState = "default"
-      else
-         nextScene = "Current scene is " .. currentScene .. ", could not find currentState"
-         sceneType = ""
-         sceneState = "entryType is: " .. entryType .. " and it was not found"
-
-      end
-   else
-      nextScene = "Current scene is " .. currentScene .. ", could not find currentState"
-      sceneType = ""
-      sceneState = "entryType is: " .. entryType .. " and it was not found"
    end
-   
-   currentScene = nextScene
-
-   return nextScene, sceneState, sceneType
-   
 end
 
-function forceCurrentScene(newCurrentScene)
+
+-- exitSceneType is: 0 = landing, 1 = deep space, 2 = orbit, 3 = hyperspace
+-- exitParameter is additional information related to the exit scene type
+
+-- For exiting landing scene:
+-- Parameter int is "leaving how":
+-- 1 = deep space
+-- Transition between ground-scenes are triggered by triggered events
+
+-- For exiting deep space scene:
+-- Parameter int is "leaving how":
+-- 1 = upper right
+-- 2 = upper left
+-- 3 = lower right
+-- 4 = lower left
+
+-- For exiting orbit scene
+-- Parameter int is "index of landing sites"
+-- -1 = Stranded, landed but missed all sites
+-- -2 = Burned up during re-entry
+-- -3 = Bounced back to deep space
+
+-- Exiting hyperspace scene is TBD
+
+function lua_sceneExitHandler(exitSceneType, exitParameter)
+   local sceneType = 0
+
+   if exitSceneType == 0 then
+      -- We are leaving landing scene
+      -- Determine next scene
+      if currentScene == "landing_scene.xml" then
+         if exitParameter == 1 then
+            currentScene = "deep_space_scene.xml"
+            sceneType = 1
+         end
+      end
+   
+   elseif exitSceneType == 1 then
+      -- We are leaving deep space scene
+      -- Determine next scene
+      if currentScene == "deep_space_scene.xml" then
+         if exitParameter == 3 then
+            currentScene = "orbit_scene.xml"
+            sceneType = 2
+         end
+      end
+   
+   elseif exitSceneType == 2 then
+      -- We are leaving orbit scene
+      -- Determine next scene
+      if currentScene == "orbit_scene.xml" then
+         currentScene = "landing_scene.xml"
+         sceneType = 0  
+      end
+   end
+
+   c_startScene(currentScene, sceneType)
+
+end
+
+function lua_forceCurrentScene(newCurrentScene)
    currentScene = newCurrentScene;
 end

@@ -10,7 +10,7 @@ currentState = "state1"
 
 -- This function is to be called when a new scene has been started
 -- It does all setup for that scene in this mission state
-function setupMissionStateScene()
+function lua_setupMissionStateScene()
 
    -- Clear triggers and event handler
    c_clearAllTriggersAndEvents()
@@ -24,6 +24,7 @@ function setupMissionStateScene()
 
    if currentState == "state1" then
       if currentScene == "landing_scene.xml" then
+
 
          -- Start timer, will send LuTO event when timed out 
          state1Timer = c_startSceneTimer(240)
@@ -76,7 +77,7 @@ function setupMissionStateScene()
    end
 end
 
-function missionStateSceneEventHandler(eventId, actorName, parameter1)
+function lua_missionStateSceneEventHandler(eventId, actorName, parameter1)
 
    -- Regardless of state, we always want to listen to leapfrog has landed 
    -- on the launch site
@@ -104,7 +105,7 @@ function missionStateSceneEventHandler(eventId, actorName, parameter1)
 
             currentState = "state2"
             
-            setupMissionStateScene()
+            lua_setupMissionStateScene()
          end
       end
 
@@ -119,7 +120,7 @@ function missionStateSceneEventHandler(eventId, actorName, parameter1)
             credits = c_getObjectProperty("leapfrog1", 8)
             c_setObjectProperty("leapfrog1", 8, credits + 400)
 
-            setupMissionStateScene()
+            lua_setupMissionStateScene()
          end
          
          if actorName == "bomb1" and eventId == "ExEX" then
@@ -129,7 +130,7 @@ function missionStateSceneEventHandler(eventId, actorName, parameter1)
 
             currentState = "state5"
             
-            setupMissionStateScene()
+            lua_setupMissionStateScene()
          end
 
       end
@@ -145,7 +146,7 @@ function missionStateSceneEventHandler(eventId, actorName, parameter1)
             
             currentState = "state4"
             
-            setupMissionStateScene()
+            lua_setupMissionStateScene()
          end
          
          if actorName == "bomb1" and eventId == "ExEX" then
@@ -155,7 +156,7 @@ function missionStateSceneEventHandler(eventId, actorName, parameter1)
 
             currentState = "state5"
             
-            setupMissionStateScene()
+            lua_setupMissionStateScene()
          end
       end
 
@@ -172,7 +173,7 @@ function missionStateSceneEventHandler(eventId, actorName, parameter1)
                credits = c_getObjectProperty("leapfrog1", 8)
                c_setObjectProperty("leapfrog1", 8, credits + 20)
 
-               setupMissionStateScene()
+               lua_setupMissionStateScene()
             end 
          end
       end

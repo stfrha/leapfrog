@@ -194,7 +194,9 @@ void OrbitScene::doUpdate(const oxygine::UpdateState &us)
    case touchDown:
       
       // Sending landing complete event with the result
-      OrbitSceneLandingComplete event(m_planet->getLandingResult());
+
+      // TODO: Decode landing results in m_planet->getLandingResult()
+      ExitOrbitSceneEvent event(1);
       dispatchEvent(&event);
       break;
    }

@@ -13,7 +13,6 @@ class NextSceneDefinition
 public:
    bool m_armNextScene;
    std::string m_nextSceneFile;
-   std::string m_nextSceneState;
    SceneActor::SceneTypeEnum m_nextSceneType;
 
    NextSceneDefinition();
@@ -77,29 +76,15 @@ private:
 
    NextSceneDefinition m_nextScene;
 
-   void transitToDeepSpaceListner(oxygine::Event *ev);
-   void transitToOrbitListner(oxygine::Event *ev);
-   void landingCompleteListner(oxygine::Event *ev);
+   void exitLandingScene(oxygine::Event *ev);
+   void exitDeepSpaceScene(oxygine::Event *ev);
+   void exitOrbitScene(oxygine::Event *ev);
+   void exitHyperspaceScene(oxygine::Event *ev);
    void resourceDepletedHandler(oxygine::Event *ev);
    void setManualPanButtonState(void);
    void fetchInternetScene(void);
    
    void httpLoaded(oxygine::Event*);
-
-
-   //void calculateButtonGeometrics(void);
-   //void turnLeftButtonDownHandler(Event* event);
-   //void turnLeftButtonUpHandler(Event* event);
-   //void turnRightButtonDownHandler(Event* event);
-   //void turnRightButtonUpHandler(Event* event);
-   //void boosterButtonDownHandler(Event* event);
-   //void boosterButtonUpHandler(Event* event);
-   //void fireButtonDownHandler(Event* event);
-   //void fireButtonUpHandler(Event* event);
-   //void zoomInButtonDownHandler(Event* event);
-   //void zoomInButtonUpHandler(Event* event);
-   //void zoomOutButtonDownHandler(Event* event);
-   //void zoomOutButtonUpHandler(Event* event);
 
    void sceneDownHandler(Event* event);
    void sceneUpHandler(Event* event);
@@ -124,6 +109,7 @@ public:
       startScene reads xml file which builds the tree of CompoundObjects.
    */
    void startScene(void);
+   void armScene(std::string sceneName, int sceneType);
 
    float getProperty(std::string object, int propId);
    void setProperty(std::string object, int propId, float value);
@@ -141,7 +127,6 @@ public:
    void unregisterDualPropTrigger(
       std::string object,
       int eventId);
-   void sendEvent(int eventId);
 
 protected:
    void doUpdate(const UpdateState& us);

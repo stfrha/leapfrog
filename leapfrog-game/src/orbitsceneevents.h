@@ -5,13 +5,15 @@
 
 // Events that is fired for special conditions
 
-class OrbitSceneLandingComplete : public oxygine::Event
+// Parameter int is "index of landing sites"
+// -1 = Stranded, landed but missed all sites
+// -2 = Burned up during re-entry
+// -3 = Bounced back to deep space
+
+class ExitOrbitSceneEvent : public oxygine::Event
 {
 public:
    enum { EVENT = eventID('O', 'S', 'L', 'C') };
-   LandingResult m_results;
-   OrbitSceneLandingComplete(LandingResult results) :
-      Event(EVENT),
-      m_results(results)
-   {  }
+   int m_parameter;
+   ExitOrbitSceneEvent(int parameter) : Event(EVENT), m_parameter(parameter) {}
 };

@@ -26,8 +26,7 @@ using namespace std;
 NextSceneDefinition::NextSceneDefinition() :
    m_nextSceneFile("landing_scene.xml"),
    m_armNextScene(true),
-   m_nextSceneType(SceneActor::SceneTypeEnum::landing),
-   m_nextSceneState("default")
+   m_nextSceneType(SceneActor::SceneTypeEnum::landing)
 {
 }
 
@@ -49,7 +48,7 @@ MainActor::MainActor() :
 	//load xml file with resources definition
 	m_gameResources.loadXML("res.xml");
 
-   g_LuaInterface.initLuaInterface();
+   g_LuaInterface.initLuaInterface(this);
 
    g_HeadDownDisplay = new HeadDownDisplay();
 
@@ -62,36 +61,10 @@ MainActor::MainActor() :
       Vector2(g_Layout.getButtonWidth() * 2.0f, g_Layout.getYFromBottom(1) - g_Layout.getButtonWidth() / 2.0f),
       g_Layout.getDefaultFontSize());
 
-
-   // Here the game status should probably be read from file
-
-   //m_gameStatus->initGameStatus(this);
-
 	setSize(g_Layout.getViewPortBounds());
    
-   g_LuaInterface.determineNextScene(
-      "New Game", "", 
-      m_nextScene.m_nextSceneFile, 
-      m_nextScene.m_nextSceneState, 
-      m_nextScene.m_nextSceneType);
+   g_LuaInterface.lua_startInitialScene();
    m_nextScene.m_armNextScene = true;
-
-
-   //g_LuaInterface.determineNextScene("toDeepSpace", "", m_nextSceneFile, m_nextSceneState, m_nextSceneType);
-   //g_LuaInterface.determineNextScene("toOrbit", "", m_nextSceneFile, m_nextSceneState, m_nextSceneType);
-   //g_LuaInterface.determineNextScene("toLanding", "alphaCity", m_nextSceneFile, m_nextSceneState, m_nextSceneType);
-
-   //m_nextSceneFile = "landing_scene.xml";
-   //m_armNextScene = true;
-   //m_nextSceneType = SceneActor::SceneTypeEnum::landing;
-
-   //m_nextSceneFile = "deep_space_scene.xml";
-   //m_armNextScene = true;
-   //m_nextSceneType = deepSpace;
-
-   //m_nextSceneFile = "orbit_scene.xml";
-   //m_armNextScene = true;
-   //m_nextSceneType = orbit;
 
    //   addEventListener(TouchEvent::MOVE, CLOSURE(this, &MainActor::sceneMoveHandler));
    addEventListener(CompoundObjectCreatedEvent::EVENT, CLOSURE(this, &MainActor::dummyHandler));
@@ -102,6 +75,14 @@ MainActor::~MainActor()
 {
 	//free previously loaded resources
 	m_gameResources.free();
+}
+
+
+void MainActor::armScene(std::string sceneName, int sceneType)
+{
+   m_nextScene.m_nextSceneFile = sceneName;
+   m_nextScene.m_nextSceneType = static_cast<SceneActor::SceneTypeEnum>(sceneType);
+   m_nextScene.m_armNextScene = true;
 }
 
 void MainActor::startScene(void)
@@ -171,12 +152,12 @@ void MainActor::startScene(void)
       if (m_nextScene.m_nextSceneType == SceneActor::SceneTypeEnum::landing)
       {
          m_sceneObject = sceneObj.get();
-         sceneObj->addEventListener(LandingActorTransitToDeepSpaceEvent::EVENT, CLOSURE(this, &MainActor::transitToDeepSpaceListner));
+         sceneObj->addEventListener(ExitLandingSceneEvent::EVENT, CLOSURE(this, &MainActor::exitLandingScene));
       }
       else
       {
          m_sceneObject = sceneObj.get();
-         sceneObj->addEventListener(DeepSpaceSceneTransitToOrbitEvent::EVENT, CLOSURE(this, &MainActor::transitToOrbitListner));
+         sceneObj->addEventListener(ExitDeepSpaceSceneEvent::EVENT, CLOSURE(this, &MainActor::exitDeepSpaceScene));
       }
    }
    else if (m_nextScene.m_nextSceneType == SceneActor::SceneTypeEnum::orbit)
@@ -194,7 +175,7 @@ void MainActor::startScene(void)
       OrbitScene* os = static_cast<OrbitScene*>(co.get());
       m_sceneObject = os->m_space;
 
-      co.get()->addEventListener(OrbitSceneLandingComplete::EVENT, CLOSURE(this, &MainActor::landingCompleteListner));
+      co.get()->addEventListener(ExitOrbitSceneEvent::EVENT, CLOSURE(this, &MainActor::exitOrbitScene));
    }
 
    m_sceneObject->connectToForeignObjects();
@@ -277,30 +258,46 @@ void MainActor::unregisterDualPropTrigger(
 
 }
 
-void MainActor::sendEvent(int eventId)
+void MainActor::exitLandingScene(oxygine::Event *ev)
 {
+   ExitLandingSceneEvent* xev = static_cast<ExitLandingSceneEvent*>(ev);
+   g_LuaInterface.lua_sceneExitHandler(SceneActor::SceneTypeEnum::landing, xev->m_parameter);
+}
 
+void MainActor::exitDeepSpaceScene(oxygine::Event *ev)
+{
+   ExitDeepSpaceSceneEvent* xev = static_cast<ExitDeepSpaceSceneEvent*>(ev);
+   g_LuaInterface.lua_sceneExitHandler(SceneActor::SceneTypeEnum::deepSpace, xev->m_parameter);
+}
+
+void MainActor::exitOrbitScene(oxygine::Event *ev)
+{
+   ExitOrbitSceneEvent* xev = static_cast<ExitOrbitSceneEvent*>(ev);
+   g_LuaInterface.lua_sceneExitHandler(SceneActor::SceneTypeEnum::orbit, xev->m_parameter);
+}
+
+void MainActor::exitHyperspaceScene(oxygine::Event *ev)
+{
 
 }
 
-
-void MainActor::transitToDeepSpaceListner(Event *ev)
-{
-   g_LuaInterface.determineNextScene("toDeepSpace", "", m_nextScene.m_nextSceneFile, m_nextScene.m_nextSceneState, m_nextScene.m_nextSceneType);
-   m_nextScene.m_armNextScene = true;
-}
-
-void MainActor::transitToOrbitListner(Event *ev)
-{
-   g_LuaInterface.determineNextScene("toOrbit", "", m_nextScene.m_nextSceneFile, m_nextScene.m_nextSceneState, m_nextScene.m_nextSceneType);
-   m_nextScene.m_armNextScene = true;
-}
-
-void MainActor::landingCompleteListner(oxygine::Event *ev)
-{
-   g_LuaInterface.determineNextScene("toLanding", "alphaCity", m_nextScene.m_nextSceneFile, m_nextScene.m_nextSceneState, m_nextScene.m_nextSceneType);
-   m_nextScene.m_armNextScene = true;
-}
+//void MainActor::transitToDeepSpaceListner(Event *ev)
+//{
+//   g_LuaInterface.determineNextScene("toDeepSpace", "", m_nextScene.m_nextSceneFile, m_nextScene.m_nextSceneState, m_nextScene.m_nextSceneType);
+//   m_nextScene.m_armNextScene = true;
+//}
+//
+//void MainActor::transitToOrbitListner(Event *ev)
+//{
+//   g_LuaInterface.determineNextScene("toOrbit", "", m_nextScene.m_nextSceneFile, m_nextScene.m_nextSceneState, m_nextScene.m_nextSceneType);
+//   m_nextScene.m_armNextScene = true;
+//}
+//
+//void MainActor::landingCompleteListner(oxygine::Event *ev)
+//{
+//   g_LuaInterface.determineNextScene("toLanding", "alphaCity", m_nextScene.m_nextSceneFile, m_nextScene.m_nextSceneState, m_nextScene.m_nextSceneType);
+//   m_nextScene.m_armNextScene = true;
+//}
 
 void MainActor::resourceDepletedHandler(oxygine::Event *ev)
 {
@@ -375,7 +372,6 @@ void MainActor::httpLoaded(Event* event)
 
    // TODO: For now, this is hardcoded, but somhow, it needs to be configurable
    m_nextScene.m_nextSceneType = SceneActor::SceneTypeEnum::landing;
-   m_nextScene.m_nextSceneState = "landingState";
    m_nextScene.m_armNextScene = true;
    m_nextScene.m_nextSceneFile = "updated_scene.xml";
 
@@ -411,25 +407,25 @@ void MainActor::doUpdate(const UpdateState& us)
    {
       const Uint8* data = SDL_GetKeyboardState(0);
 
-      if (data[SDL_SCANCODE_F1])
-      {
-         g_LuaInterface.forceCurrentScene("orbit_scene.xml");
-         g_LuaInterface.determineNextScene("toLanding", "alphaCity", m_nextScene.m_nextSceneFile, m_nextScene.m_nextSceneState, m_nextScene.m_nextSceneType);
-         m_nextScene.m_armNextScene = true;
-     }
-      else if (data[SDL_SCANCODE_F2])
-      {
-         g_LuaInterface.forceCurrentScene("landing_scene.xml");
-         g_LuaInterface.determineNextScene("toDeepSpace", "", m_nextScene.m_nextSceneFile, m_nextScene.m_nextSceneState, m_nextScene.m_nextSceneType);
-         m_nextScene.m_armNextScene = true;
+     // if (data[SDL_SCANCODE_F1])
+     // {
+     //    g_LuaInterface.lua_forceCurrentScene("orbit_scene.xml");
+     //    g_LuaInterface.determineNextScene("toLanding", "alphaCity", m_nextScene.m_nextSceneFile, m_nextScene.m_nextSceneState, m_nextScene.m_nextSceneType);
+     //    m_nextScene.m_armNextScene = true;
+     //}
+     // else if (data[SDL_SCANCODE_F2])
+     // {
+     //    g_LuaInterface.lua_forceCurrentScene("landing_scene.xml");
+     //    g_LuaInterface.determineNextScene("toDeepSpace", "", m_nextScene.m_nextSceneFile, m_nextScene.m_nextSceneState, m_nextScene.m_nextSceneType);
+     //    m_nextScene.m_armNextScene = true;
 
-      }
-      else if (data[SDL_SCANCODE_F3])
-      {
-         g_LuaInterface.forceCurrentScene("deep_space_scene.xml");
-         g_LuaInterface.determineNextScene("toOrbit", "", m_nextScene.m_nextSceneFile, m_nextScene.m_nextSceneState, m_nextScene.m_nextSceneType);
-         m_nextScene.m_armNextScene = true;
-      }
+     // }
+     // else if (data[SDL_SCANCODE_F3])
+     // {
+     //    g_LuaInterface.lua_forceCurrentScene("deep_space_scene.xml");
+     //    g_LuaInterface.determineNextScene("toOrbit", "", m_nextScene.m_nextSceneFile, m_nextScene.m_nextSceneState, m_nextScene.m_nextSceneType);
+     //    m_nextScene.m_armNextScene = true;
+     // }
    }
 
 }

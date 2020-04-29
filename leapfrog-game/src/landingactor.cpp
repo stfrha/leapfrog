@@ -60,7 +60,7 @@ void LandingActor::transitToDeepSpace(oxygine::Event *ev)
 
 void LandingActor::fadeOutComplete(Event *ev)
 {
-   LandingActorTransitToDeepSpaceEvent event;
+   ExitLandingSceneEvent event(1);
    dispatchEvent(&event);
 }
 
@@ -77,8 +77,6 @@ void LandingActor::startLeapfrogInScene(string name)
 }
 
 
-// TODO: This should probably be more general. 
-// For instance, to allow multiple Launch-sites
 void LandingActor::startLaunchSiteInScene(string name)
 {
    LaunchSite* ls = static_cast<LaunchSite*>(getObject(name));
