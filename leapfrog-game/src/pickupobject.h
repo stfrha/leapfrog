@@ -55,7 +55,7 @@ public:
 
    void readPickupObjectNode(const pugi::xml_node& node);
 
-   void doPickupAmountCalculation(GameStatus* status);
+   void doPickupAmountCalculation(ObjectResources* status);
 };
 
 class PickupObject : public CompoundObject
@@ -78,7 +78,7 @@ public:
       pugi::xml_node& root,
       int groupIndex);
    
-   void handlePickup(GameStatus* status);
+   void handlePickup(ObjectResources* status);
 
 protected:
 	void doUpdate(const oxygine::UpdateState& us);

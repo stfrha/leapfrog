@@ -213,6 +213,7 @@
     <ClCompile Include="..\src\luainterface.cpp" />
     <ClCompile Include="..\src\magneticmine.cpp" />
     <ClCompile Include="..\src\messagedisplay.cpp" />
+    <ClCompile Include="..\src\objectresources.cpp" />
     <ClCompile Include="..\src\parallaxbackground.cpp" />
     <ClCompile Include="..\src\pickupobject.cpp" />
     <ClCompile Include="..\src\steerableobject.cpp" />
@@ -312,7 +313,6 @@
     <ClInclude Include="..\src\freespaceactor.h" />
     <ClInclude Include="..\src\freespacecontactlistener.h" />
     <ClInclude Include="..\src\gamestatus.h" />
-    <ClInclude Include="..\src\gamestatusevents.h" />
     <ClInclude Include="..\src\groupindexsource.h" />
     <ClInclude Include="..\src\gun.h" />
     <ClInclude Include="..\src\headdowndisplay.h" />
@@ -321,6 +321,8 @@
     <ClInclude Include="..\src\magneticmine.h" />
     <ClInclude Include="..\src\messagedisplay.h" />
     <ClInclude Include="..\src\objectpropertyevents.h" />
+    <ClInclude Include="..\src\objectresources.h" />
+    <ClInclude Include="..\src\objectresourcesevents.h" />
     <ClInclude Include="..\src\parallaxbackground.h" />
     <ClInclude Include="..\src\pickupobject.h" />
     <ClInclude Include="..\src\pickupobjectevents.h" />

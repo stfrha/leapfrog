@@ -20,7 +20,7 @@
 #include "blastemitter.h"
 #include "headdowndisplay.h"
 
-#include "gamestatusevents.h"
+#include "objectresourcesevents.h"
 
 
 using namespace oxygine;
@@ -193,7 +193,7 @@ LeapFrog::LeapFrog(
    if (ma != NULL)
    {
       // Init game status in leapfrog object
-      initGameStatus(ma);
+      initObjectResources(ma, g_GameStatus.getResources());
    }
 
 }
@@ -788,7 +788,7 @@ void LeapFrog::fireMainBooster(bool burn, bool flamesOnly)
 {
    // Handle booster flame particles
 
-   if ((m_environment == ENV_GROUND) && (m_gameStatus->getFuel() <= 0.0f))
+   if ((m_environment == ENV_GROUND) && (m_resources->getFuel() <= 0.0f))
    {
       // No burn here
    }
@@ -813,7 +813,7 @@ void LeapFrog::fireMainBooster(bool burn, bool flamesOnly)
    }
 
    //// Below override any booster settings on ground if no fuel
-   //if ((m_environment == ENV_GROUND) && (m_gameStatus->getFuel() <= 0.0f))
+   //if ((m_environment == ENV_GROUND) && (m_resources->getFuel() <= 0.0f))
    //{
    //   // Turn emitter off here, will be turned off each update that 
    //   // the booster is pressed with no fule, in land
@@ -893,14 +893,14 @@ void LeapFrog::fireMainBooster(bool burn, bool flamesOnly)
       }
       else if (m_environment == ENV_GROUND)
       {
-         if (burn && (m_gameStatus->getFuel() > 0.0f))
+         if (burn && (m_resources->getFuel() > 0.0f))
          {
             m_boostMagnuitude += m_boostInc;
             if (m_boostMagnuitude > m_boostMaxMagnitude)
             {
                m_boostMagnuitude = m_boostMaxMagnitude;
-               m_gameStatus->deltaFuel(-m_boostMagnuitude / 240000.0f);
-               //m_gameStatus->deltaFuel(-m_boostMagnuitude / 30000.0f);
+               m_resources->deltaFuel(-m_boostMagnuitude / 240000.0f);
+               //m_resources->deltaFuel(-m_boostMagnuitude / 30000.0f);
             }
          }
          else
@@ -925,7 +925,7 @@ void LeapFrog::fireSteeringBooster(int dir)
 {
    // Handle booster flame particles
 
-   if ((m_environment == ENV_GROUND) && (m_gameStatus->getFuel() <= 0.0f))
+   if ((m_environment == ENV_GROUND) && (m_resources->getFuel() <= 0.0f))
    {
       // No fire here
    }
@@ -961,7 +961,7 @@ void LeapFrog::fireSteeringBooster(int dir)
 
    //if (m_environment == ENV_GROUND)
    //{
-   //   if (m_gameStatus->getFuel() == 0.0f)
+   //   if (m_resources->getFuel() == 0.0f)
    //   {
    //      // Turn emitter off here, will be turned off each update that 
    //      // the booster is pressed with no fule, in land
@@ -1001,13 +1001,13 @@ void LeapFrog::fireSteeringBooster(int dir)
    }
    else if (m_environment == ENV_GROUND)
    {
-      if (m_gameStatus->getFuel() > 0.0f)
+      if (m_resources->getFuel() > 0.0f)
       {
-         if ((dir == -1) && (m_gameStatus->getFuel() > 0.0f))
+         if ((dir == -1) && (m_resources->getFuel() > 0.0f))
          {
             m_steerMagnitude = -m_steerMaxMagnitude;
          }
-         else if ((dir == 1) && (m_gameStatus->getFuel() > 0.0f))
+         else if ((dir == 1) && (m_resources->getFuel() > 0.0f))
          {
             m_steerMagnitude = m_steerMaxMagnitude;
          }
@@ -1238,7 +1238,7 @@ void LeapFrog::hitImpulse(b2Contact* contact, const b2ContactImpulse* impulse)
       normalImpulses += impulse->normalImpulses[i];
    }
 
-   m_gameStatus->deltaDamage(normalImpulses / 100.0f);
+   m_resources->deltaDamage(normalImpulses / 100.0f);
 
    evaluateLepfrogDamage();
 
@@ -1248,7 +1248,7 @@ void LeapFrog::hitByBullet(b2Contact* contact, float bulletEqvDamage)
 {
    collisionBlast(contact, true);
 
-   m_gameStatus->deltaDamage(25.0f);
+   m_resources->deltaDamage(25.0f);
 
    evaluateLepfrogDamage();
 }
@@ -1265,10 +1265,12 @@ void LeapFrog::footOnLandingPad(bool resting)
    }
 }
 
-
-void LeapFrog::initGameStatus(Actor* statusEventOriginator)
+// The resources of the leapfrog is saved in the game status and uses a pointer to that instance. 
+// This means that the initObjectResources is called with the mainactor gamestatus resources as
+// a reference.
+void LeapFrog::initObjectResources(Actor* statusEventOriginator, spObjectResources resources)
 {
-   m_gameStatus = new GameStatus();
+   m_resources = resources;
 
    // The event to send on property change must contain a pointer to the ObjectProperty.
    // The ObjectProperty is created without an event (set to NULL) and the event is 
@@ -1286,7 +1288,7 @@ void LeapFrog::initGameStatus(Actor* statusEventOriginator)
    m_properties.push_back(credits);
    m_properties.push_back(damage);
 
-   m_gameStatus->initGameStatus(
+   m_resources->initObjectResources(
       statusEventOriginator, 
       &m_properties[LeapfroPropertiesEnum::ammo], 
       &m_properties[LeapfroPropertiesEnum::shield],
@@ -1294,5 +1296,5 @@ void LeapFrog::initGameStatus(Actor* statusEventOriginator)
       &m_properties[LeapfroPropertiesEnum::credits],
       &m_properties[LeapfroPropertiesEnum::damage]);
 
-   m_gameStatus->registerShieldObject(m_shield.get());
+   m_resources->registerShieldObject(m_shield.get());
 }

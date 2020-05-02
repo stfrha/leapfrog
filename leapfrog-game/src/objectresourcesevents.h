@@ -2,7 +2,7 @@
 
 #include "oxygine-framework.h"
 
-enum GameStatusTypeEnum
+enum ObjectResourcesTypeEnum
 {
    fuel,
    credits,
@@ -21,10 +21,10 @@ class ObjectProperty;
 //public:
 //   enum { EVENT = eventID('G', 's', 'S', 'C') };
 //
-//   GameStatusTypeEnum m_type;
+//   ObjectResourcesTypeEnum m_type;
 //   ObjectProperty* m_property;
 //   StatusChangedEvent(
-//      GameStatusTypeEnum type,
+//      ObjectResourcesTypeEnum type,
 //      ObjectProperty* property) :
 //      Event(EVENT), 
 //      m_type(type),
@@ -37,9 +37,9 @@ class StatusResourceDepletedEvent : public oxygine::Event
 public:
    enum { EVENT = eventID('G', 's', 'R', 'D') };
 
-   GameStatusTypeEnum m_type;
+   ObjectResourcesTypeEnum m_type;
    StatusResourceDepletedEvent(
-      GameStatusTypeEnum type) :
+      ObjectResourcesTypeEnum type) :
       Event(EVENT),
       m_type(type)
    {}
@@ -50,10 +50,10 @@ class TransactResourceCommandEvent : public oxygine::Event
 public:
    enum { EVENT = eventID('G', 's', 'T', 'R') };
 
-   GameStatusTypeEnum m_type;
+   ObjectResourcesTypeEnum m_type;
    float m_value;
    TransactResourceCommandEvent(
-      GameStatusTypeEnum type,
+      ObjectResourcesTypeEnum type,
       float value) :
       Event(EVENT),
       m_type(type),

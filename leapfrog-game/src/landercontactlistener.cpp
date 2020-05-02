@@ -164,7 +164,7 @@ void LanderContactListener::PostSolve(b2Contact* contact, const b2ContactImpulse
    {
       if (pickup)
       {
-         pickup->handlePickup(leapfrog->m_gameStatus.get());
+         pickup->handlePickup(leapfrog->m_resources.get());
       }
       else if (bullet)
       {

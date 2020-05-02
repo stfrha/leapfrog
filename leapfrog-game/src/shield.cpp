@@ -138,7 +138,7 @@ void Shield::shieldHit(b2Contact* contact)
 
 void Shield::evaluatShieldDamage(void)
 {
-   if (m_parent->m_gameStatus->getShield() <= 0.0f)
+   if (m_parent->m_resources->getShield() <= 0.0f)
    {
       // Remove shield from collisions
 
@@ -162,7 +162,7 @@ void Shield::shieldHitImpulse(b2Contact* contact, const b2ContactImpulse* impuls
       normalImpulses += impulse->normalImpulses[i];
    }
 
-   m_parent->m_gameStatus->deltaShield(-normalImpulses / 1000.0f);
+   m_parent->m_resources->deltaShield(-normalImpulses / 1000.0f);
 
    evaluatShieldDamage();
 }
@@ -172,7 +172,7 @@ void Shield::shieldHitByBullet(b2Contact* contact, float bulletEqvDamage)
 
    shieldHit(contact);
 
-   m_parent->m_gameStatus->deltaShield(-25.0f);
+   m_parent->m_resources->deltaShield(-25.0f);
 
    evaluatShieldDamage();
 }

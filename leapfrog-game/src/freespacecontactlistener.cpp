@@ -164,7 +164,7 @@ void FreeSpaceContactListener::PostSolve(b2Contact* contact, const b2ContactImpu
    {
       if (pickup)
       {
-         pickup->handlePickup(shield1->getParent()->m_gameStatus.get());
+         pickup->handlePickup(shield1->getParent()->m_resources.get());
       }
       else if (bullet)
       {
@@ -185,7 +185,7 @@ void FreeSpaceContactListener::PostSolve(b2Contact* contact, const b2ContactImpu
    {
       if (pickup)
       {
-         pickup->handlePickup(shield2->getParent()->m_gameStatus.get());
+         pickup->handlePickup(shield2->getParent()->m_resources.get());
       }
       else if (bullet)
       {
@@ -209,11 +209,11 @@ void FreeSpaceContactListener::PostSolve(b2Contact* contact, const b2ContactImpu
       // (from certain angles). In this case, if the 
       // shield is still active, we do not damage
       // leapfrog 
-      if (leapfrog->m_gameStatus->getShield() <= 0.0f)
+      if (leapfrog->m_resources->getShield() <= 0.0f)
       {
          if (pickup)
          {
-            pickup->handlePickup(leapfrog->m_gameStatus.get());
+            pickup->handlePickup(leapfrog->m_resources.get());
          }
          else if (bullet)
          {
@@ -236,7 +236,7 @@ void FreeSpaceContactListener::PostSolve(b2Contact* contact, const b2ContactImpu
    {
       if (pickup)
       {
-         pickup->handlePickup(steerableObject->m_gameStatus.get());
+         pickup->handlePickup(steerableObject->m_resources.get());
       }
       else if (bullet)
       {

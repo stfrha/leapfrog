@@ -143,9 +143,9 @@ void BreakableObject::damageCollision(b2Contact* contact, float bulletEqvDamage)
    bool shattered = false;
 
    // Take damage
-   m_gameStatus->deltaDamage(bulletEqvDamage);
+   m_resources->deltaDamage(bulletEqvDamage);
 
-   if (m_gameStatus->getDamage() >= m_breakAtDamage)
+   if (m_resources->getDamage() >= m_breakAtDamage)
    {
       m_isDead = true;
       addMeToDeathList();
@@ -207,15 +207,15 @@ void BreakableObject::spawnBreakableObjects(void)
 
 }
 
-void BreakableObject::initGameStatus(Actor* statusEventOriginator)
+void BreakableObject::initObjectResources(Actor* statusEventOriginator, spObjectResources resources)
 {
-   m_gameStatus = new GameStatus();
+   m_resources = new ObjectResources();
 
    ObjectProperty* damage = new ObjectProperty(this, NULL, 0, 0.0f);
 
-   m_gameStatus->initGameStatus(statusEventOriginator, NULL, NULL, NULL, NULL, damage);
+   m_resources->initObjectResources(statusEventOriginator, NULL, NULL, NULL, NULL, damage);
 
    m_properties.push_back(*damage);
 
-   m_gameStatus->registerShieldObject(NULL);
+   m_resources->registerShieldObject(NULL);
 }

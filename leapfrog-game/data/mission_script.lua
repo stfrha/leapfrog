@@ -30,8 +30,9 @@ function lua_setupMissionStateScene()
          state1Timer = c_startSceneTimer(240)
 
          -- Initialise leapfrog as descenting
-         c_addPositionedChildObject("leapfrog_reentry.xml", "leapfrog1", 220, 510)
-         
+         c_addPositionedChildObject("leapfrog_reentry.xml", "leapfrog1", 220, 490)
+         --c_addPositionedChildObject("leapfrog_reentry.xml", "leapfrog1", 540, 400)
+          
          -- Reconfigure leapfrog to landing mode
          c_setObjectProperty("leapfrog1", 0, 2)
 

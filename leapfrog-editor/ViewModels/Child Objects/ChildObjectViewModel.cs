@@ -41,18 +41,26 @@ namespace LeapfrogEditor
       {
          ModelObject = modelObject;
 
-         CompObj = new ChildCOViewModel(this, parentVm, mainVm, _modelObject.CompObj, enabled);
-         _co.Clear();
-         _co.Add(CompObj);
-
-         if (IsFileReferenceChild)
+         if (_modelObject.CompObj != null)
          {
-            CompObj.BuildViewModel(false);
+            CompObj = new ChildCOViewModel(this, parentVm, mainVm, _modelObject.CompObj, enabled);
+            _co.Clear();
+            _co.Add(CompObj);
+
+            if (IsFileReferenceChild)
+            {
+               CompObj.BuildViewModel(false);
+            }
+            else
+            {
+               CompObj.BuildViewModel(true);
+            }
          }
          else
          {
-            CompObj.BuildViewModel(true);
+            CompObj = null;
          }
+
       }
 
       #endregion
@@ -245,53 +253,58 @@ namespace LeapfrogEditor
 
       public void AddChildShapesToGlobalCollection(ref CompositeCollection coll, bool showJoints, bool showSystems, bool showBackgrounds)
       {
-
-         foreach (Object o in CompObj.ShapeCollection.Shapes)
+         if (CompObj != null)
          {
-            if (o is LfShapeViewModel)
+            foreach (Object o in CompObj.ShapeCollection.Shapes)
             {
-               LfShapeViewModel svm = o as LfShapeViewModel;
-               coll.Add(svm);
-            }
-         }
-
-         if (showJoints)
-         {
-            foreach (Object o in CompObj.JointCollection.Joints)
-            {
-               if (o is WeldJointViewModel)
+               if (o is LfShapeViewModel)
                {
-                  WeldJointViewModel wjvm = o as WeldJointViewModel;
-                  coll.Add(wjvm);
-               }
-            }
-         }
-
-         if (showSystems)
-         {
-            foreach (Object o in CompObj.SystemCollection.Systems)
-            {
-               if (o is CoSystemViewModel)
-               {
-                  CoSystemViewModel svm = o as CoSystemViewModel;
+                  LfShapeViewModel svm = o as LfShapeViewModel;
                   coll.Add(svm);
                }
             }
-         }
 
-
-         if (CompObj != MainVm.EditedCpVm)
-         {
-            foreach (ChildObjectViewModel covm in CompObj.ChildObjectCollection.Children)
+            if (showJoints)
             {
-               covm.AddChildShapesToGlobalCollection(ref coll, showJoints, showSystems, showBackgrounds);
+               foreach (Object o in CompObj.JointCollection.Joints)
+               {
+                  if (o is WeldJointViewModel)
+                  {
+                     WeldJointViewModel wjvm = o as WeldJointViewModel;
+                     coll.Add(wjvm);
+                  }
+               }
+            }
+
+            if (showSystems)
+            {
+               foreach (Object o in CompObj.SystemCollection.Systems)
+               {
+                  if (o is CoSystemViewModel)
+                  {
+                     CoSystemViewModel svm = o as CoSystemViewModel;
+                     coll.Add(svm);
+                  }
+               }
+            }
+
+
+            if (CompObj != MainVm.EditedCpVm)
+            {
+               foreach (ChildObjectViewModel covm in CompObj.ChildObjectCollection.Children)
+               {
+                  covm.AddChildShapesToGlobalCollection(ref coll, showJoints, showSystems, showBackgrounds);
+               }
             }
          }
       }
 
       public void UpdateChildrenAbsolutePos()
       {
-         CompObj.UpdateChildrenAbsolutePos();
+         if (CompObj != null)
+         {
+            CompObj.UpdateChildrenAbsolutePos();
+         }
       }
 
       // This method returns with the supplied point (expressed in this CompoundObject's

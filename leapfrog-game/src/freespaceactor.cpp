@@ -20,7 +20,7 @@ FreeSpaceActor::FreeSpaceActor(
    xml_node& root,
    int groupIndex) :
    SceneActor(gameResources, world, zoom),
-   m_inOrbitField(false),
+   m_inTransitField(0),
    m_state(firstUpdate),
    m_leapfrogBody(NULL),
    m_stateChangeTime(0)
@@ -34,11 +34,6 @@ FreeSpaceActor::FreeSpaceActor(
    m_world->SetContactListener(&m_contactListener);
 
    initCompoundObjectParts(gameResources, this, this, NULL, world, Vector2(0.0f, 0.0f), root, groupIndex, true);
-
-   // Create background before the leapfrog
-   generateBackground(gameResources);
-
-
 
 }
 
@@ -80,29 +75,29 @@ void FreeSpaceActor::doUpdate(const oxygine::UpdateState &us)
 
    if (m_leapfrogBody != NULL)
    {
-      if (m_inOrbitField)
+      if (m_inTransitField)
       {
-         if (isInsideOrbitField(m_leapfrogBody))
+         m_inTransitField = isInsideTransitField(m_leapfrogBody);
+         if (m_inTransitField)
          {
-            if (us.time > m_enteredOrbitFieldAtTime + 2500)
+            if (us.time > m_enteredTransiFieldAtTime + 2500)
             {
                // Go to Orbit scene
-               ExitDeepSpaceSceneEvent event(3);
+               ExitDeepSpaceSceneEvent event(m_inTransitField);
                dispatchEvent(&event);
             }
          }
          else
          {
-            m_inOrbitField = false;
-            m_enteredOrbitFieldAtTime = us.time;
+            m_enteredTransiFieldAtTime = us.time;
          }
       }
       else
       {
-         if (isInsideOrbitField(m_leapfrogBody))
+         m_inTransitField = isInsideTransitField(m_leapfrogBody);
+         if (m_inTransitField)
          {
-            m_inOrbitField = true;
-            m_enteredOrbitFieldAtTime = us.time;
+            m_enteredTransiFieldAtTime = us.time;
          }
       }
    }
@@ -122,25 +117,6 @@ void FreeSpaceActor::runFadeIn(void)
 
 }
 
-
-void FreeSpaceActor::generateBackground(Resources& gameResources)
-{
-   for (int x = 0; x < 6; x++)
-   {
-      for (int y = 0; y < 3; y++)
-      {
-         spSprite background = new Sprite();
-         background->setResAnim(gameResources.getResAnim("starfield"));
-         background->setPosition(-150.0f + 256.0f * x, -150.0f + 256.0f * y);
-         background->setSize(512.0f, 512.0f);
-         background->setScale(0.5f);
-         background->setPriority(26);
-         background->attachTo(this);
-      }
-   }
-
-}
-
 void FreeSpaceActor::startLeapfrogInScene(string name)
 {
    // Must run base class implementation first
@@ -152,5 +128,6 @@ void FreeSpaceActor::startLeapfrogInScene(string name)
       m_leapfrog->goToEnvironment(ENV_DEEP_SPACE);
    }
 }
+
 
 

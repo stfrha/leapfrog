@@ -44,7 +44,7 @@ PickupItem::PickupItem()
 {
 }
 
-void PickupItem::doPickupAmountCalculation(GameStatus* status)
+void PickupItem::doPickupAmountCalculation(ObjectResources* status)
 {
    if (m_pickUpType == PickupTypeEnum::inventory)
    {
@@ -166,7 +166,7 @@ PickupObject::PickupObject(
 
 
 
-void PickupObject::handlePickup(GameStatus* status)
+void PickupObject::handlePickup(ObjectResources* status)
 {
    m_pickupItem.doPickupAmountCalculation(status);
 

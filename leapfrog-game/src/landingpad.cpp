@@ -133,10 +133,10 @@ void LandingPad::doUpdate(const UpdateState &us)
       }
       else
       {
-         if ((m_latestLeapfrog->m_gameStatus->getFuel() < 100.0f) && (m_latestLeapfrog->m_gameStatus->getCredits() > 0))
+         if ((m_latestLeapfrog->m_resources->getFuel() < 100.0f) && (m_latestLeapfrog->m_resources->getCredits() > 0))
          {
-            m_latestLeapfrog->m_gameStatus->deltaFuel(0.2f);
-            m_latestLeapfrog->m_gameStatus->deltaCredits(-1);
+            m_latestLeapfrog->m_resources->deltaFuel(0.2f);
+            m_latestLeapfrog->m_resources->deltaCredits(-1);
          }
       }
 

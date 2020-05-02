@@ -137,7 +137,7 @@ public:
    void addBoundingBody(b2Body* body);
    void removeBoundingBody(b2Body* body);
    void testForBoundaryRepel(void);
-   bool isInsideOrbitField(b2Body* body);
+   int isInsideTransitField(b2Body* body);
 
    void setPanorateMode(PanorateModeEnum mode);
    void setPanorateObject(CompoundObject* co);

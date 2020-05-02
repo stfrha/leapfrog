@@ -48,7 +48,7 @@ public:
 
    void collisionBlast(b2Contact* contact, bool small = true);
    void damageCollision(b2Contact* contact, float bulletEqvDamage);
-   void initGameStatus(oxygine::Actor* statusEventOriginator) override;
+   void initObjectResources(oxygine::Actor* statusEventOriginator, spObjectResources resources = NULL) override;
 
 
 protected:

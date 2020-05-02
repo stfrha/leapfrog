@@ -70,7 +70,7 @@ void Gun::doUpdate(const oxygine::UpdateState& us)
 
       if (m_timeSinceLast >= m_interval)
       {
-         if (m_parent->m_gameStatus->getShots() > 0)
+         if (m_parent->m_resources->getShots() > 0)
          {
             b2Vec2 emitPos = m_emitterBody->GetWorldPoint(m_emitterOrigin);
 
@@ -96,7 +96,7 @@ void Gun::doUpdate(const oxygine::UpdateState& us)
 
             m_timeSinceLast = 0;
 
-            m_parent->m_gameStatus->deltaShots(-1);
+            m_parent->m_resources->deltaShots(-1);
          }
       }
    }

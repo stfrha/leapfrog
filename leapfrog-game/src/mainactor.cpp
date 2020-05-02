@@ -18,7 +18,7 @@
 #include "messagedisplay.h"
 #include "luainterface.h"
 
-#include "gamestatusevents.h"
+#include "objectresourcesevents.h"
 
 using namespace oxygine;
 using namespace std;
@@ -44,6 +44,8 @@ MainActor::MainActor() :
    m_reloadArm(true)
 {
    g_Layout.initLayout();
+
+   g_GameStatus.restoreGameStatus();
    
 	//load xml file with resources definition
 	m_gameResources.loadXML("res.xml");
@@ -280,24 +282,6 @@ void MainActor::exitHyperspaceScene(oxygine::Event *ev)
 {
 
 }
-
-//void MainActor::transitToDeepSpaceListner(Event *ev)
-//{
-//   g_LuaInterface.determineNextScene("toDeepSpace", "", m_nextScene.m_nextSceneFile, m_nextScene.m_nextSceneState, m_nextScene.m_nextSceneType);
-//   m_nextScene.m_armNextScene = true;
-//}
-//
-//void MainActor::transitToOrbitListner(Event *ev)
-//{
-//   g_LuaInterface.determineNextScene("toOrbit", "", m_nextScene.m_nextSceneFile, m_nextScene.m_nextSceneState, m_nextScene.m_nextSceneType);
-//   m_nextScene.m_armNextScene = true;
-//}
-//
-//void MainActor::landingCompleteListner(oxygine::Event *ev)
-//{
-//   g_LuaInterface.determineNextScene("toLanding", "alphaCity", m_nextScene.m_nextSceneFile, m_nextScene.m_nextSceneState, m_nextScene.m_nextSceneType);
-//   m_nextScene.m_armNextScene = true;
-//}
 
 void MainActor::resourceDepletedHandler(oxygine::Event *ev)
 {
@@ -728,11 +712,11 @@ void MainActor::registerLeapfrog(LeapFrog* leapfrog)
 
    if (leapfrog != NULL)
    {
-      initShots = (float)leapfrog->m_gameStatus->getShots();
-      initFuel = (float)leapfrog->m_gameStatus->getFuel();
-      initShield = (float)leapfrog->m_gameStatus->getShield();
-      initDamage = (float)leapfrog->m_gameStatus->getDamage();
-      initCredits = (float)leapfrog->m_gameStatus->getCredits();
+      initShots = g_GameStatus.getResources()->getShots();
+      initFuel = g_GameStatus.getResources()->getFuel();
+      initShield = g_GameStatus.getResources()->getShield();
+      initDamage = g_GameStatus.getResources()->getDamage();
+      initCredits = g_GameStatus.getResources()->getCredits();
    }
 
    spStatusBar shotsBar = new StatusBar(
@@ -746,7 +730,7 @@ void MainActor::registerLeapfrog(LeapFrog* leapfrog)
       100.0f,
       initShots,
       "Ammo:",
-      GameStatusTypeEnum::shots);
+      ObjectResourcesTypeEnum::shots);
 
    spStatusBar fuelBar = new StatusBar(
       m_gameResources,
@@ -759,7 +743,7 @@ void MainActor::registerLeapfrog(LeapFrog* leapfrog)
       100.0f,
       initFuel,
       "Fuel:",
-      GameStatusTypeEnum::fuel);
+      ObjectResourcesTypeEnum::fuel);
 
    spStatusBar shieldBar = new StatusBar(
       m_gameResources,
@@ -772,7 +756,7 @@ void MainActor::registerLeapfrog(LeapFrog* leapfrog)
       100.0f,
       initShield,
       "Shield:",
-      GameStatusTypeEnum::shield);
+      ObjectResourcesTypeEnum::shield);
 
    spStatusBar damageBar = new StatusBar(
       m_gameResources,
@@ -785,7 +769,7 @@ void MainActor::registerLeapfrog(LeapFrog* leapfrog)
       100.0f,
       initDamage,
       "Damage:",
-      GameStatusTypeEnum::damage);
+      ObjectResourcesTypeEnum::damage);
 
    spStatusLiteral creditBar = new StatusLiteral(
       m_gameResources,
@@ -797,7 +781,7 @@ void MainActor::registerLeapfrog(LeapFrog* leapfrog)
       g_Layout.getDefaultFontSize(),
       initCredits,
       "Credits:",
-      GameStatusTypeEnum::credits);
+      ObjectResourcesTypeEnum::credits);
 
    if (m_nextScene.m_nextSceneType == SceneActor::SceneTypeEnum::landing)
    {

@@ -1,6 +1,52 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <compoundObject
   needsGroupIndex="false">
+  <spritePolygon
+    name="noName"
+    texture="starfield"
+    posX="-36.967899958171529"
+    posY="-32.667555237853776"
+    angle="0"
+    zLevel="0"
+    collisionEntity="notApplicable"
+    collisionCategory="1"
+    collisionMask="65534"
+    textureMeterWidth="200"
+    textureMeterHeight="200"
+    textureOffsetMeterX="0"
+    textureOffsetMeterY="0"
+    parallaxAmount="0">
+    <vertices>
+      <vertex
+        id="1"
+        x="31.518162093281717"
+        y="25.21452967462551" />
+      <vertex
+        id="2"
+        x="1575.9081046640936"
+        y="0" />
+      <vertex
+        id="3"
+        x="1559.0984182143429"
+        y="867.80006296836063" />
+      <vertex
+        id="4"
+        x="31.518162093281717"
+        y="855.19279813104822" />
+    </vertices>
+    <triangles>
+      <triangle
+        id="1"
+        v1="1"
+        v2="4"
+        v3="3" />
+      <triangle
+        id="2"
+        v1="3"
+        v2="2"
+        v3="1" />
+    </triangles>
+  </spritePolygon>
   <behaviour
     type="scene">
     <sceneProperties
@@ -10,7 +56,8 @@
       hasUpperBoundary="true"
       hasLowerBoundary="true"
       hasLeftBoundary="true"
-      hasRightBoundary="true" >
+      hasRightBoundary="true">
+      <states />
     </sceneProperties>
   </behaviour>
   <system
@@ -18,436 +65,422 @@
     type="objectFactory">
     <objectFactoryProperties
       body="notApplicable"
-      posX="484.91492450774194"
-      posY="58.284384068435429"
-      width="20"
-      height="20"
+      posX="253.25581191333549"
+      posY="277.45715953903118"
+      width="400"
+      height="400"
       spawnInitial="10"
       intensity="0"
       lifeTime="60000">
       <spawnObject
         probabilityFactor="1">
         <childObject
-            name="largeAsteroid"
-            file="large_asteroid.xml"
-            posX="0"
-            posY="0" />
+          name="largeAsteroid"
+          file="large_asteroid.xml"
+          posX="0"
+          posY="0" />
       </spawnObject>
       <spawnObject
         probabilityFactor="1">
         <childObject
-            name="mediumAsteroid"
-            file="medium_asteroid.xml"
-            posX="0"
-            posY="0" />
+          name="mediumAsteroid"
+          file="medium_asteroid.xml"
+          posX="0"
+          posY="0" />
       </spawnObject>
       <spawnObject
         probabilityFactor="1">
         <childObject
-           name="smallAsteroid"
-           file="small_asteroid.xml"
-           posX="0"
-           posY="0" />
+          name="smallAsteroid"
+          file="small_asteroid.xml"
+          posX="0"
+          posY="0" />
       </spawnObject>
     </objectFactoryProperties>
   </system>
   <childObject
-      name="asteroid1"
-      file="large_asteroid.xml"
-      posX="500"
-      posY="240" />
+    name="asteroid1"
+    file="large_asteroid.xml"
+    posX="500"
+    posY="240" />
   <childObject
-      name="leapfrog1"
-      file="leapfrog_deep_space.xml"
-      posX="250"
-      posY="250" />
-   <childObject
-      name="hammer1"
-      posX="700"
-      posY="250">
-      <compoundObject
-         needsGroupIndex="true">
-         <behaviour
-            type="steerableObject">
-            <steerableObjectProperties
-               steeringState="wanderHunt"
-               targetBody="leapfrog1.lfMainBody"
-               bodyToBoosterAngle="180"
-               seekTargetX="100"
-               seekTargetY="100"
-               maxBoosterForce="700"
-               maxSpeed="35"
-               degPerSecMaxRotateSpeed="30"
-               linearDamping="0.5" />
-         </behaviour>
-         <dynamicBox
-            name="mainBody"
-            texture="hammer"
-            posX="0"
-            posY="0"
-            angle="180"
-            zLevel="160"
-            collisionEntity="steerableObject"
-            collisionCategory="1"
-            collisionMask="65533"
-            width="24"
-            height="12.6"
-            density="5"
-            friction="1" />
-         <system
-            name="boosterFlame"
-            type="flameEmitter">
-            <flameEmitterProperties
-               body="mainBody"
-               systemOriginX="12"
-               systemOriginY="0"
-               angle="0"
-               emitterWidth="4"
-               lifeTime="500"
-               impulseMagnitude="90"
-               radius="10" />
-         </system>
-         <system
-            name="gun"
-            type="gun">
-            <gunProperties
-               body="mainBody"
-               systemOriginX="-10"
-               systemOriginY="0"
-               angle="-180"
-               fireRate="6"
-               lifeTime="2000"
-               impulseMagnitude="10000"
-               bouncy="false" />
-         </system>
-         <system
-            name="shield"
-            type="shield">
-            <shieldProperties
-               body="mainBody"
-               systemOriginX="0"
-               systemOriginY="1"
-               radius="30"
-               zLevel="147" />
-         </system>
-      </compoundObject>
-   </childObject>
-   <childObject
-      name="mineLayer"
-      posX="800"
-      posY="150">
-      <compoundObject
-         needsGroupIndex="true">
-         <behaviour
-            type="steerableObject">
-            <steerableObjectProperties
-               steeringState="wander"
-               targetBody="leapfrog1.lfMainBody"
-               bodyToBoosterAngle="180"
-               seekTargetX="100"
-               seekTargetY="100"
-               maxBoosterForce="700"
-               maxSpeed="25"
-               degPerSecMaxRotateSpeed="20"
-               linearDamping="0.5" />
-         </behaviour>
-         <dynamicBox
-            name="mainBody"
-            texture="hammer"
-            posX="0"
-            posY="0"
-            angle="180"
-            zLevel="160"
-            collisionEntity="steerableObject"
-            collisionCategory="16"
-            collisionMask="56495"
-            width="24"
-            height="12.6"
-            density="5"
-            friction="1" />
-         <system
-            name="boosterFlame"
-            type="flameEmitter">
-            <flameEmitterProperties
-               body="mainBody"
-               systemOriginX="12"
-               systemOriginY="0"
-               angle="0"
-               emitterWidth="4"
-               lifeTime="500"
-               impulseMagnitude="90"
-               radius="10" />
-         </system>
-         <system
-            name="gun"
-            type="gun">
-            <gunProperties
-               body="mainBody"
-               systemOriginX="-10"
-               systemOriginY="0"
-               angle="180"
-               fireRate="4"
-               lifeTime="2000"
-               impulseMagnitude="10000"
-               bouncy="false" />
-         </system>
-         <system
-            name="shield"
-            type="shield">
-            <shieldProperties
-               body="mainBody"
-               systemOriginX="0"
-               systemOriginY="1"
-               radius="30"
-               zLevel="147" />
-         </system>
-         <system
-            name="mineField"
-            type="objectFactory">
-            <objectFactoryProperties
-               body="mainBody"
-               posX="-4.2452432413879073"
-               posY="-47.779529440358921"
-               width="10"
-               height="10"
-               spawnInitial="0"
-               intensity="0.2"
-               lifeTime="60000">
-               <spawnObject
-                  probabilityFactor="1">
-                  <childObject
-                     name="largeAsteroid"
-                     file="large_asteroid.xml"
-                     posX="0"
-                     posY="0" />
-               </spawnObject>
-               <spawnObject
-                  probabilityFactor="1">
-                  <childObject
-                     name="mediumAsteroid"
-                     file="medium_asteroid.xml"
-                     posX="0"
-                     posY="0" />
-               </spawnObject>
-               <spawnObject
-                  probabilityFactor="1">
-                  <childObject
-                     name="smallAsteroid"
-                     file="small_asteroid.xml"
-                     posX="0"
-                     posY="0" />
-               </spawnObject>
-               <spawnObject
-                  probabilityFactor="5">
-                  <childObject
-                     name="mine"
-                     posX="0"
-                     posY="0">
-                     <compoundObject
-                        needsGroupIndex="false">
-                        <behaviour
-                           type="magneticMine">
-                           <magneticMineProperties
-                              magneticDistance="100"
-                              magneticForce="100000"
-                              numOfParticles="40"
-                              particleRadius="1"
-                              blastPower="1000" />
-                        </behaviour>
-                        <dynamicBox
-                           name="noName"
-                           texture="bomb_crate"
-                           posX="0"
-                           posY="0"
-                           angle="0"
-                           zLevel="160"
-                           collisionEntity="explosiveObject"
-                           collisionCategory="1"
-                           collisionMask="65533"
-                           width="20"
-                           height="19.8"
-                           density="3"
-                           friction="0" />
-                      </compoundObject>
-                  </childObject>
-               </spawnObject>
-            </objectFactoryProperties>
-         </system>
-      </compoundObject>
-   </childObject>
-   <childObject
-      name="bomb1"
-      posX="256.43088151425547"
-      posY="68.457513737895681">
-      <compoundObject
-         needsGroupIndex="false">
-         <behaviour
-            type="explosiveObject">
-            <explosiveObjectProperties
-               numOfParticles="40"
-               particleRadius="1"
-               blastPower="1000" />
-         </behaviour>
-         <dynamicBox
-            name="bombBody"
-            texture="bomb_crate"
-            posX="0"
-            posY="0"
-            angle="0"
-            zLevel="160"
-            collisionEntity="explosiveObject"
-            collisionCategory="1"
-            collisionMask="65533"
-            width="20"
-            height="20"
-            density="3"
-            friction="1" />
-      </compoundObject>
-   </childObject>
-   <childObject
-      name="mine1"
-      posX="256"
-      posY="100">
-      <compoundObject
-         needsGroupIndex="false">
-         <behaviour
-            type="magneticMine">
-            <magneticMineProperties
-               magneticDistance="101"
-               magneticForce="100010"
-               numOfParticles="40"
-               particleRadius="1"
-               blastPower="1000" />
-         </behaviour>
-         <dynamicBox
-            name="magenticMineBody"
-            texture="bomb_crate"
-            posX="0"
-            posY="0"
-            angle="0"
-            zLevel="160"
-            collisionEntity="explosiveObject"
-            collisionCategory="1"
-            collisionMask="65533"
-            width="20"
-            height="20"
-            density="3"
-            friction="1" />
-      </compoundObject>
-   </childObject>
-   <childObject
-      name="coinPu1"
-      posX="366.83544941847367"
-      posY="144.14933688440306" >
-      <compoundObject 
-         needsGroupIndex="true">
-         <behaviour
-            type="pickupObject">
-            <pickupObjectProperties
-               pickupType="resourceCoin"
-               amountType="random"
-               amountMax="50"
-               amountMin="10" />
-         </behaviour>
-         <dynamicCircle
-            name="coinPuBody"
-            texture="coin_power_up"
-            posX="0"
-            posY="0"
-            angle="-17"
-            zLevel="160"
-            collisionEntity="pickup"
-            collisionCategory="1"
-            collisionMask="65533"
-            radius="7"
-            density="1"
-            friction="0" />
-      </compoundObject>
-   </childObject>
-   <childObject
-      name="fuelPu1"
-      posX="366.52858368766738"
-      posY="205.52248304566047" >
-      <compoundObject 
-         needsGroupIndex="true">
-         <behaviour
-            type="pickupObject">
-            <pickupObjectProperties
-               pickupType="resourceFuel"
-               amountType="random"
-               amountMax="50"
-               amountMin="10" />
-         </behaviour>
-         <dynamicCircle
-            name="fuelPuBody"
-            texture="fuel_power_up"
-            posX="0"
-            posY="0"
-            angle="-17"
-            zLevel="160"
-            collisionEntity="pickup"
-            collisionCategory="1"
-            collisionMask="65533"
-            radius="7"
-            density="1"
-            friction="0" />
-      </compoundObject>
-   </childObject>
-   <childObject
-      name="ammoPu1"
-      posX="451.484387656139"
-      posY="77.260911375963587" >
-      <compoundObject 
-         needsGroupIndex="true">
-         <behaviour
-            type="pickupObject">
-            <pickupObjectProperties
-               pickupType="resourceAmmo"
-               amountType="random"
-               amountMax="50"
-               amountMin="10" />
-         </behaviour>
-         <dynamicCircle
-            name="ammoPuBody"
-            texture="ammo_power_up"
-            posX="0"
-            posY="0"
-            angle="-17"
-            zLevel="160"
-            collisionEntity="pickup"
-            collisionCategory="1"
-            collisionMask="65533"
-            radius="7"
-            density="1"
-            friction="0" />
-      </compoundObject>
-   </childObject>
-   <childObject
-      name="shieldPu1"
-      posX="403.28902358074811"
-      posY="181.99437978962669" >
-      <compoundObject 
-         needsGroupIndex="true">
-         <behaviour
-            type="pickupObject">
-            <pickupObjectProperties
-               pickupType="resourceShield"
-               amountType="fix"
-               amount="100" />
-         </behaviour>
-         <dynamicCircle
-            name="shieldPuBody"
-            texture="shield_power_up"
-            posX="0"
-            posY="0"
-            angle="-17"
-            zLevel="160"
-            collisionEntity="pickup"
-            collisionCategory="1"
-            collisionMask="65533"
-            radius="7"
-            density="1"
-            friction="0" />
-      </compoundObject>
-   </childObject>
+    name="leapfrog1"
+    file="leapfrog_deep_space.xml"
+    posX="11.700612086272429"
+    posY="792.12313765148531" />
+  <childObject
+    name="hammer1"
+    posX="700"
+    posY="250">
+    <compoundObject
+      needsGroupIndex="true">
+      <dynamicBox
+        name="mainBody"
+        texture="hammer"
+        posX="0"
+        posY="0"
+        angle="180"
+        zLevel="160"
+        collisionEntity="steerableObject"
+        collisionCategory="1"
+        collisionMask="65533"
+        width="24"
+        height="12.6"
+        density="5"
+        friction="1" />
+      <behaviour
+        type="steerableObject">
+        <steerableObjectProperties
+          steeringState="wanderHunt"
+          targetBody="leapfrog1.lfMainBody"
+          bodyToBoosterAngle="180"
+          seekTargetX="100"
+          seekTargetY="100"
+          maxBoosterForce="700"
+          maxSpeed="35"
+          degPerSecMaxRotateSpeed="30"
+          linearDamping="0.5" />
+      </behaviour>
+      <system
+        name="boosterFlame"
+        type="flameEmitter">
+        <flameEmitterProperties
+          body="mainBody"
+          systemOriginX="12"
+          systemOriginY="0"
+          angle="0"
+          emitterWidth="4"
+          lifeTime="500"
+          impulseMagnitude="90"
+          radius="10" />
+      </system>
+      <system
+        name="gun"
+        type="gun">
+        <gunProperties
+          body="mainBody"
+          systemOriginX="-10"
+          systemOriginY="0"
+          angle="-180"
+          fireRate="6"
+          lifeTime="2000"
+          impulseMagnitude="10000"
+          bouncy="false" />
+      </system>
+      <system
+        name="shield"
+        type="shield">
+        <shieldProperties
+          body="mainBody"
+          systemOriginX="0"
+          systemOriginY="1"
+          radius="30"
+          zLevel="147" />
+      </system>
+    </compoundObject>
+  </childObject>
+  <childObject
+    name="mineLayer"
+    posX="800"
+    posY="150">
+    <compoundObject
+      needsGroupIndex="true">
+      <dynamicBox
+        name="mainBody"
+        texture="hammer"
+        posX="0"
+        posY="0"
+        angle="180"
+        zLevel="160"
+        collisionEntity="steerableObject"
+        collisionCategory="16"
+        collisionMask="56495"
+        width="24"
+        height="12.6"
+        density="5"
+        friction="1" />
+      <behaviour
+        type="steerableObject">
+        <steerableObjectProperties
+          steeringState="wander"
+          targetBody="leapfrog1.lfMainBody"
+          bodyToBoosterAngle="180"
+          seekTargetX="100"
+          seekTargetY="100"
+          maxBoosterForce="700"
+          maxSpeed="25"
+          degPerSecMaxRotateSpeed="20"
+          linearDamping="0.5" />
+      </behaviour>
+      <system
+        name="boosterFlame"
+        type="flameEmitter">
+        <flameEmitterProperties
+          body="mainBody"
+          systemOriginX="12"
+          systemOriginY="0"
+          angle="0"
+          emitterWidth="4"
+          lifeTime="500"
+          impulseMagnitude="90"
+          radius="10" />
+      </system>
+      <system
+        name="gun"
+        type="gun">
+        <gunProperties
+          body="mainBody"
+          systemOriginX="-10"
+          systemOriginY="0"
+          angle="180"
+          fireRate="4"
+          lifeTime="2000"
+          impulseMagnitude="10000"
+          bouncy="false" />
+      </system>
+      <system
+        name="shield"
+        type="shield">
+        <shieldProperties
+          body="mainBody"
+          systemOriginX="0"
+          systemOriginY="1"
+          radius="30"
+          zLevel="147" />
+      </system>
+      <system
+        name="mineField"
+        type="objectFactory">
+        <objectFactoryProperties
+          body="mainBody"
+          posX="-4.2452432413879073"
+          posY="-47.779529440358921"
+          width="10"
+          height="10"
+          spawnInitial="0"
+          intensity="0.2"
+          lifeTime="60000">
+          <spawnObject
+            probabilityFactor="1">
+            <childObject
+              name="largeAsteroid"
+              file="large_asteroid.xml"
+              posX="0"
+              posY="0" />
+          </spawnObject>
+          <spawnObject
+            probabilityFactor="1">
+            <childObject
+              name="mediumAsteroid"
+              file="medium_asteroid.xml"
+              posX="0"
+              posY="0" />
+          </spawnObject>
+          <spawnObject
+            probabilityFactor="1">
+            <childObject
+              name="smallAsteroid"
+              file="small_asteroid.xml"
+              posX="0"
+              posY="0" />
+          </spawnObject>
+          <spawnObject
+            probabilityFactor="5">
+            <childObject
+              name="mine"
+              posX="0"
+              posY="0">
+              <compoundObject
+                needsGroupIndex="false">
+                <dynamicBox
+                  name="magenticMineBody"
+                  texture="bomb_crate"
+                  posX="0"
+                  posY="0"
+                  angle="0"
+                  zLevel="160"
+                  collisionEntity="explosiveObject"
+                  collisionCategory="1"
+                  collisionMask="65533"
+                  width="20"
+                  height="19.8"
+                  density="3"
+                  friction="0" />
+                <behaviour
+                  type="magneticMine">
+                  <magneticMineProperties
+                    magneticDistance="100"
+                    magneticForce="100000"
+                    numOfParticles="40"
+                    particleRadius="1"
+                    blastPower="1000" />
+                </behaviour>
+              </compoundObject>
+            </childObject>
+          </spawnObject>
+        </objectFactoryProperties>
+      </system>
+    </compoundObject>
+  </childObject>
+  <childObject
+    name="bomb1"
+    posX="256.43088151425547"
+    posY="168.45751373789568">
+    <compoundObject
+      needsGroupIndex="false">
+      <dynamicBox
+        name="bombBody"
+        texture="bomb_crate"
+        posX="0"
+        posY="0"
+        angle="0"
+        zLevel="160"
+        collisionEntity="explosiveObject"
+        collisionCategory="1"
+        collisionMask="65533"
+        width="20"
+        height="20"
+        density="3"
+        friction="1" />
+      <behaviour
+        type="explosiveObject">
+        <explosiveObjectProperties
+          numOfParticles="40"
+          particleRadius="1"
+          blastPower="1000"
+          damageBulletEqv="1"
+          impactExplosion="true"
+          impactThreshold="2500" />
+        <pickupObjectProperties
+          pickupType="notDef"
+          amountType="notDefAmount"
+          amount="0"
+          amountMax="0"
+          amountMin="0" />
+      </behaviour>
+    </compoundObject>
+  </childObject>
+  <childObject
+    name="mine1"
+    posX="256"
+    posY="200">
+    <compoundObject
+      needsGroupIndex="false">
+      <dynamicBox
+        name="magenticMineBody"
+        texture="bomb_crate"
+        posX="0"
+        posY="0"
+        angle="0"
+        zLevel="160"
+        collisionEntity="explosiveObject"
+        collisionCategory="1"
+        collisionMask="65533"
+        width="20"
+        height="20"
+        density="3"
+        friction="1" />
+      <behaviour
+        type="magneticMine">
+        <magneticMineProperties
+          magneticDistance="101"
+          magneticForce="100010"
+          numOfParticles="40"
+          particleRadius="1"
+          blastPower="1000" />
+      </behaviour>
+    </compoundObject>
+  </childObject>
+  <childObject
+    name="coinPu1"
+    posX="366.83544941847367"
+    posY="144.14933688440306">
+    <compoundObject
+      needsGroupIndex="true">
+      <dynamicCircle
+        name="coinPuBody"
+        texture="coin_power_up"
+        posX="0"
+        posY="0"
+        angle="-17"
+        zLevel="160"
+        collisionEntity="pickup"
+        collisionCategory="1"
+        collisionMask="65533"
+        radius="7"
+        density="1"
+        friction="0" />
+      <behaviour
+        type="pickupObject" />
+    </compoundObject>
+  </childObject>
+  <childObject
+    name="fuelPu1"
+    posX="366.52858368766738"
+    posY="205.52248304566047">
+    <compoundObject
+      needsGroupIndex="true">
+      <dynamicCircle
+        name="fuelPuBody"
+        texture="fuel_power_up"
+        posX="0"
+        posY="0"
+        angle="-17"
+        zLevel="160"
+        collisionEntity="pickup"
+        collisionCategory="1"
+        collisionMask="65533"
+        radius="7"
+        density="1"
+        friction="0" />
+      <behaviour
+        type="pickupObject" />
+    </compoundObject>
+  </childObject>
+  <childObject
+    name="ammoPu1"
+    posX="559.08071331931251"
+    posY="221.29560930845452">
+    <compoundObject
+      needsGroupIndex="true">
+      <dynamicCircle
+        name="ammoPuBody"
+        texture="ammo_power_up"
+        posX="0"
+        posY="0"
+        angle="-17"
+        zLevel="160"
+        collisionEntity="pickup"
+        collisionCategory="1"
+        collisionMask="65533"
+        radius="7"
+        density="1"
+        friction="0" />
+      <behaviour
+        type="pickupObject" />
+    </compoundObject>
+  </childObject>
+  <childObject
+    name="shieldPu1"
+    posX="403.28902358074811"
+    posY="181.99437978962669">
+    <compoundObject
+      needsGroupIndex="true">
+      <dynamicCircle
+        name="shieldPuBody"
+        texture="shield_power_up"
+        posX="0"
+        posY="0"
+        angle="-17"
+        zLevel="160"
+        collisionEntity="pickup"
+        collisionCategory="1"
+        collisionMask="65533"
+        radius="7"
+        density="1"
+        friction="0" />
+      <behaviour
+        type="pickupObject" />
+    </compoundObject>
+  </childObject>
 </compoundObject>

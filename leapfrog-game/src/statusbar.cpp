@@ -1,7 +1,6 @@
 #include "statusbar.h"
 #include "gamestatus.h"
 #include "sceneactor.h"
-#include "gamestatusevents.h"
 #include "objectpropertyevents.h"
 #include "leapfrogevents.h"
 #include "layout.h"
@@ -20,7 +19,7 @@ StatusBar::StatusBar(
    const float maxProgress,
    const float initialProgress,
    string headline,
-   GameStatusTypeEnum statusType) :
+   ObjectResourcesTypeEnum statusType) :
    m_sceneActor(sceneActor),
    m_eventActor(eventActor),
    m_propertyId(propertyId),
@@ -159,7 +158,7 @@ StatusLiteral::StatusLiteral(
    const int fontSize,
    const int initialLiteral,
    string headline,
-   GameStatusTypeEnum statusType) :
+   ObjectResourcesTypeEnum statusType) :
    m_sceneActor(sceneActor),
    m_eventActor(eventActor),
    m_propertyId(propertyId),

@@ -239,33 +239,68 @@ void SceneActor::testForBoundaryRepel(void)
    }
 }
 
-// TODO: Below must be made more general. We need to check for transitions of all corners
-bool SceneActor::isInsideOrbitField(b2Body* body)
+// Returns index of the transit fields
+int SceneActor::isInsideTransitField(b2Body* body)
 {
    SoftBoundary* lower = NULL;
    SoftBoundary* right = NULL;
+   SoftBoundary* upper = NULL;
+   SoftBoundary* left = NULL;
 
    for (auto bit = m_boundaries.begin(); bit != m_boundaries.end(); ++bit)
    {
       if (bit->get()->getDirection() == SoftBoundary::RepelDirectionEnum::up)
       {
          lower = bit->get();
-      }
-
-      if (bit->get()->getDirection() == SoftBoundary::RepelDirectionEnum::left)
+      } 
+      else if (bit->get()->getDirection() == SoftBoundary::RepelDirectionEnum::left)
       {
          right = bit->get();
+      }
+      else if (bit->get()->getDirection() == SoftBoundary::RepelDirectionEnum::right)
+      {
+         left = bit->get();
+      }
+      else if (bit->get()->getDirection() == SoftBoundary::RepelDirectionEnum::down)
+      {
+         upper = bit->get();
+      }
+   }
+
+   if ((upper != NULL) && (right != NULL))
+   {
+      if (upper->isInside(body) && right->isInside(body))
+      {
+         return 1;
+      }
+   }
+
+   if ((upper != NULL) && (left != NULL))
+   {
+      if (upper->isInside(body) && left->isInside(body))
+      {
+         return 2;
       }
    }
 
    if ((lower != NULL) && (right != NULL))
    {
-      return (lower->isInside(body) && right->isInside(body));
+      if (lower->isInside(body) && right->isInside(body))
+      {
+         return 3;
+      }
    }
 
-   return false;
-}
+   if ((lower != NULL) && (left != NULL))
+   {
+      if (lower->isInside(body) && left->isInside(body))
+      {
+         return 4;
+      }
+   }
 
+   return 0;
+}
 
 
 SceneActor::SceneTypeEnum SceneActor::getSceneType(void)

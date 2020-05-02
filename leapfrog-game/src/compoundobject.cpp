@@ -343,7 +343,7 @@ CompoundObject* CompoundObject::initCompoundObject(
          groupIndex);
 
       bo->m_behaviourType = BehaviourEnum::breakableObject;
-      bo->initGameStatus(NULL);
+      bo->initObjectResources(NULL);
 
       return static_cast<CompoundObject*>(bo);
    }
@@ -391,7 +391,7 @@ CompoundObject* CompoundObject::initCompoundObject(
          groupIndex);
 
       so->m_behaviourType = BehaviourEnum::steerableObject;
-      so->initGameStatus(NULL);
+      so->initObjectResources(NULL);
 
       return static_cast<CompoundObject*>(so);
    }
@@ -1728,9 +1728,9 @@ void CompoundObject::connectToForeignObjects(void)
 // link individual resources to the associated 
 // systems. So that the game status gets a link
 // to the Shield system object.
-void CompoundObject::initGameStatus(oxygine::Actor* statusEventOriginator)
+void CompoundObject::initObjectResources(oxygine::Actor* statusEventOriginator, spObjectResources resources)
 {
-   m_gameStatus = NULL;
+   m_resources = NULL;
 }
 
 

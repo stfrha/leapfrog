@@ -140,7 +140,7 @@ namespace LeapfrogEditor
             // Only read files if the child object is referenced from a 
             // separate file, otherwise the serialization will already have
             // populated the child object.
-            if ((cor.File != "") && (cor.CompObj == null))
+            if ((cor.File != "") && (cor.File != "undef_file.xml") && (cor.CompObj == null))
             {
                string newFile = System.IO.Path.Combine(path, cor.File);
 
@@ -167,7 +167,7 @@ namespace LeapfrogEditor
                // Only read files if the child object is referenced from a 
                // separate file, otherwise the serialization will already have
                // populated the child object.
-               if ((cor.File != "") && (cor.CompObj == null))
+               if ((cor.File != "") && (cor.File != "undef_file.xml") && (cor.CompObj == null))
                {
                   string newFile = System.IO.Path.Combine(path, cor.File);
 
@@ -192,7 +192,7 @@ namespace LeapfrogEditor
                   // Only read files if the child object is referenced from a 
                   // separate file, otherwise the serialization will already have
                   // populated the child object.
-                  if ((cor.File != "") && (cor.CompObj == null))
+                  if ((cor.File != "") && (cor.File != "undef_file.xml") && (cor.CompObj == null))
                   {
                      string newFile = System.IO.Path.Combine(path, cor.File);
 

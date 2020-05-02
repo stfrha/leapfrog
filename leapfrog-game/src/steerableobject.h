@@ -114,7 +114,7 @@ public:
    void hitImpulse(b2Contact* contact, const b2ContactImpulse* impulse);
    void hitByBullet(b2Contact* contact, float bulletEqvDamage);
 
-   void initGameStatus(oxygine::Actor* statusEventOriginator) override;
+   void initObjectResources(oxygine::Actor* statusEventOriginator, spObjectResources resources = NULL) override;
    void connectToForeignObjects(void) override;
 
 protected:

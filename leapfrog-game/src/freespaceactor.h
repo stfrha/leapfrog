@@ -23,8 +23,8 @@ private:
    States m_state;
    int m_stateChangeTime;
 
-   bool m_inOrbitField;
-   oxygine::timeMS m_enteredOrbitFieldAtTime;
+   int m_inTransitField;
+   oxygine::timeMS m_enteredTransiFieldAtTime;
 
    FreeSpaceContactListener   m_contactListener;
 
@@ -45,6 +45,5 @@ public:
 
 protected:
    void doUpdate(const oxygine::UpdateState &us);
-   void generateBackground(Resources& gameResources);
-
+   
 };

@@ -539,9 +539,9 @@ void SteerableObject::collisionBlast(b2Contact* contact, bool small)
 
 void SteerableObject::evaluateDamage(void)
 {
-   if (m_gameStatus)
+   if (m_resources)
    {
-      if (m_gameStatus->getDamage() > 100.0f)
+      if (m_resources->getDamage() > 100.0f)
       {
          addMeToDeathList();
          g_HeadDownDisplay->removeMeFromMap(getActor("mainBody"));
@@ -562,7 +562,7 @@ void SteerableObject::hitImpulse(b2Contact* contact, const b2ContactImpulse* imp
       normalImpulses += impulse->normalImpulses[i];
    }
 
-   if (m_gameStatus) m_gameStatus->deltaDamage(normalImpulses / 100.0f);
+   if (m_resources) m_resources->deltaDamage(normalImpulses / 100.0f);
 
    evaluateDamage();
 }
@@ -571,14 +571,16 @@ void SteerableObject::hitByBullet(b2Contact* contact, float bulletEqvDamage)
 {
    collisionBlast(contact, true);
 
-   if (m_gameStatus) m_gameStatus->deltaDamage(25.0f);
+   if (m_resources) m_resources->deltaDamage(25.0f);
 
    evaluateDamage();
 }
 
-void SteerableObject::initGameStatus(Actor* statusEventOriginator)
+// The steerable object does not need any external connection 
+// of the resources. Therefore it is created, locally here
+void SteerableObject::initObjectResources(Actor* statusEventOriginator, spObjectResources resources)
 {
-   m_gameStatus = new GameStatus();
+   m_resources = new ObjectResources();
 
    ObjectProperty* ammo = new ObjectProperty(this, NULL, 5, 0.0f);
    ObjectProperty* shield = new ObjectProperty(this, NULL, 6, 0.0f);
@@ -586,7 +588,7 @@ void SteerableObject::initGameStatus(Actor* statusEventOriginator)
    ObjectProperty* credits = new ObjectProperty(this, NULL, 8, 0.0f);
    ObjectProperty* damage = new ObjectProperty(this, NULL, 9, 0.0f);
 
-   m_gameStatus->initGameStatus(statusEventOriginator, ammo, shield, fuel, credits, damage);
+   m_resources->initObjectResources(statusEventOriginator, ammo, shield, fuel, credits, damage);
 
    m_properties.push_back(*ammo);
    m_properties.push_back(*shield);
@@ -594,5 +596,5 @@ void SteerableObject::initGameStatus(Actor* statusEventOriginator)
    m_properties.push_back(*credits);
    m_properties.push_back(*damage);
 
-   m_gameStatus->registerShieldObject(m_shield.get());
+   m_resources->registerShieldObject(m_shield.get());
 }

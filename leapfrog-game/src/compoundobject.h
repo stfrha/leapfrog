@@ -225,7 +225,7 @@ public:
    std::vector<ObjectProperty> m_properties;
    std::vector<CompoundObject*> m_children;
    std::vector<System*> m_systems;
-   spGameStatus m_gameStatus;
+   spObjectResources m_resources;
    bool m_isDead;
 
    CompoundObject(SceneActor* sceneActor, CompoundObject* parentObject);
@@ -309,7 +309,7 @@ public:
       pugi::xml_node& objectNode);
 
 
-   virtual void initGameStatus(oxygine::Actor* statusEventOriginator);
+   virtual void initObjectResources(oxygine::Actor* statusEventOriginator, spObjectResources resources = NULL);
 
 
    CompoundObject* getParentObject();

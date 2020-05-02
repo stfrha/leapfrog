@@ -135,9 +135,6 @@
     <ClCompile Include="..\src\statusbar.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\gamestatus.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\src\steeringmanager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -415,6 +412,12 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\src\parallaxbackground.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\objectresources.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\gamestatus.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -734,9 +737,6 @@
     <ClInclude Include="..\src\explosiveobjectevents.h">
       <Filter>Events</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\gamestatusevents.h">
-      <Filter>Events</Filter>
-    </ClInclude>
     <ClInclude Include="..\src\landingactorevents.h">
       <Filter>Events</Filter>
     </ClInclude>
@@ -762,6 +762,12 @@
       <Filter>Events</Filter>
     </ClInclude>
     <ClInclude Include="..\src\objectpropertyevents.h">
+      <Filter>Events</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\objectresources.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\objectresourcesevents.h">
       <Filter>Events</Filter>
     </ClInclude>
   </ItemGroup>

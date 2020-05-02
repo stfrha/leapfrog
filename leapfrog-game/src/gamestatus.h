@@ -2,53 +2,51 @@
 
 #include "oxygine-framework.h"
 
+#include "objectresources.h"
+
 DECLARE_SMART(GameStatus, spGameStatus)
 
-class ObjectProperty;
-class Shield;
 
-// Needs to be an ref_counter to send events
-class GameStatus : public oxygine::ref_counter
+class GameStatus
 {
 private:
-   ObjectProperty* m_ammo;
-   ObjectProperty* m_shield;
-   ObjectProperty* m_fuel;
-   ObjectProperty* m_credits;
-   ObjectProperty* m_damage;
+   static const std::string c_gameStatusFileName;
 
-   Shield* m_shieldObj;
 
-   // originators are used to dispatch events (since this global object is bad for being an actor)
-   // and because (I presume) event goes down and back up a hiearchy branch which may differ
-   // for different status views
-   oxygine::Actor* m_statusEventOriginator;
+   pugi::xml_document m_gameStatusDocument;
+
+   ObjectResources m_leapfrogResources;
+   std::string m_currentSceneFile;
+   std::string m_currentMission;
+   std::string m_currentState;
+   int m_gunLevel;
+   int m_gunFireRateLevel;
+   int m_gunBulletSpeedLevel;
+   int m_gunBulletDamageLevel;
+   int m_shieldMaxLevel;
+   int m_damageMaxLevel;
+   int m_speedLevel;
+   int m_turnSpeedLevel;
+   int m_fuelMaxLevel;
+   int m_leftHipJointLevel;
+   int m_leftKneeJointLevel;
+   int m_leftFootJointLevel;
+   int m_rightHipJointLevel;
+   int m_rightKneeJointLevel;
+   int m_rightFootJointLevel;
 
 public:
-	GameStatus();
+   GameStatus();
 
-   void initGameStatus(
-      oxygine::Actor* originator,
-      ObjectProperty* ammoProp,
-      ObjectProperty* shieldProp,
-      ObjectProperty* fuelProp,
-      ObjectProperty* creditsProp,
-      ObjectProperty* damageProp);
-
-   int getShots(void);
-   void  deltaShots(int shots);
-
-   float getShield(void);
-   void deltaShield(float shield);
-   void registerShieldObject(Shield* shieldObj);
-
-   float getFuel(void);
-   void deltaFuel(float fuel);
-
-   int getCredits(void);
-   void  deltaCredits(int credits);
-
-   float getDamage(void);
-   void deltaDamage(float damage);
-
+   void gameStatusNewGameInit(void);
+   void initializeGameStatusXmlDocument(void);
+   void saveGameStatus(void);
+   void readGameStatus(void);
+   void restoreGameStatus(void);
+   ObjectResources* getResources(void);
 };
+
+
+extern GameStatus g_GameStatus;
+
+

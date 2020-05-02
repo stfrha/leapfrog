@@ -2,7 +2,7 @@
 
 #include "oxygine-framework.h"
 #include "layout.h"
-#include "gamestatusevents.h"
+#include "objectresourcesevents.h"
 
 DECLARE_SMART(StatusBar, spStatusBar);
 
@@ -17,7 +17,7 @@ private:
    std::string m_headline;
    int m_propertyId;
    float m_maxProgess;
-   GameStatusTypeEnum m_statusType;
+   ObjectResourcesTypeEnum m_statusType;
 
 public:
    StatusBar(
@@ -31,7 +31,7 @@ public:
       const float maxProgress,
       const float initialProgress,
       std::string headline,
-      GameStatusTypeEnum statusType);
+      ObjectResourcesTypeEnum statusType);
 
    void disconnectListner(void);
    void statusChangedListner(oxygine::Event *ev);
@@ -52,7 +52,7 @@ private:
    oxygine::spTextField m_tf;
    int m_propertyId;
    std::string m_headline;
-   GameStatusTypeEnum m_statusType;
+   ObjectResourcesTypeEnum m_statusType;
 
 public:
    StatusLiteral(
@@ -65,7 +65,7 @@ public:
       const int fontSize,
       const int initialLiteral,
       std::string headline,
-      GameStatusTypeEnum statusType);
+      ObjectResourcesTypeEnum statusType);
 
    void disconnectListner(void);
    void statusChangedListner(oxygine::Event *ev);

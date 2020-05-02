@@ -63,7 +63,7 @@ OrbitScene::OrbitScene(
 
    m_leapfrog = static_cast<LeapFrog*>(orbWin->getObject("spaceScene.leapfrog1"));
 
-//   m_leapfrog->initGameStatus(gameStatus);
+//   m_leapfrog->initObjectResources(gameStatus);
 
    m_space->addEventListener(OrbitSpaceOrbitEstablished::EVENT, CLOSURE(this, &OrbitScene::orbitEstablishedHandler));
 
