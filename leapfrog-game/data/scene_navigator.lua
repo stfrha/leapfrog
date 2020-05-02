@@ -2,12 +2,15 @@
 -- perhaps they are read from files and then sent as inputs to this script
 
 currentScene = "New Game"
+currentMission = 0
 gameProgress = 0
 
 function lua_startInitialScene()
-   if currentScene == "New Game" then
+   if currentMission == 0 then
       currentScene = "landing_scene.xml"
       sceneType = 0
+      currentMission = 1
+      currentState = 1
       
       c_startScene(currentScene, sceneType)
 
@@ -74,6 +77,8 @@ function lua_sceneExitHandler(exitSceneType, exitParameter)
 
 end
 
-function lua_forceCurrentScene(newCurrentScene)
+function lua_forceCurrentScene(newCurrentScene, newMission, newState)
    currentScene = newCurrentScene;
+   currentMission = newMission;
+   currentState = newState;
 end

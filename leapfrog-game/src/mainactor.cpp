@@ -41,14 +41,17 @@ MainActor::MainActor() :
    m_panTouchIndex(0),
    m_reloadTouchIndex(0),
    m_reloadPressed(false),
-   m_reloadArm(true)
+   m_reloadArm(true),
+   m_firstUpdate(true)
 {
    g_Layout.initLayout();
 
-   g_GameStatus.restoreGameStatus();
-   
 	//load xml file with resources definition
 	m_gameResources.loadXML("res.xml");
+
+   // Restore game status except leapfrog. That is 
+   // managed on the Leapfrog object initiative
+   g_GameStatus.restoreGameStatus();
 
    g_LuaInterface.initLuaInterface(this);
 
@@ -65,7 +68,9 @@ MainActor::MainActor() :
 
 	setSize(g_Layout.getViewPortBounds());
    
+   g_LuaInterface.lua_forceCurrentScene();
    g_LuaInterface.lua_startInitialScene();
+   m_firstUpdate = true;
    m_nextScene.m_armNextScene = true;
 
    //   addEventListener(TouchEvent::MOVE, CLOSURE(this, &MainActor::sceneMoveHandler));
@@ -386,6 +391,14 @@ void MainActor::doUpdate(const UpdateState& us)
       m_nextScene.m_armNextScene = false;
 
       startScene();
+
+      // If this is the very first scene, we must run lua_setupInitialMissionStateScene
+      // to load all additional objects, for instance to load and position leapfrog
+      // at the correct place
+      if (m_firstUpdate)
+      {
+         g_LuaInterface.setupInitialMissionStateScene(m_sceneObject);
+      }
    }
    else
    {
@@ -726,7 +739,7 @@ void MainActor::registerLeapfrog(LeapFrog* leapfrog)
       5,
       Vector2(g_Layout.getXFromRight(1), g_Layout.getYFromTop(1)),
       Vector2(g_Layout.getButtonWidth() * 2.0f, g_Layout.getButtonWidth() / 2.0f),
-      g_Layout.getDefaultFontSize(),
+      (int)g_Layout.getDefaultFontSize(),
       100.0f,
       initShots,
       "Ammo:",
@@ -739,7 +752,7 @@ void MainActor::registerLeapfrog(LeapFrog* leapfrog)
       7,
       Vector2(g_Layout.getXFromRight(1), g_Layout.getYFromTop(1) + g_Layout.getButtonWidth() / 2.0f + 2.0f),
       Vector2(g_Layout.getButtonWidth() * 2.0f, g_Layout.getButtonWidth() / 2.0f),
-      g_Layout.getDefaultFontSize(),
+      (int)g_Layout.getDefaultFontSize(),
       100.0f,
       initFuel,
       "Fuel:",
@@ -752,7 +765,7 @@ void MainActor::registerLeapfrog(LeapFrog* leapfrog)
       6,
       Vector2(g_Layout.getXFromRight(1), g_Layout.getYFromTop(1) + g_Layout.getButtonWidth() / 2.0f * 2.0f + 2.0f),
       Vector2(g_Layout.getButtonWidth() * 2.0f, g_Layout.getButtonWidth() / 2.0f),
-      g_Layout.getDefaultFontSize(),
+      (int)g_Layout.getDefaultFontSize(),
       100.0f,
       initShield,
       "Shield:",
@@ -765,7 +778,7 @@ void MainActor::registerLeapfrog(LeapFrog* leapfrog)
       9,
       Vector2(g_Layout.getXFromRight(1), g_Layout.getYFromTop(1) + g_Layout.getButtonWidth() / 2.0f * 3.0f + 2.0f),
       Vector2(g_Layout.getButtonWidth() * 2.0f, g_Layout.getButtonWidth() / 2.0f),
-      g_Layout.getDefaultFontSize(),
+      (int)g_Layout.getDefaultFontSize(),
       100.0f,
       initDamage,
       "Damage:",
@@ -778,7 +791,7 @@ void MainActor::registerLeapfrog(LeapFrog* leapfrog)
       8,
       Vector2(g_Layout.getXFromRight(1), g_Layout.getYFromTop(1) + g_Layout.getButtonWidth() / 2.0f * 4.0f + 2.0f),
       Vector2(g_Layout.getButtonWidth() * 2.0f, g_Layout.getButtonWidth() / 2.0f),
-      g_Layout.getDefaultFontSize(),
+      (int)g_Layout.getDefaultFontSize(),
       initCredits,
       "Credits:",
       ObjectResourcesTypeEnum::credits);

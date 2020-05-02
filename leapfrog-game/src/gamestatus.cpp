@@ -12,8 +12,8 @@ const string GameStatus::c_gameStatusFileName = "leapfrog_game_progress.xml";
 GameStatus::GameStatus() :
    m_leapfrogResources(),
    m_currentSceneFile(""),
-   m_currentMission(""),
-   m_currentState(""),
+   m_currentMission(0),
+   m_currentState(0),
    m_gunLevel(0),
    m_gunFireRateLevel(0),
    m_gunBulletSpeedLevel(0),
@@ -35,10 +35,12 @@ GameStatus::GameStatus() :
 
 void GameStatus::gameStatusNewGameInit(void)
 {
+   // Resources cannot be set yet. For initialization they are 
+   // written 
    m_leapfrogResources.setResources(70, 100.0f, 25.0f, 20, 0.0f);
-   m_currentSceneFile = "landing_scene.xml";
-   m_currentMission = "mission1";
-   m_currentState = "state1";
+   m_currentSceneFile = "not_defined";
+   m_currentMission = 0;
+   m_currentState = 0;
    m_gunLevel = 1;
    m_gunFireRateLevel = 1;
    m_gunBulletSpeedLevel = 1;
@@ -54,6 +56,35 @@ void GameStatus::gameStatusNewGameInit(void)
    m_rightHipJointLevel = 1;
    m_rightKneeJointLevel = 1;
    m_rightFootJointLevel = 1;
+
+   xml_node root = m_gameStatusDocument.child("leapfrogGameStatus");
+
+   root.attribute("ammo").set_value(20);
+   root.attribute("shield").set_value(100);
+   root.attribute("fuel").set_value(30);
+   root.attribute("credits").set_value(70);
+   root.attribute("damage").set_value(0);
+   root.attribute("currentSceneFile").set_value(m_currentSceneFile.c_str());
+   root.attribute("currentMission").set_value(m_currentMission);
+   root.attribute("currentState").set_value(m_currentState);
+   root.attribute("gunLevel").set_value(m_gunLevel);
+   root.attribute("gunFireRateLevel").set_value(m_gunFireRateLevel);
+   root.attribute("gunBulletSpeedLevel").set_value(m_gunBulletSpeedLevel);
+   root.attribute("gunBulletDamageLevel").set_value(m_gunBulletDamageLevel);
+   root.attribute("shieldMaxLevel").set_value(m_shieldMaxLevel);
+   root.attribute("damageMaxLevel").set_value(m_damageMaxLevel);
+   root.attribute("speedLevel").set_value(m_speedLevel);
+   root.attribute("turnSpeedLevel").set_value(m_turnSpeedLevel);
+   root.attribute("fuelMaxLevel").set_value(m_fuelMaxLevel);
+   root.attribute("leftHipJointLevel").set_value(m_leftHipJointLevel);
+   root.attribute("leftKneeJointLevel").set_value(m_leftKneeJointLevel);
+   root.attribute("leftFootJointLevel").set_value(m_leftFootJointLevel);
+   root.attribute("rightHipJointLevel").set_value(m_rightHipJointLevel);
+   root.attribute("rightKneeJointLevel").set_value(m_rightKneeJointLevel);
+   root.attribute("rightFootJointLevel").set_value(m_rightFootJointLevel);
+
+   m_gameStatusDocument.save_file(c_gameStatusFileName.c_str());
+
 }
 
 void GameStatus::initializeGameStatusXmlDocument(void)
@@ -87,6 +118,13 @@ void GameStatus::initializeGameStatusXmlDocument(void)
    root.append_attribute("rightFootJointLevel");
 }
 
+void GameStatus::setSceneMissionState(const std::string& scene, int mission, int state)
+{
+   m_currentSceneFile = scene;
+   m_currentMission = mission;
+   m_currentState = state;
+}
+
 void GameStatus::saveGameStatus(void)
 {
    xml_node root = m_gameStatusDocument.child("leapfrogGameStatus");
@@ -97,8 +135,8 @@ void GameStatus::saveGameStatus(void)
    root.attribute("credits").set_value(m_leapfrogResources.getCredits());
    root.attribute("damage").set_value(m_leapfrogResources.getDamage());
    root.attribute("currentSceneFile").set_value(m_currentSceneFile.c_str());
-   root.attribute("currentMission").set_value(m_currentMission.c_str());
-   root.attribute("currentState").set_value(m_currentState.c_str());
+   root.attribute("currentMission").set_value(m_currentMission);
+   root.attribute("currentState").set_value(m_currentState);
    root.attribute("gunLevel").set_value(m_gunLevel);
    root.attribute("gunFireRateLevel").set_value(m_gunFireRateLevel);
    root.attribute("gunBulletSpeedLevel").set_value(m_gunBulletSpeedLevel);
@@ -122,17 +160,9 @@ void GameStatus::readGameStatus(void)
 {
    xml_node root = m_gameStatusDocument.child("leapfrogGameStatus");
 
-   m_leapfrogResources.setResources(
-      root.attribute("ammo").as_float(1.0),
-      root.attribute("shield").as_float(1.0),
-      root.attribute("fuel").as_float(1.0),
-      root.attribute("credits").as_float(1.0),
-      root.attribute("damage").as_float(1.0)
-   );
-
    m_currentSceneFile = root.attribute("currentSceneFile").as_string("");
-   m_currentMission = root.attribute("currentMission").as_string("");
-   m_currentState = root.attribute("currentState").as_string("");
+   m_currentMission = root.attribute("currentMission").as_int(0);
+   m_currentState = root.attribute("currentState").as_int(0);
    m_gunLevel = root.attribute("gunLevel").as_int(1);
    m_gunFireRateLevel = root.attribute("gunFireRateLevel").as_int(1);
    m_gunBulletSpeedLevel = root.attribute("gunBulletSpeedLevel").as_int(1);
@@ -148,6 +178,19 @@ void GameStatus::readGameStatus(void)
    m_rightHipJointLevel = root.attribute("rightHipJointLevel").as_int(1);
    m_rightKneeJointLevel = root.attribute("rightKneeJointLevel").as_int(1);
    m_rightFootJointLevel = root.attribute("rightFootJointLevel").as_int(1);
+}
+
+void GameStatus::restoreLeapfrogResources(void)
+{
+   xml_node root = m_gameStatusDocument.child("leapfrogGameStatus");
+
+   m_leapfrogResources.setResources(
+      root.attribute("ammo").as_int(1),
+      root.attribute("shield").as_float(1.0),
+      root.attribute("fuel").as_float(1.0),
+      root.attribute("credits").as_int(1),
+      root.attribute("damage").as_float(1.0)
+   );
 }
 
 void GameStatus::restoreGameStatus(void)
@@ -168,15 +211,29 @@ void GameStatus::restoreGameStatus(void)
       // settings
       initializeGameStatusXmlDocument();
       gameStatusNewGameInit();
-      saveGameStatus();
    }
 }
+
 
 ObjectResources* GameStatus::getResources(void)
 {
    return &m_leapfrogResources;
 }
 
+std::string GameStatus::getCurrentScene(void)
+{
+   return m_currentSceneFile;
+}
+
+int GameStatus::getCurrentMission(void)
+{
+   return m_currentMission;
+}
+
+int GameStatus::getCurrentState(void)
+{
+   return m_currentState;
+}
 
 
 

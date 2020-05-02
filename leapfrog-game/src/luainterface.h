@@ -55,10 +55,12 @@ public:
    void clearAllTriggersAndEvents(void);
 
    void lua_startInitialScene(void);
-   void lua_forceCurrentScene(const std::string& newCurrentScene);
+   void lua_forceCurrentScene(void);
    int lua_sceneExitHandler(SceneActor::SceneTypeEnum exitSceneType, int exitHow);
 
    void setupMissionStateScene(SceneActor* sceneActor);
+   void setupInitialMissionStateScene(SceneActor* sceneActor);
+
 
    void missionStateSceneEventHandler(std::string eventId, std::string actorName, int parameter);
 

@@ -5,8 +5,34 @@
 
 
 -- Global variables
-currentState = "state1"
+currentState = 1
 
+
+-- This function loads all scene objects that match the 
+-- mission state. This includes the leapfrog at the position
+-- of the state in this scene. 
+function lua_setupInitialMissionStateScene()
+   if currentScene == "landing_scene.xml" then
+      if currentMission == 1 then
+         if currentState == 1 then
+            -- Initialise leapfrog as descenting
+            c_addPositionedChildObject("leapfrog_reentry.xml", "leapfrog1", 220, 490)
+            --c_addPositionedChildObject("leapfrog_reentry.xml", "leapfrog1", 540, 400)
+
+            -- Reconfigure leapfrog to landing mode
+            c_setObjectProperty("leapfrog1", 0, 2)
+            
+         elseif currentState == 2 then
+
+            -- Initialise leapfrog as descenting
+            c_addPositionedChildObject("leapfrog_landing.xml", "leapfrog1", 415, 657)
+
+            -- Reconfigure leapfrog to landing mode
+            c_setObjectProperty("leapfrog1", 0, 2)
+         end
+      end
+   end
+end
 
 -- This function is to be called when a new scene has been started
 -- It does all setup for that scene in this mission state
@@ -22,19 +48,11 @@ function lua_setupMissionStateScene()
          c_registerEventHandler("launchSite1", "LsLL", 0, 0)
    end
 
-   if currentState == "state1" then
+   if currentState == 1 then
       if currentScene == "landing_scene.xml" then
-
 
          -- Start timer, will send LuTO event when timed out 
          state1Timer = c_startSceneTimer(240)
-
-         -- Initialise leapfrog as descenting
-         c_addPositionedChildObject("leapfrog_reentry.xml", "leapfrog1", 220, 490)
-         --c_addPositionedChildObject("leapfrog_reentry.xml", "leapfrog1", 540, 400)
-          
-         -- Reconfigure leapfrog to landing mode
-         c_setObjectProperty("leapfrog1", 0, 2)
 
          -- Register event for landing on landingPad1
          c_registerEventHandler("landing_pad1", "LpLL", 0, 0)
@@ -46,7 +64,7 @@ function lua_setupMissionStateScene()
          c_addDialogMessage("Hello. Try to land on the landing pad, to your left.", "DEBUG", true, 0, 0)
       end
 
-   elseif currentState == "state2" then
+   elseif currentState == 2 then
       if currentScene == "landing_scene.xml" then
          c_addMissionStateSceneObjects("landing_scene_state2.xml")
          
@@ -63,13 +81,13 @@ function lua_setupMissionStateScene()
 
       end
 
-   elseif currentState == "state3" then
+   elseif currentState == 3 then
       if currentScene == "landing_scene.xml" then
          c_registerEventHandler("coDestroyable", "BrBR", 0, 0)
          c_registerEventHandler("bomb1", "ExEX", 0, 0)
       end
 
-   elseif currentState == "state4" then
+   elseif currentState == 4 then
       if currentScene == "landing_scene.xml" then
          c_registerEventHandler("bomb1", "ExEX", 0, 0)
       end
@@ -90,7 +108,7 @@ function lua_missionStateSceneEventHandler(eventId, actorName, parameter1)
    end
 
 
-   if currentState == "state1" then
+   if currentState == 1 then
       if currentScene == "landing_scene.xml" then
          if eventId == "ScTO" and parameter1 == state1Timer then
 
@@ -104,20 +122,22 @@ function lua_missionStateSceneEventHandler(eventId, actorName, parameter1)
             -- Play dialog
             c_addDialogMessage("Welcome to the landing pad. Let me fill you up. A new obstacle has arrived in the grotto. Check it out.", "DEBUG", true, 0, 0)
 
-            currentState = "state2"
+            currentState = 2
+            
+            c_saveGameStatus(currentScene, currentMission, currentState)
             
             lua_setupMissionStateScene()
          end
       end
 
-   elseif currentState == "state2" then
+   elseif currentState == 2 then
       if currentScene == "landing_scene.xml" then
          if actorName == "landing_pad1" and eventId == "LpTO" then
                
             -- Play dialog
             c_addDialogMessage("That's right. Get yourself over there.", "DEBUG", true, 0, 0)
 
-            currentState = "state3"
+            currentState = 3
             credits = c_getObjectProperty("leapfrog1", 8)
             c_setObjectProperty("leapfrog1", 8, credits + 400)
 
@@ -129,14 +149,14 @@ function lua_missionStateSceneEventHandler(eventId, actorName, parameter1)
             -- Play dialog
             c_addDialogMessage("You exploded the bomb too early. Mission FAIL!!!", "DEBUG", true, 0, 0)
 
-            currentState = "state5"
+            currentState = 5
             
             lua_setupMissionStateScene()
          end
 
       end
 
-   elseif currentState == "state3" then
+   elseif currentState == 3 then
       if currentScene == "landing_scene.xml" then
          if actorName == "coDestroyable" and eventId == "BrBR" then
             -- Play dialog
@@ -145,7 +165,7 @@ function lua_missionStateSceneEventHandler(eventId, actorName, parameter1)
             -- Set bomb to more sensitivity
             c_setObjectProperty("bomb1", 0, 2500)
             
-            currentState = "state4"
+            currentState = 4
             
             lua_setupMissionStateScene()
          end
@@ -155,13 +175,13 @@ function lua_missionStateSceneEventHandler(eventId, actorName, parameter1)
             -- Play dialog
             c_addDialogMessage("You exploded the bomb too early. Mission FAIL!!!", "DEBUG", true, 0, 0)
 
-            currentState = "state5"
+            currentState = 5
             
             lua_setupMissionStateScene()
          end
       end
 
-   elseif currentState == "state4" then
+   elseif currentState == 4 then
       if currentScene == "landing_scene.xml" then
          if actorName == "bomb1" then
             if eventId == "ExEX" then
@@ -169,7 +189,7 @@ function lua_missionStateSceneEventHandler(eventId, actorName, parameter1)
                -- Play dialog
                c_addDialogMessage("Mission Complete!!!", "DEBUG", true, 0, 0)
 
-               currentState = "state5"
+               currentState = 5
                
                credits = c_getObjectProperty("leapfrog1", 8)
                c_setObjectProperty("leapfrog1", 8, credits + 20)

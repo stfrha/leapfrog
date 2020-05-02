@@ -1296,5 +1296,7 @@ void LeapFrog::initObjectResources(Actor* statusEventOriginator, spObjectResourc
       &m_properties[LeapfroPropertiesEnum::credits],
       &m_properties[LeapfroPropertiesEnum::damage]);
 
+   g_GameStatus.restoreLeapfrogResources();
+
    m_resources->registerShieldObject(m_shield.get());
 }

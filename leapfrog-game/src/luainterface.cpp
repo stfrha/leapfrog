@@ -398,43 +398,20 @@ static int c_startSceneTimer(lua_State *L)
 
 
    /* push the property value */
-   lua_pushnumber(L, timerId);
+   lua_pushnumber(L, (float)timerId);
 
    return 1;
 }
 
-
-
-static int average(lua_State *L)
+static int c_saveGameStatus(lua_State *L)
 {
-   /* get number of arguments */
-   int n = lua_gettop(L);
-   double sum = 0;
-   int i;
+   std::string sceneName = lua_tostring(L, 1);
+   int mission = lua_tointeger(L, 2);
+   int state = lua_tointeger(L, 3);
    
-   /* loop through each argument */
-   for (i = 1; i <= n; i++)
-   {
-      if (!lua_isnumber(L, i))
-      {
-         lua_pushstring(L, "Incorrect argument to 'average'");
-         lua_error(L);
-      }
-
-      /* total the arguments */
-      sum += lua_tonumber(L, i);
-   }
-
-   g_MessageDisplay->initMessage(true, "Hello, this is from a function called by a LUA script!", "LUA", 0, 0);
-
-   /* push the average */
-   lua_pushnumber(L, sum / n);
-
-   /* push the sum */
-   lua_pushnumber(L, sum);
-
-   /* return the number of results */
-   return 2;
+   g_GameStatus.setSceneMissionState(sceneName, mission, state);
+   g_GameStatus.saveGameStatus();
+   return 0;
 }
 
 
@@ -477,7 +454,8 @@ void LuaInterface::initLuaInterface(MainActor* mainActor)
    lua_register(m_L, "c_getObjectProperty", c_getObjectProperty);
    lua_register(m_L, "c_setObjectMapState", c_setObjectMapState);
    lua_register(m_L, "c_startSceneTimer", c_startSceneTimer);
-
+   lua_register(m_L, "c_saveGameStatus", c_saveGameStatus);
+   
 }
 
 //void LuaInterface::setSceneActor(SceneActor* sceneActor)
@@ -529,14 +507,20 @@ void LuaInterface::lua_startInitialScene(void)
 {
    int a1 = lua_getglobal(m_L, "lua_startInitialScene");
    int result = lua_pcall(m_L, 0, 0, 0);
+   if (result && lua_gettop(m_L))
+   {
+      logs::messageln("stack = %d", lua_gettop(m_L));
+      logs::messageln("error = %d", result);
+      logs::messageln("message = %s", lua_tostring(m_L, -1));
+   }
 }
 
-void LuaInterface::lua_forceCurrentScene(const std::string& newCurrentScene)
-{
-   int a1 = lua_getglobal(m_L, "lua_forceCurrentScene");
-   lua_pushstring(m_L, newCurrentScene.c_str());
-   int result = lua_pcall(m_L, 1, 0, 0);
-}
+//void LuaInterface::lua_forceCurrentScene(const std::string& newCurrentScene)
+//{
+//   int a1 = lua_getglobal(m_L, "lua_forceCurrentScene");
+//   lua_pushstring(m_L, newCurrentScene.c_str());
+//   int result = lua_pcall(m_L, 1, 0, 0);
+//}
 
 int LuaInterface::lua_sceneExitHandler(SceneActor::SceneTypeEnum exitSceneType, int exitHow)
 {
@@ -545,7 +529,29 @@ int LuaInterface::lua_sceneExitHandler(SceneActor::SceneTypeEnum exitSceneType, 
    lua_pushinteger(m_L, exitHow);
    // do the call (2 arguments, 0 result) 
    int result = lua_pcall(m_L, 2, 0, 0);
+   if (result && lua_gettop(m_L))
+   {
+      logs::messageln("stack = %d", lua_gettop(m_L));
+      logs::messageln("error = %d", result);
+      logs::messageln("message = %s", lua_tostring(m_L, -1));
+   }
    return 0;
+}
+
+void LuaInterface::lua_forceCurrentScene(void)
+{
+   int a1 = lua_getglobal(m_L, "lua_forceCurrentScene");
+   lua_pushstring(m_L, g_GameStatus.getCurrentScene().c_str());
+   lua_pushinteger(m_L, g_GameStatus.getCurrentMission());
+   lua_pushinteger(m_L, g_GameStatus.getCurrentState());
+   // do the call (3 arguments, 0 result) 
+   int result = lua_pcall(m_L, 3, 0, 0);
+   if (result && lua_gettop(m_L))
+   {
+      logs::messageln("stack = %d", lua_gettop(m_L));
+      logs::messageln("error = %d", result);
+      logs::messageln("message = %s", lua_tostring(m_L, -1));
+   }
 }
 
 
@@ -619,8 +625,28 @@ void LuaInterface::setupMissionStateScene(SceneActor* sceneActor)
 
    int a1 = lua_getglobal(m_L, "lua_setupMissionStateScene");
    int result = lua_pcall(m_L, 0, 0, 0);
+   if (result && lua_gettop(m_L))
+   {
+      logs::messageln("stack = %d", lua_gettop(m_L));
+      logs::messageln("error = %d", result);
+      logs::messageln("message = %s", lua_tostring(m_L, -1));
+   }
 }
 
+void LuaInterface::setupInitialMissionStateScene(SceneActor* sceneActor)
+{
+   // This makes sure that the latest scene actor ís used, do not remove it
+   m_sceneActor = sceneActor;
+
+   int a1 = lua_getglobal(m_L, "lua_setupInitialMissionStateScene");
+   int result = lua_pcall(m_L, 0, 0, 0);
+   if (result && lua_gettop(m_L))
+   {
+      logs::messageln("stack = %d", lua_gettop(m_L));
+      logs::messageln("error = %d", result);
+      logs::messageln("message = %s", lua_tostring(m_L, -1));
+   }
+}
 
 void LuaInterface::missionStateSceneEventHandler(std::string eventId, std::string actorName, int parameter)
 {
@@ -629,6 +655,14 @@ void LuaInterface::missionStateSceneEventHandler(std::string eventId, std::strin
    lua_pushstring(m_L, actorName.c_str());
    lua_pushinteger(m_L, parameter);
    int result = lua_pcall(m_L, 3, 0, 0);
+
+   if (result && lua_gettop(m_L))
+   {
+      logs::messageln("stack = %d", lua_gettop(m_L));
+      logs::messageln("error = %d", result);
+      logs::messageln("message = %s", lua_tostring(m_L, -1));
+   }
+   
 }
 
 void LuaInterface::runAverage(void)
