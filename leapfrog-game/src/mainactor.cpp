@@ -41,8 +41,7 @@ MainActor::MainActor() :
    m_panTouchIndex(0),
    m_reloadTouchIndex(0),
    m_reloadPressed(false),
-   m_reloadArm(true),
-   m_firstUpdate(true)
+   m_reloadArm(true)
 {
    g_Layout.initLayout();
 
@@ -70,7 +69,6 @@ MainActor::MainActor() :
    
    g_LuaInterface.lua_forceCurrentScene();
    g_LuaInterface.lua_startInitialScene();
-   m_firstUpdate = true;
    m_nextScene.m_armNextScene = true;
 
    //   addEventListener(TouchEvent::MOVE, CLOSURE(this, &MainActor::sceneMoveHandler));
@@ -392,13 +390,6 @@ void MainActor::doUpdate(const UpdateState& us)
 
       startScene();
 
-      // If this is the very first scene, we must run lua_setupInitialMissionStateScene
-      // to load all additional objects, for instance to load and position leapfrog
-      // at the correct place
-      if (m_firstUpdate)
-      {
-         g_LuaInterface.setupInitialMissionStateScene(m_sceneObject);
-      }
    }
    else
    {

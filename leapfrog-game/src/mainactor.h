@@ -72,8 +72,6 @@ private:
    bool m_reloadPressed;
    bool m_reloadArm;
 
-   bool m_firstUpdate;
-
    //spObjectResources m_gameStatus;
 
    NextSceneDefinition m_nextScene;

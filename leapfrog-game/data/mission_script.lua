@@ -6,6 +6,7 @@
 
 -- Global variables
 currentState = 1
+firstSceneOfToday = true
 
 
 -- This function loads all scene objects that match the 
@@ -14,6 +15,7 @@ currentState = 1
 function lua_setupInitialMissionStateScene()
    if currentScene == "landing_scene.xml" then
       if currentMission == 1 then
+
          if currentState == 1 then
             -- Initialise leapfrog as descenting
             c_addPositionedChildObject("leapfrog_reentry.xml", "leapfrog1", 220, 490)
@@ -23,6 +25,10 @@ function lua_setupInitialMissionStateScene()
             c_setObjectProperty("leapfrog1", 0, 2)
             
          elseif currentState == 2 then
+
+            c_addDialogMessage("Hello. Try to land on the landing pad, to your left.", "DEBUG", true, 0, 0)
+            c_addDialogMessage("The landing pad is the filled square on your map. Get there!", "DEBUG", true, 0, 0)
+            c_addDialogMessage("Welcome to the landing pad. Let me fill you up. A new obstacle has arrived in the grotto. Check it out.", "DEBUG", true, 0, 0)
 
             -- Initialise leapfrog as descenting
             c_addPositionedChildObject("leapfrog_landing.xml", "leapfrog1", 415, 657)
@@ -37,6 +43,14 @@ end
 -- This function is to be called when a new scene has been started
 -- It does all setup for that scene in this mission state
 function lua_setupMissionStateScene()
+
+   if firstSceneOfToday then
+      
+      firstSceneOfToday = false
+      
+      lua_setupInitialMissionStateScene()
+      
+   end 
 
    -- Clear triggers and event handler
    c_clearAllTriggersAndEvents()
