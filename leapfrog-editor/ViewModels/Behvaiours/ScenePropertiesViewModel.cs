@@ -15,6 +15,8 @@ namespace LeapfrogEditor
       #region Declarations
 
       private SceneProperties _modelObject;
+      private int _selectedSceneTypeIndex;
+
 
       // The following fields are item 0 and item 1 in the PropertyCollection collection.
       // They exists to get easy access
@@ -36,26 +38,7 @@ namespace LeapfrogEditor
       {
          ModelObject = modelObject;
 
-         // Automatically create the properties view models
-         // To get two different tree-sub branches, we divid the states
-         // and ParallaxBackgrounds into two different classes with
-         // a common base class (ScenePropertyCollectionBaseViewModel)
-         // One instance of each class is added to the PropertyCollection
-         // property of this class.
-
-         //// Create the ScenePropsStateCollectionViewModel
-         //_stateCollection = new ScenePropsStateCollectionViewModel(this, parentVm, mainVm, enabled);
-
-         //// Now populate the _stateCollection with StateViewModels from 
-         //// the source states
-         //foreach (string s in ModelObject.States)
-         //{
-         //   StateViewModel svm = new StateViewModel(this, parentVm, mainVm, this, s);
-         //   _stateCollection.States.Add(svm);
-         //}
-
-         //// Add the state collection to the PropertyCollection
-         //_propertyCollection.Add(_stateCollection);
+         SelectedSceneTypeIndex = SceneTypes.IndexOf(ModelObject.SceneType);
       }
 
       #endregion
@@ -148,54 +131,43 @@ namespace LeapfrogEditor
          set { _propertyCollection = value; }
       }
 
-      //public ScenePropsStateCollectionViewModel StateCollection
-      //{
-      //   get { return _stateCollection; }
-      //}
+      public List<string> SceneTypes
+      {
+         get
+         {
+            return new List<string>()
+            {
+               "notDef",
+               "ground",
+               "space",
+               "orbitSpaceScene",
+               "hyperspace"
+            };
+         }
+      }
 
-      //public ObservableCollection<StateViewModel> States
-      //{
-      //   get { return _stateCollection.States; }
-      //   set { _stateCollection.States = value; }
-      //}
+      public int SelectedSceneTypeIndex
+      {
+         get
+         {
+            return _selectedSceneTypeIndex;
+         }
+         set
+         {
+            if (value == -1)
+            {
+               _selectedSceneTypeIndex = 0;
+            }
+            else
+            {
+               _selectedSceneTypeIndex = value;
+            }
+            OnPropertyChanged("SelectedPickupTypeIndex");
 
+            SceneType = SceneTypes[_selectedSceneTypeIndex];
+         }
+      }
 
-      //public int DisplayedStateIndex
-      //{
-      //   get
-      //   {
-      //      return _displayedStateIndex;
-      //   }
-      //   set
-      //   {
-      //      if (value == -1)
-      //      {
-      //         _displayedStateIndex = 0;
-      //      }
-      //      else
-      //      {
-      //         _displayedStateIndex = value;
-      //      }
-
-      //      OnPropertyChanged("DisplayedStateIndex");
-
-      //      foreach (StateViewModel svm in States)
-      //      {
-      //         svm.OnPropertyChanged("StateIndicator");
-      //      }
-
-      //      ParentVm.InvalidateChildObjects();
-      //      DeselectAllChildren();
-
-      //      CompoundObjectViewModel p = ParentVm;
-
-      //      while (p != null)
-      //      {
-      //         p.OnPropertyChanged("BoundingBox");
-      //         p = p.ParentVm;
-      //      }
-      //   }
-      //}
 
       #endregion
 
@@ -209,24 +181,6 @@ namespace LeapfrogEditor
 
       #region public Methods
 
-      //public bool IsOnDisplay(StateViewModel svm)
-      //{
-      //   return (States.IndexOf(svm) == DisplayedStateIndex);
-      //}
-
-      //public void SetStateOnDisplay(StateViewModel svm)
-      //{
-      //   int i = States.IndexOf(svm);
-
-      //   if (i >= 0)
-      //   {
-      //      DisplayedStateIndex = i;
-      //   }
-      //   else
-      //   {
-      //      DisplayedStateIndex = 0;
-      //   }
-      //}
 
       #endregion
    }

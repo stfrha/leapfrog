@@ -42,13 +42,16 @@
                   ScrollViewer.HorizontalScrollBarVisibility="Disabled"
                   ItemsSource="{Binding DataContext.Textures, RelativeSource={RelativeSource AncestorType={x:Type Window}}}"
                   SelectionMode="Single"
-                  SelectedItem="{Binding MyValue, ElementName=root}"
-               >
+                  SelectedItem="{Binding MyValue, ElementName=root}" >
                   <ListView.ItemTemplate>
                      <DataTemplate>
-                        <Image Width="45" Height="45" Stretch="Uniform" 
-                           Source="{Binding Converter={StaticResource TexturePathValueConverter}}"
-                           />
+                        <Border>
+                           <StackPanel>
+                              <Image Width="45" Height="45" Stretch="Uniform" 
+                           Source="{Binding Converter={StaticResource TexturePathValueConverter}}" />
+                              <TextBlock FontSize="8" Text="{Binding}" HorizontalAlignment="Center" />
+                           </StackPanel>
+                        </Border>
                      </DataTemplate>
                   </ListView.ItemTemplate>
                   <ListView.ItemsPanel>

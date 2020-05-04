@@ -39,11 +39,23 @@ LandingPad::LandingPad(
    // Here we attach Launch Site object to tree so it gets updates etc.
    attachTo(sceneParent);
 
-   // Register leapfrog on map
-   g_HeadDownDisplay->addMeToMap(
-      MapItem::MapItemTypeEnum::neutralStationary,
-      getActor("landingPad1"),
-      MapItem::MapItemStateEnum::hollow);
+
+   // It is lame to use a fixed name for the sprite actor of the pad. 
+   // It is also lame to assume that the child object only has one sprite.
+   // The best solution is to have a proprty that points to the sprite actor
+   // that holds the position. But, not for now. 
+   // Now I use the first actor in the list.
+
+   if (m_shapes.size() > 0)
+   {
+      spActor padActor = m_shapes[0];
+
+      // Register leapfrog on map
+      g_HeadDownDisplay->addMeToMap(
+         MapItem::MapItemTypeEnum::neutralStationary,
+         padActor,
+         MapItem::MapItemStateEnum::hollow);
+   }
 
 }
 

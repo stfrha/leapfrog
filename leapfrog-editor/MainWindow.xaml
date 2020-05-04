@@ -61,9 +61,14 @@
                   <MenuItem Header="Shield System" Command="{Binding NewSystem}" CommandParameter="shield"  />
                   <MenuItem Header="Flame Emitter System" Command="{Binding NewSystem}" CommandParameter="flameEmitter"  />
                   <MenuItem Header="Reentry Flame Emitter System" Command="{Binding NewSystem}" CommandParameter="reentryFlameEmitter"  />
+                  <Separator />
+                  <MenuItem Header="Add Embedded Child Object" 
+                     Command="{Binding Path=Data.AddChildObject, Source={StaticResource DataContextProxy}}" />
+                  <MenuItem Header="Add External Child Object file" 
+                     Command="{Binding Path=Data.AddChildObjectFile, Source={StaticResource DataContextProxy}}" />
                </MenuItem>
                <MenuItem Header="Import">
-                  <MenuItem Header="Compound Object" Command="{Binding ImportCompoundObject}" />
+                  <MenuItem Header="Import Compound Object File" Command="{Binding ImportCompoundObject}" />
                </MenuItem>
                <Separator/>
                <MenuItem Header="Delete" Command="{Binding Delete}" />
@@ -217,10 +222,8 @@
                         <TextBlock.ContextMenu>
                            <ContextMenu>
                               <MenuItem Header="Add Embedded Child Object" 
-                                 CommandParameter="{Binding}"
                                  Command="{Binding Path=Data.AddChildObject, Source={StaticResource DataContextProxy}}" />
                               <MenuItem Header="Add External Child Object file" 
-                                 CommandParameter="{Binding}"
                                  Command="{Binding Path=Data.AddChildObjectFile, Source={StaticResource DataContextProxy}}" />
                            </ContextMenu>
                         </TextBlock.ContextMenu>

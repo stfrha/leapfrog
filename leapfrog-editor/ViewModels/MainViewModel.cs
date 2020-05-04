@@ -696,7 +696,9 @@ namespace LeapfrogEditor
             using (var client = new WebClient())
             {
                client.Credentials = new NetworkCredential("fredrikhoffman.se", "jessica21h");
-               client.UploadFile("ftp://ftp.fredrikhoffman.se/leapfrog/updated_scene.xml", WebRequestMethods.Ftp.UploadFile, "updated_scene.xml");
+               byte[] responseArray = client.UploadFile("ftp://ftp.fredrikhoffman.se/leapfrog/updated_scene.xml", WebRequestMethods.Ftp.UploadFile, "updated_scene.xml");
+
+               Console.WriteLine("\nResponse Received. The contents of the file uploaded are:\n{0}", System.Text.Encoding.ASCII.GetString(responseArray));
             }
 
          }
@@ -1118,29 +1120,19 @@ namespace LeapfrogEditor
 
       void AddChildObjectExecute(Object parameter)
       {
-         if (parameter is ChildCollectionViewModel)
-         {
-            ChildCollectionViewModel scvm = parameter as ChildCollectionViewModel;
+         ChildObject ch = new ChildObject();
+         ch.CompObj = new CompoundObject();
+         ChildObjectViewModel chvm = new ChildObjectViewModel(EditedCpVm.ChildObjectCollection, EditedCpVm as CompoundObjectViewModel, this, ch, true);
 
-            ChildObject ch = new ChildObject();
-            ch.CompObj = new CompoundObject();
-            ChildObjectViewModel chvm = new ChildObjectViewModel(scvm, EditedCpVm as CompoundObjectViewModel, this, ch, true);
-
-            CompoundObjectViewModel covm = EditedCpVm as CompoundObjectViewModel;
-            covm.ModelObject.ChildObjects.Add(ch);
-            scvm.Children.Add(chvm);
-            EditedCpVm.BuildGlobalShapeCollection(ShowJoints, ShowSystems, ShowBackgrounds);
-         }
+         CompoundObjectViewModel covm = EditedCpVm as CompoundObjectViewModel;
+         covm.ModelObject.ChildObjects.Add(ch);
+         EditedCpVm.ChildObjectCollection.Children.Add(chvm);
+         EditedCpVm.BuildGlobalShapeCollection(ShowJoints, ShowSystems, ShowBackgrounds);
       }
 
       bool CanAddChildObjectExecute(Object parameter)
       {
-         if (parameter == null)
-         {
-            return false;
-         }
-
-         if ((EditedCpVm != null) && (EditedCpVm is CompoundObjectViewModel) && ((parameter is ChildCollectionViewModel) || (parameter is ChildObjectViewModel)))
+         if ((EditedCpVm != null) && (EditedCpVm is CompoundObjectViewModel))
          {
             return true;
          }
@@ -1148,6 +1140,7 @@ namespace LeapfrogEditor
          return false;
       }
 
+      // Parameter is ignored in this case
       public ICommand AddChildObject
       {
          get
@@ -1158,47 +1151,33 @@ namespace LeapfrogEditor
 
       void AddChildObjectFileExecute(Object parameter)
       {
-         if (parameter is ChildCollectionViewModel)
+         OpenFileDialog ofd = new OpenFileDialog();
+
+         ofd.Filter = "Child object files (*.xml)|*.xml|All files (*.*)|*.*";
+         ofd.CheckFileExists = true;
+
+         if (ofd.ShowDialog() == true)
          {
-            ChildCollectionViewModel scvm = parameter as ChildCollectionViewModel;
+            string s = GlobalConstants.DataDirectory + System.IO.Path.GetFileName(ofd.FileName);
+            string fullPath = System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
+            string fullFileName = System.IO.Path.Combine(fullPath, s);
 
-            OpenFileDialog ofd = new OpenFileDialog();
+            ChildObject ch = new ChildObject();
+            ch.File = System.IO.Path.GetFileName(ofd.FileName);
+            ch.CompObj = CompoundObject.ReadFromFile(fullFileName);
+            ChildObjectViewModel chvm = new ChildObjectViewModel(EditedCpVm.ChildObjectCollection, EditedCpVm as CompoundObjectViewModel, this, ch, true);
+            chvm.CompObj.BuildViewModel(true);
 
-            ofd.Filter = "Child object files (*.xml)|*.xml|All files (*.*)|*.*";
-            ofd.CheckFileExists = true;
-
-            if (ofd.ShowDialog() == true)
-            {
-               string s = GlobalConstants.DataDirectory + System.IO.Path.GetFileName(ofd.FileName);
-               string fullPath = System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
-               string fullFileName = System.IO.Path.Combine(fullPath, s);
-
-               ChildObject ch = new ChildObject();
-               ch.File = System.IO.Path.GetFileName(ofd.FileName);
-               ch.CompObj = CompoundObject.ReadFromFile(fullFileName);
-               ChildObjectViewModel chvm = new ChildObjectViewModel(scvm, EditedCpVm as CompoundObjectViewModel, this, ch, true);
-               chvm.CompObj.BuildViewModel(true);
-
-               CompoundObjectViewModel covm = EditedCpVm as CompoundObjectViewModel;
-               covm.ModelObject.ChildObjects.Add(ch);
-               scvm.Children.Add(chvm);
-               EditedCpVm.BuildGlobalShapeCollection(ShowJoints, ShowSystems, ShowBackgrounds);
-
-
-
-               //OpenFileToEdit(System.IO.Path.GetFileName(ofd.FileName), true);
-            }
+            CompoundObjectViewModel covm = EditedCpVm as CompoundObjectViewModel;
+            covm.ModelObject.ChildObjects.Add(ch);
+            EditedCpVm.ChildObjectCollection.Children.Add(chvm);
+            EditedCpVm.BuildGlobalShapeCollection(ShowJoints, ShowSystems, ShowBackgrounds);
          }
       }
 
       bool CanAddChildObjectFileExecute(Object parameter)
       {
-         if (parameter == null)
-         {
-            return false;
-         }
-
-         if ((EditedCpVm != null) && (EditedCpVm is CompoundObjectViewModel) && ((parameter is ChildCollectionViewModel) || (parameter is ChildObjectViewModel)))
+         if ((EditedCpVm != null) && (EditedCpVm is CompoundObjectViewModel))
          {
             return true;
          }
