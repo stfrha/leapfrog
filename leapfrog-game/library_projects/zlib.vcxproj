@@ -108,6 +108,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug Library|Win32'">
     <LinkIncremental>true</LinkIncremental>
     <OutDir>$(SolutionDir)..\oxygine-framework\oxygine\third_party\win32\libraries\</OutDir>
+    <IntDir>$(Configuration)\zlib\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug Library|ARM64'">
     <LinkIncremental>true</LinkIncremental>
@@ -115,6 +116,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
     <OutDir>$(SolutionDir)..\oxygine-framework\oxygine\third_party\win32\libraries\</OutDir>
+    <IntDir>$(Configuration)\zlib\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'">
     <LinkIncremental>true</LinkIncremental>
@@ -122,6 +124,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release Library|Win32'">
     <LinkIncremental>true</LinkIncremental>
     <OutDir>$(SolutionDir)..\oxygine-framework\oxygine\third_party\win32\libraries\</OutDir>
+    <IntDir>$(Configuration)\zlib\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release Library|ARM64'">
     <LinkIncremental>true</LinkIncremental>
@@ -135,6 +138,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>true</LinkIncremental>
     <OutDir>$(SolutionDir)..\oxygine-framework\oxygine\third_party\win32\libraries\</OutDir>
+    <IntDir>$(Configuration)\zlib\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'">
     <LinkIncremental>true</LinkIncremental>

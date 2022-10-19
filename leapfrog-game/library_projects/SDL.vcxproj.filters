@@ -167,6 +167,13 @@
     <ClInclude Include="..\..\..\sdl\src\video\windows\SDL_windowswindow.h" />
     <ClInclude Include="..\..\..\sdl\src\video\windows\wmmsg.h" />
     <ClInclude Include="..\..\..\sdl\src\video\yuv2rgb\yuv_rgb.h" />
+    <ClInclude Include="..\..\..\sdl\include\SDL_sensor.h" />
+    <ClInclude Include="..\..\..\sdl\src\events\SDL_displayevents_c.h" />
+    <ClInclude Include="..\..\..\sdl\src\joystick\hidapi\controller_type.h" />
+    <ClInclude Include="..\..\..\sdl\src\joystick\hidapi\SDL_hidapijoystick_c.h" />
+    <ClInclude Include="..\..\..\sdl\src\sensor\dummy\SDL_dummysensor.h" />
+    <ClInclude Include="..\..\..\sdl\src\sensor\SDL_sensor_c.h" />
+    <ClInclude Include="..\..\..\sdl\src\sensor\SDL_syssensor.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\sdl\src\atomic\SDL_atomic.c" />
@@ -305,6 +312,17 @@
     <ClCompile Include="..\..\..\sdl\src\video\windows\SDL_windowsvulkan.c" />
     <ClCompile Include="..\..\..\sdl\src\video\windows\SDL_windowswindow.c" />
     <ClCompile Include="..\..\..\sdl\src\video\yuv2rgb\yuv_rgb.c" />
+    <ClCompile Include="..\..\..\sdl\src\events\SDL_displayevents.c" />
+    <ClCompile Include="..\..\..\sdl\src\hidapi\windows\hid.c" />
+    <ClCompile Include="..\..\..\sdl\src\joystick\hidapi\SDL_hidapijoystick.c" />
+    <ClCompile Include="..\..\..\sdl\src\joystick\hidapi\SDL_hidapi_ps4.c" />
+    <ClCompile Include="..\..\..\sdl\src\joystick\hidapi\SDL_hidapi_switch.c" />
+    <ClCompile Include="..\..\..\sdl\src\joystick\hidapi\SDL_hidapi_xbox360.c" />
+    <ClCompile Include="..\..\..\sdl\src\joystick\hidapi\SDL_hidapi_xboxone.c" />
+    <ClCompile Include="..\..\..\sdl\src\libm\e_exp.c" />
+    <ClCompile Include="..\..\..\sdl\src\libm\e_log10.c" />
+    <ClCompile Include="..\..\..\sdl\src\sensor\dummy\SDL_dummysensor.c" />
+    <ClCompile Include="..\..\..\sdl\src\sensor\SDL_sensor.c" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="..\..\..\sdl\src\main\windows\version.rc" />

@@ -64,11 +64,11 @@
   <PropertyGroup>
     <_ProjectFileVersion>10.0.40219.1</_ProjectFileVersion>
     <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(SolutionDir)..\oxygine-framework\libs\</OutDir>
-    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(Platform)\$(Configuration)\</IntDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(Platform)\$(Configuration)\sdl2\</IntDir>
     <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(SolutionDir)$(Platform)\$(Configuration)\</OutDir>
     <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(Platform)\$(Configuration)\</IntDir>
     <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(SolutionDir)..\oxygine-framework\libs\</OutDir>
-    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(Platform)\$(Configuration)\</IntDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(Platform)\$(Configuration)\sdl2\</IntDir>
     <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(SolutionDir)$(Platform)\$(Configuration)\</OutDir>
     <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(Platform)\$(Configuration)\</IntDir>
     <CodeAnalysisRuleSet Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">AllRules.ruleset</CodeAnalysisRuleSet>
@@ -114,7 +114,7 @@
       <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ResourceCompile>
     <Link>
-      <AdditionalDependencies>winmm.lib;imm32.lib;version.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>setupapi.lib;winmm.lib;imm32.lib;version.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <IgnoreAllDefaultLibraries>true</IgnoreAllDefaultLibraries>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
@@ -179,7 +179,7 @@
       <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ResourceCompile>
     <Link>
-      <AdditionalDependencies>winmm.lib;imm32.lib;version.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>setupapi.lib;winmm.lib;imm32.lib;version.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <IgnoreAllDefaultLibraries>true</IgnoreAllDefaultLibraries>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
@@ -269,6 +269,7 @@
     <ClInclude Include="..\..\..\sdl\include\SDL_revision.h" />
     <ClInclude Include="..\..\..\sdl\include\SDL_rwops.h" />
     <ClInclude Include="..\..\..\sdl\include\SDL_scancode.h" />
+    <ClInclude Include="..\..\..\sdl\include\SDL_sensor.h" />
     <ClInclude Include="..\..\..\sdl\include\SDL_shape.h" />
     <ClInclude Include="..\..\..\sdl\include\SDL_stdinc.h" />
     <ClInclude Include="..\..\..\sdl\include\SDL_surface.h" />
@@ -311,6 +312,7 @@
     <ClInclude Include="..\..\..\sdl\src\events\blank_cursor.h" />
     <ClInclude Include="..\..\..\sdl\src\events\default_cursor.h" />
     <ClInclude Include="..\..\..\sdl\src\events\SDL_clipboardevents_c.h" />
+    <ClInclude Include="..\..\..\sdl\src\events\SDL_displayevents_c.h" />
     <ClInclude Include="..\..\..\sdl\src\events\SDL_dropevents_c.h" />
     <ClInclude Include="..\..\..\sdl\src\events\SDL_events_c.h" />
     <ClInclude Include="..\..\..\sdl\src\events\SDL_gesture_c.h" />
@@ -323,6 +325,8 @@
     <ClInclude Include="..\..\..\sdl\src\haptic\windows\SDL_dinputhaptic_c.h" />
     <ClInclude Include="..\..\..\sdl\src\haptic\windows\SDL_windowshaptic_c.h" />
     <ClInclude Include="..\..\..\sdl\src\haptic\windows\SDL_xinputhaptic_c.h" />
+    <ClInclude Include="..\..\..\sdl\src\joystick\hidapi\controller_type.h" />
+    <ClInclude Include="..\..\..\sdl\src\joystick\hidapi\SDL_hidapijoystick_c.h" />
     <ClInclude Include="..\..\..\sdl\src\joystick\SDL_joystick_c.h" />
     <ClInclude Include="..\..\..\sdl\src\joystick\SDL_sysjoystick.h" />
     <ClInclude Include="..\..\..\sdl\src\joystick\windows\SDL_dinputjoystick_c.h" />
@@ -348,6 +352,9 @@
     <ClInclude Include="..\..\..\sdl\src\render\software\SDL_rotate.h" />
     <ClInclude Include="..\..\..\sdl\src\SDL_dataqueue.h" />
     <ClInclude Include="..\..\..\sdl\src\SDL_error_c.h" />
+    <ClInclude Include="..\..\..\sdl\src\sensor\dummy\SDL_dummysensor.h" />
+    <ClInclude Include="..\..\..\sdl\src\sensor\SDL_sensor_c.h" />
+    <ClInclude Include="..\..\..\sdl\src\sensor\SDL_syssensor.h" />
     <ClInclude Include="..\..\..\sdl\src\thread\SDL_systhread.h" />
     <ClInclude Include="..\..\..\sdl\src\thread\SDL_thread_c.h" />
     <ClInclude Include="..\..\..\sdl\src\thread\windows\SDL_systhread_c.h" />
@@ -402,6 +409,7 @@
     <ClCompile Include="..\..\..\sdl\src\cpuinfo\SDL_cpuinfo.c" />
     <ClCompile Include="..\..\..\sdl\src\dynapi\SDL_dynapi.c" />
     <ClCompile Include="..\..\..\sdl\src\events\SDL_clipboardevents.c" />
+    <ClCompile Include="..\..\..\sdl\src\events\SDL_displayevents.c" />
     <ClCompile Include="..\..\..\sdl\src\events\SDL_dropevents.c" />
     <ClCompile Include="..\..\..\sdl\src\events\SDL_events.c" />
     <ClCompile Include="..\..\..\sdl\src\events\SDL_gesture.c" />
@@ -416,6 +424,12 @@
     <ClCompile Include="..\..\..\sdl\src\haptic\windows\SDL_dinputhaptic.c" />
     <ClCompile Include="..\..\..\sdl\src\haptic\windows\SDL_windowshaptic.c" />
     <ClCompile Include="..\..\..\sdl\src\haptic\windows\SDL_xinputhaptic.c" />
+    <ClCompile Include="..\..\..\sdl\src\hidapi\windows\hid.c" />
+    <ClCompile Include="..\..\..\sdl\src\joystick\hidapi\SDL_hidapijoystick.c" />
+    <ClCompile Include="..\..\..\sdl\src\joystick\hidapi\SDL_hidapi_ps4.c" />
+    <ClCompile Include="..\..\..\sdl\src\joystick\hidapi\SDL_hidapi_switch.c" />
+    <ClCompile Include="..\..\..\sdl\src\joystick\hidapi\SDL_hidapi_xbox360.c" />
+    <ClCompile Include="..\..\..\sdl\src\joystick\hidapi\SDL_hidapi_xboxone.c" />
     <ClCompile Include="..\..\..\sdl\src\joystick\SDL_gamecontroller.c" />
     <ClCompile Include="..\..\..\sdl\src\joystick\SDL_joystick.c" />
     <ClCompile Include="..\..\..\sdl\src\joystick\windows\SDL_dinputjoystick.c" />
@@ -423,8 +437,10 @@
     <ClCompile Include="..\..\..\sdl\src\joystick\windows\SDL_windowsjoystick.c" />
     <ClCompile Include="..\..\..\sdl\src\joystick\windows\SDL_xinputjoystick.c" />
     <ClCompile Include="..\..\..\sdl\src\libm\e_atan2.c" />
+    <ClCompile Include="..\..\..\sdl\src\libm\e_exp.c" />
     <ClCompile Include="..\..\..\sdl\src\libm\e_fmod.c" />
     <ClCompile Include="..\..\..\sdl\src\libm\e_log.c" />
+    <ClCompile Include="..\..\..\sdl\src\libm\e_log10.c" />
     <ClCompile Include="..\..\..\sdl\src\libm\e_pow.c" />
     <ClCompile Include="..\..\..\sdl\src\libm\e_rem_pio2.c" />
     <ClCompile Include="..\..\..\sdl\src\libm\e_sqrt.c" />
@@ -467,6 +483,8 @@
     <ClCompile Include="..\..\..\sdl\src\SDL_error.c" />
     <ClCompile Include="..\..\..\sdl\src\SDL_hints.c" />
     <ClCompile Include="..\..\..\sdl\src\SDL_log.c" />
+    <ClCompile Include="..\..\..\sdl\src\sensor\dummy\SDL_dummysensor.c" />
+    <ClCompile Include="..\..\..\sdl\src\sensor\SDL_sensor.c" />
     <ClCompile Include="..\..\..\sdl\src\stdlib\SDL_getenv.c" />
     <ClCompile Include="..\..\..\sdl\src\stdlib\SDL_iconv.c" />
     <ClCompile Include="..\..\..\sdl\src\stdlib\SDL_malloc.c" />
