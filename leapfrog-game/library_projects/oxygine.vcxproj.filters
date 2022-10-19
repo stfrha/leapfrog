@@ -1,0 +1,300 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="src">
+      <UniqueIdentifier>{40a4006a-401e-4792-946f-769e3c8c21af}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\closure">
+      <UniqueIdentifier>{55ec68cd-ffdd-436d-bc68-7765c8dfeeac}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\core">
+      <UniqueIdentifier>{b2a01828-8a53-407a-b24a-3f287504f357}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\math">
+      <UniqueIdentifier>{339db1d5-9ead-46ce-ab8d-1e3a0d5d9676}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\pugi">
+      <UniqueIdentifier>{c3ffd2db-6929-462c-bf67-8b3ea0a098ef}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\utils">
+      <UniqueIdentifier>{58d9286e-925e-4368-8790-9d4d79bd85c0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\winnie_alloc">
+      <UniqueIdentifier>{fa541539-b6e5-433e-b100-978d94de0a0d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\res">
+      <UniqueIdentifier>{18bec777-8592-44da-9495-72a4cdb72f88}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="third_party">
+      <UniqueIdentifier>{ab1704c4-3d14-4c1b-9dee-9ea7374b2d6f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\text">
+      <UniqueIdentifier>{e57c8d6a-dca6-43ca-a381-36a669b001c9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\dev_tools">
+      <UniqueIdentifier>{820c9e24-c789-4cb7-a04f-7b1d6709ee74}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\gl">
+      <UniqueIdentifier>{b8f36a93-6b35-4120-adb9-ac1ae693b774}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\minizip">
+      <UniqueIdentifier>{164d853c-2678-421b-982f-073d6b5ebb1d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\core\curl">
+      <UniqueIdentifier>{14e0f6bd-fc8b-4504-87bb-84301453e184}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\json">
+      <UniqueIdentifier>{5363bb12-7b88-4a51-8310-818b944e0238}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\actor">
+      <UniqueIdentifier>{969670a7-a5c7-4510-9635-59c4787ea429}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\tween">
+      <UniqueIdentifier>{a6234509-4f2a-4666-966c-a848e4aae3e6}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\..\oxygine-framework\oxygine\src\oxygine\actor\Actor.cpp" />
+    <ClCompile Include="..\..\..\oxygine-framework\oxygine\src\oxygine\actor\Box9Sprite.cpp" />
+    <ClCompile Include="..\..\..\oxygine-framework\oxygine\src\oxygine\actor\Button.cpp" />
+    <ClCompile Include="..\..\..\oxygine-framework\oxygine\src\oxygine\actor\ClipRectActor.cpp" />
+    <ClCompile Include="..\..\..\oxygine-framework\oxygine\src\oxygine\actor\ColorRectSprite.cpp" />
+    <ClCompile Include="..\..\..\oxygine-framework\oxygine\src\oxygine\actor\DebugActor.cpp" />
+    <ClCompile Include="..\..\..\oxygine-framework\oxygine\src\oxygine\actor\MaskedSprite.cpp" />
+    <ClCompile Include="..\..\..\oxygine-framework\oxygine\src\oxygine\actor\Polygon.cpp" />
+    <ClCompile Include="..\..\..\oxygine-framework\oxygine\src\oxygine\actor\ProgressBar.cpp" />
+    <ClCompile Include="..\..\..\oxygine-framework\oxygine\src\oxygine\actor\SlidingActor.cpp" />
+    <ClCompile Include="..\..\..\oxygine-framework\oxygine\src\oxygine\actor\Sprite.cpp" />
+    <ClCompile Include="..\..\..\oxygine-framework\oxygine\src\oxygine\actor\Stage.cpp" />
+    <ClCompile Include="..\..\..\oxygine-framework\oxygine\src\oxygine\actor\TextField.cpp" />
+    <ClCompile Include="..\..\..\oxygine-framework\oxygine\src\oxygine\actor\WebImage.cpp" />
+    <ClCompile Include="..\..\..\oxygine-framework\oxygine\src\oxygine\AnimationFrame.cpp" />
+    <ClCompile Include="..\..\..\oxygine-framework\oxygine\src\oxygine\AsyncTask.cpp" />
+    <ClCompile Include="..\..\..\oxygine-framework\oxygine\src\oxygine\Clock.cpp" />
+    <ClCompile Include="..\..\..\oxygine-framework\oxygine\src\oxygine\core\curl\HttpRequestCurlTask.cpp" />
+    <ClCompile Include="..\..\..\oxygine-framework\oxygine\src\oxygine\core\file.cpp" />
+    <ClCompile Include="..\..\..\oxygine-framework\oxygine\src\oxygine\core\FileSystem.cpp" />
+    <ClCompile Include="..\..\..\oxygine-framework\oxygine\src\oxygine\core\gl\NativeTextureGLES.cpp" />
+    <ClCompile Include="..\..\..\oxygine-framework\oxygine\src\oxygine\core\gl\oxgl.cpp" />
+    <ClCompile Include="..\..\..\oxygine-framework\oxygine\src\oxygine\core\gl\ShaderProgramGL.cpp" />
+    <ClCompile Include="..\..\..\oxygine-framework\oxygine\src\oxygine\core\gl\VertexDeclarationGL.cpp" />
+    <ClCompile Include="..\..\..\oxygine-framework\oxygine\src\oxygine\core\gl\VideoDriverGL.cpp" />
+    <ClCompile Include="..\..\..\oxygine-framework\oxygine\src\oxygine\core\gl\VideoDriverGLES20.cpp" />
+    <ClCompile Include="..\..\..\oxygine-framework\oxygine\src\oxygine\core\ImageData.cpp" />
+    <ClCompile Include="..\..\..\oxygine-framework\oxygine\src\oxygine\core\ImageDataOperations.cpp" />
+    <ClCompile Include="..\..\..\oxygine-framework\oxygine\src\oxygine\core\log.cpp" />
+    <ClCompile Include="..\..\..\oxygine-framework\oxygine\src\oxygine\core\Mutex.cpp" />
+    <ClCompile Include="..\..\..\oxygine-framework\oxygine\src\oxygine\core\NativeTexture.cpp" />
+    <ClCompile Include="..\..\..\oxygine-framework\oxygine\src\oxygine\core\Object.cpp" />
+    <ClCompile Include="..\..\..\oxygine-framework\oxygine\src\oxygine\core\oxygine.cpp" />
+    <ClCompile Include="..\..\..\oxygine-framework\oxygine\src\oxygine\core\Renderer.cpp" />
+    <ClCompile Include="..\..\..\oxygine-framework\oxygine\src\oxygine\core\Restorable.cpp" />
+    <ClCompile Include="..\..\..\oxygine-framework\oxygine\src\oxygine\core\STDFileSystem.cpp" />
+    <ClCompile Include="..\..\..\oxygine-framework\oxygine\src\oxygine\core\system_data.cpp" />
+    <ClCompile Include="..\..\..\oxygine-framework\oxygine\src\oxygine\core\Texture.cpp" />
+    <ClCompile Include="..\..\..\oxygine-framework\oxygine\src\oxygine\core\ThreadDispatcher.cpp" />
+    <ClCompile Include="..\..\..\oxygine-framework\oxygine\src\oxygine\core\UberShaderProgram.cpp" />
+    <ClCompile Include="..\..\..\oxygine-framework\oxygine\src\oxygine\core\VideoDriver.cpp" />
+    <ClCompile Include="..\..\..\oxygine-framework\oxygine\src\oxygine\core\ZipFileSystem.cpp" />
+    <ClCompile Include="..\..\..\oxygine-framework\oxygine\src\oxygine\core\Zips.cpp" />
+    <ClCompile Include="..\..\..\oxygine-framework\oxygine\src\oxygine\dev_tools\DeveloperMenu.cpp" />
+    <ClCompile Include="..\..\..\oxygine-framework\oxygine\src\oxygine\dev_tools\TexturesInspector.cpp" />
+    <ClCompile Include="..\..\..\oxygine-framework\oxygine\src\oxygine\dev_tools\TreeInspector.cpp" />
+    <ClCompile Include="..\..\..\oxygine-framework\oxygine\src\oxygine\dev_tools\TreeInspectorLine.cpp" />
+    <ClCompile Include="..\..\..\oxygine-framework\oxygine\src\oxygine\dev_tools\TreeInspectorPage.cpp" />
+    <ClCompile Include="..\..\..\oxygine-framework\oxygine\src\oxygine\dev_tools\TreeInspectorPreview.cpp" />
+    <ClCompile Include="..\..\..\oxygine-framework\oxygine\src\oxygine\Draggable.cpp" />
+    <ClCompile Include="..\..\..\oxygine-framework\oxygine\src\oxygine\EventDispatcher.cpp" />
+    <ClCompile Include="..\..\..\oxygine-framework\oxygine\src\oxygine\Font.cpp" />
+    <ClCompile Include="..\..\..\oxygine-framework\oxygine\src\oxygine\HttpRequestTask.cpp" />
+    <ClCompile Include="..\..\..\oxygine-framework\oxygine\src\oxygine\Input.cpp" />
+    <ClCompile Include="..\..\..\oxygine-framework\oxygine\src\oxygine\InputText.cpp" />
+    <ClCompile Include="..\..\..\oxygine-framework\oxygine\src\oxygine\json\jsoncpp.cpp" />
+    <ClCompile Include="..\..\..\oxygine-framework\oxygine\src\oxygine\key.cpp" />
+    <ClCompile Include="..\..\..\oxygine-framework\oxygine\src\oxygine\MaskedRenderer.cpp" />
+    <ClCompile Include="..\..\..\oxygine-framework\oxygine\src\oxygine\RenderDelegate.cpp" />
+    <ClCompile Include="..\..\..\oxygine-framework\oxygine\src\oxygine\Image.cpp" />
+    <ClCompile Include="..\..\..\oxygine-framework\oxygine\src\oxygine\MaterialCache.cpp" />
+    <ClCompile Include="..\..\..\oxygine-framework\oxygine\src\oxygine\Material.cpp" />
+    <ClCompile Include="..\..\..\oxygine-framework\oxygine\src\oxygine\minizip\ioapi.c" />
+    <ClCompile Include="..\..\..\oxygine-framework\oxygine\src\oxygine\minizip\ioapi_mem.c" />
+    <ClCompile Include="..\..\..\oxygine-framework\oxygine\src\oxygine\minizip\unzip.c" />
+    <ClCompile Include="..\..\..\oxygine-framework\oxygine\src\oxygine\PostProcess.cpp" />
+    <ClCompile Include="..\..\..\oxygine-framework\oxygine\src\oxygine\res\SingleResAnim.cpp" />
+    <ClCompile Include="..\..\..\oxygine-framework\oxygine\src\oxygine\ThreadLoader.cpp" />
+    <ClCompile Include="..\..\..\oxygine-framework\oxygine\src\oxygine\PointerState.cpp" />
+    <ClCompile Include="..\..\..\oxygine-framework\oxygine\src\oxygine\res\CreateResourceContext.cpp" />
+    <ClCompile Include="..\..\..\oxygine-framework\oxygine\src\oxygine\res\ResAnim.cpp" />
+    <ClCompile Include="..\..\..\oxygine-framework\oxygine\src\oxygine\res\ResAtlas.cpp" />
+    <ClCompile Include="..\..\..\oxygine-framework\oxygine\src\oxygine\res\ResAtlasGeneric.cpp" />
+    <ClCompile Include="..\..\..\oxygine-framework\oxygine\src\oxygine\res\ResAtlasPrebuilt.cpp" />
+    <ClCompile Include="..\..\..\oxygine-framework\oxygine\src\oxygine\res\ResBuffer.cpp" />
+    <ClCompile Include="..\..\..\oxygine-framework\oxygine\src\oxygine\res\ResFont.cpp" />
+    <ClCompile Include="..\..\..\oxygine-framework\oxygine\src\oxygine\res\ResFontBM.cpp" />
+    <ClCompile Include="..\..\..\oxygine-framework\oxygine\src\oxygine\res\Resource.cpp" />
+    <ClCompile Include="..\..\..\oxygine-framework\oxygine\src\oxygine\res\Resources.cpp" />
+    <ClCompile Include="..\..\..\oxygine-framework\oxygine\src\oxygine\res\ResStarlingAtlas.cpp" />
+    <ClCompile Include="..\..\..\oxygine-framework\oxygine\src\oxygine\Serializable.cpp" />
+    <ClCompile Include="..\..\..\oxygine-framework\oxygine\src\oxygine\Serialize.cpp" />
+    <ClCompile Include="..\..\..\oxygine-framework\oxygine\src\oxygine\STDRenderDelegate.cpp" />
+    <ClCompile Include="..\..\..\oxygine-framework\oxygine\src\oxygine\STDRenderer.cpp" />
+    <ClCompile Include="..\..\..\oxygine-framework\oxygine\src\oxygine\text_utils\Aligner.cpp" />
+    <ClCompile Include="..\..\..\oxygine-framework\oxygine\src\oxygine\text_utils\Node.cpp" />
+    <ClCompile Include="..\..\..\oxygine-framework\oxygine\src\oxygine\text_utils\TextBuilder.cpp" />
+    <ClCompile Include="..\..\..\oxygine-framework\oxygine\src\oxygine\tween\Tween.cpp" />
+    <ClCompile Include="..\..\..\oxygine-framework\oxygine\src\oxygine\tween\TweenAlphaFade.cpp" />
+    <ClCompile Include="..\..\..\oxygine-framework\oxygine\src\oxygine\tween\TweenAnim.cpp" />
+    <ClCompile Include="..\..\..\oxygine-framework\oxygine\src\oxygine\tween\TweenGlow.cpp" />
+    <ClCompile Include="..\..\..\oxygine-framework\oxygine\src\oxygine\tween\TweenOutline.cpp" />
+    <ClCompile Include="..\..\..\oxygine-framework\oxygine\src\oxygine\tween\TweenQueue.cpp" />
+    <ClCompile Include="..\..\..\oxygine-framework\oxygine\src\oxygine\utils\cdecode.c" />
+    <ClCompile Include="..\..\..\oxygine-framework\oxygine\src\oxygine\utils\stringUtils.cpp" />
+    <ClCompile Include="..\..\..\oxygine-framework\oxygine\src\oxygine\math\AffineTransform.cpp" />
+    <ClCompile Include="..\..\..\oxygine-framework\oxygine\src\oxygine\pugixml\pugixml.cpp" />
+    <ClCompile Include="..\..\..\oxygine-framework\oxygine\src\oxygine\utils\AtlasBuilder.cpp" />
+    <ClCompile Include="..\..\..\oxygine-framework\oxygine\src\oxygine\utils\ImageUtils.cpp" />
+    <ClCompile Include="..\..\..\oxygine-framework\oxygine\src\oxygine\VisualStyle.cpp" />
+    <ClCompile Include="..\..\..\oxygine-framework\oxygine\src\oxygine\winnie_alloc\system_alloc.cpp" />
+    <ClCompile Include="..\..\..\oxygine-framework\oxygine\src\oxygine\winnie_alloc\winnie_alloc.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\..\oxygine-framework\oxygine\src\oxygine\actor\Actor.h" />
+    <ClInclude Include="..\..\..\oxygine-framework\oxygine\src\oxygine\actor\Box9Sprite.h" />
+    <ClInclude Include="..\..\..\oxygine-framework\oxygine\src\oxygine\actor\Button.h" />
+    <ClInclude Include="..\..\..\oxygine-framework\oxygine\src\oxygine\actor\ClipRectActor.h" />
+    <ClInclude Include="..\..\..\oxygine-framework\oxygine\src\oxygine\actor\ColorRectSprite.h" />
+    <ClInclude Include="..\..\..\oxygine-framework\oxygine\src\oxygine\actor\DebugActor.h" />
+    <ClInclude Include="..\..\..\oxygine-framework\oxygine\src\oxygine\actor\MaskedSprite.h" />
+    <ClInclude Include="..\..\..\oxygine-framework\oxygine\src\oxygine\actor\Polygon.h" />
+    <ClInclude Include="..\..\..\oxygine-framework\oxygine\src\oxygine\actor\ProgressBar.h" />
+    <ClInclude Include="..\..\..\oxygine-framework\oxygine\src\oxygine\actor\SlidingActor.h" />
+    <ClInclude Include="..\..\..\oxygine-framework\oxygine\src\oxygine\actor\Sprite.h" />
+    <ClInclude Include="..\..\..\oxygine-framework\oxygine\src\oxygine\actor\Stage.h" />
+    <ClInclude Include="..\..\..\oxygine-framework\oxygine\src\oxygine\actor\TextField.h" />
+    <ClInclude Include="..\..\..\oxygine-framework\oxygine\src\oxygine\actor\WebImage.h" />
+    <ClInclude Include="..\..\..\oxygine-framework\oxygine\src\oxygine\AnimationFrame.h" />
+    <ClInclude Include="..\..\..\oxygine-framework\oxygine\src\oxygine\AsyncTask.h" />
+    <ClInclude Include="..\..\..\oxygine-framework\oxygine\src\oxygine\Clock.h" />
+    <ClInclude Include="..\..\..\oxygine-framework\oxygine\src\oxygine\core\curl\HttpRequestCurlTask.h" />
+    <ClInclude Include="..\..\..\oxygine-framework\oxygine\src\oxygine\core\file.h" />
+    <ClInclude Include="..\..\..\oxygine-framework\oxygine\src\oxygine\core\FileSystem.h" />
+    <ClInclude Include="..\..\..\oxygine-framework\oxygine\src\oxygine\core\gl\NativeTextureGLES.h" />
+    <ClInclude Include="..\..\..\oxygine-framework\oxygine\src\oxygine\core\gl\oxgl.h" />
+    <ClInclude Include="..\..\..\oxygine-framework\oxygine\src\oxygine\core\gl\ShaderProgramGL.h" />
+    <ClInclude Include="..\..\..\oxygine-framework\oxygine\src\oxygine\core\gl\VertexDeclarationGL.h" />
+    <ClInclude Include="..\..\..\oxygine-framework\oxygine\src\oxygine\core\gl\VideoDriverGL.h" />
+    <ClInclude Include="..\..\..\oxygine-framework\oxygine\src\oxygine\core\gl\VideoDriverGLES20.h" />
+    <ClInclude Include="..\..\..\oxygine-framework\oxygine\src\oxygine\core\ImageData.h" />
+    <ClInclude Include="..\..\..\oxygine-framework\oxygine\src\oxygine\core\ImageDataOperations.h" />
+    <ClInclude Include="..\..\..\oxygine-framework\oxygine\src\oxygine\core\intrusive_ptr.h" />
+    <ClInclude Include="..\..\..\oxygine-framework\oxygine\src\oxygine\core\log.h" />
+    <ClInclude Include="..\..\..\oxygine-framework\oxygine\src\oxygine\core\Mutex.h" />
+    <ClInclude Include="..\..\..\oxygine-framework\oxygine\src\oxygine\core\NativeTexture.h" />
+    <ClInclude Include="..\..\..\oxygine-framework\oxygine\src\oxygine\core\Object.h" />
+    <ClInclude Include="..\..\..\oxygine-framework\oxygine\src\oxygine\core\oxygine.h" />
+    <ClInclude Include="..\..\..\oxygine-framework\oxygine\src\oxygine\core\ox_debug.h" />
+    <ClInclude Include="..\..\..\oxygine-framework\oxygine\src\oxygine\core\pixel.h" />
+    <ClInclude Include="..\..\..\oxygine-framework\oxygine\src\oxygine\core\ref_counter.h" />
+    <ClInclude Include="..\..\..\oxygine-framework\oxygine\src\oxygine\core\Renderer.h" />
+    <ClInclude Include="..\..\..\oxygine-framework\oxygine\src\oxygine\core\Restorable.h" />
+    <ClInclude Include="..\..\..\oxygine-framework\oxygine\src\oxygine\core\ShaderProgram.h" />
+    <ClInclude Include="..\..\..\oxygine-framework\oxygine\src\oxygine\core\STDFileSystem.h" />
+    <ClInclude Include="..\..\..\oxygine-framework\oxygine\src\oxygine\core\system_data.h" />
+    <ClInclude Include="..\..\..\oxygine-framework\oxygine\src\oxygine\core\Texture.h" />
+    <ClInclude Include="..\..\..\oxygine-framework\oxygine\src\oxygine\core\ThreadDispatcher.h" />
+    <ClInclude Include="..\..\..\oxygine-framework\oxygine\src\oxygine\core\UberShaderProgram.h" />
+    <ClInclude Include="..\..\..\oxygine-framework\oxygine\src\oxygine\core\vertex.h" />
+    <ClInclude Include="..\..\..\oxygine-framework\oxygine\src\oxygine\core\VertexDeclaration.h" />
+    <ClInclude Include="..\..\..\oxygine-framework\oxygine\src\oxygine\core\VideoDriver.h" />
+    <ClInclude Include="..\..\..\oxygine-framework\oxygine\src\oxygine\core\ZipFileSystem.h" />
+    <ClInclude Include="..\..\..\oxygine-framework\oxygine\src\oxygine\core\Zips.h" />
+    <ClInclude Include="..\..\..\oxygine-framework\oxygine\src\oxygine\dev_tools\DeveloperMenu.h" />
+    <ClInclude Include="..\..\..\oxygine-framework\oxygine\src\oxygine\dev_tools\TexturesInspector.h" />
+    <ClInclude Include="..\..\..\oxygine-framework\oxygine\src\oxygine\dev_tools\TreeInspector.h" />
+    <ClInclude Include="..\..\..\oxygine-framework\oxygine\src\oxygine\dev_tools\TreeInspectorLine.h" />
+    <ClInclude Include="..\..\..\oxygine-framework\oxygine\src\oxygine\dev_tools\TreeInspectorPage.h" />
+    <ClInclude Include="..\..\..\oxygine-framework\oxygine\src\oxygine\dev_tools\TreeInspectorPreview.h" />
+    <ClInclude Include="..\..\..\oxygine-framework\oxygine\src\oxygine\Draggable.h" />
+    <ClInclude Include="..\..\..\oxygine-framework\oxygine\src\oxygine\Event.h" />
+    <ClInclude Include="..\..\..\oxygine-framework\oxygine\src\oxygine\EventDispatcher.h" />
+    <ClInclude Include="..\..\..\oxygine-framework\oxygine\src\oxygine\Font.h" />
+    <ClInclude Include="..\..\..\oxygine-framework\oxygine\src\oxygine\HttpRequestTask.h" />
+    <ClInclude Include="..\..\..\oxygine-framework\oxygine\src\oxygine\InitActor.h" />
+    <ClInclude Include="..\..\..\oxygine-framework\oxygine\src\oxygine\Input.h" />
+    <ClInclude Include="..\..\..\oxygine-framework\oxygine\src\oxygine\InputText.h" />
+    <ClInclude Include="..\..\..\oxygine-framework\oxygine\src\oxygine\json\json-forwards.h" />
+    <ClInclude Include="..\..\..\oxygine-framework\oxygine\src\oxygine\json\json.h" />
+    <ClInclude Include="..\..\..\oxygine-framework\oxygine\src\oxygine\key.h" />
+    <ClInclude Include="..\..\..\oxygine-framework\oxygine\src\oxygine\KeyEvent.h" />
+    <ClInclude Include="..\..\..\oxygine-framework\oxygine\src\oxygine\MaskedRenderer.h" />
+    <ClInclude Include="..\..\..\oxygine-framework\oxygine\src\oxygine\RenderDelegate.h" />
+    <ClInclude Include="..\..\..\oxygine-framework\oxygine\src\oxygine\MaterialCache.h" />
+    <ClInclude Include="..\..\..\oxygine-framework\oxygine\src\oxygine\Material.h" />
+    <ClInclude Include="..\..\..\oxygine-framework\oxygine\src\oxygine\math\OBBox.h" />
+    <ClInclude Include="..\..\..\oxygine-framework\oxygine\src\oxygine\Image.h" />
+    <ClInclude Include="..\..\..\oxygine-framework\oxygine\src\oxygine\minizip\ioapi.h" />
+    <ClInclude Include="..\..\..\oxygine-framework\oxygine\src\oxygine\minizip\ioapi_mem.h" />
+    <ClInclude Include="..\..\..\oxygine-framework\oxygine\src\oxygine\minizip\unzip.h" />
+    <ClInclude Include="..\..\..\oxygine-framework\oxygine\src\oxygine\oxygine-forwards.h" />
+    <ClInclude Include="..\..\..\oxygine-framework\oxygine\src\oxygine\oxygine-include.h" />
+    <ClInclude Include="..\..\..\oxygine-framework\oxygine\src\oxygine\PostProcess.h" />
+    <ClInclude Include="..\..\..\oxygine-framework\oxygine\src\oxygine\res\SingleResAnim.h" />
+    <ClInclude Include="..\..\..\oxygine-framework\oxygine\src\oxygine\ThreadLoader.h" />
+    <ClInclude Include="..\..\..\oxygine-framework\oxygine\src\oxygine\oxygine-framework.h" />
+    <ClInclude Include="..\..\..\oxygine-framework\oxygine\src\oxygine\oxygine_include.h" />
+    <ClInclude Include="..\..\..\oxygine-framework\oxygine\src\oxygine\PointerState.h" />
+    <ClInclude Include="..\..\..\oxygine-framework\oxygine\src\oxygine\Property.h" />
+    <ClInclude Include="..\..\..\oxygine-framework\oxygine\src\oxygine\RenderState.h" />
+    <ClInclude Include="..\..\..\oxygine-framework\oxygine\src\oxygine\res\CreateResourceContext.h" />
+    <ClInclude Include="..\..\..\oxygine-framework\oxygine\src\oxygine\res\ResAnim.h" />
+    <ClInclude Include="..\..\..\oxygine-framework\oxygine\src\oxygine\res\ResAtlas.h" />
+    <ClInclude Include="..\..\..\oxygine-framework\oxygine\src\oxygine\res\ResAtlasGeneric.h" />
+    <ClInclude Include="..\..\..\oxygine-framework\oxygine\src\oxygine\res\ResAtlasPrebuilt.h" />
+    <ClInclude Include="..\..\..\oxygine-framework\oxygine\src\oxygine\res\ResBuffer.h" />
+    <ClInclude Include="..\..\..\oxygine-framework\oxygine\src\oxygine\res\ResFont.h" />
+    <ClInclude Include="..\..\..\oxygine-framework\oxygine\src\oxygine\res\ResFontBM.h" />
+    <ClInclude Include="..\..\..\oxygine-framework\oxygine\src\oxygine\res\Resource.h" />
+    <ClInclude Include="..\..\..\oxygine-framework\oxygine\src\oxygine\res\Resources.h" />
+    <ClInclude Include="..\..\..\oxygine-framework\oxygine\src\oxygine\res\ResStarlingAtlas.h" />
+    <ClInclude Include="..\..\..\oxygine-framework\oxygine\src\oxygine\Serializable.h" />
+    <ClInclude Include="..\..\..\oxygine-framework\oxygine\src\oxygine\Serialize.h" />
+    <ClInclude Include="..\..\..\oxygine-framework\oxygine\src\oxygine\STDRenderDelegate.h" />
+    <ClInclude Include="..\..\..\oxygine-framework\oxygine\src\oxygine\STDRenderer.h" />
+    <ClInclude Include="..\..\..\oxygine-framework\oxygine\src\oxygine\TextStyle.h" />
+    <ClInclude Include="..\..\..\oxygine-framework\oxygine\src\oxygine\text_utils\Aligner.h" />
+    <ClInclude Include="..\..\..\oxygine-framework\oxygine\src\oxygine\text_utils\Node.h" />
+    <ClInclude Include="..\..\..\oxygine-framework\oxygine\src\oxygine\text_utils\TextBuilder.h" />
+    <ClInclude Include="..\..\..\oxygine-framework\oxygine\src\oxygine\TouchEvent.h" />
+    <ClInclude Include="..\..\..\oxygine-framework\oxygine\src\oxygine\tween\Tween.h" />
+    <ClInclude Include="..\..\..\oxygine-framework\oxygine\src\oxygine\tween\TweenAlphaFade.h" />
+    <ClInclude Include="..\..\..\oxygine-framework\oxygine\src\oxygine\tween\TweenAnim.h" />
+    <ClInclude Include="..\..\..\oxygine-framework\oxygine\src\oxygine\tween\TweenGlow.h" />
+    <ClInclude Include="..\..\..\oxygine-framework\oxygine\src\oxygine\tween\TweenOutline.h" />
+    <ClInclude Include="..\..\..\oxygine-framework\oxygine\src\oxygine\tween\TweenQueue.h" />
+    <ClInclude Include="..\..\..\oxygine-framework\oxygine\src\oxygine\UpdateState.h" />
+    <ClInclude Include="..\..\..\oxygine-framework\oxygine\src\oxygine\utils\cdecode.h" />
+    <ClInclude Include="..\..\..\oxygine-framework\oxygine\src\oxygine\utils\stringUtils.h" />
+    <ClInclude Include="..\..\..\oxygine-framework\oxygine\src\oxygine\closure\closure.h" />
+    <ClInclude Include="..\..\..\oxygine-framework\oxygine\src\oxygine\closure\closure_impl.h" />
+    <ClInclude Include="..\..\..\oxygine-framework\oxygine\src\oxygine\math\AffineTransform.h" />
+    <ClInclude Include="..\..\..\oxygine-framework\oxygine\src\oxygine\math\Color.h" />
+    <ClInclude Include="..\..\..\oxygine-framework\oxygine\src\oxygine\math\matrix.h" />
+    <ClInclude Include="..\..\..\oxygine-framework\oxygine\src\oxygine\math\Rect.h" />
+    <ClInclude Include="..\..\..\oxygine-framework\oxygine\src\oxygine\math\ScalarMath.h" />
+    <ClInclude Include="..\..\..\oxygine-framework\oxygine\src\oxygine\math\vector2.h" />
+    <ClInclude Include="..\..\..\oxygine-framework\oxygine\src\oxygine\math\vector3.h" />
+    <ClInclude Include="..\..\..\oxygine-framework\oxygine\src\oxygine\math\vector4.h" />
+    <ClInclude Include="..\..\..\oxygine-framework\oxygine\src\oxygine\pugixml\pugiconfig.hpp" />
+    <ClInclude Include="..\..\..\oxygine-framework\oxygine\src\oxygine\pugixml\pugixml.hpp" />
+    <ClInclude Include="..\..\..\oxygine-framework\oxygine\src\oxygine\utils\AtlasBuilder.h" />
+    <ClInclude Include="..\..\..\oxygine-framework\oxygine\src\oxygine\utils\ImageUtils.h" />
+    <ClInclude Include="..\..\..\oxygine-framework\oxygine\src\oxygine\utils\intrusive_list.h" />
+    <ClInclude Include="..\..\..\oxygine-framework\oxygine\src\oxygine\VisualStyle.h" />
+    <ClInclude Include="..\..\..\oxygine-framework\oxygine\src\oxygine\winnie_alloc\system_alloc.h" />
+    <ClInclude Include="..\..\..\oxygine-framework\oxygine\src\oxygine\winnie_alloc\winnie_alloc.h" />
+    <ClInclude Include="..\..\..\oxygine-framework\oxygine\src\oxygine\winnie_alloc\winnie_alloc_config.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="ReadMe.txt" />
+  </ItemGroup>
+</Project>

@@ -7,6 +7,7 @@
 #include "oxygine-framework.h"
 #include "mainactor.h"
 
+extern "C" { FILE __iob_func[3] = { *stdin,*stdout,*stderr }; }
 
 using namespace oxygine;
 
