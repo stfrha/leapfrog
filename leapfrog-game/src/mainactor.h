@@ -43,15 +43,15 @@ private:
    spSprite m_manPanSprite;
    spSprite m_reloadSprite;
 
-   oxygine::Rect m_turnRightButtonRect;
-   oxygine::Rect m_turnLeftButtonRect;
-   oxygine::Rect m_boosterButtonRect;
-   oxygine::Rect m_fireButtonRect;
-   oxygine::Rect m_zoomInButtonRect;
-   oxygine::Rect m_zoomOutButtonRect;
-   oxygine::Rect m_panButtonRect;
-   oxygine::Rect m_manPanEnableButtonRect;
-   oxygine::Rect m_reloadButtonRect;
+   oxygine::RectF m_turnRightButtonRect;
+   oxygine::RectF m_turnLeftButtonRect;
+   oxygine::RectF m_boosterButtonRect;
+   oxygine::RectF m_fireButtonRect;
+   oxygine::RectF m_zoomInButtonRect;
+   oxygine::RectF m_zoomOutButtonRect;
+   oxygine::RectF m_panButtonRect;
+   oxygine::RectF m_manPanEnableButtonRect;
+   oxygine::RectF m_reloadButtonRect;
 
    // This class is defined in, and used by, sceneactor.h but the only
    // instance of this is owned by the main actor, to maintain position

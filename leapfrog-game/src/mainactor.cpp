@@ -422,16 +422,16 @@ void MainActor::doUpdate(const UpdateState& us)
 void MainActor::createButtonOverlay(void)
 {
    // Caluclate button geometrics
-   m_turnLeftButtonRect = Rect(0.0f, g_Layout.getYFromBottom(1), g_Layout.getButtonWidth(), g_Layout.getButtonWidth());
-   m_turnRightButtonRect = Rect(g_Layout.getButtonWidth(), g_Layout.getYFromBottom(0), g_Layout.getButtonWidth(), g_Layout.getButtonWidth());
-   m_boosterButtonRect = Rect(g_Layout.getXFromRight(0), g_Layout.getYFromBottom(1), g_Layout.getButtonWidth(), g_Layout.getButtonWidth());
-   m_fireButtonRect = Rect(g_Layout.getXFromRight(1), g_Layout.getYFromBottom(0), g_Layout.getButtonWidth(), g_Layout.getButtonWidth());
+   m_turnLeftButtonRect = RectF(0.0f, g_Layout.getYFromBottom(1), g_Layout.getButtonWidth(), g_Layout.getButtonWidth());
+   m_turnRightButtonRect = RectF(g_Layout.getButtonWidth(), g_Layout.getYFromBottom(0), g_Layout.getButtonWidth(), g_Layout.getButtonWidth());
+   m_boosterButtonRect = RectF(g_Layout.getXFromRight(0), g_Layout.getYFromBottom(1), g_Layout.getButtonWidth(), g_Layout.getButtonWidth());
+   m_fireButtonRect = RectF(g_Layout.getXFromRight(1), g_Layout.getYFromBottom(0), g_Layout.getButtonWidth(), g_Layout.getButtonWidth());
 
-   m_manPanEnableButtonRect = Rect(g_Layout.getXFromRight(0), 0.0f, g_Layout.getButtonWidth(), g_Layout.getButtonWidth());
-   m_zoomInButtonRect = Rect(g_Layout.getXFromRight(1) - g_Layout.getButtonWidth() / 2.0f, 0.0f, g_Layout.getButtonWidth(), g_Layout.getButtonWidth());
-   m_zoomOutButtonRect = Rect(g_Layout.getXFromRight(3), 0.0f, g_Layout.getButtonWidth(), g_Layout.getButtonWidth());
-   m_reloadButtonRect = Rect(g_Layout.getXFromRight(4) - g_Layout.getButtonWidth() / 2.0f, 0.0f, g_Layout.getButtonWidth(), g_Layout.getButtonWidth());
-   m_panButtonRect = Rect(g_Layout.getViewPortBounds().x / 2.0f - g_Layout.getButtonWidth() / 2.0f, g_Layout.getViewPortBounds().y / 2.0f - g_Layout.getButtonWidth() / 2.0f, g_Layout.getButtonWidth(), g_Layout.getButtonWidth());
+   m_manPanEnableButtonRect = RectF(g_Layout.getXFromRight(0), 0.0f, g_Layout.getButtonWidth(), g_Layout.getButtonWidth());
+   m_zoomInButtonRect = RectF(g_Layout.getXFromRight(1) - g_Layout.getButtonWidth() / 2.0f, 0.0f, g_Layout.getButtonWidth(), g_Layout.getButtonWidth());
+   m_zoomOutButtonRect = RectF(g_Layout.getXFromRight(3), 0.0f, g_Layout.getButtonWidth(), g_Layout.getButtonWidth());
+   m_reloadButtonRect = RectF(g_Layout.getXFromRight(4) - g_Layout.getButtonWidth() / 2.0f, 0.0f, g_Layout.getButtonWidth(), g_Layout.getButtonWidth());
+   m_panButtonRect = RectF(g_Layout.getViewPortBounds().x / 2.0f - g_Layout.getButtonWidth() / 2.0f, g_Layout.getViewPortBounds().y / 2.0f - g_Layout.getButtonWidth() / 2.0f, g_Layout.getButtonWidth(), g_Layout.getButtonWidth());
 
 
    // Define sprites
@@ -716,11 +716,11 @@ void MainActor::registerLeapfrog(LeapFrog* leapfrog)
 
    if (leapfrog != NULL)
    {
-      initShots = g_GameStatus.getResources()->getShots();
+      initShots = (float)g_GameStatus.getResources()->getShots();
       initFuel = g_GameStatus.getResources()->getFuel();
       initShield = g_GameStatus.getResources()->getShield();
       initDamage = g_GameStatus.getResources()->getDamage();
-      initCredits = g_GameStatus.getResources()->getCredits();
+      initCredits = (float)g_GameStatus.getResources()->getCredits();
    }
 
    spStatusBar shotsBar = new StatusBar(
