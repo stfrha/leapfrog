@@ -40,13 +40,28 @@ MainActor::MainActor() :
    m_zoomOutTouchIndex(0),
    m_panTouchIndex(0),
    m_reloadTouchIndex(0),
+   m_splashArm(true),
    m_reloadPressed(false),
    m_reloadArm(true)
 {
    g_Layout.initLayout();
 
-	//load xml file with resources definition
-	m_gameResources.loadXML("res.xml");
+   m_splashScreenResource.loadXML("splash_screen.xml");
+
+   // Now center splash on center of screen
+   oxygine::Sprite* splashSprite = new  oxygine::Sprite();
+   splashSprite->setResAnim(m_splashScreenResource.getResAnim("splash_screen"));
+   splashSprite->setAnchor(Vector2(0.5f, 0.5f));
+   splashSprite->setPosition((getStage()->getSize()).x / 2, (getStage()->getSize()).y / 2);
+   splashSprite->attachTo(this);
+}
+
+void MainActor::initMainActor(void)
+{
+   m_splashScreenResource.unload();
+
+   //load xml file with resources definition
+   m_gameResources.loadXML("res.xml");
 
    // Restore game status except leapfrog. That is 
    // managed on the Leapfrog object initiative
@@ -65,8 +80,8 @@ MainActor::MainActor() :
       Vector2(g_Layout.getButtonWidth() * 2.0f, g_Layout.getYFromBottom(1) - g_Layout.getButtonWidth() / 2.0f),
       g_Layout.getDefaultFontSize());
 
-	setSize(g_Layout.getViewPortBounds());
-   
+   setSize(g_Layout.getViewPortBounds());
+
    g_LuaInterface.lua_forceCurrentScene();
    g_LuaInterface.lua_startInitialScene();
    m_nextScene.m_armNextScene = true;
@@ -75,6 +90,7 @@ MainActor::MainActor() :
    addEventListener(CompoundObjectCreatedEvent::EVENT, CLOSURE(this, &MainActor::dummyHandler));
 
 }
+
 
 MainActor::~MainActor()
 {
@@ -369,6 +385,12 @@ void MainActor::httpLoaded(Event* event)
 
 void MainActor::doUpdate(const UpdateState& us)
 {
+   if (m_splashArm)
+   {
+      m_splashArm = false;
+      initMainActor();
+   }
+
    if (m_reloadArm && m_reloadPressed)
    {
       m_reloadArm = false;

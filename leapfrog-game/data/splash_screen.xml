@@ -1,0 +1,7 @@
+<?xml version="1.0"?>
+<resources>
+	<set path = "splash_screen" />
+	<atlas>
+		<image file="splash_screen.png"/>	
+	</atlas>
+</resources>
