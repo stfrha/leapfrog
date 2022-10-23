@@ -365,11 +365,21 @@
     <ClInclude Include="..\src\steeringinterface.h" />
     <ClInclude Include="..\src\steeringmanager.h" />
     <ClInclude Include="..\src\system.h" />
+    <ClInclude Include="resource.h" />
+    <ClInclude Include="resource1.h" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\library_projects\oxygine.vcxproj">
       <Project>{52411305-cfe1-4fa8-9885-5729bfc816cf}</Project>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="leapfrog1.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="icon1.ico" />
+    <Image Include="icon2.ico" />
+    <Image Include="leapfrog.ico" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

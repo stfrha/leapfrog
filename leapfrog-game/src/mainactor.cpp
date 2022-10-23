@@ -805,7 +805,7 @@ void MainActor::registerLeapfrog(LeapFrog* leapfrog)
       Vector2(g_Layout.getXFromRight(1), g_Layout.getYFromTop(1) + g_Layout.getButtonWidth() / 2.0f * 4.0f + 2.0f),
       Vector2(g_Layout.getButtonWidth() * 2.0f, g_Layout.getButtonWidth() / 2.0f),
       (int)g_Layout.getDefaultFontSize(),
-      initCredits,
+      (int)initCredits,
       "Credits:",
       ObjectResourcesTypeEnum::credits);
 
