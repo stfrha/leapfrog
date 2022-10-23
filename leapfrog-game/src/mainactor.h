@@ -30,6 +30,7 @@ private:
 	//in real project you would have more than one Resources declarations.
 	//It is important on mobile devices with limited memory and you would load/unload them
 	oxygine::Resources m_gameResources;
+   oxygine::Resources m_splashScreenResource;
 
    b2World* m_world;
 
@@ -71,11 +72,13 @@ private:
 
    bool m_reloadPressed;
    bool m_reloadArm;
+   bool m_splashArm;
 
    //spObjectResources m_gameStatus;
 
    NextSceneDefinition m_nextScene;
 
+   void initMainActor(void);
    void exitLandingScene(oxygine::Event *ev);
    void exitDeepSpaceScene(oxygine::Event *ev);
    void exitOrbitScene(oxygine::Event *ev);
