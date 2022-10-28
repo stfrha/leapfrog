@@ -38,6 +38,7 @@ public:
 	LandingActor(
       oxygine::Resources& gameResources, 
       b2World* world,
+      float initialZoom,
       float zoom,
       pugi::xml_node& root,
       int groupIndex);

@@ -52,18 +52,19 @@ SceneActor* SceneActor::defineScene(
    SceneActor* baseScene = NULL;
 
    // Calc zoom scale: Formula empirically found to be nice
+   float initalZoomScale = g_Layout.getViewPortBounds().x / 384.0f;
    float zoomScale = g_Layout.getViewPortBounds().x / 3840.0f;
 
    if (sceneTypeStr == "ground")
    {
-      LandingActor* landingScene = new LandingActor(gameResources, world, zoomScale, root, groupIndex);
+      LandingActor* landingScene = new LandingActor(gameResources, world, initalZoomScale, zoomScale, root, groupIndex);
 
       baseScene = static_cast<SceneActor*>(landingScene);
 
    }
    else if (sceneTypeStr == "space")
    {
-      FreeSpaceActor* spaceScene = new FreeSpaceActor(gameResources, world, zoomScale, root, groupIndex);
+      FreeSpaceActor* spaceScene = new FreeSpaceActor(gameResources, world, initalZoomScale, zoomScale, root, groupIndex);
 
       baseScene = static_cast<SceneActor*>(spaceScene);
    }
@@ -134,11 +135,12 @@ SceneActor* SceneActor::defineScene(
 SceneActor::SceneActor(
    Resources& gameResources, 
    b2World* world, 
+   float initialZoomScale,
    float zoomScale) :
    CompoundObject(this, NULL),
    m_gameResources(&gameResources),
    m_world(world),
-   m_zoomScale(zoomScale),
+   m_zoomScale(initialZoomScale),
    m_stageToViewPortScale(m_zoomScale * Scales::c_stageToViewPortScale),
    m_physToStageScale(1.0f),
    m_panorateMode(center),
@@ -149,6 +151,7 @@ SceneActor::SceneActor(
    m_turnRightPressed(false),
    m_boosterPressed(false),
    m_firePressed(false),
+   m_pausePressed(false),
    m_zoomInPressed(false),
    m_zoomOutPressed(false),
    m_panButtonPressed(false),
@@ -156,7 +159,9 @@ SceneActor::SceneActor(
    m_armManPanEnableChange(true),
    m_panObject(NULL),
    m_manualPan(NULL),
-   m_timerIdCounter(0)
+   m_timerIdCounter(0),
+   m_isInPause(false),
+   m_armPauseChange(true)
 {
 	setScale(m_stageToViewPortScale);
 
@@ -177,6 +182,7 @@ SceneActor::SceneActor(
 
    setUserData(aud);
 
+   addTween(SceneActor::TweenZoom(zoomScale), 4000, 1, false, 0, Tween::ease_inOutQuad);
 }
 
 SceneActor::~SceneActor()
@@ -362,6 +368,23 @@ void SceneActor::setWantedVpPos(const Vector2& pos)
    m_wantedVpPos = pos;
 }
 
+const float& SceneActor::getZoom() const
+{
+   return m_zoomScale;
+}
+
+bool SceneActor::getIsInPause(void)
+{
+   return m_isInPause;
+}
+
+void SceneActor::setZoom(const float& zoom)
+{
+   m_zoomScale = zoom;
+   m_stageToViewPortScale = m_zoomScale * Scales::c_stageToViewPortScale;
+   setScale(m_stageToViewPortScale);
+}
+
 void SceneActor::setPanorateObject(CompoundObject* co)
 {
    if (co)
@@ -373,14 +396,6 @@ void SceneActor::setPanorateObject(CompoundObject* co)
 void SceneActor::setManualPan(ManualPan* mp)
 {
    m_manualPan = mp;
-}
-
-
-void SceneActor::setZoom(float zoom)
-{
-   m_zoomScale = zoom;
-   m_stageToViewPortScale = m_zoomScale * Scales::c_stageToViewPortScale;
-   setScale(m_stageToViewPortScale);
 }
 
 void SceneActor::enablePanorateLimit(bool enable)
@@ -433,39 +448,112 @@ void SceneActor::takeControlOfLeapfrog(bool control)
 
 void SceneActor::doUpdate(const UpdateState& us)
 {
-   // Handle timers
-   vector<int> removeIds;
+   const Uint8* data = SDL_GetKeyboardState(0);
 
-   for (auto it = m_timers.begin(); it != m_timers.end(); ++it)
+   if (!m_isInPause)
    {
-      if (it->tickTimer())
-      {
-         removeIds.push_back(it->m_id);
+      // Handle timers
+      vector<int> removeIds;
 
-         SceneTimeoutEvent ev(it->m_id);
-         m_sceneActor->dispatchEvent(&ev);
+      for (auto it = m_timers.begin(); it != m_timers.end(); ++it)
+      {
+         if (it->tickTimer())
+         {
+            removeIds.push_back(it->m_id);
+
+            SceneTimeoutEvent ev(it->m_id);
+            m_sceneActor->dispatchEvent(&ev);
+
+         }
+      }
+
+      // Remove all timers that timed out
+      for (auto it = removeIds.begin(); it != removeIds.end(); ++it)
+      {
+         removeTimer(*it);
+      }
+
+      testForBoundaryRepel();
+
+      m_world->Step(c_secondsPerUpdate, 6, 2);
+
+      // Kill all actors registrated for death
+      sweepKillList();
+
+      // Spawn all actors registred for birth
+      sweepSpawnList();
+
+      if (m_leapfrog != NULL)
+      {
+         if (!m_externalControl)
+         {
+            if (data[SDL_SCANCODE_W] || m_boosterPressed)
+            {
+               m_leapfrog->fireMainBooster(true);
+            }
+            else
+            {
+               m_leapfrog->fireMainBooster(false);
+            }
+
+            if (data[SDL_SCANCODE_A] || m_turnLeftPressed)
+            {
+               m_leapfrog->fireSteeringBooster(-1);
+            }
+            else if (data[SDL_SCANCODE_D] || m_turnRightPressed)
+            {
+               m_leapfrog->fireSteeringBooster(1);
+            }
+            else
+            {
+               m_leapfrog->fireSteeringBooster(0);
+            }
+         }
+
+         if (data[SDL_SCANCODE_RETURN] || m_firePressed)
+         {
+            m_leapfrog->fireGun(true);
+         }
+         else
+         {
+            m_leapfrog->fireGun(false);
+         }
+
+         if (data[SDL_SCANCODE_0])
+         {
+            m_leapfrog->goToMode(LFM_RESET);
+         }
+         else if (data[SDL_SCANCODE_1])
+         {
+            m_leapfrog->goToMode(LFM_LANDING);
+         }
+         else if (data[SDL_SCANCODE_2])
+         {
+            m_leapfrog->goToMode(LFM_DEEP_SPACE);
+         }
+         else if (data[SDL_SCANCODE_3])
+         {
+            m_leapfrog->goToMode(LFM_REENTRY);
+         }
+
+
+         if (data[SDL_SCANCODE_KP_9])
+         {
+            m_leapfrog->fireReentryFlames(true);
+         }
+         else if (data[SDL_SCANCODE_KP_8])
+         {
+            m_leapfrog->fireReentryFlames(false);
+         }
+
+         if (data[SDL_SCANCODE_P])
+         {
+            m_leapfrog->dumpParts();
+         }
 
       }
+
    }
-
-   // Remove all timers that timed out
-   for (auto it = removeIds.begin(); it != removeIds.end(); ++it)
-   {
-      removeTimer(*it);
-   }
-
-   testForBoundaryRepel();
-
-	//in real project you should make steps with fixed dt, check box2d documentation
-	m_world->Step(us.dt / 1000.0f, 6, 2);
-
-   // Kill all actors registrated for death
-   sweepKillList();
-
-   // Spawn all actors registred for birth
-   sweepSpawnList();
-
-	const Uint8* data = SDL_GetKeyboardState(0);
 	
 	if (data[SDL_SCANCODE_KP_PLUS] || m_zoomInPressed)
 	{
@@ -495,74 +583,24 @@ void SceneActor::doUpdate(const UpdateState& us)
 
    m_stageToViewPortScale = m_zoomScale * Scales::c_stageToViewPortScale;
 
-   if (m_leapfrog != NULL)
+
+   if (m_pausePressed && m_armPauseChange)
    {
-      if (!m_externalControl)
+      if (m_isInPause)
       {
-         if (data[SDL_SCANCODE_W] || m_boosterPressed)
-         {
-            m_leapfrog->fireMainBooster(true);
-         }
-         else
-         {
-            m_leapfrog->fireMainBooster(false);
-         }
-
-         if (data[SDL_SCANCODE_A] || m_turnLeftPressed)
-         {
-            m_leapfrog->fireSteeringBooster(-1);
-         }
-         else if (data[SDL_SCANCODE_D] || m_turnRightPressed)
-         {
-            m_leapfrog->fireSteeringBooster(1);
-         }
-         else
-         {
-            m_leapfrog->fireSteeringBooster(0);
-         }
-      }
-
-      if (data[SDL_SCANCODE_RETURN] || m_firePressed)
-      {
-         m_leapfrog->fireGun(true);
+         m_isInPause = false;
       }
       else
       {
-         m_leapfrog->fireGun(false);
+         m_isInPause = true;
       }
 
-      if (data[SDL_SCANCODE_0])
-      {
-         m_leapfrog->goToMode(LFM_RESET);
-      }
-      else if (data[SDL_SCANCODE_1])
-      {
-         m_leapfrog->goToMode(LFM_LANDING);
-      }
-      else if (data[SDL_SCANCODE_2])
-      {
-         m_leapfrog->goToMode(LFM_DEEP_SPACE);
-      }
-      else if (data[SDL_SCANCODE_3])
-      {
-         m_leapfrog->goToMode(LFM_REENTRY);
-      }
+      m_armPauseChange = false;
+   }
 
-
-      if (data[SDL_SCANCODE_KP_9])
-      {
-         m_leapfrog->fireReentryFlames(true);
-      }
-      else if (data[SDL_SCANCODE_KP_8])
-      {
-         m_leapfrog->fireReentryFlames(false);
-      }
-
-      if (data[SDL_SCANCODE_P])
-      {
-         m_leapfrog->dumpParts();
-      }
-
+   if (!m_pausePressed && !m_armPauseChange)
+   {
+      m_armPauseChange = true;
    }
 
    if (m_manPanEnablePressed && m_armManPanEnableChange)

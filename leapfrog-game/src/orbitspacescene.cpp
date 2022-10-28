@@ -15,7 +15,7 @@ OrbitSpaceScene::OrbitSpaceScene(
    b2World* world,
    xml_node& root,
    int groupIndex) :
-	SceneActor(gameResources, world, 0.4f),
+	SceneActor(gameResources, world, 0.4f, 0.4f),
    m_state(waitForLeapfrog),
    m_stateStartTime(0)
 {

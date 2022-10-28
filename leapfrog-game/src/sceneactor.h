@@ -65,13 +65,16 @@ public:
    };
 
 private:
+   float c_secondsPerUpdate = 1.0f / 60.0f;
    spCompoundObject m_panObject;
    bool m_armManPanEnableChange;
-   std::vector<spSoftBoundary>   m_boundaries;
-   std::vector<b2Body*>   m_boundedBodies;
+   bool m_armPauseChange;
+   std::vector<spSoftBoundary> m_boundaries;
+   std::vector<b2Body*> m_boundedBodies;
    ManualPan* m_manualPan;
    std::vector<SceneTimer> m_timers;
    int m_timerIdCounter;
+   bool m_isInPause;
 
    std::vector<ParallaxBackground> m_parallaxBackgrounds;
 
@@ -80,6 +83,9 @@ private:
    // make the body at the specified position.
    // This can be animated for smooth transitions.
    oxygine::Vector2 m_wantedVpPos;
+
+   // This can be animated for smooth transitions.
+   float m_zoomPos;
 
 protected:
    oxygine::Resources * m_gameResources;
@@ -99,10 +105,15 @@ public:
    void setWantedVpPos(const Vector2& pos);
    void setManualPan(ManualPan* mp);
 
+   const float& getZoom() const;
+   void setZoom(const float& pos);
+
+   bool getIsInPause(void);
 
 	SceneActor(
       oxygine::Resources& gameResources, 
       b2World* world, 
+      float initialZoomScale,
       float zoomScale);
    ~SceneActor();
 
@@ -120,6 +131,7 @@ public:
    bool m_turnRightPressed;
    bool m_boosterPressed;
    bool m_firePressed;
+   bool m_pausePressed;
    bool m_zoomInPressed;
    bool m_zoomOutPressed;
    bool m_panButtonPressed;
@@ -141,7 +153,6 @@ public:
 
    void setPanorateMode(PanorateModeEnum mode);
    void setPanorateObject(CompoundObject* co);
-   void setZoom(float zoom);
    void enablePanorateLimit(bool enable);
 
    void addMeToDeathList(spActor actor);
@@ -161,6 +172,8 @@ public:
    SceneActor::SceneTypeEnum getSceneType(void);
 
    typedef Property2Args<float, oxygine::Vector2, const oxygine::Vector2&, SceneActor, &SceneActor::getWantedVpPos, &SceneActor::setWantedVpPos>  TweenWantedVpPos;
+   typedef Property2Args<float, float, const float&, SceneActor, &SceneActor::getZoom, &SceneActor::setZoom>  TweenZoom;
+
 
 
 protected:

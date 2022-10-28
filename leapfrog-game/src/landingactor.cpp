@@ -15,10 +15,11 @@ using namespace pugi;
 LandingActor::LandingActor(
    Resources& gameResources,
    b2World* world,
+   float initialZoom,
    float zoom,
    xml_node& root,
    int groupIndex) :
-   SceneActor(gameResources, world, zoom)
+   SceneActor(gameResources, world, initialZoom, zoom)
 {
 
    m_contactListener.InitContactListner(this);

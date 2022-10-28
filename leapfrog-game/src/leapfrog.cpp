@@ -200,7 +200,7 @@ LeapFrog::LeapFrog(
 
 void LeapFrog::setModePropHandler(oxygine::Event *ev)
 {
-   dumpParts();
+   // dumpParts();
 
    float value = m_properties[LeapfroPropertiesEnum::propMode].getProperty();
    

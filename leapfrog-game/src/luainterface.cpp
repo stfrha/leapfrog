@@ -555,69 +555,6 @@ void LuaInterface::lua_forceCurrentScene(void)
 }
 
 
-//int LuaInterface::determineNextScene(
-//   const std::string& entryType,
-//   const std::string& entryParameter,
-//   std::string& nextSceneFileName,
-//   std::string& nextSceneState,
-//   SceneActor::SceneTypeEnum& type)
-//{
-//   int a1 = lua_getglobal(m_L, "determineNextScene");
-//   lua_pushstring(m_L, entryType.c_str());
-//   lua_pushstring(m_L, entryParameter.c_str());
-//
-//   // do the call (2 arguments, 3 result) 
-//   int result = lua_pcall(m_L, 2, 3, 0);
-//
-//   if (result != 0)
-//   {
-//      // Something went wrong
-//      //return -1;
-//   }
-//
-//   // retrieve result 
-//   if (!lua_isstring(m_L, -1))
-//   {
-//      // Wrong return type
-//      //return -2;
-//   }
-//
-//   if (!lua_isstring(m_L, -2))
-//   {
-//      // Wrong return type
-//      //return -3;
-//   }
-//
-//   std::string sceneType  = std::string(lua_tostring(m_L, -1));
-//   lua_pop(m_L, 1);  
-//
-//   nextSceneState = std::string(lua_tostring(m_L, -1));
-//   lua_pop(m_L, 1);  
-//
-//   nextSceneFileName = std::string(lua_tostring(m_L, -1));
-//   lua_pop(m_L, 1);  
-//
-//   if (sceneType == "landing")
-//   {
-//      type = SceneActor::SceneTypeEnum::landing;
-//   }
-//   else if (sceneType == "deepSpace")
-//   {
-//      type = SceneActor::SceneTypeEnum::deepSpace;
-//   }
-//   else if (sceneType == "orbit")
-//   {
-//      type = SceneActor::SceneTypeEnum::orbit;
-//   }
-//   else if (sceneType == "hyperSpace")
-//   {
-//      type = SceneActor::SceneTypeEnum::hyperSpace;
-//   }
-//
-//
-//   return 0;
-//}
-
 void LuaInterface::setupMissionStateScene(SceneActor* sceneActor)
 {
    // This makes sure that the latest scene actor ís used, do not remove it

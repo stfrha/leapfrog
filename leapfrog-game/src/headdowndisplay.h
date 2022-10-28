@@ -92,13 +92,12 @@ class HeadDownDisplay : public oxygine::Actor
 {
 private:
    bool m_actorExists;
-   oxygine::Resources* m_gameResources;
+   oxygine::Resources* m_hudResources;
    SceneActor* m_sceneActor;
    std::vector<spMapItem> m_mapActors;
    float m_mapScale;
    float m_itemScale;
    int m_itemIdRepository;
-
 
 public:
    float m_sceneWidth;
@@ -108,7 +107,7 @@ public:
    HeadDownDisplay();
 
    void initialiseMap(
-      oxygine::Resources* gameResources,
+      oxygine::Resources* hudResources,
       SceneActor* sceneActor,
       const oxygine::Vector2& topLeft, 
       const oxygine::Vector2& bottomRight);

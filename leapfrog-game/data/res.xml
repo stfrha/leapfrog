@@ -2,15 +2,9 @@
 <resources>
 	<set path = "images" />
 	<atlas>
-		<image file="pan_button.png"/>	
-		<image file="reload_button.png" />
+		<image file="checkers.png"/>	
+
 		<image file="button.png"/>		
-		<image file="booster_button.png"/>		
-		<image file="fire_button.png"/>		
-		<image file="turn_left_button.png"/>		
-		<image file="turn_right_button.png"/>		
-		<image file="zoom_in_button.png"/>		
-		<image file="zoom_out_button.png"/>		
       
 		<image file="lf_body.png"/>		
 		<image file="lf_boost.png"/>		
@@ -32,10 +26,6 @@
 		<image file="white_circle.png"/>	
 		<image file="shield_exciter.png" cols="11" />
 		<image file="planet_mask.png"/>	
-		<image file="trajectory.png"/>	
-		<image file="predicted_site.png"/>	
-		<image file="lf_position.png"/>	
-		<image file="reentry_burn_level.png"/>	
 		<image file="reentry_flames.png"/>	
 		<image file="ls_right_leg_rest.png"/>	
 		<image file="ls_right_tank_holder.png"/>	
@@ -61,19 +51,8 @@
 		<image file="shield_power_up.png"/>	
 		<image file="fuel_power_up.png"/>	
 		<image file="coin_power_up.png"/>	
-		<image file="msg_bbl_left.png"  guideX1="24" guideX2="104" guideY1="24" guideY2="104" />	
-		<image file="msg_bbl_right.png"  guideX1="24" guideX2="104" guideY1="24" guideY2="104" />	
-		<image file="display_fat.png" />	
-		<image file="display_thin.png" />	
-		<image file="progress_bar.png" />	
 		<image file="box9a.png" />	
 		<image file="explosion_ani.png" rows="8" cols="8" />
-		<image file="friendly_moving.png" rows="1" cols="2" />
-		<image file="friendly_stationary.png"  rows="1" cols="2" />
-		<image file="enemy_moving.png" rows="1" cols="2" />
-		<image file="enemy_stationary.png"  rows="1" cols="2" />
-		<image file="neutral_moving.png"  rows="1" cols="2" />
-		<image file="neutral_stationary.png" rows="1" cols="2" />
 		<image file="night_sky.png"/>	  
 		<image file="cloud.png"/>	  
 	</atlas>
@@ -145,5 +124,4 @@
 	</atlas>		
 	<set path = "fonts" />
 	<font file="main.fnt" />	
-	<font file="lf_font.fnt" />	
 </resources>

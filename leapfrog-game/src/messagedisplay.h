@@ -41,7 +41,7 @@ public:
    };
 
 private:
-   oxygine::Resources* m_gameResources;
+   oxygine::Resources* m_hudResources;
    oxygine::spClipRectActor m_messageActor;
 
    float m_messageDisplayWidth;
@@ -59,7 +59,7 @@ public:
    MessageDisplay();
 
    void initialiseMessageDisplay(
-      oxygine::Resources* gameResources,
+      oxygine::Resources* hudResources,
       oxygine::Actor* sceneActor,
       const oxygine::Vector2& topLeft, 
       const oxygine::Vector2& bottomRight,

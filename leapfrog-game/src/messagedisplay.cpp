@@ -57,13 +57,13 @@ void MessageDisplay::clearMessageDisplay(void)
 
 
 void MessageDisplay::initialiseMessageDisplay(
-   Resources* gameResources,
+   Resources* hudResources,
    Actor* mainActor,
    const Vector2& topLeft, 
    const Vector2& bottomRight,
    const float fontSize)
 {
-   m_gameResources = gameResources;
+   m_hudResources = hudResources;
 
    // Calculate the rect where the MessageDisplay is to be
    m_messageDisplayWidth = bottomRight.x - topLeft.x;
@@ -91,7 +91,7 @@ void MessageDisplay::initialiseMessageDisplay(
    m_messageActor->attachTo(mdFrame);
 
    spBox9Sprite hej = new Box9Sprite();
-   hej->setResAnim(m_gameResources->getResAnim("display_thin"));
+   hej->setResAnim(m_hudResources->getResAnim("display_thin"));
    hej->setVerticalMode(Box9Sprite::STRETCHING);
    hej->setHorizontalMode(Box9Sprite::STRETCHING);
    hej->setSize(m_messageDisplayWidth, m_messageDisplayHeight);
@@ -184,11 +184,11 @@ void MessageDisplay::processFirstInQueue(void)
 
    if (m_messageQueue[0].m_leftBubble)
    {
-      m_newBubble->setResAnim(m_gameResources->getResAnim("msg_bbl_left"));
+      m_newBubble->setResAnim(m_hudResources->getResAnim("msg_bbl_left"));
    }
    else
    {
-      m_newBubble->setResAnim(m_gameResources->getResAnim("msg_bbl_right"));
+      m_newBubble->setResAnim(m_hudResources->getResAnim("msg_bbl_right"));
    }
 
 
@@ -212,7 +212,7 @@ void MessageDisplay::processFirstInQueue(void)
    style.multiline = true;
    style.vAlign = TextStyle::VerticalAlign::VALIGN_TOP;
    style.hAlign = TextStyle::HorizontalAlign::HALIGN_LEFT;
-   style.font = m_gameResources->getResFont("lf_font");
+   style.font = m_hudResources->getResFont("lf_font");
    style.color = Color::White;
    style.fontSize = (int)m_fontSize;
 

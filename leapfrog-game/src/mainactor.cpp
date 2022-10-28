@@ -51,6 +51,28 @@ MainActor::MainActor() :
    // Now center splash on center of screen
    oxygine::Sprite* splashSprite = new  oxygine::Sprite();
    splashSprite->setResAnim(m_splashScreenResource.getResAnim("splash_screen"));
+
+   // Determine sprite size so it fills the screen
+
+   //logs::messageln("Stage width %f, Stage Height: %f", (getStage()->getSize()).x, (getStage()->getSize()).y);
+   //logs::messageln("Sprite width %f, Sprite Height: %f", splashSprite->getWidth(), splashSprite->getHeight());
+
+   float hr = (getStage()->getSize()).y / splashSprite->getHeight();
+   float wr = (getStage()->getSize()).x / splashSprite->getWidth();
+   float rate = 0.0f;
+   if (hr > wr)
+   {
+      rate = hr;
+   }
+   else
+   {
+      rate = wr;
+   }
+
+   splashSprite->setSize(splashSprite->getWidth() * rate, splashSprite->getHeight() * rate);
+
+   // logs::messageln("New Sprite width %f, New Sprite Height: %f", splashSprite->getWidth(), splashSprite->getHeight());
+
    splashSprite->setAnchor(Vector2(0.5f, 0.5f));
    splashSprite->setPosition((getStage()->getSize()).x / 2, (getStage()->getSize()).y / 2);
    splashSprite->attachTo(this);
@@ -62,6 +84,7 @@ void MainActor::initMainActor(void)
 
    //load xml file with resources definition
    m_gameResources.loadXML("res.xml");
+   m_hudResources.loadXML("res_hud.xml");
 
    // Restore game status except leapfrog. That is 
    // managed on the Leapfrog object initiative
@@ -74,7 +97,7 @@ void MainActor::initMainActor(void)
    g_MessageDisplay = new MessageDisplay();
 
    g_MessageDisplay->initialiseMessageDisplay(
-      &m_gameResources,
+      &m_hudResources,
       getStage().get(),
       Vector2(0.0f, g_Layout.getButtonWidth()),
       Vector2(g_Layout.getButtonWidth() * 2.0f, g_Layout.getYFromBottom(1) - g_Layout.getButtonWidth() / 2.0f),
@@ -96,6 +119,7 @@ MainActor::~MainActor()
 {
 	//free previously loaded resources
 	m_gameResources.free();
+   m_hudResources.free();
 }
 
 
@@ -207,7 +231,7 @@ void MainActor::startScene(void)
    addEventListener(StatusResourceDepletedEvent::EVENT, CLOSURE(this, &MainActor::resourceDepletedHandler));
 
    g_HeadDownDisplay->initialiseMap(
-      &m_gameResources,
+      &m_hudResources,
       m_sceneObject,
       Vector2(0.0f, 0.0f),
       m_sceneObject->getSize());
@@ -449,16 +473,17 @@ void MainActor::createButtonOverlay(void)
    m_boosterButtonRect = RectF(g_Layout.getXFromRight(0), g_Layout.getYFromBottom(1), g_Layout.getButtonWidth(), g_Layout.getButtonWidth());
    m_fireButtonRect = RectF(g_Layout.getXFromRight(1), g_Layout.getYFromBottom(0), g_Layout.getButtonWidth(), g_Layout.getButtonWidth());
 
-   m_manPanEnableButtonRect = RectF(g_Layout.getXFromRight(0), 0.0f, g_Layout.getButtonWidth(), g_Layout.getButtonWidth());
-   m_zoomInButtonRect = RectF(g_Layout.getXFromRight(1) - g_Layout.getButtonWidth() / 2.0f, 0.0f, g_Layout.getButtonWidth(), g_Layout.getButtonWidth());
-   m_zoomOutButtonRect = RectF(g_Layout.getXFromRight(3), 0.0f, g_Layout.getButtonWidth(), g_Layout.getButtonWidth());
-   m_reloadButtonRect = RectF(g_Layout.getXFromRight(4) - g_Layout.getButtonWidth() / 2.0f, 0.0f, g_Layout.getButtonWidth(), g_Layout.getButtonWidth());
+   m_pauseButtonRect = RectF(g_Layout.getXFromRight(0), 0.0f, g_Layout.getButtonWidth(), g_Layout.getButtonWidth());
+   m_manPanEnableButtonRect = RectF(g_Layout.getXFromRight(1) - g_Layout.getButtonWidth() / 2.0f, 0.0f, g_Layout.getButtonWidth(), g_Layout.getButtonWidth());
+   m_zoomInButtonRect = RectF(g_Layout.getXFromRight(2) - g_Layout.getButtonWidth() / 2.0f, 0.0f, g_Layout.getButtonWidth(), g_Layout.getButtonWidth());
+   m_zoomOutButtonRect = RectF(g_Layout.getXFromRight(4), 0.0f, g_Layout.getButtonWidth(), g_Layout.getButtonWidth());
+   m_reloadButtonRect = RectF(g_Layout.getXFromRight(5) - g_Layout.getButtonWidth() / 2.0f, 0.0f, g_Layout.getButtonWidth(), g_Layout.getButtonWidth());
    m_panButtonRect = RectF(g_Layout.getViewPortBounds().x / 2.0f - g_Layout.getButtonWidth() / 2.0f, g_Layout.getViewPortBounds().y / 2.0f - g_Layout.getButtonWidth() / 2.0f, g_Layout.getButtonWidth(), g_Layout.getButtonWidth());
 
 
    // Define sprites
    spSprite turnLeftButton = new Sprite();
-   turnLeftButton->setResAnim(m_gameResources.getResAnim("turn_left_button"));
+   turnLeftButton->setResAnim(m_hudResources.getResAnim("turn_left_button"));
    turnLeftButton->setSize(g_Layout.getButtonWidth(), g_Layout.getButtonWidth());
    turnLeftButton->setPosition(m_turnLeftButtonRect.getLeftTop());
    turnLeftButton->setAnchor(0.0f, 0.0f);
@@ -466,7 +491,7 @@ void MainActor::createButtonOverlay(void)
    turnLeftButton->attachTo(this);
 
    spSprite turnRightButton = new Sprite();
-   turnRightButton->setResAnim(m_gameResources.getResAnim("turn_right_button"));
+   turnRightButton->setResAnim(m_hudResources.getResAnim("turn_right_button"));
    turnRightButton->setSize(g_Layout.getButtonWidth(), g_Layout.getButtonWidth());
    turnRightButton->setPosition(m_turnRightButtonRect.getLeftTop());
    turnRightButton->setAnchor(0.0f, 0.0f);
@@ -474,7 +499,7 @@ void MainActor::createButtonOverlay(void)
    turnRightButton->attachTo(this);
 
    spSprite fireButton = new Sprite();
-   fireButton->setResAnim(m_gameResources.getResAnim("fire_button"));
+   fireButton->setResAnim(m_hudResources.getResAnim("fire_button"));
    fireButton->setSize(g_Layout.getButtonWidth(), g_Layout.getButtonWidth());
    fireButton->setPosition(m_fireButtonRect.getLeftTop());
    fireButton->setAnchor(0.0f, 0.0f);
@@ -482,15 +507,23 @@ void MainActor::createButtonOverlay(void)
    fireButton->attachTo(this);
 
    spSprite thursterButton = new Sprite();
-   thursterButton->setResAnim(m_gameResources.getResAnim("booster_button"));
+   thursterButton->setResAnim(m_hudResources.getResAnim("booster_button"));
    thursterButton->setSize(g_Layout.getButtonWidth(), g_Layout.getButtonWidth());
    thursterButton->setPosition(m_boosterButtonRect.getLeftTop());
    thursterButton->setAnchor(0.0f, 0.0f);
    thursterButton->setTouchEnabled(false);
    thursterButton->attachTo(this);
 
+   spSprite pauseButton = new Sprite();
+   pauseButton->setResAnim(m_hudResources.getResAnim("pause_button"));
+   pauseButton->setSize(g_Layout.getButtonWidth(), g_Layout.getButtonWidth());
+   pauseButton->setPosition(m_pauseButtonRect.getLeftTop());
+   pauseButton->setAnchor(0.0f, 0.0f);
+   pauseButton->setTouchEnabled(false);
+   pauseButton->attachTo(this);
+
    m_zoomOutSprite = new Sprite();
-   m_zoomOutSprite->setResAnim(m_gameResources.getResAnim("zoom_out_button"));
+   m_zoomOutSprite->setResAnim(m_hudResources.getResAnim("zoom_out_button"));
    m_zoomOutSprite->setSize(g_Layout.getButtonWidth(), g_Layout.getButtonWidth());
    m_zoomOutSprite->setPosition(m_zoomOutButtonRect.getLeftTop());
    m_zoomOutSprite->setAnchor(0.0f, 0.0f);
@@ -498,7 +531,7 @@ void MainActor::createButtonOverlay(void)
    m_zoomOutSprite->attachTo(this);
 
    m_zoomInSprite = new Sprite();
-   m_zoomInSprite->setResAnim(m_gameResources.getResAnim("zoom_in_button"));
+   m_zoomInSprite->setResAnim(m_hudResources.getResAnim("zoom_in_button"));
    m_zoomInSprite->setSize(g_Layout.getButtonWidth(), g_Layout.getButtonWidth());
    m_zoomInSprite->setPosition(m_zoomInButtonRect.getLeftTop());
    m_zoomInSprite->setAnchor(0.0f, 0.0f);
@@ -506,7 +539,7 @@ void MainActor::createButtonOverlay(void)
    m_zoomInSprite->attachTo(this);
 
    m_manPanEnableSprite = new Sprite();
-   m_manPanEnableSprite->setResAnim(m_gameResources.getResAnim("pan_button"));
+   m_manPanEnableSprite->setResAnim(m_hudResources.getResAnim("pan_button"));
    m_manPanEnableSprite->setSize(g_Layout.getButtonWidth(), g_Layout.getButtonWidth());
    m_manPanEnableSprite->setPosition(m_manPanEnableButtonRect.getLeftTop());
    m_manPanEnableSprite->setAnchor(0.0f, 0.0f);
@@ -514,7 +547,7 @@ void MainActor::createButtonOverlay(void)
    m_manPanEnableSprite->attachTo(this);
 
    m_manPanSprite = new Sprite();
-   m_manPanSprite->setResAnim(m_gameResources.getResAnim("pan_button"));
+   m_manPanSprite->setResAnim(m_hudResources.getResAnim("pan_button"));
    m_manPanSprite->setSize(g_Layout.getButtonWidth(), g_Layout.getButtonWidth());
    m_manPanSprite->setPosition(m_panButtonRect.getLeftTop());
    m_manPanSprite->setAnchor(0.0f, 0.0f);
@@ -522,7 +555,7 @@ void MainActor::createButtonOverlay(void)
    m_manPanSprite->attachTo(this);
 
    m_reloadSprite = new Sprite();
-   m_reloadSprite->setResAnim(m_gameResources.getResAnim("reload_button"));
+   m_reloadSprite->setResAnim(m_hudResources.getResAnim("reload_button"));
    m_reloadSprite->setSize(g_Layout.getButtonWidth(), g_Layout.getButtonWidth());
    m_reloadSprite->setPosition(m_reloadButtonRect.getLeftTop());
    m_reloadSprite->setAnchor(0.0f, 0.0f);
@@ -582,6 +615,11 @@ void MainActor::sceneDownHandler(Event* event)
    {
       m_sceneObject->m_firePressed = true;
       m_fireTouchIndex = te->index;
+   }
+   else if (m_pauseButtonRect.pointIn(p))
+   {
+      m_sceneObject->m_pausePressed = true;
+      m_pauseTouchIndex = te->index;
    }
    else if (m_zoomInButtonRect.pointIn(p))
    {
@@ -652,6 +690,11 @@ void MainActor::sceneUpHandler(Event* event)
    {
       m_sceneObject->m_firePressed = false;
       m_fireTouchIndex = 0;
+   }
+   else if (te->index == m_pauseTouchIndex)
+   {
+      m_sceneObject->m_pausePressed = false;
+      m_pauseTouchIndex = 0;
    }
    else if (te->index == m_zoomInTouchIndex)
    {
@@ -746,7 +789,7 @@ void MainActor::registerLeapfrog(LeapFrog* leapfrog)
    }
 
    spStatusBar shotsBar = new StatusBar(
-      m_gameResources,
+      m_hudResources,
       leapfrog,
       m_sceneObject,
       5,
@@ -759,7 +802,7 @@ void MainActor::registerLeapfrog(LeapFrog* leapfrog)
       ObjectResourcesTypeEnum::shots);
 
    spStatusBar fuelBar = new StatusBar(
-      m_gameResources,
+      m_hudResources,
       leapfrog,
       m_sceneObject,
       7,
@@ -772,7 +815,7 @@ void MainActor::registerLeapfrog(LeapFrog* leapfrog)
       ObjectResourcesTypeEnum::fuel);
 
    spStatusBar shieldBar = new StatusBar(
-      m_gameResources,
+      m_hudResources,
       leapfrog,
       m_sceneObject,
       6,
@@ -785,7 +828,7 @@ void MainActor::registerLeapfrog(LeapFrog* leapfrog)
       ObjectResourcesTypeEnum::shield);
 
    spStatusBar damageBar = new StatusBar(
-      m_gameResources,
+      m_hudResources,
       leapfrog,
       m_sceneObject,
       9,
@@ -798,7 +841,7 @@ void MainActor::registerLeapfrog(LeapFrog* leapfrog)
       ObjectResourcesTypeEnum::damage);
 
    spStatusLiteral creditBar = new StatusLiteral(
-      m_gameResources,
+      m_hudResources,
       leapfrog,
       m_sceneObject,
       8,

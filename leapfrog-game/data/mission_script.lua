@@ -3,7 +3,6 @@
 -- It assumes the global variable currentScene to be set to 
 -- the file name of the current scene.
 
-
 -- Global variables
 currentState = 1
 firstSceneOfToday = true
@@ -13,28 +12,20 @@ firstSceneOfToday = true
 -- mission state. This includes the leapfrog at the position
 -- of the state in this scene. 
 function lua_setupInitialMissionStateScene()
+
+   print("Hello hello hello hello hello hello hello hello!!!")
+   
    if currentScene == "landing_scene.xml" then
       if currentMission == 1 then
-
          if currentState == 1 then
             -- Initialise leapfrog as descenting
-            c_addPositionedChildObject("leapfrog_reentry.xml", "leapfrog1", 220, 490)
-            --c_addPositionedChildObject("leapfrog_reentry.xml", "leapfrog1", 540, 400)
+            c_addPositionedChildObject("leapfrog_landing.xml", "leapfrog1", 415, 657)
 
             -- Reconfigure leapfrog to landing mode
             c_setObjectProperty("leapfrog1", 0, 2)
             
          elseif currentState == 2 then
 
-            c_addDialogMessage("Hello. Try to land on the landing pad, to your left.", "DEBUG", true, 0, 0)
-            c_addDialogMessage("The landing pad is the filled square on your map. Get there!", "DEBUG", true, 0, 0)
-            c_addDialogMessage("Welcome to the landing pad. Let me fill you up. A new obstacle has arrived in the grotto. Check it out.", "DEBUG", true, 0, 0)
-
-            -- Initialise leapfrog as descenting
-            c_addPositionedChildObject("leapfrog_landing.xml", "leapfrog1", 415, 657)
-
-            -- Reconfigure leapfrog to landing mode
-            c_setObjectProperty("leapfrog1", 0, 2)
          end
       end
    end
@@ -63,33 +54,40 @@ function lua_setupMissionStateScene()
    end
 
    if currentState == 1 then
+   
       if currentScene == "landing_scene.xml" then
 
-         -- Start timer, will send LuTO event when timed out 
+         c_addMissionStateSceneObjects("landing_scene_state2.xml")
+
+         -- Start timer, will send ScTO event when timed out 
          state1Timer = c_startSceneTimer(240)
 
          -- Register event for landing on landingPad1
          c_registerEventHandler("landing_pad1", "LpLL", 0, 0)
-         
+
+         -- Detect if bomb exploded prematurely
+         c_registerEventHandler("bomb1", "ExEX", 0, 0)
+
          -- Set state of next mission objective
          c_setObjectMapState("landing_pad1", "landingPad1", 1)
 
          -- Play dialog
-         c_addDialogMessage("Hello. Try to land on the landing pad, to your left.", "DEBUG", true, 0, 0)
+         c_addDialogMessage("Hello. Try to land on the landing pad, right below you.", "DEBUG", true, 0, 0)
       end
 
    elseif currentState == 2 then
+   
       if currentScene == "landing_scene.xml" then
-         c_addMissionStateSceneObjects("landing_scene_state2.xml")
          
+         -- Register event for leaving (Take-off) landingPad1
          c_registerEventHandler("landing_pad1", "LpTO", 0, 0)
+         
+         -- Detect if bomb exploded prematurely
          c_registerEventHandler("bomb1", "ExEX", 0, 0)
 
          -- Set state of next mission objective
-         c_setObjectMapState("landing_pad1", "landingPad1", 0)
+         c_setObjectMapState("coDestroyable", "springDestroyable", 0)
 
-         -- Play dialog
-         c_addDialogMessage("Try not to explode the bomd, just yet.", "DEBUG", true, 0, 0)
          -- Set bomb to be very in-sensitivity
          c_setObjectProperty("bomb1", 0, 250000)
 
@@ -131,17 +129,27 @@ function lua_missionStateSceneEventHandler(eventId, actorName, parameter1)
             c_addPositionedChildObject("medium_asteroid.xml", "dummy1", 500, 500)
 
          end
+
          if actorName == "landing_pad1" and eventId == "LpLL" then
             
             -- Play dialog
-            c_addDialogMessage("Welcome to the landing pad. Let me fill you up. A new obstacle has arrived in the grotto. Check it out.", "DEBUG", true, 0, 0)
+            c_addDialogMessage("Yippie: Welcome to the landing pad. Let me fill you up. A new obstacle has arrived in the grotto. Check it out.", "DEBUG", true, 0, 0)
 
             currentState = 2
             
-            c_saveGameStatus(currentScene, currentMission, currentState)
+            lua_setupMissionStateScene()
+         end
+
+         if actorName == "bomb1" and eventId == "ExEX" then
+               
+            -- Play dialog
+            c_addDialogMessage("You exploded the bomb too early. Mission FAIL!!!", "DEBUG", true, 0, 0)
+
+            currentState = 5
             
             lua_setupMissionStateScene()
          end
+
       end
 
    elseif currentState == 2 then
@@ -152,8 +160,6 @@ function lua_missionStateSceneEventHandler(eventId, actorName, parameter1)
             c_addDialogMessage("That's right. Get yourself over there.", "DEBUG", true, 0, 0)
 
             currentState = 3
-            credits = c_getObjectProperty("leapfrog1", 8)
-            c_setObjectProperty("leapfrog1", 8, credits + 400)
 
             lua_setupMissionStateScene()
          end

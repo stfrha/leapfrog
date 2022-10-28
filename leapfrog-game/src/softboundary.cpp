@@ -49,21 +49,31 @@ SoftBoundary::SoftBoundary(
    }
 
    m_threshold = determineThreshold(rc);
-   
-   //setHorizontalMode(Box9Sprite::TILING_FULL);
-	
-   
-   
-   //setVerticalMode(Box9Sprite::TILING_FULL);
-	setResAnim(gameResources.getResAnim("deep_space_boundary"));
 
-   //setAlpha(0.75f);
-
-	// size and position here is in stage coordinate (same as rc)
-	setSize(rc.getSize());
-	setPosition(rc.getLeftTop());
-	setAnchor(Vector2(0.5f, 0.5f));
+   // size and position here is in stage coordinate (same as rc)
+   setSize(rc.getSize());
+   setPosition(rc.getLeftTop());
+   setAnchor(Vector2(0.5f, 0.5f));
    setPriority(216);
+
+   Sprite* mask = new Sprite();
+   mask->setResAnim(gameResources.getResAnim("deep_space_boundary"));
+   mask->setSize(rc.getSize().x, rc.getSize().y - 5);
+   mask->attachTo(this);
+   mask->setVisible(false);
+
+   // Add a white sprite masked by a alpha-sprite:
+   spMaskedSprite maskedSprite = new MaskedSprite();
+   maskedSprite->setAnchor(Vector2(0.5f, 0.5f));
+   maskedSprite->attachTo(this);
+
+   oxygine::ColorRectSprite* maskBackground = new  oxygine::ColorRectSprite();
+   maskBackground->setColor(oxygine::Color::White);
+   maskBackground->setSize(rc.getSize());
+   maskBackground->setPosition(0, 1);
+   maskBackground->attachTo(maskedSprite);
+
+   maskedSprite->setMask(mask, true);
 
    // Rotate sprite acc to position
    switch (m_repelDir)

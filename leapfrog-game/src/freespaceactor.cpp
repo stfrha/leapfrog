@@ -16,10 +16,11 @@ using namespace pugi;
 FreeSpaceActor::FreeSpaceActor(
    Resources& gameResources,
    b2World* world,
+   float initialZoom,
    float zoom,
    xml_node& root,
    int groupIndex) :
-   SceneActor(gameResources, world, zoom),
+   SceneActor(gameResources, world, initialZoom, zoom),
    m_inTransitField(0),
    m_state(firstUpdate),
    m_leapfrogBody(NULL),

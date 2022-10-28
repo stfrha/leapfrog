@@ -145,10 +145,16 @@ void LandingPad::doUpdate(const UpdateState &us)
       }
       else
       {
-         if ((m_latestLeapfrog->m_resources->getFuel() < 100.0f) && (m_latestLeapfrog->m_resources->getCredits() > 0))
+         if (!m_sceneActor->getIsInPause())
          {
-            m_latestLeapfrog->m_resources->deltaFuel(0.2f);
-            m_latestLeapfrog->m_resources->deltaCredits(-1);
+            // Perhaps add fuel to some class of properties that are not allowed to change
+            // while in pause, instead of this type of if statements.
+
+            if ((m_latestLeapfrog->m_resources->getFuel() < 100.0f) && (m_latestLeapfrog->m_resources->getCredits() > 0))
+            {
+               m_latestLeapfrog->m_resources->deltaFuel(0.2f);
+               m_latestLeapfrog->m_resources->deltaCredits(-1);
+            }
          }
       }
 

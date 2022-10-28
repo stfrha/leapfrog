@@ -1,8 +1,9 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<compoundObject>
+<compoundObject
+  needsGroupIndex="false">
   <staticBox
     name="block1"
-    texture="lf_position"
+    texture="ls_left_trolley"
     posX="0"
     posY="0"
     angle="39"
@@ -15,9 +16,9 @@
   <dynamicBox
     name="block2"
     texture="crater_rock"
-    posX="13.019242202182795"
-    posY="10.213168655275069"
-    angle="-51"
+    posX="17.069402170748162"
+    posY="11.977742809673885"
+    angle="-11"
     zLevel="192"
     collisionEntity="notApplicable"
     collisionCategory="1"
@@ -26,14 +27,16 @@
     height="20"
     density="1"
     friction="0" />
+  <behaviour
+    type="notApplicable" />
   <revoluteJoint
     name="noJointName"
     objectAName="block2"
     objectBName="block1"
     objectAAnchorX="-8.04165127267344"
     objectAAnchorY="-8.2214437176487483"
-    objectBAnchorX="8.3032768898561855"
-    objectBAnchorY="7.9227608436405079"
+    objectBAnchorX="9.383842552790183"
+    objectBAnchorY="-0.52908162949029569"
     lockJoint="false"
     useMotor="true"
     motorSpeed="40"

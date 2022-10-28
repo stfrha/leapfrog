@@ -273,7 +273,7 @@
   </spritePolygon>
   <staticBox
     name="ropeHolder"
-    texture="lf_position"
+    texture="flame_particle"
     posX="322.38464431010971"
     posY="280.6366114379698"
     angle="0"
@@ -1209,8 +1209,8 @@
     name="rope1"
     objectAName="ropeHolder"
     objectBName="wrecker"
-    objectAAnchorX="0"
-    objectAAnchorY="10"
+    objectAAnchorX="-0.37827551012060212"
+    objectAAnchorY="0.16483673687025657"
     objectBAnchorX="0"
     objectBAnchorY="-10"
     texture="concrete"
@@ -1231,12 +1231,6 @@
     file="launch_site.xml"
     posX="153"
     posY="627" />
-<!--  <childObject
-    name="leapfrog1"
-    file="leapfrog_reentry.xml"
-    posX="537.19860737896806"
-    posY="481.56945402130646" />
-    -->
   <childObject
     name="landing_pad1"
     posX="415.23595638880357"

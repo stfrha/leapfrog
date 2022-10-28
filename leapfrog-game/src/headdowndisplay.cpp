@@ -227,12 +227,12 @@ void HeadDownDisplay::clearMap(void)
 
 
 void HeadDownDisplay::initialiseMap(
-   Resources* gameResources,
+   Resources* hudResources,
    SceneActor* sceneActor,
    const Vector2& topLeft, 
    const Vector2& bottomRight)
 {
-   m_gameResources = gameResources;
+   m_hudResources = hudResources;
    m_sceneActor = sceneActor;
 
    // The map is the same size as the game map but scaled to fit into the 
@@ -263,7 +263,7 @@ void HeadDownDisplay::initialiseMap(
    attachTo(sceneActor->getParent());
 
    spBox9Sprite hej = new Box9Sprite();
-   hej->setResAnim(m_gameResources->getResAnim("display_fat"));
+   hej->setResAnim(m_hudResources->getResAnim("display_fat"));
    hej->setVerticalMode(Box9Sprite::STRETCHING);
    hej->setHorizontalMode(Box9Sprite::STRETCHING);
    hej->setSize(m_sceneWidth, m_sceneHeight);
@@ -280,7 +280,7 @@ void HeadDownDisplay::initialiseMap(
    // created, how could they?). Now it is time to add them.
    for (auto it = m_mapActors.begin(); it != m_mapActors.end(); ++it)
    {
-      (*it)->addToMapActor(m_gameResources, this, m_itemScale);
+      (*it)->addToMapActor(m_hudResources, this, m_itemScale);
    }
 }
 
@@ -298,7 +298,7 @@ int HeadDownDisplay::addMeToMap(
    if (m_actorExists)
    {
        mi = new MapItem(
-         m_gameResources,
+         m_hudResources,
          this,
          type,
          state,

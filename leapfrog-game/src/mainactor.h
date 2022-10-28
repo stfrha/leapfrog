@@ -31,6 +31,7 @@ private:
 	//It is important on mobile devices with limited memory and you would load/unload them
 	oxygine::Resources m_gameResources;
    oxygine::Resources m_splashScreenResource;
+   oxygine::Resources m_hudResources;
 
    b2World* m_world;
 
@@ -48,6 +49,7 @@ private:
    oxygine::RectF m_turnLeftButtonRect;
    oxygine::RectF m_boosterButtonRect;
    oxygine::RectF m_fireButtonRect;
+   oxygine::RectF m_pauseButtonRect;
    oxygine::RectF m_zoomInButtonRect;
    oxygine::RectF m_zoomOutButtonRect;
    oxygine::RectF m_panButtonRect;
@@ -63,6 +65,7 @@ private:
    int m_turnLeftTouchIndex;
    int m_boosterTouchIndex;
    int m_fireTouchIndex;
+   int m_pauseTouchIndex;
    int m_zoomInTouchIndex;
    int m_zoomOutTouchIndex;
    int m_panTouchIndex;

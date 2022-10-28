@@ -65,13 +65,16 @@ void ObjectFactory::readObjectFactoryNode(const xml_node& objectNode)
 
 void ObjectFactory::doUpdate(const oxygine::UpdateState& us)
 {
-   m_timeSinceLast += us.dt;
-
-   if (m_timeSinceLast >= m_interval)
+   if (!m_sceneActor->getIsInPause())
    {
-      spawnObjects(1);
+      m_timeSinceLast += us.dt;
 
-      m_timeSinceLast = 0;
+      if (m_timeSinceLast >= m_interval)
+      {
+         spawnObjects(1);
+
+         m_timeSinceLast = 0;
+      }
    }
 }
 
