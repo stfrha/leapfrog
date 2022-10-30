@@ -8,6 +8,8 @@
 #include "mainactor.h"
 #include "layout.h"
 #include "polygonvertices.h"
+#include "headdowndisplay.h"
+#include "messagedisplay.h"
 
 using namespace oxygine;
 using namespace std;
@@ -378,6 +380,11 @@ bool SceneActor::getIsInPause(void)
    return m_isInPause;
 }
 
+void SceneActor::setIsInPause(bool isInPause)
+{
+   m_isInPause = isInPause;
+}
+
 void SceneActor::setZoom(const float& zoom)
 {
    m_zoomScale = zoom;
@@ -593,6 +600,7 @@ void SceneActor::doUpdate(const UpdateState& us)
       else
       {
          m_isInPause = true;
+        
       }
 
       m_armPauseChange = false;

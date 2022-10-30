@@ -31,7 +31,7 @@ ParallaxBackground::ParallaxBackground(
 
    // z-level range from 20 (at 100% amount, i.e. static background,
    // to 30 which is foreground
-   m_sprite->setPriority(30.0f - m_parallaxAmount * 10.0f);
+   m_sprite->setPriority((short)(30.0f - m_parallaxAmount * 10.0f));
 
    //initCompoundObjectParts(
    //   gameResources,

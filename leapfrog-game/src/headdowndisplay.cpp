@@ -1,6 +1,6 @@
 #include "headdowndisplay.h"
 
-#include "sceneactor.h"
+#include "mainactor.h"
 #include "actoruserdata.h"
 #include "bodyuserdata.h"
 #include "layout.h"
@@ -196,11 +196,12 @@ void MapItem::doUpdate(const oxygine::UpdateState& us)
 
 HeadDownDisplay::HeadDownDisplay() :
    m_itemIdRepository(0),
-   m_actorExists(false)
+   m_actorExists(false),
+   m_hudMode(HudModeType::hudModeMap)
 {
 }
 
-void HeadDownDisplay::clearMap(void)
+void HeadDownDisplay::clearDisplay(void)
 {
    // since this is class is supposed to be instance once globally
    // (a lazy singleton implementation) we need to clean up all here
@@ -218,25 +219,45 @@ void HeadDownDisplay::clearMap(void)
       actor = next;
    }
 
+}
+
+void HeadDownDisplay::clearMap(void)
+{
+   clearDisplay();
+
    // vector is of type spActor so clearing it will delete all items
    m_mapActors.clear();
 
-   m_actorExists = false;
+   // m_actorExists = false;
 
 }
 
 
-void HeadDownDisplay::initialiseMap(
+void HeadDownDisplay::initialiseHud(
    Resources* hudResources,
-   SceneActor* sceneActor,
+   MainActor* mainActor,
    const Vector2& topLeft, 
    const Vector2& bottomRight)
 {
    m_hudResources = hudResources;
-   m_sceneActor = sceneActor;
+   m_mainActor = mainActor;
 
+   // The HUD can work as game menu, map or orbit overlay. The modes 
+   // all have a common ancor on the screen, at the midde bottom. 
+   // The game menu and orbit overlay have the top margin the same as the bottom.
+   // The orbit overlay goes from left = 0 to right = screen width
+   // The game menu goes from TBD to TBD
    // The map is the same size as the game map but scaled to fit into the 
    // map window between the lower buttons
+   // In map modes, the size of the map needs to be the same as the scene 
+   // but scaled to the map size. This is because that makes the position
+   // of map items on the map the same as the real positions in the scene
+   // However, when using the orbit overlay or game menu, we want the scale
+   // to one. 
+   // The animation of the size transitions is done in screen coordinates.
+   // so, when shrinking to map size, this is done in scale 1, using the 
+   // size as animation. When the map animation is finished, the size and scale
+   // is changed in the same step, doing a seamless switch to map scale.
 
    m_sceneWidth = bottomRight.x - topLeft.x;
    m_sceneHeight = bottomRight.y - topLeft.y;
@@ -246,32 +267,36 @@ void HeadDownDisplay::initialiseMap(
    float mapRight = g_Layout.getXFromRight(1) - g_Layout.getButtonWidth() / 4.0f;
    float mapTop = g_Layout.getYFromBottom(1);
    float mapBottom = g_Layout.getYFromBottom(-1) - g_Layout.getButtonWidth() / 4.0f;
-   Vector2 mapCenter((mapRight - mapLeft) / 2.0f + mapLeft, (mapBottom - mapTop) / 2.0f + mapTop);
+   // Vector2 mapPos((mapRight - mapLeft) / 2.0f + mapLeft, (mapBottom - mapTop) / 2.0f + mapTop);
+   Vector2 mapPos((mapRight - mapLeft) / 2.0f + mapLeft, mapBottom);
 
-   float xScale = (mapRight - mapLeft) / (m_sceneWidth);
-   float yScale = (mapBottom - mapTop) / (m_sceneHeight);
+   float mapScaleX = (mapRight - mapLeft) / (m_sceneWidth);
+   float mapScaleY = (mapBottom - mapTop) / (m_sceneHeight);
 
-   m_mapScale = fmin(xScale, yScale);
+   m_mapScale = fmin(mapScaleX, mapScaleY);
+   m_mapSizeX = m_sceneWidth * m_mapScale;
+   m_mapSizeY = m_sceneHeight * m_mapScale;
+
    m_itemScale = 1.0f / m_mapScale * g_Layout.getButtonWidth() / 80.0f;
+
+   m_menuSizeX = g_Layout.getViewPortBounds().x - 4.0f * g_Layout.getButtonWidth();
+   m_menuSizeY = g_Layout.getViewPortBounds().y - 2.0f * (g_Layout.getViewPortBounds().y - mapBottom);
+
+   m_orbitSizeX = g_Layout.getViewPortBounds().x;
+   m_orbitSizeY = m_menuSizeY;
 
    float thickness = 8.0f;
 
-   setAnchor(0.5f, 0.5f);
+   setResAnim(m_hudResources->getResAnim("display_fat"));
+   setVerticalMode(Box9Sprite::STRETCHING);
+   setHorizontalMode(Box9Sprite::STRETCHING);
    setSize(m_sceneWidth, m_sceneHeight);
-   setPosition(mapCenter);
+   setAnchor(0.5f, 1.0f);
+   setPosition(mapPos);
    setScale(m_mapScale);
-   attachTo(sceneActor->getParent());
-
-   spBox9Sprite hej = new Box9Sprite();
-   hej->setResAnim(m_hudResources->getResAnim("display_fat"));
-   hej->setVerticalMode(Box9Sprite::STRETCHING);
-   hej->setHorizontalMode(Box9Sprite::STRETCHING);
-   hej->setSize(m_sceneWidth, m_sceneHeight);
-   hej->setAnchor(0.0f, 0.0f);
-   hej->setPosition(0.0f, 0.0f);
-   hej->setGuides(8, 120, 8, 120);
-   hej->setTouchEnabled(false);
-   hej->attachTo(this);
+   setGuides(8, 120, 8, 120);
+   setTouchEnabled(false);
+   attachTo(mainActor);
 
    m_actorExists = true;
 
@@ -374,3 +399,63 @@ void HeadDownDisplay::doUpdate(const oxygine::UpdateState& us)
 {
 }
 
+void HeadDownDisplay::goToOrbit(void)
+{
+   if (m_hudMode == HudModeType::hudModeMap)
+   {
+      clearDisplay();
+      setResAnim(m_hudResources->getResAnim("display_thin"));
+      setSize(m_mapSizeX, m_mapSizeY);
+      setScale(1.0f);
+   }
+   m_hudMode = HudModeType::hudModeOrbit;
+   spTween tween = addTween(Actor::TweenSize(m_orbitSizeX, m_orbitSizeY), 500);
+   tween->setDoneCallback(CLOSURE(this, &HeadDownDisplay::menuTransitionComplete));
+}
+
+void HeadDownDisplay::goToMenu(void)
+{
+   if (m_hudMode == HudModeType::hudModeMap)
+   {
+      clearDisplay();
+      setResAnim(m_hudResources->getResAnim("display_thin"));
+      setSize(m_mapSizeX, m_mapSizeY);
+      setScale(1.0f);
+   }
+   m_hudMode = HudModeType::hudModeMenu;
+   spTween tween = addTween(Actor::TweenSize(m_menuSizeX, m_menuSizeY), 750, 1, false, 0, oxygine::Tween::EASE::ease_outBounce);
+   tween->setDoneCallback(CLOSURE(this, &HeadDownDisplay::menuTransitionComplete));
+}
+
+void HeadDownDisplay::goToMap(void)
+{
+   if (m_hudMode != HudModeType::hudModeMap)
+   {
+      clearDisplay();
+      spTween tween = addTween(Actor::TweenSize(m_mapSizeX, m_mapSizeY), 500);
+      tween->setDoneCallback(CLOSURE(this, &HeadDownDisplay::mapTransitionComplete));
+
+   }
+
+}
+
+void HeadDownDisplay::menuTransitionComplete(Event* event)
+{
+   // TODO: Light up buttons (in mainactor) only at this time
+}
+
+
+void HeadDownDisplay::mapTransitionComplete(oxygine::Event* event)
+{
+   setResAnim(m_hudResources->getResAnim("display_fat"));
+   setSize(m_sceneWidth, m_sceneHeight);
+   setScale(m_mapScale);
+   m_hudMode = HudModeType::hudModeMap;
+
+   for (auto it = m_mapActors.begin(); it != m_mapActors.end(); ++it)
+   {
+      (*it)->addToMapActor(m_hudResources, this, m_itemScale);
+   }
+
+   m_mainActor->restartedFromMenu();
+}

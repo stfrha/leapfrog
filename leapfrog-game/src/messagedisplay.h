@@ -28,7 +28,7 @@ public:
       int postWait);
 };
 
-class MessageDisplay : public oxygine::Actor
+class MessageDisplay : public oxygine::Box9Sprite
 {
 public:
    enum MsgDispStateEnum
@@ -41,14 +41,26 @@ public:
    };
 
 private:
+   bool m_fullHeight; 
+
    oxygine::Resources* m_hudResources;
    oxygine::spClipRectActor m_messageActor;
+   oxygine::spActor m_mdFrame;
+
+   float m_highTop;
+   float m_normalTop;
+   float m_left;
+   float m_right;
+   float m_highBottom;
+   float m_normalBottom;
 
    float m_messageDisplayWidth;
    float m_messageDisplayHeight;
+
    float m_fontSize;
 
    std::vector<MessageItem> m_messageQueue;
+   std::vector<MessageItem> m_displayedMessages;
    MsgDispStateEnum m_state;
    int m_ticks;
    bool m_noPreviousMessages;
@@ -61,9 +73,15 @@ public:
    void initialiseMessageDisplay(
       oxygine::Resources* hudResources,
       oxygine::Actor* sceneActor,
-      const oxygine::Vector2& topLeft, 
-      const oxygine::Vector2& bottomRight,
+      float highTop,
+      float normalTop,
+      float left,
+      float right,
+      float highBottom,
+      float normalBottom,
       const float fontSize);
+
+   void setFullHeight(bool fullHeight);
 
    void clearMessageDisplay(void);
 
@@ -86,6 +104,13 @@ public:
 
 protected:
 	void doUpdate(const oxygine::UpdateState& us);
+
+   // Put all displayed messages onto the display again, without
+   // tweens. Used if size is changed.
+   void redrawMessages(void);
+   void drawMessage(const MessageItem& message);
+   void instantTransit(void);
+
 };
 
 extern spMessageDisplay g_MessageDisplay;

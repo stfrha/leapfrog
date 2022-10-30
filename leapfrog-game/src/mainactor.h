@@ -45,6 +45,8 @@ private:
    spSprite m_manPanSprite;
    spSprite m_reloadSprite;
 
+   spActor m_controllersAndStatusActor;
+
    oxygine::RectF m_turnRightButtonRect;
    oxygine::RectF m_turnLeftButtonRect;
    oxygine::RectF m_boosterButtonRect;
@@ -76,6 +78,7 @@ private:
    bool m_reloadPressed;
    bool m_reloadArm;
    bool m_splashArm;
+   bool m_menuArm;
 
    //spObjectResources m_gameStatus;
 
@@ -133,6 +136,9 @@ public:
    void unregisterDualPropTrigger(
       std::string object,
       int eventId);
+
+   void buttonB1Clicked(void);
+   void restartedFromMenu(void);
 
 protected:
    void doUpdate(const UpdateState& us);

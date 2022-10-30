@@ -1,4 +1,5 @@
 #include "messagedisplay.h"
+#include "messagedisplay.h"
 
 #include "sceneactor.h"
 #include "actoruserdata.h"
@@ -32,7 +33,8 @@ MessageItem::MessageItem(
 
 MessageDisplay::MessageDisplay()  :
    m_state(idle),
-   m_noPreviousMessages(true)
+   m_noPreviousMessages(true),
+   m_fullHeight(false)
 {
 }
 
@@ -59,48 +61,75 @@ void MessageDisplay::clearMessageDisplay(void)
 void MessageDisplay::initialiseMessageDisplay(
    Resources* hudResources,
    Actor* mainActor,
-   const Vector2& topLeft, 
-   const Vector2& bottomRight,
+   float highTop,
+   float normalTop,
+   float left,
+   float right,
+   float highBottom,
+   float normalBottom,
    const float fontSize)
 {
+   m_highTop = highTop;
+   m_normalTop = normalTop;
+   m_left = left;
+   m_right = right;
+   m_highBottom = highBottom;
+   m_normalBottom = normalBottom;
+
    m_hudResources = hudResources;
 
-   // Calculate the rect where the MessageDisplay is to be
-   m_messageDisplayWidth = bottomRight.x - topLeft.x;
-   m_messageDisplayHeight = bottomRight.y - topLeft.y;
    m_fontSize = fontSize;
 
    float thickness = 1.0f;
 
+   setResAnim(m_hudResources->getResAnim("display_thin"));
+   setVerticalMode(Box9Sprite::STRETCHING);
+   setHorizontalMode(Box9Sprite::STRETCHING);
+   setGuides(8, 120, 8, 120);
+   setTouchEnabled(false);
    setAnchor(0.0f, 0.0f);
-   setSize(m_messageDisplayWidth, m_messageDisplayHeight);
-   setPosition(topLeft);
+   //setSize(m_messageDisplayWidth, m_messageDisplayHeight);
    setPriority(250);
    attachTo(mainActor);
 
-   spActor mdFrame = new Actor();
-   mdFrame->setAnchor(0.0f, 0.0f);
-   mdFrame->setSize(m_messageDisplayWidth, m_messageDisplayHeight);
-   mdFrame->setPosition(0.0f, 0.0f);
-   mdFrame->attachTo(this);
+   m_mdFrame = new Actor();
+   m_mdFrame->setAnchor(0.0f, 0.0f);
+   //m_mdFrame->setSize(m_messageDisplayWidth, m_messageDisplayHeight);
+   m_mdFrame->setPosition(0.0f, 0.0f);
+   m_mdFrame->attachTo(this);
 
    m_messageActor = new ClipRectActor();
    m_messageActor->setAnchor(0.0f, 0.0f);
-   m_messageActor->setSize(m_messageDisplayWidth, m_messageDisplayHeight);
+   //m_messageActor->setSize(m_messageDisplayWidth, m_messageDisplayHeight);
    m_messageActor->setPosition(0.0f, 0.0f);
-   m_messageActor->attachTo(mdFrame);
+   m_messageActor->attachTo(m_mdFrame);
 
-   spBox9Sprite hej = new Box9Sprite();
-   hej->setResAnim(m_hudResources->getResAnim("display_thin"));
-   hej->setVerticalMode(Box9Sprite::STRETCHING);
-   hej->setHorizontalMode(Box9Sprite::STRETCHING);
-   hej->setSize(m_messageDisplayWidth, m_messageDisplayHeight);
-   hej->setAnchor(0.0f, 0.0f);
-   hej->setPosition(0.0f, 0.0f);
-   hej->setGuides(8, 120, 8, 120);
-   hej->setTouchEnabled(false);
-   hej->attachTo(mdFrame);
+   setFullHeight(m_fullHeight);
+}
 
+void MessageDisplay::setFullHeight(bool fullHeight)
+{
+   m_fullHeight = fullHeight;
+
+   // Calculate the rect where the MessageDisplay is to be
+   if (m_fullHeight)
+   {
+      m_messageDisplayHeight = m_highBottom - m_highTop;
+      setPosition(m_left, m_highTop);
+   }
+   else
+   {
+      m_messageDisplayHeight = m_normalBottom - m_normalTop;
+      setPosition(m_left, m_normalTop);
+   }
+
+   m_messageDisplayWidth = m_right - m_left;
+
+   setSize(m_messageDisplayWidth, m_messageDisplayHeight);
+   m_messageActor->setSize(m_messageDisplayWidth, m_messageDisplayHeight);
+   m_mdFrame->setSize(m_messageDisplayWidth, m_messageDisplayHeight);
+
+   redrawMessages();
 }
 
 void MessageDisplay::doUpdate(const oxygine::UpdateState& us)
@@ -178,11 +207,18 @@ void MessageDisplay::prepareFirstInQueue(void)
    }
 }
 
+
 void MessageDisplay::processFirstInQueue(void)
+{
+   drawMessage(m_messageQueue[0]);
+}
+
+
+void MessageDisplay::drawMessage(const MessageItem& message)
 {
    m_newBubble = new Box9Sprite();
 
-   if (m_messageQueue[0].m_leftBubble)
+   if (message.m_leftBubble)
    {
       m_newBubble->setResAnim(m_hudResources->getResAnim("msg_bbl_left"));
    }
@@ -195,7 +231,7 @@ void MessageDisplay::processFirstInQueue(void)
    m_newBubble->setVerticalMode(Box9Sprite::STRETCHING);
    m_newBubble->setHorizontalMode(Box9Sprite::STRETCHING);
 
-   if (m_messageQueue[0].m_leftBubble)
+   if (message.m_leftBubble)
    {
       m_newBubble->setAnchor(0.0f, 1.0f);
       m_newBubble->setPosition(4.0f, m_messageDisplayHeight - 4.0f);
@@ -220,7 +256,7 @@ void MessageDisplay::processFirstInQueue(void)
    msgTextField->setSize(Vector2(m_messageDisplayWidth - 40.0f - 8.0f, 0));
    msgTextField->setAnchor(0.0f, 0.0f);
    msgTextField->setPosition(8.0f, 8.0f);
-   msgTextField->setText(m_messageQueue[0].m_message);
+   msgTextField->setText(message.m_message);
    msgTextField->setColor(g_Layout.getPhosphorColor());
 
 
@@ -233,6 +269,7 @@ void MessageDisplay::processFirstInQueue(void)
    msgTextField->attachTo(m_newBubble);
 
 }
+
 
 void MessageDisplay::startTransit(void)
 {
@@ -275,6 +312,39 @@ void MessageDisplay::startTransit(void)
    }
 }
 
+void MessageDisplay::instantTransit(void)
+{
+   // Now we know the size of the new entry. We can now move all other children 
+   // up by that same amount
+
+   spActor actor = m_messageActor->getFirstChild();
+
+   vector<spActor> toOldToLiveList;
+
+   while (actor)
+   {
+      Vector2 pos = actor->getPosition();
+
+      // Check if message is no longer visible
+      if (pos.y < 0)
+      {
+         // TODO: remove actor
+         toOldToLiveList.push_back(actor);
+      }
+      else
+      {
+         actor->setPosition(pos.x, pos.y - m_newMessageHeight - 4.0f);
+      }
+
+      actor = actor->getNextSibling();
+   }
+
+   for (auto it = toOldToLiveList.begin(); it != toOldToLiveList.end(); ++it)
+   {
+      (*it)->detach();
+   }
+}
+
 void MessageDisplay::startMessageAnimation(void)
 {
    // When all old messages are pushed up, 
@@ -305,7 +375,34 @@ void MessageDisplay::atNewBubbleFinished(oxygine::Event* event)
    else
    {
       m_state = idle;
+      m_displayedMessages.push_back(*(m_messageQueue.begin()));
       m_messageQueue.erase(m_messageQueue.begin());
    }
-
 }
+
+void MessageDisplay::redrawMessages(void)
+{
+   clearMessageDisplay();
+
+   for (auto it = m_displayedMessages.begin(); it != m_displayedMessages.end(); ++it)
+   {
+      drawMessage(*it);
+
+      if (m_noPreviousMessages)
+      {
+         m_noPreviousMessages = false;
+
+         m_newBubble->setScale(1.0f);
+         m_newBubble->attachTo(m_messageActor);
+      }
+      else
+      {
+         // New message but there are already old messages on display
+         // we need to move old messages to make space for the new
+         instantTransit();
+         m_newBubble->setScale(1.0f);
+         m_newBubble->attachTo(m_messageActor);
+      }
+   }
+}
+

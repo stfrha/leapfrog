@@ -6,7 +6,7 @@
 #include "physdispconvert.h"
 #include "collisionentity.h"
 
-class SceneActor;
+class MainActor;
 class HeadDownDisplay;
 
 DECLARE_SMART(MapItem, spMapItem);
@@ -88,16 +88,36 @@ protected:
 
 DECLARE_SMART(HeadDownDisplay, spHeadDownDisplay);
 
-class HeadDownDisplay : public oxygine::Actor
+class HeadDownDisplay : public oxygine::Box9Sprite
 {
 private:
+
+   enum HudModeType
+   {
+      hudModeMap,
+      hudModeOrbit,
+      hudModeMenu
+   };
+
    bool m_actorExists;
+   HudModeType m_hudMode;
    oxygine::Resources* m_hudResources;
-   SceneActor* m_sceneActor;
+   MainActor* m_mainActor;
    std::vector<spMapItem> m_mapActors;
    float m_mapScale;
+   float m_mapSizeX;
+   float m_mapSizeY;
+   float m_orbitSizeX;
+   float m_orbitSizeY;
+   float m_menuSizeX;
+   float m_menuSizeY;
+
    float m_itemScale;
    int m_itemIdRepository;
+
+
+   void menuTransitionComplete(oxygine::Event* event);
+   void mapTransitionComplete(oxygine::Event* event);
 
 public:
    float m_sceneWidth;
@@ -106,13 +126,14 @@ public:
 
    HeadDownDisplay();
 
-   void initialiseMap(
+   void initialiseHud(
       oxygine::Resources* hudResources,
-      SceneActor* sceneActor,
+      MainActor* mainActor,
       const oxygine::Vector2& topLeft, 
       const oxygine::Vector2& bottomRight);
 
    void clearMap(void);
+   void clearDisplay(void);
 
    int addMeToMap(
       MapItem::MapItemTypeEnum type,
@@ -127,6 +148,10 @@ public:
 
    // Slow version, the item is looked up
    void setState(oxygine::spActor actor, MapItem::MapItemStateEnum state);
+
+   void goToOrbit(void);
+   void goToMenu(void);
+   void goToMap(void);
 
 protected:
 	void doUpdate(const oxygine::UpdateState& us);

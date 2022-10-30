@@ -214,6 +214,7 @@
     <ClCompile Include="..\src\headdowndisplay.cpp" />
     <ClCompile Include="..\src\luainterface.cpp" />
     <ClCompile Include="..\src\magneticmine.cpp" />
+    <ClCompile Include="..\src\menuactor.cpp" />
     <ClCompile Include="..\src\messagedisplay.cpp" />
     <ClCompile Include="..\src\objectresources.cpp" />
     <ClCompile Include="..\src\parallaxbackground.cpp" />
@@ -321,6 +322,7 @@
     <ClInclude Include="..\src\lua.hpp" />
     <ClInclude Include="..\src\luainterface.h" />
     <ClInclude Include="..\src\magneticmine.h" />
+    <ClInclude Include="..\src\menuactor.h" />
     <ClInclude Include="..\src\messagedisplay.h" />
     <ClInclude Include="..\src\objectpropertyevents.h" />
     <ClInclude Include="..\src\objectresources.h" />
@@ -360,7 +362,6 @@
     <ClInclude Include="..\src\smokeparticle.h" />
     <ClInclude Include="..\src\softboundary.h" />
     <ClInclude Include="..\src\spawnobject.h" />
-    <ClInclude Include="..\src\static.h" />
     <ClInclude Include="..\src\statusbar.h" />
     <ClInclude Include="..\src\steeringinterface.h" />
     <ClInclude Include="..\src\steeringmanager.h" />

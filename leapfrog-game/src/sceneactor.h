@@ -1,4 +1,5 @@
 #pragma once
+
 #include "oxygine-framework.h"
 #include "Box2D/Box2D.h"
 #include "compoundobject.h"
@@ -109,6 +110,7 @@ public:
    void setZoom(const float& pos);
 
    bool getIsInPause(void);
+   void setIsInPause(bool isInPause);
 
 	SceneActor(
       oxygine::Resources& gameResources, 
@@ -138,7 +140,6 @@ public:
    bool m_manPanEnablePressed;
    oxygine::Vector2 m_panVector;
    spLeapFrog  m_leapfrog;
-   HeadDownDisplay* m_map;
 
    b2World* getWorld(void);
    Resources* getResources(void);

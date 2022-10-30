@@ -17,6 +17,7 @@
 #include "headdowndisplay.h"
 #include "messagedisplay.h"
 #include "luainterface.h"
+#include "menuactor.h"
 
 #include "objectresourcesevents.h"
 
@@ -42,7 +43,9 @@ MainActor::MainActor() :
    m_reloadTouchIndex(0),
    m_splashArm(true),
    m_reloadPressed(false),
-   m_reloadArm(true)
+   m_reloadArm(true),
+   m_menuArm(true),
+   m_sceneObject(NULL)
 {
    g_Layout.initLayout();
 
@@ -98,9 +101,13 @@ void MainActor::initMainActor(void)
 
    g_MessageDisplay->initialiseMessageDisplay(
       &m_hudResources,
-      getStage().get(),
-      Vector2(0.0f, g_Layout.getButtonWidth()),
-      Vector2(g_Layout.getButtonWidth() * 2.0f, g_Layout.getYFromBottom(1) - g_Layout.getButtonWidth() / 2.0f),
+      getStage().get(), 
+      0.0f, 
+      g_Layout.getButtonWidth(), 
+      0.0f, 
+      g_Layout.getButtonWidth() * 2.0f, 
+      g_Layout.getViewPortBounds().y, 
+      g_Layout.getYFromBottom(1) - g_Layout.getButtonWidth() / 2.0f,
       g_Layout.getDefaultFontSize());
 
    setSize(g_Layout.getViewPortBounds());
@@ -230,9 +237,9 @@ void MainActor::startScene(void)
 
    addEventListener(StatusResourceDepletedEvent::EVENT, CLOSURE(this, &MainActor::resourceDepletedHandler));
 
-   g_HeadDownDisplay->initialiseMap(
+   g_HeadDownDisplay->initialiseHud(
       &m_hudResources,
-      m_sceneObject,
+      this,
       Vector2(0.0f, 0.0f),
       m_sceneObject->getSize());
 
@@ -241,7 +248,6 @@ void MainActor::startScene(void)
    createButtonOverlay();
 
    setManualPanButtonState();
-
 
    //m_debugDraw = new Box2DDraw;
    //m_debugDraw->SetFlags(b2Draw::e_shapeBit | b2Draw::e_jointBit | b2Draw::e_pairBit | b2Draw::e_centerOfMassBit);
@@ -415,6 +421,22 @@ void MainActor::doUpdate(const UpdateState& us)
       initMainActor();
    }
 
+   if ((m_sceneObject != NULL) && (m_sceneObject->getIsInPause()) && (m_menuArm == true))
+   {
+      g_HeadDownDisplay->goToMenu();
+      g_MessageDisplay->setFullHeight(true);
+      m_controllersAndStatusActor->setVisible(false);
+
+      spMenuActor ma = new MenuActor(
+         m_hudResources,
+         this,
+         Vector2(100.0f, 100.0f),
+         Vector2(400.0f, 300.0f));
+
+      m_menuArm = false;
+
+   }
+
    if (m_reloadArm && m_reloadPressed)
    {
       m_reloadArm = false;
@@ -439,7 +461,8 @@ void MainActor::doUpdate(const UpdateState& us)
    }
    else
    {
-      const Uint8* data = SDL_GetKeyboardState(0);
+
+      // const Uint8* data = SDL_GetKeyboardState(0);
 
      // if (data[SDL_SCANCODE_F1])
      // {
@@ -462,11 +485,20 @@ void MainActor::doUpdate(const UpdateState& us)
      // }
    }
 
+
+
 }
 
 
 void MainActor::createButtonOverlay(void)
 {
+
+   m_controllersAndStatusActor = new Actor();
+   m_controllersAndStatusActor->setAnchor(getAnchor());
+   m_controllersAndStatusActor->setSize(getSize());
+   m_controllersAndStatusActor->setPosition(getPosition());
+   m_controllersAndStatusActor->attachTo(this);
+
    // Caluclate button geometrics
    m_turnLeftButtonRect = RectF(0.0f, g_Layout.getYFromBottom(1), g_Layout.getButtonWidth(), g_Layout.getButtonWidth());
    m_turnRightButtonRect = RectF(g_Layout.getButtonWidth(), g_Layout.getYFromBottom(0), g_Layout.getButtonWidth(), g_Layout.getButtonWidth());
@@ -488,7 +520,7 @@ void MainActor::createButtonOverlay(void)
    turnLeftButton->setPosition(m_turnLeftButtonRect.getLeftTop());
    turnLeftButton->setAnchor(0.0f, 0.0f);
    turnLeftButton->setTouchEnabled(false);
-   turnLeftButton->attachTo(this);
+   turnLeftButton->attachTo(m_controllersAndStatusActor);
 
    spSprite turnRightButton = new Sprite();
    turnRightButton->setResAnim(m_hudResources.getResAnim("turn_right_button"));
@@ -496,7 +528,7 @@ void MainActor::createButtonOverlay(void)
    turnRightButton->setPosition(m_turnRightButtonRect.getLeftTop());
    turnRightButton->setAnchor(0.0f, 0.0f);
    turnRightButton->setTouchEnabled(false);
-   turnRightButton->attachTo(this);
+   turnRightButton->attachTo(m_controllersAndStatusActor);
 
    spSprite fireButton = new Sprite();
    fireButton->setResAnim(m_hudResources.getResAnim("fire_button"));
@@ -504,7 +536,7 @@ void MainActor::createButtonOverlay(void)
    fireButton->setPosition(m_fireButtonRect.getLeftTop());
    fireButton->setAnchor(0.0f, 0.0f);
    fireButton->setTouchEnabled(false);
-   fireButton->attachTo(this);
+   fireButton->attachTo(m_controllersAndStatusActor);
 
    spSprite thursterButton = new Sprite();
    thursterButton->setResAnim(m_hudResources.getResAnim("booster_button"));
@@ -512,7 +544,7 @@ void MainActor::createButtonOverlay(void)
    thursterButton->setPosition(m_boosterButtonRect.getLeftTop());
    thursterButton->setAnchor(0.0f, 0.0f);
    thursterButton->setTouchEnabled(false);
-   thursterButton->attachTo(this);
+   thursterButton->attachTo(m_controllersAndStatusActor);
 
    spSprite pauseButton = new Sprite();
    pauseButton->setResAnim(m_hudResources.getResAnim("pause_button"));
@@ -520,7 +552,7 @@ void MainActor::createButtonOverlay(void)
    pauseButton->setPosition(m_pauseButtonRect.getLeftTop());
    pauseButton->setAnchor(0.0f, 0.0f);
    pauseButton->setTouchEnabled(false);
-   pauseButton->attachTo(this);
+   pauseButton->attachTo(m_controllersAndStatusActor);
 
    m_zoomOutSprite = new Sprite();
    m_zoomOutSprite->setResAnim(m_hudResources.getResAnim("zoom_out_button"));
@@ -528,7 +560,7 @@ void MainActor::createButtonOverlay(void)
    m_zoomOutSprite->setPosition(m_zoomOutButtonRect.getLeftTop());
    m_zoomOutSprite->setAnchor(0.0f, 0.0f);
    m_zoomOutSprite->setTouchEnabled(false);
-   m_zoomOutSprite->attachTo(this);
+   m_zoomOutSprite->attachTo(m_controllersAndStatusActor);
 
    m_zoomInSprite = new Sprite();
    m_zoomInSprite->setResAnim(m_hudResources.getResAnim("zoom_in_button"));
@@ -536,7 +568,7 @@ void MainActor::createButtonOverlay(void)
    m_zoomInSprite->setPosition(m_zoomInButtonRect.getLeftTop());
    m_zoomInSprite->setAnchor(0.0f, 0.0f);
    m_zoomInSprite->setTouchEnabled(false);
-   m_zoomInSprite->attachTo(this);
+   m_zoomInSprite->attachTo(m_controllersAndStatusActor);
 
    m_manPanEnableSprite = new Sprite();
    m_manPanEnableSprite->setResAnim(m_hudResources.getResAnim("pan_button"));
@@ -544,7 +576,7 @@ void MainActor::createButtonOverlay(void)
    m_manPanEnableSprite->setPosition(m_manPanEnableButtonRect.getLeftTop());
    m_manPanEnableSprite->setAnchor(0.0f, 0.0f);
    m_manPanEnableSprite->setTouchEnabled(false);
-   m_manPanEnableSprite->attachTo(this);
+   m_manPanEnableSprite->attachTo(m_controllersAndStatusActor);
 
    m_manPanSprite = new Sprite();
    m_manPanSprite->setResAnim(m_hudResources.getResAnim("pan_button"));
@@ -552,7 +584,7 @@ void MainActor::createButtonOverlay(void)
    m_manPanSprite->setPosition(m_panButtonRect.getLeftTop());
    m_manPanSprite->setAnchor(0.0f, 0.0f);
    m_manPanSprite->setTouchEnabled(false);
-   m_manPanSprite->attachTo(this);
+   m_manPanSprite->attachTo(m_controllersAndStatusActor);
 
    m_reloadSprite = new Sprite();
    m_reloadSprite->setResAnim(m_hudResources.getResAnim("reload_button"));
@@ -560,30 +592,8 @@ void MainActor::createButtonOverlay(void)
    m_reloadSprite->setPosition(m_reloadButtonRect.getLeftTop());
    m_reloadSprite->setAnchor(0.0f, 0.0f);
    m_reloadSprite->setTouchEnabled(false);
-   m_reloadSprite->attachTo(this);
-  
-   //spBox9Sprite hej = new Box9Sprite();
-   //hej->setResAnim(m_gameResources.getResAnim("box9a"));
-   //hej->setVerticalMode(Box9Sprite::TILING);
-   //hej->setHorizontalMode(Box9Sprite::TILING);
-   //hej->setSize(512.0f, 256.0f);
-   //hej->setPosition(700.0f, 250.0f);
-   //hej->setAnchor(0.0f, 0.0f);
-   //hej->setGuides(40, 160, 40, 160);
-   //hej->setTouchEnabled(false);
-   //hej->attachTo(this);
-
-   //spBox9Sprite hej2 = new Box9Sprite();
-   //hej2->setResAnim(m_gameResources.getResAnim("box9a"));
-   //hej2->setVerticalMode(Box9Sprite::STRETCHING);
-   //hej2->setHorizontalMode(Box9Sprite::STRETCHING);
-   //hej2->setSize(512, 256.0f);
-   //hej2->setPosition(700.0f, 530.0f);
-   //hej2->setAnchor(0.0f, 0.0f);
-   //hej->setGuides(40, 160, 40, 160);
-   //hej2->setTouchEnabled(false);
-   //hej2->attachTo(this);
-
+   m_reloadSprite->attachTo(m_controllersAndStatusActor);
+ 
 }
 
 
@@ -792,6 +802,7 @@ void MainActor::registerLeapfrog(LeapFrog* leapfrog)
       m_hudResources,
       leapfrog,
       m_sceneObject,
+      m_controllersAndStatusActor.get(),
       5,
       Vector2(g_Layout.getXFromRight(1), g_Layout.getYFromTop(1)),
       Vector2(g_Layout.getButtonWidth() * 2.0f, g_Layout.getButtonWidth() / 2.0f),
@@ -805,6 +816,7 @@ void MainActor::registerLeapfrog(LeapFrog* leapfrog)
       m_hudResources,
       leapfrog,
       m_sceneObject,
+      m_controllersAndStatusActor.get(),
       7,
       Vector2(g_Layout.getXFromRight(1), g_Layout.getYFromTop(1) + g_Layout.getButtonWidth() / 2.0f + 2.0f),
       Vector2(g_Layout.getButtonWidth() * 2.0f, g_Layout.getButtonWidth() / 2.0f),
@@ -818,6 +830,7 @@ void MainActor::registerLeapfrog(LeapFrog* leapfrog)
       m_hudResources,
       leapfrog,
       m_sceneObject,
+      m_controllersAndStatusActor.get(),
       6,
       Vector2(g_Layout.getXFromRight(1), g_Layout.getYFromTop(1) + g_Layout.getButtonWidth() / 2.0f * 2.0f + 2.0f),
       Vector2(g_Layout.getButtonWidth() * 2.0f, g_Layout.getButtonWidth() / 2.0f),
@@ -831,6 +844,7 @@ void MainActor::registerLeapfrog(LeapFrog* leapfrog)
       m_hudResources,
       leapfrog,
       m_sceneObject,
+      m_controllersAndStatusActor.get(),
       9,
       Vector2(g_Layout.getXFromRight(1), g_Layout.getYFromTop(1) + g_Layout.getButtonWidth() / 2.0f * 3.0f + 2.0f),
       Vector2(g_Layout.getButtonWidth() * 2.0f, g_Layout.getButtonWidth() / 2.0f),
@@ -844,6 +858,7 @@ void MainActor::registerLeapfrog(LeapFrog* leapfrog)
       m_hudResources,
       leapfrog,
       m_sceneObject,
+      m_controllersAndStatusActor.get(),
       8,
       Vector2(g_Layout.getXFromRight(1), g_Layout.getYFromTop(1) + g_Layout.getButtonWidth() / 2.0f * 4.0f + 2.0f),
       Vector2(g_Layout.getButtonWidth() * 2.0f, g_Layout.getButtonWidth() / 2.0f),
@@ -856,5 +871,27 @@ void MainActor::registerLeapfrog(LeapFrog* leapfrog)
    {
       shieldBar->setAlpha(128);
    }
+
+}
+
+void MainActor::buttonB1Clicked(void)
+{
+   g_HeadDownDisplay->goToMap();
+}
+
+
+void MainActor::restartedFromMenu(void)
+{
+   g_MessageDisplay->setFullHeight(false);
+   m_controllersAndStatusActor->setVisible(true);
+
+   g_HeadDownDisplay->initialiseHud(
+      &m_hudResources,
+      this,
+      Vector2(0.0f, 0.0f),
+      m_sceneObject->getSize());
+
+   m_menuArm = true;
+   m_sceneObject->setIsInPause(false);
 
 }

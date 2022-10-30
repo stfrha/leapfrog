@@ -5,155 +5,64 @@
       <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
       <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
     </Filter>
-    <Filter Include="Header Files">
-      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
-      <Extensions>h;hpp;hxx;hm;inl;inc;xsd</Extensions>
-    </Filter>
-    <Filter Include="images">
-      <UniqueIdentifier>{a917e880-8336-46eb-a660-18c0feed3416}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Particles">
-      <UniqueIdentifier>{89f9327f-4ec7-44e2-92db-d98913c5e7f2}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Box2D">
       <UniqueIdentifier>{95ba31f3-904e-4716-a404-45a82f8bc7dd}</UniqueIdentifier>
     </Filter>
     <Filter Include="LUA">
       <UniqueIdentifier>{1d4edfda-005b-40cf-88ae-c1348d3ddb9d}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Events">
-      <UniqueIdentifier>{de6d241b-2896-4cd5-9b65-80c0053f03ae}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Resources">
       <UniqueIdentifier>{3041c7d5-e6a0-4b2f-81e3-cc5bc3542a15}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\hud">
+      <UniqueIdentifier>{7dd8dedf-57f9-4b4c-97a5-ac213f68eca9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\actors">
+      <UniqueIdentifier>{c930ed4b-e862-464f-996e-89aaca1780b2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\game management">
+      <UniqueIdentifier>{91068f1e-e4b9-4f50-97e7-63d356d13032}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\scenes">
+      <UniqueIdentifier>{323abc14-b401-4fe0-897f-eac28cdfe879}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\utilities">
+      <UniqueIdentifier>{09d8d4fb-f937-40a5-a1f0-d989031f1248}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\particles">
+      <UniqueIdentifier>{89f9327f-4ec7-44e2-92db-d98913c5e7f2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\events">
+      <UniqueIdentifier>{de6d241b-2896-4cd5-9b65-80c0053f03ae}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\master actors">
+      <UniqueIdentifier>{b3f8bcc4-3c4b-4abf-841c-391f7aa463fb}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\src\main.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\Box2DDebugDraw.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\physdispconvert.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\scales.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\leapfrog.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\landingactor.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\mainactor.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\sceneactor.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\freespaceactor.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\softboundary.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\bullet.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\gun.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\freespacecontactlistener.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\shield.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\marker.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\planetactor.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\src\blastemitter.cpp">
-      <Filter>Particles</Filter>
+      <Filter>Source Files\particles</Filter>
     </ClCompile>
     <ClCompile Include="..\src\blastparticle.cpp">
-      <Filter>Particles</Filter>
+      <Filter>Source Files\particles</Filter>
     </ClCompile>
     <ClCompile Include="..\src\flameemitter.cpp">
-      <Filter>Particles</Filter>
+      <Filter>Source Files\particles</Filter>
     </ClCompile>
     <ClCompile Include="..\src\flameparticle.cpp">
-      <Filter>Particles</Filter>
+      <Filter>Source Files\particles</Filter>
     </ClCompile>
     <ClCompile Include="..\src\smokeparticle.cpp">
-      <Filter>Particles</Filter>
+      <Filter>Source Files\particles</Filter>
     </ClCompile>
     <ClCompile Include="..\src\reentryflameparticle.cpp">
-      <Filter>Particles</Filter>
+      <Filter>Source Files\particles</Filter>
     </ClCompile>
     <ClCompile Include="..\src\reentryflameemitter.cpp">
-      <Filter>Particles</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\compoundobject.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\polygonvertices.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\launchsite.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\landercontactlistener.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\landingpad.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\particles</Filter>
     </ClCompile>
     <ClCompile Include="..\src\flamesmokeparticle.cpp">
-      <Filter>Particles</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\orbitwindow.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\orbitscene.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\orbitspacescene.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\objectfactory.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\layout.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\statusbar.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\steeringmanager.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\objectproperty.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\system.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\breakableobject.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\spawnobject.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\steerableobject.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\groupindexsource.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\particles</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\Box2D\Box2D\Common\b2BlockAllocator.cpp">
       <Filter>Box2D</Filter>
@@ -293,21 +202,6 @@
     <ClCompile Include="..\..\..\Box2D\Box2D\Dynamics\b2WorldCallbacks.cpp">
       <Filter>Box2D</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\explosiveobject.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\magneticmine.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\headdowndisplay.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\pickupobject.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\messagedisplay.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\lua\lapi.c">
       <Filter>LUA</Filter>
     </ClCompile>
@@ -407,157 +301,163 @@
     <ClCompile Include="..\..\..\lua\lzio.c">
       <Filter>LUA</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\luainterface.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="..\src\breakableobject.cpp">
+      <Filter>Source Files\actors</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\bullet.cpp">
+      <Filter>Source Files\actors</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\compoundobject.cpp">
+      <Filter>Source Files\actors</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\explosiveobject.cpp">
+      <Filter>Source Files\actors</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\gun.cpp">
+      <Filter>Source Files\actors</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\landingactor.cpp">
+      <Filter>Source Files\actors</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\landingpad.cpp">
+      <Filter>Source Files\actors</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\launchsite.cpp">
+      <Filter>Source Files\actors</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\leapfrog.cpp">
+      <Filter>Source Files\actors</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\magneticmine.cpp">
+      <Filter>Source Files\actors</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\objectfactory.cpp">
+      <Filter>Source Files\actors</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\pickupobject.cpp">
+      <Filter>Source Files\actors</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\shield.cpp">
+      <Filter>Source Files\actors</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\spawnobject.cpp">
+      <Filter>Source Files\actors</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\steerableobject.cpp">
+      <Filter>Source Files\actors</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\steeringmanager.cpp">
+      <Filter>Source Files\actors</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\system.cpp">
+      <Filter>Source Files\actors</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\headdowndisplay.cpp">
+      <Filter>Source Files\hud</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\messagedisplay.cpp">
+      <Filter>Source Files\hud</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\statusbar.cpp">
+      <Filter>Source Files\hud</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\freespaceactor.cpp">
+      <Filter>Source Files\scenes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\freespacecontactlistener.cpp">
+      <Filter>Source Files\scenes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\orbitscene.cpp">
+      <Filter>Source Files\scenes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\orbitspacescene.cpp">
+      <Filter>Source Files\scenes</Filter>
     </ClCompile>
     <ClCompile Include="..\src\parallaxbackground.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\scenes</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\objectresources.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="..\src\planetactor.cpp">
+      <Filter>Source Files\scenes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\softboundary.cpp">
+      <Filter>Source Files\scenes</Filter>
     </ClCompile>
     <ClCompile Include="..\src\gamestatus.cpp">
+      <Filter>Source Files\game management</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\luainterface.cpp">
+      <Filter>Source Files\game management</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\groupindexsource.cpp">
+      <Filter>Source Files\utilities</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\layout.cpp">
+      <Filter>Source Files\utilities</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\objectproperty.cpp">
+      <Filter>Source Files\utilities</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\objectresources.cpp">
+      <Filter>Source Files\utilities</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\physdispconvert.cpp">
+      <Filter>Source Files\utilities</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\polygonvertices.cpp">
+      <Filter>Source Files\utilities</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\scales.cpp">
+      <Filter>Source Files\utilities</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\landercontactlistener.cpp">
+      <Filter>Source Files\scenes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\marker.cpp">
+      <Filter>Source Files\utilities</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\Box2DDebugDraw.cpp">
+      <Filter>Source Files\utilities</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\orbitwindow.cpp">
+      <Filter>Source Files\scenes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\main.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\mainactor.cpp">
+      <Filter>Source Files\master actors</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\sceneactor.cpp">
+      <Filter>Source Files\master actors</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\menuactor.cpp">
+      <Filter>Source Files\hud</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\src\physdispconvert.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\scales.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\leapfrog.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\landingactor.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\static.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\mainactor.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\sceneactor.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\freespaceactor.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\softboundary.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\bullet.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\gun.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\collisionentity.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\freespacecontactlistener.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\shield.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\marker.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\planetactor.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\src\blastparticle.h">
-      <Filter>Particles</Filter>
+      <Filter>Source Files\particles</Filter>
     </ClInclude>
     <ClInclude Include="..\src\blastemitter.h">
-      <Filter>Particles</Filter>
+      <Filter>Source Files\particles</Filter>
     </ClInclude>
     <ClInclude Include="..\src\flameemitter.h">
-      <Filter>Particles</Filter>
+      <Filter>Source Files\particles</Filter>
     </ClInclude>
     <ClInclude Include="..\src\flameparticle.h">
-      <Filter>Particles</Filter>
+      <Filter>Source Files\particles</Filter>
     </ClInclude>
     <ClInclude Include="..\src\smokeparticle.h">
-      <Filter>Particles</Filter>
+      <Filter>Source Files\particles</Filter>
     </ClInclude>
     <ClInclude Include="..\src\reentryflameparticle.h">
-      <Filter>Particles</Filter>
+      <Filter>Source Files\particles</Filter>
     </ClInclude>
     <ClInclude Include="..\src\reentryflameemitter.h">
-      <Filter>Particles</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\compoundobject.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\polygonvertices.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\launchsite.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\landercontactlistener.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\landingpad.h">
-      <Filter>Header Files</Filter>
+      <Filter>Source Files\particles</Filter>
     </ClInclude>
     <ClInclude Include="..\src\flamesmokeparticle.h">
-      <Filter>Particles</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\orbitwindow.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\orbitscene.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\orbitspacescene.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\objectfactory.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\layout.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\statusbar.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\gamestatus.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\steeringmanager.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\steeringinterface.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\objectproperty.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\system.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\breakableobject.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\spawnobject.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\bodyuserdata.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\actoruserdata.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\steerableobject.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\groupindexsource.h">
-      <Filter>Header Files</Filter>
+      <Filter>Source Files\particles</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\Box2D\Box2D\Common\b2BlockAllocator.h">
       <Filter>Box2D</Filter>
@@ -700,80 +600,194 @@
     <ClInclude Include="..\..\..\Box2D\Box2D\Box2D.h">
       <Filter>Box2D</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\explosiveobject.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\magneticmine.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\headdowndisplay.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\messagedisplay.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\lua.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\luainterface.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\pickupobject.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\parallaxbackground.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\src\breakableobjectevents.h">
-      <Filter>Events</Filter>
+      <Filter>Source Files\events</Filter>
     </ClInclude>
     <ClInclude Include="..\src\compoundobjectevents.h">
-      <Filter>Events</Filter>
+      <Filter>Source Files\events</Filter>
     </ClInclude>
     <ClInclude Include="..\src\deepspacesceneevents.h">
-      <Filter>Events</Filter>
+      <Filter>Source Files\events</Filter>
     </ClInclude>
     <ClInclude Include="..\src\explosiveobjectevents.h">
-      <Filter>Events</Filter>
+      <Filter>Source Files\events</Filter>
     </ClInclude>
     <ClInclude Include="..\src\landingactorevents.h">
-      <Filter>Events</Filter>
+      <Filter>Source Files\events</Filter>
     </ClInclude>
     <ClInclude Include="..\src\landingpadevents.h">
-      <Filter>Events</Filter>
+      <Filter>Source Files\events</Filter>
     </ClInclude>
     <ClInclude Include="..\src\launchsiteevents.h">
-      <Filter>Events</Filter>
+      <Filter>Source Files\events</Filter>
     </ClInclude>
     <ClInclude Include="..\src\leapfrogevents.h">
-      <Filter>Events</Filter>
+      <Filter>Source Files\events</Filter>
     </ClInclude>
     <ClInclude Include="..\src\orbitsceneevents.h">
-      <Filter>Events</Filter>
+      <Filter>Source Files\events</Filter>
     </ClInclude>
     <ClInclude Include="..\src\orbitspacesceneevents.h">
-      <Filter>Events</Filter>
+      <Filter>Source Files\events</Filter>
     </ClInclude>
     <ClInclude Include="..\src\pickupobjectevents.h">
-      <Filter>Events</Filter>
+      <Filter>Source Files\events</Filter>
     </ClInclude>
     <ClInclude Include="..\src\sceneactorevents.h">
-      <Filter>Events</Filter>
+      <Filter>Source Files\events</Filter>
     </ClInclude>
     <ClInclude Include="..\src\objectpropertyevents.h">
-      <Filter>Events</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\objectresources.h">
-      <Filter>Header Files</Filter>
+      <Filter>Source Files\events</Filter>
     </ClInclude>
     <ClInclude Include="..\src\objectresourcesevents.h">
-      <Filter>Events</Filter>
+      <Filter>Source Files\events</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\headdowndisplay.h">
+      <Filter>Source Files\hud</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\messagedisplay.h">
+      <Filter>Source Files\hud</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\statusbar.h">
+      <Filter>Source Files\hud</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\breakableobject.h">
+      <Filter>Source Files\actors</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\bullet.h">
+      <Filter>Source Files\actors</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\compoundobject.h">
+      <Filter>Source Files\actors</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\explosiveobject.h">
+      <Filter>Source Files\actors</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\gun.h">
+      <Filter>Source Files\actors</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\landingactor.h">
+      <Filter>Source Files\actors</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\landingpad.h">
+      <Filter>Source Files\actors</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\launchsite.h">
+      <Filter>Source Files\actors</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\leapfrog.h">
+      <Filter>Source Files\actors</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\magneticmine.h">
+      <Filter>Source Files\actors</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\objectfactory.h">
+      <Filter>Source Files\actors</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\pickupobject.h">
+      <Filter>Source Files\actors</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\shield.h">
+      <Filter>Source Files\actors</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\spawnobject.h">
+      <Filter>Source Files\actors</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\steerableobject.h">
+      <Filter>Source Files\actors</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\steeringmanager.h">
+      <Filter>Source Files\actors</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\system.h">
+      <Filter>Source Files\actors</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\gamestatus.h">
+      <Filter>Source Files\game management</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\luainterface.h">
+      <Filter>Source Files\game management</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\groupindexsource.h">
+      <Filter>Source Files\utilities</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\layout.h">
+      <Filter>Source Files\utilities</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\marker.h">
+      <Filter>Source Files\utilities</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\objectproperty.h">
+      <Filter>Source Files\utilities</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\objectresources.h">
+      <Filter>Source Files\utilities</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\physdispconvert.h">
+      <Filter>Source Files\utilities</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\polygonvertices.h">
+      <Filter>Source Files\utilities</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\scales.h">
+      <Filter>Source Files\utilities</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\actoruserdata.h">
+      <Filter>Source Files\actors</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\bodyuserdata.h">
+      <Filter>Source Files\actors</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\collisionentity.h">
+      <Filter>Source Files\actors</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\freespaceactor.h">
+      <Filter>Source Files\scenes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\freespacecontactlistener.h">
+      <Filter>Source Files\scenes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\landercontactlistener.h">
+      <Filter>Source Files\scenes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\orbitscene.h">
+      <Filter>Source Files\scenes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\orbitspacescene.h">
+      <Filter>Source Files\scenes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\orbitwindow.h">
+      <Filter>Source Files\scenes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\parallaxbackground.h">
+      <Filter>Source Files\scenes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\planetactor.h">
+      <Filter>Source Files\scenes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\softboundary.h">
+      <Filter>Source Files\scenes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\steeringinterface.h">
+      <Filter>Source Files\actors</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\lua.hpp">
+      <Filter>Source Files\game management</Filter>
     </ClInclude>
     <ClInclude Include="resource.h">
-      <Filter>Header Files</Filter>
+      <Filter>Resources</Filter>
     </ClInclude>
     <ClInclude Include="resource1.h">
-      <Filter>Header Files</Filter>
+      <Filter>Resources</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\mainactor.h">
+      <Filter>Source Files\master actors</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\sceneactor.h">
+      <Filter>Source Files\master actors</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\menuactor.h">
+      <Filter>Source Files\hud</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

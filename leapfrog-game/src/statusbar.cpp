@@ -12,6 +12,7 @@ StatusBar::StatusBar(
    Resources& gameResources,
    oxygine::Actor* eventActor,
    SceneActor* sceneActor,
+   Actor* attachToMe,
    int propertyId,
    const Vector2& pos,
    const Vector2& size,
@@ -30,7 +31,7 @@ StatusBar::StatusBar(
    setPosition(pos + Vector2(-2.0f, 0.0f));
    setAnchor(0.0f, 0.0f);
    setPriority(163);
-   attachTo(sceneActor->getParent());
+   attachTo(attachToMe);
 
    // Status bar has headline and progress bar beneath
 
@@ -152,6 +153,7 @@ StatusLiteral::StatusLiteral(
    Resources& gameResources,
    oxygine::Actor* eventActor,
    SceneActor* sceneActor,
+   Actor* attachToMe,
    int propertyId,
    const Vector2& pos,
    const Vector2& size,
@@ -168,7 +170,7 @@ StatusLiteral::StatusLiteral(
    setPosition(pos + Vector2(-2.0f, 0.0f));
    setAnchor(0.0f, 0.0f);
    setPriority(163);
-   attachTo(sceneActor->getParent());
+   attachTo(attachToMe);
 
    // Status bar has headline and literal string beneath
    spTextField t = new TextField();
