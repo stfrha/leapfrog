@@ -128,57 +128,54 @@ void SteerableObject::doUpdate(const oxygine::UpdateState& us)
       m_steeringManager->resetStateChangeClock(us);
    }
 
-   if (!m_sceneActor->getIsInPause())
+   b2Vec2 pos = m_body->GetPosition();
+   m_properties[SteerableObjectPropertyEnum::xPos].setProperty(pos.x);
+   m_properties[SteerableObjectPropertyEnum::yPos].setProperty(pos.y);
+
+
+   b2Vec2 steeringVelChange(0.0f, 0.0f);
+   int state = (int)m_properties[SteerableObjectPropertyEnum::state].getProperty();
+   switch (state)
    {
-      b2Vec2 pos = m_body->GetPosition();
-      m_properties[SteerableObjectPropertyEnum::xPos].setProperty(pos.x);
-      m_properties[SteerableObjectPropertyEnum::yPos].setProperty(pos.y);
-
-
-      b2Vec2 steeringVelChange(0.0f, 0.0f);
-      int state = (int)m_properties[SteerableObjectPropertyEnum::state].getProperty();
-      switch (state)
+   case fix:
+      break;
+   case wanderHunt:
+      steeringVelChange = m_steeringManager->wanderHunt(us, m_targetBody, m_maxSpeed);
+      if (m_steeringManager->getWanderHunterStateChanged())
       {
-      case fix:
-         break;
-      case wanderHunt:
-         steeringVelChange = m_steeringManager->wanderHunt(us, m_targetBody, m_maxSpeed);
-         if (m_steeringManager->getWanderHunterStateChanged())
+         SteeringManager::WanderHunterState whState = m_steeringManager->getWanderHunterState();
+         switch (whState)
          {
-            SteeringManager::WanderHunterState whState = m_steeringManager->getWanderHunterState();
-            switch (whState)
-            {
-            case SteeringManager::WanderHunterState::wanderState:
-               g_HeadDownDisplay->setState(m_headDownDisplayItemId, MapItem::MapItemStateEnum::hollow);
-               break;
-            case SteeringManager::WanderHunterState::seekState:
-               g_HeadDownDisplay->setState(m_headDownDisplayItemId, MapItem::MapItemStateEnum::flashingSlow);
-               break;
-            case SteeringManager::WanderHunterState::pursuitState:
-               g_HeadDownDisplay->setState(m_headDownDisplayItemId, MapItem::MapItemStateEnum::flashingFast);
-               break;
-            }
+         case SteeringManager::WanderHunterState::wanderState:
+            g_HeadDownDisplay->setState(m_headDownDisplayItemId, MapItem::MapItemStateEnum::hollow);
+            break;
+         case SteeringManager::WanderHunterState::seekState:
+            g_HeadDownDisplay->setState(m_headDownDisplayItemId, MapItem::MapItemStateEnum::flashingSlow);
+            break;
+         case SteeringManager::WanderHunterState::pursuitState:
+            g_HeadDownDisplay->setState(m_headDownDisplayItemId, MapItem::MapItemStateEnum::flashingFast);
+            break;
          }
-         break;
-      case seek:
-         steeringVelChange = m_steeringManager->seek(m_seekPoint, m_maxSpeed);
-         break;
-      case pursuit:
-         steeringVelChange = m_steeringManager->pursuit(m_targetBody, m_maxSpeed);
-         break;
-      case wander:
-         steeringVelChange = m_steeringManager->wander(m_maxSpeed);
-         break;
       }
-
-      b2Vec2 avoidanceVelChange = m_steeringManager->avoidCollision(m_maxSpeed);
-
-      steeringVelChange += avoidanceVelChange;
-
-      executeSteeringForce(steeringVelChange, us, (avoidanceVelChange.Length() > 0.00001f));
-
-      m_boosterFlame->setFlameScale(m_boosterScale);
+      break;
+   case seek:
+      steeringVelChange = m_steeringManager->seek(m_seekPoint, m_maxSpeed);
+      break;
+   case pursuit:
+      steeringVelChange = m_steeringManager->pursuit(m_targetBody, m_maxSpeed);
+      break;
+   case wander:
+      steeringVelChange = m_steeringManager->wander(m_maxSpeed);
+      break;
    }
+
+   b2Vec2 avoidanceVelChange = m_steeringManager->avoidCollision(m_maxSpeed);
+
+   steeringVelChange += avoidanceVelChange;
+
+   executeSteeringForce(steeringVelChange, us, (avoidanceVelChange.Length() > 0.00001f));
+
+   m_boosterFlame->setFlameScale(m_boosterScale);
 
  }
 

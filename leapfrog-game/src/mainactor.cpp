@@ -116,9 +116,6 @@ void MainActor::initMainActor(void)
    g_LuaInterface.lua_startInitialScene();
    m_nextScene.m_armNextScene = true;
 
-   //   addEventListener(TouchEvent::MOVE, CLOSURE(this, &MainActor::sceneMoveHandler));
-   addEventListener(CompoundObjectCreatedEvent::EVENT, CLOSURE(this, &MainActor::dummyHandler));
-
 }
 
 
@@ -426,12 +423,6 @@ void MainActor::doUpdate(const UpdateState& us)
       g_HeadDownDisplay->goToMenu();
       g_MessageDisplay->setFullHeight(true);
       m_controllersAndStatusActor->setVisible(false);
-
-      spMenuActor ma = new MenuActor(
-         m_hudResources,
-         this,
-         Vector2(100.0f, 100.0f),
-         Vector2(400.0f, 300.0f));
 
       m_menuArm = false;
 
@@ -755,12 +746,6 @@ void MainActor::sceneMoveHandler(Event* event)
 
 }
 
-
-void MainActor::dummyHandler(Event* event)
-{
-   logs::messageln("Got dummy event");
-}
-
 void MainActor::recursiveRemoveChildren(spActor& parent)
 {
    spActor child = parent->getFirstChild();
@@ -874,9 +859,38 @@ void MainActor::registerLeapfrog(LeapFrog* leapfrog)
 
 }
 
-void MainActor::buttonB1Clicked(void)
+void MainActor::buttonClicked(int i)
 {
-   g_HeadDownDisplay->goToMap();
+   if (i == 1)
+   {
+      m_postMenuAction = PostMenuActionType::continueCurrent;
+      g_HeadDownDisplay->goToMap();
+   }
+   else if (i == 2)
+   {
+      m_postMenuAction = PostMenuActionType::continueLatest;
+      g_HeadDownDisplay->goToMap();
+   }
+   else if (i == 3)
+   {
+      m_postMenuAction = PostMenuActionType::startNew;
+      g_HeadDownDisplay->goToMap();
+   }
+   else if (i == 4)
+   {
+      m_postMenuAction = PostMenuActionType::testLanding;
+      g_HeadDownDisplay->goToMap();
+   }
+   else if (i == 5)
+   {
+      m_postMenuAction = PostMenuActionType::testSpace;
+      g_HeadDownDisplay->goToMap();
+   }
+   else if (i == 6)
+   {
+      m_postMenuAction = PostMenuActionType::testOrbit;
+      g_HeadDownDisplay->goToMap();
+   }
 }
 
 
@@ -891,7 +905,71 @@ void MainActor::restartedFromMenu(void)
       Vector2(0.0f, 0.0f),
       m_sceneObject->getSize());
 
-   m_menuArm = true;
-   m_sceneObject->setIsInPause(false);
+   if (m_postMenuAction == PostMenuActionType::continueCurrent)
+   {
+      // Release pause
+      m_menuArm = true;
+      m_sceneObject->setIsInPause(false);
+   }
+   else if (m_postMenuAction == PostMenuActionType::startNew)
+   {
+      // Initialise new game data and load first scene according to lua
+      m_menuArm = true;
+      m_sceneObject->setIsInPause(false);
 
+      g_GameStatus.initializeGameStatusXmlDocument();
+      g_GameStatus.gameStatusNewGameInit();
+      g_LuaInterface.lua_forceCurrentScene();
+      g_LuaInterface.lua_startInitialScene();
+      m_nextScene.m_armNextScene = true;
+
+   }
+   else if (m_postMenuAction == PostMenuActionType::continueLatest)
+   {
+      // restore previous state and continue from there
+      m_menuArm = true;
+      m_sceneObject->setIsInPause(false);
+
+      g_GameStatus.restoreGameStatus();
+      g_LuaInterface.lua_forceCurrentScene();
+      g_LuaInterface.lua_startInitialScene();
+      m_nextScene.m_armNextScene = true;
+   }
+   else if (m_postMenuAction == PostMenuActionType::testLanding)
+   {
+      m_menuArm = true;
+      m_sceneObject->setIsInPause(false);
+
+      g_GameStatus.setSceneMissionState("landing_scene.xml", 1, 1);
+      g_LuaInterface.lua_forceCurrentScene();
+      g_LuaInterface.lua_startInitialScene();
+      m_nextScene.m_armNextScene = true;
+   }
+   else if (m_postMenuAction == PostMenuActionType::testSpace)
+   {
+      m_menuArm = true;
+      m_sceneObject->setIsInPause(false);
+
+      g_GameStatus.setSceneMissionState("deep_space_scene.xml", 1, 1);
+      g_LuaInterface.lua_forceCurrentScene();
+      g_LuaInterface.lua_startInitialScene();
+      m_nextScene.m_armNextScene = true;
+   }
+   else if (m_postMenuAction == PostMenuActionType::testOrbit)
+   {
+      m_menuArm = true;
+      m_sceneObject->setIsInPause(false);
+
+      g_GameStatus.setSceneMissionState("orbit_scene.xml", 1, 1);
+      g_LuaInterface.lua_forceCurrentScene();
+      g_LuaInterface.lua_startInitialScene();
+      m_nextScene.m_armNextScene = true;
+   }
+}
+
+void MainActor::menuTransitionComplete(void)
+{
+   spMenuActor ma = new MenuActor(
+      m_hudResources,
+      this);
 }

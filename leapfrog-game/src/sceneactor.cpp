@@ -44,6 +44,7 @@ SceneActor* SceneActor::defineScene(
    pugi::xml_node& root,
    int groupIndex)
 {
+
    string sceneTypeStr = root.child("behaviour").child("sceneProperties").attribute("sceneType").as_string();
 
    float width = root.child("behaviour").child("sceneProperties").attribute("width").as_float(1000.0f);
@@ -165,6 +166,10 @@ SceneActor::SceneActor(
    m_isInPause(false),
    m_armPauseChange(true)
 {
+   m_clock = new Clock;
+   setClock(m_clock);
+
+
 	setScale(m_stageToViewPortScale);
 
    // Set wanted viewport position to center (since panorate mode defaults to center)
@@ -383,6 +388,15 @@ bool SceneActor::getIsInPause(void)
 void SceneActor::setIsInPause(bool isInPause)
 {
    m_isInPause = isInPause;
+
+   if (!isInPause)
+   {
+      m_clock->resume();
+   }
+   else
+   {
+      m_clock->pause();
+   }
 }
 
 void SceneActor::setZoom(const float& zoom)
@@ -457,109 +471,109 @@ void SceneActor::doUpdate(const UpdateState& us)
 {
    const Uint8* data = SDL_GetKeyboardState(0);
 
-   if (!m_isInPause)
+   // Handle timers
+   vector<int> removeIds;
+
+   for (auto it = m_timers.begin(); it != m_timers.end(); ++it)
    {
-      // Handle timers
-      vector<int> removeIds;
-
-      for (auto it = m_timers.begin(); it != m_timers.end(); ++it)
+      if (it->tickTimer())
       {
-         if (it->tickTimer())
-         {
-            removeIds.push_back(it->m_id);
+         removeIds.push_back(it->m_id);
 
-            SceneTimeoutEvent ev(it->m_id);
-            m_sceneActor->dispatchEvent(&ev);
+         SceneTimeoutEvent ev(it->m_id);
+         m_sceneActor->dispatchEvent(&ev);
 
-         }
       }
+   }
 
-      // Remove all timers that timed out
-      for (auto it = removeIds.begin(); it != removeIds.end(); ++it)
+   // Remove all timers that timed out
+   for (auto it = removeIds.begin(); it != removeIds.end(); ++it)
+   {
+      removeTimer(*it);
+   }
+
+   testForBoundaryRepel();
+
+   float spu = c_secondsPerUpdate;
+   if (m_isInPause)
+   {
+      spu = 0.0f;
+   }
+   m_world->Step(spu, 6, 2);
+
+   // Kill all actors registrated for death
+   sweepKillList();
+
+   // Spawn all actors registred for birth
+   sweepSpawnList();
+
+   if (m_leapfrog != NULL)
+   {
+      if (!m_externalControl)
       {
-         removeTimer(*it);
-      }
-
-      testForBoundaryRepel();
-
-      m_world->Step(c_secondsPerUpdate, 6, 2);
-
-      // Kill all actors registrated for death
-      sweepKillList();
-
-      // Spawn all actors registred for birth
-      sweepSpawnList();
-
-      if (m_leapfrog != NULL)
-      {
-         if (!m_externalControl)
+         if (data[SDL_SCANCODE_W] || m_boosterPressed)
          {
-            if (data[SDL_SCANCODE_W] || m_boosterPressed)
-            {
-               m_leapfrog->fireMainBooster(true);
-            }
-            else
-            {
-               m_leapfrog->fireMainBooster(false);
-            }
-
-            if (data[SDL_SCANCODE_A] || m_turnLeftPressed)
-            {
-               m_leapfrog->fireSteeringBooster(-1);
-            }
-            else if (data[SDL_SCANCODE_D] || m_turnRightPressed)
-            {
-               m_leapfrog->fireSteeringBooster(1);
-            }
-            else
-            {
-               m_leapfrog->fireSteeringBooster(0);
-            }
-         }
-
-         if (data[SDL_SCANCODE_RETURN] || m_firePressed)
-         {
-            m_leapfrog->fireGun(true);
+            m_leapfrog->fireMainBooster(true);
          }
          else
          {
-            m_leapfrog->fireGun(false);
+            m_leapfrog->fireMainBooster(false);
          }
 
-         if (data[SDL_SCANCODE_0])
+         if (data[SDL_SCANCODE_A] || m_turnLeftPressed)
          {
-            m_leapfrog->goToMode(LFM_RESET);
+            m_leapfrog->fireSteeringBooster(-1);
          }
-         else if (data[SDL_SCANCODE_1])
+         else if (data[SDL_SCANCODE_D] || m_turnRightPressed)
          {
-            m_leapfrog->goToMode(LFM_LANDING);
+            m_leapfrog->fireSteeringBooster(1);
          }
-         else if (data[SDL_SCANCODE_2])
+         else
          {
-            m_leapfrog->goToMode(LFM_DEEP_SPACE);
+            m_leapfrog->fireSteeringBooster(0);
          }
-         else if (data[SDL_SCANCODE_3])
-         {
-            m_leapfrog->goToMode(LFM_REENTRY);
-         }
-
-
-         if (data[SDL_SCANCODE_KP_9])
-         {
-            m_leapfrog->fireReentryFlames(true);
-         }
-         else if (data[SDL_SCANCODE_KP_8])
-         {
-            m_leapfrog->fireReentryFlames(false);
-         }
-
-         if (data[SDL_SCANCODE_P])
-         {
-            m_leapfrog->dumpParts();
-         }
-
       }
 
+      if (data[SDL_SCANCODE_RETURN] || m_firePressed)
+      {
+         m_leapfrog->fireGun(true);
+      }
+      else
+      {
+         m_leapfrog->fireGun(false);
+      }
+
+      if (data[SDL_SCANCODE_0])
+      {
+         m_leapfrog->goToMode(LFM_RESET);
+      }
+      else if (data[SDL_SCANCODE_1])
+      {
+         m_leapfrog->goToMode(LFM_LANDING);
+      }
+      else if (data[SDL_SCANCODE_2])
+      {
+         m_leapfrog->goToMode(LFM_DEEP_SPACE);
+      }
+      else if (data[SDL_SCANCODE_3])
+      {
+         m_leapfrog->goToMode(LFM_REENTRY);
+      }
+
+
+      if (data[SDL_SCANCODE_KP_9])
+      {
+         m_leapfrog->fireReentryFlames(true);
+      }
+      else if (data[SDL_SCANCODE_KP_8])
+      {
+         m_leapfrog->fireReentryFlames(false);
+      }
+
+      if (data[SDL_SCANCODE_P])
+      {
+         m_leapfrog->dumpParts();
+      }
    }
 	
 	if (data[SDL_SCANCODE_KP_PLUS] || m_zoomInPressed)
@@ -596,11 +610,12 @@ void SceneActor::doUpdate(const UpdateState& us)
       if (m_isInPause)
       {
          m_isInPause = false;
+         m_clock->resume();
       }
       else
       {
          m_isInPause = true;
-        
+         m_clock->pause();       
       }
 
       m_armPauseChange = false;

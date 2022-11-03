@@ -104,13 +104,6 @@ private:
    oxygine::Resources* m_hudResources;
    MainActor* m_mainActor;
    std::vector<spMapItem> m_mapActors;
-   float m_mapScale;
-   float m_mapSizeX;
-   float m_mapSizeY;
-   float m_orbitSizeX;
-   float m_orbitSizeY;
-   float m_menuSizeX;
-   float m_menuSizeY;
 
    float m_itemScale;
    int m_itemIdRepository;
@@ -120,6 +113,14 @@ private:
    void mapTransitionComplete(oxygine::Event* event);
 
 public:
+   float m_mapScale;
+   float m_mapSizeX;
+   float m_mapSizeY;
+   float m_orbitSizeX;
+   float m_orbitSizeY;
+   float m_menuSizeX;
+   float m_menuSizeY;
+
    float m_sceneWidth;
    float m_sceneHeight;
 

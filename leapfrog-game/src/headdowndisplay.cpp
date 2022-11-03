@@ -279,7 +279,7 @@ void HeadDownDisplay::initialiseHud(
 
    m_itemScale = 1.0f / m_mapScale * g_Layout.getButtonWidth() / 80.0f;
 
-   m_menuSizeX = g_Layout.getViewPortBounds().x - 4.0f * g_Layout.getButtonWidth();
+   m_menuSizeX = g_Layout.getViewPortBounds().x - 4.0f * g_Layout.getButtonWidth()  - 0.2f * g_Layout.getButtonWidth();
    m_menuSizeY = g_Layout.getViewPortBounds().y - 2.0f * (g_Layout.getViewPortBounds().y - mapBottom);
 
    m_orbitSizeX = g_Layout.getViewPortBounds().x;
@@ -442,6 +442,8 @@ void HeadDownDisplay::goToMap(void)
 void HeadDownDisplay::menuTransitionComplete(Event* event)
 {
    // TODO: Light up buttons (in mainactor) only at this time
+   m_mainActor->menuTransitionComplete();
+
 }
 
 

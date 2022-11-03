@@ -26,6 +26,19 @@ DECLARE_SMART(MainActor, spMainActor)
 class MainActor : public oxygine::Actor
 {
 private:
+
+   enum PostMenuActionType
+   {
+      continueCurrent,
+      continueLatest,
+      startNew,
+      testLanding,
+      testSpace,
+      testOrbit
+   };
+
+   PostMenuActionType m_postMenuAction;
+
 	//it is our resources
 	//in real project you would have more than one Resources declarations.
 	//It is important on mobile devices with limited memory and you would load/unload them
@@ -137,8 +150,9 @@ public:
       std::string object,
       int eventId);
 
-   void buttonB1Clicked(void);
+   void buttonClicked(int button);
    void restartedFromMenu(void);
+   void menuTransitionComplete(void);
 
 protected:
    void doUpdate(const UpdateState& us);

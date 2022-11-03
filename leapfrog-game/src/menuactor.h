@@ -40,13 +40,17 @@ private:
    MainActor* m_mainActor;
 
    void b1Clicked(oxygine::Event* event);
+   void b2Clicked(oxygine::Event* event);
+   void b3Clicked(oxygine::Event* event);
+   void b4Clicked(oxygine::Event* event);
+   void b5Clicked(oxygine::Event* event);
+   void b6Clicked(oxygine::Event* event);
+   void b7Clicked(oxygine::Event* event);
 
 public:
-	MenuActor(
+   MenuActor(
       Resources& hudResources,
-      MainActor* parent,
-      const Vector2& pos,
-      const Vector2& size);
+      MainActor* mainActor);
 
 protected:
    void doUpdate(const oxygine::UpdateState &us);

@@ -6,57 +6,69 @@
 -- Global variables
 currentState = 1
 firstSceneOfToday = true
+lfDefined = false
 
 
 -- This function loads all scene objects that match the 
 -- mission state. This includes the leapfrog at the position
 -- of the state in this scene. 
-function lua_setupInitialMissionStateScene()
-
-   print("Hello hello hello hello hello hello hello hello!!!")
-   
-   if currentScene == "landing_scene.xml" then
-      if currentMission == 1 then
-         if currentState == 1 then
-            -- Initialise leapfrog as descenting
-            c_addPositionedChildObject("leapfrog_landing.xml", "leapfrog1", 415, 657)
-
-            -- Reconfigure leapfrog to landing mode
-            c_setObjectProperty("leapfrog1", 0, 2)
-            
-         elseif currentState == 2 then
-
-         end
-      end
-   end
-end
+-- function lua_setupInitialMissionStateScene()
+--    if currentScene == "landing_scene.xml" then
+--       if currentMission == 1 then
+--          if currentState == 1 then
+--             -- Initialise leapfrog as descenting
+--             c_addPositionedChildObject("leapfrog_landing.xml", "leapfrog1", 415, 657)
+-- 
+--             -- Reconfigure leapfrog to landing mode
+--             c_setObjectProperty("leapfrog1", 0, 2)
+--             
+--          elseif currentState == 2 then
+-- 
+--          end
+--       end
+--    end
+-- end
 
 -- This function is to be called when a new scene has been started
 -- It does all setup for that scene in this mission state
 function lua_setupMissionStateScene()
 
-   if firstSceneOfToday then
-      
-      firstSceneOfToday = false
-      
-      lua_setupInitialMissionStateScene()
-      
-   end 
+   -- Test if LF shall be positioned according to the nextLfxxxx
+   -- variables
+   if useInitialLfPos then
+      -- Note that if the file loaded is not the same configuration as 
+      -- the nextLfConfiguration, the LF will reconfigure as an animation
+      c_addPositionedChildObject(nextLfFile, "leapfrog1", nextLfPosX, nextLfPosY)
+      c_setObjectProperty("leapfrog1", 0, nextLfConfiguration)
+      lfDefined = true      
+   end
+
+   -- if firstSceneOfToday then
+   --    firstSceneOfToday = false
+   --    lua_setupInitialMissionStateScene()
+   -- end 
 
    -- Clear triggers and event handler
    c_clearAllTriggersAndEvents()
 
-   -- Regardless of state, we always want to listen to leapfrog has landed 
-   -- on the launch site
    if currentScene == "landing_scene.xml" then
-         -- Register event for landing on launchsite 1
-         c_registerEventHandler("launchSite1", "LsLL", 0, 0)
-   end
 
-   if currentState == 1 then
-   
-      if currentScene == "landing_scene.xml" then
+      -- Regardless of state, we always want to listen to leapfrog has landed 
+      -- on the launch site
+      c_registerEventHandler("launchSite1", "LsLL", 0, 0)
 
+      if currentState == 1 then
+
+         if lfDefined == false then 
+            if useInitialLfPos == false then
+               -- Initialise leapfrog as descenting
+               c_addPositionedChildObject("leapfrog_landing.xml", "leapfrog1", 527, 526)
+               -- Reconfigure leapfrog to landing mode
+               c_setObjectProperty("leapfrog1", 0, 2)
+               lfDefined = true      
+            end
+         end
+      
          c_addMissionStateSceneObjects("landing_scene_state2.xml")
 
          -- Start timer, will send ScTO event when timed out 
@@ -68,17 +80,26 @@ function lua_setupMissionStateScene()
          -- Detect if bomb exploded prematurely
          c_registerEventHandler("bomb1", "ExEX", 0, 0)
 
+         -- Set bomb to be very in-sensitivity
+         c_setObjectProperty("bomb1", 0, 250000)
+
+
          -- Set state of next mission objective
          c_setObjectMapState("landing_pad1", "landingPad1", 1)
+         c_setObjectMapState("coDestroyable", "springDestroyable", 0)
 
          -- Play dialog
          c_addDialogMessage("Hello. Try to land on the landing pad, right below you.", "DEBUG", true, 0, 0)
-      end
 
-   elseif currentState == 2 then
-   
-      if currentScene == "landing_scene.xml" then
-         
+      elseif currentState == 2 then
+
+         if lfDefined == false then 
+            if useInitialLfPos == false then
+               c_addPositionedChildObject("leapfrog_landing.xml", "leapfrog1", 415, 657)
+               lfDefined = true      
+            end
+         end
+           
          -- Register event for leaving (Take-off) landingPad1
          c_registerEventHandler("landing_pad1", "LpTO", 0, 0)
          
@@ -86,26 +107,19 @@ function lua_setupMissionStateScene()
          c_registerEventHandler("bomb1", "ExEX", 0, 0)
 
          -- Set state of next mission objective
-         c_setObjectMapState("coDestroyable", "springDestroyable", 0)
+         c_setObjectMapState("landing_pad1", "landingPad1", 0)
+         c_setObjectMapState("coDestroyable", "springDestroyable", 1)
 
-         -- Set bomb to be very in-sensitivity
-         c_setObjectProperty("bomb1", 0, 250000)
-
-      end
-
-   elseif currentState == 3 then
-      if currentScene == "landing_scene.xml" then
+      elseif currentState == 3 then
          c_registerEventHandler("coDestroyable", "BrBR", 0, 0)
          c_registerEventHandler("bomb1", "ExEX", 0, 0)
-      end
 
-   elseif currentState == 4 then
-      if currentScene == "landing_scene.xml" then
+      elseif currentState == 4 then
          c_registerEventHandler("bomb1", "ExEX", 0, 0)
       end
 
-
    end
+
 end
 
 function lua_missionStateSceneEventHandler(eventId, actorName, parameter1)
@@ -113,20 +127,19 @@ function lua_missionStateSceneEventHandler(eventId, actorName, parameter1)
    -- Regardless of state, we always want to listen to leapfrog has landed 
    -- on the launch site
    if currentScene == "landing_scene.xml" then
-         if eventId == "LsLL" then
-            c_addDialogMessage("You will now be launched into deep space.", "DEBUG", true, 0, 0)
-            c_setObjectProperty("launchSite1", 1, 0)
-         end
+      if eventId == "LsLL" then
+         c_addDialogMessage("You will now be launched into deep space.", "DEBUG", true, 0, 0)
+         c_setObjectProperty("launchSite1", 1, 0)
+      end
    end
 
-
-   if currentState == 1 then
-      if currentScene == "landing_scene.xml" then
+   if currentScene == "landing_scene.xml" then
+      if currentState == 1 then
          if eventId == "ScTO" and parameter1 == state1Timer then
 
             -- Play dialog
             c_addDialogMessage("The landing pad is the filled square on your map. Get there!", "DEBUG", true, 0, 0)
-            c_addPositionedChildObject("medium_asteroid.xml", "dummy1", 500, 500)
+            --c_addPositionedChildObject("medium_asteroid.xml", "dummy1", 500, 500)
 
          end
 
@@ -136,6 +149,8 @@ function lua_missionStateSceneEventHandler(eventId, actorName, parameter1)
             c_addDialogMessage("Yippie: Welcome to the landing pad. Let me fill you up. A new obstacle has arrived in the grotto. Check it out.", "DEBUG", true, 0, 0)
 
             currentState = 2
+            
+            -- TODO: Here we do a save game call
             
             lua_setupMissionStateScene()
          end
@@ -149,11 +164,7 @@ function lua_missionStateSceneEventHandler(eventId, actorName, parameter1)
             
             lua_setupMissionStateScene()
          end
-
-      end
-
-   elseif currentState == 2 then
-      if currentScene == "landing_scene.xml" then
+      elseif currentState == 2 then
          if actorName == "landing_pad1" and eventId == "LpTO" then
                
             -- Play dialog
@@ -174,10 +185,7 @@ function lua_missionStateSceneEventHandler(eventId, actorName, parameter1)
             lua_setupMissionStateScene()
          end
 
-      end
-
-   elseif currentState == 3 then
-      if currentScene == "landing_scene.xml" then
+      elseif currentState == 3 then
          if actorName == "coDestroyable" and eventId == "BrBR" then
             -- Play dialog
             c_addDialogMessage("Good job, the spring is free. Now destroy the bomb.", "DEBUG", true, 0, 0)
@@ -199,10 +207,7 @@ function lua_missionStateSceneEventHandler(eventId, actorName, parameter1)
             
             lua_setupMissionStateScene()
          end
-      end
-
-   elseif currentState == 4 then
-      if currentScene == "landing_scene.xml" then
+      elseif currentState == 4 then
          if actorName == "bomb1" then
             if eventId == "ExEX" then
                

@@ -66,6 +66,7 @@ public:
    };
 
 private:
+   oxygine::Clock* m_clock;
    float c_secondsPerUpdate = 1.0f / 60.0f;
    spCompoundObject m_panObject;
    bool m_armManPanEnableChange;
