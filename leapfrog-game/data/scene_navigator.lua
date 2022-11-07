@@ -8,35 +8,43 @@ currentMission = 0
 currentSceneType = 0
 
 gameProgress = 0
+
+-- These variables are used in the mission_script to load the leapfrog at the 
+-- correct position and configuration for the exit/entry combination. Thus, 
+-- they are set here in the lua_sceneExitHandler function and then used in 
+-- lua_setupMissionStateScene function. To use them, the useInitialConfiguration
+-- must be set to false.
 nextLfFile = "leapfrog_landing.xml"
 nextLfPosX = 415
 nextLfPosY = 657
-nextLfConfiguration = 2
+nextLfMode = 2  -- 0 = Reset, 1 = deep space, 2 = Landing, 3 = Orbit, 4 == Reentry (What is the differnce between orbit and reentry?)
+-- Or what is the difference between Deep space and orbit?
 
 -- This is used to determine if the nextLfxxxxx variables declared above should
--- be used when the Leapfrog is created (in the setupMissionStateScene function)
+-- be used when the Leapfrog is created in the setupMissionStateScene function (false)
 -- or if the exit-entry pair of the lua_sceneExitHandler function below
--- is used.
--- The nextLfxxxxx variables here are only used (useInitialLfPos == false) when 
--- starting a new game or starting a saved game. 
+-- is used (true).
 useInitialLfPos = false
+
+lfDefined = false
 
 -- This function starts a new or saved game. If used for a new
 -- game, the currentMission needs only be set to zero for this 
 -- function to initialize the first mission and selects its scene.
 -- If used for a saved game, the currentMission must be set to >0.
--- The other variables: sceneType, currentState and currentScene
+-- The other variables: currentSceneType, currentState and currentScene
 -- must be set using the lua_forceCurrentScene before this is called.
 function lua_startInitialScene()
    if currentMission == 0 then
       currentScene = "landing_scene.xml"
-      sceneType = 0
+      currentSceneType = 0
       currentMission = 1
       currentState = 1
-      useInitialLfPos = false -- For initial start, the LF file, pos and prop data is set by the setupMissionStateScene    
+      lfDefined = false
    end
 
-   c_startScene(currentScene, sceneType)
+   useInitialLfPos = true -- For initial start, the LF file, pos and prop data is set by the setupMissionStateScene    
+   c_startScene(currentScene, currentSceneType)
 end
 
 
@@ -72,7 +80,16 @@ function lua_sceneExitHandler(exitSceneType, exitParameter)
       if currentScene == "landing_scene.xml" then
          if exitParameter == 1 then
             currentScene = "deep_space_scene.xml"
-            sceneType = 1
+            currentSceneType = 1
+
+            nextLfFile = "leapfrog_deep_space.xml"
+            nextLfPosX = 40
+            nextLfPosY = 760
+            nextLfMode = 1
+            useInitialLfPos = false
+            lfDefined = false
+
+            c_saveGameStatus("deep_space_scene.xml", currentMission, currentState, currentSceneType)
          end
       end
    
@@ -82,7 +99,16 @@ function lua_sceneExitHandler(exitSceneType, exitParameter)
       if currentScene == "deep_space_scene.xml" then
          if exitParameter == 3 then
             currentScene = "orbit_scene.xml"
-            sceneType = 2
+            currentSceneType = 2
+            
+            nextLfFile = "leapfrog_deep_space.xml"
+            nextLfPosX = -8
+            nextLfPosY = 18
+            nextLfMode = 3
+            useInitialLfPos = false
+            lfDefined = false
+            
+            c_saveGameStatus("orbit_scene.xml", currentMission, currentState, currentSceneType)
          end
       end
    
@@ -91,7 +117,16 @@ function lua_sceneExitHandler(exitSceneType, exitParameter)
       -- Determine next scene
       if currentScene == "orbit_scene.xml" then
          currentScene = "landing_scene.xml"
-         sceneType = 0  
+         currentSceneType = 0  
+         
+         nextLfFile = "leapfrog_reentry.xml"
+         nextLfPosX = 520
+         nextLfPosY = 50
+         nextLfMode = 2
+         useInitialLfPos = false
+         lfDefined = false
+         
+         c_saveGameStatus("landing_scene.xml", currentMission, currentState, currentSceneType)
       end
    end
 
@@ -104,5 +139,4 @@ function lua_forceCurrentScene(newCurrentScene, newMission, newState, newSceneTy
    currentMission = newMission;
    currentState = newState;
    currentSceneType = newSceneType
-   
 end

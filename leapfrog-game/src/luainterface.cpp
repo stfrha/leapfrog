@@ -408,8 +408,9 @@ static int c_saveGameStatus(lua_State *L)
    std::string sceneName = lua_tostring(L, 1);
    int mission = lua_tointeger(L, 2);
    int state = lua_tointeger(L, 3);
+   int type = lua_tointeger(L, 4);
    
-   g_GameStatus.setSceneMissionState(sceneName, mission, state);
+   g_GameStatus.setSceneMissionState(sceneName, mission, state, type);
    g_GameStatus.saveGameStatus();
    return 0;
 }
@@ -544,8 +545,10 @@ void LuaInterface::lua_forceCurrentScene(void)
    lua_pushstring(m_L, g_GameStatus.getCurrentScene().c_str());
    lua_pushinteger(m_L, g_GameStatus.getCurrentMission());
    lua_pushinteger(m_L, g_GameStatus.getCurrentState());
-   // do the call (3 arguments, 0 result) 
-   int result = lua_pcall(m_L, 3, 0, 0);
+   lua_pushinteger(m_L, g_GameStatus.getCurrentSceneType());
+
+   // do the call (4 arguments, 0 result) 
+   int result = lua_pcall(m_L, 4, 0, 0);
    if (result && lua_gettop(m_L))
    {
       logs::messageln("stack = %d", lua_gettop(m_L));

@@ -24,7 +24,7 @@ public:
       oxygine::Resources& gameResources,
       oxygine::Actor* eventActor,
       SceneActor* sceneActor,
-      Actor* attachToMe,
+      oxygine::Actor* attachToMe,
       int propertyId,
       const oxygine::Vector2 & pos,
       const oxygine::Vector2 & size,

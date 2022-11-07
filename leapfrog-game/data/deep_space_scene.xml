@@ -4,7 +4,7 @@
   <spritePolygon
     name="noName"
     texture="starfield"
-    posX="-36.967899958171529"
+    posX="-20.9678999581715"
     posY="-32.667555237853776"
     angle="0"
     zLevel="0"
@@ -103,11 +103,6 @@
     file="large_asteroid.xml"
     posX="500"
     posY="240" />
-  <childObject
-    name="leapfrog1"
-    file="leapfrog_deep_space.xml"
-    posX="11.700612086272429"
-    posY="792.12313765148531" />
   <childObject
     name="hammer1"
     posX="700"

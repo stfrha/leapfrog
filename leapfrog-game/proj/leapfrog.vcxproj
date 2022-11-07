@@ -201,6 +201,7 @@
     <ClCompile Include="..\src\Box2DDebugDraw.cpp" />
     <ClCompile Include="..\src\breakableobject.cpp" />
     <ClCompile Include="..\src\bullet.cpp" />
+    <ClCompile Include="..\src\buttondisplay.cpp" />
     <ClCompile Include="..\src\compoundobject.cpp" />
     <ClCompile Include="..\src\explosiveobject.cpp" />
     <ClCompile Include="..\src\flameemitter.cpp" />
@@ -212,6 +213,7 @@
     <ClCompile Include="..\src\groupindexsource.cpp" />
     <ClCompile Include="..\src\gun.cpp" />
     <ClCompile Include="..\src\headdowndisplay.cpp" />
+    <ClCompile Include="..\src\headupdisplay.cpp" />
     <ClCompile Include="..\src\luainterface.cpp" />
     <ClCompile Include="..\src\magneticmine.cpp" />
     <ClCompile Include="..\src\menuactor.cpp" />
@@ -304,6 +306,7 @@
     <ClInclude Include="..\src\breakableobject.h" />
     <ClInclude Include="..\src\breakableobjectevents.h" />
     <ClInclude Include="..\src\bullet.h" />
+    <ClInclude Include="..\src\buttondisplay.h" />
     <ClInclude Include="..\src\collisionentity.h" />
     <ClInclude Include="..\src\compoundobject.h" />
     <ClInclude Include="..\src\compoundobjectevents.h" />
@@ -319,6 +322,7 @@
     <ClInclude Include="..\src\groupindexsource.h" />
     <ClInclude Include="..\src\gun.h" />
     <ClInclude Include="..\src\headdowndisplay.h" />
+    <ClInclude Include="..\src\headupdisplay.h" />
     <ClInclude Include="..\src\lua.hpp" />
     <ClInclude Include="..\src\luainterface.h" />
     <ClInclude Include="..\src\magneticmine.h" />

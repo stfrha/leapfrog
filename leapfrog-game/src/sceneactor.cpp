@@ -619,6 +619,7 @@ void SceneActor::doUpdate(const UpdateState& us)
       }
 
       m_armPauseChange = false;
+      m_pausePressed = false;
    }
 
    if (!m_pausePressed && !m_armPauseChange)

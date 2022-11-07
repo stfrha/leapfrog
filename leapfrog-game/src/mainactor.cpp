@@ -15,6 +15,7 @@
 #include "orbitscene.h"
 #include "orbitspacescene.h"
 #include "headdowndisplay.h"
+#include "headupdisplay.h"
 #include "messagedisplay.h"
 #include "luainterface.h"
 #include "menuactor.h"
@@ -33,14 +34,6 @@ NextSceneDefinition::NextSceneDefinition() :
 
 MainActor::MainActor() :
    m_world(NULL),
-   m_turnRightTouchIndex(0),
-   m_turnLeftTouchIndex(0),
-   m_boosterTouchIndex(0),
-   m_fireTouchIndex(0),
-   m_zoomInTouchIndex(0),
-   m_zoomOutTouchIndex(0),
-   m_panTouchIndex(0),
-   m_reloadTouchIndex(0),
    m_splashArm(true),
    m_reloadPressed(false),
    m_reloadArm(true),
@@ -89,15 +82,11 @@ void MainActor::initMainActor(void)
    m_gameResources.loadXML("res.xml");
    m_hudResources.loadXML("res_hud.xml");
 
-   // Restore game status except leapfrog. That is 
-   // managed on the Leapfrog object initiative
-   g_GameStatus.restoreGameStatus();
-
    g_LuaInterface.initLuaInterface(this);
 
    g_HeadDownDisplay = new HeadDownDisplay();
-
    g_MessageDisplay = new MessageDisplay();
+   g_headUpDisplay = new HeadUpDisplay();
 
    g_MessageDisplay->initialiseMessageDisplay(
       &m_hudResources,
@@ -112,9 +101,13 @@ void MainActor::initMainActor(void)
 
    setSize(g_Layout.getViewPortBounds());
 
+
+   // restore previous state and continue from there
+   g_GameStatus.restoreGameStatus();
    g_LuaInterface.lua_forceCurrentScene();
    g_LuaInterface.lua_startInitialScene();
    m_nextScene.m_armNextScene = true;
+
 
 }
 
@@ -136,6 +129,8 @@ void MainActor::armScene(std::string sceneName, int sceneType)
 
 void MainActor::startScene(void)
 {
+   g_MessageDisplay->clearMessageDisplay();
+
    // Clear all triggers and events from the current 
    // actors before they are destroyed.
    g_LuaInterface.clearAllTriggersAndEvents();
@@ -168,11 +163,6 @@ void MainActor::startScene(void)
    // Gravity resets to zero. The Scene behaviour must set the gravity
    // by itself
    m_world = new b2World(b2Vec2(0.0f, 0.0f));
-
-   // And then re-add those needed by main actor
-   addTouchDownListener(CLOSURE(this, &MainActor::sceneDownHandler));
-   addTouchUpListener(CLOSURE(this, &MainActor::sceneUpHandler));
-   addEventListener(TouchEvent::MOVE, (CLOSURE(this, &MainActor::panMoveHandler)));
 
    spClipRectActor window = new ClipRectActor();
 
@@ -227,24 +217,24 @@ void MainActor::startScene(void)
       co.get()->addEventListener(ExitOrbitSceneEvent::EVENT, CLOSURE(this, &MainActor::exitOrbitScene));
    }
 
-   m_sceneObject->connectToForeignObjects();
-
-   m_sceneObject->setManualPan(&m_manualPan);
-
-
    addEventListener(StatusResourceDepletedEvent::EVENT, CLOSURE(this, &MainActor::resourceDepletedHandler));
 
-   g_HeadDownDisplay->initialiseHud(
+   g_HeadDownDisplay->initialiseHdd(
       &m_hudResources,
       this,
       Vector2(0.0f, 0.0f),
       m_sceneObject->getSize());
 
+   g_headUpDisplay->initialiseHeadUpDisplay(
+      &m_hudResources,
+      this,
+      m_sceneObject,
+      Vector2(0.0f, 0.0f),
+      m_sceneObject->getSize()); 
+
    g_LuaInterface.setupMissionStateScene(m_sceneObject);
 
-   createButtonOverlay();
-
-   setManualPanButtonState();
+   m_sceneObject->connectToForeignObjects();
 
    //m_debugDraw = new Box2DDraw;
    //m_debugDraw->SetFlags(b2Draw::e_shapeBit | b2Draw::e_jointBit | b2Draw::e_pairBit | b2Draw::e_centerOfMassBit);
@@ -357,26 +347,6 @@ void MainActor::resourceDepletedHandler(oxygine::Event *ev)
    }
 }
 
-void MainActor::setManualPanButtonState(void)
-{
-   if (m_manualPan.m_manPanEnable)
-   {
-      m_manPanEnableSprite->setAlpha(255);
-      m_manPanSprite->setVisible(true);
-      m_reloadSprite->setVisible(true);
-      m_zoomInSprite->setVisible(true);
-      m_zoomOutSprite->setVisible(true);
-   }
-   else
-   {
-      m_manPanEnableSprite->setAlpha(128);
-      m_manPanSprite->setVisible(false);
-      m_reloadSprite->setVisible(false);
-      m_zoomInSprite->setVisible(false);
-      m_zoomOutSprite->setVisible(false);
-   }
-}
-
 void MainActor::fetchInternetScene(void)
 {
    ox::HttpRequestTask::init();
@@ -420,9 +390,9 @@ void MainActor::doUpdate(const UpdateState& us)
 
    if ((m_sceneObject != NULL) && (m_sceneObject->getIsInPause()) && (m_menuArm == true))
    {
+      g_headUpDisplay->detach();
       g_HeadDownDisplay->goToMenu();
       g_MessageDisplay->setFullHeight(true);
-      m_controllersAndStatusActor->setVisible(false);
 
       m_menuArm = false;
 
@@ -481,270 +451,6 @@ void MainActor::doUpdate(const UpdateState& us)
 }
 
 
-void MainActor::createButtonOverlay(void)
-{
-
-   m_controllersAndStatusActor = new Actor();
-   m_controllersAndStatusActor->setAnchor(getAnchor());
-   m_controllersAndStatusActor->setSize(getSize());
-   m_controllersAndStatusActor->setPosition(getPosition());
-   m_controllersAndStatusActor->attachTo(this);
-
-   // Caluclate button geometrics
-   m_turnLeftButtonRect = RectF(0.0f, g_Layout.getYFromBottom(1), g_Layout.getButtonWidth(), g_Layout.getButtonWidth());
-   m_turnRightButtonRect = RectF(g_Layout.getButtonWidth(), g_Layout.getYFromBottom(0), g_Layout.getButtonWidth(), g_Layout.getButtonWidth());
-   m_boosterButtonRect = RectF(g_Layout.getXFromRight(0), g_Layout.getYFromBottom(1), g_Layout.getButtonWidth(), g_Layout.getButtonWidth());
-   m_fireButtonRect = RectF(g_Layout.getXFromRight(1), g_Layout.getYFromBottom(0), g_Layout.getButtonWidth(), g_Layout.getButtonWidth());
-
-   m_pauseButtonRect = RectF(g_Layout.getXFromRight(0), 0.0f, g_Layout.getButtonWidth(), g_Layout.getButtonWidth());
-   m_manPanEnableButtonRect = RectF(g_Layout.getXFromRight(1) - g_Layout.getButtonWidth() / 2.0f, 0.0f, g_Layout.getButtonWidth(), g_Layout.getButtonWidth());
-   m_zoomInButtonRect = RectF(g_Layout.getXFromRight(2) - g_Layout.getButtonWidth() / 2.0f, 0.0f, g_Layout.getButtonWidth(), g_Layout.getButtonWidth());
-   m_zoomOutButtonRect = RectF(g_Layout.getXFromRight(4), 0.0f, g_Layout.getButtonWidth(), g_Layout.getButtonWidth());
-   m_reloadButtonRect = RectF(g_Layout.getXFromRight(5) - g_Layout.getButtonWidth() / 2.0f, 0.0f, g_Layout.getButtonWidth(), g_Layout.getButtonWidth());
-   m_panButtonRect = RectF(g_Layout.getViewPortBounds().x / 2.0f - g_Layout.getButtonWidth() / 2.0f, g_Layout.getViewPortBounds().y / 2.0f - g_Layout.getButtonWidth() / 2.0f, g_Layout.getButtonWidth(), g_Layout.getButtonWidth());
-
-
-   // Define sprites
-   spSprite turnLeftButton = new Sprite();
-   turnLeftButton->setResAnim(m_hudResources.getResAnim("turn_left_button"));
-   turnLeftButton->setSize(g_Layout.getButtonWidth(), g_Layout.getButtonWidth());
-   turnLeftButton->setPosition(m_turnLeftButtonRect.getLeftTop());
-   turnLeftButton->setAnchor(0.0f, 0.0f);
-   turnLeftButton->setTouchEnabled(false);
-   turnLeftButton->attachTo(m_controllersAndStatusActor);
-
-   spSprite turnRightButton = new Sprite();
-   turnRightButton->setResAnim(m_hudResources.getResAnim("turn_right_button"));
-   turnRightButton->setSize(g_Layout.getButtonWidth(), g_Layout.getButtonWidth());
-   turnRightButton->setPosition(m_turnRightButtonRect.getLeftTop());
-   turnRightButton->setAnchor(0.0f, 0.0f);
-   turnRightButton->setTouchEnabled(false);
-   turnRightButton->attachTo(m_controllersAndStatusActor);
-
-   spSprite fireButton = new Sprite();
-   fireButton->setResAnim(m_hudResources.getResAnim("fire_button"));
-   fireButton->setSize(g_Layout.getButtonWidth(), g_Layout.getButtonWidth());
-   fireButton->setPosition(m_fireButtonRect.getLeftTop());
-   fireButton->setAnchor(0.0f, 0.0f);
-   fireButton->setTouchEnabled(false);
-   fireButton->attachTo(m_controllersAndStatusActor);
-
-   spSprite thursterButton = new Sprite();
-   thursterButton->setResAnim(m_hudResources.getResAnim("booster_button"));
-   thursterButton->setSize(g_Layout.getButtonWidth(), g_Layout.getButtonWidth());
-   thursterButton->setPosition(m_boosterButtonRect.getLeftTop());
-   thursterButton->setAnchor(0.0f, 0.0f);
-   thursterButton->setTouchEnabled(false);
-   thursterButton->attachTo(m_controllersAndStatusActor);
-
-   spSprite pauseButton = new Sprite();
-   pauseButton->setResAnim(m_hudResources.getResAnim("pause_button"));
-   pauseButton->setSize(g_Layout.getButtonWidth(), g_Layout.getButtonWidth());
-   pauseButton->setPosition(m_pauseButtonRect.getLeftTop());
-   pauseButton->setAnchor(0.0f, 0.0f);
-   pauseButton->setTouchEnabled(false);
-   pauseButton->attachTo(m_controllersAndStatusActor);
-
-   m_zoomOutSprite = new Sprite();
-   m_zoomOutSprite->setResAnim(m_hudResources.getResAnim("zoom_out_button"));
-   m_zoomOutSprite->setSize(g_Layout.getButtonWidth(), g_Layout.getButtonWidth());
-   m_zoomOutSprite->setPosition(m_zoomOutButtonRect.getLeftTop());
-   m_zoomOutSprite->setAnchor(0.0f, 0.0f);
-   m_zoomOutSprite->setTouchEnabled(false);
-   m_zoomOutSprite->attachTo(m_controllersAndStatusActor);
-
-   m_zoomInSprite = new Sprite();
-   m_zoomInSprite->setResAnim(m_hudResources.getResAnim("zoom_in_button"));
-   m_zoomInSprite->setSize(g_Layout.getButtonWidth(), g_Layout.getButtonWidth());
-   m_zoomInSprite->setPosition(m_zoomInButtonRect.getLeftTop());
-   m_zoomInSprite->setAnchor(0.0f, 0.0f);
-   m_zoomInSprite->setTouchEnabled(false);
-   m_zoomInSprite->attachTo(m_controllersAndStatusActor);
-
-   m_manPanEnableSprite = new Sprite();
-   m_manPanEnableSprite->setResAnim(m_hudResources.getResAnim("pan_button"));
-   m_manPanEnableSprite->setSize(g_Layout.getButtonWidth(), g_Layout.getButtonWidth());
-   m_manPanEnableSprite->setPosition(m_manPanEnableButtonRect.getLeftTop());
-   m_manPanEnableSprite->setAnchor(0.0f, 0.0f);
-   m_manPanEnableSprite->setTouchEnabled(false);
-   m_manPanEnableSprite->attachTo(m_controllersAndStatusActor);
-
-   m_manPanSprite = new Sprite();
-   m_manPanSprite->setResAnim(m_hudResources.getResAnim("pan_button"));
-   m_manPanSprite->setSize(g_Layout.getButtonWidth(), g_Layout.getButtonWidth());
-   m_manPanSprite->setPosition(m_panButtonRect.getLeftTop());
-   m_manPanSprite->setAnchor(0.0f, 0.0f);
-   m_manPanSprite->setTouchEnabled(false);
-   m_manPanSprite->attachTo(m_controllersAndStatusActor);
-
-   m_reloadSprite = new Sprite();
-   m_reloadSprite->setResAnim(m_hudResources.getResAnim("reload_button"));
-   m_reloadSprite->setSize(g_Layout.getButtonWidth(), g_Layout.getButtonWidth());
-   m_reloadSprite->setPosition(m_reloadButtonRect.getLeftTop());
-   m_reloadSprite->setAnchor(0.0f, 0.0f);
-   m_reloadSprite->setTouchEnabled(false);
-   m_reloadSprite->attachTo(m_controllersAndStatusActor);
- 
-}
-
-
-void MainActor::sceneDownHandler(Event* event)
-{
-   TouchEvent* te = (TouchEvent*)event;
-   Vector2 v = te->localPosition;
-
-   // logs::messageln("Down with index: %d", te->index);
-
-   Point p = Point((int)v.x, (int)v.y);
-
-   if (m_turnLeftButtonRect.pointIn(p))
-   {
-      m_sceneObject->m_turnLeftPressed = true;
-      m_turnLeftTouchIndex = te->index;
-   }
-   else if (m_turnRightButtonRect.pointIn(p))
-   {
-      m_sceneObject->m_turnRightPressed = true;
-      m_turnRightTouchIndex = te->index;
-   }
-   else if (m_boosterButtonRect.pointIn(p))
-   {
-      m_sceneObject->m_boosterPressed = true;
-      m_boosterTouchIndex = te->index;
-   }
-   else if (m_fireButtonRect.pointIn(p))
-   {
-      m_sceneObject->m_firePressed = true;
-      m_fireTouchIndex = te->index;
-   }
-   else if (m_pauseButtonRect.pointIn(p))
-   {
-      m_sceneObject->m_pausePressed = true;
-      m_pauseTouchIndex = te->index;
-   }
-   else if (m_zoomInButtonRect.pointIn(p))
-   {
-      if (m_manualPan.m_manPanEnable)
-      {
-         m_sceneObject->m_zoomInPressed = true;
-         m_zoomInTouchIndex = te->index;
-      }
-   }
-   else if (m_zoomOutButtonRect.pointIn(p))
-   {
-      if (m_manualPan.m_manPanEnable)
-      {
-         m_sceneObject->m_zoomOutPressed = true;
-         m_zoomOutTouchIndex = te->index;
-      }
-   }
-   else if (m_manPanEnableButtonRect.pointIn(p))
-   {
-      m_sceneObject->m_manPanEnablePressed = true;
-      m_manPanEnableTouchIndex = te->index;
-   }
-   else if (m_panButtonRect.pointIn(p))
-   {
-      if (m_manualPan.m_manPanEnable)
-      {
-         m_sceneObject->m_panButtonPressed = true;
-         m_panTouchIndex = te->index;
-         m_panStartPos = v;
-      }
-   }
-   else if (m_reloadButtonRect.pointIn(p))
-   {
-      if (m_manualPan.m_manPanEnable)
-      {
-         m_reloadPressed = true;
-         m_reloadTouchIndex = te->index;
-      }
-   }
-}
-
-
-void MainActor::sceneUpHandler(Event* event)
-{
-   TouchEvent* te = (TouchEvent*)event;
-
-   //logs::messageln("Up with index: %d", te->index);
-
-   // Vector2 v = te->localPosition;
-   // Point p = Point((int)v.x, (int)v.y);
-
-   if (te->index == m_turnLeftTouchIndex)
-   {
-      m_sceneObject->m_turnLeftPressed = false;
-      m_turnLeftTouchIndex = 0;
-   }
-   else if (te->index == m_turnRightTouchIndex)
-   {
-      m_sceneObject->m_turnRightPressed = false;
-      m_turnRightTouchIndex = 0;
-   }
-   else if (te->index == m_boosterTouchIndex)
-   {
-      m_sceneObject->m_boosterPressed = false;
-      m_boosterTouchIndex = 0;
-   }
-   else if (te->index == m_fireTouchIndex)
-   {
-      m_sceneObject->m_firePressed = false;
-      m_fireTouchIndex = 0;
-   }
-   else if (te->index == m_pauseTouchIndex)
-   {
-      m_sceneObject->m_pausePressed = false;
-      m_pauseTouchIndex = 0;
-   }
-   else if (te->index == m_zoomInTouchIndex)
-   {
-      m_sceneObject->m_zoomInPressed = false;
-      m_zoomInTouchIndex = 0;
-   }
-   else if (te->index == m_zoomOutTouchIndex)
-   {
-      m_sceneObject->m_zoomOutPressed = false;
-      m_zoomOutTouchIndex = 0;
-   }
-   else if (te->index == m_manPanEnableTouchIndex)
-   {
-      m_sceneObject->m_manPanEnablePressed = false;
-      m_manPanEnableTouchIndex = 0;
-
-      setManualPanButtonState();
-   }
-   else if (te->index == m_panTouchIndex)
-   {
-      m_sceneObject->m_panButtonPressed = false;
-      m_sceneObject->m_panVector = Vector2(0.0f, 0.0f);
-      m_panTouchIndex = 0;
-   }
-   else if (te->index == m_reloadTouchIndex)
-   {
-      m_reloadPressed = false;
-      m_reloadTouchIndex = 0;
-   }
-}
-
-void MainActor::panMoveHandler(Event* event)
-{
-   TouchEvent* te = (TouchEvent*)event;
-
-   if (te->index == m_panTouchIndex)
-   {
-      m_sceneObject->m_panVector = (te->localPosition - m_panStartPos) / 8.0f;
-   }
-}
-
-void MainActor::sceneMoveHandler(Event* event)
-{
-   TouchEvent* te = (TouchEvent*)event;
-   Vector2 v = te->localPosition;
-
-   //logs::messageln("Move with index: %d", te->index);
-
-}
 
 void MainActor::recursiveRemoveChildren(spActor& parent)
 {
@@ -759,104 +465,6 @@ void MainActor::recursiveRemoveChildren(spActor& parent)
 
       child = copy->getNextSibling();
    }
-}
-
-void MainActor::registerLeapfrog(LeapFrog* leapfrog)
-{
-   if (leapfrog == NULL)
-   {
-      return;
-   }
-
-   float initShots = 100.0f;
-   float initFuel = 100.0f;
-   float initShield = 100.0f;
-   float initDamage = 100.0f;
-   float initCredits = 0.0f;
-
-   if (leapfrog != NULL)
-   {
-      initShots = (float)g_GameStatus.getResources()->getShots();
-      initFuel = g_GameStatus.getResources()->getFuel();
-      initShield = g_GameStatus.getResources()->getShield();
-      initDamage = g_GameStatus.getResources()->getDamage();
-      initCredits = (float)g_GameStatus.getResources()->getCredits();
-   }
-
-   spStatusBar shotsBar = new StatusBar(
-      m_hudResources,
-      leapfrog,
-      m_sceneObject,
-      m_controllersAndStatusActor.get(),
-      5,
-      Vector2(g_Layout.getXFromRight(1), g_Layout.getYFromTop(1)),
-      Vector2(g_Layout.getButtonWidth() * 2.0f, g_Layout.getButtonWidth() / 2.0f),
-      (int)g_Layout.getDefaultFontSize(),
-      100.0f,
-      initShots,
-      "Ammo:",
-      ObjectResourcesTypeEnum::shots);
-
-   spStatusBar fuelBar = new StatusBar(
-      m_hudResources,
-      leapfrog,
-      m_sceneObject,
-      m_controllersAndStatusActor.get(),
-      7,
-      Vector2(g_Layout.getXFromRight(1), g_Layout.getYFromTop(1) + g_Layout.getButtonWidth() / 2.0f + 2.0f),
-      Vector2(g_Layout.getButtonWidth() * 2.0f, g_Layout.getButtonWidth() / 2.0f),
-      (int)g_Layout.getDefaultFontSize(),
-      100.0f,
-      initFuel,
-      "Fuel:",
-      ObjectResourcesTypeEnum::fuel);
-
-   spStatusBar shieldBar = new StatusBar(
-      m_hudResources,
-      leapfrog,
-      m_sceneObject,
-      m_controllersAndStatusActor.get(),
-      6,
-      Vector2(g_Layout.getXFromRight(1), g_Layout.getYFromTop(1) + g_Layout.getButtonWidth() / 2.0f * 2.0f + 2.0f),
-      Vector2(g_Layout.getButtonWidth() * 2.0f, g_Layout.getButtonWidth() / 2.0f),
-      (int)g_Layout.getDefaultFontSize(),
-      100.0f,
-      initShield,
-      "Shield:",
-      ObjectResourcesTypeEnum::shield);
-
-   spStatusBar damageBar = new StatusBar(
-      m_hudResources,
-      leapfrog,
-      m_sceneObject,
-      m_controllersAndStatusActor.get(),
-      9,
-      Vector2(g_Layout.getXFromRight(1), g_Layout.getYFromTop(1) + g_Layout.getButtonWidth() / 2.0f * 3.0f + 2.0f),
-      Vector2(g_Layout.getButtonWidth() * 2.0f, g_Layout.getButtonWidth() / 2.0f),
-      (int)g_Layout.getDefaultFontSize(),
-      100.0f,
-      initDamage,
-      "Damage:",
-      ObjectResourcesTypeEnum::damage);
-
-   spStatusLiteral creditBar = new StatusLiteral(
-      m_hudResources,
-      leapfrog,
-      m_sceneObject,
-      m_controllersAndStatusActor.get(),
-      8,
-      Vector2(g_Layout.getXFromRight(1), g_Layout.getYFromTop(1) + g_Layout.getButtonWidth() / 2.0f * 4.0f + 2.0f),
-      Vector2(g_Layout.getButtonWidth() * 2.0f, g_Layout.getButtonWidth() / 2.0f),
-      (int)g_Layout.getDefaultFontSize(),
-      (int)initCredits,
-      "Credits:",
-      ObjectResourcesTypeEnum::credits);
-
-   if (m_nextScene.m_nextSceneType == SceneActor::SceneTypeEnum::landing)
-   {
-      shieldBar->setAlpha(128);
-   }
-
 }
 
 void MainActor::buttonClicked(int i)
@@ -896,40 +504,39 @@ void MainActor::buttonClicked(int i)
 
 void MainActor::restartedFromMenu(void)
 {
-   g_MessageDisplay->setFullHeight(false);
-   m_controllersAndStatusActor->setVisible(true);
+   m_menuArm = true;
+   m_sceneObject->setIsInPause(false);
 
-   g_HeadDownDisplay->initialiseHud(
-      &m_hudResources,
-      this,
-      Vector2(0.0f, 0.0f),
-      m_sceneObject->getSize());
+   g_MessageDisplay->setFullHeight(false);
 
    if (m_postMenuAction == PostMenuActionType::continueCurrent)
    {
       // Release pause
-      m_menuArm = true;
-      m_sceneObject->setIsInPause(false);
+      g_headUpDisplay->initialiseHeadUpDisplay(
+         &m_hudResources,
+         this,
+         m_sceneObject,
+         Vector2(0.0f, 0.0f),
+         m_sceneObject->getSize());
+
+      g_HeadDownDisplay->initialiseHdd(
+         &m_hudResources,
+         this,
+         Vector2(0.0f, 0.0f),
+         m_sceneObject->getSize());
    }
    else if (m_postMenuAction == PostMenuActionType::startNew)
    {
       // Initialise new game data and load first scene according to lua
-      m_menuArm = true;
-      m_sceneObject->setIsInPause(false);
-
       g_GameStatus.initializeGameStatusXmlDocument();
       g_GameStatus.gameStatusNewGameInit();
       g_LuaInterface.lua_forceCurrentScene();
       g_LuaInterface.lua_startInitialScene();
       m_nextScene.m_armNextScene = true;
-
    }
    else if (m_postMenuAction == PostMenuActionType::continueLatest)
    {
       // restore previous state and continue from there
-      m_menuArm = true;
-      m_sceneObject->setIsInPause(false);
-
       g_GameStatus.restoreGameStatus();
       g_LuaInterface.lua_forceCurrentScene();
       g_LuaInterface.lua_startInitialScene();
@@ -937,37 +544,28 @@ void MainActor::restartedFromMenu(void)
    }
    else if (m_postMenuAction == PostMenuActionType::testLanding)
    {
-      m_menuArm = true;
-      m_sceneObject->setIsInPause(false);
-
-      g_GameStatus.setSceneMissionState("landing_scene.xml", 1, 1);
+      g_GameStatus.setSceneMissionState("landing_scene.xml", 1, 1, 0);
       g_LuaInterface.lua_forceCurrentScene();
       g_LuaInterface.lua_startInitialScene();
       m_nextScene.m_armNextScene = true;
    }
    else if (m_postMenuAction == PostMenuActionType::testSpace)
    {
-      m_menuArm = true;
-      m_sceneObject->setIsInPause(false);
-
-      g_GameStatus.setSceneMissionState("deep_space_scene.xml", 1, 1);
+      g_GameStatus.setSceneMissionState("deep_space_scene.xml", 1, 1, 1);
       g_LuaInterface.lua_forceCurrentScene();
       g_LuaInterface.lua_startInitialScene();
       m_nextScene.m_armNextScene = true;
    }
    else if (m_postMenuAction == PostMenuActionType::testOrbit)
    {
-      m_menuArm = true;
-      m_sceneObject->setIsInPause(false);
-
-      g_GameStatus.setSceneMissionState("orbit_scene.xml", 1, 1);
+      g_GameStatus.setSceneMissionState("orbit_scene.xml", 1, 1, 2);
       g_LuaInterface.lua_forceCurrentScene();
       g_LuaInterface.lua_startInitialScene();
       m_nextScene.m_armNextScene = true;
    }
 }
 
-void MainActor::menuTransitionComplete(void)
+void MainActor::menuStartTransitionComplete(void)
 {
    spMenuActor ma = new MenuActor(
       m_hudResources,

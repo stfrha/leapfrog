@@ -17,6 +17,7 @@ private:
 
    ObjectResources m_leapfrogResources;
    std::string m_currentSceneFile;
+   int m_currentSceneType;
    int m_currentMission;
    int m_currentState;
    int m_gunLevel;
@@ -40,7 +41,7 @@ public:
 
    void gameStatusNewGameInit(void);
    void initializeGameStatusXmlDocument(void);
-   void setSceneMissionState(const std::string& scene, int mission, int state);
+   void setSceneMissionState(const std::string& scene, int mission, int state, int type);
    void saveGameStatus(void);
    void readGameStatus(void);
    void restoreGameStatus(void);
@@ -48,6 +49,7 @@ public:
    ObjectResources* getResources(void);
 
    std::string getCurrentScene(void);
+   int getCurrentSceneType(void);
    int getCurrentMission(void);
    int getCurrentState(void);
 

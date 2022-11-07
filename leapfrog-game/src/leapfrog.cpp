@@ -20,6 +20,8 @@
 #include "blastemitter.h"
 #include "headdowndisplay.h"
 
+#include "headupdisplay.h"
+
 #include "objectresourcesevents.h"
 
 
@@ -248,12 +250,7 @@ void LeapFrog::doUpdate(const UpdateState &us)
       // Start leapfrog handling in scene
       m_sceneActor->startLeapfrogInScene(getName());
 
-      // Register leapfrog to create status bars
-      MainActor* ma = (MainActor*)(getStage()->getFirstChild().get());
-      if (ma != NULL)
-      {
-         ma->registerLeapfrog(this);
-      }
+      g_headUpDisplay->registerLeapfrog(this, (m_mode == LeapFrogModeEnum::LFM_LANDING));
    }
 
    // Update properties with the values that where determined by 

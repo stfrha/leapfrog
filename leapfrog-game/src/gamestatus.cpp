@@ -39,6 +39,7 @@ void GameStatus::gameStatusNewGameInit(void)
    // written 
    m_leapfrogResources.setResources(70, 100.0f, 25.0f, 20, 0.0f);
    m_currentSceneFile = "not_defined";
+   m_currentSceneType = 0;
    m_currentMission = 0;
    m_currentState = 0;
    m_gunLevel = 1;
@@ -65,6 +66,7 @@ void GameStatus::gameStatusNewGameInit(void)
    root.attribute("credits").set_value(70);
    root.attribute("damage").set_value(0);
    root.attribute("currentSceneFile").set_value(m_currentSceneFile.c_str());
+   root.attribute("currentSceneType").set_value(m_currentSceneType);
    root.attribute("currentMission").set_value(m_currentMission);
    root.attribute("currentState").set_value(m_currentState);
    root.attribute("gunLevel").set_value(m_gunLevel);
@@ -99,6 +101,7 @@ void GameStatus::initializeGameStatusXmlDocument(void)
    root.append_attribute("credits");
    root.append_attribute("damage");
    root.append_attribute("currentSceneFile");
+   root.append_attribute("currentSceneType");
    root.append_attribute("currentMission");
    root.append_attribute("currentState");
    root.append_attribute("gunLevel");
@@ -118,11 +121,12 @@ void GameStatus::initializeGameStatusXmlDocument(void)
    root.append_attribute("rightFootJointLevel");
 }
 
-void GameStatus::setSceneMissionState(const std::string& scene, int mission, int state)
+void GameStatus::setSceneMissionState(const std::string& scene, int mission, int state, int type)
 {
    m_currentSceneFile = scene;
    m_currentMission = mission;
    m_currentState = state;
+   m_currentSceneType = type;
 }
 
 void GameStatus::saveGameStatus(void)
@@ -135,6 +139,7 @@ void GameStatus::saveGameStatus(void)
    root.attribute("credits").set_value(m_leapfrogResources.getCredits());
    root.attribute("damage").set_value(m_leapfrogResources.getDamage());
    root.attribute("currentSceneFile").set_value(m_currentSceneFile.c_str());
+   root.attribute("currentSceneType").set_value(m_currentSceneType);
    root.attribute("currentMission").set_value(m_currentMission);
    root.attribute("currentState").set_value(m_currentState);
    root.attribute("gunLevel").set_value(m_gunLevel);
@@ -161,6 +166,7 @@ void GameStatus::readGameStatus(void)
    xml_node root = m_gameStatusDocument.child("leapfrogGameStatus");
 
    m_currentSceneFile = root.attribute("currentSceneFile").as_string("");
+   m_currentSceneType = root.attribute("currentSceneType").as_int(0);
    m_currentMission = root.attribute("currentMission").as_int(0);
    m_currentState = root.attribute("currentState").as_int(0);
    m_gunLevel = root.attribute("gunLevel").as_int(1);
@@ -233,6 +239,11 @@ int GameStatus::getCurrentMission(void)
 int GameStatus::getCurrentState(void)
 {
    return m_currentState;
+}
+
+int GameStatus::getCurrentSceneType(void)
+{
+   return m_currentSceneType;
 }
 
 

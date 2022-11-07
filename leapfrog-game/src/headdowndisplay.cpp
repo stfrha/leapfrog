@@ -233,7 +233,7 @@ void HeadDownDisplay::clearMap(void)
 }
 
 
-void HeadDownDisplay::initialiseHud(
+void HeadDownDisplay::initialiseHdd(
    Resources* hudResources,
    MainActor* mainActor,
    const Vector2& topLeft, 
@@ -410,7 +410,7 @@ void HeadDownDisplay::goToOrbit(void)
    }
    m_hudMode = HudModeType::hudModeOrbit;
    spTween tween = addTween(Actor::TweenSize(m_orbitSizeX, m_orbitSizeY), 500);
-   tween->setDoneCallback(CLOSURE(this, &HeadDownDisplay::menuTransitionComplete));
+   tween->setDoneCallback(CLOSURE(this, &HeadDownDisplay::menuStartTransitionComplete));
 }
 
 void HeadDownDisplay::goToMenu(void)
@@ -424,7 +424,7 @@ void HeadDownDisplay::goToMenu(void)
    }
    m_hudMode = HudModeType::hudModeMenu;
    spTween tween = addTween(Actor::TweenSize(m_menuSizeX, m_menuSizeY), 750, 1, false, 0, oxygine::Tween::EASE::ease_outBounce);
-   tween->setDoneCallback(CLOSURE(this, &HeadDownDisplay::menuTransitionComplete));
+   tween->setDoneCallback(CLOSURE(this, &HeadDownDisplay::menuStartTransitionComplete));
 }
 
 void HeadDownDisplay::goToMap(void)
@@ -439,11 +439,10 @@ void HeadDownDisplay::goToMap(void)
 
 }
 
-void HeadDownDisplay::menuTransitionComplete(Event* event)
+void HeadDownDisplay::menuStartTransitionComplete(Event* event)
 {
    // TODO: Light up buttons (in mainactor) only at this time
-   m_mainActor->menuTransitionComplete();
-
+   m_mainActor->menuStartTransitionComplete();
 }
 
 

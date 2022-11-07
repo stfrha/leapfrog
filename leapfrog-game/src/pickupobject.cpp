@@ -170,6 +170,9 @@ void PickupObject::handlePickup(ObjectResources* status)
 {
    m_pickupItem.doPickupAmountCalculation(status);
 
+   PickedUpEvent event;
+   dispatchEvent(&event);
+
    m_isDead = true;
    addMeToDeathList();
 

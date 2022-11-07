@@ -19,7 +19,8 @@ local function setupMissionStateScene()
       if currentState == 1 then
 
          if lfDefined == false then 
-            if useInitialLfPos == false then
+            if useInitialLfPos == true then
+               -- We will end up here for a new game and not during a exit/entry sequence
                -- Initialise leapfrog as descenting
                c_addPositionedChildObject("leapfrog_landing.xml", "leapfrog1", 527, 526)
                -- Reconfigure leapfrog to landing mode
@@ -77,22 +78,44 @@ local function setupMissionStateScene()
          c_registerEventHandler("bomb1", "ExEX", 0, 0)
       end
 
-   end
+   elseif currentScene == "deep_space_scene.xml" then
 
+      if currentState == 5 then
+      
+      
+         if lfDefined == false then 
+            if useInitialLfPos == true then
+               -- We will end up here for a new game and not during a exit/entry sequence
+               -- Initialise leapfrog as descenting
+               c_addPositionedChildObject("leapfrog_deep_space.xml", "leapfrog1", 20, 780)
+               
+               -- We dont want to change the mode since it makes leapfrog instable (and the mode is already correct)
+
+               lfDefined = true      
+            end
+         end
+      
+         c_addPositionedChildObject("space_treasure.xml", "treasure", 700, 400)
+
+         c_addDialogMessage("Welcome to space. Find the coin treasure.", "DEBUG", true, 0, 0)
+
+         c_registerEventHandler("treasure", "PuPU", 0, 0)
+
+      end
+   end
 end
 
 local function missionStateSceneEventHandler(eventId, actorName, parameter1)
 
-   -- Regardless of state, we always want to listen to leapfrog has landed 
-   -- on the launch site
    if currentScene == "landing_scene.xml" then
+
+      -- Regardless of state, we always want to listen to leapfrog has landed 
+      -- on the launch site
       if eventId == "LsLL" then
          c_addDialogMessage("You will now be launched into deep space.", "DEBUG", true, 0, 0)
          c_setObjectProperty("launchSite1", 1, 0)
       end
-   end
 
-   if currentScene == "landing_scene.xml" then
       if currentState == 1 then
          if eventId == "ScTO" and parameter1 == state1Timer then
 
@@ -109,8 +132,6 @@ local function missionStateSceneEventHandler(eventId, actorName, parameter1)
 
             currentState = 2
             
-            -- TODO: Here we do a save game call
-            
             lua_setupMissionStateScene()
          end
 
@@ -119,7 +140,7 @@ local function missionStateSceneEventHandler(eventId, actorName, parameter1)
             -- Play dialog
             c_addDialogMessage("You exploded the bomb too early. Mission FAIL!!!", "DEBUG", true, 0, 0)
 
-            currentState = 5
+            currentState = 6
             
             lua_setupMissionStateScene()
          end
@@ -139,7 +160,7 @@ local function missionStateSceneEventHandler(eventId, actorName, parameter1)
             -- Play dialog
             c_addDialogMessage("You exploded the bomb too early. Mission FAIL!!!", "DEBUG", true, 0, 0)
 
-            currentState = 5
+            currentState = 6
             
             lua_setupMissionStateScene()
          end
@@ -171,12 +192,28 @@ local function missionStateSceneEventHandler(eventId, actorName, parameter1)
             if eventId == "ExEX" then
                
                -- Play dialog
-               c_addDialogMessage("Mission Complete!!!", "DEBUG", true, 0, 0)
+               c_addDialogMessage("Good work, you have earned a handsome reward. Ues it to get into space.", "DEBUG", true, 0, 0)
 
                currentState = 5
                
                credits = c_getObjectProperty("leapfrog1", 8)
-               c_setObjectProperty("leapfrog1", 8, credits + 20)
+               c_setObjectProperty("leapfrog1", 8, credits + 200)
+
+               -- Should not be done, since the scene exit/entry handling in c-code will
+               -- do it.
+               -- lua_setupMissionStateScene()
+            end 
+         end
+      end
+   elseif currentScene == "deep_space_scene.xml" then
+      if currentState == 5 then
+         if actorName == "treasure" then
+            if eventId == "PuPU" then
+               
+               -- Play dialog
+               c_addDialogMessage("Mission Complete, you are now a rich space pirate.", "DEBUG", true, 0, 0)
+
+               currentState = 6
 
                lua_setupMissionStateScene()
             end 

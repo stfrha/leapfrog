@@ -52,50 +52,11 @@ private:
 
    SceneActor* m_sceneObject;
 
-   spSprite m_zoomInSprite;
-   spSprite m_zoomOutSprite;
-   spSprite m_manPanEnableSprite;
-   spSprite m_manPanSprite;
-   spSprite m_reloadSprite;
+   NextSceneDefinition m_nextScene;
 
-   spActor m_controllersAndStatusActor;
-
-   oxygine::RectF m_turnRightButtonRect;
-   oxygine::RectF m_turnLeftButtonRect;
-   oxygine::RectF m_boosterButtonRect;
-   oxygine::RectF m_fireButtonRect;
-   oxygine::RectF m_pauseButtonRect;
-   oxygine::RectF m_zoomInButtonRect;
-   oxygine::RectF m_zoomOutButtonRect;
-   oxygine::RectF m_panButtonRect;
-   oxygine::RectF m_manPanEnableButtonRect;
-   oxygine::RectF m_reloadButtonRect;
-
-   // This class is defined in, and used by, sceneactor.h but the only
-   // instance of this is owned by the main actor, to maintain position
-   // and manual pan mode between scenes (or after reloading of scenes)
-   ManualPan   m_manualPan;
-
-   int m_turnRightTouchIndex;
-   int m_turnLeftTouchIndex;
-   int m_boosterTouchIndex;
-   int m_fireTouchIndex;
-   int m_pauseTouchIndex;
-   int m_zoomInTouchIndex;
-   int m_zoomOutTouchIndex;
-   int m_panTouchIndex;
-   int m_manPanEnableTouchIndex;
-   int m_reloadTouchIndex;
-   oxygine::Vector2 m_panStartPos;
-
-   bool m_reloadPressed;
    bool m_reloadArm;
    bool m_splashArm;
    bool m_menuArm;
-
-   //spObjectResources m_gameStatus;
-
-   NextSceneDefinition m_nextScene;
 
    void initMainActor(void);
    void exitLandingScene(oxygine::Event *ev);
@@ -103,25 +64,19 @@ private:
    void exitOrbitScene(oxygine::Event *ev);
    void exitHyperspaceScene(oxygine::Event *ev);
    void resourceDepletedHandler(oxygine::Event *ev);
-   void setManualPanButtonState(void);
    void fetchInternetScene(void);
    
    void httpLoaded(oxygine::Event*);
-
-   void sceneDownHandler(Event* event);
-   void sceneUpHandler(Event* event);
-   void panMoveHandler(Event* event);
-   void sceneMoveHandler(Event* event);
 
    void dummyHandler(Event* event);
 
    void recursiveRemoveChildren(oxygine::spActor& parent);
 
 public:
+   bool m_reloadPressed;
+
 	MainActor();
 	~MainActor();
-
-   void registerLeapfrog(LeapFrog* leapfrog);
 
    // Below is the interface to the game manager (LUA script enginge)
    // "std::string object" are on the form "objectA.objectAsB.objectBsC" in the hierarcical 
@@ -152,11 +107,10 @@ public:
 
    void buttonClicked(int button);
    void restartedFromMenu(void);
-   void menuTransitionComplete(void);
+   void menuStartTransitionComplete(void);
 
 protected:
    void doUpdate(const UpdateState& us);
-   void createButtonOverlay(void);
 
 };
 

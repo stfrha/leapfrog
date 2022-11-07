@@ -109,7 +109,7 @@ private:
    int m_itemIdRepository;
 
 
-   void menuTransitionComplete(oxygine::Event* event);
+   void menuStartTransitionComplete(oxygine::Event* event);
    void mapTransitionComplete(oxygine::Event* event);
 
 public:
@@ -127,7 +127,7 @@ public:
 
    HeadDownDisplay();
 
-   void initialiseHud(
+   void initialiseHdd(
       oxygine::Resources* hudResources,
       MainActor* mainActor,
       const oxygine::Vector2& topLeft, 

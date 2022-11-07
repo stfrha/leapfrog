@@ -433,6 +433,12 @@
     <ClCompile Include="..\src\menuactor.cpp">
       <Filter>Source Files\hud</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\buttondisplay.cpp">
+      <Filter>Source Files\hud</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\headupdisplay.cpp">
+      <Filter>Source Files\hud</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\blastparticle.h">
@@ -787,6 +793,12 @@
       <Filter>Source Files\master actors</Filter>
     </ClInclude>
     <ClInclude Include="..\src\menuactor.h">
+      <Filter>Source Files\hud</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\buttondisplay.h">
+      <Filter>Source Files\hud</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\headupdisplay.h">
       <Filter>Source Files\hud</Filter>
     </ClInclude>
   </ItemGroup>
