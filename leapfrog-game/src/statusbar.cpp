@@ -4,12 +4,12 @@
 #include "objectpropertyevents.h"
 #include "leapfrogevents.h"
 #include "layout.h"
+#include "graphicresources.h"
 
 using namespace oxygine;
 using namespace std;
 
 StatusBar::StatusBar(
-   Resources& gameResources,
    oxygine::Actor* eventActor,
    SceneActor* sceneActor,
    Actor* attachToMe,
@@ -43,7 +43,8 @@ StatusBar::StatusBar(
    t->setPriority(255);
 
 //   TextStyle style = TextStyle(gameResources.getResFont("lf_font")).withColor(Color::Fuchsia).alignLeft();
-   TextStyle style = TextStyle(gameResources.getResFont("lf_font")).withColor(Color::White).alignLeft();
+   
+   TextStyle style = TextStyle(g_GraphRes.getResources(GraphicResources::ResourceTypeEnum::hud).getResFont("lf_font")).withColor(Color::White).alignLeft();
    //style.fontSize = size.y / 2.0f / 8.0f * 6.0f;
    style.fontSize = fontSize;
    
@@ -92,7 +93,7 @@ StatusBar::StatusBar(
    //right->attachTo(theBar);
 
    spBox9Sprite hej = new Box9Sprite();
-   hej->setResAnim(gameResources.getResAnim("display_thin"));
+   hej->setResAnim(g_GraphRes.getResources(GraphicResources::ResourceTypeEnum::hud).getResAnim("display_thin"));
    hej->setVerticalMode(Box9Sprite::STRETCHING);
    hej->setHorizontalMode(Box9Sprite::STRETCHING);
    hej->setSize(size.x, size.y / 2.0f);
@@ -103,7 +104,7 @@ StatusBar::StatusBar(
    hej->attachTo(theBar);
 
    m_progressBar = new ProgressBar();
-   m_progressBar->setResAnim(gameResources.getResAnim("progress_bar"));
+   m_progressBar->setResAnim(g_GraphRes.getResources(GraphicResources::ResourceTypeEnum::hud).getResAnim("progress_bar"));
    m_progressBar->setAnchor(0.0f, 0.0f);
    m_progressBar->setSize(Vector2(size.x, size.y / 2.0f) - Vector2(4.0f, 4.0f));
 //   m_progressBar->setPosition(pos + Vector2(0.0f, size.y / 2.0f));
@@ -150,7 +151,6 @@ void StatusBar::dummyListner(oxygine::Event *ev)
 
 
 StatusLiteral::StatusLiteral(
-   Resources& gameResources,
    oxygine::Actor* eventActor,
    SceneActor* sceneActor,
    Actor* attachToMe,
@@ -179,7 +179,7 @@ StatusLiteral::StatusLiteral(
    t->setColor(g_Layout.getPhosphorColor());
    t->setPriority(255);
 
-   TextStyle style = TextStyle(gameResources.getResFont("lf_font")).withColor(Color::White).alignLeft();
+   TextStyle style = TextStyle(g_GraphRes.getResources(GraphicResources::ResourceTypeEnum::hud).getResFont("lf_font")).withColor(Color::White).alignLeft();
    style.fontSize = fontSize;
 
    t->setStyle(style);
@@ -198,7 +198,7 @@ StatusLiteral::StatusLiteral(
    m_tf->setColor(g_Layout.getPhosphorColor());
    m_tf->setPriority(255);
 
-   TextStyle literalStyle = TextStyle(gameResources.getResFont("lf_font")).withColor(Color::White).alignLeft();
+   TextStyle literalStyle = TextStyle(g_GraphRes.getResources(GraphicResources::ResourceTypeEnum::hud).getResFont("lf_font")).withColor(Color::White).alignLeft();
    literalStyle.fontSize = fontSize + 4;
 
    m_tf->setStyle(literalStyle);

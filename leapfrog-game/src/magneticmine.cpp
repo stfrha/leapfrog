@@ -13,7 +13,6 @@ using namespace oxygine;
 using namespace pugi;
 
 MagneticMine::MagneticMine(
-   Resources& gameResources,
    SceneActor* sceneParent,
    CompoundObject* parentObject,
    b2World* world,
@@ -22,7 +21,6 @@ MagneticMine::MagneticMine(
    const xml_node& propNode,
    int groupIndex) :
    ExplosiveObject(
-      gameResources, 
       sceneParent, 
       parentObject, 
       world, 

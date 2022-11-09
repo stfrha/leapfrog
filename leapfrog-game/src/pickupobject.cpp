@@ -89,7 +89,6 @@ void PickupItem::doPickupAmountCalculation(ObjectResources* status)
 }
 
 PickupObject::PickupObject(
-   Resources& gameResources,
    SceneActor* sceneParent,
    CompoundObject* parentObject,
    b2World* world,
@@ -97,14 +96,12 @@ PickupObject::PickupObject(
    xml_node& root,
    int groupIndex) :
    CompoundObject(sceneParent, parentObject),
-   m_gameResource(&gameResources),
    m_sceneActor(sceneParent),
    m_world(world)
 {
    m_pickupItem.readPickupObjectNode(root.child("behaviour").child("pickupObjectProperties"));
      
    initCompoundObjectParts(
-      gameResources,
       sceneParent,
       sceneParent,
       parentObject,

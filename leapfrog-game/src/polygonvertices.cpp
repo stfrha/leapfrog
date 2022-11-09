@@ -2,6 +2,7 @@
 #include "polygonvertices.h"
 #include "physdispconvert.h"
 #include "scales.h"
+#include "graphicresources.h"
 
 using namespace oxygine;
 using namespace std;
@@ -271,7 +272,6 @@ void PolygonVertices::createChainBodyPolygon(
 
 void PolygonVertices::createPolygonBorders(
    oxygine::Polygon* polygon,
-   Resources& gameResources,
    vector<Vector2>& vertices,
    pugi::xml_node objectNode)
 {
@@ -431,7 +431,7 @@ void PolygonVertices::createPolygonBorders(
             if (doThisBorder)
             {
                spPolygon border = new oxygine::Polygon();
-               border->setResAnim(gameResources.getResAnim(texture));
+               border->setResAnim(g_GraphRes.getResources(GraphicResources::ResourceTypeEnum::game).getResAnim(texture));
                border->setAnchor(0.0f, 0.5f);
 
                vector<Vector2> vertices(4);
@@ -537,7 +537,7 @@ void PolygonVertices::createPolygonBorders(
          if (doThisBorder)
          {
             spPolygon border = new oxygine::Polygon();
-            border->setResAnim(gameResources.getResAnim(texture));
+            border->setResAnim(g_GraphRes.getResources(GraphicResources::ResourceTypeEnum::game).getResAnim(texture));
             border->setAnchor(0.0f, 0.5f);
 
             vector<Vector2> vertices(4);

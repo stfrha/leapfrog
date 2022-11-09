@@ -39,7 +39,6 @@ private:
 
 public:
 	OrbitScene(
-      oxygine::Resources& gameResources,
       CompoundObject* parentObject,
       b2World* world,
       pugi::xml_node& root,

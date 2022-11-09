@@ -13,13 +13,12 @@ using namespace std;
 using namespace pugi;
 
 LandingActor::LandingActor(
-   Resources& gameResources,
    b2World* world,
    float initialZoom,
    float zoom,
    xml_node& root,
    int groupIndex) :
-   SceneActor(gameResources, world, initialZoom, zoom)
+   SceneActor(world, initialZoom, zoom)
 {
 
    m_contactListener.InitContactListner(this);
@@ -33,7 +32,7 @@ LandingActor::LandingActor(
 
    m_world->SetContactListener(&m_contactListener);
 
-   initCompoundObjectParts(gameResources, this, this, NULL, world, Vector2(0.0f, 0.0f), root, groupIndex, true);
+   initCompoundObjectParts(this, this, NULL, world, Vector2(0.0f, 0.0f), root, groupIndex, true);
 
 }
 

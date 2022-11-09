@@ -2,11 +2,11 @@
 #include "physdispconvert.h"
 #include "scales.h"
 #include "layout.h"
+#include "graphicresources.h"
 
 using namespace oxygine;
 
 SoftBoundary::SoftBoundary(
-   oxygine::Resources& gameResources,
    RepelDirectionEnum repelDir) :
    m_repelDir(repelDir)
 {
@@ -57,7 +57,7 @@ SoftBoundary::SoftBoundary(
    setPriority(216);
 
    Sprite* mask = new Sprite();
-   mask->setResAnim(gameResources.getResAnim("deep_space_boundary"));
+   mask->setResAnim(g_GraphRes.getResources(GraphicResources::ResourceTypeEnum::game).getResAnim("deep_space_boundary"));
    mask->setSize(rc.getSize().x, rc.getSize().y - 5);
    mask->attachTo(this);
    mask->setVisible(false);

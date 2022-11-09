@@ -10,7 +10,6 @@ using namespace pugi;
 using namespace std;
 
 OrbitWindow::OrbitWindow(
-   Resources& gameResources,
    CompoundObject* parentObject,
    b2World* world,
    float posX,
@@ -40,7 +39,6 @@ OrbitWindow::OrbitWindow(
    clip->attachTo(frame);
 
    spSceneActor sceneObj = static_cast<SceneActor*>(CompoundObject::readDefinitionXmlFile(
-      gameResources,
       NULL,
       NULL,
       world,

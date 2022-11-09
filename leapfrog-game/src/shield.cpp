@@ -5,6 +5,8 @@
 
 #include "gamestatus.h"
 
+#include "graphicresources.h"
+
 using namespace oxygine;
 using namespace pugi;
 
@@ -12,17 +14,16 @@ class SceneActor;
 class CompoundObject;
 
 Shield::Shield(
-   Resources* gameResources,
    SceneActor* sceneActor,
    CompoundObject* parentObject,
    b2World* world,
    const xml_node& objectNode,
    int groupIndex) :
-   System(gameResources, sceneActor,  world, parentObject)
+   System(sceneActor,  world, parentObject)
 {
    readShieldNode(objectNode);
 
-   m_resAnim = m_gameResources->getResAnim("shield_exciter");
+   m_resAnim = g_GraphRes.getResources(GraphicResources::ResourceTypeEnum::game).getResAnim("shield_exciter");
 
    m_sprite = new Sprite();
 

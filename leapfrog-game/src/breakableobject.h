@@ -23,7 +23,6 @@ DECLARE_SMART(BreakableObject, spBreakableObject);
 class BreakableObject : public CompoundObject
 {
 private:
-   oxygine::Resources* m_gameResource;
    b2World* m_world;
    SceneActor* m_sceneActor;
    spSpawnObjectList m_spawnObjects;
@@ -36,7 +35,6 @@ private:
 
 public:
 	BreakableObject(
-      oxygine::Resources& gameResources,
       SceneActor* sceneParent,
       CompoundObject* parentObject,
       b2World* world,

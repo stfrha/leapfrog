@@ -54,7 +54,6 @@ ModeAngles::ModeAngles(float rgtBigLeg, float rgtSmallLeg, float rgtFoot,
 
 
 LeapFrog::LeapFrog(
-	Resources& gameResources,
 	SceneActor* sceneParent,
    CompoundObject* parentObject,
 	b2World* world,
@@ -73,13 +72,12 @@ LeapFrog::LeapFrog(
    m_boostFireLastUpdate(false),
    m_rightSteerFireLastUpdate(false),
    m_leftSteerFireLastUpdate(false),
-   m_gameResources(&gameResources),
    m_state(LFS_NORMAL),
    m_wantedAngle(0.0f),
    m_modeInTransit(false),
    m_armInitialRegistration(true)
 {
-	initCompoundObjectParts(gameResources, sceneParent, sceneParent, parentObject, world, pos, root, groupIndex);
+	initCompoundObjectParts(sceneParent, sceneParent, parentObject, world, pos, root, groupIndex);
 
    m_leapfrogActor = getActor("lfMainBody");
    m_lfRightBigLeg = static_cast<Sprite*>(getActor("lfRightBigLeg").get());
@@ -1207,7 +1205,6 @@ void LeapFrog::collisionBlast(b2Contact* contact, bool small)
    if (contact->GetManifold()->pointCount > 0)
    {
       spBlastEmitter blast = new BlastEmitter(
-         m_sceneActor->getResources(),
          PhysDispConvert::convert(m.points[0], 1.0f),
          blastIntensity,                                     // Intensity, particles / sec
          emitterLifetime,                                    // Emitter Lifetime

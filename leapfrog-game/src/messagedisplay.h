@@ -43,7 +43,6 @@ public:
 private:
    bool m_fullHeight; 
 
-   oxygine::Resources* m_hudResources;
    oxygine::ClipRectActor* m_messageActor;
    oxygine::Actor* m_mdFrame;
 
@@ -74,7 +73,6 @@ public:
    MessageDisplay();
 
    void initialiseMessageDisplay(
-      oxygine::Resources* hudResources,
       oxygine::Actor* sceneActor,
       float highTop,
       float normalTop,

@@ -13,12 +13,10 @@ using namespace oxygine;
 using namespace pugi;
 
 ParallaxBackground::ParallaxBackground(
-   Resources& gameResources,
    SceneActor* sceneParent,
    b2World* world,
    float parallaxAmount) :
    CompoundObject(sceneParent, sceneParent),
-   m_gameResource(&gameResources),
    m_sceneActor(sceneParent),
    m_world(world),
    m_parallaxAmount(parallaxAmount)

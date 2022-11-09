@@ -26,7 +26,6 @@ private:
 
 public:
    Bullet(
-      oxygine::Resources& gameResources,
       SceneActor* sceneActor,
       b2World* world,
       const b2Vec2& pos,

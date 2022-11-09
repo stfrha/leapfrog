@@ -37,11 +37,9 @@ public:
    b2Body * m_body;
    b2RevoluteJoint* m_shieldJoint;
 
-
    oxygine::ResAnim* m_resAnim;
    
    Shield(
-      oxygine::Resources* gameResources,
       SceneActor* sceneActor,
       CompoundObject* parentObject,
       b2World* world,

@@ -85,8 +85,8 @@ function lua_sceneExitHandler(exitSceneType, exitParameter)
             currentSceneType = 1
 
             nextLfFile = "leapfrog_deep_space.xml"
-            nextLfPosX = 40
-            nextLfPosY = 760
+            nextLfPosX = 20
+            nextLfPosY = 730
             nextLfMode = 1
             useInitialLfPos = false
             lfDefined = false
@@ -132,7 +132,7 @@ function lua_sceneExitHandler(exitSceneType, exitParameter)
       end
    end
 
-   c_startScene(currentScene, sceneType)
+   c_startScene(currentScene, currentSceneType)
 
 end
 

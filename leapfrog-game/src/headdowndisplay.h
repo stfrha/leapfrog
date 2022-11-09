@@ -62,7 +62,6 @@ public:
       oxygine::spActor actor);
 
    MapItem(
-      oxygine::Resources* gameResources,
       HeadDownDisplay* hddMapActor,
       MapItemTypeEnum type,
       MapItemStateEnum state,
@@ -71,7 +70,6 @@ public:
       float scale);
 
    void addToMapActor(
-      oxygine::Resources* gameResources,
       HeadDownDisplay* hddMapActor,
       float scale);
 
@@ -101,13 +99,11 @@ private:
 
    bool m_actorExists;
    HudModeType m_hudMode;
-   oxygine::Resources* m_hudResources;
    MainActor* m_mainActor;
    std::vector<spMapItem> m_mapActors;
 
    float m_itemScale;
    int m_itemIdRepository;
-
 
    void menuStartTransitionComplete(oxygine::Event* event);
    void mapTransitionComplete(oxygine::Event* event);
@@ -124,11 +120,9 @@ public:
    float m_sceneWidth;
    float m_sceneHeight;
 
-
    HeadDownDisplay();
 
    void initialiseHdd(
-      oxygine::Resources* hudResources,
       MainActor* mainActor,
       const oxygine::Vector2& topLeft, 
       const oxygine::Vector2& bottomRight);

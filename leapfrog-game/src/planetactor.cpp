@@ -1,16 +1,15 @@
 #include "planetactor.h"
 #include "sceneactor.h"
 #include "layout.h"
+#include "graphicresources.h"
 
 using namespace oxygine;
 using namespace pugi;
 
 PlanetActor::PlanetActor(
-   Resources& gameResources,
    CompoundObject* parentObject,
    const xml_node& objectNode) :
    CompoundObject((SceneActor*)this, parentObject),
-   m_gameResources(&gameResources),
    m_parentObject(parentObject),
    m_state(PAS_INITITAL),
    m_stateChange(true),
@@ -39,7 +38,7 @@ PlanetActor::PlanetActor(
 
    spBox9Sprite planetSprite = new Box9Sprite();
 //   planetSprite->setResAnim(gameResources.getResAnim("planet_rock"));
-   planetSprite->setResAnim(gameResources.getResAnim(objectNode.attribute("texture").as_string()));
+   planetSprite->setResAnim(g_GraphRes.getResources(GraphicResources::ResourceTypeEnum::game).getResAnim(objectNode.attribute("texture").as_string()));
    planetSprite->setSize(7000.0f, 7000.0f);
    planetSprite->setAnchor(0.5f, 0.5f);
    planetSprite->setGuides(0, 0, 0, 0);
@@ -48,7 +47,7 @@ PlanetActor::PlanetActor(
    planetSprite->attachTo(maskedSprite);
 
    spSprite mask = new Sprite();
-   mask->setResAnim(gameResources.getResAnim("planet_mask"));
+   mask->setResAnim(g_GraphRes.getResources(GraphicResources::ResourceTypeEnum::game).getResAnim("planet_mask"));
    mask->setSize(7000.0f, 7000.0f);
    mask->setAnchor(0.5f, 0.5f);
    mask->attachTo(maskedSprite);
@@ -101,7 +100,7 @@ PlanetActor::PlanetActor(
    attachTo(m_parentObject);
 
    m_positionIndicator = new Sprite();
-   m_positionIndicator->setResAnim(m_gameResources->getResAnim("lf_position"));
+   m_positionIndicator->setResAnim(g_GraphRes.getResources(GraphicResources::ResourceTypeEnum::hud).getResAnim("lf_position"));
    m_positionIndicator->setSize(40.0f, 40.0f);
    m_positionIndicator->setAnchor(0.5f, 0.5f);
    m_positionIndicator->setPosition(Vector2(100.0f, 150.0f));
@@ -163,7 +162,7 @@ void PlanetActor::orbitEstablished(void)
    for (auto it = m_landingSites.begin(); it != m_landingSites.end(); ++it)
    {
       spSprite predSite = new Sprite();
-      predSite->setResAnim(m_gameResources->getResAnim("predicted_site"));
+      predSite->setResAnim(g_GraphRes.getResources(GraphicResources::ResourceTypeEnum::hud).getResAnim("predicted_site"));
       predSite->setSize(100.0f, 30.0f);
       predSite->setAnchor(0.5f, 0.5f);
 
@@ -174,7 +173,7 @@ void PlanetActor::orbitEstablished(void)
       predSite->attachTo(m_planet);
 
       spSprite crs = new Sprite();
-      crs->setResAnim(m_gameResources->getResAnim(it->m_texture));
+      crs->setResAnim(g_GraphRes.getResources(GraphicResources::ResourceTypeEnum::game).getResAnim(it->m_texture));
       crs->setSize(100.0f, 30.0f);
       crs->setAnchor(0.5f, 0.5f);
 
@@ -190,7 +189,7 @@ void PlanetActor::orbitEstablished(void)
    for (int i = 0; i < 44; i++)
    {
       trajectory[i] = new Sprite();
-      trajectory[i]->setResAnim(m_gameResources->getResAnim("trajectory"));
+      trajectory[i]->setResAnim(g_GraphRes.getResources(GraphicResources::ResourceTypeEnum::hud).getResAnim("trajectory"));
       trajectory[i]->setSize(50.0f, 8.0f);
       trajectory[i]->setAnchor(0.0f, 0.5f);
       trajectory[i]->setPosition(c_trajectoryPositions[i] + m_orbitStartPos);
@@ -254,7 +253,7 @@ void PlanetActor::orbitEstablished(void)
    burnFrame->setHorizontalMode(Box9Sprite::STRETCHING);
    burnFrame->setAnchor(0.5f, 0.5f);
    burnFrame->setSize(barWidth, barHeight);
-   burnFrame->setResAnim(m_gameResources->getResAnim("display_thin"));
+   burnFrame->setResAnim(g_GraphRes.getResources(GraphicResources::ResourceTypeEnum::hud).getResAnim("display_thin"));
    burnFrame->setPosition(barHorCenter, barVertCenter);
    burnFrame->setGuides(8, 120, 8, 120);
    burnFrame->attachTo(m_parentObject);
@@ -274,7 +273,7 @@ void PlanetActor::orbitEstablished(void)
    spBox9Sprite safeZoom = new Box9Sprite();
    safeZoom->setVerticalMode(Box9Sprite::STRETCHING);
    safeZoom->setHorizontalMode(Box9Sprite::STRETCHING);
-   safeZoom->setResAnim(m_gameResources->getResAnim("display_thin"));
+   safeZoom->setResAnim(g_GraphRes.getResources(GraphicResources::ResourceTypeEnum::hud).getResAnim("display_thin"));
    safeZoom->setGuides(8, 120, 8, 120);
    safeZoom->setAnchor(0.5f, 0.5f);
    safeZoom->setSize(barInsideFrameWidth, barSafeZoneHeight);
@@ -283,7 +282,7 @@ void PlanetActor::orbitEstablished(void)
 
    m_burnIndicator = new ProgressBar();
    m_burnIndicator->setAnchor(0.5f, 0.5f);
-   m_burnIndicator->setResAnim(m_gameResources->getResAnim("progress_bar"));
+   m_burnIndicator->setResAnim(g_GraphRes.getResources(GraphicResources::ResourceTypeEnum::hud).getResAnim("progress_bar"));
    m_burnIndicator->setSize(barInsideFrameWidth, barInsideFrameHeight);
    m_burnIndicator->setDirection(ProgressBar::dir_90);
    m_burnIndicator->setPosition(barHorCenter, barVertCenter);
@@ -291,7 +290,7 @@ void PlanetActor::orbitEstablished(void)
    m_burnIndicator->setProgress(0.0f);
 
    spSprite level = new Sprite();
-   level->setResAnim(m_gameResources->getResAnim("reentry_burn_level"));
+   level->setResAnim(g_GraphRes.getResources(GraphicResources::ResourceTypeEnum::hud).getResAnim("reentry_burn_level"));
    level->setAnchor(0.5f, 0.5f);
    level->setSize(barCaretWidth, barCaretHeight);
    level->setPosition(barHorCenter, barCaretVertCenter);

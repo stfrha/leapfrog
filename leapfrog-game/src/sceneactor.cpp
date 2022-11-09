@@ -38,7 +38,6 @@ bool SceneTimer::tickTimer(void)
 
 
 SceneActor* SceneActor::defineScene(
-   Resources& gameResources,
    CompoundObject* parentObject,
    b2World* world,
    pugi::xml_node& root,
@@ -60,21 +59,30 @@ SceneActor* SceneActor::defineScene(
 
    if (sceneTypeStr == "ground")
    {
-      LandingActor* landingScene = new LandingActor(gameResources, world, initalZoomScale, zoomScale, root, groupIndex);
+      LandingActor* landingScene = new LandingActor(
+         world, 
+         initalZoomScale, 
+         zoomScale, 
+         root, 
+         groupIndex);
 
       baseScene = static_cast<SceneActor*>(landingScene);
 
    }
    else if (sceneTypeStr == "space")
    {
-      FreeSpaceActor* spaceScene = new FreeSpaceActor(gameResources, world, initalZoomScale, zoomScale, root, groupIndex);
+      FreeSpaceActor* spaceScene = new FreeSpaceActor(
+         world, 
+         initalZoomScale, 
+         zoomScale, 
+         root, 
+         groupIndex);
 
       baseScene = static_cast<SceneActor*>(spaceScene);
    }
    else if (sceneTypeStr == "orbitSpaceScene")
    {
       OrbitSpaceScene* orbitScene = new OrbitSpaceScene(
-         gameResources,
          world, 
          root, 
          groupIndex);
@@ -96,7 +104,6 @@ SceneActor* SceneActor::defineScene(
    if (boundary)
    {
       sb = new SoftBoundary(
-         gameResources,
          SoftBoundary::down);
       baseScene->addChild(sb);
       baseScene->m_boundaries.push_back(sb);
@@ -106,7 +113,6 @@ SceneActor* SceneActor::defineScene(
    if (boundary)
    {
       sb = new SoftBoundary(
-         gameResources,
          SoftBoundary::up);
       baseScene->addChild(sb);
       baseScene->m_boundaries.push_back(sb);
@@ -116,7 +122,6 @@ SceneActor* SceneActor::defineScene(
    if (boundary)
    {
       sb = new SoftBoundary(
-         gameResources,
          SoftBoundary::right);
       baseScene->addChild(sb);
       baseScene->m_boundaries.push_back(sb);
@@ -126,7 +131,6 @@ SceneActor* SceneActor::defineScene(
    if (boundary)
    {
       sb = new SoftBoundary(
-         gameResources,
          SoftBoundary::left);
       baseScene->addChild(sb);
       baseScene->m_boundaries.push_back(sb);
@@ -136,12 +140,10 @@ SceneActor* SceneActor::defineScene(
 }
 
 SceneActor::SceneActor(
-   Resources& gameResources, 
    b2World* world, 
    float initialZoomScale,
    float zoomScale) :
    CompoundObject(this, NULL),
-   m_gameResources(&gameResources),
    m_world(world),
    m_zoomScale(initialZoomScale),
    m_stageToViewPortScale(m_zoomScale * Scales::c_stageToViewPortScale),
@@ -213,7 +215,6 @@ void SceneActor::addParallaxBackgroundSprite(spSprite sp, float parallaxAmount)
    // If we get here (without returning earlier) there was no background with the
    // same amount. Create a new one.
    ParallaxBackground* sa = new ParallaxBackground(
-      *m_gameResources,
       this,
       m_world,
       parallaxAmount);
@@ -325,11 +326,6 @@ SceneActor::SceneTypeEnum SceneActor::getSceneType(void)
 b2World* SceneActor::getWorld(void)
 {
    return m_world;
-}
-
-Resources* SceneActor::getResources(void)
-{
-   return m_gameResources;
 }
 
 void SceneActor::setPanorateMode(PanorateModeEnum mode)
@@ -844,7 +840,6 @@ void SceneActor::sweepSpawnList(void)
 
 
          defineChildObject(
-            *m_gameResources,
             this,
             this,
             m_world,

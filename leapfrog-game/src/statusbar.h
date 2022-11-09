@@ -21,7 +21,6 @@ private:
 
 public:
    StatusBar(
-      oxygine::Resources& gameResources,
       oxygine::Actor* eventActor,
       SceneActor* sceneActor,
       oxygine::Actor* attachToMe,
@@ -57,7 +56,6 @@ private:
 
 public:
    StatusLiteral(
-      oxygine::Resources& gameResources,
       oxygine::Actor* eventActor,
       SceneActor* sceneActor,
       Actor* attachToMe,

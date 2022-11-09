@@ -1,15 +1,15 @@
 #include "blastparticle.h"
+#include "graphicresources.h"
 
 using namespace oxygine;
 
 BlastParticle::BlastParticle(
-   oxygine::Resources* gameResources,
    const Vector2& pos,
    int lifetime,
    float distance,
    float particleSize)
 {
-   setResAnim(gameResources->getResAnim("white_circle"));
+   setResAnim(g_GraphRes.getResources(GraphicResources::ResourceTypeEnum::game).getResAnim("white_circle"));
    setSize(particleSize, particleSize);
    setPosition(pos);
    setAnchor(Vector2(0.5f, 0.5f));

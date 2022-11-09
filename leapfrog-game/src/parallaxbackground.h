@@ -23,13 +23,11 @@ public:
    float m_parallaxAmount;
 
 protected:
-   oxygine::Resources* m_gameResource;
    b2World* m_world;
    SceneActor* m_sceneActor;
  
 public:
    ParallaxBackground(
-      oxygine::Resources& gameResources,
       SceneActor* sceneParent,
       b2World* world,
       float parallaxAmount);

@@ -9,11 +9,9 @@ using namespace oxygine;
 using namespace pugi;
 
 System::System(
-   oxygine::Resources* gameResources,
    SceneActor* sceneActor,
    b2World* world,
    CompoundObject* parent) :
-   m_gameResources(gameResources),
    m_sceneActor(sceneActor),
    m_world(world),
    m_parent(parent)
@@ -21,7 +19,6 @@ System::System(
 }
 
 System* System::initialiseSystemNode(
-   Resources* gameResources,
    SceneActor* sceneActor,
    b2World* world,
    CompoundObject* parent, 
@@ -34,7 +31,6 @@ System* System::initialiseSystemNode(
    {
       // initiate a object factory
       ObjectFactory* of = new ObjectFactory(
-         gameResources,
          sceneActor,
          parent,
          world,
@@ -47,7 +43,6 @@ System* System::initialiseSystemNode(
    else if (systemType == "flameEmitter")
    {
       FlameEmitter* fe = new FlameEmitter(
-         gameResources,
          sceneActor,
          parent,
          world,
@@ -62,7 +57,6 @@ System* System::initialiseSystemNode(
    else if (systemType == "gun")
    {
       Gun* g = new Gun(
-         gameResources,
          sceneActor,
          parent,
          world,
@@ -77,7 +71,6 @@ System* System::initialiseSystemNode(
    else if (systemType == "shield")
    {
       Shield* sh = new Shield(
-         gameResources,
          sceneActor,
          parent,
          world,
@@ -91,7 +84,6 @@ System* System::initialiseSystemNode(
    else if (systemType == "reentryFlameEmitter")
    {
       ReentryFlameEmitter* rfe = new ReentryFlameEmitter(
-         gameResources,
          sceneActor,
          parent,
          world,

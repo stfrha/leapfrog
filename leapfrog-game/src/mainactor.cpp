@@ -19,6 +19,7 @@
 #include "messagedisplay.h"
 #include "luainterface.h"
 #include "menuactor.h"
+#include "graphicresources.h"
 
 #include "objectresourcesevents.h"
 
@@ -79,8 +80,8 @@ void MainActor::initMainActor(void)
    m_splashScreenResource.unload();
 
    //load xml file with resources definition
-   m_gameResources.loadXML("res.xml");
-   m_hudResources.loadXML("res_hud.xml");
+   g_GraphRes.loadResource(GraphicResources::ResourceTypeEnum::game, "res.xml");
+   g_GraphRes.loadResource(GraphicResources::ResourceTypeEnum::hud, "res_hud.xml");
 
    g_LuaInterface.initLuaInterface(this);
 
@@ -89,7 +90,6 @@ void MainActor::initMainActor(void)
    g_headUpDisplay = new HeadUpDisplay();
 
    g_MessageDisplay->initialiseMessageDisplay(
-      &m_hudResources,
       getStage().get(), 
       0.0f, 
       g_Layout.getButtonWidth(), 
@@ -114,9 +114,6 @@ void MainActor::initMainActor(void)
 
 MainActor::~MainActor()
 {
-	//free previously loaded resources
-	m_gameResources.free();
-   m_hudResources.free();
 }
 
 
@@ -174,7 +171,6 @@ void MainActor::startScene(void)
       (m_nextScene.m_nextSceneType == SceneActor::SceneTypeEnum::deepSpace))
    {
       spSceneActor sceneObj = static_cast<SceneActor*>(CompoundObject::readDefinitionXmlFile(
-            m_gameResources,
             NULL,
             NULL,
             m_world,
@@ -202,7 +198,6 @@ void MainActor::startScene(void)
    else if (m_nextScene.m_nextSceneType == SceneActor::SceneTypeEnum::orbit)
    {
       spCompoundObject co = static_cast<SceneActor*>(CompoundObject::readDefinitionXmlFile(
-            m_gameResources,
             NULL,
             NULL,
             m_world,
@@ -220,13 +215,11 @@ void MainActor::startScene(void)
    addEventListener(StatusResourceDepletedEvent::EVENT, CLOSURE(this, &MainActor::resourceDepletedHandler));
 
    g_HeadDownDisplay->initialiseHdd(
-      &m_hudResources,
       this,
       Vector2(0.0f, 0.0f),
       m_sceneObject->getSize());
 
    g_headUpDisplay->initialiseHeadUpDisplay(
-      &m_hudResources,
       this,
       m_sceneObject,
       Vector2(0.0f, 0.0f),
@@ -502,14 +495,12 @@ void MainActor::restartedFromMenu(void)
    {
       // Release pause
       g_headUpDisplay->initialiseHeadUpDisplay(
-         &m_hudResources,
          this,
          m_sceneObject,
          Vector2(0.0f, 0.0f),
          m_sceneObject->getSize());
 
       g_HeadDownDisplay->initialiseHdd(
-         &m_hudResources,
          this,
          Vector2(0.0f, 0.0f),
          m_sceneObject->getSize());
@@ -557,7 +548,6 @@ void MainActor::restartedFromMenu(void)
 void MainActor::menuStartTransitionComplete(void)
 {
    spMenuActor ma = new MenuActor(
-      m_hudResources,
       this);
 }
 

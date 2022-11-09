@@ -20,20 +20,17 @@ public:
    };
 
 protected:
-   oxygine::Resources* m_gameResources;
    SceneActor* m_sceneActor;
    b2World* m_world;
    CompoundObject* m_parent;
 
 public:
    System(
-      oxygine::Resources* gameResources,
       SceneActor* sceneActor,
       b2World* world,
       CompoundObject* parent);
 
    static System* initialiseSystemNode(
-      oxygine::Resources* gameResources,
       SceneActor* sceneActor,
       b2World* world,
       CompoundObject* parent,

@@ -4,6 +4,7 @@
 #include "actoruserdata.h"
 #include "bodyuserdata.h"
 #include "layout.h"
+#include "graphicresources.h"
 
 using namespace std;
 using namespace oxygine;
@@ -28,7 +29,6 @@ MapItem::MapItem(
 
 
 MapItem::MapItem(
-   oxygine::Resources* gameResources,
    HeadDownDisplay* hddMapActor,
    MapItemTypeEnum type,
    MapItemStateEnum state,
@@ -44,25 +44,25 @@ MapItem::MapItem(
    switch (m_type)
    {
    case MapItemTypeEnum::me:
-      m_resAnim = gameResources->getResAnim("friendly_moving");
+      m_resAnim = g_GraphRes.getResources(GraphicResources::ResourceTypeEnum::hud).getResAnim("friendly_moving");
       break;
    case MapItemTypeEnum::friendlyMoving:
-      m_resAnim = gameResources->getResAnim("friendly_moving");
+      m_resAnim = g_GraphRes.getResources(GraphicResources::ResourceTypeEnum::hud).getResAnim("friendly_moving");
       break;
    case MapItemTypeEnum::friendlyStationary:
-      m_resAnim = gameResources->getResAnim("friendly_stationary");
+      m_resAnim = g_GraphRes.getResources(GraphicResources::ResourceTypeEnum::hud).getResAnim("friendly_stationary");
       break;
    case MapItemTypeEnum::enemyMoving:
-      m_resAnim = gameResources->getResAnim("enemy_moving");
+      m_resAnim = g_GraphRes.getResources(GraphicResources::ResourceTypeEnum::hud).getResAnim("enemy_moving");
       break;
    case MapItemTypeEnum::enemyStationary:
-      m_resAnim = gameResources->getResAnim("enemy_stationary");
+      m_resAnim = g_GraphRes.getResources(GraphicResources::ResourceTypeEnum::hud).getResAnim("enemy_stationary");
       break;
    case MapItemTypeEnum::neutralMoving:
-      m_resAnim = gameResources->getResAnim("neutral_moving");
+      m_resAnim = g_GraphRes.getResources(GraphicResources::ResourceTypeEnum::hud).getResAnim("neutral_moving");
       break;
    case MapItemTypeEnum::neutralStationary:
-      m_resAnim = gameResources->getResAnim("neutral_stationary");
+      m_resAnim = g_GraphRes.getResources(GraphicResources::ResourceTypeEnum::hud).getResAnim("neutral_stationary");
       break;
    }
 
@@ -80,7 +80,6 @@ MapItem::MapItem(
 }
 
 void MapItem::addToMapActor(
-   oxygine::Resources* gameResources,
    HeadDownDisplay* hddMapActor,
    float scale)
 {
@@ -89,25 +88,25 @@ void MapItem::addToMapActor(
    switch (m_type)
    {
    case MapItemTypeEnum::me:
-      m_resAnim = gameResources->getResAnim("friendly_moving");
+      m_resAnim = g_GraphRes.getResources(GraphicResources::ResourceTypeEnum::hud).getResAnim("friendly_moving");
       break;
    case MapItemTypeEnum::friendlyMoving:
-      m_resAnim = gameResources->getResAnim("friendly_moving");
+      m_resAnim = g_GraphRes.getResources(GraphicResources::ResourceTypeEnum::hud).getResAnim("friendly_moving");
       break;
    case MapItemTypeEnum::friendlyStationary:
-      m_resAnim = gameResources->getResAnim("friendly_stationary");
+      m_resAnim = g_GraphRes.getResources(GraphicResources::ResourceTypeEnum::hud).getResAnim("friendly_stationary");
       break;
    case MapItemTypeEnum::enemyMoving:
-      m_resAnim = gameResources->getResAnim("enemy_moving");
+      m_resAnim = g_GraphRes.getResources(GraphicResources::ResourceTypeEnum::hud).getResAnim("enemy_moving");
       break;
    case MapItemTypeEnum::enemyStationary:
-      m_resAnim = gameResources->getResAnim("enemy_stationary");
+      m_resAnim = g_GraphRes.getResources(GraphicResources::ResourceTypeEnum::hud).getResAnim("enemy_stationary");
       break;
    case MapItemTypeEnum::neutralMoving:
-      m_resAnim = gameResources->getResAnim("neutral_moving");
+      m_resAnim = g_GraphRes.getResources(GraphicResources::ResourceTypeEnum::hud).getResAnim("neutral_moving");
       break;
    case MapItemTypeEnum::neutralStationary:
-      m_resAnim = gameResources->getResAnim("neutral_stationary");
+      m_resAnim = g_GraphRes.getResources(GraphicResources::ResourceTypeEnum::hud).getResAnim("neutral_stationary");
       break;
    }
 
@@ -234,12 +233,10 @@ void HeadDownDisplay::clearMap(void)
 
 
 void HeadDownDisplay::initialiseHdd(
-   Resources* hudResources,
    MainActor* mainActor,
    const Vector2& topLeft, 
    const Vector2& bottomRight)
 {
-   m_hudResources = hudResources;
    m_mainActor = mainActor;
 
    // The HUD can work as game menu, map or orbit overlay. The modes 
@@ -286,8 +283,8 @@ void HeadDownDisplay::initialiseHdd(
    m_orbitSizeY = m_menuSizeY;
 
    float thickness = 8.0f;
-
-   setResAnim(m_hudResources->getResAnim("display_fat"));
+   
+   setResAnim(g_GraphRes.getResources(GraphicResources::ResourceTypeEnum::hud).getResAnim("display_fat"));
    setVerticalMode(Box9Sprite::STRETCHING);
    setHorizontalMode(Box9Sprite::STRETCHING);
    setSize(m_sceneWidth, m_sceneHeight);
@@ -305,7 +302,7 @@ void HeadDownDisplay::initialiseHdd(
    // created, how could they?). Now it is time to add them.
    for (auto it = m_mapActors.begin(); it != m_mapActors.end(); ++it)
    {
-      (*it)->addToMapActor(m_hudResources, this, m_itemScale);
+      (*it)->addToMapActor(this, m_itemScale);
    }
 }
 
@@ -323,7 +320,6 @@ int HeadDownDisplay::addMeToMap(
    if (m_actorExists)
    {
        mi = new MapItem(
-         m_hudResources,
          this,
          type,
          state,
@@ -404,7 +400,7 @@ void HeadDownDisplay::goToOrbit(void)
    if (m_hudMode == HudModeType::hudModeMap)
    {
       clearDisplay();
-      setResAnim(m_hudResources->getResAnim("display_thin"));
+      setResAnim(g_GraphRes.getResources(GraphicResources::ResourceTypeEnum::hud).getResAnim("display_thin"));
       setSize(m_mapSizeX, m_mapSizeY);
       setScale(1.0f);
    }
@@ -418,7 +414,7 @@ void HeadDownDisplay::goToMenu(void)
    if (m_hudMode == HudModeType::hudModeMap)
    {
       clearDisplay();
-      setResAnim(m_hudResources->getResAnim("display_thin"));
+      setResAnim(g_GraphRes.getResources(GraphicResources::ResourceTypeEnum::hud).getResAnim("display_thin"));
       setSize(m_mapSizeX, m_mapSizeY);
       setScale(1.0f);
    }
@@ -448,14 +444,14 @@ void HeadDownDisplay::menuStartTransitionComplete(Event* event)
 
 void HeadDownDisplay::mapTransitionComplete(oxygine::Event* event)
 {
-   setResAnim(m_hudResources->getResAnim("display_fat"));
+   setResAnim(g_GraphRes.getResources(GraphicResources::ResourceTypeEnum::hud).getResAnim("display_fat"));
    setSize(m_sceneWidth, m_sceneHeight);
    setScale(m_mapScale);
    m_hudMode = HudModeType::hudModeMap;
 
    for (auto it = m_mapActors.begin(); it != m_mapActors.end(); ++it)
    {
-      (*it)->addToMapActor(m_hudResources, this, m_itemScale);
+      (*it)->addToMapActor(this, m_itemScale);
    }
 
    m_mainActor->restartedFromMenu();

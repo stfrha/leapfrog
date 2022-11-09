@@ -31,9 +31,7 @@ private:
 
 public:
 	// rc is in stage coordinates, i.e. meters
-	SoftBoundary(
-      oxygine::Resources& gameResources, 
-      RepelDirectionEnum repelDir);
+	SoftBoundary(RepelDirectionEnum repelDir);
 
    void testForRepel(b2Body* body);
    bool isInside(b2Body* body);

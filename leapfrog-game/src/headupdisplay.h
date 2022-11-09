@@ -15,7 +15,6 @@ class HeadUpDisplay : public oxygine::Actor
 {
 private:
 
-   oxygine::Resources* m_headUpDisplayResources;
    MainActor* m_mainActor;
    SceneActor* m_sceneActor;
    ButtonDisplay* m_buttonDisplay;
@@ -25,7 +24,6 @@ public:
    HeadUpDisplay();
 
    void initialiseHeadUpDisplay(
-      oxygine::Resources* headUpDisplayResources,
       MainActor* mainActor,
       SceneActor* sceneActor,
       const oxygine::Vector2& topLeft,

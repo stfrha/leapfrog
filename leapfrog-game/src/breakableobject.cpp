@@ -12,7 +12,6 @@ using namespace oxygine;
 using namespace pugi;
 
 BreakableObject::BreakableObject(
-   Resources& gameResources,
    SceneActor* sceneParent,
    CompoundObject* parentObject,
    b2World* world,
@@ -20,7 +19,6 @@ BreakableObject::BreakableObject(
    xml_node& root,
    int groupIndex) :
    CompoundObject(sceneParent, parentObject),
-   m_gameResource(&gameResources),
    m_sceneActor(sceneParent),
    m_world(world)
 {
@@ -30,7 +28,6 @@ BreakableObject::BreakableObject(
    m_spawnObjects->readSpawnObjectsNode(root.child("behaviour").child("breakableObjectProperties"));
 
    initCompoundObjectParts(
-      gameResources,
       sceneParent,
       sceneParent,
       parentObject,
@@ -121,7 +118,6 @@ void BreakableObject::collisionBlast(b2Contact* contact, bool small)
    if (contact->GetManifold()->pointCount > 0)
    {
       spBlastEmitter blast = new BlastEmitter(
-         m_sceneActor->getResources(),
          PhysDispConvert::convert(m.points[0], 1.0f),
          blastIntensity,                                     // Intensity, particles / sec
          emitterLifetime,                                    // Emitter Lifetime

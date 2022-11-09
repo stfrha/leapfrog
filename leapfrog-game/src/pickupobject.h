@@ -61,7 +61,6 @@ public:
 class PickupObject : public CompoundObject
 {
 private:
-   oxygine::Resources* m_gameResource;
    b2World* m_world;
    SceneActor* m_sceneActor;
 
@@ -70,7 +69,6 @@ private:
 
 public:
 	PickupObject(
-      oxygine::Resources& gameResources,
       SceneActor* sceneParent,
       CompoundObject* parentObject,
       b2World* world,

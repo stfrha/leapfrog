@@ -10,13 +10,11 @@ using namespace oxygine;
 using namespace pugi;
 
 ReentryFlameEmitter::ReentryFlameEmitter(
-   Resources* gameResources,
    SceneActor* sceneActor,
    CompoundObject* parent,
    b2World* world,
    const xml_node& objectNode) :
    System(
-      gameResources,
       sceneActor,
       world,
       parent),
@@ -110,7 +108,6 @@ void ReentryFlameEmitter::doUpdate(const oxygine::UpdateState& us)
 
          // Create one test flame particle
          spReentryFlameParticle flameParticle = new ReentryFlameParticle(
-            m_gameResources,
             PhysDispConvert::convert(emitPos, 1.0f),
             m_lifetime,
             PhysDispConvert::convert(m_maxSize, 1.0f));

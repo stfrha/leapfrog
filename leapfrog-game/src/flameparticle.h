@@ -11,13 +11,11 @@ DECLARE_SMART(FlameParticle, spFlameParticle);
 class FlameParticle : public oxygine::Sprite, CollisionEntity
 {
 private:
-   oxygine::Resources * m_gameResources;
    b2World* m_world;
    b2Body* m_body;
 
 public:
 	FlameParticle(
-      oxygine::Resources& gameResources, 
       b2World* world, 
       const b2Vec2& pos, 
       const b2Vec2& vel, 

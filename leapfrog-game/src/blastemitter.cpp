@@ -5,14 +5,12 @@
 using namespace oxygine;
 
 BlastEmitter::BlastEmitter(
-   Resources* gameResources,
    Vector2 emitterOrigin, 
    float intensity,
    int lifetime, 
    int particleLifeTime,
    float particleDistance,
    float particleSize) :
-   m_gameResources(gameResources),
    m_emitterOrigin(emitterOrigin),
    m_intensity(intensity),
    m_timeToDie(0),
@@ -55,7 +53,7 @@ void BlastEmitter::doUpdate(const oxygine::UpdateState& us)
    if (us.time >= m_timeOfNextParticle)
    {
       // Create particle
-      spBlastParticle particle = new BlastParticle(m_gameResources, m_emitterOrigin, m_particleLifeTime, m_particleDistance, m_particleSize);
+      spBlastParticle particle = new BlastParticle(m_emitterOrigin, m_particleLifeTime, m_particleDistance, m_particleSize);
 
       particle->attachTo(getParent());
 

@@ -11,7 +11,6 @@ DECLARE_SMART(ButtonDisplay, spButtonDisplay);
 class ButtonDisplay : public oxygine::Actor
 {
 private:
-   oxygine::Resources* m_hudResources;
    MainActor* m_mainActor;
    SceneActor* m_sceneActor;
 
@@ -59,7 +58,6 @@ public:
    ButtonDisplay();
 
    void initialiseButtonDisplay(
-      oxygine::Resources* hudResources,
       MainActor* mainActor,
       SceneActor* sceneActor,
       const oxygine::Vector2& topLeft, 

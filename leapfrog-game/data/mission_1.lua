@@ -86,7 +86,8 @@ local function setupMissionStateScene()
             if useInitialLfPos == true then
                -- We will end up here for a new game and not during a exit/entry sequence
                -- Initialise leapfrog as descenting
-               c_addPositionedChildObject("leapfrog_deep_space.xml", "leapfrog1", 20, 780)
+               -- c_addPositionedChildObject("leapfrog_deep_space.xml", "leapfrog1", 20, 780)
+               c_addPositionedChildObject("leapfrog_deep_space.xml", "leapfrog1", 20, 730)
                
                -- We dont want to change the mode since it makes leapfrog instable (and the mode is already correct)
 

@@ -5,6 +5,7 @@
 #include "actoruserdata.h"
 #include "bodyuserdata.h"
 #include "layout.h"
+#include "graphicresources.h"
 
 using namespace std;
 using namespace oxygine;
@@ -12,8 +13,6 @@ using namespace oxygine;
 
 // Instanciate global instance of the HDD
 spMessageDisplay g_MessageDisplay;
-
-
 
 MessageItem::MessageItem(
    string message,
@@ -27,7 +26,6 @@ MessageItem::MessageItem(
    m_preWait(preWait),
    m_postWait(postWait)
 {
-
 }
 
 
@@ -66,7 +64,6 @@ void MessageDisplay::cleanAndClearMessageDisplay(void)
 
 
 void MessageDisplay::initialiseMessageDisplay(
-   Resources* hudResources,
    Actor* mainActor,
    float highTop,
    float normalTop,
@@ -83,13 +80,11 @@ void MessageDisplay::initialiseMessageDisplay(
    m_highBottom = highBottom;
    m_normalBottom = normalBottom;
 
-   m_hudResources = hudResources;
-
    m_fontSize = fontSize;
 
    float thickness = 1.0f;
 
-   setResAnim(m_hudResources->getResAnim("display_thin"));
+   setResAnim(g_GraphRes.getResources(GraphicResources::ResourceTypeEnum::hud).getResAnim("display_thin"));
    setVerticalMode(Box9Sprite::STRETCHING);
    setHorizontalMode(Box9Sprite::STRETCHING);
    setGuides(8, 120, 8, 120);
@@ -230,11 +225,11 @@ void MessageDisplay::drawMessage(const MessageItem& message)
 
    if (message.m_leftBubble)
    {
-      m_newBubble->setResAnim(m_hudResources->getResAnim("msg_bbl_left"));
+      m_newBubble->setResAnim(g_GraphRes.getResources(GraphicResources::ResourceTypeEnum::hud).getResAnim("msg_bbl_left"));
    }
    else
    {
-      m_newBubble->setResAnim(m_hudResources->getResAnim("msg_bbl_right"));
+      m_newBubble->setResAnim(g_GraphRes.getResources(GraphicResources::ResourceTypeEnum::hud).getResAnim("msg_bbl_right"));
    }
 
 
@@ -258,7 +253,8 @@ void MessageDisplay::drawMessage(const MessageItem& message)
    style.multiline = true;
    style.vAlign = TextStyle::VerticalAlign::VALIGN_TOP;
    style.hAlign = TextStyle::HorizontalAlign::HALIGN_LEFT;
-   style.font = m_hudResources->getResFont("lf_font");
+
+   style.font = g_GraphRes.getResources(GraphicResources::ResourceTypeEnum::hud).getResFont("lf_font");
    style.color = Color::White;
    style.fontSize = (int)m_fontSize;
 

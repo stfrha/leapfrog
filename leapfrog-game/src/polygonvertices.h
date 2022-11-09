@@ -66,7 +66,6 @@ public:
 
    static void createPolygonBorders(
       oxygine::Polygon* polygon,
-      oxygine::Resources& gameResources,
       std::vector<oxygine::Vector2>& vertices,
       pugi::xml_node objectNode);
 

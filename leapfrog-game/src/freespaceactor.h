@@ -34,7 +34,6 @@ public:
    b2Body * m_leapfrogBody;
 
    FreeSpaceActor(
-      Resources& gameResources,
       b2World* world,
       float initialZoom,
       float zoom,

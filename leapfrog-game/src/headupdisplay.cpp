@@ -16,20 +16,17 @@ HeadUpDisplay::HeadUpDisplay()
 }
 
 void HeadUpDisplay::initialiseHeadUpDisplay(
-   oxygine::Resources* headUpDisplayResources,
    MainActor* mainActor,
    SceneActor* sceneActor,
    const oxygine::Vector2& topLeft,
    const oxygine::Vector2& bottomRight)
 {
-   m_headUpDisplayResources = headUpDisplayResources;
    m_mainActor = mainActor;
    m_sceneActor = sceneActor;
 
    spButtonDisplay buttonDisplay = new ButtonDisplay();
 
    buttonDisplay->initialiseButtonDisplay(
-      m_headUpDisplayResources,
       m_mainActor,
       m_sceneActor,
       topLeft,
@@ -83,7 +80,6 @@ void HeadUpDisplay::registerLeapfrog(LeapFrog* leapfrog, bool hideShield)
    }
 
    spStatusBar shotsBar = new StatusBar(
-      *m_headUpDisplayResources,
       leapfrog,
       m_sceneActor,
       this,
@@ -97,7 +93,6 @@ void HeadUpDisplay::registerLeapfrog(LeapFrog* leapfrog, bool hideShield)
       ObjectResourcesTypeEnum::shots);
 
    spStatusBar fuelBar = new StatusBar(
-      *m_headUpDisplayResources,
       leapfrog,
       m_sceneActor,
       this,
@@ -111,7 +106,6 @@ void HeadUpDisplay::registerLeapfrog(LeapFrog* leapfrog, bool hideShield)
       ObjectResourcesTypeEnum::fuel);
 
    spStatusBar shieldBar = new StatusBar(
-      *m_headUpDisplayResources,
       leapfrog,
       m_sceneActor,
       this,
@@ -125,7 +119,6 @@ void HeadUpDisplay::registerLeapfrog(LeapFrog* leapfrog, bool hideShield)
       ObjectResourcesTypeEnum::shield);
 
    spStatusBar damageBar = new StatusBar(
-      *m_headUpDisplayResources,
       leapfrog,
       m_sceneActor,
       this,
@@ -139,7 +132,6 @@ void HeadUpDisplay::registerLeapfrog(LeapFrog* leapfrog, bool hideShield)
       ObjectResourcesTypeEnum::damage);
 
    spStatusLiteral creditBar = new StatusLiteral(
-      *m_headUpDisplayResources,
       leapfrog,
       m_sceneActor,
       this,

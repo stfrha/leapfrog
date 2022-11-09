@@ -2,6 +2,7 @@
 
 #include "mainactor.h"
 #include "layout.h"
+#include "graphicresources.h"
 
 using namespace std;
 using namespace oxygine;
@@ -20,13 +21,11 @@ ButtonDisplay::ButtonDisplay() :
 }
 
 void ButtonDisplay::initialiseButtonDisplay(
-   Resources* hudResources,
    MainActor* mainActor,
    SceneActor* sceneActor,
    const Vector2& topLeft,
    const Vector2& bottomRight)
 {
-   m_hudResources = hudResources;
    m_mainActor = mainActor;
    m_sceneActor = sceneActor;
    createButtonOverlay();
@@ -228,7 +227,7 @@ void ButtonDisplay::createButtonOverlay(void)
 
    // Define sprites
    spSprite turnLeftButton = new Sprite();
-   turnLeftButton->setResAnim(m_hudResources->getResAnim("turn_left_button"));
+   turnLeftButton->setResAnim(g_GraphRes.getResources(GraphicResources::ResourceTypeEnum::hud).getResAnim("turn_left_button"));
    turnLeftButton->setSize(g_Layout.getButtonWidth(), g_Layout.getButtonWidth());
    turnLeftButton->setPosition(m_turnLeftButtonRect.getLeftTop());
    turnLeftButton->setAnchor(0.0f, 0.0f);
@@ -236,7 +235,7 @@ void ButtonDisplay::createButtonOverlay(void)
    turnLeftButton->attachTo(this);
 
    spSprite turnRightButton = new Sprite();
-   turnRightButton->setResAnim(m_hudResources->getResAnim("turn_right_button"));
+   turnRightButton->setResAnim(g_GraphRes.getResources(GraphicResources::ResourceTypeEnum::hud).getResAnim("turn_right_button"));
    turnRightButton->setSize(g_Layout.getButtonWidth(), g_Layout.getButtonWidth());
    turnRightButton->setPosition(m_turnRightButtonRect.getLeftTop());
    turnRightButton->setAnchor(0.0f, 0.0f);
@@ -244,7 +243,7 @@ void ButtonDisplay::createButtonOverlay(void)
    turnRightButton->attachTo(this);
 
    spSprite fireButton = new Sprite();
-   fireButton->setResAnim(m_hudResources->getResAnim("fire_button"));
+   fireButton->setResAnim(g_GraphRes.getResources(GraphicResources::ResourceTypeEnum::hud).getResAnim("fire_button"));
    fireButton->setSize(g_Layout.getButtonWidth(), g_Layout.getButtonWidth());
    fireButton->setPosition(m_fireButtonRect.getLeftTop());
    fireButton->setAnchor(0.0f, 0.0f);
@@ -252,7 +251,7 @@ void ButtonDisplay::createButtonOverlay(void)
    fireButton->attachTo(this);
 
    spSprite thursterButton = new Sprite();
-   thursterButton->setResAnim(m_hudResources->getResAnim("booster_button"));
+   thursterButton->setResAnim(g_GraphRes.getResources(GraphicResources::ResourceTypeEnum::hud).getResAnim("booster_button"));
    thursterButton->setSize(g_Layout.getButtonWidth(), g_Layout.getButtonWidth());
    thursterButton->setPosition(m_boosterButtonRect.getLeftTop());
    thursterButton->setAnchor(0.0f, 0.0f);
@@ -260,7 +259,7 @@ void ButtonDisplay::createButtonOverlay(void)
    thursterButton->attachTo(this);
 
    spSprite pauseButton = new Sprite();
-   pauseButton->setResAnim(m_hudResources->getResAnim("pause_button"));
+   pauseButton->setResAnim(g_GraphRes.getResources(GraphicResources::ResourceTypeEnum::hud).getResAnim("pause_button"));
    pauseButton->setSize(g_Layout.getButtonWidth(), g_Layout.getButtonWidth());
    pauseButton->setPosition(m_pauseButtonRect.getLeftTop());
    pauseButton->setAnchor(0.0f, 0.0f);
@@ -268,7 +267,7 @@ void ButtonDisplay::createButtonOverlay(void)
    pauseButton->attachTo(this);
 
    spSprite zoomOutSprite = new Sprite();
-   zoomOutSprite->setResAnim(m_hudResources->getResAnim("zoom_out_button"));
+   zoomOutSprite->setResAnim(g_GraphRes.getResources(GraphicResources::ResourceTypeEnum::hud).getResAnim("zoom_out_button"));
    zoomOutSprite->setSize(g_Layout.getButtonWidth(), g_Layout.getButtonWidth());
    zoomOutSprite->setPosition(m_zoomOutButtonRect.getLeftTop());
    zoomOutSprite->setAnchor(0.0f, 0.0f);
@@ -277,7 +276,7 @@ void ButtonDisplay::createButtonOverlay(void)
    m_zoomOutSprite = zoomOutSprite.get();
 
    spSprite zoomInSprite = new Sprite();
-   zoomInSprite->setResAnim(m_hudResources->getResAnim("zoom_in_button"));
+   zoomInSprite->setResAnim(g_GraphRes.getResources(GraphicResources::ResourceTypeEnum::hud).getResAnim("zoom_in_button"));
    zoomInSprite->setSize(g_Layout.getButtonWidth(), g_Layout.getButtonWidth());
    zoomInSprite->setPosition(m_zoomInButtonRect.getLeftTop());
    zoomInSprite->setAnchor(0.0f, 0.0f);
@@ -286,7 +285,7 @@ void ButtonDisplay::createButtonOverlay(void)
    m_zoomInSprite = zoomInSprite.get();
 
    spSprite manPanEnableSprite = new Sprite();
-   manPanEnableSprite->setResAnim(m_hudResources->getResAnim("pan_button"));
+   manPanEnableSprite->setResAnim(g_GraphRes.getResources(GraphicResources::ResourceTypeEnum::hud).getResAnim("pan_button"));
    manPanEnableSprite->setSize(g_Layout.getButtonWidth(), g_Layout.getButtonWidth());
    manPanEnableSprite->setPosition(m_manPanEnableButtonRect.getLeftTop());
    manPanEnableSprite->setAnchor(0.0f, 0.0f);
@@ -295,7 +294,7 @@ void ButtonDisplay::createButtonOverlay(void)
    m_manPanEnableSprite = manPanEnableSprite.get();
 
    spSprite manPanSprite = new Sprite();
-   manPanSprite->setResAnim(m_hudResources->getResAnim("pan_button"));
+   manPanSprite->setResAnim(g_GraphRes.getResources(GraphicResources::ResourceTypeEnum::hud).getResAnim("pan_button"));
    manPanSprite->setSize(g_Layout.getButtonWidth(), g_Layout.getButtonWidth());
    manPanSprite->setPosition(m_panButtonRect.getLeftTop());
    manPanSprite->setAnchor(0.0f, 0.0f);
@@ -304,7 +303,7 @@ void ButtonDisplay::createButtonOverlay(void)
    m_manPanSprite = manPanSprite.get();
 
    spSprite reloadSprite = new Sprite();
-   reloadSprite->setResAnim(m_hudResources->getResAnim("reload_button"));
+   reloadSprite->setResAnim(g_GraphRes.getResources(GraphicResources::ResourceTypeEnum::hud).getResAnim("reload_button"));
    reloadSprite->setSize(g_Layout.getButtonWidth(), g_Layout.getButtonWidth());
    reloadSprite->setPosition(m_reloadButtonRect.getLeftTop());
    reloadSprite->setAnchor(0.0f, 0.0f);

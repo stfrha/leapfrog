@@ -153,7 +153,7 @@ private:
    float m_wantedAngle;
    bool m_modeInTransit;
 
-	b2World * m_world;
+	b2World* m_world;
 	b2Body* m_mainBody;
 	b2Body* m_rightBigLegBody;
 	b2Body* m_leftBigLegBody;
@@ -179,9 +179,6 @@ private:
 
    spBox2DDraw m_debugDraw;
    
-
-   oxygine::Resources* m_gameResources;
-
    void collisionBlast(b2Contact* contact, bool small = true);
    void evaluateLepfrogDamage(void);
 
@@ -196,7 +193,6 @@ public:
    spReentryFlameEmitter m_reentryFlameEmitterLeftLeg;
 
 	LeapFrog(
-		oxygine::Resources& gameResources,
 		SceneActor* sceneParent,
       CompoundObject* parentObject,
 		b2World* world,

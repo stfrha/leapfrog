@@ -7,13 +7,12 @@ using namespace oxygine;
 using namespace pugi;
 
 Gun::Gun(
-   Resources* gameResources,
    SceneActor* sceneActor,
    CompoundObject* parentObject,
    b2World* world,
    const xml_node& objectNode,
    int groupIndex) :
-   System(gameResources, sceneActor, world, parentObject),
+   System(sceneActor, world, parentObject),
    m_groupIndex(groupIndex),
    m_fire(false)
    //m_emitterBody(body),
@@ -80,7 +79,6 @@ void Gun::doUpdate(const oxygine::UpdateState& us)
             b2Vec2 craftSpeed = m_emitterBody->GetLinearVelocity();
 
             spBullet bullet = new Bullet(
-               *m_gameResources,
                m_sceneActor,
                m_emitterBody->GetWorld(),
                emitPos,

@@ -14,13 +14,12 @@ using namespace std;
 using namespace pugi;
 
 FreeSpaceActor::FreeSpaceActor(
-   Resources& gameResources,
    b2World* world,
    float initialZoom,
    float zoom,
    xml_node& root,
    int groupIndex) :
-   SceneActor(gameResources, world, initialZoom, zoom),
+   SceneActor(world, initialZoom, zoom),
    m_inTransitField(0),
    m_state(firstUpdate),
    m_leapfrogBody(NULL),
@@ -34,7 +33,7 @@ FreeSpaceActor::FreeSpaceActor(
 
    m_world->SetContactListener(&m_contactListener);
 
-   initCompoundObjectParts(gameResources, this, this, NULL, world, Vector2(0.0f, 0.0f), root, groupIndex, true);
+   initCompoundObjectParts(this, this, NULL, world, Vector2(0.0f, 0.0f), root, groupIndex, true);
 
 }
 
@@ -113,7 +112,7 @@ void FreeSpaceActor::runFadeIn(void)
    fader->setAlpha(255);
    fader->setPriority(255);
    fader->attachTo(this);
-   spTween tween = fader->addTween(Actor::TweenAlpha(0), 1000);
+   spTween tween = fader->addTween(Actor::TweenAlpha(0), 2000);
    tween->detachWhenDone();
 
 }

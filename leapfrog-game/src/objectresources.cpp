@@ -202,7 +202,7 @@ void ObjectResources::deltaFuel(float deltaFuel)
 
 int ObjectResources::getCredits(void)
 {
-   return m_credits->getProperty();
+   return (int)m_credits->getProperty();
 }
 
 void  ObjectResources::deltaCredits(int deltaCredits)
@@ -216,14 +216,14 @@ void  ObjectResources::deltaCredits(int deltaCredits)
       //StatusChangedEvent event(ObjectResourcesTypeEnum::credits, m_credits);
       //m_statusEventOriginator->dispatchEvent(&event);
 
-      if (credits <= 0.0f)
+      if (credits <= 0)
       {
          StatusResourceDepletedEvent event(ObjectResourcesTypeEnum::credits);
          m_statusEventOriginator->dispatchEvent(&event);
       }
    }
 
-   m_credits->setProperty(credits);
+   m_credits->setProperty((float)credits);
 }
 
 float ObjectResources::getDamage(void)

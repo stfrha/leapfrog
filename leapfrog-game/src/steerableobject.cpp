@@ -13,7 +13,6 @@ using namespace oxygine;
 using namespace pugi;
 
 SteerableObject::SteerableObject(
-   oxygine::Resources& gameResources,
    SceneActor* sceneActor,
    CompoundObject* parentObject,
    b2World* world,
@@ -21,7 +20,6 @@ SteerableObject::SteerableObject(
    pugi::xml_node& root,
    int groupIndex) :
    CompoundObject(sceneActor, parentObject),
-   m_gameResource(&gameResources),
    m_world(world),
    m_sceneActor(sceneActor),
 //   m_state(fix),
@@ -38,7 +36,7 @@ SteerableObject::SteerableObject(
    m_boosterFlame(NULL),
    m_armClockReset(true)
 {
-   initCompoundObjectParts(gameResources, sceneActor, sceneActor, parentObject, world, pos, root, groupIndex);
+   initCompoundObjectParts(sceneActor, sceneActor, parentObject, world, pos, root, groupIndex);
 
    attachTo(m_sceneActor);
 
@@ -537,7 +535,6 @@ void SteerableObject::collisionBlast(b2Contact* contact, bool small)
    if (contact->GetManifold()->pointCount > 0)
    {
       spBlastEmitter blast = new BlastEmitter(
-         m_sceneActor->getResources(),
          PhysDispConvert::convert(m.points[0], 1.0f),
          blastIntensity,                                     // Intensity, particles / sec
          emitterLifetime,                                    // Emitter Lifetime

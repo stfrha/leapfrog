@@ -43,7 +43,6 @@ private:
 
 public:
 	Gun(
-      oxygine::Resources* gameResources,
       SceneActor* sceneActor,
       CompoundObject* parentObject,
       b2World* world,

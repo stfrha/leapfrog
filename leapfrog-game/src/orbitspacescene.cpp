@@ -5,17 +5,17 @@
 #include "orbitspacescene.h"
 #include "actoruserdata.h"
 
+#include "graphicresources.h"
 
 using namespace oxygine;
 using namespace std;
 using namespace pugi;
 
 OrbitSpaceScene::OrbitSpaceScene(
-   Resources& gameResources,
    b2World* world,
    xml_node& root,
    int groupIndex) :
-	SceneActor(gameResources, world, 0.4f, 0.4f),
+	SceneActor(world, 0.4f, 0.4f),
    m_state(waitForLeapfrog),
    m_stateStartTime(0)
 {
@@ -28,14 +28,14 @@ OrbitSpaceScene::OrbitSpaceScene(
 //   m_world->SetContactListener(&m_contactListener);
 
 //   readDefinitionXmlFile(gameResources, this, NULL, m_world, Vector2(0.0f, 0.0f), fileName, initialState);
-   initCompoundObjectParts(gameResources, this, this, this, world, Vector2(0.0f, 0.0f), root, groupIndex, true);
+   initCompoundObjectParts(this, this, this, world, Vector2(0.0f, 0.0f), root, groupIndex, true);
 
    // Create background before the leapfrog
    // generateBackground(gameResources);
 
 
    spSprite background = new Sprite();
-   background->setResAnim(gameResources.getResAnim("starfield"));
+   background->setResAnim(g_GraphRes.getResources(GraphicResources::ResourceTypeEnum::game).getResAnim("starfield"));
    background->setSize(800.0f, 300.0f);
    background->setPosition(-150.0f, 0.0f);
    background->setScale(0.3f);

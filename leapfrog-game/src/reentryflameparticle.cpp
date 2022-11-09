@@ -1,14 +1,14 @@
 #include "reentryflameparticle.h"
+#include "graphicresources.h"
 
 using namespace oxygine;
 
 ReentryFlameParticle::ReentryFlameParticle(
-   oxygine::Resources* gameResources,
    const Vector2& pos,
    int lifetime,
    const Vector2& growToSize)
 {
-   setResAnim(gameResources->getResAnim("reentry_flames"));
+   setResAnim(g_GraphRes.getResources(GraphicResources::ResourceTypeEnum::game).getResAnim("reentry_flames"));
    setSize(growToSize);
    setPosition(pos);
    setAnchor(Vector2(0.5f, 1.0f));

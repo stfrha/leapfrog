@@ -104,6 +104,7 @@ LOCAL_SRC_FILES += ../../../src/objectresources.cpp
 LOCAL_SRC_FILES += ../../../src/groupindexsource.cpp
 LOCAL_SRC_FILES += ../../../src/gun.cpp
 LOCAL_SRC_FILES += ../../../src/headdowndisplay.cpp
+LOCAL_SRC_FILES += ../../../src/headupdisplay.cpp
 LOCAL_SRC_FILES += ../../../src/landercontactlistener.cpp
 LOCAL_SRC_FILES += ../../../src/landingactor.cpp
 LOCAL_SRC_FILES += ../../../src/landingpad.cpp
@@ -137,7 +138,9 @@ LOCAL_SRC_FILES += ../../../src/steerableobject.cpp
 LOCAL_SRC_FILES += ../../../src/steeringmanager.cpp
 LOCAL_SRC_FILES += ../../../src/system.cpp
 LOCAL_SRC_FILES += ../../../src/parallaxbackground.cpp
+LOCAL_SRC_FILES += ../../../src/buttondisplay.cpp
 LOCAL_SRC_FILES += ../../../src/menuactor.cpp
+LOCAL_SRC_FILES += ../../../src/graphicresources.cpp
 LOCAL_SRC_FILES += ../../../src/main.cpp
 
 

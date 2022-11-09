@@ -42,9 +42,7 @@ private:
 	//it is our resources
 	//in real project you would have more than one Resources declarations.
 	//It is important on mobile devices with limited memory and you would load/unload them
-	oxygine::Resources m_gameResources;
    oxygine::Resources m_splashScreenResource;
-   oxygine::Resources m_hudResources;
 
    b2World* m_world;
 

@@ -43,7 +43,6 @@ private:
    };
 
 protected:
-   oxygine::Resources* m_gameResource;
    b2World* m_world;
    SceneActor* m_sceneActor;
    int m_blastDuration;
@@ -69,7 +68,6 @@ protected:
 
 public:
 	ExplosiveObject(
-      oxygine::Resources& gameResources,
       SceneActor* sceneParent,
       CompoundObject* parentObject,
       b2World* world,

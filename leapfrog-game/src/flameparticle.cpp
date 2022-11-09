@@ -2,11 +2,11 @@
 #include "flamesmokeparticle.h"
 #include "bodyuserdata.h"
 #include "actoruserdata.h"
+#include "graphicresources.h"
 
 using namespace oxygine;
 
 FlameParticle::FlameParticle(
-   Resources& gameResources,
    b2World* world,
    const b2Vec2& pos,
    const b2Vec2& vel,
@@ -14,7 +14,6 @@ FlameParticle::FlameParticle(
    b2Vec2 impulseForce,
    float radius,
    int groupIndex) :
-   m_gameResources(&gameResources),
    m_world(world)
 {
    // If lifetime is zero, for instance if scale is zero,
@@ -24,7 +23,7 @@ FlameParticle::FlameParticle(
       return;
    }
 
-   setResAnim(gameResources.getResAnim("flame_particle"));
+   setResAnim(g_GraphRes.getResources(GraphicResources::ResourceTypeEnum::game).getResAnim("flame_particle"));
    setSize(radius, radius);
    setPosition(PhysDispConvert::convert(pos, 1.0f));
    setAnchor(Vector2(0.5f, 0.5f));

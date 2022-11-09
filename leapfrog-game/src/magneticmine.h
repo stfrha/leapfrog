@@ -33,7 +33,6 @@ private:
 
 public:
 	MagneticMine(
-      oxygine::Resources& gameResources,
       SceneActor* sceneParent,
       CompoundObject* parentObject,
       b2World* world,

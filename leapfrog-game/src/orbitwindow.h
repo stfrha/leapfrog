@@ -13,7 +13,6 @@ public:
    OrbitWindow();
    
    OrbitWindow(
-      oxygine::Resources& gameResources, 
       CompoundObject* parentObject,
       b2World* world,
       float posX,

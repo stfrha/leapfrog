@@ -14,7 +14,6 @@ class MenuButton : public oxygine::Box9Sprite
 {
 public:
    MenuButton(
-      oxygine::Resources& hudResources,
       MenuActor* menuParent,
       const oxygine::Vector2& pos,
       const oxygine::Vector2& size,
@@ -48,9 +47,7 @@ private:
    void b7Clicked(oxygine::Event* event);
 
 public:
-   MenuActor(
-      Resources& hudResources,
-      MainActor* mainActor);
+   MenuActor(MainActor* mainActor);
 
 protected:
    void doUpdate(const oxygine::UpdateState &us);

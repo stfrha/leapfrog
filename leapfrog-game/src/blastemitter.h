@@ -29,8 +29,6 @@ DECLARE_SMART(BlastEmitter, spBlastEmitter);
 class BlastEmitter : public oxygine::Actor
 {
 private:
-   oxygine::Resources* m_gameResources;
-   
    oxygine::Vector2 m_emitterOrigin;
 
    BlastEmitterStatistics m_stats;
@@ -47,7 +45,6 @@ private:
 
 public:
 	BlastEmitter(
-      oxygine::Resources* gameResources,
       oxygine::Vector2 emitterOrigin, 
       float intensity,
       int lifetime,

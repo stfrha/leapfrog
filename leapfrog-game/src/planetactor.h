@@ -105,7 +105,6 @@ private:
    float m_planetAngleAtSurface;
 
 
-   oxygine::Resources* m_gameResources;
    oxygine::spActor m_planet;
    oxygine::spSprite m_positionIndicator;
    oxygine::spProgressBar m_burnIndicator;
@@ -118,7 +117,6 @@ public:
    std::string m_spaceSceneFile;
 
    PlanetActor(
-      oxygine::Resources& gameResources,
       CompoundObject* parentObject,
       const pugi::xml_node& objectNode);
    void orbitEstablished(void);

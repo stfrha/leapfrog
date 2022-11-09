@@ -14,7 +14,6 @@ using namespace pugi;
 using namespace std;
 
 OrbitScene::OrbitScene(
-   Resources& gameResources,
    CompoundObject* parentObject,
    b2World* world,
    xml_node& root,
@@ -25,7 +24,7 @@ OrbitScene::OrbitScene(
    // Nothing should be read here 
    // initCompoundObjectParts(gameResources, this, NULL, world, Vector2(0.02f, 0.0f), root, initialState, groupIndex);
 
-   m_planet = new PlanetActor(gameResources, this, root.child("behaviour").child("properties"));
+   m_planet = new PlanetActor(this, root.child("behaviour").child("properties"));
 
    // Here we need to calculate some geometrics
    // Position, size, scale and frameThickness of OrbitWindow is needed
@@ -46,7 +45,6 @@ OrbitScene::OrbitScene(
 
    // Below creates the space scene window incl the space scene itself
    spOrbitWindow orbWin = new OrbitWindow(
-      gameResources,
       this,
       world,
       x,

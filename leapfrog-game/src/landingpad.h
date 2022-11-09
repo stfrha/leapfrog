@@ -41,7 +41,6 @@ private:
 
 public:
 	LandingPad(
-      oxygine::Resources& gameResources,
       SceneActor* sceneParent,
       CompoundObject* parentObject,
       b2World* world,

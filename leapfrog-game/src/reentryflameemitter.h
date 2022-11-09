@@ -60,7 +60,6 @@ public:
  //     b2Vec2 maxSize);
 
    ReentryFlameEmitter(
-      oxygine::Resources* gameResources,
       SceneActor* sceneActor,
       CompoundObject* parentObject,
       b2World* world,

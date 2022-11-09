@@ -10,11 +10,12 @@
 
 #include "groupindexsource.h"
 
+#include "graphicresources.h"
+
 using namespace oxygine;
 using namespace pugi;
 
 ExplosiveObject::ExplosiveObject(
-   Resources& gameResources,
    SceneActor* sceneParent,
    CompoundObject* parentObject,
    b2World* world,
@@ -23,7 +24,6 @@ ExplosiveObject::ExplosiveObject(
    const xml_node& propNode,
    int groupIndex) :
    CompoundObject(sceneParent, parentObject),
-   m_gameResource(&gameResources),
    m_sceneActor(sceneParent),
    m_world(world),
    m_blastDuration(500),
@@ -45,7 +45,6 @@ ExplosiveObject::ExplosiveObject(
    readExplosiveObjectNode(propNode, impactThreshold);
 
    initCompoundObjectParts(
-      gameResources,
       sceneParent,
       sceneParent,
       parentObject,
@@ -143,7 +142,7 @@ void ExplosiveObject::doUpdate(const oxygine::UpdateState& us)
 
 void ExplosiveObject::startAnimation(b2Vec2 pos)
 {
-   oxygine::ResAnim* resAnim = m_gameResource->getResAnim("explosion_ani");
+   oxygine::ResAnim* resAnim = g_GraphRes.getResources(GraphicResources::ResourceTypeEnum::game).getResAnim("explosion_ani");
 
    m_explosionAnimation = new Sprite();
    m_explosionAnimation->setAnchor(0.5f, 0.5f);

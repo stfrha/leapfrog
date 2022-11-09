@@ -266,7 +266,6 @@ static int c_addMissionStateSceneObjects(lua_State *L)
    SceneActor* scene = g_LuaInterface.getSceneActor();
    
    scene->addObjectsFromXmlFile(
-      *scene->getResources(),
       scene,
       NULL,
       scene->getWorld(),
@@ -287,7 +286,6 @@ static int c_addPositionedChildObject(lua_State *L)
 
    // Create and define the child by reading the file
    CompoundObject* co = CompoundObject::readDefinitionXmlFile(
-      *scene->getResources(),
       scene,
       NULL,
       scene->getWorld(),

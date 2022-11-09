@@ -9,7 +9,6 @@
 using namespace oxygine;
 
 Bullet::Bullet(
-   oxygine::Resources& gameResources,
    SceneActor* sceneActor,
    b2World* world,
    const b2Vec2& pos,
@@ -104,7 +103,6 @@ void Bullet::bulletHit(b2Contact* contact)
    if (contact->GetManifold()->pointCount > 0)
    {
       spBlastEmitter blast = new BlastEmitter(
-         m_sceneActor->getResources(),
          PhysDispConvert::convert(m.points[0], 1.0f),
          blastIntensity,                                     // Intensity, particles / sec
          emitterLifetime,                                    // Emitter Lifetime

@@ -90,7 +90,6 @@ private:
    float m_zoomPos;
 
 protected:
-   oxygine::Resources * m_gameResources;
    float	m_zoomScale;
    float	m_stageToViewPortScale;
    float	m_physToStageScale;
@@ -114,14 +113,12 @@ public:
    void setIsInPause(bool isInPause);
 
 	SceneActor(
-      oxygine::Resources& gameResources, 
       b2World* world, 
       float initialZoomScale,
       float zoomScale);
    ~SceneActor();
 
    static SceneActor* defineScene(
-      Resources& gameResources,
       CompoundObject* parentObject,
       b2World* world,
       pugi::xml_node& root,
@@ -143,7 +140,6 @@ public:
    LeapFrog* m_leapfrog;
 
    b2World* getWorld(void);
-   Resources* getResources(void);
 
    void addParallaxBackground(ParallaxBackground* background);
    void addParallaxBackgroundSprite(oxygine::spSprite sp, float parallaxAmount);

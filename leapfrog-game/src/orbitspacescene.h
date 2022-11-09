@@ -33,7 +33,6 @@ private:
 
 public:
 	OrbitSpaceScene(
-      oxygine::Resources& gameResources,
       b2World* world,
       pugi::xml_node& root,
       int groupIndex);

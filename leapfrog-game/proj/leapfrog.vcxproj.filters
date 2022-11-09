@@ -38,6 +38,9 @@
     <Filter Include="Source Files\master actors">
       <UniqueIdentifier>{b3f8bcc4-3c4b-4abf-841c-391f7aa463fb}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\sprite and font resources">
+      <UniqueIdentifier>{30a362c8-2014-495d-b487-71eb79bad7cd}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\src\blastemitter.cpp">
@@ -439,6 +442,9 @@
     <ClCompile Include="..\src\compoundobject.cpp">
       <Filter>Source Files\master actors</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\graphicresources.cpp">
+      <Filter>Source Files\sprite and font resources</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\blastparticle.h">
@@ -800,6 +806,9 @@
     </ClInclude>
     <ClInclude Include="..\src\compoundobject.h">
       <Filter>Source Files\master actors</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\graphicresources.h">
+      <Filter>Source Files\sprite and font resources</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

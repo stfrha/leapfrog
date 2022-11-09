@@ -5,20 +5,20 @@
 #include "layout.h"
 #include "headdowndisplay.h"
 #include "mainactor.h"
+#include "graphicresources.h"
 
 using namespace oxygine;
 using namespace std;
 
 
 MenuButton::MenuButton(
-   oxygine::Resources& hudResources,
    MenuActor* menuParent,
    const oxygine::Vector2& pos,
    const oxygine::Vector2& size,
    string caption /*  ,
    event eventToFireAtButtonCLick*/)
 {
-   setResAnim(hudResources.getResAnim("display_thin"));
+   setResAnim(g_GraphRes.getResources(GraphicResources::ResourceTypeEnum::hud).getResAnim("display_thin"));
    setVerticalMode(Box9Sprite::STRETCHING);
    setHorizontalMode(Box9Sprite::STRETCHING);
    setGuides(8, 120, 8, 120);
@@ -32,7 +32,7 @@ MenuButton::MenuButton(
    style.multiline = false;
    style.vAlign = TextStyle::VerticalAlign::VALIGN_TOP;
    style.hAlign = TextStyle::HorizontalAlign::HALIGN_LEFT;
-   style.font = hudResources.getResFont("lf_font");
+   style.font = g_GraphRes.getResources(GraphicResources::ResourceTypeEnum::hud).getResFont("lf_font");
    style.color = Color::White;
    style.fontSize = (int)(size.y / 2.0f);
 
@@ -55,7 +55,6 @@ void MenuButton::doUpdate(const oxygine::UpdateState& us)
 
 
 MenuActor::MenuActor(
-   Resources& hudResources,
    MainActor* mainActor) :
    m_mainActor(mainActor)
 {
@@ -71,49 +70,42 @@ MenuActor::MenuActor(
    float sepTrioWidth = trioButtonWidth / 10.0f;
 
    spMenuButton b1 = new MenuButton(
-      hudResources,
       this,
       Vector2(g_Layout.getYFromTop(1), sepHeight * 1),
       Vector2(buttonWidth, buttonHeight),
       "Continue current game");
 
    spMenuButton b2 = new MenuButton(
-      hudResources,
       this,
       Vector2(g_Layout.getYFromTop(1), sepHeight * 2 + buttonHeight * 1),
       Vector2(buttonWidth, buttonHeight),
       "Restart latest game");
 
    spMenuButton b3 = new MenuButton(
-      hudResources,
       this,
       Vector2(g_Layout.getYFromTop(1), sepHeight * 3 + buttonHeight * 2),
       Vector2(buttonWidth, buttonHeight),
       "Start new game");
 
    spMenuButton b4 = new MenuButton(
-      hudResources,
       this,
       Vector2(g_Layout.getYFromTop(1), sepHeight * 4 + buttonHeight * 3),
       Vector2(trioButtonWidth, buttonHeight),
       "Landing");
 
    spMenuButton b5 = new MenuButton(
-      hudResources,
       this,
       Vector2(g_Layout.getYFromTop(1) + trioButtonWidth * 1 + sepTrioWidth * 1, sepHeight * 4 + buttonHeight * 3),
       Vector2(trioButtonWidth, buttonHeight),
       "Space");
 
    spMenuButton b6 = new MenuButton(
-      hudResources,
       this,
       Vector2(g_Layout.getYFromTop(1) + trioButtonWidth * 2 + sepTrioWidth * 2, sepHeight * 4 + buttonHeight * 3),
       Vector2(trioButtonWidth, buttonHeight),
       "Orbit");
 
    spMenuButton b7 = new MenuButton(
-      hudResources,
       this,
       Vector2(g_Layout.getYFromTop(1), sepHeight * 6 + buttonHeight * 5),
       Vector2(buttonWidth, buttonHeight),

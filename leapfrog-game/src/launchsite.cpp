@@ -5,13 +5,13 @@
 #include "actoruserdata.h"
 #include "launchsiteevents.h"
 #include "headdowndisplay.h"
+#include "graphicresources.h"
 
 using namespace oxygine;
 using namespace std;
 
 
 LaunchSite::LaunchSite(
-   Resources& gameResources,
    SceneActor* sceneParent,
    CompoundObject* parentObject,
    b2World* world,
@@ -19,7 +19,6 @@ LaunchSite::LaunchSite(
    pugi::xml_node& root,
    int groupIndex) :
    CompoundObject(sceneParent, parentObject),
-   m_gameResources(&gameResources),
    m_world(world),
    m_sceneParent(sceneParent),
    m_state(idle),
@@ -29,7 +28,7 @@ LaunchSite::LaunchSite(
    m_angleHoldDuration(16000),
    m_armInitialRegistration(true)
 {
-	initCompoundObjectParts(gameResources, sceneParent, sceneParent, parentObject, world, pos, root, groupIndex);
+	initCompoundObjectParts(sceneParent, sceneParent, parentObject, world, pos, root, groupIndex);
 
    m_leftFootRestJoint = (b2RevoluteJoint*)getJoint("leftRestJoint");
    m_rightFootRestJoint = (b2RevoluteJoint*)getJoint("rightRestJoint");
@@ -377,7 +376,7 @@ void LaunchSite::showCountdownNumber(int n)
    t->setPriority(255);
    t->attachTo(m_sceneParent);
 
-   TextStyle style = TextStyle(m_gameResources->getResFont("main")).withColor(Color::White).alignMiddle();
+   TextStyle style = TextStyle(g_GraphRes.getResources(GraphicResources::ResourceTypeEnum::game).getResFont("main")).withColor(Color::White).alignMiddle();
 
    t->setStyle(style);
    

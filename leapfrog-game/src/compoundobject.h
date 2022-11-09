@@ -62,7 +62,6 @@ private:
    BehaviourEnum m_behaviourType;
 
    void defineSpriteBox(
-      oxygine::Resources& gameResources,
       oxygine::Actor* parentActor,
       CompoundObject* parentObject,
       const oxygine::Vector2& pos,
@@ -70,7 +69,6 @@ private:
       bool parentIsScene = false);
 
    void defineSpritePolygon(
-      oxygine::Resources& gameResources,
       oxygine::Actor* parentActor,
       CompoundObject* parentObject,
       const oxygine::Vector2& pos,
@@ -78,7 +76,6 @@ private:
       bool parentIsScene = false);
 
    void defineCircle(
-      oxygine::Resources& gameResources,
       oxygine::Actor* parentActor,
       CompoundObject* parentObject,
       b2World* world,
@@ -88,7 +85,6 @@ private:
       bool staticBody);
 
    void defineStaticCircle(
-      oxygine::Resources& gameResources,
       oxygine::Actor* parentActor,
       CompoundObject* parentObject,
       b2World* world,
@@ -97,7 +93,6 @@ private:
       int groupIndex);
 
    void defineBox(
-      oxygine::Resources& gameResources,
       oxygine::Actor* parentActor,
       CompoundObject* parentObject,
       b2World* world,
@@ -107,7 +102,6 @@ private:
       bool staticBody);
 
    void defineStaticBox(
-      oxygine::Resources& gameResources, 
       oxygine::Actor* parentActor,
       CompoundObject* parentObject,
       b2World* world,
@@ -116,7 +110,6 @@ private:
       int groupIndex);
 
    void defineStaticPolygon(
-      oxygine::Resources& gameResources, 
       oxygine::Actor* parentActor,
       CompoundObject* parentObject,
       b2World* world,
@@ -125,7 +118,6 @@ private:
       int groupIndex);
 
    void defineBoxedSpritePolygon(
-      oxygine::Resources& gameResources,
       oxygine::Actor* parentActor,
       CompoundObject* parentObject,
       b2World* world,
@@ -135,7 +127,6 @@ private:
       bool staticBody);
 
    void defineStaticBoxedSpritePolygon(
-      oxygine::Resources& gameResources,
       oxygine::Actor* parentActor,
       CompoundObject* parentObject,
       b2World* world,
@@ -144,7 +135,6 @@ private:
       int groupIndex);
 
    void defineDynamicCircle(
-      oxygine::Resources& gameResources,
       oxygine::Actor* parentActor,
       CompoundObject* parentObject,
       b2World* world,
@@ -153,7 +143,6 @@ private:
       int groupIndex);
 
    void defineDynamicBox(
-      oxygine::Resources& gameResources, 
       oxygine::Actor* parentActor,
       CompoundObject* parentObject,
       b2World* world,
@@ -162,7 +151,6 @@ private:
       int groupIndex);
 
    void defineDynamicPolygon(
-      oxygine::Resources& gameResources, 
       oxygine::Actor* parentActor,
       CompoundObject* parentObject,
       b2World* world,
@@ -171,7 +159,6 @@ private:
       int groupIndex);
 
    void defineDynamicBoxedSpritePolygon(
-      oxygine::Resources& gameResources,
       oxygine::Actor* parentActor,
       CompoundObject* parentObject,
       b2World* world,
@@ -180,7 +167,6 @@ private:
       int groupIndex);
 
    void defineRope(
-      oxygine::Resources& gameResources,
       oxygine::Actor* parentActor,
       SceneActor* sceneActor,
       CompoundObject* parentObject,
@@ -237,7 +223,6 @@ public:
 // Static, public methods used to create new CO (or behaviour decendant of CO)
 
    static CompoundObject* readDefinitionXmlFile(
-      oxygine::Resources& gameResources,
       SceneActor* sceneParent,
       CompoundObject* parentObject,
       b2World* world,
@@ -245,7 +230,6 @@ public:
       const std::string& fileName);
 
    static CompoundObject* readDefinitionXml(
-      oxygine::Resources& gameResources,
       SceneActor* sceneParent,
       CompoundObject* parentObject,
       b2World* world,
@@ -254,7 +238,6 @@ public:
       const size_t size);
 
    static CompoundObject* initCompoundObject(
-      oxygine::Resources& gameResources,
       SceneActor* sceneParent,
       CompoundObject* parentObject,
       b2World* world,
@@ -265,7 +248,6 @@ public:
 
    // Normal, non-static, public methods of an instance of a CO
    void addObjectsFromXmlFile(
-      oxygine::Resources& gameResources,
       SceneActor* sceneParent,
       CompoundObject* parentObject,
       b2World* world,
@@ -276,7 +258,6 @@ public:
    // but in some instances, it is not. ParallaxBackground, for instance
    // is another case
    bool initCompoundObjectParts(
-      oxygine::Resources& gameResources,
       oxygine::Actor* parentActor,
       SceneActor* sceneParent,
       CompoundObject* parentObject,
@@ -287,7 +268,6 @@ public:
       bool parentIsScene = false);
 
    CompoundObject* defineChildObject(
-      oxygine::Resources& gameResources,
       SceneActor* sceneParent,
       CompoundObject* parentObject,
       b2World* world,
@@ -295,7 +275,6 @@ public:
       pugi::xml_node& objectNode);
 
    static void doCommonShapeDefinitions(
-      oxygine::Resources& gameResources,
       oxygine::Sprite* sprite,
       pugi::xml_node& objectNode);
 

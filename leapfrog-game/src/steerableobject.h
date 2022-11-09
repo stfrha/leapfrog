@@ -61,7 +61,6 @@ public:
    };
 
 private:
-   oxygine::Resources* m_gameResource;
    b2World* m_world;
    b2Body* m_body;
    bool m_slowTurningAfterHit;
@@ -103,7 +102,6 @@ public:
    spShield m_shield;
 
 	SteerableObject(
-      oxygine::Resources& gameResources, 
       SceneActor* sceneActor,
       CompoundObject* parentObject,
       b2World* world,

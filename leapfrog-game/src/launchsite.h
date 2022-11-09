@@ -66,7 +66,6 @@ public:
    };
 
 private:
-   oxygine::Resources * m_gameResources;
    b2World * m_world;
    SceneActor* m_sceneParent;
 
@@ -118,7 +117,6 @@ private:
 
 public:
 	LaunchSite(
-      oxygine::Resources& gameResources,
       SceneActor* sceneParent,
       CompoundObject* parentObject,
       b2World* world,

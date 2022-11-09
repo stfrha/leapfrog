@@ -8,12 +8,11 @@ using namespace pugi;
 using namespace std;
 
 ObjectFactory::ObjectFactory(
-   Resources* gameResources,
    SceneActor* sceneParent,
    CompoundObject* parentObject,
    b2World* world,
    const xml_node& objectNode) :
-   System(gameResources, sceneParent, world, parentObject),
+   System(sceneParent, world, parentObject),
    m_timeSinceLast(0),
    m_initialSpawn(0),
    m_attachedBody(NULL)

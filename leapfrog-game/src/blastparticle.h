@@ -13,7 +13,6 @@ private:
 
 public:
 	BlastParticle(
-      oxygine::Resources* gameResources,
       const oxygine::Vector2& pos, 
       int m_lifetime, 
       float distance, 

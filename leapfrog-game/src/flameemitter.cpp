@@ -7,14 +7,12 @@ using namespace oxygine;
 using namespace pugi;
 
 FlameEmitter::FlameEmitter(
-   Resources* gameResources,
    SceneActor* sceneActor,
    CompoundObject* parent,
    b2World* world,
    const xml_node& objectNode,
    int groupIndex)  :
    System(
-      gameResources,
       sceneActor,
       world, 
       parent),
@@ -93,7 +91,6 @@ void FlameEmitter::doUpdate(const oxygine::UpdateState& us)
 
       // Create one test flame particle
       spFlameParticle flameParticle = new FlameParticle(
-         *m_gameResources, 
          m_emitterBody->GetWorld(), 
          emitPos, 
          m_emitterBody->GetLinearVelocity(),

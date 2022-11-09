@@ -13,7 +13,6 @@ private:
 
 public:
 	ReentryFlameParticle(
-      oxygine::Resources* gameResources,
       const oxygine::Vector2& pos, 
       int m_lifetime, 
       const oxygine::Vector2& growToSize);
