@@ -82,7 +82,6 @@ local function setupMissionStateScene()
 
       if currentState == 5 then
       
-      
          if lfDefined == false then 
             if useInitialLfPos == true then
                -- We will end up here for a new game and not during a exit/entry sequence

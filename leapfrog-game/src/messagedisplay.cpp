@@ -92,17 +92,20 @@ void MessageDisplay::initialiseMessageDisplay(
    setPriority(250);
    attachTo(mainActor);
 
-   m_mdFrame = new Actor();
-   m_mdFrame->setAnchor(0.0f, 0.0f);
-   //m_mdFrame->setSize(m_messageDisplayWidth, m_messageDisplayHeight);
-   m_mdFrame->setPosition(0.0f, 0.0f);
-   m_mdFrame->attachTo(this);
+   spActor mdFrame = new Actor();
+   mdFrame->setAnchor(0.0f, 0.0f);
+   //mdFrame->setSize(m_messageDisplayWidth, m_messageDisplayHeight);
+   mdFrame->setPosition(0.0f, 0.0f);
+   mdFrame->attachTo(this);
+   m_mdFrame = mdFrame.get();
 
-   m_messageActor = new ClipRectActor();
-   m_messageActor->setAnchor(0.0f, 0.0f);
-   //m_messageActor->setSize(m_messageDisplayWidth, m_messageDisplayHeight);
-   m_messageActor->setPosition(0.0f, 0.0f);
-   m_messageActor->attachTo(m_mdFrame);
+   spClipRectActor messageActor = new ClipRectActor();
+   messageActor->setAnchor(0.0f, 0.0f);
+   //messageActor->setSize(m_messageDisplayWidth, m_messageDisplayHeight);
+   messageActor->setPosition(0.0f, 0.0f);
+   messageActor->attachTo(mdFrame);
+
+   m_messageActor = messageActor.get();
 
    setFullHeight(m_fullHeight);
 }
@@ -259,7 +262,6 @@ void MessageDisplay::drawMessage(const MessageItem& message)
    msgTextField->setText(message.m_message);
    msgTextField->setColor(g_Layout.getPhosphorColor());
 
-
    const Rect& rect = msgTextField->getTextRect();
 
    m_newMessageHeight = rect.size.y + 20.0f;
@@ -269,7 +271,6 @@ void MessageDisplay::drawMessage(const MessageItem& message)
    msgTextField->attachTo(m_newBubble);
 
 }
-
 
 void MessageDisplay::startTransit(void)
 {

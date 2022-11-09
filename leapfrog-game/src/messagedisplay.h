@@ -44,8 +44,8 @@ private:
    bool m_fullHeight; 
 
    oxygine::Resources* m_hudResources;
-   oxygine::spClipRectActor m_messageActor;
-   oxygine::spActor m_mdFrame;
+   oxygine::ClipRectActor* m_messageActor;
+   oxygine::Actor* m_mdFrame;
 
    float m_highTop;
    float m_normalTop;

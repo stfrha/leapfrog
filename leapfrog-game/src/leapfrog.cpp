@@ -1265,7 +1265,7 @@ void LeapFrog::footOnLandingPad(bool resting)
 // The resources of the leapfrog is saved in the game status and uses a pointer to that instance. 
 // This means that the initObjectResources is called with the mainactor gamestatus resources as
 // a reference.
-void LeapFrog::initObjectResources(Actor* statusEventOriginator, spObjectResources resources)
+void LeapFrog::initObjectResources(Actor* statusEventOriginator, ObjectResources* resources)
 {
    m_resources = resources;
 

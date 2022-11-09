@@ -458,12 +458,25 @@ void MainActor::recursiveRemoveChildren(spActor& parent)
 
    while (child != NULL)
    {
-      spActor copy = child;
+      spActor next = child->getNextSibling();
 
-      recursiveRemoveChildren(child);
-      child.get()->detach();
+      if (child.get() != NULL)
+      {
+         logs::messageln("Removing children from parent: %s", child->getName().c_str()/*, typeid(child.get()).name()*/);
+         recursiveRemoveChildren(child);
 
-      child = copy->getNextSibling();
+         logs::messageln("Removing child: %s" , child->getName().c_str()/*, typeid(child.get()).name()*/);
+
+         if (child->getName() == "leapfrog1")
+         {
+            int a = 10;
+         }
+
+         child->detach();
+      }
+
+
+      child = next;
    }
 }
 
@@ -570,4 +583,38 @@ void MainActor::menuStartTransitionComplete(void)
    spMenuActor ma = new MenuActor(
       m_hudResources,
       this);
+}
+
+void MainActor::cleanUpAndQuit(void)
+{
+   // To find why we crash on exit, lets do some manual cleanup here
+
+   this->dumpObject();
+   this->dumpCreatedObjects();
+
+   // Clean up current scene
+   spActor actor = getFirstChild();
+
+   while (actor)
+   {
+      spActor next = actor->getNextSibling();
+      if (actor.get() != NULL)
+      {
+         logs::messageln("Removing children from parent: %s", actor->getName().c_str()/*, typeid(child.get()).name()*/);
+         recursiveRemoveChildren(actor);
+
+         logs::messageln("Removing child: %s", actor->getName().c_str() /*, typeid(actor.get()).name()*/);
+
+         actor->detach();
+      }
+      actor = next;
+   }
+
+
+   //m_sceneObject->detach();
+   //g_MessageDisplay->detach();
+   ////g_headUpDisplay->detach();
+   //g_HeadDownDisplay->detach();
+
+   core::requestQuit();
 }

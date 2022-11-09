@@ -229,7 +229,7 @@ public:
    void releaseHoldAngle(void);
    void breakJoints(void);
    
-   void initObjectResources(oxygine::Actor* statusEventOriginator, spObjectResources resources = NULL) override;
+   void initObjectResources(oxygine::Actor* statusEventOriginator, ObjectResources* resources = NULL) override;
 
    void dumpPart(std::string name, b2Body* body, b2Body* mainBody);
    void dumpParts(void);

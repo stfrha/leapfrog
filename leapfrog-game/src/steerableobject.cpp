@@ -578,7 +578,7 @@ void SteerableObject::hitByBullet(b2Contact* contact, float bulletEqvDamage)
 
 // The steerable object does not need any external connection 
 // of the resources. Therefore it is created, locally here
-void SteerableObject::initObjectResources(Actor* statusEventOriginator, spObjectResources resources)
+void SteerableObject::initObjectResources(Actor* statusEventOriginator, ObjectResources* resources)
 {
    m_resources = new ObjectResources();
 

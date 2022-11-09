@@ -164,7 +164,7 @@ void FreeSpaceContactListener::PostSolve(b2Contact* contact, const b2ContactImpu
    {
       if (pickup)
       {
-         pickup->handlePickup(shield1->getParent()->m_resources.get());
+         pickup->handlePickup(shield1->getParent()->m_resources);
       }
       else if (bullet)
       {
@@ -185,7 +185,7 @@ void FreeSpaceContactListener::PostSolve(b2Contact* contact, const b2ContactImpu
    {
       if (pickup)
       {
-         pickup->handlePickup(shield2->getParent()->m_resources.get());
+         pickup->handlePickup(shield2->getParent()->m_resources);
       }
       else if (bullet)
       {
@@ -213,7 +213,7 @@ void FreeSpaceContactListener::PostSolve(b2Contact* contact, const b2ContactImpu
       {
          if (pickup)
          {
-            pickup->handlePickup(leapfrog->m_resources.get());
+            pickup->handlePickup(leapfrog->m_resources);
          }
          else if (bullet)
          {
@@ -236,7 +236,7 @@ void FreeSpaceContactListener::PostSolve(b2Contact* contact, const b2ContactImpu
    {
       if (pickup)
       {
-         pickup->handlePickup(steerableObject->m_resources.get());
+         pickup->handlePickup(steerableObject->m_resources);
       }
       else if (bullet)
       {

@@ -307,16 +307,10 @@
     <ClCompile Include="..\src\bullet.cpp">
       <Filter>Source Files\actors</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\compoundobject.cpp">
-      <Filter>Source Files\actors</Filter>
-    </ClCompile>
     <ClCompile Include="..\src\explosiveobject.cpp">
       <Filter>Source Files\actors</Filter>
     </ClCompile>
     <ClCompile Include="..\src\gun.cpp">
-      <Filter>Source Files\actors</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\landingactor.cpp">
       <Filter>Source Files\actors</Filter>
     </ClCompile>
     <ClCompile Include="..\src\landingpad.cpp">
@@ -438,6 +432,12 @@
     </ClCompile>
     <ClCompile Include="..\src\headupdisplay.cpp">
       <Filter>Source Files\hud</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\landingactor.cpp">
+      <Filter>Source Files\scenes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\compoundobject.cpp">
+      <Filter>Source Files\master actors</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -663,16 +663,10 @@
     <ClInclude Include="..\src\bullet.h">
       <Filter>Source Files\actors</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\compoundobject.h">
-      <Filter>Source Files\actors</Filter>
-    </ClInclude>
     <ClInclude Include="..\src\explosiveobject.h">
       <Filter>Source Files\actors</Filter>
     </ClInclude>
     <ClInclude Include="..\src\gun.h">
-      <Filter>Source Files\actors</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\landingactor.h">
       <Filter>Source Files\actors</Filter>
     </ClInclude>
     <ClInclude Include="..\src\landingpad.h">
@@ -800,6 +794,12 @@
     </ClInclude>
     <ClInclude Include="..\src\headupdisplay.h">
       <Filter>Source Files\hud</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\landingactor.h">
+      <Filter>Source Files\scenes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\compoundobject.h">
+      <Filter>Source Files\master actors</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

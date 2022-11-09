@@ -26,16 +26,18 @@ void HeadUpDisplay::initialiseHeadUpDisplay(
    m_mainActor = mainActor;
    m_sceneActor = sceneActor;
 
-   m_buttonDisplay = new ButtonDisplay();
+   spButtonDisplay buttonDisplay = new ButtonDisplay();
 
-   m_buttonDisplay->initialiseButtonDisplay(
+   buttonDisplay->initialiseButtonDisplay(
       m_headUpDisplayResources,
       m_mainActor,
       m_sceneActor,
       topLeft,
       bottomRight);
 
-   m_buttonDisplay->attachTo(this);
+   buttonDisplay->attachTo(this);
+
+   m_buttonDisplay = buttonDisplay.get();
 
    setAnchor(0.0f, 0.0f);
    setPosition(0.0f, 0.0f);

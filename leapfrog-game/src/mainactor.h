@@ -108,6 +108,7 @@ public:
    void buttonClicked(int button);
    void restartedFromMenu(void);
    void menuStartTransitionComplete(void);
+   void cleanUpAndQuit(void);
 
 protected:
    void doUpdate(const UpdateState& us);

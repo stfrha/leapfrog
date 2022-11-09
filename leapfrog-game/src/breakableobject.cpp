@@ -207,7 +207,7 @@ void BreakableObject::spawnBreakableObjects(void)
 
 }
 
-void BreakableObject::initObjectResources(Actor* statusEventOriginator, spObjectResources resources)
+void BreakableObject::initObjectResources(Actor* statusEventOriginator, ObjectResources* resources)
 {
    m_resources = new ObjectResources();
 

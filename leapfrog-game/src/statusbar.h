@@ -12,8 +12,8 @@ class StatusBar : public oxygine::Actor
 {
 private:
    SceneActor* m_sceneActor;
-   oxygine::spActor m_eventActor;
-   oxygine::spProgressBar m_progressBar;
+   oxygine::Actor* m_eventActor;
+   oxygine::ProgressBar* m_progressBar;
    std::string m_headline;
    int m_propertyId;
    float m_maxProgess;
@@ -49,8 +49,8 @@ class StatusLiteral : public oxygine::Actor
 {
 private:
    SceneActor * m_sceneActor;
-   oxygine::spActor m_eventActor;
-   oxygine::spTextField m_tf;
+   oxygine::Actor* m_eventActor;
+   oxygine::TextField* m_tf;
    int m_propertyId;
    std::string m_headline;
    ObjectResourcesTypeEnum m_statusType;

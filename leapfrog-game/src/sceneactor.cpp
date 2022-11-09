@@ -164,7 +164,8 @@ SceneActor::SceneActor(
    m_manualPan(NULL),
    m_timerIdCounter(0),
    m_isInPause(false),
-   m_armPauseChange(true)
+   m_armPauseChange(true),
+   m_leapfrog(NULL)
 {
    m_clock = new Clock;
    setClock(m_clock);

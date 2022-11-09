@@ -1728,7 +1728,7 @@ void CompoundObject::connectToForeignObjects(void)
 // link individual resources to the associated 
 // systems. So that the game status gets a link
 // to the Shield system object.
-void CompoundObject::initObjectResources(oxygine::Actor* statusEventOriginator, spObjectResources resources)
+void CompoundObject::initObjectResources(oxygine::Actor* statusEventOriginator, ObjectResources* resources)
 {
    m_resources = NULL;
 }

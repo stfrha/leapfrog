@@ -15,11 +15,11 @@ private:
    MainActor* m_mainActor;
    SceneActor* m_sceneActor;
 
-   oxygine::spSprite m_zoomInSprite;
-   oxygine::spSprite m_zoomOutSprite;
-   oxygine::spSprite m_manPanEnableSprite;
-   oxygine::spSprite m_manPanSprite;
-   oxygine::spSprite m_reloadSprite;
+   oxygine::Sprite* m_zoomInSprite;
+   oxygine::Sprite* m_zoomOutSprite;
+   oxygine::Sprite* m_manPanEnableSprite;
+   oxygine::Sprite* m_manPanSprite;
+   oxygine::Sprite* m_reloadSprite;
 
    oxygine::RectF m_turnRightButtonRect;
    oxygine::RectF m_turnLeftButtonRect;

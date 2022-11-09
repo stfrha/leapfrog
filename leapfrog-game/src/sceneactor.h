@@ -140,7 +140,7 @@ public:
    bool m_panButtonPressed;
    bool m_manPanEnablePressed;
    oxygine::Vector2 m_panVector;
-   spLeapFrog  m_leapfrog;
+   LeapFrog* m_leapfrog;
 
    b2World* getWorld(void);
    Resources* getResources(void);

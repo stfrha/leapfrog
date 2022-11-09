@@ -18,8 +18,7 @@ private:
    oxygine::Resources* m_headUpDisplayResources;
    MainActor* m_mainActor;
    SceneActor* m_sceneActor;
-
-   spButtonDisplay m_buttonDisplay;
+   ButtonDisplay* m_buttonDisplay;
 
 public:
 

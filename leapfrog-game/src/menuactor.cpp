@@ -166,6 +166,5 @@ void MenuActor::b6Clicked(oxygine::Event* event)
 void MenuActor::b7Clicked(oxygine::Event* event)
 {
    //request quit
-   core::requestQuit();
-
+   m_mainActor->cleanUpAndQuit();
 }
