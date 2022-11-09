@@ -8,7 +8,7 @@
 using namespace std;
 using namespace oxygine;
 
-// Instanciate global instance of the HDD
+// Instanciate global instance of the HUD
 spHeadUpDisplay g_headUpDisplay;
 
 HeadUpDisplay::HeadUpDisplay()
@@ -51,6 +51,14 @@ void HeadUpDisplay::initialiseHeadUpDisplay(
    addEventListener(TouchEvent::MOVE, (CLOSURE(this, &HeadUpDisplay::panMoveHandler)));
 
 }
+
+void HeadUpDisplay::cleanAndRemove(void)
+{
+   removeChildren();
+   //m_buttonDisplay->detach();
+   detach();
+}
+
 
 void HeadUpDisplay::registerLeapfrog(LeapFrog* leapfrog, bool hideShield)
 {

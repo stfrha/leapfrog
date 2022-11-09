@@ -35,12 +35,14 @@ lfDefined = false
 -- The other variables: currentSceneType, currentState and currentScene
 -- must be set using the lua_forceCurrentScene before this is called.
 function lua_startInitialScene()
+
+   lfDefined = false
+
    if currentMission == 0 then
       currentScene = "landing_scene.xml"
       currentSceneType = 0
       currentMission = 1
       currentState = 1
-      lfDefined = false
    end
 
    useInitialLfPos = true -- For initial start, the LF file, pos and prop data is set by the setupMissionStateScene    

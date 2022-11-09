@@ -128,6 +128,17 @@ void SteerableObject::doUpdate(const oxygine::UpdateState& us)
       m_steeringManager->resetStateChangeClock(us);
    }
 
+
+   // Its seams possible that the this us called after the target body has been removed 
+   // in a transient behaviour (race condition) and therefore we check if it is still 
+   // alive.
+   if (m_targetBody == NULL)
+   {
+      return;
+   }
+
+
+
    b2Vec2 pos = m_body->GetPosition();
    m_properties[SteerableObjectPropertyEnum::xPos].setProperty(pos.x);
    m_properties[SteerableObjectPropertyEnum::yPos].setProperty(pos.y);

@@ -58,6 +58,13 @@ void MessageDisplay::clearMessageDisplay(void)
 }
 
 
+void MessageDisplay::cleanAndClearMessageDisplay(void)
+{
+   m_displayedMessages.clear();
+   clearMessageDisplay();
+}
+
+
 void MessageDisplay::initialiseMessageDisplay(
    Resources* hudResources,
    Actor* mainActor,

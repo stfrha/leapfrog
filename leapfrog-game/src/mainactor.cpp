@@ -129,7 +129,7 @@ void MainActor::armScene(std::string sceneName, int sceneType)
 
 void MainActor::startScene(void)
 {
-   g_MessageDisplay->clearMessageDisplay();
+   g_MessageDisplay->cleanAndClearMessageDisplay();
 
    // Clear all triggers and events from the current 
    // actors before they are destroyed.
@@ -390,7 +390,7 @@ void MainActor::doUpdate(const UpdateState& us)
 
    if ((m_sceneObject != NULL) && (m_sceneObject->getIsInPause()) && (m_menuArm == true))
    {
-      g_headUpDisplay->detach();
+      g_headUpDisplay->cleanAndRemove();
       g_HeadDownDisplay->goToMenu();
       g_MessageDisplay->setFullHeight(true);
 
@@ -423,31 +423,7 @@ void MainActor::doUpdate(const UpdateState& us)
    else
    {
 
-      // const Uint8* data = SDL_GetKeyboardState(0);
-
-     // if (data[SDL_SCANCODE_F1])
-     // {
-     //    g_LuaInterface.lua_forceCurrentScene("orbit_scene.xml");
-     //    g_LuaInterface.determineNextScene("toLanding", "alphaCity", m_nextScene.m_nextSceneFile, m_nextScene.m_nextSceneState, m_nextScene.m_nextSceneType);
-     //    m_nextScene.m_armNextScene = true;
-     //}
-     // else if (data[SDL_SCANCODE_F2])
-     // {
-     //    g_LuaInterface.lua_forceCurrentScene("landing_scene.xml");
-     //    g_LuaInterface.determineNextScene("toDeepSpace", "", m_nextScene.m_nextSceneFile, m_nextScene.m_nextSceneState, m_nextScene.m_nextSceneType);
-     //    m_nextScene.m_armNextScene = true;
-
-     // }
-     // else if (data[SDL_SCANCODE_F3])
-     // {
-     //    g_LuaInterface.lua_forceCurrentScene("deep_space_scene.xml");
-     //    g_LuaInterface.determineNextScene("toOrbit", "", m_nextScene.m_nextSceneFile, m_nextScene.m_nextSceneState, m_nextScene.m_nextSceneType);
-     //    m_nextScene.m_armNextScene = true;
-     // }
    }
-
-
-
 }
 
 

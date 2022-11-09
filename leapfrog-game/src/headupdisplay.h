@@ -31,6 +31,8 @@ public:
       const oxygine::Vector2& topLeft,
       const oxygine::Vector2& bottomRight);
 
+   void cleanAndRemove(void);
+
    void registerLeapfrog(LeapFrog* leapfrog, bool hideShield);
 
    void sceneDownHandler(oxygine::Event* event);

@@ -67,6 +67,9 @@ private:
    oxygine::spBox9Sprite m_newBubble;
    float m_newMessageHeight;
 
+   void clearMessageDisplay(void);
+
+
 public:
    MessageDisplay();
 
@@ -83,7 +86,7 @@ public:
 
    void setFullHeight(bool fullHeight);
 
-   void clearMessageDisplay(void);
+   void cleanAndClearMessageDisplay(void);
 
    void initMessage(
       bool leftBubble,
