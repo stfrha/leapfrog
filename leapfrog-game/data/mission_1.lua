@@ -105,7 +105,7 @@ local function setupMissionStateScene()
    end
 end
 
-local function missionStateSceneEventHandler(eventId, actorName, parameter1)
+local function missiontateSceneEventHandler(eventId, actorName, parameter1)
 
    if currentScene == "landing_scene.xml" then
 

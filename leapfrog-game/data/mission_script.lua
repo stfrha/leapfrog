@@ -2,6 +2,7 @@
 -- decodes this into a specific LUA-script for that mission. It then executes the functions 
 -- of that file. 
 
+package.path = package.path .. ";./assets/?.lua"
 local mission1 = require 'mission_1'
 
 -- Global variables
