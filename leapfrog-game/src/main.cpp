@@ -6,6 +6,7 @@
 */
 #include "oxygine-framework.h"
 #include "mainactor.h"
+#include "graphicresources.h"
 
 extern "C" { FILE __iob_func[3] = { *stdin,*stdout,*stderr }; }
 
@@ -61,6 +62,7 @@ void example_update()
 //called each frame from main.cpp
 void example_destroy()
 {
+   g_GraphRes.freeResources();
 }
 
 

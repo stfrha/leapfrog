@@ -1,3 +1,8 @@
+
+
+local mission1 = {}
+
+
 -- This script is related to one mission. It holds all specifics
 -- for that mission in all states for all relevant scenes
 -- It assumes the global variable currentScene to be set to 
@@ -5,7 +10,7 @@
 
 -- This function is to be called when a new scene has been started
 -- It does all setup for that scene in this mission state
-local function setupMissionStateScene()
+mission1.setupMissionStateScene = function()
 
    -- Clear triggers and event handler
    c_clearAllTriggersAndEvents()
@@ -105,7 +110,7 @@ local function setupMissionStateScene()
    end
 end
 
-local function missiontateSceneEventHandler(eventId, actorName, parameter1)
+mission1.missionStateSceneEventHandler = function(eventId, actorName, parameter1)
 
    if currentScene == "landing_scene.xml" then
 
@@ -222,4 +227,5 @@ local function missiontateSceneEventHandler(eventId, actorName, parameter1)
    end
 end
 
-return { setupMissionStateScene = setupMissionStateScene, missionStateSceneEventHandler = missionStateSceneEventHandler}
+-- return { setupMissionStateScene = setupMissionStateScene, missionStateSceneEventHandler = missionStateSceneEventHandler}
+return mission1

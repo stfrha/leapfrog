@@ -54,6 +54,9 @@ public:
    void registerTriggerHandle(CompoundObject* object, int propertyId, int eventId);
    void clearAllTriggersAndEvents(void);
 
+   void lua_printPaths(void);
+   bool isModulePreloaded(lua_State* L, std::string const& name);
+
    void lua_startInitialScene(void);
    void lua_forceCurrentScene(void);
    int lua_sceneExitHandler(SceneActor::SceneTypeEnum exitSceneType, int exitHow);

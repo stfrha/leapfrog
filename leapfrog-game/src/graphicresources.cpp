@@ -87,5 +87,16 @@ const oxygine::Resources& GraphicResources::getResources(ResourceTypeEnum type)
    }
 }
 
+void GraphicResources::freeResources(void)
+{
+   m_hudResource.free();
+   m_gameResource.free();
+   m_sceneResource.free();
+   m_leapfrogResource.free();
+   m_missionResource.free();
+   m_allegianceResource.free();
+   m_enemyResource.free();
+}
+
 
 GraphicResources g_GraphRes;

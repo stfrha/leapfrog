@@ -33,6 +33,7 @@ public:
    void loadResource(ResourceTypeEnum type, const std::string& source);
    void unLoadResource(ResourceTypeEnum type);
    const oxygine::Resources& getResources(ResourceTypeEnum type);
+   void freeResources(void);
 };
 
 extern GraphicResources g_GraphRes;

@@ -433,13 +433,58 @@ void LuaInterface::initLuaInterface(MainActor* mainActor)
    luaL_openlibs(m_L);
 //   lua_register(m_L, "average", average);
 
+
+
+   ox::file::read("lua/mission_1.lua", m_sceneNavigatorScriptBuffer);
+   lua_getglobal(m_L, "package");
+   lua_getfield(m_L, -1, "preload");
+   int result = luaL_loadbuffer(m_L, reinterpret_cast<char*>(&m_sceneNavigatorScriptBuffer[0]), m_sceneNavigatorScriptBuffer.size(), "mission1");
+   // result = luaL_loadstring(m_L, reinterpret_cast<char*>(&m_sceneNavigatorScriptBuffer[0]));
+   //result = luaL_loadstring(m_L, "return{test = function() print('Test') end}");
+   if (result && lua_gettop(m_L))
+   {
+      logs::messageln("stack = %d", lua_gettop(m_L));
+      logs::messageln("error = %d", result);
+      logs::messageln("message = %s", lua_tostring(m_L, -1));
+   }
+   lua_setfield(m_L, -2, "mission1");
+
+   //result = lua_pcall(m_L, 0, 0, 0);
+
+
+
    ox::file::read("scene_navigator.lua", m_sceneNavigatorScriptBuffer);
-   int result = luaL_loadbuffer(m_L, reinterpret_cast<char*>(&m_sceneNavigatorScriptBuffer[0]), m_sceneNavigatorScriptBuffer.size(), "scene_navigator");
+   result = luaL_loadbuffer(m_L, reinterpret_cast<char*>(&m_sceneNavigatorScriptBuffer[0]), m_sceneNavigatorScriptBuffer.size(), "scene_navigator");
+   if (result && lua_gettop(m_L))
+   {
+      logs::messageln("stack = %d", lua_gettop(m_L));
+      logs::messageln("error = %d", result);
+      logs::messageln("message = %s", lua_tostring(m_L, -1));
+   }
    result = lua_pcall(m_L, 0, 0, 0);
+   if (result && lua_gettop(m_L))
+   {
+      logs::messageln("stack = %d", lua_gettop(m_L));
+      logs::messageln("error = %d", result);
+      logs::messageln("message = %s", lua_tostring(m_L, -1));
+   }
+
 
    ox::file::read("mission_script.lua", m_sceneNavigatorScriptBuffer);
    result = luaL_loadbuffer(m_L, reinterpret_cast<char*>(&m_sceneNavigatorScriptBuffer[0]), m_sceneNavigatorScriptBuffer.size(), "mission_script");
+   if (result && lua_gettop(m_L))
+   {
+      logs::messageln("stack = %d", lua_gettop(m_L));
+      logs::messageln("error = %d", result);
+      logs::messageln("message = %s", lua_tostring(m_L, -1));
+   }
    result = lua_pcall(m_L, 0, 0, 0);
+   if (result && lua_gettop(m_L))
+   {
+      logs::messageln("stack = %d", lua_gettop(m_L));
+      logs::messageln("error = %d", result);
+      logs::messageln("message = %s", lua_tostring(m_L, -1));
+   }
 
    lua_register(m_L, "c_startScene", c_startScene);
    lua_register(m_L, "c_registerPropertyTrigger", c_registerPropertyTrigger);
@@ -502,6 +547,30 @@ void LuaInterface::clearAllTriggersAndEvents(void)
    m_triggerHandles.clear();
 }
 
+void LuaInterface::lua_printPaths(void) {
+   lua_getglobal(m_L, "package");
+   lua_getfield(m_L, -1, "path");
+   lua_getfield(m_L, -2, "cpath");
+   const char *cpath = lua_tostring(m_L, -1);
+   const char *path = lua_tostring(m_L, -2);
+   lua_pop(m_L, 3); // field 2, field 1, package table
+   logs::messageln("cpath: `%s`", cpath);
+   logs::messageln("path: `%s`", path);
+
+   isModulePreloaded(m_L, "mission_1");
+
+   logs::messageln("Line to break");
+}
+
+bool LuaInterface::isModulePreloaded(lua_State* L, std::string const& name) {
+   lua_getglobal(L, "package");
+   lua_getfield(L, -1, "preload");
+   lua_getfield(L, -1, name.c_str());
+   bool is_preloaded = !lua_isnil(L, -1);
+   lua_pop(L, 3);
+   return is_preloaded;
+}
+
 void LuaInterface::lua_startInitialScene(void)
 {
    int a1 = lua_getglobal(m_L, "lua_startInitialScene");
@@ -558,7 +627,7 @@ void LuaInterface::lua_forceCurrentScene(void)
 
 void LuaInterface::setupMissionStateScene(SceneActor* sceneActor)
 {
-   // This makes sure that the latest scene actor ís used, do not remove it
+   // This makes sure that the latest scene actor ï¿½s used, do not remove it
    m_sceneActor = sceneActor;
 
    int a1 = lua_getglobal(m_L, "lua_setupMissionStateScene");
@@ -573,7 +642,7 @@ void LuaInterface::setupMissionStateScene(SceneActor* sceneActor)
 
 void LuaInterface::setupInitialMissionStateScene(SceneActor* sceneActor)
 {
-   // This makes sure that the latest scene actor ís used, do not remove it
+   // This makes sure that the latest scene actor ï¿½s used, do not remove it
    m_sceneActor = sceneActor;
 
    int a1 = lua_getglobal(m_L, "lua_setupInitialMissionStateScene");

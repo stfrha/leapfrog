@@ -85,6 +85,8 @@ void MainActor::initMainActor(void)
 
    g_LuaInterface.initLuaInterface(this);
 
+   g_LuaInterface.lua_printPaths();
+
    g_HeadDownDisplay = new HeadDownDisplay();
    g_MessageDisplay = new MessageDisplay();
    g_headUpDisplay = new HeadUpDisplay();
@@ -581,6 +583,8 @@ void MainActor::cleanUpAndQuit(void)
    //g_MessageDisplay->detach();
    ////g_headUpDisplay->detach();
    //g_HeadDownDisplay->detach();
+
+   //g_GraphRes.freeResources();
 
    core::requestQuit();
 }

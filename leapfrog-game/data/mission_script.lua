@@ -2,16 +2,41 @@
 -- decodes this into a specific LUA-script for that mission. It then executes the functions 
 -- of that file. 
 
-package.path = package.path .. ";./assets/?.lua"
-local mission1 = require 'mission_1'
+local mission1 = require('mission1')
+
 
 -- Global variables
 currentState = 1
+
+
+--function tprint (t, s)
+--    for k, v in pairs(t) do
+--        local kfmt = '["' .. tostring(k) ..'"]'
+--        if type(k) ~= 'string' then
+--            kfmt = '[' .. k .. ']'
+--        end
+--        local vfmt = '"'.. tostring(v) ..'"'
+--        if type(v) == 'table' then
+--            tprint(v, (s or '')..kfmt)
+--        else
+--            if type(v) ~= 'string' then
+--                vfmt = tostring(v)
+--            end
+--            io.write(type(t)..(s or '')..kfmt..' = '..vfmt)
+--        end
+--    end
+--end
 
 -- This function is to be called when a new scene has been started
 -- It does all setup for that scene in this mission state
 function lua_setupMissionStateScene()
 
+   -- io.output("mylog.txt")
+   -- print("It really works this time!")
+   --io.write("It really works this time!")
+   -- print("Hello hello hello hello hello hello hello hello hello hello ")
+   --io.write("Hello hello hello hello hello hello hello hello hello hello ")
+   -- tprint(package.preload)
    -- Test if LF shall be positioned according to the nextLfxxxx
    -- variables
    if lfDefined == false then

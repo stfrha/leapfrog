@@ -38,7 +38,7 @@ void HeadUpDisplay::initialiseHeadUpDisplay(
 
    setAnchor(0.0f, 0.0f);
    setPosition(0.0f, 0.0f);
-   setSize(bottomRight.x, bottomRight.y);
+   setSize(getStage()->getSize());
 
    attachTo(mainActor);
 
