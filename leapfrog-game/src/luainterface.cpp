@@ -401,15 +401,34 @@ static int c_startSceneTimer(lua_State *L)
    return 1;
 }
 
-static int c_saveGameStatus(lua_State *L)
+static int c_exitSceneSaveGameStatus(lua_State *L)
 {
    std::string sceneName = lua_tostring(L, 1);
    int mission = lua_tointeger(L, 2);
    int state = lua_tointeger(L, 3);
    int type = lua_tointeger(L, 4);
-   
-   g_GameStatus.setSceneMissionState(sceneName, mission, state, type);
+   std::string exitSceneName = lua_tostring(L, 5);
+   int exitSceneType = lua_tointeger(L, 6);
+   int exitParameter = lua_tointeger(L, 7);
+
+   g_GameStatus.setSceneMissionState(sceneName, mission, state, type, exitSceneName, exitSceneType, exitParameter);
    g_GameStatus.saveGameStatus();
+   return 0;
+}
+
+
+// This is used for saveing the status when the very first, initial scene
+// has been determined by lua_startInitialScene. There is no exit scene here.
+static int c_saveGameStatus(lua_State* L)
+{
+   std::string sceneName = lua_tostring(L, 1);
+   int mission = lua_tointeger(L, 2);
+   int state = lua_tointeger(L, 3);
+   int type = lua_tointeger(L, 4);
+
+   g_GameStatus.readGameStatus();
+   g_GameStatus.setSceneMissionState(sceneName, mission, state, type, "", -1, -1);
+   g_GameStatus.saveGameSceneStatus();
    return 0;
 }
 
@@ -498,8 +517,9 @@ void LuaInterface::initLuaInterface(MainActor* mainActor)
    lua_register(m_L, "c_getObjectProperty", c_getObjectProperty);
    lua_register(m_L, "c_setObjectMapState", c_setObjectMapState);
    lua_register(m_L, "c_startSceneTimer", c_startSceneTimer);
+   lua_register(m_L, "c_exitSceneSaveGameStatus", c_exitSceneSaveGameStatus);
    lua_register(m_L, "c_saveGameStatus", c_saveGameStatus);
-   
+
 }
 
 //void LuaInterface::setSceneActor(SceneActor* sceneActor)
@@ -593,6 +613,22 @@ void LuaInterface::lua_startInitialScene(void)
 int LuaInterface::lua_sceneExitHandler(SceneActor::SceneTypeEnum exitSceneType, int exitHow)
 {
    int a1 = lua_getglobal(m_L, "lua_sceneExitHandler");
+   lua_pushinteger(m_L, static_cast<int>(exitSceneType));
+   lua_pushinteger(m_L, exitHow);
+   // do the call (2 arguments, 0 result) 
+   int result = lua_pcall(m_L, 2, 0, 0);
+   if (result && lua_gettop(m_L))
+   {
+      logs::messageln("stack = %d", lua_gettop(m_L));
+      logs::messageln("error = %d", result);
+      logs::messageln("message = %s", lua_tostring(m_L, -1));
+   }
+   return 0;
+}
+
+int LuaInterface::lua_findLeapfrogEntryPosition(SceneActor::SceneTypeEnum exitSceneType, int exitHow)
+{
+   int a1 = lua_getglobal(m_L, "lua_findLeapfrogEntryPosition");
    lua_pushinteger(m_L, static_cast<int>(exitSceneType));
    lua_pushinteger(m_L, exitHow);
    // do the call (2 arguments, 0 result) 

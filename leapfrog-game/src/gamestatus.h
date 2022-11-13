@@ -32,9 +32,12 @@ private:
 
    ObjectResources m_leapfrogResources;
    std::string m_currentSceneFile;
+   std::string m_exitSceneFile;
    int m_currentSceneType;
    int m_currentMission;
    int m_currentState;
+   int m_exitSceneType;
+   int m_exitParameter;
    int m_gunLevel;
    int m_gunFireRateLevel;
    int m_gunBulletSpeedLevel;
@@ -56,8 +59,13 @@ public:
 
    void gameStatusNewGameInit(void);
    void initializeGameStatusXmlDocument(void);
-   void setSceneMissionState(const std::string& scene, int mission, int state, int type);
+   void setSceneMissionState(
+      const std::string& scene, int mission, int state, int type,
+      const std::string& exitScene,
+      int exitSceneType,
+      int exitParameter);
    void saveGameStatus(void);
+   void saveGameSceneStatus(void);
    void readGameStatus(void);
    void restoreGameStatus(void);
    void restoreLeapfrogResources(void);
@@ -67,6 +75,9 @@ public:
    int getCurrentSceneType(void);
    int getCurrentMission(void);
    int getCurrentState(void);
+   std::string getExitScene(void);
+   int getExitSceneType(void);
+   int getExitParameter(void);
 
 };
 

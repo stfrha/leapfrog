@@ -38,7 +38,7 @@ function lua_startInitialScene()
 
    lfDefined = false
 
-   if currentMission == 0 then
+   if currentMission == 0 or currentMission == 1 then
       currentScene = "landing_scene.xml"
       currentSceneType = 0
       currentMission = 1
@@ -46,6 +46,10 @@ function lua_startInitialScene()
    end
 
    useInitialLfPos = true -- For initial start, the LF file, pos and prop data is set by the setupMissionStateScene    
+   
+   -- Save the scene that was just determined. So we restart to it at later re-starts.
+   c_saveGameStatus(currentScene, currentMission, currentState, currentSceneType)
+
    c_startScene(currentScene, currentSceneType)
 end
 
@@ -67,14 +71,54 @@ end
 
 -- For exiting orbit scene
 -- Parameter int is "index of landing sites"
+-- But for errors in landing, the following negative parameters exists
 -- -1 = Stranded, landed but missed all sites
 -- -2 = Burned up during re-entry
 -- -3 = Bounced back to deep space
 
 -- Exiting hyperspace scene is TBD
 
+function lua_findLeapfrogEntryPosition(exitSceneType, exitParameter)
+
+   if exitSceneType == 0 and exitParameter == 1 then
+      -- We are leaving landing scene to the deep_space_scene
+      if currentScene == "deep_space_scene.xml" then
+         nextLfFile = "leapfrog_deep_space.xml"
+         nextLfPosX = 20
+         nextLfPosY = 730
+         nextLfMode = 1
+         useInitialLfPos = false
+         lfDefined = false
+      end
+   
+   elseif exitSceneType == 1 and exitParameter == 3 then
+      -- We are leaving deep space scene in lower right corner, to orbit scene
+      if currentScene == "orbit_scene.xml" then
+         nextLfFile = "leapfrog_deep_space.xml"
+         nextLfPosX = -8
+         nextLfPosY = 18
+         nextLfMode = 3
+         useInitialLfPos = false
+         lfDefined = false
+      end
+
+   elseif exitSceneType == 2 and exitParameter >= 0 then
+      -- We are leaving orbit scene after a succesfull landing
+      -- The exitParameter defines what city (and thus scene) to load
+      if currentScene == "landing_scene.xml" then
+         nextLfFile = "leapfrog_reentry.xml"
+         nextLfPosX = 520
+         nextLfPosY = 50
+         nextLfMode = 2
+         useInitialLfPos = false
+         lfDefined = false
+      end
+   end
+end   
+
 function lua_sceneExitHandler(exitSceneType, exitParameter)
-   local sceneType = 0
+
+   local oldScene = currentScene
 
    if exitSceneType == 0 then
       -- We are leaving landing scene
@@ -83,15 +127,9 @@ function lua_sceneExitHandler(exitSceneType, exitParameter)
          if exitParameter == 1 then
             currentScene = "deep_space_scene.xml"
             currentSceneType = 1
-
-            nextLfFile = "leapfrog_deep_space.xml"
-            nextLfPosX = 20
-            nextLfPosY = 730
-            nextLfMode = 1
-            useInitialLfPos = false
-            lfDefined = false
-
-            c_saveGameStatus("deep_space_scene.xml", currentMission, currentState, currentSceneType)
+            
+            lua_findLeapfrogEntryPosition(exitSceneType, exitParameter)
+            c_exitSceneSaveGameStatus(currentScene, currentMission, currentState, currentSceneType, oldScene, exitSceneType, exitParameter)
          end
       end
    
@@ -103,14 +141,8 @@ function lua_sceneExitHandler(exitSceneType, exitParameter)
             currentScene = "orbit_scene.xml"
             currentSceneType = 2
             
-            nextLfFile = "leapfrog_deep_space.xml"
-            nextLfPosX = -8
-            nextLfPosY = 18
-            nextLfMode = 3
-            useInitialLfPos = false
-            lfDefined = false
-            
-            c_saveGameStatus("orbit_scene.xml", currentMission, currentState, currentSceneType)
+            lua_findLeapfrogEntryPosition(exitSceneType, exitParameter)
+            c_exitSceneSaveGameStatus(currentScene, currentMission, currentState, currentSceneType, oldScene, exitSceneType, exitParameter)
          end
       end
    
@@ -121,14 +153,8 @@ function lua_sceneExitHandler(exitSceneType, exitParameter)
          currentScene = "landing_scene.xml"
          currentSceneType = 0  
          
-         nextLfFile = "leapfrog_reentry.xml"
-         nextLfPosX = 520
-         nextLfPosY = 50
-         nextLfMode = 2
-         useInitialLfPos = false
-         lfDefined = false
-         
-         c_saveGameStatus("landing_scene.xml", currentMission, currentState, currentSceneType)
+         lua_findLeapfrogEntryPosition(exitSceneType, exitParameter)
+         c_exitSceneSaveGameStatus(currentScene, currentMission, currentState, currentSceneType, oldScene, exitSceneType, exitParameter)
       end
    end
 

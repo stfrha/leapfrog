@@ -106,8 +106,21 @@ void MainActor::initMainActor(void)
 
    // restore previous state and continue from there
    g_GameStatus.restoreGameStatus();
-   g_LuaInterface.lua_forceCurrentScene();
-   g_LuaInterface.lua_startInitialScene();
+
+   if (g_GameStatus.getExitSceneType() == -1)
+   {
+      // Exit scene data is NOT available, run initial position for leapfrog
+      g_LuaInterface.lua_startInitialScene();
+   }
+   else
+   {
+      // Exit scene data is available, use that
+      g_LuaInterface.lua_forceCurrentScene();
+      g_LuaInterface.lua_findLeapfrogEntryPosition(
+         static_cast<SceneActor::SceneTypeEnum>(
+            g_GameStatus.getExitSceneType()),
+         g_GameStatus.getExitParameter());
+   }
    m_nextScene.m_armNextScene = true;
 
 
@@ -230,6 +243,13 @@ void MainActor::startScene(void)
    g_LuaInterface.setupMissionStateScene(m_sceneObject);
 
    m_sceneObject->connectToForeignObjects();
+
+   // Now all is initiated. If this is the initial mission scene we need to 
+   // save the game state to say that the first mission has begun. 
+   if (g_GameStatus.getExitSceneType() == -1)
+   {
+      g_GameStatus.saveGameStatus();
+   }
 
    //m_debugDraw = new Box2DDraw;
    //m_debugDraw->SetFlags(b2Draw::e_shapeBit | b2Draw::e_jointBit | b2Draw::e_pairBit | b2Draw::e_centerOfMassBit);
@@ -520,27 +540,39 @@ void MainActor::restartedFromMenu(void)
    {
       // restore previous state and continue from there
       g_GameStatus.restoreGameStatus();
-      g_LuaInterface.lua_forceCurrentScene();
-      g_LuaInterface.lua_startInitialScene();
+
+      if (g_GameStatus.getExitSceneType() == -1)
+      {
+         // Exit scene data is NOT available, run initial position for leapfrog
+         g_LuaInterface.lua_startInitialScene();
+      }
+      else
+      {
+         // Exit scene data is available, use that
+         g_LuaInterface.lua_forceCurrentScene();
+         g_LuaInterface.lua_findLeapfrogEntryPosition(static_cast<SceneActor::SceneTypeEnum>(g_GameStatus.getExitSceneType()),
+            g_GameStatus.getExitParameter());
+      }
+
       m_nextScene.m_armNextScene = true;
    }
    else if (m_postMenuAction == PostMenuActionType::testLanding)
    {
-      g_GameStatus.setSceneMissionState("landing_scene.xml", 1, 1, 0);
+      g_GameStatus.setSceneMissionState("landing_scene.xml", 1, 1, 0, "orbit_scene.xml", 2, 0);
       g_LuaInterface.lua_forceCurrentScene();
       g_LuaInterface.lua_startInitialScene();
       m_nextScene.m_armNextScene = true;
    }
    else if (m_postMenuAction == PostMenuActionType::testSpace)
    {
-      g_GameStatus.setSceneMissionState("deep_space_scene.xml", 1, 1, 1);
+      g_GameStatus.setSceneMissionState("deep_space_scene.xml", 1, 1, 1, "landing_scene.xml", 0, 0);
       g_LuaInterface.lua_forceCurrentScene();
       g_LuaInterface.lua_startInitialScene();
       m_nextScene.m_armNextScene = true;
    }
    else if (m_postMenuAction == PostMenuActionType::testOrbit)
    {
-      g_GameStatus.setSceneMissionState("orbit_scene.xml", 1, 1, 2);
+      g_GameStatus.setSceneMissionState("orbit_scene.xml", 1, 1, 2, "deep_space_scene.xml", 1, 0);
       g_LuaInterface.lua_forceCurrentScene();
       g_LuaInterface.lua_startInitialScene();
       m_nextScene.m_armNextScene = true;
@@ -555,11 +587,6 @@ void MainActor::menuStartTransitionComplete(void)
 
 void MainActor::cleanUpAndQuit(void)
 {
-   // To find why we crash on exit, lets do some manual cleanup here
-
-   this->dumpObject();
-   this->dumpCreatedObjects();
-
    // Clean up current scene
    spActor actor = getFirstChild();
 
@@ -568,23 +595,15 @@ void MainActor::cleanUpAndQuit(void)
       spActor next = actor->getNextSibling();
       if (actor.get() != NULL)
       {
-         logs::messageln("Removing children from parent: %s", actor->getName().c_str()/*, typeid(child.get()).name()*/);
+         // logs::messageln("Removing children from parent: %s", actor->getName().c_str()/*, typeid(child.get()).name()*/);
          recursiveRemoveChildren(actor);
 
-         logs::messageln("Removing child: %s", actor->getName().c_str() /*, typeid(actor.get()).name()*/);
+         // logs::messageln("Removing child: %s", actor->getName().c_str() /*, typeid(actor.get()).name()*/);
 
          actor->detach();
       }
       actor = next;
    }
-
-
-   //m_sceneObject->detach();
-   //g_MessageDisplay->detach();
-   ////g_headUpDisplay->detach();
-   //g_HeadDownDisplay->detach();
-
-   //g_GraphRes.freeResources();
 
    core::requestQuit();
 }

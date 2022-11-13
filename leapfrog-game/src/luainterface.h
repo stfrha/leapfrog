@@ -60,6 +60,7 @@ public:
    void lua_startInitialScene(void);
    void lua_forceCurrentScene(void);
    int lua_sceneExitHandler(SceneActor::SceneTypeEnum exitSceneType, int exitHow);
+   int lua_findLeapfrogEntryPosition(SceneActor::SceneTypeEnum exitSceneType, int exitHow);
 
    void setupMissionStateScene(SceneActor* sceneActor);
    void setupInitialMissionStateScene(SceneActor* sceneActor);

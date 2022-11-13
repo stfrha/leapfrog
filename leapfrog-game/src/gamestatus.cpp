@@ -12,8 +12,12 @@ const string GameStatus::c_gameStatusFileName = "leapfrog_game_progress.xml";
 GameStatus::GameStatus() :
    m_leapfrogResources(),
    m_currentSceneFile(""),
+   m_exitSceneFile(""),
+   m_currentSceneType(0),
    m_currentMission(0),
    m_currentState(0),
+   m_exitSceneType(0),
+   m_exitParameter(0),
    m_gunLevel(0),
    m_gunFireRateLevel(0),
    m_gunBulletSpeedLevel(0),
@@ -39,9 +43,12 @@ void GameStatus::gameStatusNewGameInit(void)
    // written 
    m_leapfrogResources.setResources(70, 100.0f, 25.0f, 20, 0.0f);
    m_currentSceneFile = "not_defined";
+   m_exitSceneFile = "not_defined";
    m_currentSceneType = 0;
    m_currentMission = 0;
    m_currentState = 0;
+   m_exitSceneType = -1;   // This will force loading the initial leapfrog for the mission.
+   m_exitParameter = -1;
    m_gunLevel = 1;
    m_gunFireRateLevel = 1;
    m_gunBulletSpeedLevel = 1;
@@ -66,9 +73,12 @@ void GameStatus::gameStatusNewGameInit(void)
    root.attribute("credits").set_value(70);
    root.attribute("damage").set_value(0);
    root.attribute("currentSceneFile").set_value(m_currentSceneFile.c_str());
+   root.attribute("exitSceneFile").set_value(m_exitSceneFile.c_str());
    root.attribute("currentSceneType").set_value(m_currentSceneType);
    root.attribute("currentMission").set_value(m_currentMission);
    root.attribute("currentState").set_value(m_currentState);
+   root.attribute("exitSceneType").set_value(m_exitSceneType);
+   root.attribute("exitParameter").set_value(m_exitParameter);
    root.attribute("gunLevel").set_value(m_gunLevel);
    root.attribute("gunFireRateLevel").set_value(m_gunFireRateLevel);
    root.attribute("gunBulletSpeedLevel").set_value(m_gunBulletSpeedLevel);
@@ -105,9 +115,12 @@ void GameStatus::initializeGameStatusXmlDocument(void)
    root.append_attribute("credits");
    root.append_attribute("damage");
    root.append_attribute("currentSceneFile");
+   root.append_attribute("exitSceneFile");
    root.append_attribute("currentSceneType");
    root.append_attribute("currentMission");
    root.append_attribute("currentState");
+   root.append_attribute("exitSceneType");
+   root.append_attribute("exitParameter");
    root.append_attribute("gunLevel");
    root.append_attribute("gunFireRateLevel");
    root.append_attribute("gunBulletSpeedLevel");
@@ -125,12 +138,24 @@ void GameStatus::initializeGameStatusXmlDocument(void)
    root.append_attribute("rightFootJointLevel");
 }
 
-void GameStatus::setSceneMissionState(const std::string& scene, int mission, int state, int type)
+void GameStatus::setSceneMissionState(
+   const std::string& scene, 
+   int mission, 
+   int state, 
+   int type, 
+   const std::string& exitScene, 
+   int exitSceneType, 
+   int exitParameter )
 {
    m_currentSceneFile = scene;
    m_currentMission = mission;
    m_currentState = state;
    m_currentSceneType = type;
+   m_exitSceneFile = exitScene;
+   m_exitSceneType = exitSceneType;
+   m_exitParameter = exitParameter;
+
+   // TODO: Is this used? If so, should exit data be added?
 }
 
 void GameStatus::saveGameStatus(void)
@@ -143,9 +168,12 @@ void GameStatus::saveGameStatus(void)
    root.attribute("credits").set_value(m_leapfrogResources.getCredits());
    root.attribute("damage").set_value(m_leapfrogResources.getDamage());
    root.attribute("currentSceneFile").set_value(m_currentSceneFile.c_str());
+   root.attribute("exitSceneFile").set_value(m_exitSceneFile.c_str());
    root.attribute("currentSceneType").set_value(m_currentSceneType);
    root.attribute("currentMission").set_value(m_currentMission);
    root.attribute("currentState").set_value(m_currentState);
+   root.attribute("exitSceneType").set_value(m_exitSceneType);
+   root.attribute("exitParameter").set_value(m_exitParameter);
    root.attribute("gunLevel").set_value(m_gunLevel);
    root.attribute("gunFireRateLevel").set_value(m_gunFireRateLevel);
    root.attribute("gunBulletSpeedLevel").set_value(m_gunBulletSpeedLevel);
@@ -169,14 +197,27 @@ void GameStatus::saveGameStatus(void)
    ox::file::write(c_gameStatusFileName, my_writer.m_buf);
 }
 
+void GameStatus::saveGameSceneStatus(void)
+{
+   // We only want to change some data, not all. We assume that the 
+   // m_gameStatusDocument is up to date.
+
+   oxygine_xml_writer my_writer;
+   m_gameStatusDocument.save(my_writer);
+   ox::file::write(c_gameStatusFileName, my_writer.m_buf);
+}
+
 void GameStatus::readGameStatus(void)
 {
    xml_node root = m_gameStatusDocument.child("leapfrogGameStatus");
 
    m_currentSceneFile = root.attribute("currentSceneFile").as_string("");
+   m_exitSceneFile = root.attribute("exitSceneFile").as_string("");
    m_currentSceneType = root.attribute("currentSceneType").as_int(0);
    m_currentMission = root.attribute("currentMission").as_int(0);
    m_currentState = root.attribute("currentState").as_int(0);
+   m_exitSceneType = root.attribute("exitSceneType").as_int(0);
+   m_exitParameter = root.attribute("exitParameter").as_int(0);
    m_gunLevel = root.attribute("gunLevel").as_int(1);
    m_gunFireRateLevel = root.attribute("gunFireRateLevel").as_int(1);
    m_gunBulletSpeedLevel = root.attribute("gunBulletSpeedLevel").as_int(1);
@@ -254,6 +295,20 @@ int GameStatus::getCurrentSceneType(void)
    return m_currentSceneType;
 }
 
+std::string GameStatus::getExitScene(void)
+{
+   return m_exitSceneFile;
+}
+
+int GameStatus::getExitSceneType(void)
+{
+   return m_exitSceneType;
+}
+
+int GameStatus::getExitParameter(void)
+{
+   return m_exitParameter;
+}
 
 
 
