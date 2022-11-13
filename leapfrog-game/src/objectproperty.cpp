@@ -84,7 +84,7 @@ void ObjectProperty::setProperty(float value)
       m_object->dispatchEvent(&ev);
    }
 
-   // Handeling an even may cause it to be removed as a trigger from this 
+   // Handeling an event may cause it to be removed as a trigger from this 
    // list which would invalidate the iterator. Therefore we build a list of
    // all events to be sent and send them after the loop
    vector<ObjectPropertyTriggeredEvent> eventList;
@@ -123,6 +123,12 @@ void ObjectProperty::extSetProperty(float value)
       }
    }
 }
+
+void ObjectProperty::setPropertyNoEvent(float value)
+{
+	m_value = value;
+}
+
 
 float ObjectProperty::getProperty(void)
 {

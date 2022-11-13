@@ -86,6 +86,7 @@ public:
 
 	void setProperty(float value);
    void extSetProperty(float value);
+   void setPropertyNoEvent(float value);
 	float getProperty(void);
 	void registerPropertyEventTrigger(
       int eventId, 

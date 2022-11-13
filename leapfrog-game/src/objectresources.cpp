@@ -71,11 +71,11 @@ void ObjectResources::initObjectResources(
 
 void ObjectResources::setResources(int ammo, float shield, float fuel, int credit, float damage)
 {
-   if (m_ammo != NULL) m_ammo->setProperty((float)ammo);
-   if (m_fuel != NULL) m_fuel->setProperty(fuel);
-   if (m_shield != NULL) m_shield->setProperty(shield);
-   if (m_damage != NULL) m_damage->setProperty(damage);
-   if (m_credits != NULL) m_credits->setProperty((float)credit);
+   if (m_ammo != NULL) m_ammo->setPropertyNoEvent((float)ammo);
+   if (m_fuel != NULL) m_fuel->setPropertyNoEvent(fuel);
+   if (m_shield != NULL) m_shield->setPropertyNoEvent(shield);
+   if (m_damage != NULL) m_damage->setPropertyNoEvent(damage);
+   if (m_credits != NULL) m_credits->setPropertyNoEvent((float)credit);
 }
 
 

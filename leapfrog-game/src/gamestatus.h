@@ -4,6 +4,21 @@
 
 #include "objectresources.h"
 
+
+class oxygine_xml_writer : public pugi::xml_writer
+{
+public:
+   ox::file::buffer m_buf;
+
+   virtual void write(const void* data, size_t size)
+   {
+      for (size_t i = 0; i < size; i++)
+      {
+         m_buf.push_back(static_cast<const char*>(data)[i]);
+      }
+   }
+};
+
 DECLARE_SMART(GameStatus, spGameStatus)
 
 

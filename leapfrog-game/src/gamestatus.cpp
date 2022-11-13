@@ -85,7 +85,11 @@ void GameStatus::gameStatusNewGameInit(void)
    root.attribute("rightKneeJointLevel").set_value(m_rightKneeJointLevel);
    root.attribute("rightFootJointLevel").set_value(m_rightFootJointLevel);
 
-   m_gameStatusDocument.save_file(c_gameStatusFileName.c_str());
+   // m_gameStatusDocument.save_file(c_gameStatusFileName.c_str());
+   
+   oxygine_xml_writer my_writer;
+   m_gameStatusDocument.save(my_writer);
+   ox::file::write(c_gameStatusFileName, my_writer.m_buf);
 
 }
 
@@ -158,7 +162,11 @@ void GameStatus::saveGameStatus(void)
    root.attribute("rightKneeJointLevel").set_value(m_rightKneeJointLevel);
    root.attribute("rightFootJointLevel").set_value(m_rightFootJointLevel);
 
-   m_gameStatusDocument.save_file(c_gameStatusFileName.c_str());
+   // m_gameStatusDocument.save_file(c_gameStatusFileName.c_str());
+
+   oxygine_xml_writer my_writer;
+   m_gameStatusDocument.save(my_writer);
+   ox::file::write(c_gameStatusFileName, my_writer.m_buf);
 }
 
 void GameStatus::readGameStatus(void)
