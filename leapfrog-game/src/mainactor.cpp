@@ -120,8 +120,9 @@ void MainActor::initMainActor(void)
          static_cast<SceneActor::SceneTypeEnum>(
             g_GameStatus.getExitSceneType()),
          g_GameStatus.getExitParameter());
+
+      armScene(g_GameStatus.getCurrentScene(), g_GameStatus.getCurrentSceneType());
    }
-   m_nextScene.m_armNextScene = true;
 
 
 }
@@ -143,12 +144,12 @@ void MainActor::startScene(void)
 {
    g_MessageDisplay->cleanAndClearMessageDisplay();
 
-   // Clear all triggers and events from the current 
-   // actors before they are destroyed.
-   g_LuaInterface.clearAllTriggersAndEvents();
-
    // Remove listners which includes scene transit events
    removeAllEventListeners();
+
+   // Clear all triggers and events from the current
+   // actors before they are destroyed.
+   g_LuaInterface.clearAllTriggersAndEvents();
 
    // Clean up current scene
    spActor actor = getFirstChild();
@@ -534,7 +535,6 @@ void MainActor::restartedFromMenu(void)
       g_GameStatus.gameStatusNewGameInit();
       g_LuaInterface.lua_forceCurrentScene();
       g_LuaInterface.lua_startInitialScene();
-      m_nextScene.m_armNextScene = true;
    }
    else if (m_postMenuAction == PostMenuActionType::continueLatest)
    {
@@ -552,30 +552,27 @@ void MainActor::restartedFromMenu(void)
          g_LuaInterface.lua_forceCurrentScene();
          g_LuaInterface.lua_findLeapfrogEntryPosition(static_cast<SceneActor::SceneTypeEnum>(g_GameStatus.getExitSceneType()),
             g_GameStatus.getExitParameter());
-      }
 
-      m_nextScene.m_armNextScene = true;
+         armScene(g_GameStatus.getCurrentScene(), g_GameStatus.getCurrentSceneType());
+      }
    }
    else if (m_postMenuAction == PostMenuActionType::testLanding)
    {
       g_GameStatus.setSceneMissionState("landing_scene.xml", 1, 1, 0, "orbit_scene.xml", 2, 0);
       g_LuaInterface.lua_forceCurrentScene();
       g_LuaInterface.lua_startInitialScene();
-      m_nextScene.m_armNextScene = true;
    }
    else if (m_postMenuAction == PostMenuActionType::testSpace)
    {
       g_GameStatus.setSceneMissionState("deep_space_scene.xml", 1, 1, 1, "landing_scene.xml", 0, 0);
       g_LuaInterface.lua_forceCurrentScene();
       g_LuaInterface.lua_startInitialScene();
-      m_nextScene.m_armNextScene = true;
    }
    else if (m_postMenuAction == PostMenuActionType::testOrbit)
    {
       g_GameStatus.setSceneMissionState("orbit_scene.xml", 1, 1, 2, "deep_space_scene.xml", 1, 0);
       g_LuaInterface.lua_forceCurrentScene();
       g_LuaInterface.lua_startInitialScene();
-      m_nextScene.m_armNextScene = true;
    }
 }
 
@@ -587,6 +584,14 @@ void MainActor::menuStartTransitionComplete(void)
 
 void MainActor::cleanUpAndQuit(void)
 {
+   // Remove listners which includes scene transit events
+   removeAllEventListeners();
+
+   // Clear all triggers and events from the current
+   // actors before they are destroyed.
+   g_LuaInterface.clearAllTriggersAndEvents();
+
+
    // Clean up current scene
    spActor actor = getFirstChild();
 
