@@ -614,8 +614,7 @@ void MainActor::restartedFromMenu(void)
 
 void MainActor::menuStartTransitionComplete(void)
 {
-   spMenuActor ma = new MenuActor(
-      this);
+   spMenuActor ma = new MenuActor();
 }
 
 void MainActor::cleanUpAndQuit(void)

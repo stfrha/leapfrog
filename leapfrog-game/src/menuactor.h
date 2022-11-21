@@ -27,16 +27,12 @@ protected:
 
 };
 
-class MainActor;
-
 
 DECLARE_SMART(MenuActor, spMenuActor);
 
 class MenuActor : public oxygine::Actor
 {
-public:
 private:
-   MainActor* m_mainActor;
 
    void b1Clicked(oxygine::Event* event);
    void b2Clicked(oxygine::Event* event);
@@ -47,7 +43,7 @@ private:
    void b7Clicked(oxygine::Event* event);
 
 public:
-   MenuActor(MainActor* mainActor);
+   MenuActor();
 
 protected:
    void doUpdate(const oxygine::UpdateState &us);

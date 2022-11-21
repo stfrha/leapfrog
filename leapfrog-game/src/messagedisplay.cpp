@@ -1,5 +1,4 @@
 #include "messagedisplay.h"
-#include "messagedisplay.h"
 
 #include "sceneactor.h"
 #include "actoruserdata.h"
@@ -64,7 +63,7 @@ void MessageDisplay::cleanAndClearMessageDisplay(void)
 
 
 void MessageDisplay::initialiseMessageDisplay(
-   Actor* mainActor,
+   Actor* parentActor,
    float highTop,
    float normalTop,
    float left,
@@ -91,7 +90,7 @@ void MessageDisplay::initialiseMessageDisplay(
    setAnchor(0.0f, 0.0f);
    //setSize(m_messageDisplayWidth, m_messageDisplayHeight);
    setPriority(250);
-   attachTo(mainActor);
+   attachTo(parentActor);
 
    spActor mdFrame = new Actor();
    mdFrame->setAnchor(0.0f, 0.0f);

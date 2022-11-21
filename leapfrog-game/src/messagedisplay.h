@@ -6,8 +6,6 @@
 #include "physdispconvert.h"
 #include "collisionentity.h"
 
-class SceneActor;
-
 DECLARE_SMART(MessageDisplay, spMessageDisplay);
 
 class MessageItem
@@ -73,7 +71,7 @@ public:
    MessageDisplay();
 
    void initialiseMessageDisplay(
-      oxygine::Actor* sceneActor,
+      oxygine::Actor* parentActor,
       float highTop,
       float normalTop,
       float left,

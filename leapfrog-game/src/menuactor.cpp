@@ -54,9 +54,7 @@ void MenuButton::doUpdate(const oxygine::UpdateState& us)
 }
 
 
-MenuActor::MenuActor(
-   MainActor* mainActor) :
-   m_mainActor(mainActor)
+MenuActor::MenuActor()
 {
    setPosition(0.0f, 0.0f);
    setAnchor(0.0f, 0.0f);
@@ -127,36 +125,36 @@ void MenuActor::doUpdate(const UpdateState &us)
 
 void MenuActor::b1Clicked(oxygine::Event* event)
 {
-   m_mainActor->buttonClicked(1);
+   g_MainActor->buttonClicked(1);
 }
 
 void MenuActor::b2Clicked(oxygine::Event* event)
 {
-   m_mainActor->buttonClicked(2);
+   g_MainActor->buttonClicked(2);
 }
 
 void MenuActor::b3Clicked(oxygine::Event* event)
 {
-   m_mainActor->buttonClicked(3);
+   g_MainActor->buttonClicked(3);
 }
 
 void MenuActor::b4Clicked(oxygine::Event* event)
 {
-   m_mainActor->buttonClicked(4);
+   g_MainActor->buttonClicked(4);
 }
 
 void MenuActor::b5Clicked(oxygine::Event* event)
 {
-   m_mainActor->buttonClicked(5);
+   g_MainActor->buttonClicked(5);
 }
 
 void MenuActor::b6Clicked(oxygine::Event* event)
 {
-   m_mainActor->buttonClicked(6);
+   g_MainActor->buttonClicked(6);
 }
 
 void MenuActor::b7Clicked(oxygine::Event* event)
 {
    //request quit
-   m_mainActor->cleanUpAndQuit();
+   g_MainActor->cleanUpAndQuit();
 }
