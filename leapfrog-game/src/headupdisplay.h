@@ -4,7 +4,6 @@
 #include "leapfrog.h"
 #include "buttondisplay.h"
 
-class MainActor;
 class SceneActor;
 
 // The HUD contains the buttons and the status bar.
@@ -15,7 +14,6 @@ class HeadUpDisplay : public oxygine::Actor
 {
 private:
 
-   MainActor* m_mainActor;
    SceneActor* m_sceneActor;
    ButtonDisplay* m_buttonDisplay;
    oxygine::Actor* m_statusBarActor;
@@ -25,7 +23,6 @@ public:
    HeadUpDisplay();
 
    void initialiseHeadUpDisplay(
-      MainActor* mainActor,
       SceneActor* sceneActor,
       const oxygine::Vector2& topLeft,
       const oxygine::Vector2& bottomRight);

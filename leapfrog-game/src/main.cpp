@@ -13,8 +13,6 @@ extern "C" { FILE __iob_func[3] = { *stdin,*stdout,*stderr }; }
 
 using namespace oxygine;
 
-MainActor* mainActor;
-
 
 //void onEvent(Event* ev)
 //{
@@ -46,10 +44,10 @@ void example_init()
 {
    //lets create our client code simple actor
    //spMainActor was defined above as smart intrusive pointer (read more: http://www.boost.org/doc/libs/1_60_0/libs/smart_ptr/intrusive_ptr.html)
-   mainActor = new MainActor;
+   g_MainActor = new MainActor();
 
    //and add it to Stage as child
-   getStage()->addChild(mainActor);
+   getStage()->addChild(g_MainActor);
 
    //core::getDispatcher()->addEventListener(oxygine::core::EVENT_SYSTEM, onEvent);
 

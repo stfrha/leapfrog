@@ -6,7 +6,6 @@
 #include "physdispconvert.h"
 #include "collisionentity.h"
 
-class MainActor;
 class HeadDownDisplay;
 
 DECLARE_SMART(MapItem, spMapItem);
@@ -99,7 +98,6 @@ private:
 
    bool m_actorExists;
    HudModeType m_hudMode;
-   MainActor* m_mainActor;
    std::vector<spMapItem> m_mapActors;
 
    float m_itemScale;
@@ -126,7 +124,6 @@ public:
    HeadDownDisplay();
 
    void initialiseHdd(
-      MainActor* mainActor,
       const oxygine::Vector2& topLeft, 
       const oxygine::Vector2& bottomRight);
 

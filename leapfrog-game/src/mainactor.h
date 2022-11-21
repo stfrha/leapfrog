@@ -113,3 +113,4 @@ protected:
 
 };
 
+extern spMainActor g_MainActor;

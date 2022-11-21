@@ -169,12 +169,9 @@ static int c_startScene(lua_State *L)
    std::string nextScene = lua_tostring(L, 1);
    int sceneTypeInt = lua_tointeger(L, 2);
 
-
-   MainActor* ma = g_LuaInterface.getMainActor();
-
-   if (ma != NULL)
+   if (g_MainActor != NULL)
    {
-      ma->armScene(nextScene, sceneTypeInt);
+      g_MainActor->armScene(nextScene, sceneTypeInt);
    }
 
    return 0;
@@ -438,21 +435,16 @@ static int c_saveGameStatus(lua_State* L)
 
 
 LuaInterface::LuaInterface() : 
-   m_sceneActor(NULL),
-   m_mainActor(NULL)
+   m_sceneActor(NULL)
 {
 }
 
-void LuaInterface::initLuaInterface(MainActor* mainActor)
+void LuaInterface::initLuaInterface(void)
 {
-   m_mainActor = mainActor;
-
    // initialize Lua 
    m_L = luaL_newstate();
    luaL_openlibs(m_L);
 //   lua_register(m_L, "average", average);
-
-
 
    ox::file::read("lua/mission_1.lua", m_sceneNavigatorScriptBuffer);
    lua_getglobal(m_L, "package");
@@ -531,12 +523,6 @@ SceneActor* LuaInterface::getSceneActor(void)
 {
    return m_sceneActor;
 }
-
-MainActor* LuaInterface::getMainActor(void)
-{
-   return m_mainActor;
-}
-
 
 void LuaInterface::registerHandlerHandle(oxygine::Actor* actor, int eventId)
 {

@@ -33,6 +33,10 @@ NextSceneDefinition::NextSceneDefinition() :
 {
 }
 
+
+// Instanciate global instance of the Main actor
+spMainActor g_MainActor;
+
 MainActor::MainActor() :
    m_world(NULL),
    m_splashArm(true),
@@ -81,7 +85,7 @@ void MainActor::initMainActor(void)
    g_GraphRes.loadResource(GraphicResources::ResourceTypeEnum::game, "res.xml");
    g_GraphRes.loadResource(GraphicResources::ResourceTypeEnum::hud, "res_hud.xml");
 
-   g_LuaInterface.initLuaInterface(this);
+   g_LuaInterface.initLuaInterface();
 
    g_LuaInterface.lua_printPaths();
 
@@ -229,12 +233,10 @@ void MainActor::startScene(void)
    addEventListener(StatusResourceDepletedEvent::EVENT, CLOSURE(this, &MainActor::resourceDepletedHandler));
 
    g_HeadDownDisplay->initialiseHdd(
-      this,
       Vector2(0.0f, 0.0f),
       m_sceneObject->getSize());
 
    g_headUpDisplay->initialiseHeadUpDisplay(
-      this,
       m_sceneObject,
       Vector2(0.0f, 0.0f),
       m_sceneObject->getSize()); 

@@ -16,18 +16,15 @@ HeadUpDisplay::HeadUpDisplay()
 }
 
 void HeadUpDisplay::initialiseHeadUpDisplay(
-   MainActor* mainActor,
    SceneActor* sceneActor,
    const oxygine::Vector2& topLeft,
    const oxygine::Vector2& bottomRight)
 {
-   m_mainActor = mainActor;
    m_sceneActor = sceneActor;
 
    spButtonDisplay buttonDisplay = new ButtonDisplay();
 
    buttonDisplay->initialiseButtonDisplay(
-      m_mainActor,
       m_sceneActor,
       topLeft,
       bottomRight);
@@ -49,7 +46,7 @@ void HeadUpDisplay::initialiseHeadUpDisplay(
    setPosition(0.0f, 0.0f);
    setSize(getStage()->getSize());
 
-   attachTo(mainActor);
+   attachTo(g_MainActor);
 
    // MainActor did this for every start of scene, is this necessary?
    addTouchDownListener(CLOSURE(this, &HeadUpDisplay::sceneDownHandler));

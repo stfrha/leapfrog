@@ -4,14 +4,11 @@
 
 #include "sceneactor.h"
 
-class MainActor;
-
 DECLARE_SMART(ButtonDisplay, spButtonDisplay);
 
 class ButtonDisplay : public oxygine::Actor
 {
 private:
-   MainActor* m_mainActor;
    SceneActor* m_sceneActor;
 
    oxygine::Sprite* m_zoomInSprite;
@@ -58,7 +55,6 @@ public:
    ButtonDisplay();
 
    void initialiseButtonDisplay(
-      MainActor* mainActor,
       SceneActor* sceneActor,
       const oxygine::Vector2& topLeft, 
       const oxygine::Vector2& bottomRight);

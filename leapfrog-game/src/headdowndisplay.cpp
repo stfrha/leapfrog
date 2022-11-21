@@ -233,12 +233,9 @@ void HeadDownDisplay::clearMap(void)
 
 
 void HeadDownDisplay::initialiseHdd(
-   MainActor* mainActor,
    const Vector2& topLeft, 
    const Vector2& bottomRight)
 {
-   m_mainActor = mainActor;
-
    // The HUD can work as game menu, map or orbit overlay. The modes 
    // all have a common ancor on the screen, at the midde bottom. 
    // The game menu and orbit overlay have the top margin the same as the bottom.
@@ -298,7 +295,7 @@ void HeadDownDisplay::initialiseHdd(
    setScale(m_mapScale);
    setTouchEnabled(false);
    setTouchEnabled(false);
-   attachTo(mainActor);
+   attachTo(g_MainActor);
 
    m_actorExists = true;
 
@@ -466,12 +463,12 @@ void HeadDownDisplay::goToMap(void)
 void HeadDownDisplay::menuStartTransitionComplete(Event* event)
 {
    // TODO: Light up buttons (in mainactor) only at this time
-   m_mainActor->menuStartTransitionComplete();
+   g_MainActor->menuStartTransitionComplete();
 }
 
 void HeadDownDisplay::orbitStartTransitionComplete(oxygine::Event* event)
 {
-   m_mainActor->restartedFromMenu();
+   g_MainActor->restartedFromMenu();
 }
 
 
@@ -489,5 +486,5 @@ void HeadDownDisplay::mapTransitionComplete(oxygine::Event* event)
       (*it)->addToMapActor(this, m_itemScale);
    }
 
-   m_mainActor->restartedFromMenu();
+   g_MainActor->restartedFromMenu();
 }

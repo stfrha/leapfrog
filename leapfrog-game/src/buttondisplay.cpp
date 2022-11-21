@@ -21,12 +21,10 @@ ButtonDisplay::ButtonDisplay() :
 }
 
 void ButtonDisplay::initialiseButtonDisplay(
-   MainActor* mainActor,
    SceneActor* sceneActor,
    const Vector2& topLeft,
    const Vector2& bottomRight)
 {
-   m_mainActor = mainActor;
    m_sceneActor = sceneActor;
    createButtonOverlay();
 
@@ -100,7 +98,7 @@ void ButtonDisplay::sceneDownHandler(Event* event)
    {
       if (m_manualPan.m_manPanEnable)
       {
-         m_mainActor->m_reloadPressed = true;
+         g_MainActor->m_reloadPressed = true;
          m_reloadTouchIndex = te->index;
       }
    }
@@ -166,7 +164,7 @@ void ButtonDisplay::sceneUpHandler(Event* event)
    }
    else if (te->index == m_reloadTouchIndex)
    {
-      m_mainActor->m_reloadPressed = false;
+      g_MainActor->m_reloadPressed = false;
       m_reloadTouchIndex = 0;
    }
 }
