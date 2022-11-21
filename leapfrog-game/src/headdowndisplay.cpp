@@ -263,9 +263,11 @@ void HeadDownDisplay::initialiseHdd(
    float mapLeft = g_Layout.getXFromLeft(2) + g_Layout.getButtonWidth() / 4.0f;
    float mapRight = g_Layout.getXFromRight(1) - g_Layout.getButtonWidth() / 4.0f;
    float mapTop = g_Layout.getYFromBottom(1);
-   float mapBottom = g_Layout.getYFromBottom(-1) - g_Layout.getButtonWidth() / 4.0f;
+   // float mapBottom = g_Layout.getYFromBottom(-1) - g_Layout.getButtonWidth() / 4.0f;
+   float mapBottom = g_Layout.getYFromBottom(-1);
+
    // Vector2 mapPos((mapRight - mapLeft) / 2.0f + mapLeft, (mapBottom - mapTop) / 2.0f + mapTop);
-   Vector2 mapPos((mapRight - mapLeft) / 2.0f + mapLeft, mapBottom);
+   m_mapPos = Vector2((mapRight - mapLeft) / 2.0f + mapLeft, mapBottom);
 
    float mapScaleX = (mapRight - mapLeft) / (m_sceneWidth);
    float mapScaleY = (mapBottom - mapTop) / (m_sceneHeight);
@@ -279,19 +281,22 @@ void HeadDownDisplay::initialiseHdd(
    m_menuSizeX = g_Layout.getViewPortBounds().x - 4.0f * g_Layout.getButtonWidth()  - 0.2f * g_Layout.getButtonWidth();
    m_menuSizeY = g_Layout.getViewPortBounds().y - 2.0f * (g_Layout.getViewPortBounds().y - mapBottom);
 
-   m_orbitSizeX = g_Layout.getViewPortBounds().x;
+   // m_orbitSizeX = g_Layout.getViewPortBounds().x;
+   m_orbitSizeX = g_Layout.getXFromRight(4);
+   
+
    m_orbitSizeY = m_menuSizeY;
 
    float thickness = 8.0f;
    
    setResAnim(g_GraphRes.getResources(GraphicResources::ResourceTypeEnum::hud).getResAnim("display_fat"));
-   setVerticalMode(Box9Sprite::STRETCHING);
-   setHorizontalMode(Box9Sprite::STRETCHING);
+   setVerticalMode(Box9Sprite::TILING_FULL);
+   setHorizontalMode(Box9Sprite::TILING_FULL);
    setSize(m_sceneWidth, m_sceneHeight);
    setAnchor(0.5f, 1.0f);
-   setPosition(mapPos);
+   setPosition(m_mapPos);
    setScale(m_mapScale);
-   setGuides(8, 120, 8, 120);
+   setTouchEnabled(false);
    setTouchEnabled(false);
    attachTo(mainActor);
 
@@ -397,16 +402,25 @@ void HeadDownDisplay::doUpdate(const oxygine::UpdateState& us)
 
 void HeadDownDisplay::goToOrbit(void)
 {
+
    if (m_hudMode == HudModeType::hudModeMap)
    {
-      clearDisplay();
+      clearMap();
       setResAnim(g_GraphRes.getResources(GraphicResources::ResourceTypeEnum::hud).getResAnim("display_thin"));
+      setVerticalMode(Box9Sprite::TILING_FULL);
+      setHorizontalMode(Box9Sprite::TILING_FULL);
       setSize(m_mapSizeX, m_mapSizeY);
       setScale(1.0f);
    }
+   else
+   {
+      clearDisplay();
+   }
    m_hudMode = HudModeType::hudModeOrbit;
    spTween tween = addTween(Actor::TweenSize(m_orbitSizeX, m_orbitSizeY), 500);
-   tween->setDoneCallback(CLOSURE(this, &HeadDownDisplay::menuStartTransitionComplete));
+   tween->setDoneCallback(CLOSURE(this, &HeadDownDisplay::orbitStartTransitionComplete));
+
+   spTween moveTween = addTween(Actor::TweenPosition(m_orbitSizeX / 2.0f, m_orbitSizeY), 500);
 }
 
 void HeadDownDisplay::goToMenu(void)
@@ -415,12 +429,22 @@ void HeadDownDisplay::goToMenu(void)
    {
       clearDisplay();
       setResAnim(g_GraphRes.getResources(GraphicResources::ResourceTypeEnum::hud).getResAnim("display_thin"));
+      setVerticalMode(Box9Sprite::TILING_FULL);
+      setHorizontalMode(Box9Sprite::TILING_FULL);
       setSize(m_mapSizeX, m_mapSizeY);
       setScale(1.0f);
    }
+   
+   if (m_hudMode == HudModeType::hudModeOrbit)
+   {
+      spTween moveTween = addTween(Actor::TweenPosition(m_mapPos), 750);
+   }
+
    m_hudMode = HudModeType::hudModeMenu;
    spTween tween = addTween(Actor::TweenSize(m_menuSizeX, m_menuSizeY), 750, 1, false, 0, oxygine::Tween::EASE::ease_outBounce);
    tween->setDoneCallback(CLOSURE(this, &HeadDownDisplay::menuStartTransitionComplete));
+
+
 }
 
 void HeadDownDisplay::goToMap(void)
@@ -433,6 +457,10 @@ void HeadDownDisplay::goToMap(void)
 
    }
 
+   if (m_hudMode == HudModeType::hudModeMap)
+   {
+      spTween moveTween = addTween(Actor::TweenPosition(m_mapPos), 500);
+   }
 }
 
 void HeadDownDisplay::menuStartTransitionComplete(Event* event)
@@ -441,10 +469,17 @@ void HeadDownDisplay::menuStartTransitionComplete(Event* event)
    m_mainActor->menuStartTransitionComplete();
 }
 
+void HeadDownDisplay::orbitStartTransitionComplete(oxygine::Event* event)
+{
+   m_mainActor->restartedFromMenu();
+}
+
 
 void HeadDownDisplay::mapTransitionComplete(oxygine::Event* event)
 {
    setResAnim(g_GraphRes.getResources(GraphicResources::ResourceTypeEnum::hud).getResAnim("display_fat"));
+   setVerticalMode(Box9Sprite::TILING_FULL);
+   setHorizontalMode(Box9Sprite::TILING_FULL);
    setSize(m_sceneWidth, m_sceneHeight);
    setScale(m_mapScale);
    m_hudMode = HudModeType::hudModeMap;

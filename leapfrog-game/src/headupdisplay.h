@@ -18,6 +18,7 @@ private:
    MainActor* m_mainActor;
    SceneActor* m_sceneActor;
    ButtonDisplay* m_buttonDisplay;
+   oxygine::Actor* m_statusBarActor;
 
 public:
 
@@ -29,6 +30,8 @@ public:
       const oxygine::Vector2& topLeft,
       const oxygine::Vector2& bottomRight);
 
+   void showStatusBars(bool show);
+   void showButtons(bool show);
    void cleanAndRemove(void);
 
    void registerLeapfrog(LeapFrog* leapfrog, bool hideShield);

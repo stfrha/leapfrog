@@ -59,7 +59,12 @@ OrbitScene::OrbitScene(
 
    m_space = static_cast<OrbitSpaceScene*>(orbWin->getObject("spaceScene"));
 
-   m_leapfrog = static_cast<LeapFrog*>(orbWin->getObject("spaceScene.leapfrog1"));
+   // m_leapfrog = static_cast<LeapFrog*>(orbWin->getObject("spaceScene.leapfrog1"));
+
+   //if (m_leapfrog == NULL)
+   //{
+   //   int a = 10;
+   //}
 
 //   m_leapfrog->initObjectResources(gameStatus);
 
@@ -69,6 +74,12 @@ OrbitScene::OrbitScene(
 
 void OrbitScene::doUpdate(const oxygine::UpdateState &us)
 {
+   // We do nothing until leapfrog is created.
+   if (m_space->m_leapfrog == NULL)
+   {
+      return;
+   }
+
    const Uint8* data = SDL_GetKeyboardState(0);
    int time;
    float burnAmount;
@@ -83,7 +94,7 @@ void OrbitScene::doUpdate(const oxygine::UpdateState &us)
       if (data[SDL_SCANCODE_W] || m_space->m_boosterPressed)
       {
          m_planet->startBurn();
-         m_leapfrog->fireMainBooster(true, true);
+         m_space->m_leapfrog->fireMainBooster(true, true);
          m_state = breaking;
       }
 
@@ -95,8 +106,8 @@ void OrbitScene::doUpdate(const oxygine::UpdateState &us)
          m_planet->stopBurn();
          m_stateChangeTime = us.time;
          m_state = reentry;
-         m_leapfrog->fireMainBooster(false);
-         m_leapfrog->fireReentryFlames(true);
+         m_space->m_leapfrog->fireMainBooster(false);
+         m_space->m_leapfrog->fireReentryFlames(true);
 
          // Here the burn is complete
          float burnAmount = m_planet->getBurnAmount();
@@ -111,11 +122,11 @@ void OrbitScene::doUpdate(const oxygine::UpdateState &us)
       if (time > 10200)
       {
          heat = 0;
-         m_leapfrog->reentrySetHeat(heat);
+         m_space->m_leapfrog->reentrySetHeat(heat);
          m_planet->surfaceReached();
          m_stateChangeTime = us.time;
          m_state = touchDown;
-         m_leapfrog->dumpReentryFlamees();
+         m_space->m_leapfrog->dumpReentryFlamees();
       }
       else
       {
@@ -124,24 +135,24 @@ void OrbitScene::doUpdate(const oxygine::UpdateState &us)
             // Too much break burn, falls too fast, burns on reentry
             if (time < 5000)
             {
-               m_leapfrog->setHoldAngle(m_planet->getReentryLeapfrogAngle((float)time) - MATH_PI / 2.0f);
+               m_space->m_leapfrog->setHoldAngle(m_planet->getReentryLeapfrogAngle((float)time) - MATH_PI / 2.0f);
 
                if (time > 3333)
                {
                   // increse burn
                   int heat = (int)((time - 3333.0f) * 255.0f / 1666.0f);
-                  m_leapfrog->reentrySetHeat(heat);
+                  m_space->m_leapfrog->reentrySetHeat(heat);
                }
             }
             else
             {
                // Dissassemble the leapfrog to pieces whith flames
-               m_leapfrog->setHoldAngle(20.0f * MATH_PI);
+               m_space->m_leapfrog->setHoldAngle(20.0f * MATH_PI);
 
                if (time > 9000)
                {
                   // Dissasmble leapfrog
-                  m_leapfrog->breakJoints();
+                  m_space->m_leapfrog->breakJoints();
                }
 
             }
@@ -151,39 +162,39 @@ void OrbitScene::doUpdate(const oxygine::UpdateState &us)
             // Too little break burn, going too fast, bounce off of atmosphere
             if (time < 5000)
             {
-               m_leapfrog->setHoldAngle(m_planet->getReentryLeapfrogAngle((float)time) - MATH_PI / 2.0f);
+               m_space->m_leapfrog->setHoldAngle(m_planet->getReentryLeapfrogAngle((float)time) - MATH_PI / 2.0f);
 
                if (time > 3333)
                {
                   // increse burn
                   heat = (int)((time - 3333.0f) * 255.0f / 3333.0f);
-                  m_leapfrog->reentrySetHeat(heat);
+                  m_space->m_leapfrog->reentrySetHeat(heat);
                }
             }
             else
             {
                // Remove heat and tumble the leapfrog
-               m_leapfrog->setHoldAngle(20.0f * MATH_PI);
+               m_space->m_leapfrog->setHoldAngle(20.0f * MATH_PI);
                heat = 0;
-               m_leapfrog->reentrySetHeat(heat);
+               m_space->m_leapfrog->reentrySetHeat(heat);
             }
 
          }
          else
          {
-            m_leapfrog->setHoldAngle(m_planet->getReentryLeapfrogAngle((float)time) - MATH_PI / 2.0f);
+            m_space->m_leapfrog->setHoldAngle(m_planet->getReentryLeapfrogAngle((float)time) - MATH_PI / 2.0f);
 
             if (time > 9000)
             {
                // decrese burn
                heat = (10000 - time) * 255 / 1000;
-               m_leapfrog->reentrySetHeat(heat);
+               m_space->m_leapfrog->reentrySetHeat(heat);
             }
             else if (time > 3333)
             {
                // increse burn
                heat = (int)((time - 3333.0f) * 255.0f / 3333.0f);
-               m_leapfrog->reentrySetHeat(heat);
+               m_space->m_leapfrog->reentrySetHeat(heat);
             }
          }
       }

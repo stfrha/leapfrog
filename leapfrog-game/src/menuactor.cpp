@@ -19,8 +19,8 @@ MenuButton::MenuButton(
    event eventToFireAtButtonCLick*/)
 {
    setResAnim(g_GraphRes.getResources(GraphicResources::ResourceTypeEnum::hud).getResAnim("display_thin"));
-   setVerticalMode(Box9Sprite::STRETCHING);
-   setHorizontalMode(Box9Sprite::STRETCHING);
+   setVerticalMode(Box9Sprite::TILING_FULL);
+   setHorizontalMode(Box9Sprite::TILING_FULL);
    setGuides(8, 120, 8, 120);
    setSize(size);
    setPosition(pos);

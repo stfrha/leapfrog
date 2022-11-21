@@ -105,6 +105,7 @@ private:
    float m_itemScale;
    int m_itemIdRepository;
 
+   void orbitStartTransitionComplete(oxygine::Event* event);
    void menuStartTransitionComplete(oxygine::Event* event);
    void mapTransitionComplete(oxygine::Event* event);
 
@@ -119,6 +120,8 @@ public:
 
    float m_sceneWidth;
    float m_sceneHeight;
+
+   oxygine::Vector2 m_mapPos;
 
    HeadDownDisplay();
 

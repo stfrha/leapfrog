@@ -129,7 +129,7 @@ void OrbitSpaceScene::startLeapfrogInScene(string name)
    {
       m_leapfrog->goToEnvironment(ENV_ORBIT);
       m_leapfrog->setHoldAngle(MATH_PI / 2.0f);
-      CompoundObject* co = m_leapfrog->getObject("lfMainBody");
+      // CompoundObject* co = m_leapfrog->getObject("lfMainBody");
       m_leapfrogBody = m_leapfrog->getBody("lfMainBody");
    }
 }

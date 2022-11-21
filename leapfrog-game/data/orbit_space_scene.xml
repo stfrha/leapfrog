@@ -6,11 +6,11 @@
          sceneType="orbitSpaceScene">
       </sceneProperties>
    </behaviour>
-   <childObject
+<!--   <childObject
       name="leapfrog1"
       file="leapfrog_deep_space.xml" 
       posX="-8.0"
       posY="18.0" />
-   </childObject>
+   </childObject> -->
 </compoundObject>
 

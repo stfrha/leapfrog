@@ -85,9 +85,8 @@ void MessageDisplay::initialiseMessageDisplay(
    float thickness = 1.0f;
 
    setResAnim(g_GraphRes.getResources(GraphicResources::ResourceTypeEnum::hud).getResAnim("display_thin"));
-   setVerticalMode(Box9Sprite::STRETCHING);
-   setHorizontalMode(Box9Sprite::STRETCHING);
-   setGuides(8, 120, 8, 120);
+   setVerticalMode(Box9Sprite::TILING_FULL);
+   setHorizontalMode(Box9Sprite::TILING_FULL);
    setTouchEnabled(false);
    setAnchor(0.0f, 0.0f);
    //setSize(m_messageDisplayWidth, m_messageDisplayHeight);

@@ -28,7 +28,7 @@ public:
 
 private:
    PlanetActor* m_planet;
-   LeapFrog* m_leapfrog;
+   // LeapFrog* m_leapfrog; 
    States m_state;
    int m_stateChangeTime;
    

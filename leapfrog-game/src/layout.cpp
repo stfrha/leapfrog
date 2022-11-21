@@ -12,29 +12,41 @@ Layout::Layout() :
 {
 }
 
-void Layout::initLayout(void)
+void Layout::initLayout(int sizeCode)
 {
-   float division = 8.0f;
-   m_buttonWidth = (getStage()->getSize()).y / division;
-
-   // Find the button width in inces and make sure it is not smaller 
-   // than 1 cm = 0.4 inch
-   if (SDL_GetDisplayDPI(0, &m_ddpi, &m_hdpi, &m_vdpi) == 0)
+   if (sizeCode == 0)
    {
-      float inchButtonWidth = m_buttonWidth / m_hdpi;
+      float division = 8.0f;
+      m_buttonWidth = (getStage()->getSize()).y / division;
 
-      if (inchButtonWidth < 0.4f)
+      // Find the button width in inces and make sure it is not smaller 
+      // than 1 cm = 0.4 inch
+      if (SDL_GetDisplayDPI(0, &m_ddpi, &m_hdpi, &m_vdpi) == 0)
       {
-         m_buttonWidth = m_hdpi * 0.4f;
-      }
+         float inchButtonWidth = m_buttonWidth / m_hdpi;
 
-      float inchButtonHeight = m_buttonWidth / m_vdpi;
+         if (inchButtonWidth < 0.4f)
+         {
+            m_buttonWidth = m_hdpi * 0.4f;
+         }
 
-      if (inchButtonHeight < 0.4f)
-      {
-         m_buttonWidth = m_vdpi * 0.4f;
+         float inchButtonHeight = m_buttonWidth / m_vdpi;
+
+         if (inchButtonHeight < 0.4f)
+         {
+            m_buttonWidth = m_vdpi * 0.4f;
+         }
       }
    }
+   else if (sizeCode == 1)
+   {
+      m_buttonWidth = 177.0f;  // Same as on android
+   }
+   else if (sizeCode == 2)
+   {
+      m_buttonWidth = 88.5f;  // Same as on android
+   }
+
 
    m_defaultFontSize = g_Layout.getButtonWidth() / 2.0f / 2.0f / 8.0f * 6.0f;
 

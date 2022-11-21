@@ -7,6 +7,7 @@
 #include "oxygine-framework.h"
 #include "mainactor.h"
 #include "graphicresources.h"
+#include "layout.h"
 
 extern "C" { FILE __iob_func[3] = { *stdin,*stdout,*stderr }; }
 
@@ -96,7 +97,10 @@ int mainloop()
 }
 
 // Application entry point
-void run()
+// sizeCode gives a way to run different resolutions
+// 0 = default size (960,640)
+// 1 = Galaxy S10 size (2164, 1080)
+void run(int sizeCode = 0)
 {
    ObjectBase::__startTracingLeaks();
 
@@ -106,8 +110,22 @@ void run()
 
 #if OXYGINE_SDL || OXYGINE_EMSCRIPTEN
    // The initial window size can be set up here on SDL builds
-   desc.w = 960;
-   desc.h = 640;
+   switch (sizeCode)
+   {
+   case 0:
+      desc.w = 960;
+      desc.h = 640;
+      break;
+   case 1:
+      desc.w = 2164;
+      desc.h = 1080;
+      break;
+   case 2:
+      desc.w = 1082;
+      desc.h = 540;
+      break;
+   }
+
    //desc.w = 1536;
    //desc.h = 1024;
    // Marmalade settings can be modified from the emulator's menu
@@ -130,6 +148,8 @@ void run()
 
    // DebugActor is a helper actor node. It shows FPS, memory usage and other useful stuff
    DebugActor::show();
+
+   g_Layout.initLayout(sizeCode);
 
    // Initializes our example game. See example.cpp
    example_init();
@@ -207,8 +227,15 @@ extern "C"
 
    int main(int argc, char* argv[])
    {
+      if (argc == 2)
+      {
+         run(argv[1][0] - '0');
+      }
+      else
+      {
+         run();
+      }
 
-      run();
 
 #if TARGET_OS_IPHONE || TARGET_OS_SIMULATOR
       // If parameter 2 is set to 1, refresh rate will be 60 fps, 2 - 30 fps, 3 - 15 fps.

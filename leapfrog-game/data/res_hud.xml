@@ -15,10 +15,10 @@
 
 		<image file="lf_position.png"/>	
 
-		<image file="msg_bbl_left.png"  guideX1="24" guideX2="104" guideY1="24" guideY2="104" />	
-		<image file="msg_bbl_right.png"  guideX1="24" guideX2="104" guideY1="24" guideY2="104" />	
-		<image file="display_fat.png" />	
-		<image file="display_thin.png" />	
+		<image file="msg_bbl_left.png" guideX1="24" guideX2="104" guideY1="24" guideY2="104" />	
+		<image file="msg_bbl_right.png" guideX1="24" guideX2="104" guideY1="24" guideY2="104" />	
+		<image file="display_fat.png"  guideX1="8" guideX2="120" guideY1="8" guideY2="120" />	
+		<image file="display_thin.png"  guideX1="3" guideX2="125" guideY1="3" guideY2="125" />	
 		<image file="progress_bar.png" />	
 
 		<image file="trajectory.png"/>	

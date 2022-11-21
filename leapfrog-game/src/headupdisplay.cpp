@@ -36,6 +36,15 @@ void HeadUpDisplay::initialiseHeadUpDisplay(
 
    m_buttonDisplay = buttonDisplay.get();
 
+   spActor statusBarActor = new Actor();
+
+   statusBarActor->setAnchor(0.0f, 0.0f);
+   statusBarActor->setPosition(0.0f, 0.0f);
+   statusBarActor->setSize(getStage()->getSize());
+   statusBarActor->attachTo(this);
+
+   m_statusBarActor = statusBarActor.get();
+
    setAnchor(0.0f, 0.0f);
    setPosition(0.0f, 0.0f);
    setSize(getStage()->getSize());
@@ -56,6 +65,15 @@ void HeadUpDisplay::cleanAndRemove(void)
    detach();
 }
 
+void HeadUpDisplay::showStatusBars(bool show)
+{
+   m_statusBarActor->setVisible(show);
+}
+
+void HeadUpDisplay::showButtons(bool show)
+{
+   m_buttonDisplay->setVisible(show);
+}
 
 void HeadUpDisplay::registerLeapfrog(LeapFrog* leapfrog, bool hideShield)
 {
@@ -82,7 +100,7 @@ void HeadUpDisplay::registerLeapfrog(LeapFrog* leapfrog, bool hideShield)
    spStatusBar shotsBar = new StatusBar(
       leapfrog,
       m_sceneActor,
-      this,
+      m_statusBarActor,
       5,
       Vector2(g_Layout.getXFromRight(1), g_Layout.getYFromTop(1)),
       Vector2(g_Layout.getButtonWidth() * 2.0f, g_Layout.getButtonWidth() / 2.0f),
@@ -95,7 +113,7 @@ void HeadUpDisplay::registerLeapfrog(LeapFrog* leapfrog, bool hideShield)
    spStatusBar fuelBar = new StatusBar(
       leapfrog,
       m_sceneActor,
-      this,
+      m_statusBarActor,
       7,
       Vector2(g_Layout.getXFromRight(1), g_Layout.getYFromTop(1) + g_Layout.getButtonWidth() / 2.0f + 2.0f),
       Vector2(g_Layout.getButtonWidth() * 2.0f, g_Layout.getButtonWidth() / 2.0f),
@@ -108,7 +126,7 @@ void HeadUpDisplay::registerLeapfrog(LeapFrog* leapfrog, bool hideShield)
    spStatusBar shieldBar = new StatusBar(
       leapfrog,
       m_sceneActor,
-      this,
+      m_statusBarActor,
       6,
       Vector2(g_Layout.getXFromRight(1), g_Layout.getYFromTop(1) + g_Layout.getButtonWidth() / 2.0f * 2.0f + 2.0f),
       Vector2(g_Layout.getButtonWidth() * 2.0f, g_Layout.getButtonWidth() / 2.0f),
@@ -121,7 +139,7 @@ void HeadUpDisplay::registerLeapfrog(LeapFrog* leapfrog, bool hideShield)
    spStatusBar damageBar = new StatusBar(
       leapfrog,
       m_sceneActor,
-      this,
+      m_statusBarActor,
       9,
       Vector2(g_Layout.getXFromRight(1), g_Layout.getYFromTop(1) + g_Layout.getButtonWidth() / 2.0f * 3.0f + 2.0f),
       Vector2(g_Layout.getButtonWidth() * 2.0f, g_Layout.getButtonWidth() / 2.0f),
@@ -134,7 +152,7 @@ void HeadUpDisplay::registerLeapfrog(LeapFrog* leapfrog, bool hideShield)
    spStatusLiteral creditBar = new StatusLiteral(
       leapfrog,
       m_sceneActor,
-      this,
+      m_statusBarActor,
       8,
       Vector2(g_Layout.getXFromRight(1), g_Layout.getYFromTop(1) + g_Layout.getButtonWidth() / 2.0f * 4.0f + 2.0f),
       Vector2(g_Layout.getButtonWidth() * 2.0f, g_Layout.getButtonWidth() / 2.0f),

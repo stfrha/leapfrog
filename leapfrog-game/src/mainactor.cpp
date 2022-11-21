@@ -41,8 +41,6 @@ MainActor::MainActor() :
    m_menuArm(true),
    m_sceneObject(NULL)
 {
-   g_Layout.initLayout();
-
    m_splashScreenResource.loadXML("splash_screen.xml");
 
    // Now center splash on center of screen
@@ -241,6 +239,16 @@ void MainActor::startScene(void)
       Vector2(0.0f, 0.0f),
       m_sceneObject->getSize()); 
 
+   if (m_nextScene.m_nextSceneType == SceneActor::SceneTypeEnum::orbit)
+   {
+      g_HeadDownDisplay->goToOrbit();
+      g_headUpDisplay->showStatusBars(false);
+   }
+   else
+   {
+      g_HeadDownDisplay->goToMap();
+   }
+
    g_LuaInterface.setupMissionStateScene(m_sceneObject);
 
    m_sceneObject->connectToForeignObjects();
@@ -406,7 +414,10 @@ void MainActor::doUpdate(const UpdateState& us)
 
    if ((m_sceneObject != NULL) && (m_sceneObject->getIsInPause()) && (m_menuArm == true))
    {
-      g_headUpDisplay->cleanAndRemove();
+      // g_headUpDisplay->cleanAndRemove();
+      g_headUpDisplay->showStatusBars(false);
+      g_headUpDisplay->setTouchEnabled(false);
+      g_headUpDisplay->showButtons(false);
       g_HeadDownDisplay->goToMenu();
       g_MessageDisplay->setFullHeight(true);
 
@@ -477,7 +488,15 @@ void MainActor::buttonClicked(int i)
    if (i == 1)
    {
       m_postMenuAction = PostMenuActionType::continueCurrent;
-      g_HeadDownDisplay->goToMap();
+
+      if (m_nextScene.m_nextSceneType == SceneActor::SceneTypeEnum::orbit)
+      {
+         g_HeadDownDisplay->goToOrbit();
+      }
+      else
+      {
+         g_HeadDownDisplay->goToMap();
+      }
    }
    else if (i == 2)
    {
@@ -517,16 +536,31 @@ void MainActor::restartedFromMenu(void)
    if (m_postMenuAction == PostMenuActionType::continueCurrent)
    {
       // Release pause
-      g_headUpDisplay->initialiseHeadUpDisplay(
-         this,
-         m_sceneObject,
-         Vector2(0.0f, 0.0f),
-         m_sceneObject->getSize());
+      g_headUpDisplay->setTouchEnabled(true);
+      g_headUpDisplay->showButtons(true);
+      g_headUpDisplay->showStatusBars(m_nextScene.m_nextSceneType != SceneActor::SceneTypeEnum::orbit);
+      //g_headUpDisplay->initialiseHeadUpDisplay(
+      //   this,
+      //   m_sceneObject,
+      //   Vector2(0.0f, 0.0f),
+      //   m_sceneObject->getSize());
+      // g_headUpDisplay->registerLeapfrog(m_sceneObject->m_leapfrog, (m_nextScene.m_nextSceneType == SceneActor::SceneTypeEnum::orbit));
 
-      g_HeadDownDisplay->initialiseHdd(
-         this,
-         Vector2(0.0f, 0.0f),
-         m_sceneObject->getSize());
+      //g_HeadDownDisplay->initialiseHdd(
+      //   this,
+      //   Vector2(0.0f, 0.0f),
+      //   m_sceneObject->getSize());
+
+
+
+      //if (m_nextScene.m_nextSceneType == SceneActor::SceneTypeEnum::orbit)
+      //{
+      //   g_HeadDownDisplay->goToOrbit();
+      //}
+      //else
+      //{
+      //   g_HeadDownDisplay->goToMap();
+      //}
    }
    else if (m_postMenuAction == PostMenuActionType::startNew)
    {

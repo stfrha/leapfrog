@@ -30,7 +30,7 @@ private:
 public:
 	Layout();
 
-   void initLayout(void);
+   void initLayout(int sizeCode = 0);
    void initStageSize(oxygine::Vector2 stageSize, float boundaryWidth);
 
    float getButtonWidth(void);
