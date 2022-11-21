@@ -66,7 +66,6 @@ public:
    };
 
 private:
-   oxygine::Clock* m_clock;
    float c_secondsPerUpdate = 1.0f / 60.0f;
    spCompoundObject m_panObject;
    bool m_armManPanEnableChange;
@@ -76,7 +75,6 @@ private:
    ManualPan* m_manualPan;
    std::vector<SceneTimer> m_timers;
    int m_timerIdCounter;
-   bool m_isInPause;
 
    std::vector<ParallaxBackground> m_parallaxBackgrounds;
 
@@ -108,9 +106,6 @@ public:
 
    const float& getZoom() const;
    void setZoom(const float& pos);
-
-   bool getIsInPause(void);
-   void setIsInPause(bool isInPause);
 
 	SceneActor(
       b2World* world, 

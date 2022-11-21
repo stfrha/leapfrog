@@ -165,14 +165,9 @@ SceneActor::SceneActor(
    m_panObject(NULL),
    m_manualPan(NULL),
    m_timerIdCounter(0),
-   m_isInPause(false),
    m_armPauseChange(true),
    m_leapfrog(NULL)
 {
-   m_clock = new Clock;
-   setClock(m_clock);
-
-
 	setScale(m_stageToViewPortScale);
 
    // Set wanted viewport position to center (since panorate mode defaults to center)
@@ -377,25 +372,6 @@ const float& SceneActor::getZoom() const
    return m_zoomScale;
 }
 
-bool SceneActor::getIsInPause(void)
-{
-   return m_isInPause;
-}
-
-void SceneActor::setIsInPause(bool isInPause)
-{
-   m_isInPause = isInPause;
-
-   if (!isInPause)
-   {
-      m_clock->resume();
-   }
-   else
-   {
-      m_clock->pause();
-   }
-}
-
 void SceneActor::setZoom(const float& zoom)
 {
    m_zoomScale = zoom;
@@ -492,7 +468,7 @@ void SceneActor::doUpdate(const UpdateState& us)
    testForBoundaryRepel();
 
    float spu = c_secondsPerUpdate;
-   if (m_isInPause)
+   if (g_MainActor->isInPause())
    {
       spu = 0.0f;
    }
@@ -604,19 +580,8 @@ void SceneActor::doUpdate(const UpdateState& us)
 
    if (m_pausePressed && m_armPauseChange)
    {
-      if (m_isInPause)
-      {
-         m_isInPause = false;
-         m_clock->resume();
-      }
-      else
-      {
-         m_isInPause = true;
-         m_clock->pause();       
-      }
-
+      g_MainActor->goToPause();
       m_armPauseChange = false;
-      m_pausePressed = false;
    }
 
    if (!m_pausePressed && !m_armPauseChange)

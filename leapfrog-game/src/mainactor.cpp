@@ -43,7 +43,8 @@ MainActor::MainActor() :
    m_reloadPressed(false),
    m_reloadArm(true),
    m_menuArm(true),
-   m_sceneObject(NULL)
+   m_sceneObject(NULL),
+   m_isInPause(false)
 {
    m_splashScreenResource.loadXML("splash_screen.xml");
 
@@ -202,6 +203,9 @@ void MainActor::startScene(void)
 
       window->addChild(sceneObj);
 
+      m_clock = new Clock;
+      sceneObj->setClock(m_clock);
+
       if (m_nextScene.m_nextSceneType == SceneActor::SceneTypeEnum::landing)
       {
          m_sceneObject = sceneObj.get();
@@ -215,19 +219,21 @@ void MainActor::startScene(void)
    }
    else if (m_nextScene.m_nextSceneType == SceneActor::SceneTypeEnum::orbit)
    {
-      spCompoundObject co = static_cast<SceneActor*>(CompoundObject::readDefinitionXmlFile(
+      spOrbitScene sceneObj = static_cast<OrbitScene*>(CompoundObject::readDefinitionXmlFile(
             NULL,
             NULL,
             m_world,
             Vector2(0.0f, 0.0f),
             m_nextScene.m_nextSceneFile));
 
-      window->addChild(co);
+      window->addChild(sceneObj);
 
-      OrbitScene* os = static_cast<OrbitScene*>(co.get());
-      m_sceneObject = os->m_space;
+      m_clock = new Clock;
+      sceneObj->setClock(m_clock);
 
-      co.get()->addEventListener(ExitOrbitSceneEvent::EVENT, CLOSURE(this, &MainActor::exitOrbitScene));
+      m_sceneObject = sceneObj->m_space;
+
+      sceneObj->addEventListener(ExitOrbitSceneEvent::EVENT, CLOSURE(this, &MainActor::exitOrbitScene));
    }
 
    addEventListener(StatusResourceDepletedEvent::EVENT, CLOSURE(this, &MainActor::resourceDepletedHandler));
@@ -240,6 +246,8 @@ void MainActor::startScene(void)
       m_sceneObject,
       Vector2(0.0f, 0.0f),
       m_sceneObject->getSize()); 
+
+   g_headUpDisplay->setTouchEnabled(true);
 
    if (m_nextScene.m_nextSceneType == SceneActor::SceneTypeEnum::orbit)
    {
@@ -267,6 +275,7 @@ void MainActor::startScene(void)
    //m_debugDraw->attachTo(m_sceneObject);
    //m_debugDraw->setWorld(Scales::c_physToStageScale, m_sceneObject->GetWorld());
    //m_debugDraw->setPriority(2550);
+
 }
 
 float MainActor::getProperty(std::string object, int propId)
@@ -414,19 +423,6 @@ void MainActor::doUpdate(const UpdateState& us)
       initMainActor();
    }
 
-   if ((m_sceneObject != NULL) && (m_sceneObject->getIsInPause()) && (m_menuArm == true))
-   {
-      // g_headUpDisplay->cleanAndRemove();
-      g_headUpDisplay->showStatusBars(false);
-      g_headUpDisplay->setTouchEnabled(false);
-      g_headUpDisplay->showButtons(false);
-      g_HeadDownDisplay->goToMenu();
-      g_MessageDisplay->setFullHeight(true);
-
-      m_menuArm = false;
-
-   }
-
    if (m_reloadArm && m_reloadPressed)
    {
       m_reloadArm = false;
@@ -531,8 +527,9 @@ void MainActor::buttonClicked(int i)
 void MainActor::restartedFromMenu(void)
 {
    m_menuArm = true;
-   m_sceneObject->setIsInPause(false);
-
+   m_clock->resume();
+   m_isInPause = false;
+ 
    g_MessageDisplay->setFullHeight(false);
 
    if (m_postMenuAction == PostMenuActionType::continueCurrent)
@@ -541,28 +538,7 @@ void MainActor::restartedFromMenu(void)
       g_headUpDisplay->setTouchEnabled(true);
       g_headUpDisplay->showButtons(true);
       g_headUpDisplay->showStatusBars(m_nextScene.m_nextSceneType != SceneActor::SceneTypeEnum::orbit);
-      //g_headUpDisplay->initialiseHeadUpDisplay(
-      //   this,
-      //   m_sceneObject,
-      //   Vector2(0.0f, 0.0f),
-      //   m_sceneObject->getSize());
-      // g_headUpDisplay->registerLeapfrog(m_sceneObject->m_leapfrog, (m_nextScene.m_nextSceneType == SceneActor::SceneTypeEnum::orbit));
 
-      //g_HeadDownDisplay->initialiseHdd(
-      //   this,
-      //   Vector2(0.0f, 0.0f),
-      //   m_sceneObject->getSize());
-
-
-
-      //if (m_nextScene.m_nextSceneType == SceneActor::SceneTypeEnum::orbit)
-      //{
-      //   g_HeadDownDisplay->goToOrbit();
-      //}
-      //else
-      //{
-      //   g_HeadDownDisplay->goToMap();
-      //}
    }
    else if (m_postMenuAction == PostMenuActionType::startNew)
    {
@@ -596,19 +572,22 @@ void MainActor::restartedFromMenu(void)
    {
       g_GameStatus.setSceneMissionState("landing_scene.xml", 1, 1, 0, "orbit_scene.xml", 2, 0);
       g_LuaInterface.lua_forceCurrentScene();
-      g_LuaInterface.lua_startInitialScene();
+      g_LuaInterface.lua_findLeapfrogEntryPosition(static_cast<SceneActor::SceneTypeEnum>(g_GameStatus.getExitSceneType()), g_GameStatus.getExitParameter());
+      armScene(g_GameStatus.getCurrentScene(), g_GameStatus.getCurrentSceneType());
    }
    else if (m_postMenuAction == PostMenuActionType::testSpace)
    {
-      g_GameStatus.setSceneMissionState("deep_space_scene.xml", 1, 1, 1, "landing_scene.xml", 0, 0);
+      g_GameStatus.setSceneMissionState("deep_space_scene.xml", 1, 1, 1, "landing_scene.xml", 0, 1);
       g_LuaInterface.lua_forceCurrentScene();
-      g_LuaInterface.lua_startInitialScene();
+      g_LuaInterface.lua_findLeapfrogEntryPosition(static_cast<SceneActor::SceneTypeEnum>(g_GameStatus.getExitSceneType()), g_GameStatus.getExitParameter());
+      armScene(g_GameStatus.getCurrentScene(), g_GameStatus.getCurrentSceneType());
    }
    else if (m_postMenuAction == PostMenuActionType::testOrbit)
    {
-      g_GameStatus.setSceneMissionState("orbit_scene.xml", 1, 1, 2, "deep_space_scene.xml", 1, 0);
+      g_GameStatus.setSceneMissionState("orbit_scene.xml", 1, 1, 2, "deep_space_scene.xml", 1, 3);
       g_LuaInterface.lua_forceCurrentScene();
-      g_LuaInterface.lua_startInitialScene();
+      g_LuaInterface.lua_findLeapfrogEntryPosition(static_cast<SceneActor::SceneTypeEnum>(g_GameStatus.getExitSceneType()), g_GameStatus.getExitParameter());
+      armScene(g_GameStatus.getCurrentScene(), g_GameStatus.getCurrentSceneType());
    }
 }
 
@@ -646,4 +625,25 @@ void MainActor::cleanUpAndQuit(void)
    }
 
    core::requestQuit();
+}
+
+bool MainActor::isInPause(void)
+{
+   return m_isInPause;
+}
+
+void MainActor::goToPause(void)
+{
+   m_clock->pause();
+   m_isInPause = true;
+
+   // g_headUpDisplay->cleanAndRemove();
+   g_headUpDisplay->showStatusBars(false);
+   g_headUpDisplay->setTouchEnabled(false);
+   g_headUpDisplay->showButtons(false);
+   g_HeadDownDisplay->goToMenu();
+   g_MessageDisplay->setFullHeight(true);
+
+   m_menuArm = false;
+
 }

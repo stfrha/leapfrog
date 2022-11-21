@@ -196,7 +196,7 @@ void MapItem::doUpdate(const oxygine::UpdateState& us)
 HeadDownDisplay::HeadDownDisplay() :
    m_itemIdRepository(0),
    m_actorExists(false),
-   m_hudMode(HudModeType::hudModeMap)
+   m_hudMode(HudModeType::hudModeInit)
 {
 }
 
@@ -217,7 +217,6 @@ void HeadDownDisplay::clearDisplay(void)
       }
       actor = next;
    }
-
 }
 
 void HeadDownDisplay::clearMap(void)
@@ -294,7 +293,6 @@ void HeadDownDisplay::initialiseHdd(
    setPosition(m_mapPos);
    setScale(m_mapScale);
    setTouchEnabled(false);
-   setTouchEnabled(false);
    attachTo(g_MainActor);
 
    m_actorExists = true;
@@ -306,6 +304,8 @@ void HeadDownDisplay::initialiseHdd(
    {
       (*it)->addToMapActor(this, m_itemScale);
    }
+
+   resetHudMode();
 }
 
 int HeadDownDisplay::addMeToMap(
@@ -400,7 +400,7 @@ void HeadDownDisplay::doUpdate(const oxygine::UpdateState& us)
 void HeadDownDisplay::goToOrbit(void)
 {
 
-   if (m_hudMode == HudModeType::hudModeMap)
+   if ((m_hudMode == HudModeType::hudModeMap) || (m_hudMode == HudModeType::hudModeInit))
    {
       clearMap();
       setResAnim(g_GraphRes.getResources(GraphicResources::ResourceTypeEnum::hud).getResAnim("display_thin"));
@@ -413,7 +413,7 @@ void HeadDownDisplay::goToOrbit(void)
    {
       clearDisplay();
    }
-   m_hudMode = HudModeType::hudModeOrbit;
+
    spTween tween = addTween(Actor::TweenSize(m_orbitSizeX, m_orbitSizeY), 500);
    tween->setDoneCallback(CLOSURE(this, &HeadDownDisplay::orbitStartTransitionComplete));
 
@@ -444,6 +444,11 @@ void HeadDownDisplay::goToMenu(void)
 
 }
 
+void HeadDownDisplay::resetHudMode(void)
+{
+   m_hudMode = HudModeType::hudModeInit;
+}
+
 void HeadDownDisplay::goToMap(void)
 {
    if (m_hudMode != HudModeType::hudModeMap)
@@ -468,7 +473,12 @@ void HeadDownDisplay::menuStartTransitionComplete(Event* event)
 
 void HeadDownDisplay::orbitStartTransitionComplete(oxygine::Event* event)
 {
-   g_MainActor->restartedFromMenu();
+   if (m_hudMode != HudModeType::hudModeInit)
+   {
+      g_MainActor->restartedFromMenu();
+   }
+
+   m_hudMode = HudModeType::hudModeOrbit;
 }
 
 
@@ -479,12 +489,16 @@ void HeadDownDisplay::mapTransitionComplete(oxygine::Event* event)
    setHorizontalMode(Box9Sprite::TILING_FULL);
    setSize(m_sceneWidth, m_sceneHeight);
    setScale(m_mapScale);
-   m_hudMode = HudModeType::hudModeMap;
 
    for (auto it = m_mapActors.begin(); it != m_mapActors.end(); ++it)
    {
       (*it)->addToMapActor(this, m_itemScale);
    }
 
-   g_MainActor->restartedFromMenu();
+   if (m_hudMode != HudModeType::hudModeInit)
+   {
+      g_MainActor->restartedFromMenu();
+   }
+
+   m_hudMode = HudModeType::hudModeMap;
 }

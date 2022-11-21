@@ -91,6 +91,7 @@ private:
 
    enum HudModeType
    {
+      hudModeInit,
       hudModeMap,
       hudModeOrbit,
       hudModeMenu
@@ -147,6 +148,8 @@ public:
    void goToOrbit(void);
    void goToMenu(void);
    void goToMap(void);
+
+   void resetHudMode(void);
 
 protected:
 	void doUpdate(const oxygine::UpdateState& us);

@@ -26,6 +26,8 @@ DECLARE_SMART(MainActor, spMainActor)
 class MainActor : public oxygine::Actor
 {
 private:
+   oxygine::spClock m_clock;
+   bool m_isInPause;
 
    enum PostMenuActionType
    {
@@ -103,6 +105,8 @@ public:
       std::string object,
       int eventId);
 
+   void goToPause(void);
+   bool isInPause(void);
    void buttonClicked(int button);
    void restartedFromMenu(void);
    void menuStartTransitionComplete(void);

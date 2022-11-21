@@ -2,6 +2,7 @@
 #include "freespaceactor.h"
 #include "objectfactory.h"
 #include "actoruserdata.h"
+#include "mainactor.h"
 
 using namespace oxygine;
 using namespace pugi;
@@ -64,7 +65,7 @@ void ObjectFactory::readObjectFactoryNode(const xml_node& objectNode)
 
 void ObjectFactory::doUpdate(const oxygine::UpdateState& us)
 {
-   if (!m_sceneActor->getIsInPause())
+   if (!g_MainActor->isInPause())
    {
       m_timeSinceLast += us.dt;
 

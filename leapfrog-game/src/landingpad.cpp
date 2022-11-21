@@ -2,6 +2,7 @@
 #include "landingpad.h"
 #include "landingpadevents.h"
 
+#include "mainactor.h"
 #include "sceneactor.h"
 
 #include "gamestatus.h"
@@ -144,7 +145,7 @@ void LandingPad::doUpdate(const UpdateState &us)
       }
       else
       {
-         if (!m_sceneActor->getIsInPause())
+         if (!g_MainActor->isInPause())
          {
             // Perhaps add fuel to some class of properties that are not allowed to change
             // while in pause, instead of this type of if statements.
