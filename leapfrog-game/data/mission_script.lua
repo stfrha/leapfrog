@@ -19,7 +19,7 @@ function lua_setupMissionStateScene()
          -- Note that if the file loaded is not the same configuration as 
          -- the nextLfMode, the LF will reconfigure as an animation
          c_addPositionedChildObject(nextLfFile, "leapfrog1", nextLfPosX, nextLfPosY)
-         c_setObjectProperty("leapfrog1", 1, nextLfMode)
+         c_setObjectProperty("leapfrog1", 0, nextLfMode)
          lfDefined = true      
       end
    end

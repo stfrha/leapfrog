@@ -121,7 +121,8 @@ namespace LeapfrogEditor
          {
             if (value == -1)
             {
-               _selectedPickupTypeIndex = 0;
+               return; // Why is -1 being written to it?
+               // _selectedPickupTypeIndex = 0;
             }
             else
             {
@@ -156,7 +157,8 @@ namespace LeapfrogEditor
          {
             if (value == -1)
             {
-               _selectedAmountTypeIndex = 0;
+               return;
+               // _selectedAmountTypeIndex = 0;
             }
             else
             {

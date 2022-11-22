@@ -489,7 +489,7 @@
     <flameEmitterProperties
       body="lfMainBody"
       systemOriginX="0.066538249786844944"
-      systemOriginY="8.9774849288035057"
+      systemOriginY="11.25951999800759"
       angle="90"
       emitterWidth="4"
       lifeTime="250"

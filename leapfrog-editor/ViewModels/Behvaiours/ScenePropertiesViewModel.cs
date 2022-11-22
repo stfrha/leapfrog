@@ -156,13 +156,14 @@ namespace LeapfrogEditor
          {
             if (value == -1)
             {
-               _selectedSceneTypeIndex = 0;
+               return;
+               // _selectedSceneTypeIndex = 0;
             }
             else
             {
                _selectedSceneTypeIndex = value;
             }
-            OnPropertyChanged("SelectedPickupTypeIndex");
+            OnPropertyChanged("SelectedSceneTypeIndex");
 
             SceneType = SceneTypes[_selectedSceneTypeIndex];
          }

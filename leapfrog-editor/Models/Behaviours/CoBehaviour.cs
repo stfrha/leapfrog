@@ -99,12 +99,7 @@ namespace LeapfrogEditor
 
       public bool ShouldSerializePickupObjProps()
       {
-         return (Type == "explosiveObject");
-      }
-
-      public bool ShouldSerializeBackgroundProps()
-      {
-         return (Type == "parallaxBackground");
+         return (Type == "pickupObject");
       }
 
 

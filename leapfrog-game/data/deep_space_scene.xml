@@ -346,12 +346,6 @@
           damageBulletEqv="1"
           impactExplosion="true"
           impactThreshold="2500" />
-        <pickupObjectProperties
-          pickupType="notDef"
-          amountType="notDefAmount"
-          amount="0"
-          amountMax="0"
-          amountMin="0" />
       </behaviour>
     </compoundObject>
   </childObject>
@@ -406,7 +400,14 @@
         density="1"
         friction="0" />
       <behaviour
-        type="pickupObject" />
+        type="pickupObject">
+        <pickupObjectProperties
+          pickupType="resourceCoin"
+          amountType="random"
+          amount="0"
+          amountMax="70"
+          amountMin="180" />
+      </behaviour>
     </compoundObject>
   </childObject>
   <childObject
@@ -429,7 +430,14 @@
         density="1"
         friction="0" />
       <behaviour
-        type="pickupObject" />
+        type="pickupObject">
+        <pickupObjectProperties
+          pickupType="resourceFuel"
+          amountType="random"
+          amount="0"
+          amountMax="200"
+          amountMin="400" />
+      </behaviour>
     </compoundObject>
   </childObject>
   <childObject
@@ -452,7 +460,14 @@
         density="1"
         friction="0" />
       <behaviour
-        type="pickupObject" />
+        type="pickupObject">
+        <pickupObjectProperties
+          pickupType="resourceAmmo"
+          amountType="random"
+          amount="0"
+          amountMax="100"
+          amountMin="500" />
+      </behaviour>
     </compoundObject>
   </childObject>
   <childObject
@@ -475,7 +490,14 @@
         density="1"
         friction="0" />
       <behaviour
-        type="pickupObject" />
+        type="pickupObject">
+        <pickupObjectProperties
+          pickupType="resourceShield"
+          amountType="random"
+          amount="0"
+          amountMax="4"
+          amountMin="50" />
+      </behaviour>
     </compoundObject>
   </childObject>
 </compoundObject>

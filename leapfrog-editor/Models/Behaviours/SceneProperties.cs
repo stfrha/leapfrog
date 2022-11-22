@@ -41,7 +41,9 @@ namespace LeapfrogEditor
       public string SceneType
       {
          get { return _sceneType; }
-         set { _sceneType = value; }
+         set { 
+            _sceneType = value; 
+         }
       }
 
       [XmlAttribute("width")]

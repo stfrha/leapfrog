@@ -97,7 +97,7 @@ function lua_findLeapfrogEntryPosition(exitSceneType, exitParameter)
          nextLfFile = "leapfrog_deep_space.xml"
          nextLfPosX = -8
          nextLfPosY = 18
-         nextLfMode = 3
+         nextLfMode = 1
          useInitialLfPos = false
          lfDefined = false
       end

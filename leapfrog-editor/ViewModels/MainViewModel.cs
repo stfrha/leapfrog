@@ -424,10 +424,11 @@ namespace LeapfrogEditor
          // What object is we pointing at?
          if (parameter is CompoundObjectViewModel)
          {
-            EditedCpVm = parameter as CompoundObjectViewModel;
-            EditedCpVm.OnPropertyChanged("");
-            OnPropertyChanged("");
             DeselectAll();
+
+            EditedCpVm = parameter as CompoundObjectViewModel;
+            //EditedCpVm.OnPropertyChanged("");
+            //OnPropertyChanged("");
 
             // Build global shape collection
             EditedCpVm.BuildGlobalShapeCollection(ShowJoints, ShowSystems, ShowBackgrounds);
