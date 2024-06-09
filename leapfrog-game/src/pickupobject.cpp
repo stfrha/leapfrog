@@ -18,7 +18,11 @@ PickupItem::PickupTypeEnum PickupItem::pickupTypeFromString(const string& s)
    if (s == "resourceAmmo") return PickupTypeEnum::resourceAmmo;
    if (s == "resourceFuel") return PickupTypeEnum::resourceFuel;
    if (s == "resourceShield") return PickupTypeEnum::resourceShield;
-   if (s == "resourceCoin") return PickupTypeEnum::resourceCoin;
+   if (s == "resourceCoin")
+   {
+      return PickupTypeEnum::resourceCoin;
+
+   }
    if (s == "inventory") return PickupTypeEnum::inventory;
    return PickupTypeEnum::notDef;
 }
@@ -60,7 +64,8 @@ void PickupItem::doPickupAmountCalculation(ObjectResources* status)
    }
    else
    {
-      amount = static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (m_amountMax - m_amountMin)) + m_amountMin);
+      // amount = static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (m_amountMax - m_amountMin)) + m_amountMin);
+      amount = static_cast<float>(rand() / static_cast<float>(RAND_MAX + 1)) * (m_amountMax - m_amountMin + 1.0f) + m_amountMin;
    }
    
    if (m_pickUpType == PickupTypeEnum::resourceAmmo)

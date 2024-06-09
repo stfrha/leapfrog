@@ -405,8 +405,8 @@
           pickupType="resourceCoin"
           amountType="random"
           amount="0"
-          amountMax="70"
-          amountMin="180" />
+          amountMax="180"
+          amountMin="70" />
       </behaviour>
     </compoundObject>
   </childObject>
@@ -435,8 +435,8 @@
           pickupType="resourceFuel"
           amountType="random"
           amount="0"
-          amountMax="200"
-          amountMin="400" />
+          amountMax="100"
+          amountMin="70" />
       </behaviour>
     </compoundObject>
   </childObject>
@@ -466,7 +466,7 @@
           amountType="random"
           amount="0"
           amountMax="100"
-          amountMin="500" />
+          amountMin="70" />
       </behaviour>
     </compoundObject>
   </childObject>
@@ -495,7 +495,7 @@
           pickupType="resourceShield"
           amountType="random"
           amount="0"
-          amountMax="4"
+          amountMax="100"
           amountMin="50" />
       </behaviour>
     </compoundObject>

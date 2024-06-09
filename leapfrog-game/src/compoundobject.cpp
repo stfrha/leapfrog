@@ -580,7 +580,7 @@ void CompoundObject::doCommonShapeDefinitions(
 }
 
 void CompoundObject::doCollisionDefinitions(
-   b2Fixture*& fixture,
+   b2Fixture* fixture,
    xml_node& objectNode,
    int groupIndex)
 {

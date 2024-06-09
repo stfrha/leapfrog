@@ -89,6 +89,11 @@ void FlameEmitter::doUpdate(const oxygine::UpdateState& us)
 
       b2Vec2 impulse = b2Vec2((ri + m_impulseMagnitude) * cos(emitAngle), (ri + m_impulseMagnitude) * sin(emitAngle));
 
+      if (m_groupIndex != 7)
+      {
+         int a = 10;
+      }
+
       // Create one test flame particle
       spFlameParticle flameParticle = new FlameParticle(
          m_emitterBody->GetWorld(), 

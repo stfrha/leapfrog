@@ -279,7 +279,7 @@ public:
       pugi::xml_node& objectNode);
 
    static void doCollisionDefinitions(
-      b2Fixture*& fixture,
+      b2Fixture* fixture,
       pugi::xml_node& objectNode,
       int groupIndex);
 
