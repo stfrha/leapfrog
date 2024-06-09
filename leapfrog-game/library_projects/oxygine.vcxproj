@@ -88,9 +88,9 @@
     </ClCompile>
     <Lib>
       <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
-      <AdditionalDependencies>libcurl_imp.lib;ws2_32.lib;libjpeg.lib;libpng.lib;zlib.lib;opengl32.lib;pthreadVCE2.lib;SDL2.lib;SDL2main.lib</AdditionalDependencies>
+      <AdditionalDependencies>libcurl_imp.lib;ws2_32.lib;libjpeg.lib;libpng.lib;zlib.lib;opengl32.lib;pthreadVCE2.lib;SDL2.lib;SDL2main.lib;legacy_stdio_definitions.lib</AdditionalDependencies>
       <AdditionalDependencies Condition="'$(VisualStudioVersion)' == '14.0' or '$(VisualStudioVersion)' == '15.0'">libcurl_imp.lib;ws2_32.lib;libjpeg-2015.lib;libpng-2015.lib;libzlib.lib;opengl32.lib;pthreadVCE2.lib;SDL2.lib;SDL2main.lib;</AdditionalDependencies>
-      <AdditionalLibraryDirectories>..\..\..\oxygine-framework\oxygine\third_party\win32\libraries;..\..\..\oxygine-framework\libs</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>..\..\..\oxygine-framework\oxygine\third_party\win32\libraries;..\..\..\leapfrog\Win32\Release</AdditionalLibraryDirectories>
     </Lib>
     <PostBuildEvent>
       <Command>copy $(TargetPath) $(ProjectDir)\..\lib\$(TargetFileName)</Command>
@@ -110,9 +110,9 @@
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
     </ClCompile>
     <Lib>
-      <AdditionalDependencies>libcurl_imp.lib;ws2_32.lib;libjpeg.lib;libpng.lib;zlib.lib;opengl32.lib;pthreadVCE2.lib;SDL2.lib;SDL2main.lib</AdditionalDependencies>
+      <AdditionalDependencies>libcurl_imp.lib;ws2_32.lib;libjpeg.lib;libpng.lib;zlib.lib;opengl32.lib;pthreadVCE2.lib;SDL2.lib;SDL2main.lib;legacy_stdio_definitions.lib</AdditionalDependencies>
       <AdditionalDependencies Condition="'$(VisualStudioVersion)' == '14.0' or '$(VisualStudioVersion)' == '15.0'">libcurl_imp.lib;ws2_32.lib;libjpeg-2015.lib;libpng-2015.lib;libzlib.lib;opengl32.lib;pthreadVCE2.lib;SDL2.lib;SDL2main.lib;</AdditionalDependencies>
-      <AdditionalLibraryDirectories>..\..\..\oxygine-framework\oxygine\third_party\win32\libraries;..\..\..\oxygine-framework\libs</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>..\..\..\oxygine-framework\oxygine\third_party\win32\libraries;..\..\..\leapfrog\Win32\Release</AdditionalLibraryDirectories>
     </Lib>
     <PostBuildEvent>
       <Command>copy $(TargetPath) $(ProjectDir)\..\lib\$(TargetFileName)</Command>

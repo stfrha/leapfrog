@@ -86,6 +86,17 @@ Verkar ok, men jag behövde ändra include paths till lua-filerna (lua.hpp). Må
 
 Provade nu att hämta ut en fräsch repo-uppsättning och försökte bygga. Fick då ett nytt fel. Men det löste sig när jag valde rätt branch av SDL. Sedan funkade det.
 
+Men inte ändå. Det är någon skillnad mellan (1) git-dummy och (2) git-leapfrogtest. Verkar som att git-dummy har kvar de gamla, leapfrog-projekten. 
+
+Använder dem båda rätt projekt för SDL? Kolla i SLN:
+(1): Ja, den använder den från SDL
+(2): Japp
+
+Kan det vara så att oxygine råkar läsa ett gammalt lib när det bygger? Från början hämtades libet från oxygine-framework/libs men nu skapas SDL i leapfrog\Win32\Release. Japp. Det är fixat och det får nu att bygga från git-dummy. Behövde ändra i oxygine-framework och leapfrog.
+
+
+
+
 
 
 
