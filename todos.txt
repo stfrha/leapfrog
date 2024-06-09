@@ -82,6 +82,10 @@ Men sedan kom ett nytt fel. Något om Sandbox inte hittade filen den sökte efte
 
 Ok, nu när det fungerad så behöver jag göra det från scratch igen. Låt oss skriva över första projektet och ta det från där.
 
+Verkar ok, men jag behövde ändra include paths till lua-filerna (lua.hpp). Måste nog ändra på motsvarande sätt i windows. Det funkade!! Committar nu. 
+
+
+
 
 
 
