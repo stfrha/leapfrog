@@ -84,6 +84,8 @@ Ok, nu när det fungerad så behöver jag göra det från scratch igen. Låt oss
 
 Verkar ok, men jag behövde ändra include paths till lua-filerna (lua.hpp). Måste nog ändra på motsvarande sätt i windows. Det funkade!! Committar nu. 
 
+Provade nu att hämta ut en fräsch repo-uppsättning och försökte bygga. Fick då ett nytt fel. Men det löste sig när jag valde rätt branch av SDL. Sedan funkade det.
+
 
 
 
