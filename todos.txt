@@ -1,0 +1,103 @@
+Hej
+
+Här är min nya journal för Leapfrog-utveckling.
+
+Jag försöker nu bygga på Mac (har lyckats på PC, Android och Linux (tror jag)). Det funkar men skärmen blir bara en fjärdedel när jag kör på Macen. Antagligen pga retinaskärm som har dubbel upplösning. (Antar att den har dubbel fysisk upplösning men vanlig logisk upplösning, dvs det är en skillnad på punkter och pixlar). 
+
+Det finns en fix för detta i en senare SDL. (Eller hur: Japp, även om den senaste libsdl-org/SDL har ytterligare senare fixar.)
+
+Så, kan jag använda senaste SDL för Leapfrog? Hur byggar jag det? Jag antar att det kommer skita sig när man kombinerar oxygine med senaste SDL. Kanske kan jag uppdatera oxygine så det matchar senaste SDL? 
+
+Så, hur bygger jag? Hur används oxygine i Leapfrog? Oxygine byggs som ett lib: leapfrog-game/bin/oxygine-d.lib för debug eller oxygine.lib för release. Så vem byger oxygine-libbet? Följer detta med installationen? Nej, förstås inte. Det finns ett projekt som måste byggas. Det heter oxygine. 
+
+Oxygine byggs som ett lib som i sin tur använder andra lib (några av dessa finns projekt i oxygine):
+                     projekt    dll
+libcurl_imp.lib                  x 
+ws2_32.lib
+libjpeg.lib             x        
+libpng.lib              x
+zlib.lib                x        x  
+opengl32.lib
+pthreadVCE2.lib                  x
+SDL2.lib                x
+SDL2main.lib            x
+
+De övriga måste ingå i repot. Stämmer detta? 
+
+Oxygine hittar sina lib här:
+..\..\..\oxygine-framework\oxygine\third_party\win32\libraries - libcurl_imp.lib, libjpeg.lib, libpng.lib, libzlib.lib, pthreadVCE2.lib. Jag har dessutom byggt zlib.lib här. 
+..\..\..\oxygine-framework\libs - Här finns sdl2.dll och SDL2.lib/SDL2main.lib.
+
+I leapforg-game/data finns följande dll:er:
+libcurl.dll
+libeay32.dll
+libssh2.dll
+pthreadVCE2.dll
+SDL2.dll
+ssleay32.dll
+zlib.dll
+
+Hämtade senaste SDL, valde branch SDL2. Byggde för både debug och release, båda fungerade. Hämtade senaste oxygine. Byggde och fick några fel. Skall se om jag kan fixa dem.
+Error: unresolved external symbol __imp__fprintf
+Löstes med följande länk, la till legacy_stdio_definitions.lib i Properties/Librarian/General/Additional Dependencies enligt följande länk: https://stackoverflow.com/questions/30412951/unresolved-external-symbol-imp-fprintf-and-imp-iob-func-sdl2
+Löste bara två errors, följande kvarstod. Provade att ändra i Properties/C++/Code generation/Runtime libraries/MD till MT -> funkade ännu sämre
+Error: unresolved external symbol __imp____iob_func
+För detta behövde jag lägga till följande kod i main.cpp
+FILE _iob[] = { *stdin, *stdout, *stderr };
+extern "C" FILE * __cdecl __iob_func(void)
+{
+   return _iob;
+}
+Näst fel:
+unresolved external symbol __imp__CommandLineToArgvW@8
+Löste sig med att lägga till Shell32.lib i Linker/General/additoinal dependencies.
+
+Gick att bygga men inte köra. Kanske måste fler bibliotek (som är förkompilerade i oxygine) byggas för rätt version av VS. Jag har projekt för zlib, png och jpeg men vet inte var jag fått dem ifrån. Från GITHUB såklart. 
+libjpeg: Hittar inte en xcproj-fil i den. 
+
+Okej, det är uppenbart att jag har gjort det här jobbet förut. Jag har antaligen byggt alla lib för vs2019. Så jag borde kunna använda mina existerande projekt. Alltså borde jag testa att bygga leapfrog från scratch men med senaste SDL2.
+Risken är nu att jag bygger ny version av SDL2 men med äldre projektfil. Kanske behöver projektfilen uppdateras enligt senaste SDL. Okej, men jag har antagligen (tidigare) kopierat SDL-projekten och gjort om dem så de bygger dll-erna och sparar dem på rätt ställe. Istället för att kopiera dem. Jag borde istället använda SDL's egna projekt och kopiera dem till rätt plats med ett post-build tool (bat-fil typ).
+libjpeg och libpng verkar jag ändrat till att vara statiska lib (istället för dll:er). Fine. 
+Så, med png och jpeg byggda från sina repon med projektfiler i leapfrog, men med SDL2.dll byggd från SDL's senaste repo, och kopierat dll-filen till rätt ställe, så funkade det!!
+
+Jag borde göra en readme för hur man installerar byggmiljön och lägga till automatiska koperingar av dll:er till leapfrog-game/data. Det får bli senare. Fixat nu!
+
+Tillbaka till mac-världen. Jag vill nu bygga leapfrog med nya SDL, men jag klantade mig på något sätt och har förlorat länken till SDL i projektet. Det bästa är att återskapa projektet och dokumenter här hur jag gjorde det, om jag behöver göra det igen. Så jag börjar på ny kula.
+ 
+I macen, på oxygine-framework/tools: kör följande:
+python3 gen_template.py Leapfrog -t macosx -d ../../leapfrog/leapfrog-game/proj.macosx
+
+Öppna projektet i xcode. lägg till kodfiler, (använd med "Create Groups"):
+leapfrog\leapfrog-game\src
+Box2D\Box2D
+lua (alla .c och .h filer MEN inte lua.c som innehåller en main-fil)
+
+I Leapfrog_macosx: Build Settings/SearchPaths/Header Search Paths: Lägg till ../../../Box2d och ../../../lua
+
+I Leapfrog_macosx/Supporting Files: Lägg till allt innehåll i leapfrog-game/data - denna gång med "Create folder references":
+
+Build fail med unresolved symbols. En massa SDL-symboler saknas, typ CreateWindow. Kan detta ha med att jag kör en senare SDL? Vet faktiskt inte vad jag gjorde för att komma förbi detta. 
+
+Men sedan kom ett nytt fel. Något om Sandbox inte hittade filen den sökte efter (kanske en .h-fil i en byggkatalog). I det läget bytte jag till gamla SDL. Då funkade det. Tillbaka till nya, samma fel. Jag behöver lösa det felet. Wow. Jag behövde gå in i SDL-projektet, välja target: Framework, Build Settings/Build Options/User Script Sandboxing, sätta till "No". Då löste det sig. Och problemet med upplösning OCH uppdatering fixade sig.
+
+Ok, nu när det fungerad så behöver jag göra det från scratch igen. Låt oss skriva över första projektet och ta det från där.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
