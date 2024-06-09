@@ -62,6 +62,27 @@ Så, med png och jpeg byggda från sina repon med projektfiler i leapfrog, men m
 
 Jag borde göra en readme för hur man installerar byggmiljön och lägga till automatiska koperingar av dll:er till leapfrog-game/data. Det får bli senare. Fixat nu!
 
+Tillbaka till mac-världen. Jag vill nu bygga leapfrog med nya SDL, men jag klantade mig på något sätt och har förlorat länken till SDL i projektet. Det bästa är att återskapa projektet och dokumenter här hur jag gjorde det, om jag behöver göra det igen. Så jag börjar på ny kula.
+ 
+I macen, på oxygine-framework/tools: kör följande:
+python3 gen_template.py Leapfrog -t macosx -d ../../leapfrog/leapfrog-game/proj.macosx
+
+Öppna projektet i xcode. lägg till kodfiler, (använd med "Create Groups"):
+leapfrog\leapfrog-game\src
+Box2D\Box2D
+lua (alla .c och .h filer MEN inte lua.c som innehåller en main-fil)
+
+I Leapfrog_macosx: Build Settings/SearchPaths/Header Search Paths: Lägg till ../../../Box2d och ../../../lua
+
+I Leapfrog_macosx/Supporting Files: Lägg till allt innehåll i leapfrog-game/data - denna gång med "Create folder references":
+
+Build fail med unresolved symbols. En massa SDL-symboler saknas, typ CreateWindow. Kan detta ha med att jag kör en senare SDL? Vet faktiskt inte vad jag gjorde för att komma förbi detta. 
+
+Men sedan kom ett nytt fel. Något om Sandbox inte hittade filen den sökte efter (kanske en .h-fil i en byggkatalog). I det läget bytte jag till gamla SDL. Då funkade det. Tillbaka till nya, samma fel. Jag behöver lösa det felet. Wow. Jag behövde gå in i SDL-projektet, välja target: Framework, Build Settings/Build Options/User Script Sandboxing, sätta till "No". Då löste det sig. Och problemet med upplösning OCH uppdatering fixade sig.
+
+Ok, nu när det fungerad så behöver jag göra det från scratch igen. Låt oss skriva över första projektet och ta det från där.
+
+
 
 
 
