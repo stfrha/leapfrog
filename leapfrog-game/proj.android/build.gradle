@@ -3,7 +3,6 @@ buildscript {
     	google()
         mavenLocal()        
         mavenCentral()
-        jcenter()        
     }
     dependencies {
         classpath "com.android.tools.build:gradle:7.3.1"
@@ -13,7 +12,14 @@ buildscript {
 allprojects {
     repositories {
         google()
-        jcenter()
+        mavenCentral()
+    }
+
+    gradle.projectsEvaluated {
+        tasks.withType(JavaCompile) {
+            options.compilerArgs << "-Xlint:unchecked"
+            options.compilerArgs << "-Xlint:deprecation"
+        }
     }
 }
 
@@ -27,8 +33,8 @@ dependencies {
 }
 
 android {
-
-    compileSdkVersion 26
+    namespace = "org.oxygine.Leapfrog"
+    compileSdkVersion 34
 
 
     sourceSets {
@@ -42,8 +48,8 @@ android {
     }
 
     defaultConfig {
-    	minSdkVersion 19
-        targetSdkVersion 26
+    	minSdkVersion 28
+        targetSdkVersion 34
 
         ndk {
             abiFilters 'armeabi-v7a', 'arm64-v8a'

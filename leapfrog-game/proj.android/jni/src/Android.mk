@@ -4,6 +4,7 @@ include $(CLEAR_VARS)
 LOCAL_MODULE := main
 
 LOCAL_C_INCLUDES += $(LOCAL_PATH)/../../../../../Box2D/
+LOCAL_C_INCLUDES += $(LOCAL_PATH)/../../../../../lua/
 
 #SDK_ROOT points to folder with SDL and oxygine-framework
 LOCAL_SRC_FILES := ../../../../..//SDL/src/main/android/SDL_android_main.c

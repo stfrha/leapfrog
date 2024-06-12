@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-      package="org.oxygine.Leapfrog"
       android:versionCode="1"
       android:versionName="1.0"
       android:installLocation="auto">
@@ -16,7 +15,8 @@
                   android:theme="@android:style/Theme.NoTitleBar.Fullscreen"
                   android:configChanges="locale|orientation|keyboardHidden|screenSize" 
                   android:screenOrientation="sensorLandscape"
-                  android:launchMode="singleTask">
+                  android:launchMode="singleTask"
+                  android:exported="true">
 
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -25,10 +25,7 @@
         </activity>
     </application>
 
-    <!-- <uses-sdk android:minSdkVersion="10" android:targetSdkVersion="16" /> -->
-    <uses-sdk android:minSdkVersion="10" android:targetSdkVersion="29" />
-
-    <uses-permission android:name="android.permission.INTERNET" /> <!--used for http requests-->    
+    <uses-permission android:name="android.permission.INTERNET" /> <!--used for http requests-->
     <uses-permission android:name="android.permission.WAKE_LOCK" /><!--used for http requests (downloading files)-->
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/><!--used for Proxy detection, could be disabled-->  
 

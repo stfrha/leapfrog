@@ -94,7 +94,43 @@ Använder dem båda rätt projekt för SDL? Kolla i SLN:
 
 Kan det vara så att oxygine råkar läsa ett gammalt lib när det bygger? Från början hämtades libet från oxygine-framework/libs men nu skapas SDL i leapfrog\Win32\Release. Japp. Det är fixat och det får nu att bygga från git-dummy. Behövde ändra i oxygine-framework och leapfrog.
 
+Allt bygger med den senaste incheckningen. Har gjort en fork av SDL som innehåller alla brancher och som funkar. Nu kör jag vidare med android. 
 
+Gick att bygga men inte att installera på Lindas padda. Det var en för gammal version. Jag ändrade på tre ställen i filen: leapfrog-game/proj.android/build.gradle (android studio rödmarkerade dessa rader som en varning att de var för låga):
+
+android {
+    compileSdkVersion 31                                       <------ HÄR
+    sourceSets {
+        main {
+            jniLibs.srcDirs = ['libs']
+            manifest.srcFile 'AndroidManifest.xml'
+            java.srcDirs = ['src']
+            res.srcDirs = ['res']
+            assets.srcDirs = ['../data']
+        }
+    }
+    defaultConfig {
+    	minSdkVersion 31                                         <------ HÄR
+        targetSdkVersion 31                                    <------ HÄR
+        ndk {
+            abiFilters 'armeabi-v7a', 'arm64-v8a'
+        }
+        externalNativeBuild {
+            ndkBuild {
+                arguments 'NDK_MODULE_PATH+=../../../'
+            }
+        }
+    }
+    
+MEN: I proj.android/AndroidManifest.xml står det <uses-sdk android:minSdkVersion="10" android:targetSdkVersion="29" /> (en rad som jag antagligen har ändrat förut). Skall inte denna också ha version 31? Nej, build.gradle överrider AndroidManifest och jag tog därför bort det från AndroidManifest.
+
+För att bygga sedan, var jag tvungen att ladda ner SDK:n version 31 i Android Studio menyn: Tools/SDK Manager/ 
+Nedladdningen skedde automatiskt när jag klickade i version 31. Behövde en ny version av java för att android studio skulle funka (antagligen pga de nya SDKn). Installerat.
+
+Android studio gillade inte raden i main som las till för någon förändring i VS:    extern "C" { FILE __iob_func[3] = { *stdin,*stdout,*stderr }; }, så jag la in den i en #ifdef för windows.
+
+Det verkar skita sig med android. Jag såg nu att det fanns nya commits för oxygine för android-spel. Jag behöver testa det, men först vill jag få igång emulatorer. Då behövde jag något som heter HAXM. Detta är installerat men inte enablat på min dator. Måste därför göra det i inställningar/Appar och funktioner/Program och funktioner/Aktivera eller inaktivera Windows-funktioner/ Men, vilka skall jag enabla. 
+Enligt: https://stackoverflow.com/questions/67319710/how-to-enable-vmx-in-the-haxm-installation, så skall jag aktivera Hyper-V-grejor. Antar att detta är det som kallas för Windows-hypervisorplattform. Stämmer detta?
 
 
 

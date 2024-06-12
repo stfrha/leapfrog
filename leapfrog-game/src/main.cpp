@@ -9,7 +9,9 @@
 #include "graphicresources.h"
 #include "layout.h"
 
+#if defined(_WIN32) || defined(_WIN64)
 extern "C" { FILE __iob_func[3] = { *stdin,*stdout,*stderr }; }
+#endif
 
 using namespace oxygine;
 
