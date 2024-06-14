@@ -130,12 +130,112 @@ Nedladdningen skedde automatiskt när jag klickade i version 31. Behövde en ny 
 Android studio gillade inte raden i main som las till för någon förändring i VS:    extern "C" { FILE __iob_func[3] = { *stdin,*stdout,*stderr }; }, så jag la in den i en #ifdef för windows.
 
 Det verkar skita sig med android. Jag såg nu att det fanns nya commits för oxygine för android-spel. Jag behöver testa det, men först vill jag få igång emulatorer. Då behövde jag något som heter HAXM. Detta är installerat men inte enablat på min dator. Måste därför göra det i inställningar/Appar och funktioner/Program och funktioner/Aktivera eller inaktivera Windows-funktioner/ Men, vilka skall jag enabla. 
-Enligt: https://stackoverflow.com/questions/67319710/how-to-enable-vmx-in-the-haxm-installation, så skall jag aktivera Hyper-V-grejor. Antar att detta är det som kallas för Windows-hypervisorplattform. Stämmer detta?
+Enligt: https://stackoverflow.com/questions/67319710/how-to-enable-vmx-in-the-haxm-installation, så skall jag aktivera Hyper-V-grejor. Antar att detta är det som kallas för Windows-hypervisorplattform. Stämmer detta? Ja, fick igång emulatorn och kunde launcha appen på emulatorn. Fick sedan, vad jag bedömmer, exakt samma fel som på Lindas padda. 
 
+Jag försöker nu använda senaste oxygine-framework för att göra ett nytt projekt.
 
+Har nu uppdaterat till senaste oxygine. Stämmer det? Verkar så. Gör ett nytt projekt då:
 
+Jag går till leapfrog/leapfrog-game och där kör jag:
 
+python3 ..\..\oxygine-framework\tools\gen_template.py Leapfrog -t android -d proj.android2
 
+Jag börjar med att försöka bygga med grundinställningarna och köra på en emulator som jag bygger för att matcha de inställningarna. Sedan tar jag det därifrån.
+
+Först när jag öppnar projektet så vill den ändra till version 4.8 av Gradle Wrapper (från 4.6). Jag låter den göra det.
+
+Fick det här meddelandet: cvc-complex-type.2.4.a: Ogiltigt inneh�ll hittades med b�rjan med elementet 'base-extension'. N�got av '{layoutlib}' f�rv�ntas. Vet inte vad det betyder. Ca 5 utskrifter av det. (antagligen XML-tolkning som blivit fel) Sedan står det "Gradle Sync Issues" Klickar man på det, står det: 
+Gradle sync failed: Failed to find Build tools 28.0.3 // Install Build tools 28.0.3 and sync project // Upgrade plugin to version 7.3.1 and sync project
+Jag kan klicka på båda de sista, för att utföra ändringarna. Klickade på den första, och det såg ut som om den även installerade 7.3.1 i samma veva.  
+Fortfarande några XML-tolkningsfel (kanske färre), men även:
+FAILURE: Build failed with an exception.
+* Where:
+Build file 'E:\git2\oxygine-framework\oxygine\SDL\android\extension\build.gradle' line: 14 (denna rad är namespace="org.oxygine.lib.extension"). Jag tror det fanns något om att namespace skulle anges på ett annat sätt...
+* What went wrong:
+A problem occurred evaluating project ':oxygine-extension'.
+> Could not set unknown property 'namespace' for object of type com.android.build.gradle.LibraryExtension.
+Så, hur fixade vi detta då? Släpper det för nu.
+
+Gick tillbaka till Build Output rutan och klickade även på Upgrade plugin to version 7.3.1 and sync project.
+Fick följande meddelande: 
+[CXX5202] This app only has 32-bit [armeabi-v7a] native libraries. Beginning August 1, 2019 Google Play store requires that all apps that include native libraries must provide 64-bit versions. For more information, visit https://g.co/64-bit-requirement
+Jag får hantera detta senare, arm64-v8a lib var bortkommenterat i gradle.build, om jag lägger till den så byggs även 64-bits-version. Jag kan tänka mig att meddellandet försvinner. 
+
+[..] Fixa 64-bitars-version
+
+Nu måste jag lägga till källkod och andra assets. 
+
+Jag behövde redigera jni/src/Android.mk:
+
+// Includes:
+LOCAL_C_INCLUDES += $(LOCAL_PATH)/../../../../../Box2D/
+
+// Källfiler
+LOCAL_SRC_FILES += ../../../../../Box2D/Box2D/Collision/b2BroadPhase.cpp
+
+BYgget går att bygga. Nu behöver jag en device som klarar den versionen API: 26.
+Jag har byggt för arm, men devicen verker ha x86. Hittade en för arm64_v8a. (Oreo, api 26, arm64-v8a, Android 8 (Google API).
+
+Running!! OOHUUII!
+
+Precis som förut. FÖrsöker debugga nu. Tuffar på i början med javakod. Sedam i filen: OxygineActivity.java, rad 63, kallas onCreate (som antagligen överrider en befintlig onCreate), så tuffar det på till: 
+super.onCreate(savedInstanceState);
+Hoppar jag över den så går det till dissassembly. 
+Går jag in så hamnar jag ii SDLActivity.java. 
+Här görs några utskrifter som faktiskt kom ut när jag körde emulatorn (Device: ... och Model: ...). Men när jag går in i log-funktionen så tappas sync mellan kod och debugger. Source code does not match the byte code.
+Tillbaka i SDLActivity.java: kör loadLibraries(). Den försöker ladda bibliotek "SDL2". Kollar om  ReLinker finns i projektet. Den verkar inte finnas och då försöker den ladda med System.loadLibrary("SDL2"). Där går vi in i disassembly. 
+
+Okej, började om med ny approach: ANvänd branch 2024 av oxygine samt kopiera vissa java-filer från sdl/android till oxygine. Behövde version mindre än 11 av java. Trodde jag fixat det, men icke. Gick att välja i Settings/Build.../Gradle
+Behövde sedan upgradera Gradle Plugin från 3.2.1 till 3.6.4, samt upgradera Gradle 
+ndkVersion stämde inte, eller... ndkVersion var inte specat så någon generisk valdes, men den var inte installerad. Jag la själv till följande rad i build.gradle:
+    ndkVersion "23.1.7779620"
+Nu kunde jag inte bygga för jag hade fel jdk-version, eller något. Gick tillbaka till version 11.
+
+Nästa fel: error: lambda expressions are not supported in -source 7  (use -source 8 or higher to enable lambda expressions)
+
+Äntligen lyckades jag bygga demo-projektet och köra på emulator. Jag byggde med följande versioner och annat:
+
+För att bygga användes JDK version 17.0.10 (GRADLE_LOCAL_JAVA_HOME).
+
+Använde compileSdkVersion 26
+minSdkVersion 21
+targetSdkVersion 26
+abiFilters 'armeabi-v7a', 'arm64-v8a', 'x86' (jag behöver bygga png-libbet för x86_64 om jag vill ha med det filtret)
+gradle version: 8.4.2
+ndk version: 26.1.10909125
+
+Jag lyckade köra på emulator: 
+Pixel XL API32 Android 12L x86_64 (trots att jag inte byggt för 64 bit)
+Det verkar aldrig komma igång på Pixel Tablet API 26, men med debugger kommer den längre. Funkar i alla fall dåligt.
+
+Äntligen lyckades jag bygga med ovanstående versioner, och det lyckades på en x86-telefon. Jag provar nu att öka till version (compileSdkeVersion) 34 (från 26)
+
+Och med en fix för att få det kompatibelt, behövde lägga till någon "android:exported="true" för MainActivity i AndroidManifest.xml, så funkade även det och då gick det att köra på Lindas padda. Yippiii!
+
+Skall försöka komma ihåg stegen som jag gjorde.
+
+Checkade ut branch 2024 (skall göra den till min fork) av oxygine-framework. Jag tog senaste versionen av SDL med branch SDL2. Jag kopierade en all java-kod från SDL\android-project\app\src\main\java\org\libsdl\app till oxygine-framework\oxygine\SDL\android\lib\src\org\libsdl\app
+
+Jag generareade ett nytt projekt från build-skripten. I leapfrog-game-katalogen körde jag:
+python3 ..\..\oxygine-framework\tools\gen_template.py Leapfrog -t android -d proj.android
+
+Jag använde senaste android-studio. 
+- För att bygga användes JDK version 17.0.10 (GRADLE_LOCAL_JAVA_HOME).
+- Använde compileSdkVersion 34 
+- minSdkVersion 21
+- targetSdkVersion 33 (var tvungen att byga koden från [compileSdkVersion 34] till [defaultConfig { compileSdk 34 }])
+- abiFilters 'armeabi-v7a', 'arm64-v8a', 'x86' (jag behöver bygga png-libbet för x86_64 om jag vill ha med det filtret)
+- gradle version: 8.4.2
+- ndk version: 26.1.10909125
+
+Jag fick ett error på en symbol som inte finns: BLUETOOTH_CONNECT, så jag kommenterade bort 362-366 av oxygine-framework\oxygine\SDL\android\lib\src\org\libsdl\app\HIDDeviceManager.java, kanske skiter det sig om jag måste använda bluetooth.
+
+Jag tror det var det hela. Skall lägga till och committa nu.
+
+[..] Bygg för relase
+[..] Fixa splashscreen
+[..] Fixa icon
+[..] Bygga x86_64
 
 
 
