@@ -54,6 +54,6 @@ public:
    void restartShield(void);
 
 protected:
-	void doUpdate(const oxygine::UpdateState& us);
+	void doUpdate(const oxygine::UpdateState& us) override;
    void atHitComplete(oxygine::Event* event);
 };

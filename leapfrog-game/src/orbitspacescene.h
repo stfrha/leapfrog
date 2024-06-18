@@ -40,6 +40,6 @@ public:
    void startLeapfrogInScene(std::string name);
 
 protected:
-   void doUpdate(const oxygine::UpdateState &us);
+   void doUpdate(const oxygine::UpdateState &us) override;
 
 };

@@ -7,6 +7,7 @@
 #include "orbitscene.h"
 #include "sceneactor.h"
 #include "gamestatus.h"
+#include "fpsestimator.h"
 
 class NextSceneDefinition
 {
@@ -48,16 +49,21 @@ private:
 
    b2World* m_world;
 
+   spFpsEstimator m_fpsEst;
+
    spBox2DDraw m_debugDraw;
 
    SceneActor* m_sceneObject;
 
    NextSceneDefinition m_nextScene;
 
-   bool m_reloadArm;
+   bool m_fpsEstArm; 
    bool m_splashArm;
+   bool m_initArm;
+   bool m_reloadArm;
    bool m_menuArm;
 
+   void showSplashScreen(void);
    void initMainActor(void);
    void exitLandingScene(oxygine::Event *ev);
    void exitDeepSpaceScene(oxygine::Event *ev);
@@ -74,6 +80,7 @@ private:
 
 public:
    bool m_reloadPressed;
+   float m_fps;
 
 	MainActor();
 	~MainActor();
@@ -113,7 +120,7 @@ public:
    void cleanUpAndQuit(void);
 
 protected:
-   void doUpdate(const UpdateState& us);
+   void doUpdate(const UpdateState& us) override;
 
 };
 

@@ -38,7 +38,7 @@ public:
    void dummyListner(oxygine::Event *ev);
 
 protected:
-	void doUpdate(const oxygine::UpdateState& us);
+	void doUpdate(const oxygine::UpdateState& us) override;
 };
 
 
@@ -73,7 +73,7 @@ public:
    void setLiteral(int value);
 
 protected:
-   void doUpdate(const oxygine::UpdateState& us);
+   void doUpdate(const oxygine::UpdateState& us) override;
 };
 
 

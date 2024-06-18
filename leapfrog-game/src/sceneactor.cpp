@@ -140,13 +140,13 @@ SceneActor* SceneActor::defineScene(
 }
 
 SceneActor::SceneActor(
-   b2World* world, 
+   b2World* world,
    float initialZoomScale,
    float zoomScale) :
    CompoundObject(this, NULL),
    m_world(world),
    m_zoomScale(initialZoomScale),
-   m_stageToViewPortScale(m_zoomScale * Scales::c_stageToViewPortScale),
+   m_stageToViewPortScale(m_zoomScale* Scales::c_stageToViewPortScale),
    m_physToStageScale(1.0f),
    m_panorateMode(center),
    m_panorateLimitEnabled(true),
@@ -166,7 +166,8 @@ SceneActor::SceneActor(
    m_manualPan(NULL),
    m_timerIdCounter(0),
    m_armPauseChange(true),
-   m_leapfrog(NULL)
+   m_leapfrog(NULL),
+   m_secondsPerUpdate(1.0f / g_MainActor->m_fps)
 {
 	setScale(m_stageToViewPortScale);
 
@@ -467,7 +468,7 @@ void SceneActor::doUpdate(const UpdateState& us)
 
    testForBoundaryRepel();
 
-   float spu = c_secondsPerUpdate;
+   float spu = m_secondsPerUpdate;
    if (g_MainActor->isInPause())
    {
       spu = 0.0f;

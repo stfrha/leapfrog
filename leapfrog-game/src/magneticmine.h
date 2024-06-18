@@ -42,5 +42,5 @@ public:
       int groupIndex);
 
 protected:
-   void doUpdate(const oxygine::UpdateState& us);
+   void doUpdate(const oxygine::UpdateState& us) override;
 };

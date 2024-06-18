@@ -143,6 +143,7 @@ LOCAL_SRC_FILES += ../../../src/parallaxbackground.cpp
 LOCAL_SRC_FILES += ../../../src/buttondisplay.cpp
 LOCAL_SRC_FILES += ../../../src/menuactor.cpp
 LOCAL_SRC_FILES += ../../../src/graphicresources.cpp
+LOCAL_SRC_FILES += ../../../src/fpsestimator.cpp
 LOCAL_SRC_FILES += ../../../src/main.cpp
 
 LOCAL_STATIC_LIBRARIES := oxygine-framework_static

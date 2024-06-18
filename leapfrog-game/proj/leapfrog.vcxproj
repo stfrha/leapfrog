@@ -208,6 +208,7 @@
     <ClCompile Include="..\src\flameemitter.cpp" />
     <ClCompile Include="..\src\flameparticle.cpp" />
     <ClCompile Include="..\src\flamesmokeparticle.cpp" />
+    <ClCompile Include="..\src\fpsestimator.cpp" />
     <ClCompile Include="..\src\freespaceactor.cpp" />
     <ClCompile Include="..\src\freespacecontactlistener.cpp" />
     <ClCompile Include="..\src\gamestatus.cpp" />
@@ -318,6 +319,7 @@
     <ClInclude Include="..\src\flameemitter.h" />
     <ClInclude Include="..\src\flameparticle.h" />
     <ClInclude Include="..\src\flamesmokeparticle.h" />
+    <ClInclude Include="..\src\fpsestimator.h" />
     <ClInclude Include="..\src\freespaceactor.h" />
     <ClInclude Include="..\src\freespacecontactlistener.h" />
     <ClInclude Include="..\src\gamestatus.h" />

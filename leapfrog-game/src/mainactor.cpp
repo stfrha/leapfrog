@@ -39,28 +39,35 @@ spMainActor g_MainActor;
 
 MainActor::MainActor() :
    m_world(NULL),
+   m_fpsEstArm(false),
    m_splashArm(true),
    m_reloadPressed(false),
    m_reloadArm(true),
    m_menuArm(true),
+   m_initArm(false),
    m_sceneObject(NULL),
-   m_isInPause(false)
+   m_isInPause(false),
+   m_fpsEst(NULL)
+{
+}
+
+void MainActor::showSplashScreen(void)
 {
    m_splashScreenResource.loadXML("splash_screen.xml");
 
    // Now center splash on center of screen
-   oxygine::Sprite* splashSprite = new  oxygine::Sprite();
+   spSprite splashSprite = new  oxygine::Sprite();
    splashSprite->setResAnim(m_splashScreenResource.getResAnim("splash_screen"));
 
    // Determine sprite size so it fills the screen
 
-   //logs::messageln("Stage width %f, Stage Height: %f", (getStage()->getSize()).x, (getStage()->getSize()).y);
-   //logs::messageln("Sprite width %f, Sprite Height: %f", splashSprite->getWidth(), splashSprite->getHeight());
+   logs::messageln("Stage width %f, Stage Height: %f", (getStage()->getSize()).x, (getStage()->getSize()).y);
+   logs::messageln("Sprite width %f, Sprite Height: %f", splashSprite->getWidth(), splashSprite->getHeight());
 
    float hr = (getStage()->getSize()).y / splashSprite->getHeight();
    float wr = (getStage()->getSize()).x / splashSprite->getWidth();
    float rate = 0.0f;
-   if (hr > wr)
+   if (hr < wr)
    {
       rate = hr;
    }
@@ -71,12 +78,13 @@ MainActor::MainActor() :
 
    splashSprite->setSize(splashSprite->getWidth() * rate, splashSprite->getHeight() * rate);
 
-   // logs::messageln("New Sprite width %f, New Sprite Height: %f", splashSprite->getWidth(), splashSprite->getHeight());
+   logs::messageln("New Sprite width %f, New Sprite Height: %f", splashSprite->getWidth(), splashSprite->getHeight());
 
    splashSprite->setAnchor(Vector2(0.5f, 0.5f));
    splashSprite->setPosition((getStage()->getSize()).x / 2, (getStage()->getSize()).y / 2);
    splashSprite->attachTo(this);
 }
+
 
 void MainActor::initMainActor(void)
 {
@@ -420,7 +428,44 @@ void MainActor::doUpdate(const UpdateState& us)
    if (m_splashArm)
    {
       m_splashArm = false;
+      showSplashScreen();
+      m_fpsEstArm = true;
+      return;
+   }
+
+   if (m_fpsEstArm)
+   {
+      if (m_fpsEst == NULL)
+      {
+         m_fpsEst = new FpsEstimator(this);
+         return;
+      }
+      else
+      {
+         if (m_fpsEst->getFps() < 0.0f)
+         {
+            // Do nothing
+            return;
+         }
+         else
+         {
+            m_fps = m_fpsEst->getFps();
+
+            logs::messageln("FPS estimated to: %f", m_fps);
+
+            removeChild(m_fpsEst);
+
+            m_fpsEstArm = false;
+            m_initArm = true;
+         }
+      }
+      return;
+   }
+
+   if (m_initArm)
+   {
       initMainActor();
+      m_initArm = false;
    }
 
    if (m_reloadArm && m_reloadPressed)

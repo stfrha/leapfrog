@@ -248,6 +248,6 @@ private:
    void setEnvPropHandler(oxygine::Event *ev);
 
 protected:
-   void doUpdate(const UpdateState &us);
+   void doUpdate(const UpdateState &us) override;
 };
 

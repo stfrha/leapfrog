@@ -75,6 +75,6 @@ public:
    std::string dumpData(void);
 
 protected:
-	void doUpdate(const oxygine::UpdateState& us);
+	void doUpdate(const oxygine::UpdateState& us) override;
 
 };

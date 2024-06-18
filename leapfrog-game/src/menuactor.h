@@ -22,7 +22,7 @@ public:
       );
 
 protected:
-   void doUpdate(const oxygine::UpdateState& us);
+   void doUpdate(const oxygine::UpdateState& us) override;
 
 
 };
@@ -46,7 +46,7 @@ public:
    MenuActor();
 
 protected:
-   void doUpdate(const oxygine::UpdateState &us);
+   void doUpdate(const oxygine::UpdateState &us) override;
 
 };
 

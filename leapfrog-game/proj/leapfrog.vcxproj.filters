@@ -445,6 +445,9 @@
     <ClCompile Include="..\src\graphicresources.cpp">
       <Filter>Source Files\sprite and font resources</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\fpsestimator.cpp">
+      <Filter>Source Files\utilities</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\blastparticle.h">
@@ -809,6 +812,9 @@
     </ClInclude>
     <ClInclude Include="..\src\graphicresources.h">
       <Filter>Source Files\sprite and font resources</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\fpsestimator.h">
+      <Filter>Source Files\utilities</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

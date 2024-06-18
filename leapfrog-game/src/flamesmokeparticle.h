@@ -27,6 +27,6 @@ public:
       float radius);          // start Radius, will get scaled up and thinned (alpha) down
 
 protected:
-	void doUpdate(const oxygine::UpdateState& us);
+	void doUpdate(const oxygine::UpdateState& us) override;
    void atParticleDeath(oxygine::Event* event);
 };

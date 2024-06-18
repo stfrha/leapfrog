@@ -18,6 +18,6 @@ public:
       const oxygine::Vector2& growToSize);
 
 protected:
-	void doUpdate(const oxygine::UpdateState& us);
+	void doUpdate(const oxygine::UpdateState& us) override;
    void atParticleDeath(oxygine::Event* event);
 };

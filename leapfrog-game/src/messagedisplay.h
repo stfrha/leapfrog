@@ -102,7 +102,7 @@ public:
 
 
 protected:
-	void doUpdate(const oxygine::UpdateState& us);
+	void doUpdate(const oxygine::UpdateState& us) override;
 
    // Put all displayed messages onto the display again, without
    // tweens. Used if size is changed.
