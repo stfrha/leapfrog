@@ -232,11 +232,13 @@ Jag fick ett error på en symbol som inte finns: BLUETOOTH_CONNECT, så jag komm
 
 Jag tror det var det hela. Skall lägga till och committa nu.
 
-[..] Bygg för relase
-[..] Fixa splashscreen
-[..] Fixa icon
+[ok] Bygg för relase
+[ok] Fixa splashscreen
+[ok] Fixa ikoner
 [..] Bygga x86_64
+[ok] Sätt override på doUpdate för att bli av med många varningar
 
+Splash screen: Det var inte att jag hade en pekare som dog. Men jag får något felmeddellande. Jag bör kolla om det försvinner när jag inte kör splashscreen.
 
 
 
