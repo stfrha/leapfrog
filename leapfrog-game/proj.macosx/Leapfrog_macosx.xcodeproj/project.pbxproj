@@ -184,6 +184,7 @@
 		9C0A5FF02C161A630046AE49 /* small_asteroid.xml in Resources */ = {isa = PBXBuildFile; fileRef = 9C0A5FCD2C161A630046AE49 /* small_asteroid.xml */; };
 		9C0A5FF12C161A630046AE49 /* medium_asteroid.xml in Resources */ = {isa = PBXBuildFile; fileRef = 9C0A5FCE2C161A630046AE49 /* medium_asteroid.xml */; };
 		9C0A5FF22C161A630046AE49 /* landing_pad.xml in Resources */ = {isa = PBXBuildFile; fileRef = 9C0A5FCF2C161A630046AE49 /* landing_pad.xml */; };
+		9C92D88B2C2328E300ED4C85 /* fpsestimator.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9C92D88A2C2328E300ED4C85 /* fpsestimator.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -622,6 +623,8 @@
 		9C0A5FCD2C161A630046AE49 /* small_asteroid.xml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; name = small_asteroid.xml; path = ../data/small_asteroid.xml; sourceTree = "<group>"; };
 		9C0A5FCE2C161A630046AE49 /* medium_asteroid.xml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; name = medium_asteroid.xml; path = ../data/medium_asteroid.xml; sourceTree = "<group>"; };
 		9C0A5FCF2C161A630046AE49 /* landing_pad.xml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; name = landing_pad.xml; path = ../data/landing_pad.xml; sourceTree = "<group>"; };
+		9C92D87F2C2328E300ED4C85 /* fpsestimator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = fpsestimator.h; sourceTree = "<group>"; };
+		9C92D88A2C2328E300ED4C85 /* fpsestimator.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = fpsestimator.cpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -997,6 +1000,8 @@
 		9C0A5DA92C1619DC0046AE49 /* src */ = {
 			isa = PBXGroup;
 			children = (
+				9C92D88A2C2328E300ED4C85 /* fpsestimator.cpp */,
+				9C92D87F2C2328E300ED4C85 /* fpsestimator.h */,
 				9C0A5DAA2C1619DC0046AE49 /* flameemitter.cpp */,
 				9C0A5DAB2C1619DC0046AE49 /* pickupobject.cpp */,
 				9C0A5DAC2C1619DC0046AE49 /* reentryflameparticle.h */,
@@ -1461,6 +1466,7 @@
 				9C0A5E4A2C1619DC0046AE49 /* freespacecontactlistener.cpp in Sources */,
 				9C0A5E332C1619DC0046AE49 /* marker.cpp in Sources */,
 				9C0A5D0C2C1619800046AE49 /* lcode.c in Sources */,
+				9C92D88B2C2328E300ED4C85 /* fpsestimator.cpp in Sources */,
 				9C0A5D902C1619C20046AE49 /* b2Joint.cpp in Sources */,
 				9C0A5E362C1619DC0046AE49 /* flameparticle.cpp in Sources */,
 			);
