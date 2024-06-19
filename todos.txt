@@ -240,6 +240,26 @@ Jag tror det var det hela. Skall lägga till och committa nu.
 
 Splash screen: Det var inte att jag hade en pekare som dog. Men jag får något felmeddellande. Jag bör kolla om det försvinner när jag inte kör splashscreen.
 
+I ovanstående process har jag ändrat i filer i oxygine-framework. T ex ändrade jag i någon java-fil. Dessutom ändrade jag namespace (eller liknande) från typ: oxygine_lib till oxygine.lib. Detta behöver committas, och då in i min fork. Jag behöver därför klona oxygine-framework från min fork och kopiera in det från git2. Sedan committa igen. Min fork blir då den riktiga som jag använder. Om det senare kommer en uppdatering från oxygine, så får jag merga in den i min fork.
+
+Kanske är det bra att se vilka filer jag har ändrat i min fork:
+commit   Filer ändrade                                                        Ändringar                     Kommentar
+6264a39  oxygine/SDL/win32/oxygine.vcxproj                                    windows target platform       Ej relevant
+4675c97  oxygine/SDL/android/lib/src/org/oxygine/lib/OxygineActivity.java     Hiding navigation bar         Relevant
+00284ee  Massa filer                                                          Merge master                  Ej relevant, görs ändå
+28a963d  Som ovan
+
+Men hur är det då med OxygineActivity.java. Den är inte ändrad på 9 år. Min ändring gäller därför fortfarande. Så, jag borde 
+kopiera undan min version av oxygine-framework.
+Göra om fork:en till att peka på 2024-branchen. 
+Clona ut min nya fork
+KOpiera in min sparade version. 
+Commita
+Biff!!
+
+
+
+
 
 
 
