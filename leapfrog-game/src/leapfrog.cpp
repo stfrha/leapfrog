@@ -893,9 +893,11 @@ void LeapFrog::fireMainBooster(bool burn, bool flamesOnly)
             m_boostMagnuitude += m_boostInc;
             if (m_boostMagnuitude > m_boostMaxMagnitude)
             {
-               m_boostMagnuitude = m_boostMaxMagnitude;
-               m_resources->deltaFuel(-m_boostMagnuitude / 240000.0f);
-               //m_resources->deltaFuel(-m_boostMagnuitude / 30000.0f);
+                m_boostMagnuitude = m_boostMaxMagnitude;
+                // Need to scale the fuel by the FPS (since it may differ between devices)
+                // The 240000.0f was calibrated to FPS = 60.
+                m_resources->deltaFuel(-m_boostMagnuitude / 240000.0f * 60.0f / g_MainActor->m_fps);
+                //m_resources->deltaFuel(-m_boostMagnuitude / 30000.0f);
             }
          }
          else
