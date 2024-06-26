@@ -258,8 +258,41 @@ Commita
 Biff!!
 
 
+NU!!!! Går vi över till iphone!!!!
+
+Skapade projekt med (från oxygine-framework/tools):
+python3 gen_template.py Leapfrog -t ios -d ../../leapfrog/leapfrog-game/proj.ios
+
+Öppnade och behövde installera ios-simulatorer (ios 17). 
+Valde sedan minimum deployement: 12.0 (den var på 8.0)
+Behövde hämta senaste LUA för att hantera en förändring i IOS (system() finns inte längre). För att bygga med den behövdes sätta define/macro LUA_USE_IOS i Target/Build settings/Appla Clang - Preprocessing/Preprocessor Macros.
+Sedan behövde jag lägga till SDL-libbet i Target/General/Frameworks, Libraries.../liboxygine_ios.a
+Sedan fick jag en mängd saknade symboler i länkaren. Verkar vara symboler från oxygine-libbet. Har det inte byggts?
+Vid något tillfälle så la jag till arm64 i Target/Build Settings/Architectures/Exclude Arcitecture/Debug och Release. Testa att ta bort det. Fick då problem med att libjpeg var byggt för ios och target var byggt för ios_simulator. Testade med Ediths telefon. Efter att jag lagt till ett personligt designteam för att signering skulle funka, så kom till slut samma felmeddellande fram: symboler saknas. 
+Tillbaka till att bygga för simulatorn. Libben jpg (och kanske png) är byggda för ios och inte ios_simulator. Är detta huvudproblemet eller är det att oxygine inte verkar byggt, som är huvudproblemet?
+Kan jag öppna oxygine, bara?
+
+Jag började om:
+- Skapade projekt med (från oxygine-framework/tools):
+- Valde sedan minimum deployement: 12.0 (den var på 8.0)
+- Satte define/macro LUA_USE_IOS i Target/Build settings/Appla Clang - Preprocessing/Preprocessor Macros.
+- La till källfiler för Leapfrog samt supporting Files
+- La till sökvägar till lua och Box2d.
+- La till arm64 i Target/Build Settings/Architectures/Exclude Arcitecture/Debug och Release för alla project: leapfrog, oxygine och SDL
+- I SDL-projektet, välja target: Framework, Build Settings/Build Options/User Script Sandboxing, sätta till "No". 
+- Ändrade SDL/Target Framework-iOS/Build Settings/Apple Clang - Language c++/c++ Language Dialect/GNU++11
+- Tog bort onelua.c eftersom den nog inte var tänkt att vara med
+- I projektträdvyn i Xcode, alltså inte i findern: Drog SDL/Library Source/Main/uikit/SDL_uikit_mian.c till Leapfrog_ios/src. Detta stod i dokumentationen för SDL för ios.
 
 
+
+Nu är det hanterligt antal saknade symboler i oxygine. PoolObject delete och new, t ex. Mycket annat verkar ha byggts av oxygine. Saknas den i senaste versionen? Just new och delete är i en if-def på ett macro som heter: OBJECT_POOL_ALLOCATOR. Om denna är satt så byggs new och delete in. Den verkar inte vara satt i Windows. Källan är om det är debug eller inte. Om _DEBUG eller DEBUG är satt, så sätts OX_DEBUG. Om den inte är satt, och det inte är EMSCRIPTEN, så definieras OBJECT_POOL_ALLOCATOR.
+När vi kör debug, så skall inte OBJECT_POOL_ALLOCATOR vara satt. Då finns inte new eller delete. Hur funkar det då? PÅ något annat sätt, så klart. Men det måste blivit något knas när en del av koden tror new och delete finns men andra delar inte tror det. Så var kallas den på? PoolObject är den högsta basklassen. 
+Om new och delete inte är överridna, så finns ju default-varianter av dem. Varför kallas det inte på dem?
+
+Bygge för release gjorde nog susen för ovanstående problem. Vet inte varför.
+
+Fick många dubbla definitioner. Nu saknas istället _main symbolen. Var är den? Det saknades en fil från SDL som låg i SDL projektet men behövde ligga i Leapfrog-projektet. Jag drog den från SDL/Library Source/Main/uikit/SDL_uikit_mian.c (obs: detta är inte i findern utan i Xcode's projektvy) till Leapfrog_ios/src. Då funkade det.
 
 
 
