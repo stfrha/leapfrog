@@ -23,6 +23,7 @@
 		4F7EF5AF200623DE004089D6 /* Metal.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4F7EF5AE200623DE004089D6 /* Metal.framework */; };
 		4F8012E521454FEA00FDBA22 /* CoreBluetooth.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4F8012E021454FEA00FDBA22 /* CoreBluetooth.framework */; };
 		9223FE7F1C2D913D000B1FDA /* GameController.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9223FE7E1C2D913D000B1FDA /* GameController.framework */; };
+		9CDF23802C2D60BF002916FF /* SDL2.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9CEEC83D2C2A104B002BAE4F /* SDL2.framework */; };
 		9CEEC8D42C2A1348002BAE4F /* flameemitter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9CEEC8512C2A1348002BAE4F /* flameemitter.cpp */; };
 		9CEEC8D52C2A1348002BAE4F /* pickupobject.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9CEEC8522C2A1348002BAE4F /* pickupobject.cpp */; };
 		9CEEC8D62C2A1348002BAE4F /* menuactor.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9CEEC8542C2A1348002BAE4F /* menuactor.cpp */; };
@@ -158,7 +159,6 @@
 		9CEECA612C2A13D5002BAE4F /* b2BroadPhase.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9CEECA312C2A13D5002BAE4F /* b2BroadPhase.cpp */; };
 		9CEECA622C2A13D5002BAE4F /* b2CollideEdge.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9CEECA342C2A13D5002BAE4F /* b2CollideEdge.cpp */; };
 		9CEECA632C2A13D5002BAE4F /* b2Collision.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9CEECA352C2A13D5002BAE4F /* b2Collision.cpp */; };
-		9CEECA7E2C2C6431002BAE4F /* SDL2.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9CEEC83D2C2A104B002BAE4F /* SDL2.framework */; };
 		9CEECA822C2C6479002BAE4F /* SDL_uikit_main.c in Sources */ = {isa = PBXBuildFile; fileRef = 9CEECA812C2C6479002BAE4F /* SDL_uikit_main.c */; };
 		9CEECBBB2C2CA882002BAE4F /* splash_screen.xml in Resources */ = {isa = PBXBuildFile; fileRef = 9CEECB982C2CA881002BAE4F /* splash_screen.xml */; };
 		9CEECBBC2C2CA882002BAE4F /* leapfrog_landing.xml in Resources */ = {isa = PBXBuildFile; fileRef = 9CEECB992C2CA881002BAE4F /* leapfrog_landing.xml */; };
@@ -195,6 +195,7 @@
 		9CEECBDB2C2CA882002BAE4F /* space_treasure.xml in Resources */ = {isa = PBXBuildFile; fileRef = 9CEECBB82C2CA882002BAE4F /* space_treasure.xml */; };
 		9CEECBDC2C2CA882002BAE4F /* collision_entities.xml in Resources */ = {isa = PBXBuildFile; fileRef = 9CEECBB92C2CA882002BAE4F /* collision_entities.xml */; };
 		9CEECBDD2C2CA882002BAE4F /* landing_scene.xml in Resources */ = {isa = PBXBuildFile; fileRef = 9CEECBBA2C2CA882002BAE4F /* landing_scene.xml */; };
+		9CF0E0012C2E000000000001 /* SDL2.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 9CEEC83D2C2A104B002BAE4F /* SDL2.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		AD18619B1D8EC97A0043AFA3 /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AD18619A1D8EC97A0043AFA3 /* AVFoundation.framework */; };
 /* End PBXBuildFile section */
 
@@ -292,6 +293,20 @@
 		};
 /* End PBXContainerItemProxy section */
 
+/* Begin PBXCopyFilesBuildPhase section */
+		9CF0E0022C2E000000000001 /* Embed Frameworks */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				9CF0E0012C2E000000000001 /* SDL2.framework in Embed Frameworks */,
+			);
+			name = "Embed Frameworks";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
 /* Begin PBXFileReference section */
 		048AD0AD197D24AB001963EF /* CoreMotion.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMotion.framework; path = System/Library/Frameworks/CoreMotion.framework; sourceTree = SDKROOT; };
 		04998CEC17F8A933003441C3 /* Leapfrog_ios.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Leapfrog_ios.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -311,6 +326,7 @@
 		4F7EF5AE200623DE004089D6 /* Metal.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Metal.framework; path = System/Library/Frameworks/Metal.framework; sourceTree = SDKROOT; };
 		4F8012E021454FEA00FDBA22 /* CoreBluetooth.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreBluetooth.framework; path = System/Library/Frameworks/CoreBluetooth.framework; sourceTree = SDKROOT; };
 		9223FE7E1C2D913D000B1FDA /* GameController.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GameController.framework; path = System/Library/Frameworks/GameController.framework; sourceTree = SDKROOT; };
+		9CDF23832C2D6769002916FF /* libpng.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = libpng.framework; path = ../../../../libpng2/ios/framework/libpng.framework; sourceTree = "<group>"; };
 		9CEEC8512C2A1348002BAE4F /* flameemitter.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = flameemitter.cpp; sourceTree = "<group>"; };
 		9CEEC8522C2A1348002BAE4F /* pickupobject.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = pickupobject.cpp; sourceTree = "<group>"; };
 		9CEEC8532C2A1348002BAE4F /* reentryflameparticle.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = reentryflameparticle.h; sourceTree = "<group>"; };
@@ -644,19 +660,17 @@
 				4F7EF5AF200623DE004089D6 /* Metal.framework in Frameworks */,
 				AD18619B1D8EC97A0043AFA3 /* AVFoundation.framework in Frameworks */,
 				9223FE7F1C2D913D000B1FDA /* GameController.framework in Frameworks */,
-				9CEECA7E2C2C6431002BAE4F /* SDL2.framework in Frameworks */,
+				9CDF23802C2D60BF002916FF /* SDL2.framework in Frameworks */,
 				049B52B11871EBFA00EF3C66 /* liboxygine_ios.a in Frameworks */,
 				04998EF017F8ADD4003441C3 /* CoreGraphics.framework in Frameworks */,
 				048AD0AE197D24AB001963EF /* CoreMotion.framework in Frameworks */,
 				04998EEF17F8ADD4003441C3 /* Foundation.framework in Frameworks */,
 				04998EE617F8ADB4003441C3 /* libz.dylib in Frameworks */,
 				04998EE917F8ADB4003441C3 /* CoreAudio.framework in Frameworks */,
-				04998EF817F8B6F3003441C3 /* libjpeg.a in Frameworks */,
 				04998EEE17F8ADD4003441C3 /* UIKit.framework in Frameworks */,
 				04998EE817F8ADB4003441C3 /* AudioToolbox.framework in Frameworks */,
 				04998EE717F8ADB4003441C3 /* QuartzCore.framework in Frameworks */,
 				04998EEA17F8ADB4003441C3 /* OpenGLES.framework in Frameworks */,
-				04998EF717F8B6F3003441C3 /* libpng.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -699,6 +713,7 @@
 		04998CEE17F8A933003441C3 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				9CDF23832C2D6769002916FF /* libpng.framework */,
 				4F8012E021454FEA00FDBA22 /* CoreBluetooth.framework */,
 				AD18619A1D8EC97A0043AFA3 /* AVFoundation.framework */,
 				9223FE7E1C2D913D000B1FDA /* GameController.framework */,
@@ -1176,6 +1191,7 @@
 				04998CE817F8A933003441C3 /* Sources */,
 				04998CE917F8A933003441C3 /* Frameworks */,
 				04998CEA17F8A933003441C3 /* Resources */,
+				9CF0E0022C2E000000000001 /* Embed Frameworks */,
 			);
 			buildRules = (
 			);
@@ -1194,7 +1210,7 @@
 			isa = PBXProject;
 			attributes = {
 				BuildIndependentTargetsInParallel = YES;
-				LastUpgradeCheck = 1500;
+				LastUpgradeCheck = 1540;
 				ORGANIZATIONNAME = Mac;
 			};
 			buildConfigurationList = 04998CE717F8A933003441C3 /* Build configuration list for PBXProject "Leapfrog_ios" */;
@@ -1542,7 +1558,7 @@
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "Apple Development";
 				COMPRESS_PNG_FILES = NO;
 				COPY_PHASE_STRIP = NO;
 				ENABLE_BITCODE = NO;
@@ -1565,7 +1581,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -1605,7 +1621,7 @@
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "Apple Development";
 				COMPRESS_PNG_FILES = NO;
 				COPY_PHASE_STRIP = YES;
 				ENABLE_BITCODE = NO;
@@ -1621,7 +1637,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				USER_HEADER_SEARCH_PATHS = (
@@ -1637,9 +1653,10 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
-				EXCLUDED_ARCHS = arm64;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = N5267GF8Q8;
 				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "Leapfrog/Leapfrog_ios-Prefix.pch";
@@ -1655,13 +1672,17 @@
 					../../../lua,
 				);
 				INFOPLIST_FILE = "Leapfrog/Leapfrog_ios-Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"../../../oxygine-framework//oxygine/third_party/ios/libraries",
 				);
 				ONLY_ACTIVE_ARCH = YES;
-				PRODUCT_BUNDLE_IDENTIFIER = org.oxygine.leapfrog;
+				PRODUCT_BUNDLE_IDENTIFIER = se.stfrha.leapfrog;
 				PRODUCT_NAME = Leapfrog_ios;
 				PROVISIONING_PROFILE = "";
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -1674,9 +1695,10 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
-				EXCLUDED_ARCHS = arm64;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = N5267GF8Q8;
 				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "Leapfrog/Leapfrog_ios-Prefix.pch";
@@ -1688,13 +1710,17 @@
 					../../../lua,
 				);
 				INFOPLIST_FILE = "Leapfrog/Leapfrog_ios-Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"../../../oxygine-framework//oxygine/third_party/ios/libraries",
 				);
 				ONLY_ACTIVE_ARCH = NO;
-				PRODUCT_BUNDLE_IDENTIFIER = org.oxygine.leapfrog;
+				PRODUCT_BUNDLE_IDENTIFIER = se.stfrha.leapfrog;
 				PRODUCT_NAME = Leapfrog_ios;
 				PROVISIONING_PROFILE = "";
 				TARGETED_DEVICE_FAMILY = "1,2";
