@@ -1597,7 +1597,7 @@ CompoundObject* CompoundObject::getObjectImpl(const std::string& name)
    {
       if ((*it)->getName() == name)
       {
-         return (CompoundObject*)(*it);
+         return (CompoundObject*)(*it).get();
       }
    }
      

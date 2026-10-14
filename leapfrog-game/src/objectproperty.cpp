@@ -120,7 +120,14 @@ void ObjectProperty::extSetProperty(float value)
       if ((m_extSetPropEvent != NULL) && (m_object != NULL))
       {
          m_object->dispatchEvent(m_extSetPropEvent);
-      }
+		
+		 // Persistent event: drop the smart refs dispatch stored in it,
+		 // otherwise the object keeps itself alive through its own event.
+		 m_extSetPropEvent->target = nullptr;
+		 m_extSetPropEvent->currentTarget = nullptr;
+		 m_extSetPropEvent->stopsImmediatePropagation = false;
+		 m_extSetPropEvent->stopsPropagation = false;
+	  }
    }
 }
 

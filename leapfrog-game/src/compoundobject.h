@@ -209,7 +209,7 @@ public:
    // Property values are protected within the ObjectProperty type
    // so it is safe to expose the list of properties here.
    std::vector<ObjectProperty> m_properties;
-   std::vector<CompoundObject*> m_children;
+   std::vector<spCompoundObject> m_children;
    std::vector<System*> m_systems;
    ObjectResources* m_resources;
    bool m_isDead;

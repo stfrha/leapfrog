@@ -210,13 +210,10 @@ void SceneActor::addParallaxBackgroundSprite(spSprite sp, float parallaxAmount)
 
    // If we get here (without returning earlier) there was no background with the
    // same amount. Create a new one.
-   ParallaxBackground* sa = new ParallaxBackground(
-      this,
-      m_world,
-      parallaxAmount);
-
-   addParallaxBackground(sa);
-   sp->attachTo(sa->m_sprite);
+   m_parallaxBackgrounds.emplace_back(this, m_world, parallaxAmount);
+   ParallaxBackground& sa = m_parallaxBackgrounds.back();
+   addChild(sa.m_sprite);
+   sp->attachTo(sa.m_sprite);
 }
 
 void SceneActor::addParallaxBackground(ParallaxBackground* background)

@@ -7,6 +7,8 @@
 #include "oxygine-framework.h"
 #include "mainactor.h"
 #include "graphicresources.h"
+#include "headupdisplay.h"
+#include "messagedisplay.h"
 #include "layout.h"
 
 #if defined(_WIN32) || defined(_WIN64)
@@ -63,6 +65,11 @@ void example_update()
 //called each frame from main.cpp
 void example_destroy()
 {
+    g_HeadDownDisplay = nullptr;
+    g_headUpDisplay = nullptr;
+    g_MessageDisplay = nullptr;
+    g_MainActor = nullptr;
+
    g_GraphRes.freeResources();
 }
 
