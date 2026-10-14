@@ -76,36 +76,42 @@ MenuActor::MenuActor()
       Vector2(g_Layout.getYFromTop(1), sepHeight * 1),
       Vector2(buttonWidth, buttonHeight),
       "Continue current game");
+   b1->addEventListener(TouchEvent::CLICK, CLOSURE(this, &MenuActor::b1Clicked));
 
    spMenuButton b2 = new MenuButton(
       this,
       Vector2(g_Layout.getYFromTop(1), sepHeight * 2 + buttonHeight * 1),
       Vector2(buttonWidth, buttonHeight),
       "Restart latest game");
+   b2->addEventListener(TouchEvent::CLICK, CLOSURE(this, &MenuActor::b2Clicked));
 
    spMenuButton b3 = new MenuButton(
       this,
       Vector2(g_Layout.getYFromTop(1), sepHeight * 3 + buttonHeight * 2),
       Vector2(buttonWidth, buttonHeight),
       "Start new game");
+   b3->addEventListener(TouchEvent::CLICK, CLOSURE(this, &MenuActor::b3Clicked));
 
    spMenuButton b4 = new MenuButton(
       this,
       Vector2(g_Layout.getYFromTop(1), sepHeight * 4 + buttonHeight * 3),
       Vector2(trioButtonWidth, buttonHeight),
       "Landing");
+   b4->addEventListener(TouchEvent::CLICK, CLOSURE(this, &MenuActor::b4Clicked));
 
    spMenuButton b5 = new MenuButton(
       this,
       Vector2(g_Layout.getYFromTop(1) + trioButtonWidth * 1 + sepTrioWidth * 1, sepHeight * 4 + buttonHeight * 3),
       Vector2(trioButtonWidth, buttonHeight),
       "Space");
+   b5->addEventListener(TouchEvent::CLICK, CLOSURE(this, &MenuActor::b5Clicked));
 
    spMenuButton b6 = new MenuButton(
       this,
       Vector2(g_Layout.getYFromTop(1) + trioButtonWidth * 2 + sepTrioWidth * 2, sepHeight * 4 + buttonHeight * 3),
       Vector2(trioButtonWidth, buttonHeight),
       "Orbit");
+   b6->addEventListener(TouchEvent::CLICK, CLOSURE(this, &MenuActor::b6Clicked));
 
 #if !(defined(__APPLE__) && TARGET_OS_IPHONE)
    // create/show the Exit menu item
@@ -114,15 +120,10 @@ MenuActor::MenuActor()
        Vector2(g_Layout.getYFromTop(1), sepHeight * 6 + buttonHeight * 5),
        Vector2(buttonWidth, buttonHeight),
        "Exit");
+
+   b7->addEventListener(TouchEvent::CLICK, CLOSURE(this, &MenuActor::b7Clicked));
 #endif
 
-   b1->addEventListener(TouchEvent::CLICK, CLOSURE(this, &MenuActor::b1Clicked));
-   b2->addEventListener(TouchEvent::CLICK, CLOSURE(this, &MenuActor::b2Clicked));
-   b3->addEventListener(TouchEvent::CLICK, CLOSURE(this, &MenuActor::b3Clicked));
-   b4->addEventListener(TouchEvent::CLICK, CLOSURE(this, &MenuActor::b4Clicked));
-   b5->addEventListener(TouchEvent::CLICK, CLOSURE(this, &MenuActor::b5Clicked));
-   b6->addEventListener(TouchEvent::CLICK, CLOSURE(this, &MenuActor::b6Clicked));
-   b7->addEventListener(TouchEvent::CLICK, CLOSURE(this, &MenuActor::b7Clicked));
 
 }
 
