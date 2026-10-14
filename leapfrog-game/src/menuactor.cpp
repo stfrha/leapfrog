@@ -7,6 +7,10 @@
 #include "mainactor.h"
 #include "graphicresources.h"
 
+#if defined(__APPLE__)
+#include <TargetConditionals.h>
+#endif
+
 using namespace oxygine;
 using namespace std;
 
@@ -103,11 +107,14 @@ MenuActor::MenuActor()
       Vector2(trioButtonWidth, buttonHeight),
       "Orbit");
 
+#if !(defined(__APPLE__) && TARGET_OS_IPHONE)
+   // create/show the Exit menu item
    spMenuButton b7 = new MenuButton(
-      this,
-      Vector2(g_Layout.getYFromTop(1), sepHeight * 6 + buttonHeight * 5),
-      Vector2(buttonWidth, buttonHeight),
-      "Exit");
+       this,
+       Vector2(g_Layout.getYFromTop(1), sepHeight * 6 + buttonHeight * 5),
+       Vector2(buttonWidth, buttonHeight),
+       "Exit");
+#endif
 
    b1->addEventListener(TouchEvent::CLICK, CLOSURE(this, &MenuActor::b1Clicked));
    b2->addEventListener(TouchEvent::CLICK, CLOSURE(this, &MenuActor::b2Clicked));
