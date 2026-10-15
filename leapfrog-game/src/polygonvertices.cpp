@@ -431,7 +431,7 @@ void PolygonVertices::createPolygonBorders(
             if (doThisBorder)
             {
                spPolygon border = new oxygine::Polygon();
-               border->setResAnim(g_GraphRes.getResources(GraphicResources::ResourceTypeEnum::game).getResAnim(texture));
+               border->setResAnim(g_GraphRes.getResAnim(texture));
                border->setAnchor(0.0f, 0.5f);
 
                vector<Vector2> vertices(4);
@@ -537,7 +537,7 @@ void PolygonVertices::createPolygonBorders(
          if (doThisBorder)
          {
             spPolygon border = new oxygine::Polygon();
-            border->setResAnim(g_GraphRes.getResources(GraphicResources::ResourceTypeEnum::game).getResAnim(texture));
+            border->setResAnim(g_GraphRes.getResAnim(texture));
             border->setAnchor(0.0f, 0.5f);
 
             vector<Vector2> vertices(4);

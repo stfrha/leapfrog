@@ -573,7 +573,7 @@ void CompoundObject::doCommonShapeDefinitions(
    Sprite* sprite,
    xml_node& objectNode)
 {
-   sprite->setResAnim(g_GraphRes.getResources(GraphicResources::ResourceTypeEnum::game).getResAnim(objectNode.attribute("texture").as_string()));
+   sprite->setResAnim(g_GraphRes.getResAnim(objectNode.attribute("texture").as_string()));
    sprite->setName(objectNode.attribute("name").as_string());
    sprite->setPriority((short)objectNode.attribute("zLevel").as_int());
    sprite->setTouchChildrenEnabled(false);
@@ -1109,7 +1109,7 @@ void CompoundObject::defineRope(
 
    // Define sprite of first segment
    spSprite object = new Sprite();
-   object->setResAnim(g_GraphRes.getResources(GraphicResources::ResourceTypeEnum::game).getResAnim(texture));
+   object->setResAnim(g_GraphRes.getResAnim(texture));
    object->setSize(segmentLength, thickness);
    object->setAnchor(0.5f, 0.5f);
    object->setPriority(zLevel);
@@ -1172,7 +1172,7 @@ void CompoundObject::defineRope(
    {
       // Create sprite of segment i
       spSprite object = new Sprite();
-      object->setResAnim(g_GraphRes.getResources(GraphicResources::ResourceTypeEnum::game).getResAnim(texture));
+      object->setResAnim(g_GraphRes.getResAnim(texture));
       object->setSize(segmentLength, thickness);
       object->setAnchor(0.5f, 0.5f);
       object->setPriority(zLevel);

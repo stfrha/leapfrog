@@ -38,7 +38,7 @@ PlanetActor::PlanetActor(
 
    spBox9Sprite planetSprite = new Box9Sprite();
 //   planetSprite->setResAnim(gameResources.getResAnim("planet_rock"));
-   planetSprite->setResAnim(g_GraphRes.getResources(GraphicResources::ResourceTypeEnum::game).getResAnim(objectNode.attribute("texture").as_string()));
+   planetSprite->setResAnim(g_GraphRes.getResAnim(objectNode.attribute("texture").as_string()));
    planetSprite->setSize(7000.0f, 7000.0f);
    planetSprite->setAnchor(0.5f, 0.5f);
    planetSprite->setGuides(0, 0, 0, 0);
@@ -173,7 +173,7 @@ void PlanetActor::orbitEstablished(void)
       predSite->attachTo(m_planet);
 
       spSprite crs = new Sprite();
-      crs->setResAnim(g_GraphRes.getResources(GraphicResources::ResourceTypeEnum::game).getResAnim(it->m_texture));
+      crs->setResAnim(g_GraphRes.getResAnim(it->m_texture));
       crs->setSize(100.0f, 30.0f);
       crs->setAnchor(0.5f, 0.5f);
 

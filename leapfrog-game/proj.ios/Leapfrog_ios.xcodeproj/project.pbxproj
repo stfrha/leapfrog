@@ -170,6 +170,8 @@
 		9CEECBC22C2CA882002BAE4F /* leapfrog_deep_space.xml in Resources */ = {isa = PBXBuildFile; fileRef = 9CEECB9F2C2CA881002BAE4F /* leapfrog_deep_space.xml */; };
 		9CEECBC32C2CA882002BAE4F /* scene_navigator.lua in Resources */ = {isa = PBXBuildFile; fileRef = 9CEECBA02C2CA881002BAE4F /* scene_navigator.lua */; };
 		9CEECBC42C2CA882002BAE4F /* res_hud.xml in Resources */ = {isa = PBXBuildFile; fileRef = 9CEECBA12C2CA881002BAE4F /* res_hud.xml */; };
+		8E60CCB5123EE36B85690C4C /* scene_resources.xml in Resources */ = {isa = PBXBuildFile; fileRef = 619A8670FC67F29B0EC2BA72 /* scene_resources.xml */; };
+		BD732C1E91E1B5508EAB2CA5 /* res_mining.xml in Resources */ = {isa = PBXBuildFile; fileRef = 0F1C5C04FE81487A600FF83B /* res_mining.xml */; };
 		9CEECBC52C2CA882002BAE4F /* strange_machine.xml in Resources */ = {isa = PBXBuildFile; fileRef = 9CEECBA22C2CA881002BAE4F /* strange_machine.xml */; };
 		9CEECBC62C2CA882002BAE4F /* clouds_background.xml in Resources */ = {isa = PBXBuildFile; fileRef = 9CEECBA32C2CA881002BAE4F /* clouds_background.xml */; };
 		9CEECBC72C2CA882002BAE4F /* mk2 in Resources */ = {isa = PBXBuildFile; fileRef = 9CEECBA42C2CA881002BAE4F /* mk2 */; };
@@ -623,6 +625,8 @@
 		9CEECB9F2C2CA881002BAE4F /* leapfrog_deep_space.xml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; name = leapfrog_deep_space.xml; path = ../data/leapfrog_deep_space.xml; sourceTree = "<group>"; };
 		9CEECBA02C2CA881002BAE4F /* scene_navigator.lua */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = scene_navigator.lua; path = ../data/scene_navigator.lua; sourceTree = "<group>"; };
 		9CEECBA12C2CA881002BAE4F /* res_hud.xml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; name = res_hud.xml; path = ../data/res_hud.xml; sourceTree = "<group>"; };
+		619A8670FC67F29B0EC2BA72 /* scene_resources.xml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; name = scene_resources.xml; path = ../data/scene_resources.xml; sourceTree = "<group>"; };
+		0F1C5C04FE81487A600FF83B /* res_mining.xml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; name = res_mining.xml; path = ../data/res_mining.xml; sourceTree = "<group>"; };
 		9CEECBA22C2CA881002BAE4F /* strange_machine.xml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; name = strange_machine.xml; path = ../data/strange_machine.xml; sourceTree = "<group>"; };
 		9CEECBA32C2CA881002BAE4F /* clouds_background.xml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; name = clouds_background.xml; path = ../data/clouds_background.xml; sourceTree = "<group>"; };
 		9CEECBA42C2CA881002BAE4F /* mk2 */ = {isa = PBXFileReference; lastKnownFileType = folder; name = mk2; path = ../data/mk2; sourceTree = "<group>"; };
@@ -758,6 +762,8 @@
 				9CEECBAB2C2CA881002BAE4F /* orbit_scene.xml */,
 				9CEECBAC2C2CA881002BAE4F /* orbit_space_scene.xml */,
 				9CEECBA12C2CA881002BAE4F /* res_hud.xml */,
+				619A8670FC67F29B0EC2BA72 /* scene_resources.xml */,
+				0F1C5C04FE81487A600FF83B /* res_mining.xml */,
 				9CEECB9E2C2CA881002BAE4F /* res.xml */,
 				9CEECBA02C2CA881002BAE4F /* scene_navigator.lua */,
 				9CEECBAD2C2CA881002BAE4F /* small_asteroid.xml */,
@@ -1354,6 +1360,8 @@
 				9CEECBD72C2CA882002BAE4F /* landing_scene_state2.xml in Resources */,
 				9CEECBD32C2CA882002BAE4F /* landing_pad.xml in Resources */,
 				9CEECBC42C2CA882002BAE4F /* res_hud.xml in Resources */,
+				8E60CCB5123EE36B85690C4C /* scene_resources.xml in Resources */,
+				BD732C1E91E1B5508EAB2CA5 /* res_mining.xml in Resources */,
 				9CEECBBB2C2CA882002BAE4F /* splash_screen.xml in Resources */,
 				9CEECBDC2C2CA882002BAE4F /* collision_entities.xml in Resources */,
 				9CEECBC62C2CA882002BAE4F /* clouds_background.xml in Resources */,
