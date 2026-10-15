@@ -45,6 +45,12 @@ Script-specific options are listed with `-- --help`.
   The kit adds new textures to `res.xml` itself (own atlas, `trim="false" extend="false"`,
   plus `rows`/`cols` for animations). It skips `*_test` names, custom `--out` and `--no-register`,
   and never changes entries that already exist.
+* Big scenery goes in a per-world resource set instead of `res.xml`, e.g. `res_mining.xml`
+  (`kit = sk.Kit(args, res="res_mining.xml")` or `--res`). The game loads a set only while a
+  scene that uses it runs; `data/scene_resources.xml` says which scenes use which set.
+  New sets are created and added to the iOS/macOS Xcode projects automatically
+  (`project_files.py`, which can also be run on its own:
+  `python project_files.py add-res res_desert.xml --scenes desert_scene.xml`).
 * Editor-only images (e.g. a single frame for fitting bodies when the game uses an animation)
   go to `leapfrog-game/editor_images/`, which no build project includes. The editor reads
   textures from both folders.
@@ -58,4 +64,4 @@ Script-specific options are listed with `-- --help`.
 |---|---|---|---|
 | `ls_tower.py` | `ls_tower` | 9 x 106.7 | rendered at 19 px/unit (too tall for 2048 at 20) |
 | `ls_booster_tank.py` | `ls_booster_tank` | 13.2 x 53 | hex plating twice the ship's hex size (`--tile 7.8`; ship is ~3.9) |
-| `ore_building.py` | `ore_building` | ~50 x 42 (perspective) | mission giver's building with the pub "The Ore"; pad states in `PADS` at the top; game uses `ore_building_blink` (2 frames, Beer neon on/off); `ore_building` is editor-only |
+| `ore_building.py` | `ore_building` | ~50 x 42 (perspective) | mission giver's building with the pub "The Ore"; pad states in `PADS` at the top; game uses `ore_building_blink` (2 frames, Beer neon on/off); `ore_building` is editor-only; registered in `res_mining.xml` |

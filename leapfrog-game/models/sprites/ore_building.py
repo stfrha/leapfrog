@@ -68,7 +68,7 @@ def options(p):
 
 
 args = sk.parse_args(options)
-kit = sk.Kit(args, rig="persp")
+kit = sk.Kit(args, rig="persp", res="res_mining.xml")   # home world scenery set
 rnd = random.Random(args.seed)
 
 M = kit.material

@@ -55,6 +55,8 @@ DEFAULT_MAX_PX = 2048    # safe texture / atlas size on older phones
 if KIT_DIR not in sys.path:
     sys.path.insert(0, KIT_DIR)
 
+import project_files  # noqa: E402  (data files and Xcode projects)
+
 
 # ---------------------------------------------------------------------------
 # Command line
@@ -73,6 +75,9 @@ def parse_args(add_extra=None):
     p.add_argument("--hdri", default=None, help="path to an HDRI, overrides the theme's default")
     p.add_argument("--save-blend", action="store_true", help="also save the generated scene to sprites/_blend/")
     p.add_argument("--no-render", action="store_true", help="build the scene only (use with --save-blend)")
+    p.add_argument("--res", default=None,
+                   help="resource file to register textures in (default set by the script, else res.xml). "
+                        "Scenery belongs in a per-world set like res_mining.xml")
     p.add_argument("--no-register", action="store_true",
                    help="don't add new textures to data/res.xml (never done for *_test names)")
     if add_extra:
@@ -432,9 +437,13 @@ def register_texture(filename, attrs="", res_xml=RES_XML):
 class Kit:
     """Owns the scene for one sprite script."""
 
-    def __init__(self, args, rig="ortho"):
+    def __init__(self, args, rig="ortho", res=None):
+        """res: resource file this script's textures belong in (default res.xml).
+        Big scenery should go in a per-world set (e.g. res_mining.xml) that is
+        only loaded while a scene using it runs; see data/scene_resources.xml."""
         self.args = args
         self.rig = rig
+        self.res = args.res or res or "res.xml"
         reset_scene()
         self.scene = bpy.context.scene
         setup_render(self.scene, args)
@@ -556,9 +565,19 @@ class Kit:
         return True
 
     def register(self, filename, attrs=""):
-        """Add a shipped texture to res.xml (skipped for test renders / custom --out)."""
-        if self._may_register(os.path.splitext(filename)[0]):
-            register_texture(filename, attrs)
+        """Add a shipped texture to the script's resource file (skipped for test renders / custom --out)."""
+        if not self._may_register(os.path.splitext(filename)[0]):
+            return
+        res_path = os.path.join(GAME_DIR, "data", self.res)
+        if self.res != "res.xml":
+            project_files.ensure_res_file(self.res)
+            if not project_files.scenes_using(self.res):
+                print("sprite_kit: NOTE no scene uses %s yet. Map scenes to it with:" % self.res)
+                print("sprite_kit:   python project_files.py add-res %s --scenes <scene>.xml" % self.res)
+            if os.path.exists(RES_XML) and ('file="%s"' % filename) in open(RES_XML, encoding="utf-8").read():
+                print("sprite_kit: NOTE %s is also listed in res.xml; remove it there so it isn't "
+                      "loaded for the whole game" % filename)
+        register_texture(filename, attrs, res_xml=res_path)
 
     def make_strip(self, frame_paths, name, layout="auto"):
         """Combine frames into <name>.png in data/images and register it as an animation."""
