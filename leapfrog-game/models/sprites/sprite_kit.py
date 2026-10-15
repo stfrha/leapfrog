@@ -410,23 +410,31 @@ def register_texture(filename, attrs="", res_xml=RES_XML):
         raw = f.read()
     text = raw.decode("utf-8")
     if ('file="%s"' % filename) in text:
-        print("sprite_kit: %s is already in res.xml (attributes unchanged)" % filename)
+        print("sprite_kit: %s is already in %s (attributes unchanged)" % (filename, os.path.basename(res_xml)))
         return False
     nl = "\r\n" if "\r\n" in text else "\n"
-    end = text.rfind("</resources>")
-    if end < 0:
-        print("sprite_kit: no </resources> in res.xml, register %s by hand" % filename)
-        return False
     extra = (" " + attrs.strip()) if attrs.strip() else ""
     block = ("\t<atlas clamp2edge=\"false\">" + nl +
              "\t\t<image file=\"%s\"%s trim=\"false\" extend=\"false\"/>" % (filename, extra) + nl +
              "\t</atlas>" + nl)
-    # insert at the start of the line that holds </resources>
-    line_start = text.rfind("\n", 0, end) + 1
-    text = text[:line_start] + block + text[line_start:]
+    # A <set path="..."/> applies to everything after it, and res.xml switches
+    # to "fonts" at the end. So insert right after the last existing atlas
+    # (which is in the images section), or, in a file without atlases, before
+    # </resources>.
+    last_atlas = text.rfind("</atlas>")
+    if last_atlas >= 0:
+        eol = text.find("\n", last_atlas)
+        insert_at = len(text) if eol < 0 else eol + 1
+    else:
+        end = text.rfind("</resources>")
+        if end < 0:
+            print("sprite_kit: no </resources> in %s, register %s by hand" % (res_xml, filename))
+            return False
+        insert_at = text.rfind("\n", 0, end) + 1
+    text = text[:insert_at] + block + text[insert_at:]
     with open(res_xml, "wb") as f:
         f.write(text.encode("utf-8"))
-    print("sprite_kit: added %s to res.xml" % filename)
+    print("sprite_kit: added %s to %s" % (filename, os.path.basename(res_xml)))
     return True
 
 
