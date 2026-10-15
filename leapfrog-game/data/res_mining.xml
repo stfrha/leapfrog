@@ -1,4 +1,7 @@
 <?xml version="1.0"?>
 <resources>
 	<set path = "images" />
+	<atlas clamp2edge="false">
+		<image file="ore_building_blink.png" rows="2" trim="false" extend="false"/>
+	</atlas>
 </resources>
