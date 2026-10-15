@@ -36,14 +36,22 @@
       </ToggleButton>
       <Popup IsOpen="{Binding IsChecked, ElementName=button}" StaysOpen="False">
          <Border Background="LightYellow">
-            <Button Margin="10"
-                    FontSize="10"
-                    Content="Set Width acc. to Height and Texture aspect ratio"
-                    Command="{Binding DataContext.SetShapeWidth, RelativeSource={RelativeSource AncestorType={x:Type Window}}}"
-                     CommandParameter="{Binding}"
-                    >
+            <StackPanel>
+               <Button Margin="10"
+                       FontSize="10"
+                       Content="Set Width acc. to Height and Texture aspect ratio"
+                       Command="{Binding DataContext.SetShapeWidth, RelativeSource={RelativeSource AncestorType={x:Type Window}}}"
+                        CommandParameter="{Binding}"
+                       >
                
-            </Button>
+               </Button>
+               <Button Margin="10,0,10,10"
+                       FontSize="10"
+                       Content="Set Width and Height from texture pixel size"
+                       Command="{Binding DataContext.SetShapeSizeFromTexture, RelativeSource={RelativeSource AncestorType={x:Type Window}}}"
+                       CommandParameter="{Binding}"
+                       />
+            </StackPanel>
          </Border>
       </Popup>
    </Grid>

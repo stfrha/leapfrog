@@ -23,5 +23,9 @@ namespace LeapfrogEditor
       void SetHeightToTextureAspectRatio();
 
       void SetWidthToTextureAspectRatio();
+
+      // Sets both Width and Height from the texture's pixel size divided by
+      // GlobalConstants.TexturePixelsPerUnit.
+      void SetSizeFromTexture();
    }
 }

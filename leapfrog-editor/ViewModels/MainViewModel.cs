@@ -800,6 +800,29 @@ namespace LeapfrogEditor
          }
       }
 
+      void SetShapeSizeFromTextureExecute(Object parameter)
+      {
+         if (parameter is IWidthHeightInterface)
+         {
+            IWidthHeightInterface iwh = (IWidthHeightInterface)parameter;
+
+            iwh.SetSizeFromTexture();
+         }
+      }
+
+      bool CanSetShapeSizeFromTextureExecute(Object parameter)
+      {
+         return true;
+      }
+
+      public ICommand SetShapeSizeFromTexture
+      {
+         get
+         {
+            return new MicroMvvm.RelayCommand<Object>(parameter => SetShapeSizeFromTextureExecute(parameter), parameter => CanSetShapeSizeFromTextureExecute(parameter));
+         }
+      }
+
       void CreateTrianglesExecute(Object parameter)
       {
          EditedCpVm.GenerateTriangles();

@@ -127,6 +127,11 @@ namespace LeapfrogEditor
          Height = bi.Height / bi.Width * Width;
       }
 
+      public void SetSizeFromTexture()
+      {
+         TextureSize.SetSizeFromTexture(this, Texture);
+      }
+
       #endregion
    }
 }

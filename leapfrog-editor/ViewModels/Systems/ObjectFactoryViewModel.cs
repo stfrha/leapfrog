@@ -438,6 +438,11 @@ namespace LeapfrogEditor
          //   Height = bi.Height / bi.Width * Width;
       }
 
+      public void SetSizeFromTexture()
+      {
+         // Not supported for object factories (as with the aspect ratio functions)
+      }
+
       public override void InvalidateAll()
       {
          UpdateCornerPoints();
