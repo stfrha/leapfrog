@@ -341,6 +341,48 @@ def merge_unchanged(base_path, variant_path, t0=0.012, t1=0.05, blur_px=4):
           % (os.path.basename(variant_path), os.path.basename(base_path), changed))
 
 
+def make_strip(frame_paths, out_path, layout="auto", max_px=DEFAULT_MAX_PX):
+    """
+    Combine equally sized frames into one image for an oxygine animation
+    (<image file="..." cols="N"/> or rows="N" in res.xml). Frame 0 is
+    left / top. layout: "cols", "rows" or "auto" (whichever keeps the image
+    smallest, preferring a size within max_px). Returns (cols, rows).
+    """
+    import numpy as np
+    frames = [_load_pixels(p) for p in frame_paths]
+    w, h = frames[0][1], frames[0][2]
+    if any((f[1], f[2]) != (w, h) for f in frames):
+        raise ValueError("make_strip: frames have different sizes")
+    n = len(frames)
+    if layout == "auto":
+        as_cols = max(w * n, h)
+        as_rows = max(w, h * n)
+        layout = "cols" if (as_cols <= as_rows) else "rows"
+    if layout == "cols":
+        data = np.concatenate([f[0] for f in frames], axis=1)
+        cols, rows = n, 1
+    else:
+        # Blender's pixel rows run bottom-up, so frame 0 (top) goes last.
+        data = np.concatenate([f[0] for f in reversed(frames)], axis=0)
+        cols, rows = 1, n
+    sh, sw = data.shape[0], data.shape[1]
+    img = bpy.data.images.new("strip", sw, sh, alpha=True)
+    img.pixels.foreach_set(data.astype(np.float32).ravel())
+    img.filepath_raw = out_path
+    img.file_format = 'PNG'
+    img.save()
+    bpy.data.images.remove(img)
+
+    attr = ('cols="%d"' % cols) if cols > 1 else ('rows="%d"' % rows)
+    print("")
+    print("sprite_kit: %s, %d frames, %d x %d px" % (out_path, n, sw, sh))
+    if max(sw, sh) > max_px:
+        print("sprite_kit: WARNING the animation image is larger than %d px" % max_px)
+    print("sprite_kit:   res.xml:  <image file=\"%s\" %s/>" % (os.path.basename(out_path), attr))
+    print("")
+    return cols, rows
+
+
 # ---------------------------------------------------------------------------
 # Kit
 # ---------------------------------------------------------------------------

@@ -13,11 +13,14 @@ frame is fitted to the building at 20 px/unit at the building's depth, so
 
 Pads are part of the image; draw their collision bodies in the editor.
 
-Two images are rendered from the same scene, for a blinking neon:
-    ore_building.png           Beer neon on, lighting the facade and ground pink
-    ore_building_beer_off.png  Beer neon off; identical everywhere else
-(Pixels that differ only by render noise are copied from the first image,
-so swapping the two doesn't make the rest of the building shimmer.)
+Two frames are rendered from the same scene, for a blinking neon:
+    ore_building.png        Beer neon on (single image; use it to set the
+                            body size in the editor)
+    ore_building_blink.png  both frames in one image, on then off, for an
+                            oxygine animation; the script prints the res.xml
+                            line (rows="2" or cols="2")
+In the off frame, pixels that differ only by render noise are copied from
+the on frame, so the rest of the building doesn't shimmer when it blinks.
 
 Run from leapfrog-game\\models\\sprites:
     blender -b --factory-startup -P ore_building.py
@@ -61,6 +64,7 @@ def options(p):
     p.add_argument("--font", default=None, help="TTF/OTF for the signs (default: Blender's font)")
     p.add_argument("--beer-power", type=float, default=600.0, help="watts of pink light from the Beer neon")
     p.add_argument("--no-blink", action="store_true", help="skip the second render with the Beer neon off")
+    p.add_argument("--keep-frames", action="store_true", help="also keep <name>_beer_off.png as a separate file")
 
 
 args = sk.parse_args(options)
@@ -352,4 +356,10 @@ if not args.no_blink:
     beer.data.materials[0] = M("neon_dead")
     for light in beer_lights:
         light.hide_render = True
-    kit.render_variant(args.name + "_beer_off")
+    off_path = kit.render_variant(args.name + "_beer_off")
+    if off_path:
+        # One image with both frames (on, off) for an oxygine animation.
+        on_path = os.path.join(args.out, args.name + ".png")
+        sk.make_strip([on_path, off_path], os.path.join(args.out, args.name + "_blink.png"))
+        if not args.keep_frames:
+            os.remove(off_path)
