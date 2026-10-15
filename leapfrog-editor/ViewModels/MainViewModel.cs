@@ -160,21 +160,27 @@ namespace LeapfrogEditor
 
       #region Texture list
 
-      private FileSystemWatcher _textureWatcher;
+      private List<FileSystemWatcher> _textureWatchers = new List<FileSystemWatcher>();
       private System.Windows.Threading.DispatcherTimer _textureRefreshTimer;
 
-      // Syncs Textures with the .png files in the image directory. The
-      // collection object is kept, so everything bound to it updates.
+      // Syncs Textures with the .png files in the image directories (game
+      // images and editor-only images). The collection object is kept, so
+      // everything bound to it updates.
       public void UpdateTextureList()
       {
-         string dir = TextureImages.FullImageDirectory;
-
          List<string> names = new List<string>();
-         if (Directory.Exists(dir))
+         foreach (string dir in TextureImages.TextureDirectories)
          {
-            foreach (string file in Directory.GetFiles(dir, "*.png"))
+            if (Directory.Exists(dir))
             {
-               names.Add(System.IO.Path.GetFileNameWithoutExtension(file));
+               foreach (string file in Directory.GetFiles(dir, "*.png"))
+               {
+                  string name = System.IO.Path.GetFileNameWithoutExtension(file);
+                  if (!names.Contains(name, StringComparer.OrdinalIgnoreCase))
+                  {
+                     names.Add(name);
+                  }
+               }
             }
          }
          names.Sort(StringComparer.OrdinalIgnoreCase);
@@ -223,12 +229,6 @@ namespace LeapfrogEditor
             return;
          }
 
-         string dir = TextureImages.FullImageDirectory;
-         if (!Directory.Exists(dir))
-         {
-            return;
-         }
-
          // Blender writes a file in several steps; wait until it has been
          // quiet for a moment before refreshing.
          _textureRefreshTimer = new System.Windows.Threading.DispatcherTimer();
@@ -239,13 +239,23 @@ namespace LeapfrogEditor
             RefreshTexturesNow();
          };
 
-         _textureWatcher = new FileSystemWatcher(dir, "*.png");
-         _textureWatcher.NotifyFilter = NotifyFilters.FileName | NotifyFilters.LastWrite | NotifyFilters.Size;
-         _textureWatcher.Created += OnTextureFileChanged;
-         _textureWatcher.Changed += OnTextureFileChanged;
-         _textureWatcher.Deleted += OnTextureFileChanged;
-         _textureWatcher.Renamed += OnTextureFileChanged;
-         _textureWatcher.EnableRaisingEvents = true;
+         foreach (string dir in TextureImages.TextureDirectories)
+         {
+            // editor_images may not exist yet; F5 still finds it later
+            if (!Directory.Exists(dir))
+            {
+               continue;
+            }
+
+            FileSystemWatcher w = new FileSystemWatcher(dir, "*.png");
+            w.NotifyFilter = NotifyFilters.FileName | NotifyFilters.LastWrite | NotifyFilters.Size;
+            w.Created += OnTextureFileChanged;
+            w.Changed += OnTextureFileChanged;
+            w.Deleted += OnTextureFileChanged;
+            w.Renamed += OnTextureFileChanged;
+            w.EnableRaisingEvents = true;
+            _textureWatchers.Add(w);
+         }
       }
 
       // Called on a background thread by the FileSystemWatcher.

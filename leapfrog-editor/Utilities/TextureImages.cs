@@ -26,15 +26,39 @@ namespace LeapfrogEditor
 
       public static string FullImageDirectory
       {
-         get
-         {
-            string exeDir = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
-            return Path.GetFullPath(Path.Combine(exeDir, GlobalConstants.ImageDirectory));
-         }
+         get { return FullPath(GlobalConstants.ImageDirectory); }
       }
 
+      public static string FullEditorImageDirectory
+      {
+         get { return FullPath(GlobalConstants.EditorImageDirectory); }
+      }
+
+      // All folders textures are read from: the game's images first, then
+      // the editor-only images.
+      public static string[] TextureDirectories
+      {
+         get { return new string[] { FullImageDirectory, FullEditorImageDirectory }; }
+      }
+
+      private static string FullPath(string relative)
+      {
+         string exeDir = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
+         return Path.GetFullPath(Path.Combine(exeDir, relative));
+      }
+
+      // Path of a texture's PNG: data\images if it's there, otherwise
+      // editor_images. (If it exists in neither, the data\images path.)
       public static string FullFileName(string texture)
       {
+         foreach (string dir in TextureDirectories)
+         {
+            string f = Path.Combine(dir, texture + ".png");
+            if (File.Exists(f))
+            {
+               return f;
+            }
+         }
          return Path.Combine(FullImageDirectory, texture + ".png");
       }
 

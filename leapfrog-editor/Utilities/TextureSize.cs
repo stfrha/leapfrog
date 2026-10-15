@@ -22,9 +22,7 @@ namespace LeapfrogEditor
          pixelWidth = 0;
          pixelHeight = 0;
 
-         string s = GlobalConstants.ImageDirectory + texture + ".png";
-         string fullPath = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
-         string fullFileName = Path.Combine(fullPath, s);
+         string fullFileName = TextureImages.FullFileName(texture);
 
          if (!File.Exists(fullFileName))
          {
@@ -62,7 +60,8 @@ namespace LeapfrogEditor
          if (!TryGetPixelSize(texture, out pw, out ph))
          {
             MessageBox.Show(
-               "Could not read texture '" + texture + ".png' in " + GlobalConstants.ImageDirectory,
+               "Could not read texture '" + texture + ".png' in " + GlobalConstants.ImageDirectory +
+               " or " + GlobalConstants.EditorImageDirectory,
                "Set size from texture",
                MessageBoxButton.OK,
                MessageBoxImage.Warning);
