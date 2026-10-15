@@ -150,21 +150,119 @@ namespace LeapfrogEditor
          CollEnts = CollisionEntities.ReadFromFile(fullFileName);
 
 
-         // Build collections of texture names
-         // Process the list of files found in the directory.
-         s = GlobalConstants.DataDirectory + "images";
+         // Build collection of texture names, and keep it up to date while
+         // the editor runs.
+         UpdateTextureList();
+         StartTextureWatcher();
+      }
 
-         string[] fileEntries = Directory.GetFiles(s);
-         foreach (string file in fileEntries)
+      #endregion
+
+      #region Texture list
+
+      private FileSystemWatcher _textureWatcher;
+      private System.Windows.Threading.DispatcherTimer _textureRefreshTimer;
+
+      // Syncs Textures with the .png files in the image directory. The
+      // collection object is kept, so everything bound to it updates.
+      public void UpdateTextureList()
+      {
+         string dir = TextureImages.FullImageDirectory;
+
+         List<string> names = new List<string>();
+         if (Directory.Exists(dir))
          {
-            string fname = System.IO.Path.GetFileNameWithoutExtension(file);
-            string ext = System.IO.Path.GetExtension(file);
-
-            if (ext == ".png")
+            foreach (string file in Directory.GetFiles(dir, "*.png"))
             {
-               Textures.Add(fname);
+               names.Add(System.IO.Path.GetFileNameWithoutExtension(file));
             }
          }
+         names.Sort(StringComparer.OrdinalIgnoreCase);
+
+         // Remove textures that are gone
+         for (int i = Textures.Count - 1; i >= 0; i--)
+         {
+            if (!names.Contains(Textures[i], StringComparer.OrdinalIgnoreCase))
+            {
+               Textures.RemoveAt(i);
+            }
+         }
+
+         // Add new ones in sorted position
+         foreach (string name in names)
+         {
+            if (!Textures.Contains(name, StringComparer.OrdinalIgnoreCase))
+            {
+               int pos = 0;
+               while ((pos < Textures.Count) && (StringComparer.OrdinalIgnoreCase.Compare(Textures[pos], name) < 0))
+               {
+                  pos++;
+               }
+               Textures.Insert(pos, name);
+            }
+         }
+      }
+
+      // Updates the texture list and redraws the scene, so new and
+      // re-rendered textures show up.
+      public void RefreshTexturesNow()
+      {
+         UpdateTextureList();
+
+         if (EditedCpVm != null)
+         {
+            EditedCpVm.BuildGlobalShapeCollection(ShowJoints, ShowSystems, ShowBackgrounds);
+         }
+      }
+
+      private void StartTextureWatcher()
+      {
+         // MainViewModel is also created by the XAML designer; don't watch there.
+         if (System.ComponentModel.DesignerProperties.GetIsInDesignMode(new DependencyObject()))
+         {
+            return;
+         }
+
+         string dir = TextureImages.FullImageDirectory;
+         if (!Directory.Exists(dir))
+         {
+            return;
+         }
+
+         // Blender writes a file in several steps; wait until it has been
+         // quiet for a moment before refreshing.
+         _textureRefreshTimer = new System.Windows.Threading.DispatcherTimer();
+         _textureRefreshTimer.Interval = TimeSpan.FromMilliseconds(500);
+         _textureRefreshTimer.Tick += (sender, e) =>
+         {
+            _textureRefreshTimer.Stop();
+            RefreshTexturesNow();
+         };
+
+         _textureWatcher = new FileSystemWatcher(dir, "*.png");
+         _textureWatcher.NotifyFilter = NotifyFilters.FileName | NotifyFilters.LastWrite | NotifyFilters.Size;
+         _textureWatcher.Created += OnTextureFileChanged;
+         _textureWatcher.Changed += OnTextureFileChanged;
+         _textureWatcher.Deleted += OnTextureFileChanged;
+         _textureWatcher.Renamed += OnTextureFileChanged;
+         _textureWatcher.EnableRaisingEvents = true;
+      }
+
+      // Called on a background thread by the FileSystemWatcher.
+      private void OnTextureFileChanged(object sender, FileSystemEventArgs e)
+      {
+         Application app = Application.Current;
+         if (app == null)
+         {
+            return;
+         }
+
+         app.Dispatcher.BeginInvoke(new Action(() =>
+         {
+            // Restart the timer on every event (debounce)
+            _textureRefreshTimer.Stop();
+            _textureRefreshTimer.Start();
+         }));
       }
 
       #endregion
@@ -338,6 +436,24 @@ namespace LeapfrogEditor
       #endregion
 
       #region Commands
+
+      void RefreshTexturesExecute(Object parameter)
+      {
+         RefreshTexturesNow();
+      }
+
+      bool CanRefreshTexturesExecute(Object parameter)
+      {
+         return true;
+      }
+
+      public ICommand RefreshTextures
+      {
+         get
+         {
+            return new MicroMvvm.RelayCommand<Object>(parameter => RefreshTexturesExecute(parameter), parameter => CanRefreshTexturesExecute(parameter));
+         }
+      }
 
       void NewExecute(Object parameter)
       {

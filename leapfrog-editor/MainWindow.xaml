@@ -15,6 +15,9 @@
    <Window.DataContext>
       <local:MainViewModel x:Name="myMainViewModel"/>
    </Window.DataContext>
+   <Window.InputBindings>
+      <KeyBinding Key="F5" Command="{Binding RefreshTextures}" />
+   </Window.InputBindings>
    <Window.Resources>
       <local:ToCollectionValueConverter x:Key="ToCollectionValueConverter" />
       <local:BindingProxy x:Key="DataContextProxy" Data="{Binding}" />
@@ -84,6 +87,7 @@
                   <MenuItem Header="Zoom In" />
                   <MenuItem Header="Zoom Out" />
                </MenuItem>
+               <MenuItem Header="Refresh Textures" InputGestureText="F5" Command="{Binding RefreshTextures}" />
                <MenuItem Header="Generate Triangles" Command="{Binding CreateTriangles}" />
                <MenuItem Header="Show">
                   <MenuItem Header="Joints" IsCheckable="True" IsChecked="{Binding ShowJoints}" />

@@ -307,11 +307,7 @@ namespace LeapfrogEditor
                   return null;
                }
 
-               string s = GlobalConstants.ImageDirectory + texture + ".png";
-               string fullPath = System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
-               string fullFileName = System.IO.Path.Combine(fullPath, s);
-
-               return new BitmapImage(new Uri(fullFileName));
+               return TextureImages.Get(texture);
             }
          }
 

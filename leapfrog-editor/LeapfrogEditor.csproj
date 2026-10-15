@@ -65,6 +65,7 @@
     <Compile Include="Utilities\CoordinateTransformations.cs" />
     <Compile Include="Utilities\GlobalDataDirectory.cs" />
     <Compile Include="Utilities\TextureSize.cs" />
+    <Compile Include="Utilities\TextureImages.cs" />
     <Compile Include="Models\Behaviours\BreakableObjectProperties.cs" />
     <Compile Include="Models\Behaviours\CoBehaviour.cs" />
     <Compile Include="Models\Behaviours\SceneProperties.cs" />

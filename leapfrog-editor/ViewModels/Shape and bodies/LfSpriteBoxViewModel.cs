@@ -197,7 +197,11 @@ namespace LeapfrogEditor
 
          // Get Bitmap width and height
          Uri u = new Uri(fullFileName);
-         BitmapImage bi = new BitmapImage(u);
+         System.Windows.Media.ImageSource bi = TextureImages.Get(Texture);
+         if (bi == null)
+         {
+            return;
+         }
 
          // Set width
          Width = bi.Width / bi.Height * Height;
@@ -213,7 +217,11 @@ namespace LeapfrogEditor
 
          // Get Bitmap width and height
          Uri u = new Uri(fullFileName);
-         BitmapImage bi = new BitmapImage(u);
+         System.Windows.Media.ImageSource bi = TextureImages.Get(Texture);
+         if (bi == null)
+         {
+            return;
+         }
 
          // Set width
          Height = bi.Height / bi.Width * Width;
