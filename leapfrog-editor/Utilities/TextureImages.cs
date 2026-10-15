@@ -47,18 +47,92 @@ namespace LeapfrogEditor
          return Path.GetFullPath(Path.Combine(exeDir, relative));
       }
 
-      // Path of a texture's PNG: data\images if it's there, otherwise
-      // editor_images. (If it exists in neither, the data\images path.)
-      public static string FullFileName(string texture)
+      // Index of texture name -> file, over data\images and editor_images
+      // including subfolders (images are organised in folders like
+      // images\mining; the texture name is the file name without folder, as
+      // in the game). data\images wins if a name exists in both.
+      private static Dictionary<string, string> _index = null;
+      private static List<string> _duplicates = new List<string>();
+
+      public static void RebuildIndex()
       {
+         Dictionary<string, string> idx = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+         List<string> dups = new List<string>();
+
          foreach (string dir in TextureDirectories)
          {
-            string f = Path.Combine(dir, texture + ".png");
-            if (File.Exists(f))
+            if (!Directory.Exists(dir))
             {
-               return f;
+               continue;
+            }
+
+            foreach (string file in Directory.GetFiles(dir, "*.png", SearchOption.AllDirectories))
+            {
+               string name = Path.GetFileNameWithoutExtension(file);
+               string existing;
+               if (idx.TryGetValue(name, out existing))
+               {
+                  // Same name in data\images and editor_images is fine only
+                  // when one of them is editor-only; within one root it's
+                  // ambiguous for the game.
+                  bool sameRoot = existing.StartsWith(dir, StringComparison.OrdinalIgnoreCase);
+                  if (sameRoot)
+                  {
+                     dups.Add(name + ":\n   " + existing + "\n   " + file);
+                  }
+               }
+               else
+               {
+                  idx[name] = file;
+               }
             }
          }
+
+         _index = idx;
+         _duplicates = dups;
+      }
+
+      // All texture names (builds the index if needed)
+      public static ICollection<string> TextureNames
+      {
+         get
+         {
+            if (_index == null)
+            {
+               RebuildIndex();
+            }
+            return _index.Keys;
+         }
+      }
+
+      // Texture names that exist in more than one subfolder of the same root
+      public static List<string> Duplicates
+      {
+         get { return _duplicates; }
+      }
+
+      // Path of a texture's PNG, wherever it is. (If it can't be found,
+      // the path it would have directly in data\images.)
+      public static string FullFileName(string texture)
+      {
+         if (_index == null)
+         {
+            RebuildIndex();
+         }
+
+         string f;
+         if (_index.TryGetValue(texture, out f) && File.Exists(f))
+         {
+            return f;
+         }
+
+         // Moved or new since the last scan
+         RebuildIndex();
+         if (_index.TryGetValue(texture, out f))
+         {
+            return f;
+         }
+
          return Path.Combine(FullImageDirectory, texture + ".png");
       }
 

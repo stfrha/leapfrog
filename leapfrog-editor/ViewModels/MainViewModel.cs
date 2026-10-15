@@ -161,6 +161,7 @@ namespace LeapfrogEditor
       #region Texture list
 
       private List<FileSystemWatcher> _textureWatchers = new List<FileSystemWatcher>();
+      private string _lastDuplicateWarning = "";
       private System.Windows.Threading.DispatcherTimer _textureRefreshTimer;
 
       // Syncs Textures with the .png files in the image directories (game
@@ -168,22 +169,25 @@ namespace LeapfrogEditor
       // everything bound to it updates.
       public void UpdateTextureList()
       {
-         List<string> names = new List<string>();
-         foreach (string dir in TextureImages.TextureDirectories)
-         {
-            if (Directory.Exists(dir))
-            {
-               foreach (string file in Directory.GetFiles(dir, "*.png"))
-               {
-                  string name = System.IO.Path.GetFileNameWithoutExtension(file);
-                  if (!names.Contains(name, StringComparer.OrdinalIgnoreCase))
-                  {
-                     names.Add(name);
-                  }
-               }
-            }
-         }
+         TextureImages.RebuildIndex();
+         List<string> names = new List<string>(TextureImages.TextureNames);
          names.Sort(StringComparer.OrdinalIgnoreCase);
+
+         // The game identifies a texture by file name only, so the same name
+         // in two folders is ambiguous. Warn once per new set of duplicates.
+         string dups = string.Join("\n", TextureImages.Duplicates);
+         if ((dups != "") && (dups != _lastDuplicateWarning))
+         {
+            _lastDuplicateWarning = dups;
+            MessageBox.Show(
+               "These texture names exist in more than one folder. The game can't tell them apart; " +
+               "rename or remove one of each:\n\n" + dups,
+               "Duplicate texture names", MessageBoxButton.OK, MessageBoxImage.Warning);
+         }
+         else if (dups == "")
+         {
+            _lastDuplicateWarning = "";
+         }
 
          // Remove textures that are gone
          for (int i = Textures.Count - 1; i >= 0; i--)
@@ -248,6 +252,7 @@ namespace LeapfrogEditor
             }
 
             FileSystemWatcher w = new FileSystemWatcher(dir, "*.png");
+            w.IncludeSubdirectories = true;      // images are organised in subfolders
             w.NotifyFilter = NotifyFilters.FileName | NotifyFilters.LastWrite | NotifyFilters.Size;
             w.Created += OnTextureFileChanged;
             w.Changed += OnTextureFileChanged;

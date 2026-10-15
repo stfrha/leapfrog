@@ -72,9 +72,6 @@
 		<image file="rock.png" trim="false" extend="false"/>
 	</atlas>	
 	<atlas clamp2edge="false"> 
-		<image file="grotto.png" trim="false" extend="false"/>
-	</atlas>	
-	<atlas clamp2edge="false"> 
 		<image file="grotto_light.png" trim="false" extend="false"/>
 	</atlas>	
 	<atlas clamp2edge="false"> 
@@ -122,6 +119,10 @@
 	<atlas clamp2edge="false"> 
 		<image file="transparent.png" trim="false" extend="false"/>
 	</atlas>		
+	<set path = "images/mining" />
+	<atlas clamp2edge="false">
+		<image file="grotto.png" trim="false" extend="false"/>
+	</atlas>
 	<set path = "fonts" />
 	<font file="main.fnt" />	
 </resources>

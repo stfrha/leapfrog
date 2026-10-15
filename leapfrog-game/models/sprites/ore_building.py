@@ -351,7 +351,7 @@ lean.rotation_euler = (0.0, math.radians(args.lean), 0.0)
 # With blinking, the single lit image is only for fitting bodies in the editor
 # (editor_images/, not shipped); the game uses the <name>_blink animation.
 blink = not args.no_blink
-kit.render_persp(args.name, target=(0.0, 0.0, WALL_TOP / 2 + 2.0),
+on_path = kit.render_persp(args.name, target=(0.0, 0.0, WALL_TOP / 2 + 2.0),
                  yaw_deg=args.yaw, pitch_deg=args.pitch, distance=args.distance, ground_z=0.0,
                  editor_only=blink)
 
@@ -364,7 +364,6 @@ if blink:
     if off_path:
         # One image with both frames (on, off) for an oxygine animation,
         # in data/images and registered in res.xml with rows/cols.
-        on_path = os.path.join(sk.EDITOR_OUT, args.name + ".png")
         kit.make_strip([on_path, off_path], args.name + "_blink")
         if not args.keep_frames:
             os.remove(off_path)

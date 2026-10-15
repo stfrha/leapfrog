@@ -148,6 +148,150 @@ def map_scene(scene_file, res_name):
     return True
 
 
+# ---------------------------------------------------------------------------
+# Textures in resource files
+# ---------------------------------------------------------------------------
+# In oxygine a <set path = "..."/> applies to everything after it in the
+# file, and a texture's name is its file name without folder. Every block
+# written here starts with its own <set path>, so blocks can be inserted
+# anywhere without affecting (or being affected by) the rest of the file.
+
+_SET_RE = re.compile(r'<set\s+path\s*=\s*"([^"]*)"\s*/>')
+
+
+def res_files():
+    """All resource files in data/ (res.xml first)."""
+    names = sorted(n for n in os.listdir(DATA_DIR) if n.startswith("res") and n.endswith(".xml"))
+    if "res.xml" in names:
+        names.remove("res.xml")
+        names.insert(0, "res.xml")
+    return names
+
+
+def image_folder(res_name, filename):
+    """Folder (relative to data/) that `filename` is loaded from in res_name, or None."""
+    path = os.path.join(DATA_DIR, res_name)
+    if not os.path.exists(path):
+        return None
+    text = _read(path)
+    pos = text.find('file="%s"' % filename)
+    if pos < 0:
+        return None
+    folder = ""
+    for m in _SET_RE.finditer(text, 0, pos):
+        folder = m.group(1).strip()
+    return folder
+
+
+def find_texture(filename):
+    """(res_name, folder) of the first resource file that lists filename, or (None, None)."""
+    for res in res_files():
+        folder = image_folder(res, filename)
+        if folder is not None:
+            return res, folder
+    return None, None
+
+
+def register_texture(res_name, filename, attrs="", folder="images"):
+    """
+    Add an image to data/<res_name> in its own atlas, loaded from data/<folder>.
+    Nothing happens if the file already lists it. Returns True if changed.
+    """
+    path = os.path.join(DATA_DIR, res_name)
+    if res_name != "res.xml":
+        ensure_res_file(res_name)
+    if not os.path.exists(path):
+        print("project_files: %s not found, register %s by hand" % (path, filename))
+        return False
+    text = _read(path)
+    if ('file="%s"' % filename) in text:
+        print("project_files: %s is already in %s (unchanged)" % (filename, res_name))
+        return False
+    nl = _nl(text)
+    extra = (" " + attrs.strip()) if attrs and attrs.strip() else ""
+    block = ('\t<set path = "%s" />' % folder + nl +
+             '\t<atlas clamp2edge="false">' + nl +
+             '\t\t<image file="%s"%s trim="false" extend="false"/>' % (filename, extra) + nl +
+             '\t</atlas>' + nl)
+    last_atlas = text.rfind("</atlas>")
+    if last_atlas >= 0:
+        eol = text.find("\n", last_atlas)
+        insert_at = len(text) if eol < 0 else eol + 1
+    else:
+        end = text.rfind("</resources>")
+        if end < 0:
+            print("project_files: no </resources> in %s, register %s by hand" % (res_name, filename))
+            return False
+        insert_at = text.rfind("\n", 0, end) + 1
+    text = text[:insert_at] + block + text[insert_at:]
+    # A block inserted before entries that relied on an earlier <set path>
+    # would change their folder; restore it after our block if needed.
+    following = text[insert_at + len(block):]
+    next_set = _SET_RE.search(following)
+    next_entry = re.search(r"<(atlas|image|font)\b", following)
+    if next_entry and (not next_set or next_entry.start() < next_set.start()):
+        prev_folder = ""
+        for m in _SET_RE.finditer(text, 0, insert_at):
+            prev_folder = m.group(1).strip()
+        restore = '\t<set path = "%s" />' % prev_folder + nl
+        text = text[:insert_at + len(block)] + restore + text[insert_at + len(block):]
+    _write(path, text)
+    print("project_files: added %s to %s (from data/%s)" % (filename, res_name, folder))
+    return True
+
+
+def _remove_entry(text, filename):
+    """Remove filename's entry; returns (text, other attributes of the entry)."""
+    f = re.escape(filename)
+    single = re.search(r'[ \t]*<set\s+path\s*=\s*"[^"]*"\s*/>[ \t]*\r?\n'
+                       r'(?=[ \t]*<atlas[^>]*>[ \t]*\r?\n[ \t]*<image\s+file="%s")' % f, text)
+    block = re.search(r'[ \t]*<atlas[^>]*>[ \t]*\r?\n[ \t]*(<image\s+file="%s"[^>]*/>)[^\n]*\r?\n'
+                      r'[ \t]*</atlas>[^\n]*\r?\n' % f, text)
+    if block:
+        tag = block.group(1)
+        start = single.start() if (single and single.end() == block.start()) else block.start()
+        text = text[:start] + text[block.end():]
+    else:
+        line = re.search(r'[ \t]*(<image\s+file="%s"[^>]*/>)[^\n]*\r?\n' % f, text)
+        if not line:
+            return text, None
+        tag = line.group(1)
+        text = text[:line.start()] + text[line.end():]
+    attrs = re.sub(r'\s(file|trim|extend)="[^"]*"', "", tag[len("<image"):-2]).strip()
+    return text, attrs
+
+
+def move_texture(name, folder, res_name=None):
+    """
+    Move data/<old folder>/<name>.png to data/<folder>/ and update its resource
+    entry (optionally moving it to another resource file). Returns True if done.
+    """
+    filename = name if name.endswith(".png") else name + ".png"
+    old_res, old_folder = find_texture(filename)
+    if old_res is None:
+        print("project_files: %s is not in any resource file" % filename)
+        return False
+    res_name = res_name or old_res
+    src = os.path.join(DATA_DIR, old_folder, filename)
+    dst_dir = os.path.join(DATA_DIR, folder)
+    dst = os.path.join(dst_dir, filename)
+    if os.path.normcase(os.path.abspath(src)) == os.path.normcase(os.path.abspath(dst)) and res_name == old_res:
+        print("project_files: %s is already in data/%s" % (filename, folder))
+        return False
+    if not os.path.exists(src):
+        print("project_files: %s not found" % src)
+        return False
+    os.makedirs(dst_dir, exist_ok=True)
+    if os.path.abspath(src) != os.path.abspath(dst):
+        os.replace(src, dst)
+    old_path = os.path.join(DATA_DIR, old_res)
+    text, attrs = _remove_entry(_read(old_path), filename)
+    _write(old_path, text)
+    register_texture(res_name, filename, attrs or "", folder)
+    print("project_files: moved %s: data/%s -> data/%s" % (filename, old_folder, folder))
+    return True
+
+
 def scenes_using(res_name):
     if not os.path.exists(SCENE_MAP):
         return []
@@ -161,12 +305,32 @@ if __name__ == "__main__":
     a = sub.add_parser("add-res", help="create a resource file, add it to Xcode, map scenes to it")
     a.add_argument("res")
     a.add_argument("--scenes", nargs="*", default=[])
+    m = sub.add_parser("move-texture", help="move textures to a folder and update their resource entries")
+    m.add_argument("folder", help="folder under data/, e.g. images/mining")
+    m.add_argument("names", nargs="+", help="texture names (with or without .png)")
+    m.add_argument("--res", default=None, help="also move the entries to this resource file")
+    w = sub.add_parser("where", help="show which resource file and folder each texture is in")
+    w.add_argument("names", nargs="*", help="texture names (default: all)")
     args = p.parse_args()
     if args.cmd == "add-res":
         ensure_res_file(args.res)
         ensure_scene_map()
         for s in args.scenes:
             map_scene(s, args.res)
+    elif args.cmd == "move-texture":
+        folder = args.folder.replace("\\", "/").strip("/")
+        for n in args.names:
+            move_texture(n, folder, args.res)
+    elif args.cmd == "where":
+        names = args.names
+        if not names:
+            names = []
+            for res in res_files():
+                names += re.findall(r'<image\s+file="([^"]+)"', _read(os.path.join(DATA_DIR, res)))
+        for n in names:
+            fn = n if n.endswith(".png") else n + ".png"
+            res, folder = find_texture(fn)
+            print("%-40s %-20s %s" % (fn, res or "-", ("data/" + folder) if res else "-"))
     else:
         p.print_help()
         sys.exit(1)

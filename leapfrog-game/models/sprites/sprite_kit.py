@@ -75,6 +75,9 @@ def parse_args(add_extra=None):
     p.add_argument("--hdri", default=None, help="path to an HDRI, overrides the theme's default")
     p.add_argument("--save-blend", action="store_true", help="also save the generated scene to sprites/_blend/")
     p.add_argument("--no-render", action="store_true", help="build the scene only (use with --save-blend)")
+    p.add_argument("--folder", default=None,
+                   help="image subfolder under data/images and editor_images (default: from the resource "
+                        "file, res_mining.xml -> mining, res.xml -> common)")
     p.add_argument("--res", default=None,
                    help="resource file to register textures in (default set by the script, else res.xml). "
                         "Scenery belongs in a per-world set like res_mining.xml")
@@ -398,44 +401,9 @@ def make_strip(frame_paths, out_path, layout="auto", max_px=DEFAULT_MAX_PX):
     return cols, rows
 
 
-def register_texture(filename, attrs="", res_xml=RES_XML):
-    """
-    Add an image to res.xml if it isn't listed yet, in its own atlas like the
-    other large textures. Returns True if the file was changed.
-    """
-    if not os.path.exists(res_xml):
-        print("sprite_kit: %s not found, register %s by hand" % (res_xml, filename))
-        return False
-    with open(res_xml, "rb") as f:
-        raw = f.read()
-    text = raw.decode("utf-8")
-    if ('file="%s"' % filename) in text:
-        print("sprite_kit: %s is already in %s (attributes unchanged)" % (filename, os.path.basename(res_xml)))
-        return False
-    nl = "\r\n" if "\r\n" in text else "\n"
-    extra = (" " + attrs.strip()) if attrs.strip() else ""
-    block = ("\t<atlas clamp2edge=\"false\">" + nl +
-             "\t\t<image file=\"%s\"%s trim=\"false\" extend=\"false\"/>" % (filename, extra) + nl +
-             "\t</atlas>" + nl)
-    # A <set path="..."/> applies to everything after it, and res.xml switches
-    # to "fonts" at the end. So insert right after the last existing atlas
-    # (which is in the images section), or, in a file without atlases, before
-    # </resources>.
-    last_atlas = text.rfind("</atlas>")
-    if last_atlas >= 0:
-        eol = text.find("\n", last_atlas)
-        insert_at = len(text) if eol < 0 else eol + 1
-    else:
-        end = text.rfind("</resources>")
-        if end < 0:
-            print("sprite_kit: no </resources> in %s, register %s by hand" % (res_xml, filename))
-            return False
-        insert_at = text.rfind("\n", 0, end) + 1
-    text = text[:insert_at] + block + text[insert_at:]
-    with open(res_xml, "wb") as f:
-        f.write(text.encode("utf-8"))
-    print("sprite_kit: added %s to %s" % (filename, os.path.basename(res_xml)))
-    return True
+def register_texture(filename, attrs="", res_xml=RES_XML, folder="images"):
+    """Add an image to a resource file (see project_files.register_texture)."""
+    return project_files.register_texture(os.path.basename(res_xml), filename, attrs, folder)
 
 
 # ---------------------------------------------------------------------------
@@ -452,6 +420,12 @@ class Kit:
         self.args = args
         self.rig = rig
         self.res = args.res or res or "res.xml"
+        if args.folder:
+            self.folder = args.folder.replace("\\", "/").strip("/")
+        elif self.res.startswith("res_") and self.res.endswith(".xml"):
+            self.folder = self.res[len("res_"):-len(".xml")]
+        else:
+            self.folder = "common"
         reset_scene()
         self.scene = bpy.context.scene
         setup_render(self.scene, args)
@@ -562,13 +536,34 @@ class Kit:
                             "size %.2f x %.2f units at the target's depth" % (res_x / ppu, res_y / ppu),
                             editor_only=editor_only)
 
-    def _out_dir(self, editor_only):
-        return EDITOR_OUT if editor_only else self.args.out
+    def _custom_out(self):
+        return os.path.normcase(os.path.abspath(self.args.out)) != os.path.normcase(os.path.abspath(DEFAULT_OUT))
+
+    def _out_dir(self, name, editor_only):
+        """
+        Where <name>.png goes:
+          editor-only images      editor_images/<folder>/
+          custom --out            that folder
+          already registered      wherever its resource entry points (so re-renders never break it)
+          new                     data/images/<folder>/
+        """
+        if editor_only:
+            return os.path.join(EDITOR_OUT, self.folder)
+        if self._custom_out():
+            return self.args.out
+        res, folder = project_files.find_texture(name + ".png")
+        if res is not None:
+            if folder.replace("\\", "/").strip("/") != "images/" + self.folder:
+                print("sprite_kit: NOTE %s.png stays in data/%s (listed in %s). To move it:" % (name, folder, res))
+                print("sprite_kit:   python project_files.py move-texture images/%s %s --res %s"
+                      % (self.folder, name, self.res))
+            return os.path.join(GAME_DIR, "data", folder)
+        return os.path.join(DEFAULT_OUT, self.folder)
 
     def _may_register(self, name):
         if self.args.no_register or name.endswith("_test"):
             return False
-        if os.path.normcase(os.path.abspath(self.args.out)) != os.path.normcase(os.path.abspath(DEFAULT_OUT)):
+        if self._custom_out():
             return False
         return True
 
@@ -576,7 +571,6 @@ class Kit:
         """Add a shipped texture to the script's resource file (skipped for test renders / custom --out)."""
         if not self._may_register(os.path.splitext(filename)[0]):
             return
-        res_path = os.path.join(GAME_DIR, "data", self.res)
         if self.res != "res.xml":
             project_files.ensure_res_file(self.res)
             if not project_files.scenes_using(self.res):
@@ -585,12 +579,14 @@ class Kit:
             if os.path.exists(RES_XML) and ('file="%s"' % filename) in open(RES_XML, encoding="utf-8").read():
                 print("sprite_kit: NOTE %s is also listed in res.xml; remove it there so it isn't "
                       "loaded for the whole game" % filename)
-        register_texture(filename, attrs, res_xml=res_path)
+        if project_files.find_texture(filename)[0] is None:
+            project_files.register_texture(self.res, filename, attrs, "images/" + self.folder)
 
     def make_strip(self, frame_paths, name, layout="auto"):
-        """Combine frames into <name>.png in data/images and register it as an animation."""
-        os.makedirs(self.args.out, exist_ok=True)
-        out_path = os.path.join(self.args.out, name + ".png")
+        """Combine frames into <name>.png (shipped) and register it as an animation."""
+        out_dir = self._out_dir(name, False)
+        os.makedirs(out_dir, exist_ok=True)
+        out_path = os.path.join(out_dir, name + ".png")
         cols, rows = make_strip(frame_paths, out_path, layout, self.args.max_px)
         self.register(name + ".png", ('cols="%d"' % cols) if cols > 1 else ('rows="%d"' % rows))
         return out_path
@@ -605,7 +601,7 @@ class Kit:
         if self.args.no_render:
             return None
 
-        out_dir = self._out_dir(editor_only)
+        out_dir = self._out_dir(name, editor_only)
         os.makedirs(out_dir, exist_ok=True)
         out_path = os.path.join(out_dir, name + ".png")
         self.scene.render.filepath = out_path

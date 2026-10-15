@@ -51,8 +51,16 @@ Script-specific options are listed with `-- --help`.
   New sets are created and added to the iOS/macOS Xcode projects automatically
   (`project_files.py`, which can also be run on its own:
   `python project_files.py add-res res_desert.xml --scenes desert_scene.xml`).
+* Images are organised in subfolders matching the resource set: `res_mining.xml` ->
+  `data/images/mining/`, `res.xml` -> `data/images/common/` (or `--folder`). Texture names
+  are file names without folder, so they must be unique across folders. Each entry the
+  kit writes starts with its own `<set path>`, so its position in the file doesn't matter.
+  A texture that is already registered is re-rendered to wherever its entry points.
+  Move existing textures (file + entry, optionally to another resource file) with
+  `python project_files.py move-texture images/mining ls_tower ls_booster_tank --res res_mining.xml`;
+  `python project_files.py where` lists every texture's resource file and folder.
 * Editor-only images (e.g. a single frame for fitting bodies when the game uses an animation)
-  go to `leapfrog-game/editor_images/`, which no build project includes. The editor reads
+  go to `leapfrog-game/editor_images/<folder>/`, which no build project includes. The editor reads
   textures from both folders.
 * `kit.render_variant(name)` renders the same scene again (e.g. a light switched off) for
   animation frames; pixels that only differ by render noise are copied from the first image.
