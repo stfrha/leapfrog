@@ -103,7 +103,7 @@ def make_material(role, models_dir):
     if role == "window_lit_blue":
         return _emission("window_lit_blue", (0.30, 0.55, 1.0), 6.0)
     if role == "neon_pink":
-        return _emission("neon_pink", (1.0, 0.12, 0.45), 18.0)
+        return _emission("neon_pink", (1.0, 0.12, 0.45), 25.0)
     if role == "neon_amber":
         return _emission("neon_amber", (1.0, 0.45, 0.08), 14.0)
     if role == "neon_dead":

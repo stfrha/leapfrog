@@ -13,6 +13,12 @@ frame is fitted to the building at 20 px/unit at the building's depth, so
 
 Pads are part of the image; draw their collision bodies in the editor.
 
+Two images are rendered from the same scene, for a blinking neon:
+    ore_building.png           Beer neon on, lighting the facade and ground pink
+    ore_building_beer_off.png  Beer neon off; identical everywhere else
+(Pixels that differ only by render noise are copied from the first image,
+so swapping the two doesn't make the rest of the building shimmer.)
+
 Run from leapfrog-game\\models\\sprites:
     blender -b --factory-startup -P ore_building.py
     blender -b --factory-startup -P ore_building.py -- --samples 16 --name ore_building_test
@@ -53,6 +59,8 @@ def options(p):
     p.add_argument("--distance", type=float, default=95.0, help="camera distance (less = more perspective)")
     p.add_argument("--seed", type=int, default=7, help="randomness for broken windows, rubble, cracks")
     p.add_argument("--font", default=None, help="TTF/OTF for the signs (default: Blender's font)")
+    p.add_argument("--beer-power", type=float, default=600.0, help="watts of pink light from the Beer neon")
+    p.add_argument("--no-blink", action="store_true", help="skip the second render with the Beer neon off")
 
 
 args = sk.parse_args(options)
@@ -178,7 +186,12 @@ beer = sk.text_object("neon_beer", "Beer", 1.9, [M("neon_pink"), M("neon_dead")]
                       location=(window_x, FRONT - 0.35, pz + 3.8), neon=True, tube=0.07, font_path=args.font)
 beer.data.body_format[2].material_index = 1
 building.append(beer)
-building.append(sk.point_light("neon_beer_light", (window_x, FRONT - 1.6, pz + 3.8), (1.0, 0.15, 0.5), 90.0, 0.6))
+# Strong pink light so the blinking clearly lights up the facade and the ground
+beer_lights = [
+    sk.point_light("neon_beer_light", (window_x, FRONT - 2.2, pz + 3.8), (1.0, 0.15, 0.5), args.beer_power, 1.2),
+    sk.point_light("neon_beer_ground", (window_x, FRONT - 4.0, pz + 0.8), (1.0, 0.15, 0.5), args.beer_power * 0.4, 1.5),
+]
+building += beer_lights
 # Sign board with "The Ore"
 sign_x = ps * 4.9
 sign_z = pz + 8.4
@@ -333,3 +346,10 @@ lean.rotation_euler = (0.0, math.radians(args.lean), 0.0)
 
 kit.render_persp(args.name, target=(0.0, 0.0, WALL_TOP / 2 + 2.0),
                  yaw_deg=args.yaw, pitch_deg=args.pitch, distance=args.distance, ground_z=0.0)
+
+# Second frame for blinking: same camera, Beer neon off.
+if not args.no_blink:
+    beer.data.materials[0] = M("neon_dead")
+    for light in beer_lights:
+        light.hide_render = True
+    kit.render_variant(args.name + "_beer_off")

@@ -41,6 +41,8 @@ Script-specific options are listed with `-- --help`.
 * Lighting and materials come from the theme. Scripts ask for material roles
   (`frame_main`, `frame_brace`, ...) and the theme decides what they look like.
 * A new texture must also be listed in `data/res.xml` for the game to load it.
+* `kit.render_variant(name)` renders the same scene again (e.g. a light switched off) for
+  animation frames; pixels that only differ by render noise are copied from the first image.
 
 ## Sprites
 
@@ -48,4 +50,4 @@ Script-specific options are listed with `-- --help`.
 |---|---|---|---|
 | `ls_tower.py` | `ls_tower` | 9 x 106.7 | rendered at 19 px/unit (too tall for 2048 at 20) |
 | `ls_booster_tank.py` | `ls_booster_tank` | 13.2 x 53 | hex plating twice the ship's hex size (`--tile 7.8`; ship is ~3.9) |
-| `ore_building.py` | `ore_building` | ~50 x 42 (perspective) | mission giver's building with the pub "The Ore"; pad states in `PADS` at the top |
+| `ore_building.py` | `ore_building` | ~50 x 42 (perspective) | mission giver's building with the pub "The Ore"; pad states in `PADS` at the top; also renders `ore_building_beer_off` for a blinking neon |

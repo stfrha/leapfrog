@@ -279,6 +279,69 @@ def bevel(ob, width=0.05, segments=2):
 
 
 # ---------------------------------------------------------------------------
+# Image post-processing
+# ---------------------------------------------------------------------------
+
+def _load_pixels(path):
+    import numpy as np
+    img = bpy.data.images.load(path, check_existing=False)
+    w, h = img.size
+    px = np.empty(w * h * 4, dtype=np.float32)
+    img.pixels.foreach_get(px)
+    bpy.data.images.remove(img)
+    return px.reshape(h, w, 4), w, h
+
+
+def _box_blur(a, r):
+    """Box blur of a 2D array with radius r (edges clamped), via cumulative sums."""
+    import numpy as np
+    if r <= 0:
+        return a
+    for axis in (0, 1):
+        pad = [(0, 0), (0, 0)]
+        pad[axis] = (r + 1, r)
+        p = np.pad(a, pad, mode='edge')
+        c = np.cumsum(p, axis=axis)
+        n = a.shape[axis]
+        if axis == 0:
+            a = (c[2 * r + 1:2 * r + 1 + n, :] - c[0:n, :]) / (2 * r + 1)
+        else:
+            a = (c[:, 2 * r + 1:2 * r + 1 + n] - c[:, 0:n]) / (2 * r + 1)
+    return a
+
+
+def merge_unchanged(base_path, variant_path, t0=0.012, t1=0.05, blur_px=4):
+    """
+    Rewrite variant_path so that every pixel that differs from base_path by
+    less than about t0 (render noise) is taken from base_path. Differences
+    above t1 are kept fully; the mask is softened by blur_px pixels so there
+    is no visible edge.
+    """
+    import numpy as np
+    base, w, h = _load_pixels(base_path)
+    var, w2, h2 = _load_pixels(variant_path)
+    if (w, h) != (w2, h2):
+        print("sprite_kit: merge_unchanged: size mismatch, skipped")
+        return
+    diff = np.abs(var - base).max(axis=2)
+    mask = np.clip((diff - t0) / (t1 - t0), 0.0, 1.0)
+    # Grow and soften the mask so lit areas fade out smoothly
+    soft = _box_blur(_box_blur(mask, blur_px), blur_px)
+    mask = np.clip(np.maximum(mask, soft * 3.0), 0.0, 1.0)[:, :, None]
+    out = base * (1.0 - mask) + var * mask
+
+    img = bpy.data.images.new("merged", w, h, alpha=True)
+    img.pixels.foreach_set(out.astype(np.float32).ravel())
+    img.filepath_raw = variant_path
+    img.file_format = 'PNG'
+    img.save()
+    bpy.data.images.remove(img)
+    changed = float((mask > 0.01).mean()) * 100.0
+    print("sprite_kit: %s differs from %s in %.1f %% of the image"
+          % (os.path.basename(variant_path), os.path.basename(base_path), changed))
+
+
+# ---------------------------------------------------------------------------
 # Kit
 # ---------------------------------------------------------------------------
 
@@ -411,9 +474,33 @@ class Kit:
         out_path = os.path.join(self.args.out, name + ".png")
         self.scene.render.filepath = out_path
         bpy.ops.render.render(write_still=True)
+        self._last = (out_path, res_x, res_y, ppu, size_text)
 
         print("")
         print("sprite_kit: %s" % out_path)
+        print("sprite_kit:   %s, %d x %d px, %g px/unit" % (size_text, res_x, res_y, ppu))
+        print("")
+        return out_path
+
+    def render_variant(self, name, keep_unchanged=True):
+        """
+        Render the scene again with the same camera and frame (after the script
+        has changed something, e.g. switched a light off) to <name>.png.
+
+        keep_unchanged: pixels that differ from the previous render only by
+        render noise are copied from it, so the two images can be swapped as
+        animation frames without the rest of the sprite shimmering.
+        """
+        if self.args.no_render or not getattr(self, "_last", None):
+            return None
+        base_path, res_x, res_y, ppu, size_text = self._last
+        out_path = os.path.join(self.args.out, name + ".png")
+        self.scene.render.filepath = out_path
+        bpy.ops.render.render(write_still=True)
+        if keep_unchanged:
+            merge_unchanged(base_path, out_path)
+        print("")
+        print("sprite_kit: %s (variant of %s)" % (out_path, os.path.basename(base_path)))
         print("sprite_kit:   %s, %d x %d px, %g px/unit" % (size_text, res_x, res_y, ppu))
         print("")
         return out_path
