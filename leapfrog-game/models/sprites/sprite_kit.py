@@ -22,7 +22,13 @@ Conventions
   that fits, and a warning is printed.
 * The image frame is exactly the box you pass to render_ortho(), not the
   visible pixels, so the sprite lines up with the width x height body box.
-* Output: <name>.png straight into leapfrog-game/data/images/.
+* Output: <name>.png straight into leapfrog-game/data/images/, and the
+  texture is added to data/res.xml if it isn't listed yet. Every file in
+  data/images ships with the game (Android packs all of data/, iOS has
+  data/images as a folder reference).
+* Editor-only images (e.g. a single frame used to fit bodies in the editor
+  when the game uses an animation) go to leapfrog-game/editor_images/,
+  which no build project includes.
 """
 
 import argparse
@@ -39,6 +45,8 @@ KIT_DIR = os.path.dirname(os.path.abspath(__file__))
 MODELS_DIR = os.path.dirname(KIT_DIR)            # leapfrog-game/models
 GAME_DIR = os.path.dirname(MODELS_DIR)           # leapfrog-game
 DEFAULT_OUT = os.path.join(GAME_DIR, "data", "images")
+EDITOR_OUT = os.path.join(GAME_DIR, "editor_images")      # editor-only images, not shipped
+RES_XML = os.path.join(GAME_DIR, "data", "res.xml")
 BLEND_OUT = os.path.join(KIT_DIR, "_blend")
 
 DEFAULT_PPU = 20.0       # keep equal to GlobalConstants.TexturePixelsPerUnit
@@ -65,6 +73,8 @@ def parse_args(add_extra=None):
     p.add_argument("--hdri", default=None, help="path to an HDRI, overrides the theme's default")
     p.add_argument("--save-blend", action="store_true", help="also save the generated scene to sprites/_blend/")
     p.add_argument("--no-render", action="store_true", help="build the scene only (use with --save-blend)")
+    p.add_argument("--no-register", action="store_true",
+                   help="don't add new textures to data/res.xml (never done for *_test names)")
     if add_extra:
         add_extra(p)
     return p.parse_args(argv)
@@ -383,6 +393,38 @@ def make_strip(frame_paths, out_path, layout="auto", max_px=DEFAULT_MAX_PX):
     return cols, rows
 
 
+def register_texture(filename, attrs="", res_xml=RES_XML):
+    """
+    Add an image to res.xml if it isn't listed yet, in its own atlas like the
+    other large textures. Returns True if the file was changed.
+    """
+    if not os.path.exists(res_xml):
+        print("sprite_kit: %s not found, register %s by hand" % (res_xml, filename))
+        return False
+    with open(res_xml, "rb") as f:
+        raw = f.read()
+    text = raw.decode("utf-8")
+    if ('file="%s"' % filename) in text:
+        print("sprite_kit: %s is already in res.xml (attributes unchanged)" % filename)
+        return False
+    nl = "\r\n" if "\r\n" in text else "\n"
+    end = text.rfind("</resources>")
+    if end < 0:
+        print("sprite_kit: no </resources> in res.xml, register %s by hand" % filename)
+        return False
+    extra = (" " + attrs.strip()) if attrs.strip() else ""
+    block = ("\t<atlas clamp2edge=\"false\">" + nl +
+             "\t\t<image file=\"%s\"%s trim=\"false\" extend=\"false\"/>" % (filename, extra) + nl +
+             "\t</atlas>" + nl)
+    # insert at the start of the line that holds </resources>
+    line_start = text.rfind("\n", 0, end) + 1
+    text = text[:line_start] + block + text[line_start:]
+    with open(res_xml, "wb") as f:
+        f.write(text.encode("utf-8"))
+    print("sprite_kit: added %s to res.xml" % filename)
+    return True
+
+
 # ---------------------------------------------------------------------------
 # Kit
 # ---------------------------------------------------------------------------
@@ -408,7 +450,7 @@ class Kit:
         return self._materials[role]
 
     def render_persp(self, name, target, yaw_deg=18.0, pitch_deg=6.0, lens=50.0, distance=90.0,
-                     ground_z=0.0, margin_px=2):
+                     ground_z=0.0, margin_px=2, editor_only=False):
         """
         Perspective render for static scenery (3/4 view like the silo).
 
@@ -500,9 +542,33 @@ class Kit:
         scene.render.resolution_y = res_y
 
         return self._finish(name, res_x, res_y, ppu,
-                            "size %.2f x %.2f units at the target's depth" % (res_x / ppu, res_y / ppu))
+                            "size %.2f x %.2f units at the target's depth" % (res_x / ppu, res_y / ppu),
+                            editor_only=editor_only)
 
-    def _finish(self, name, res_x, res_y, ppu, size_text):
+    def _out_dir(self, editor_only):
+        return EDITOR_OUT if editor_only else self.args.out
+
+    def _may_register(self, name):
+        if self.args.no_register or name.endswith("_test"):
+            return False
+        if os.path.normcase(os.path.abspath(self.args.out)) != os.path.normcase(os.path.abspath(DEFAULT_OUT)):
+            return False
+        return True
+
+    def register(self, filename, attrs=""):
+        """Add a shipped texture to res.xml (skipped for test renders / custom --out)."""
+        if self._may_register(os.path.splitext(filename)[0]):
+            register_texture(filename, attrs)
+
+    def make_strip(self, frame_paths, name, layout="auto"):
+        """Combine frames into <name>.png in data/images and register it as an animation."""
+        os.makedirs(self.args.out, exist_ok=True)
+        out_path = os.path.join(self.args.out, name + ".png")
+        cols, rows = make_strip(frame_paths, out_path, layout, self.args.max_px)
+        self.register(name + ".png", ('cols="%d"' % cols) if cols > 1 else ('rows="%d"' % rows))
+        return out_path
+
+    def _finish(self, name, res_x, res_y, ppu, size_text, editor_only=False):
         if self.args.save_blend:
             os.makedirs(BLEND_OUT, exist_ok=True)
             path = os.path.join(BLEND_OUT, name + ".blend")
@@ -512,16 +578,19 @@ class Kit:
         if self.args.no_render:
             return None
 
-        os.makedirs(self.args.out, exist_ok=True)
-        out_path = os.path.join(self.args.out, name + ".png")
+        out_dir = self._out_dir(editor_only)
+        os.makedirs(out_dir, exist_ok=True)
+        out_path = os.path.join(out_dir, name + ".png")
         self.scene.render.filepath = out_path
         bpy.ops.render.render(write_still=True)
         self._last = (out_path, res_x, res_y, ppu, size_text)
 
         print("")
-        print("sprite_kit: %s" % out_path)
+        print("sprite_kit: %s%s" % (out_path, "  (editor only, not shipped)" if editor_only else ""))
         print("sprite_kit:   %s, %d x %d px, %g px/unit" % (size_text, res_x, res_y, ppu))
         print("")
+        if not editor_only:
+            self.register(name + ".png")
         return out_path
 
     def render_variant(self, name, keep_unchanged=True):
@@ -536,7 +605,7 @@ class Kit:
         if self.args.no_render or not getattr(self, "_last", None):
             return None
         base_path, res_x, res_y, ppu, size_text = self._last
-        out_path = os.path.join(self.args.out, name + ".png")
+        out_path = os.path.join(os.path.dirname(base_path), name + ".png")
         self.scene.render.filepath = out_path
         bpy.ops.render.render(write_still=True)
         if keep_unchanged:
@@ -547,7 +616,7 @@ class Kit:
         print("")
         return out_path
 
-    def render_ortho(self, name, box_xz):
+    def render_ortho(self, name, box_xz, editor_only=False):
         """
         Render the front view of everything in the scene, framed exactly to
         box_xz = (xmin, zmin, xmax, zmax) in Blender units.
@@ -581,23 +650,5 @@ class Kit:
         self.scene.render.resolution_x = res_x
         self.scene.render.resolution_y = res_y
 
-        if self.args.save_blend:
-            os.makedirs(BLEND_OUT, exist_ok=True)
-            path = os.path.join(BLEND_OUT, name + ".blend")
-            bpy.ops.wm.save_as_mainfile(filepath=path)
-            print("sprite_kit: saved %s" % path)
-
-        if self.args.no_render:
-            return None
-
-        os.makedirs(self.args.out, exist_ok=True)
-        out_path = os.path.join(self.args.out, name + ".png")
-        self.scene.render.filepath = out_path
-        bpy.ops.render.render(write_still=True)
-
-        print("")
-        print("sprite_kit: %s" % out_path)
-        print("sprite_kit:   size %.3f x %.3f units, %d x %d px, %g px/unit"
-              % (w, h, res_x, res_y, ppu))
-        print("")
-        return out_path
+        return self._finish(name, res_x, res_y, ppu, "size %.3f x %.3f units" % (w, h),
+                            editor_only=editor_only)

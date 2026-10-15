@@ -40,7 +40,14 @@ Script-specific options are listed with `-- --help`.
   is fitted around the geometry at 20 px/unit at the object's depth.
 * Lighting and materials come from the theme. Scripts ask for material roles
   (`frame_main`, `frame_brace`, ...) and the theme decides what they look like.
-* A new texture must also be listed in `data/res.xml` for the game to load it.
+* Every file in `data/images` ships with the game (Android packs all of `data/`, iOS has
+  `data/images` as a folder reference), and the engine loads what `data/res.xml` lists.
+  The kit adds new textures to `res.xml` itself (own atlas, `trim="false" extend="false"`,
+  plus `rows`/`cols` for animations). It skips `*_test` names, custom `--out` and `--no-register`,
+  and never changes entries that already exist.
+* Editor-only images (e.g. a single frame for fitting bodies when the game uses an animation)
+  go to `leapfrog-game/editor_images/`, which no build project includes. The editor reads
+  textures from both folders.
 * `kit.render_variant(name)` renders the same scene again (e.g. a light switched off) for
   animation frames; pixels that only differ by render noise are copied from the first image.
   `sk.make_strip()` combines frames into one image and prints the `res.xml` line (`cols`/`rows`).
@@ -51,4 +58,4 @@ Script-specific options are listed with `-- --help`.
 |---|---|---|---|
 | `ls_tower.py` | `ls_tower` | 9 x 106.7 | rendered at 19 px/unit (too tall for 2048 at 20) |
 | `ls_booster_tank.py` | `ls_booster_tank` | 13.2 x 53 | hex plating twice the ship's hex size (`--tile 7.8`; ship is ~3.9) |
-| `ore_building.py` | `ore_building` | ~50 x 42 (perspective) | mission giver's building with the pub "The Ore"; pad states in `PADS` at the top; also `ore_building_blink` (2 frames, Beer neon on/off) |
+| `ore_building.py` | `ore_building` | ~50 x 42 (perspective) | mission giver's building with the pub "The Ore"; pad states in `PADS` at the top; game uses `ore_building_blink` (2 frames, Beer neon on/off); `ore_building` is editor-only |

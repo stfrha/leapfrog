@@ -14,11 +14,11 @@ frame is fitted to the building at 20 px/unit at the building's depth, so
 Pads are part of the image; draw their collision bodies in the editor.
 
 Two frames are rendered from the same scene, for a blinking neon:
-    ore_building.png        Beer neon on (single image; use it to set the
-                            body size in the editor)
-    ore_building_blink.png  both frames in one image, on then off, for an
-                            oxygine animation; the script prints the res.xml
-                            line (rows="2" or cols="2")
+    editor_images/ore_building.png    Beer neon on, single image for fitting the
+                                      body in the editor (not shipped)
+    data/images/ore_building_blink.png  both frames, on then off, for an
+                                      oxygine animation; added to res.xml with
+                                      rows="2" or cols="2"
 In the off frame, pixels that differ only by render noise are copied from
 the on frame, so the rest of the building doesn't shimmer when it blinks.
 
@@ -348,18 +348,23 @@ top_level = [o for o in building if o.parent is None]
 sk.parent_keep_transform(top_level, lean)
 lean.rotation_euler = (0.0, math.radians(args.lean), 0.0)
 
+# With blinking, the single lit image is only for fitting bodies in the editor
+# (editor_images/, not shipped); the game uses the <name>_blink animation.
+blink = not args.no_blink
 kit.render_persp(args.name, target=(0.0, 0.0, WALL_TOP / 2 + 2.0),
-                 yaw_deg=args.yaw, pitch_deg=args.pitch, distance=args.distance, ground_z=0.0)
+                 yaw_deg=args.yaw, pitch_deg=args.pitch, distance=args.distance, ground_z=0.0,
+                 editor_only=blink)
 
 # Second frame for blinking: same camera, Beer neon off.
-if not args.no_blink:
+if blink:
     beer.data.materials[0] = M("neon_dead")
     for light in beer_lights:
         light.hide_render = True
     off_path = kit.render_variant(args.name + "_beer_off")
     if off_path:
-        # One image with both frames (on, off) for an oxygine animation.
-        on_path = os.path.join(args.out, args.name + ".png")
-        sk.make_strip([on_path, off_path], os.path.join(args.out, args.name + "_blink.png"))
+        # One image with both frames (on, off) for an oxygine animation,
+        # in data/images and registered in res.xml with rows/cols.
+        on_path = os.path.join(sk.EDITOR_OUT, args.name + ".png")
+        kit.make_strip([on_path, off_path], args.name + "_blink")
         if not args.keep_frames:
             os.remove(off_path)
