@@ -36,7 +36,7 @@
          </ToggleButton.Template>-->
       </ToggleButton>
       <Popup IsOpen="{Binding IsChecked, ElementName=button}" StaysOpen="False">
-         <Border Width="200" Height="158" Background="LightYellow">
+         <Border Width="400" Height="316" Background="LightYellow">
             <ScrollViewer>
                <ListView 
                   ScrollViewer.HorizontalScrollBarVisibility="Disabled"
@@ -47,7 +47,7 @@
                      <DataTemplate>
                         <Border>
                            <StackPanel>
-                              <Image Width="45" Height="45" Stretch="Uniform" 
+                              <Image Width="90" Height="90" Stretch="Uniform" 
                            Source="{Binding Converter={StaticResource TexturePathValueConverter}}" />
                               <TextBlock FontSize="8" Text="{Binding}" HorizontalAlignment="Center" />
                            </StackPanel>
