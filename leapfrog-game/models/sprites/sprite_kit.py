@@ -205,6 +205,71 @@ def mesh_object(name, bm, material=None, smooth_quads=False):
     return ob
 
 
+def box_object(name, center, size, material=None, rotation=(0.0, 0.0, 0.0), bevel_width=0.0):
+    """One box as its own object (handy for parts that are rotated or tilted)."""
+    bm = bmesh.new()
+    box(bm, (0.0, 0.0, 0.0), size)
+    ob = mesh_object(name, bm, material)
+    ob.location = center
+    ob.rotation_euler = rotation
+    if bevel_width > 0:
+        bevel(ob, bevel_width)
+    return ob
+
+
+def text_object(name, body, size, materials, location=(0, 0, 0), rotation=(math.pi / 2, 0, 0),
+                neon=False, tube=0.06, extrude=0.08, font_path=None, align='CENTER'):
+    """
+    Text, facing the camera (-Y) by default.
+    neon=True makes glowing tubes along the letter outlines; otherwise solid letters.
+    materials: list of materials; set per-character slots afterwards with
+    ob.data.body_format[i].material_index.
+    """
+    cu = bpy.data.curves.new(name, 'FONT')
+    cu.body = body
+    cu.size = size
+    cu.align_x = align
+    cu.align_y = 'CENTER'
+    if font_path and os.path.exists(font_path):
+        cu.font = bpy.data.fonts.load(font_path, check_existing=True)
+    if neon:
+        cu.fill_mode = 'NONE'
+        cu.extrude = 0.0
+        cu.bevel_depth = tube
+        cu.bevel_resolution = 3
+    else:
+        cu.extrude = extrude
+        cu.bevel_depth = 0.01
+    for m in materials:
+        cu.materials.append(m)
+    ob = bpy.data.objects.new(name, cu)
+    bpy.context.scene.collection.objects.link(ob)
+    ob.location = location
+    ob.rotation_euler = rotation
+    return ob
+
+
+def point_light(name, location, color=(1, 1, 1), energy=100.0, radius=0.2):
+    data = bpy.data.lights.new(name, 'POINT')
+    data.color = color
+    data.energy = energy
+    data.shadow_soft_size = radius
+    ob = bpy.data.objects.new(name, data)
+    bpy.context.scene.collection.objects.link(ob)
+    ob.location = location
+    return ob
+
+
+def parent_keep_transform(children, parent):
+    """Parent objects without moving them (parent should be at its rest transform)."""
+    bpy.context.view_layer.update()
+    for ch in children:
+        mw = ch.matrix_world.copy()
+        ch.parent = parent
+        ch.matrix_parent_inverse = parent.matrix_world.inverted()
+        ch.matrix_world = mw
+
+
 def bevel(ob, width=0.05, segments=2):
     mod = ob.modifiers.new("Bevel", 'BEVEL')
     mod.width = width
@@ -236,6 +301,122 @@ class Kit:
         if role not in self._materials:
             self._materials[role] = self.theme.make_material(role, MODELS_DIR)
         return self._materials[role]
+
+    def render_persp(self, name, target, yaw_deg=18.0, pitch_deg=6.0, lens=50.0, distance=90.0,
+                     ground_z=0.0, margin_px=2):
+        """
+        Perspective render for static scenery (3/4 view like the silo).
+
+        The camera looks at `target` from `distance` units away, turned yaw_deg
+        to the right (seeing the object's right side) and pitched pitch_deg down.
+        The frame is fitted tightly around all geometry above ground_z, and the
+        resolution is chosen so that one unit at the target's depth is PPU
+        pixels. The object's size in the editor then comes out right with
+        "Set Width and Height from texture pixel size".
+        """
+        scene = self.scene
+        yaw = math.radians(yaw_deg)
+        pitch = math.radians(pitch_deg)
+
+        cam_data = bpy.data.cameras.new(name + "_cam")
+        cam_data.type = 'PERSP'
+        cam_data.lens = lens
+        cam_data.clip_start = 0.5
+        cam_data.clip_end = distance * 5.0
+        cam = bpy.data.objects.new(name + "_cam", cam_data)
+        scene.collection.objects.link(cam)
+        cam.rotation_euler = (math.pi / 2 - pitch, 0.0, yaw)
+        forward = Vector((-math.sin(yaw) * math.cos(pitch), math.cos(yaw) * math.cos(pitch), -math.sin(pitch)))
+        cam.location = Vector(target) - forward * distance
+        scene.camera = cam
+        bpy.context.view_layer.update()
+
+        # Project every vertex above ground onto the camera's image plane
+        # (tangent space: x/-z, y/-z in camera coordinates).
+        to_cam = cam.matrix_world.inverted()
+        dg = bpy.context.evaluated_depsgraph_get()
+        umin = vmin = float("inf")
+        umax = vmax = float("-inf")
+        for ob in scene.objects:
+            if ob.type not in ('MESH', 'CURVE', 'FONT') or ob.hide_render:
+                continue
+            ev = ob.evaluated_get(dg)
+            me = ev.to_mesh()
+            mw = ob.matrix_world
+            for v in me.vertices:
+                w = mw @ v.co
+                if w.z < ground_z:
+                    continue
+                c = to_cam @ w
+                if c.z >= -0.01:
+                    continue
+                u = c.x / -c.z
+                vv = c.y / -c.z
+                umin = min(umin, u)
+                umax = max(umax, u)
+                vmin = min(vmin, vv)
+                vmax = max(vmax, vv)
+            ev.to_mesh_clear()
+
+        uspan = umax - umin
+        vspan = vmax - vmin
+        depth = distance
+        ppu = self.args.ppu
+        res_x = uspan * depth * ppu + 2 * margin_px
+        res_y = vspan * depth * ppu + 2 * margin_px
+        if max(res_x, res_y) > self.args.max_px:
+            scale = self.args.max_px / max(res_x, res_y)
+            ppu = math.floor(ppu * scale * 10) / 10.0
+            res_x = uspan * depth * ppu + 2 * margin_px
+            res_y = vspan * depth * ppu + 2 * margin_px
+            print("sprite_kit: WARNING %s too large for %d px, using %g px/unit. "
+                  "Enter its size by hand in the editor." % (name, self.args.max_px, ppu))
+        res_x = int(math.ceil(res_x))
+        res_y = int(math.ceil(res_y))
+
+        # Fit the frame: grow the spans by the pixel margin, match the sensor to
+        # the larger side, and shift the frame centre onto the geometry.
+        uspan_m = uspan * res_x / (res_x - 2 * margin_px)
+        vspan_m = vspan * res_y / (res_y - 2 * margin_px)
+        uc = (umin + umax) / 2
+        vc = (vmin + vmax) / 2
+        if res_x >= res_y:
+            cam_data.sensor_fit = 'HORIZONTAL'
+            cam_data.sensor_width = lens * uspan_m
+            big = uspan_m
+        else:
+            cam_data.sensor_fit = 'VERTICAL'
+            cam_data.sensor_height = lens * vspan_m
+            big = vspan_m
+        cam_data.shift_x = uc / big
+        cam_data.shift_y = vc / big
+
+        scene.render.resolution_x = res_x
+        scene.render.resolution_y = res_y
+
+        return self._finish(name, res_x, res_y, ppu,
+                            "size %.2f x %.2f units at the target's depth" % (res_x / ppu, res_y / ppu))
+
+    def _finish(self, name, res_x, res_y, ppu, size_text):
+        if self.args.save_blend:
+            os.makedirs(BLEND_OUT, exist_ok=True)
+            path = os.path.join(BLEND_OUT, name + ".blend")
+            bpy.ops.wm.save_as_mainfile(filepath=path)
+            print("sprite_kit: saved %s" % path)
+
+        if self.args.no_render:
+            return None
+
+        os.makedirs(self.args.out, exist_ok=True)
+        out_path = os.path.join(self.args.out, name + ".png")
+        self.scene.render.filepath = out_path
+        bpy.ops.render.render(write_still=True)
+
+        print("")
+        print("sprite_kit: %s" % out_path)
+        print("sprite_kit:   %s, %d x %d px, %g px/unit" % (size_text, res_x, res_y, ppu))
+        print("")
+        return out_path
 
     def render_ortho(self, name, box_xz):
         """

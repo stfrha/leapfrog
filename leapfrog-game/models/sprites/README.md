@@ -35,7 +35,9 @@ Script-specific options are listed with `-- --help`.
   enter their size by hand.
 * The image frame is the part's box, not its visible pixels, so the sprite lines
   up with the body's width x height.
-* Mechanical parts: orthographic front view (camera looks along +Y, Z up).
+* Mechanical parts: orthographic front view (camera looks along +Y, Z up), `kit.render_ortho()`.
+* Static scenery (buildings): perspective 3/4 view like the silo, `kit.render_persp()`. The frame
+  is fitted around the geometry at 20 px/unit at the object's depth.
 * Lighting and materials come from the theme. Scripts ask for material roles
   (`frame_main`, `frame_brace`, ...) and the theme decides what they look like.
 * A new texture must also be listed in `data/res.xml` for the game to load it.
@@ -46,3 +48,4 @@ Script-specific options are listed with `-- --help`.
 |---|---|---|---|
 | `ls_tower.py` | `ls_tower` | 9 x 106.7 | rendered at 19 px/unit (too tall for 2048 at 20) |
 | `ls_booster_tank.py` | `ls_booster_tank` | 13.2 x 53 | hex plating twice the ship's hex size (`--tile 7.8`; ship is ~3.9) |
+| `ore_building.py` | `ore_building` | ~50 x 42 (perspective) | mission giver's building with the pub "The Ore"; pad states in `PADS` at the top |

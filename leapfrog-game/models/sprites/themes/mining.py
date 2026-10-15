@@ -62,8 +62,13 @@ def setup_world(scene, models_dir, hdri=None):
 
 def setup_lights(scene, rig):
     sun_data = bpy.data.lights.new("Sun", 'SUN')
-    sun_data.energy = SUN_STRENGTH
-    sun_data.angle = math.radians(SUN_ANGLE_DEG)
+    if rig == "persp":
+        # Scenery: softer and a bit dimmer, like the big area light over the silo.
+        sun_data.energy = SUN_STRENGTH * 0.75
+        sun_data.angle = math.radians(25.0)
+    else:
+        sun_data.energy = SUN_STRENGTH
+        sun_data.angle = math.radians(SUN_ANGLE_DEG)
     sun = bpy.data.objects.new("Sun", sun_data)
     scene.collection.objects.link(sun)
     # A sun shines along its local -Z axis.
@@ -83,7 +88,134 @@ def make_material(role, models_dir):
         return shared.hex_plate(models_dir)
     if role == "nozzle":
         return shared.burnt_metal()
+    if role == "concrete_dirty":
+        return _dirty_concrete("concrete_dirty")
+    if role == "pad_metal":
+        return _weathered_paint("pad_metal", paint=(0.16, 0.16, 0.17), rust=0.55, streak_scale=0.3)
+    if role == "rusty_metal":
+        return _weathered_paint("rusty_metal", paint=(0.12, 0.08, 0.06), rust=0.8, streak_scale=0.2)
+    if role == "hazard_paint":
+        return _weathered_paint("hazard_paint", paint=(0.55, 0.40, 0.03), rust=0.4, streak_scale=0.5)
+    if role == "glass_dark":
+        return _simple("glass_dark", base=(0.015, 0.02, 0.025), rough=0.12, metallic=0.0)
+    if role == "void":
+        return _simple("void", base=(0.004, 0.004, 0.005), rough=1.0, metallic=0.0)
+    if role == "window_lit_blue":
+        return _emission("window_lit_blue", (0.30, 0.55, 1.0), 6.0)
+    if role == "neon_pink":
+        return _emission("neon_pink", (1.0, 0.12, 0.45), 18.0)
+    if role == "neon_amber":
+        return _emission("neon_amber", (1.0, 0.45, 0.08), 14.0)
+    if role == "neon_dead":
+        return _simple("neon_dead", base=(0.10, 0.07, 0.08), rough=0.25, metallic=0.0)
     raise KeyError("mining theme has no material role '%s'" % role)
+
+
+def _simple(name, base, rough, metallic):
+    mat = bpy.data.materials.new(name)
+    mat.use_nodes = True
+    bsdf = mat.node_tree.nodes.get("Principled BSDF")
+    bsdf.inputs["Base Color"].default_value = (base[0], base[1], base[2], 1.0)
+    bsdf.inputs["Roughness"].default_value = rough
+    bsdf.inputs["Metallic"].default_value = metallic
+    return mat
+
+
+def _emission(name, color, strength):
+    mat = bpy.data.materials.new(name)
+    mat.use_nodes = True
+    nt = mat.node_tree
+    nt.nodes.clear()
+    out = nt.nodes.new("ShaderNodeOutputMaterial")
+    em = nt.nodes.new("ShaderNodeEmission")
+    em.inputs["Color"].default_value = (color[0], color[1], color[2], 1.0)
+    em.inputs["Strength"].default_value = strength
+    nt.links.new(em.outputs["Emission"], out.inputs["Surface"])
+    return mat
+
+
+def _dirty_concrete(name):
+    """
+    Worn concrete: mottled grey-beige, dark rain streaks running down,
+    dirt splashed up from the ground and a rough, uneven surface.
+    """
+    mat = bpy.data.materials.new(name)
+    mat.use_nodes = True
+    nt = mat.node_tree
+    n = nt.nodes
+    l = nt.links
+    n.clear()
+
+    out = n.new("ShaderNodeOutputMaterial")
+    bsdf = n.new("ShaderNodeBsdfPrincipled")
+    l.new(bsdf.outputs["BSDF"], out.inputs["Surface"])
+    bsdf.inputs["Metallic"].default_value = 0.0
+
+    coord = n.new("ShaderNodeTexCoord")
+
+    # Large mottling
+    mottle = n.new("ShaderNodeTexNoise")
+    mottle.inputs["Scale"].default_value = 0.35
+    mottle.inputs["Detail"].default_value = 6.0
+    l.new(coord.outputs["Object"], mottle.inputs["Vector"])
+    mottle_ramp = n.new("ShaderNodeValToRGB")
+    mottle_ramp.color_ramp.elements[0].color = (0.20, 0.19, 0.17, 1.0)
+    mottle_ramp.color_ramp.elements[1].color = (0.42, 0.40, 0.36, 1.0)
+    l.new(mottle.outputs["Fac"], mottle_ramp.inputs["Fac"])
+
+    # Rain streaks: noise stretched along Z
+    smap = n.new("ShaderNodeMapping")
+    smap.inputs["Scale"].default_value = (1.6, 1.6, 0.06)
+    l.new(coord.outputs["Object"], smap.inputs["Vector"])
+    streaks = n.new("ShaderNodeTexNoise")
+    streaks.inputs["Scale"].default_value = 2.0
+    streaks.inputs["Detail"].default_value = 4.0
+    l.new(smap.outputs["Vector"], streaks.inputs["Vector"])
+    streak_ramp = n.new("ShaderNodeValToRGB")
+    streak_ramp.color_ramp.elements[0].position = 0.45
+    streak_ramp.color_ramp.elements[0].color = (0.35, 0.33, 0.30, 1.0)
+    streak_ramp.color_ramp.elements[1].position = 0.65
+    streak_ramp.color_ramp.elements[1].color = (1.0, 1.0, 1.0, 1.0)
+    l.new(streaks.outputs["Fac"], streak_ramp.inputs["Fac"])
+
+    streaked = n.new("ShaderNodeMix")
+    streaked.data_type = 'RGBA'
+    streaked.blend_type = 'MULTIPLY'
+    _socket(streaked.inputs, "Factor_Float").default_value = 1.0
+    l.new(mottle_ramp.outputs["Color"], _socket(streaked.inputs, "A_Color"))
+    l.new(streak_ramp.outputs["Color"], _socket(streaked.inputs, "B_Color"))
+
+    # Dirt near the ground (world Z, so it follows the ground even on a tilted building)
+    geo = n.new("ShaderNodeNewGeometry")
+    sep = n.new("ShaderNodeSeparateXYZ")
+    l.new(geo.outputs["Position"], sep.inputs["Vector"])
+    dirt_ramp = n.new("ShaderNodeMapRange")
+    dirt_ramp.inputs["From Min"].default_value = 0.0
+    dirt_ramp.inputs["From Max"].default_value = 4.0
+    dirt_ramp.inputs["To Min"].default_value = 0.85
+    dirt_ramp.inputs["To Max"].default_value = 0.0
+    l.new(sep.outputs["Z"], dirt_ramp.inputs["Value"])
+
+    dirty = n.new("ShaderNodeMix")
+    dirty.data_type = 'RGBA'
+    l.new(dirt_ramp.outputs["Result"], _socket(dirty.inputs, "Factor_Float"))
+    l.new(_socket(streaked.outputs, "Result_Color"), _socket(dirty.inputs, "A_Color"))
+    _socket(dirty.inputs, "B_Color").default_value = (0.08, 0.06, 0.045, 1.0)
+    l.new(_socket(dirty.outputs, "Result_Color"), bsdf.inputs["Base Color"])
+
+    bsdf.inputs["Roughness"].default_value = 0.92
+
+    # Uneven surface
+    fine = n.new("ShaderNodeTexNoise")
+    fine.inputs["Scale"].default_value = 9.0
+    fine.inputs["Detail"].default_value = 8.0
+    l.new(coord.outputs["Object"], fine.inputs["Vector"])
+    bump = n.new("ShaderNodeBump")
+    bump.inputs["Strength"].default_value = 0.35
+    l.new(fine.outputs["Fac"], bump.inputs["Height"])
+    l.new(bump.outputs["Normal"], bsdf.inputs["Normal"])
+
+    return mat
 
 
 def _socket(sockets, identifier):
