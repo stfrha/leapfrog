@@ -10,3 +10,5 @@ xcuserdata/
 *.xcuserstate
 *.bak
 local.properties
+
+.DS_Store
