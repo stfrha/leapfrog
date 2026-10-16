@@ -7,9 +7,14 @@ the bottom-right slot, with a "Beer" neon in the window (second e dead).
 The mission giver lives top right: blue light from the window and the door
 to his pad. The whole building leans and is dirty and broken. Someone has
 levelled the mission giver's pad anyway: its support beams were cut and
-lengthened with spliced-on rods, clamped to the old beams. The building
-stands on a patch of ground (the right side has sunk into it), with the
-rubble lying on top.
+lengthened with spliced-on rods, clamped to the old beams.
+
+The building stands on a level patch of ground with the rubble on top. It
+has tipped over on its foundation: the foundation sticks out of the ground
+on the left, and the right side has sunk in. The ground patch is turned to
+face the camera, so its front edge is horizontal in the image (an edge along
+the building would slope ~6 degrees in this perspective view, the same way
+as the lean, and the ground would seem to lean with the building).
 
 Static scenery, so it uses the perspective (3/4) rig like the silo. The
 frame is fitted to the building at 20 px/unit at the building's depth, so
@@ -71,8 +76,10 @@ def options(p):
     p.add_argument("--keep-frames", action="store_true", help="also keep <name>_beer_off.png as a separate file")
     p.add_argument("--no-level-pad", action="store_true",
                    help="leave the mission giver's pad leaning with the building (no beam extensions)")
-    p.add_argument("--ground-depth", type=float, default=1.5,
-                   help="thickness of the ground under the building, 0 for no ground (default 1.5)")
+    p.add_argument("--ground-depth", type=float, default=1.8,
+                   help="thickness of the ground under the building, 0 for no ground (default 1.8)")
+    p.add_argument("--heave", type=float, default=1.2,
+                   help="how far the foundation sticks out of the ground on the high side (default 1.2)")
 
 
 args = sk.parse_args(options)
@@ -113,6 +120,9 @@ def floor_z(level):
 core = sk.box_object("core", (0, 0, WALL_TOP / 2), (CW, CD, WALL_TOP), M("concrete_dirty"), bevel_width=0.15)
 building.append(core)
 building.append(sk.box_object("plinth", (0, 0, PLINTH / 2), (CW + 0.8, CD + 0.8, PLINTH), M("concrete_dirty")))
+FOUNDATION = 1.6
+building.append(sk.box_object("foundation", (0, 0, -FOUNDATION / 2), (CW + 1.4, CD + 1.4, FOUNDATION),
+                              M("concrete_dirty"), bevel_width=0.1))
 for i in range(1, LEVELS + 1):
     z = floor_z(i) if i < LEVELS else WALL_TOP
     building.append(sk.box_object("slab_%d" % i, (0, 0, z), (CW + 0.5, CD + 0.5, 0.55), M("concrete_dirty")))
@@ -408,39 +418,47 @@ for k in range(26):
 # --- Ground -----------------------------------------------------------------
 def ground_patch(name, depth):
     """
-    A slab of dirt under the building, top at z = 0, with a crumbly front edge.
+    A level slab of dirt under the building, top at z = 0, with a crumbly
+    front edge. It is laid out in the camera's frame (x' along the image,
+    y' into the picture), so its front edge is horizontal in the render.
     Wider at the back on the left, where the fallen pad lies.
     """
-    nx, ny = 56, 10
-    y_front, y_back = FRONT - 5.0, CD / 2 + 2.0
-    x_front = (-21.0, 21.0)
-    x_back = (-27.5, 23.0)
+    yaw = math.radians(args.yaw)
+    cy, sy = math.cos(yaw), math.sin(yaw)
+
+    def world(xp, yp, z):
+        return (xp * cy - yp * sy, xp * sy + yp * cy, z)
+
+    nx, ny = 60, 12
+    y_front, y_back = -16.0, 12.5
+    x_front = (-23.0, 23.0)
+    x_back = (-28.0, 25.0)
     bm = bmesh.new()
     top = []
     for j in range(ny + 1):
         v = j / ny
-        w = min(1.0, v * 3.5)
+        w = min(1.0, v * 3.0)
         lo = x_front[0] + (x_back[0] - x_front[0]) * w
         hi = x_front[1] + (x_back[1] - x_front[1]) * w
         row = []
         for i in range(nx + 1):
-            x = lo + (hi - lo) * i / nx
-            y = y_front + (y_back - y_front) * v
+            xp = lo + (hi - lo) * i / nx
+            yp = y_front + (y_back - y_front) * v
             z = rnd.uniform(-0.06, 0.06)
             if j == 0:
-                y += rnd.uniform(-0.5, 0.5)
+                yp += rnd.uniform(-0.5, 0.3)
                 z = rnd.uniform(-0.15, 0.0)
             if i in (0, nx):
-                x += rnd.uniform(-0.6, 0.6)
-            row.append(bm.verts.new((x, y, z)))
+                xp += rnd.uniform(-0.6, 0.6)
+            row.append(bm.verts.new(world(xp, yp, z)))
         top.append(row)
     for j in range(ny):
         for i in range(nx):
             bm.faces.new((top[j][i], top[j][i + 1], top[j + 1][i + 1], top[j + 1][i]))
-    # Sides down to a ragged bottom edge, closed underneath
+    # Sides straight down (the bottom is the image's bottom edge), closed underneath
     outline = (top[0][:] + [top[j][nx] for j in range(1, ny + 1)] +
                top[ny][nx - 1::-1] + [top[j][0] for j in range(ny - 1, 0, -1)])
-    bottom = [bm.verts.new((v.co.x, v.co.y, -depth + rnd.uniform(0.0, 0.35))) for v in outline]
+    bottom = [bm.verts.new((v.co.x, v.co.y, -depth)) for v in outline]
     for k in range(len(outline)):
         k2 = (k + 1) % len(outline)
         bm.faces.new((outline[k], outline[k2], bottom[k2], bottom[k]))
@@ -451,6 +469,16 @@ def ground_patch(name, depth):
 
 if args.ground_depth > 0:
     ground.append(ground_patch("ground", args.ground_depth))
+    # Clods of dirt broken loose where the foundation lifted out (high side)
+    hs = -1.0 if args.lean >= 0 else 1.0
+    for k in range(7):
+        size = rnd.uniform(0.35, 0.8)
+        ground.append(sk.box_object("clod_%d" % k,
+                                    (hs * rnd.uniform(CW / 2 - 1.0, CW / 2 + 1.6), FRONT - rnd.uniform(0.6, 1.8),
+                                     size * 0.25),
+                                    (size, size * rnd.uniform(0.7, 1.1), size * rnd.uniform(0.5, 0.8)),
+                                    M("ground_dirt"),
+                                    rotation=(rnd.uniform(-0.3, 0.3), rnd.uniform(-0.3, 0.3), rnd.uniform(0, math.pi))))
 
 
 # --- Lean and render --------------------------------------------------------
@@ -459,9 +487,10 @@ bpy.context.scene.collection.objects.link(lean)
 top_level = [o for o in building if o.parent is None]
 sk.parent_keep_transform(top_level, lean)
 lean.rotation_euler = (0.0, math.radians(args.lean), 0.0)
-# The lean pivots on the middle of the base; lower the building so the high
-# side of the plinth stands on the ground and the low side has sunk into it.
-lean.location = (0.0, 0.0, -(CW + 0.8) / 2 * math.sin(abs(math.radians(args.lean))))
+# The lean pivots on the middle of the base. Place the building so the
+# foundation sticks `heave` out of the ground on the high side; the low side
+# sinks into the ground.
+lean.location = (0.0, 0.0, args.heave - (CW + 0.8) / 2 * math.sin(abs(math.radians(args.lean))))
 
 # With blinking, the single lit image is only for fitting bodies in the editor
 # (editor_images/, not shipped); the game uses the <name>_blink animation.
