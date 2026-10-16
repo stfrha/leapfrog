@@ -28,4 +28,8 @@
 	<atlas clamp2edge="false">
 		<image file="silo_home.png" trim="false" extend="false"/>
 	</atlas>
+   <set path = "images/mining" />
+	<atlas>
+		<image file="cloud.png" trim="false" extend="false"/>
+	</atlas>
 </resources>
