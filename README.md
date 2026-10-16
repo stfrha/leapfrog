@@ -9,7 +9,7 @@ For windows:
 The following Repositories are required:
 https://github.com/stfrha/leapfrog  
 https://github.com/stfrha/oxygine-framework  
-https://github.com/stfrha/SDL.git using branch sdl2  
+https://github.com/stfrha/SDL.git using branch leapfrog  
 https://github.com/stfrha/Box2D.git  
 https://github.com/stfrha/lua.git  
 https://github.com/stfrha/libjpeg  
@@ -24,7 +24,7 @@ For Android:
 
 https://github.com/stfrha/leapfrog  
 https://github.com/stfrha/oxygine-framework  
-https://github.com/stfrha/SDL.git using branch sdl2  
+https://github.com/stfrha/SDL.git using branch leapfrog  
 https://github.com/stfrha/Box2D.git  
 https://github.com/stfrha/lua.git 
 
@@ -33,12 +33,19 @@ For MacOsX:
 
 https://github.com/stfrha/leapfrog  
 https://github.com/stfrha/oxygine-framework  
-https://github.com/stfrha/SDL.git using branch sdl2  
+https://github.com/stfrha/SDL.git using branch leapfrog  
 https://github.com/stfrha/Box2D.git  
 https://github.com/stfrha/lua.git 
 
 
 For iOS:
+
+https://github.com/stfrha/leapfrog  
+https://github.com/stfrha/oxygine-framework  
+https://github.com/stfrha/SDL.git using branch leapfrog
+iOS: SDL must be github.com/stfrha/SDL, branch `leapfrog` (UIScene support), cloned next to the leapfrog repo.
+https://github.com/stfrha/Box2D.git  
+https://github.com/stfrha/lua.git 
 
 
 For Linux:
