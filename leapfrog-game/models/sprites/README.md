@@ -43,7 +43,9 @@ Script-specific options are listed with `-- --help`.
 * Every file in `data/images` ships with the game (Android packs all of `data/`, iOS has
   `data/images` as a folder reference), and the engine loads what `data/res.xml` lists.
   The kit adds new textures to `res.xml` itself (own atlas, `trim="false" extend="false"`,
-  plus `rows`/`cols` for animations). It skips `*_test` names, custom `--out` and `--no-register`,
+  plus `rows`/`cols` for animations). The atlas is a plain `<atlas>` (clamp to edge); only
+  textures that tile use `clamp2edge="false"`, and those must be power-of-two or they render
+  black on iOS. It skips `*_test` names, custom `--out` and `--no-register`,
   and never changes entries that already exist.
 * Big scenery goes in a per-world resource set instead of `res.xml`, e.g. `res_mining.xml`
   (`kit = sk.Kit(args, res="res_mining.xml")` or `--res`). The game loads a set only while a
@@ -58,7 +60,9 @@ Script-specific options are listed with `-- --help`.
   A texture that is already registered is re-rendered to wherever its entry points.
   Move existing textures (file + entry, optionally to another resource file) with
   `python project_files.py move-texture images/mining ls_tower ls_booster_tank --res res_mining.xml`;
-  `python project_files.py where` lists every texture's resource file and folder.
+  (a moved texture keeps its wrap mode); `python project_files.py where` lists every texture's
+  resource file and folder, and `python project_files.py check` lists repeat-mode textures
+  that aren't power-of-two.
 * Editor-only images (e.g. a single frame for fitting bodies when the game uses an animation)
   go to `leapfrog-game/editor_images/<folder>/`, which no build project includes. The editor reads
   textures from both folders.

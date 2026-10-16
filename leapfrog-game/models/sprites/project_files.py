@@ -192,10 +192,14 @@ def find_texture(filename):
     return None, None
 
 
-def register_texture(res_name, filename, attrs="", folder="images"):
+def register_texture(res_name, filename, attrs="", folder="images", repeat=False):
     """
     Add an image to data/<res_name> in its own atlas, loaded from data/<folder>.
     Nothing happens if the file already lists it. Returns True if changed.
+
+    repeat=False (default) gives a plain <atlas> (clamp to edge), right for
+    sprites. repeat=True writes <atlas clamp2edge="false"> for textures that
+    tile; on iOS (GLES2) those must have power-of-two sizes or render black.
     """
     path = os.path.join(DATA_DIR, res_name)
     if res_name != "res.xml":
@@ -210,7 +214,7 @@ def register_texture(res_name, filename, attrs="", folder="images"):
     nl = _nl(text)
     extra = (" " + attrs.strip()) if attrs and attrs.strip() else ""
     block = ('\t<set path = "%s" />' % folder + nl +
-             '\t<atlas clamp2edge="false">' + nl +
+             ('\t<atlas clamp2edge="false">' if repeat else '\t<atlas>') + nl +
              '\t\t<image file="%s"%s trim="false" extend="false"/>' % (filename, extra) + nl +
              '\t</atlas>' + nl)
     last_atlas = text.rfind("</atlas>")
@@ -240,8 +244,15 @@ def register_texture(res_name, filename, attrs="", folder="images"):
     return True
 
 
+def _atlas_repeats(atlas_tag):
+    return re.search(r'clamp2edge\s*=\s*"false"', atlas_tag) is not None
+
+
 def _remove_entry(text, filename):
-    """Remove filename's entry; returns (text, other attributes of the entry)."""
+    """
+    Remove filename's entry; returns (text, other attributes of the entry,
+    whether its atlas used repeat mode, i.e. clamp2edge="false").
+    """
     f = re.escape(filename)
     single = re.search(r'[ \t]*<set\s+path\s*=\s*"[^"]*"\s*/>[ \t]*\r?\n'
                        r'(?=[ \t]*<atlas[^>]*>[ \t]*\r?\n[ \t]*<image\s+file="%s")' % f, text)
@@ -249,16 +260,22 @@ def _remove_entry(text, filename):
                       r'[ \t]*</atlas>[^\n]*\r?\n' % f, text)
     if block:
         tag = block.group(1)
+        repeat = _atlas_repeats(re.match(r"[ \t]*(<atlas[^>]*>)", block.group(0)).group(1))
         start = single.start() if (single and single.end() == block.start()) else block.start()
         text = text[:start] + text[block.end():]
     else:
         line = re.search(r'[ \t]*(<image\s+file="%s"[^>]*/>)[^\n]*\r?\n' % f, text)
         if not line:
-            return text, None
+            return text, None, False
         tag = line.group(1)
+        # Shared atlas: its mode is on the nearest <atlas ...> before the line
+        opening = None
+        for opening in re.compile(r"<atlas\b[^>]*>").finditer(text, 0, line.start()):
+            pass
+        repeat = _atlas_repeats(opening.group(0)) if opening else False
         text = text[:line.start()] + text[line.end():]
     attrs = re.sub(r'\s(file|trim|extend)="[^"]*"', "", tag[len("<image"):-2]).strip()
-    return text, attrs
+    return text, attrs, repeat
 
 
 def move_texture(name, folder, res_name=None):
@@ -285,11 +302,47 @@ def move_texture(name, folder, res_name=None):
     if os.path.abspath(src) != os.path.abspath(dst):
         os.replace(src, dst)
     old_path = os.path.join(DATA_DIR, old_res)
-    text, attrs = _remove_entry(_read(old_path), filename)
+    text, attrs, repeat = _remove_entry(_read(old_path), filename)
     _write(old_path, text)
-    register_texture(res_name, filename, attrs or "", folder)
+    # Keep the texture's wrap mode: sprites stay clamped, tiling textures
+    # keep repeating.
+    register_texture(res_name, filename, attrs or "", folder, repeat)
     print("project_files: moved %s: data/%s -> data/%s" % (filename, old_folder, folder))
     return True
+
+
+def _png_size(path):
+    with open(path, "rb") as f:
+        head = f.read(24)
+    if head[:8] != b"\x89PNG\r\n\x1a\n":
+        return None
+    return int.from_bytes(head[16:20], "big"), int.from_bytes(head[20:24], "big")
+
+
+def _pow2(n):
+    return n > 0 and (n & (n - 1)) == 0
+
+
+def repeat_textures():
+    """
+    (res file, folder, filename, size, power-of-two) for every image whose
+    atlas uses repeat mode (clamp2edge="false").
+    """
+    found = []
+    for res in res_files():
+        text = _read(os.path.join(DATA_DIR, res))
+        for am in re.finditer(r"(<atlas\b[^>]*>)(.*?)</atlas>", text, re.S):
+            if not _atlas_repeats(am.group(1)):
+                continue
+            for im in re.finditer(r'<image\s+file="([^"]+)"', am.group(2)):
+                folder = ""
+                for sm in _SET_RE.finditer(text, 0, am.start()):
+                    folder = sm.group(1).strip()
+                path = os.path.join(DATA_DIR, folder, im.group(1))
+                size = _png_size(path) if os.path.exists(path) else None
+                ok = size is not None and _pow2(size[0]) and _pow2(size[1])
+                found.append((res, folder, im.group(1), size, ok))
+    return found
 
 
 def scenes_using(res_name):
@@ -309,6 +362,9 @@ if __name__ == "__main__":
     m.add_argument("folder", help="folder under data/, e.g. images/mining")
     m.add_argument("names", nargs="+", help="texture names (with or without .png)")
     m.add_argument("--res", default=None, help="also move the entries to this resource file")
+    c = sub.add_parser("check", help="list repeat-mode (clamp2edge=\"false\") textures that "
+                       "aren't power-of-two; they render black on iOS")
+    c.add_argument("--all", action="store_true", help="also list the power-of-two ones")
     w = sub.add_parser("where", help="show which resource file and folder each texture is in")
     w.add_argument("names", nargs="*", help="texture names (default: all)")
     args = p.parse_args()
@@ -321,6 +377,19 @@ if __name__ == "__main__":
         folder = args.folder.replace("\\", "/").strip("/")
         for n in args.names:
             move_texture(n, folder, args.res)
+    elif args.cmd == "check":
+        bad = 0
+        for res, folder, fn, size, ok in repeat_textures():
+            if ok and not args.all:
+                continue
+            bad += 0 if ok else 1
+            dims = ("%d x %d" % size) if size else "missing"
+            print("%-4s %-32s %-16s %-24s %s" % ("ok" if ok else "BAD", fn, dims, res, "data/" + folder))
+        if bad:
+            print("%d repeat-mode texture(s) are not power-of-two. Sprites that don't tile should use a"
+                  " plain <atlas>; textures that tile need power-of-two sizes." % bad)
+        else:
+            print("All repeat-mode textures are power-of-two.")
     elif args.cmd == "where":
         names = args.names
         if not names:

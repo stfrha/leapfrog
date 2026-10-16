@@ -59,7 +59,7 @@
 	<atlas clamp2edge="false"> 
 		<image file="default.png" trim="false" extend="false"/>
 	</atlas>	
-	<atlas clamp2edge="false"> 
+	<atlas> 
 		<image file="ls_booster_tank.png" trim="false" extend="false"/>
 	</atlas>	
 	<atlas clamp2edge="false"> 
