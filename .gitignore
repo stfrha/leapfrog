@@ -12,3 +12,30 @@ xcuserdata/
 local.properties
 
 .DS_Store
+
+# Visual Studio (game, libraries, editor)
+.vs/
+[Dd]ebug/
+[Dd]ebug_*/
+[Rr]elease/
+[Rr]elease_*/
+[Ww]in32/
+x64/
+bin/
+obj/
+*.VC.db
+*.VC.opendb
+ipch/
+
+# Android / Gradle build output
+.gradle/
+leapfrog-game/proj.android/build/
+leapfrog-game/proj.android/app/build/
+.cxx/
+.externalNativeBuild/
+
+# oxygine resource build output
+leapfrog-game/data-ram/
+
+# Patch files applied with git am / git apply (keep them out of the repo root)
+/*.patch
