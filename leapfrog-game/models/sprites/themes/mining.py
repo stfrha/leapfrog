@@ -106,6 +106,8 @@ def make_material(role, models_dir):
         return _emission("neon_pink", (1.0, 0.12, 0.45), 25.0)
     if role == "neon_amber":
         return _emission("neon_amber", (1.0, 0.45, 0.08), 14.0)
+    if role == "ground_dirt":
+        return _ground_dirt("ground_dirt")
     if role == "neon_dead":
         return _simple("neon_dead", base=(0.10, 0.07, 0.08), rough=0.25, metallic=0.0)
     raise KeyError("mining theme has no material role '%s'" % role)
@@ -214,6 +216,70 @@ def _dirty_concrete(name):
     bump.inputs["Strength"].default_value = 0.35
     l.new(fine.outputs["Fac"], bump.inputs["Height"])
     l.new(bump.outputs["Normal"], bsdf.inputs["Normal"])
+
+    return mat
+
+
+def _ground_dirt(name):
+    """Dusty grey-brown dirt with small stones, for ground under scenery."""
+    mat = bpy.data.materials.new(name)
+    mat.use_nodes = True
+    nt = mat.node_tree
+    n = nt.nodes
+    l = nt.links
+    n.clear()
+
+    out = n.new("ShaderNodeOutputMaterial")
+    bsdf = n.new("ShaderNodeBsdfPrincipled")
+    l.new(bsdf.outputs["BSDF"], out.inputs["Surface"])
+    bsdf.inputs["Metallic"].default_value = 0.0
+    bsdf.inputs["Roughness"].default_value = 0.96
+
+    coord = n.new("ShaderNodeTexCoord")
+
+    # Large patches of darker and lighter dirt
+    mottle = n.new("ShaderNodeTexNoise")
+    mottle.inputs["Scale"].default_value = 0.25
+    mottle.inputs["Detail"].default_value = 6.0
+    l.new(coord.outputs["Object"], mottle.inputs["Vector"])
+    mottle_ramp = n.new("ShaderNodeValToRGB")
+    mottle_ramp.color_ramp.elements[0].color = (0.07, 0.06, 0.05, 1.0)
+    mottle_ramp.color_ramp.elements[1].color = (0.24, 0.21, 0.17, 1.0)
+    l.new(mottle.outputs["Fac"], mottle_ramp.inputs["Fac"])
+
+    # Small stones: Voronoi cells, darker in the gaps between them
+    stones = n.new("ShaderNodeTexVoronoi")
+    stones.inputs["Scale"].default_value = 2.5
+    l.new(coord.outputs["Object"], stones.inputs["Vector"])
+    stone_ramp = n.new("ShaderNodeValToRGB")
+    stone_ramp.color_ramp.elements[0].position = 0.0
+    stone_ramp.color_ramp.elements[0].color = (1.0, 1.0, 1.0, 1.0)
+    stone_ramp.color_ramp.elements[1].position = 0.6
+    stone_ramp.color_ramp.elements[1].color = (0.55, 0.55, 0.55, 1.0)
+    l.new(stones.outputs["Distance"], stone_ramp.inputs["Fac"])
+
+    color = n.new("ShaderNodeMix")
+    color.data_type = 'RGBA'
+    color.blend_type = 'MULTIPLY'
+    _socket(color.inputs, "Factor_Float").default_value = 1.0
+    l.new(mottle_ramp.outputs["Color"], _socket(color.inputs, "A_Color"))
+    l.new(stone_ramp.outputs["Color"], _socket(color.inputs, "B_Color"))
+    l.new(_socket(color.outputs, "Result_Color"), bsdf.inputs["Base Color"])
+
+    # Stones raised, plus fine grit
+    bump_stones = n.new("ShaderNodeBump")
+    bump_stones.invert = True
+    bump_stones.inputs["Strength"].default_value = 0.4
+    l.new(stones.outputs["Distance"], bump_stones.inputs["Height"])
+    grit = n.new("ShaderNodeTexNoise")
+    grit.inputs["Scale"].default_value = 12.0
+    grit.inputs["Detail"].default_value = 8.0
+    l.new(coord.outputs["Object"], grit.inputs["Vector"])
+    bump_grit = n.new("ShaderNodeBump")
+    bump_grit.inputs["Strength"].default_value = 0.3
+    l.new(grit.outputs["Fac"], bump_grit.inputs["Height"])
+    l.new(bump_stones.outputs["Normal"], bump_grit.inputs["Normal"])
+    l.new(bump_grit.outputs["Normal"], bsdf.inputs["Normal"])
 
     return mat
 

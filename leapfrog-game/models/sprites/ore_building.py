@@ -5,7 +5,11 @@ Three floors, six apartments (three on each side). Each apartment has a
 landing pad on the side wall instead of a balcony. The pub "The Ore" takes
 the bottom-right slot, with a "Beer" neon in the window (second e dead).
 The mission giver lives top right: blue light from the window and the door
-to his pad. The whole building leans and is dirty and broken.
+to his pad. The whole building leans and is dirty and broken. Someone has
+levelled the mission giver's pad anyway: its support beams were cut and
+lengthened with spliced-on rods, clamped to the old beams. The building
+stands on a patch of ground (the right side has sunk into it), with the
+rubble lying on top.
 
 Static scenery, so it uses the perspective (3/4) rig like the silo. The
 frame is fitted to the building at 20 px/unit at the building's depth, so
@@ -36,7 +40,7 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 import bpy                            # noqa: E402
 import bmesh                          # noqa: E402
-from mathutils import Vector          # noqa: E402
+from mathutils import Matrix, Vector  # noqa: E402
 import sprite_kit as sk               # noqa: E402
 
 
@@ -65,6 +69,10 @@ def options(p):
     p.add_argument("--beer-power", type=float, default=600.0, help="watts of pink light from the Beer neon")
     p.add_argument("--no-blink", action="store_true", help="skip the second render with the Beer neon off")
     p.add_argument("--keep-frames", action="store_true", help="also keep <name>_beer_off.png as a separate file")
+    p.add_argument("--no-level-pad", action="store_true",
+                   help="leave the mission giver's pad leaning with the building (no beam extensions)")
+    p.add_argument("--ground-depth", type=float, default=1.5,
+                   help="thickness of the ground under the building, 0 for no ground (default 1.5)")
 
 
 args = sk.parse_args(options)
@@ -234,6 +242,55 @@ def strut_points(s, z0, y):
     return a, b
 
 
+def spliced_struts(name, s, z0, angle):
+    """
+    Support beams for a pad that has been re-levelled by `angle` (rotation
+    about Y, the same as the pad's): each old beam is cut short and a thinner
+    rod is clamped along its top, kinked at the cut, and welded to a plate
+    under the raised outer end of the pad.
+    """
+    rot = Matrix.Rotation(angle, 3, 'Y')
+    r_old, r_new = 0.22, 0.17
+    cut, overlap = 1.6, 3.2
+    old = bmesh.new()
+    new = bmesh.new()
+    objects = []
+    for k, y in enumerate((-PD / 2 + 1.2, PD / 2 - 1.2)):
+        a, b = strut_points(s, z0, y)
+        hinge = Vector((s * CW / 2, y, z0))
+        b_new = hinge + rot @ Vector((s * (PL - 1.0), 0.0, -PT))     # under the levelled pad
+        d = (b - a).normalized()
+        length = (b - a).length
+        n = Vector((-d.z, 0.0, d.x))                                  # across the beam, upwards
+        if n.z < 0:
+            n = -n
+        # Old beam: bracket on the wall, cut off before its old end
+        sk.box(old, (a.x + s * 0.1, y, a.z), (0.2, 1.0, 1.4))
+        c = a + d * (length - cut)
+        sk.strut(old, a, c, r_old)
+        # New rod: along the top of the old beam, then on to the pad
+        off = n * (r_old + r_new)
+        e0 = a + d * (length - cut - overlap) + off
+        kink = c + off
+        sk.strut(new, e0, kink, r_new)
+        sk.strut(new, kink, b_new, r_new)
+        sk.box(new, kink, (0.42, 0.42, 0.42))                         # weld lump at the kink
+        # Clamps around both
+        beta = math.atan2(-d.z, d.x)
+        for j, t in enumerate((length - cut - overlap + 0.6, length - cut - 0.5)):
+            centre = a + d * t + n * r_new
+            objects.append(sk.box_object("%s_clamp%d%d" % (name, k, j), centre,
+                                         (0.3, 2 * r_old + 0.12, 2 * (r_old + r_new) + 0.12),
+                                         M("frame_brace"), rotation=(0.0, beta, 0.0)))
+        # Plate welded under the pad
+        plate = hinge + rot @ Vector((s * (PL - 1.0), 0.0, -PT - 0.08))
+        objects.append(sk.box_object("%s_plate%d" % (name, k), plate, (1.3, 1.1, 0.16),
+                                     M("rusty_metal"), rotation=(0.0, angle, 0.0)))
+    objects.append(sk.mesh_object(name + "_old", old, M("rusty_metal"), smooth_quads=True))
+    objects.append(sk.mesh_object(name + "_new", new, M("pad_metal"), smooth_quads=True))
+    return objects
+
+
 def struts(name, s, z0, broken):
     bm = bmesh.new()
     for y in (-PD / 2 + 1.2, PD / 2 - 1.2):
@@ -248,6 +305,9 @@ def struts(name, s, z0, broken):
     return sk.mesh_object(name, bm, M("rusty_metal"), smooth_quads=True)
 
 
+# The mission giver's pad is levelled (in world space) against the lean
+level_angle = 0.0 if args.no_level_pad else -math.radians(args.lean)
+
 for (side, level), state in PADS.items():
     if state == "none":
         continue
@@ -259,7 +319,11 @@ for (side, level), state in PADS.items():
         pad, parts = pad_mesh(name, s)
         pad.location = (s * CW / 2, 0, z0)
         building += [pad] + parts
-        building.append(struts(name + "_struts", s, z0, broken=False))
+        if (side, level) == MISSION_GIVER and level_angle != 0.0:
+            pad.rotation_euler = (0.0, level_angle, 0.0)
+            building += spliced_struts(name + "_struts", s, z0, level_angle)
+        else:
+            building.append(struts(name + "_struts", s, z0, broken=False))
 
     elif state == "tilted":
         pad, parts = pad_mesh(name, s)
@@ -341,18 +405,70 @@ for k in range(26):
     ground.append(ob)
 
 
+# --- Ground -----------------------------------------------------------------
+def ground_patch(name, depth):
+    """
+    A slab of dirt under the building, top at z = 0, with a crumbly front edge.
+    Wider at the back on the left, where the fallen pad lies.
+    """
+    nx, ny = 56, 10
+    y_front, y_back = FRONT - 5.0, CD / 2 + 2.0
+    x_front = (-21.0, 21.0)
+    x_back = (-27.5, 23.0)
+    bm = bmesh.new()
+    top = []
+    for j in range(ny + 1):
+        v = j / ny
+        w = min(1.0, v * 3.5)
+        lo = x_front[0] + (x_back[0] - x_front[0]) * w
+        hi = x_front[1] + (x_back[1] - x_front[1]) * w
+        row = []
+        for i in range(nx + 1):
+            x = lo + (hi - lo) * i / nx
+            y = y_front + (y_back - y_front) * v
+            z = rnd.uniform(-0.06, 0.06)
+            if j == 0:
+                y += rnd.uniform(-0.5, 0.5)
+                z = rnd.uniform(-0.15, 0.0)
+            if i in (0, nx):
+                x += rnd.uniform(-0.6, 0.6)
+            row.append(bm.verts.new((x, y, z)))
+        top.append(row)
+    for j in range(ny):
+        for i in range(nx):
+            bm.faces.new((top[j][i], top[j][i + 1], top[j + 1][i + 1], top[j + 1][i]))
+    # Sides down to a ragged bottom edge, closed underneath
+    outline = (top[0][:] + [top[j][nx] for j in range(1, ny + 1)] +
+               top[ny][nx - 1::-1] + [top[j][0] for j in range(ny - 1, 0, -1)])
+    bottom = [bm.verts.new((v.co.x, v.co.y, -depth + rnd.uniform(0.0, 0.35))) for v in outline]
+    for k in range(len(outline)):
+        k2 = (k + 1) % len(outline)
+        bm.faces.new((outline[k], outline[k2], bottom[k2], bottom[k]))
+    bm.faces.new(bottom)
+    bmesh.ops.recalc_face_normals(bm, faces=bm.faces)
+    return sk.mesh_object(name, bm, M("ground_dirt"))
+
+
+if args.ground_depth > 0:
+    ground.append(ground_patch("ground", args.ground_depth))
+
+
 # --- Lean and render --------------------------------------------------------
 lean = bpy.data.objects.new("lean", None)
 bpy.context.scene.collection.objects.link(lean)
 top_level = [o for o in building if o.parent is None]
 sk.parent_keep_transform(top_level, lean)
 lean.rotation_euler = (0.0, math.radians(args.lean), 0.0)
+# The lean pivots on the middle of the base; lower the building so the high
+# side of the plinth stands on the ground and the low side has sunk into it.
+lean.location = (0.0, 0.0, -(CW + 0.8) / 2 * math.sin(abs(math.radians(args.lean))))
 
 # With blinking, the single lit image is only for fitting bodies in the editor
 # (editor_images/, not shipped); the game uses the <name>_blink animation.
 blink = not args.no_blink
 on_path = kit.render_persp(args.name, target=(0.0, 0.0, WALL_TOP / 2 + 2.0),
-                 yaw_deg=args.yaw, pitch_deg=args.pitch, distance=args.distance, ground_z=0.0,
+                 yaw_deg=args.yaw, pitch_deg=args.pitch, distance=args.distance,
+                 ground_z=-args.ground_depth - 0.01,
                  editor_only=blink)
 
 # Second frame for blinking: same camera, Beer neon off.
