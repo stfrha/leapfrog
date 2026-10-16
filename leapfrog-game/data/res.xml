@@ -53,8 +53,6 @@
 		<image file="coin_power_up.png"/>	
 		<image file="box9a.png" />	
 		<image file="explosion_ani.png" rows="8" cols="8" />
-		<image file="night_sky.png"/>	  
-		<image file="cloud.png"/>	  
 	</atlas>
 	<atlas clamp2edge="false"> 
 		<image file="default.png" trim="false" extend="false"/>
@@ -70,9 +68,6 @@
 	</atlas>	
 	<atlas clamp2edge="false"> 
 		<image file="rock.png" trim="false" extend="false"/>
-	</atlas>	
-	<atlas clamp2edge="false"> 
-		<image file="grotto_light.png" trim="false" extend="false"/>
 	</atlas>	
 	<atlas clamp2edge="false"> 
 		<image file="grotto_border.png" trim="false" extend="false"/>
@@ -93,9 +88,6 @@
 		<image file="planet_rock.png" trim="false" extend="false"/>
 	</atlas>	
 	<atlas clamp2edge="false"> 
-		<image file="crater_rock.png" trim="false" extend="false"/>
-	</atlas>	
-	<atlas clamp2edge="false"> 
 		<image file="dark_cave_wall.png" trim="false" extend="false"/>
 	</atlas>	
 	<atlas clamp2edge="false"> 
@@ -106,15 +98,6 @@
 	</atlas>	
 	<atlas clamp2edge="false"> 
 		<image file="concrete.png" trim="false" extend="false"/>
-	</atlas>		
-	<atlas clamp2edge="false"> 
-		<image file="silo_home.png" trim="false" extend="false"/>
-	</atlas>		
-	<atlas clamp2edge="false"> 
-		<image file="grotto_floor.png" trim="false" extend="false"/>
-	</atlas>		
-	<atlas clamp2edge="false"> 
-		<image file="grotto_roof.png" trim="false" extend="false"/>
 	</atlas>		
 	<atlas clamp2edge="false"> 
 		<image file="transparent.png" trim="false" extend="false"/>

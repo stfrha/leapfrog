@@ -4,4 +4,28 @@
 	<atlas>
 		<image file="ore_building_blink.png" rows="2" trim="false" extend="false"/>
 	</atlas>
+	<set path = "images/mining" />
+	<atlas clamp2edge="false">
+		<image file="crater_rock.png" trim="false" extend="false"/>
+	</atlas>
+	<set path = "images/mining" />
+	<atlas clamp2edge="false">
+		<image file="grotto_floor.png" trim="false" extend="false"/>
+	</atlas>
+	<set path = "images/mining" />
+	<atlas clamp2edge="false">
+		<image file="grotto_light.png" trim="false" extend="false"/>
+	</atlas>
+	<set path = "images/mining" />
+	<atlas clamp2edge="false">
+		<image file="grotto_roof.png" trim="false" extend="false"/>
+	</atlas>
+	<set path = "images/mining" />
+	<atlas>
+		<image file="night_sky.png" trim="false" extend="false"/>
+	</atlas>
+	<set path = "images/mining" />
+	<atlas clamp2edge="false">
+		<image file="silo_home.png" trim="false" extend="false"/>
+	</atlas>
 </resources>
