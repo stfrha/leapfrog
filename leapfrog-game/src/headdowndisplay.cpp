@@ -686,8 +686,9 @@ HddInstruments::HddInstruments(const RectF& mapRect, float barThickness, float g
    m_horizontalBar->setPosition(mapRect.getLeft(), mapRect.getTop() - gap - barThickness);
    m_horizontalBar->attachTo(this);
 
-   // Vertical speed: along the right edge of the map, readout above it,
-   // on the same line as the horizontal readout. Up is positive.
+   // Vertical speed: along the right edge of the map, readout to the
+   // right of the bar's top end (above it, it read as belonging to the
+   // horizontal bar). Up is positive.
    m_verticalBar = new SpeedBar(
       true,
       Vector2(barThickness, mapRect.getHeight()),
@@ -696,8 +697,8 @@ HddInstruments::HddInstruments(const RectF& mapRect, float barThickness, float g
       false,
       "V",
       fontSize,
-      Vector2(barThickness, -(gap + barThickness + readoutHeight)),
-      true);
+      Vector2(barThickness + gap, 0.0f),
+      false);
    m_verticalBar->setPosition(mapRect.getRight() + gap, mapRect.getTop());
    m_verticalBar->attachTo(this);
 
