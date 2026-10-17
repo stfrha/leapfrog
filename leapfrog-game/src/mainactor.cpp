@@ -47,6 +47,7 @@ MainActor::MainActor() :
    m_initArm(false),
    m_sceneObject(NULL),
    m_isInPause(false),
+   m_isInMessagePause(false),
    m_fpsEst(NULL)
 {
 }
@@ -678,7 +679,42 @@ void MainActor::cleanUpAndQuit(void)
 
 bool MainActor::isInPause(void)
 {
-   return m_isInPause;
+   return m_isInPause || m_isInMessagePause;
+}
+
+bool MainActor::canPauseForMessages(void)
+{
+   return !m_isInPause && !m_isInMessagePause && m_clock && (m_sceneObject != NULL);
+}
+
+void MainActor::setMessagePause(bool pause)
+{
+   if (pause == m_isInMessagePause)
+   {
+      return;
+   }
+
+   m_isInMessagePause = pause;
+
+   if (pause)
+   {
+      m_clock->pause();
+
+      // The HUD won't see the fingers lift while it is disabled, so
+      // release the flight controls now rather than having the booster
+      // stuck on when the game continues
+      m_sceneObject->m_turnLeftPressed = false;
+      m_sceneObject->m_turnRightPressed = false;
+      m_sceneObject->m_boosterPressed = false;
+      m_sceneObject->m_firePressed = false;
+
+      g_headUpDisplay->setTouchEnabled(false);
+   }
+   else
+   {
+      m_clock->resume();
+      g_headUpDisplay->setTouchEnabled(true);
+   }
 }
 
 void MainActor::goToPause(void)

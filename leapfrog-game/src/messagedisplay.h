@@ -64,7 +64,20 @@ private:
    oxygine::spBox9Sprite m_newBubble;
    float m_newMessageHeight;
 
+   // Tap to enlarge: the game pauses and the display is shown in the
+   // middle of the screen, full height and a bit zoomed in. Another
+   // tap anywhere puts it back and continues the game.
+   bool m_expanded;
+   oxygine::spColorRectSprite m_dimmer;
+   oxygine::spActor m_tapLabel;
+
    void clearMessageDisplay(void);
+   void applySize(float width, float height);
+   void touchDownHandler(oxygine::Event* event);
+   void expand(void);
+   void collapse(bool animate);
+   void collapseTweenDone(oxygine::Event* event);
+   void createTapLabel(void);
 
 
 public:

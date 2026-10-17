@@ -29,6 +29,7 @@ class MainActor : public oxygine::Actor
 private:
    oxygine::spClock m_clock;
    bool m_isInPause;
+   bool m_isInMessagePause;
 
    enum PostMenuActionType
    {
@@ -113,7 +114,14 @@ public:
       int eventId);
 
    void goToPause(void);
+
+   // True during the menu pause and while the player reads the
+   // enlarged message display (both freeze the game)
    bool isInPause(void);
+
+   // Pause without the menu, for reading the message display
+   bool canPauseForMessages(void);
+   void setMessagePause(bool pause);
    void buttonClicked(int button);
    void restartedFromMenu(void);
    void menuStartTransitionComplete(void);

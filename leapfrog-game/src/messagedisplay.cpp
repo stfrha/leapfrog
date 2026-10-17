@@ -5,6 +5,7 @@
 #include "bodyuserdata.h"
 #include "layout.h"
 #include "graphicresources.h"
+#include "mainactor.h"
 
 using namespace std;
 using namespace oxygine;
@@ -31,7 +32,8 @@ MessageItem::MessageItem(
 MessageDisplay::MessageDisplay()  :
    m_state(idle),
    m_noPreviousMessages(true),
-   m_fullHeight(false)
+   m_fullHeight(false),
+   m_expanded(false)
 {
 }
 
@@ -57,6 +59,11 @@ void MessageDisplay::clearMessageDisplay(void)
 
 void MessageDisplay::cleanAndClearMessageDisplay(void)
 {
+   if (m_expanded)
+   {
+      collapse(false);
+   }
+
    m_displayedMessages.clear();
    clearMessageDisplay();
 }
@@ -86,7 +93,12 @@ void MessageDisplay::initialiseMessageDisplay(
    setResAnim(g_GraphRes.getResources(GraphicResources::ResourceTypeEnum::hud).getResAnim("display_thin"));
    setVerticalMode(Box9Sprite::TILING_FULL);
    setHorizontalMode(Box9Sprite::TILING_FULL);
-   setTouchEnabled(false);
+
+   // Touching the display enlarges it (see expand). It is above the
+   // HUD, so these touches don't reach the game controls.
+   setTouchEnabled(true);
+   setTouchChildrenEnabled(false);
+   addTouchDownListener(CLOSURE(this, &MessageDisplay::touchDownHandler));
    setAnchor(0.0f, 0.0f);
    //setSize(m_messageDisplayWidth, m_messageDisplayHeight);
    setPriority(250);
@@ -126,13 +138,158 @@ void MessageDisplay::setFullHeight(bool fullHeight)
       setPosition(m_left, m_normalTop);
    }
 
-   m_messageDisplayWidth = m_right - m_left;
+   applySize(m_right - m_left, m_messageDisplayHeight);
+}
+
+void MessageDisplay::applySize(float width, float height)
+{
+   m_messageDisplayWidth = width;
+   m_messageDisplayHeight = height;
 
    setSize(m_messageDisplayWidth, m_messageDisplayHeight);
    m_messageActor->setSize(m_messageDisplayWidth, m_messageDisplayHeight);
    m_mdFrame->setSize(m_messageDisplayWidth, m_messageDisplayHeight);
 
+   if (m_tapLabel)
+   {
+      m_tapLabel->setPosition(m_messageDisplayWidth / 2.0f, 0.0f);
+   }
+
    redrawMessages();
+}
+
+void MessageDisplay::touchDownHandler(oxygine::Event* event)
+{
+   if (m_expanded)
+   {
+      collapse(true);
+   }
+   else if (g_MainActor && g_MainActor->canPauseForMessages())
+   {
+      expand();
+   }
+}
+
+void MessageDisplay::expand(void)
+{
+   const float zoom = 1.3f;
+   Vector2 viewport = g_Layout.getViewPortBounds();
+   float margin = g_Layout.getButtonWidth() * 0.2f;
+
+   m_expanded = true;
+   g_MainActor->setMessagePause(true);
+
+   // Dim the paused game. Touching it (or the display) continues.
+   m_dimmer = new ColorRectSprite();
+   m_dimmer->setColor(Color(0, 0, 0, 255));
+   m_dimmer->setAlpha(0);
+   m_dimmer->setAnchor(0.0f, 0.0f);
+   m_dimmer->setPosition(0.0f, 0.0f);
+   m_dimmer->setSize(viewport);
+   m_dimmer->setPriority(getPriority() - 1);
+   m_dimmer->addTouchDownListener(CLOSURE(this, &MessageDisplay::touchDownHandler));
+   m_dimmer->attachTo(getParent());
+   m_dimmer->addTween(Actor::TweenAlpha(140), 250);
+
+   // Same width as normal (so the bubbles keep their line breaks), all
+   // the height there is, then scaled up and centred
+   float height = (viewport.y - 2.0f * margin) / zoom;
+   float width = m_right - m_left;
+
+   removeTweens();
+   applySize(width, height);
+
+   createTapLabel();
+
+   Vector2 target((viewport.x - width * zoom) / 2.0f, margin);
+   addTween(Actor::TweenPosition(target), 250, 1, false, 0, Tween::EASE::ease_outQuad);
+   addTween(Actor::TweenScale(zoom), 250, 1, false, 0, Tween::EASE::ease_outQuad);
+}
+
+void MessageDisplay::collapse(bool animate)
+{
+   m_expanded = false;
+
+   if (m_tapLabel)
+   {
+      m_tapLabel->detach();
+      m_tapLabel = NULL;
+   }
+
+   if (m_dimmer)
+   {
+      m_dimmer->detach();
+      m_dimmer = NULL;
+   }
+
+   removeTweens();
+
+   if (animate)
+   {
+      Vector2 target(m_left, m_fullHeight ? m_highTop : m_normalTop);
+      addTween(Actor::TweenPosition(target), 200, 1, false, 0, Tween::EASE::ease_inQuad);
+      spTween tween = addTween(Actor::TweenScale(1.0f), 200, 1, false, 0, Tween::EASE::ease_inQuad);
+      tween->setDoneCallback(CLOSURE(this, &MessageDisplay::collapseTweenDone));
+   }
+   else
+   {
+      setScale(1.0f);
+      setFullHeight(m_fullHeight);
+   }
+
+   if (g_MainActor)
+   {
+      g_MainActor->setMessagePause(false);
+   }
+}
+
+void MessageDisplay::collapseTweenDone(oxygine::Event* event)
+{
+   setScale(1.0f);
+   setFullHeight(m_fullHeight);
+}
+
+void MessageDisplay::createTapLabel(void)
+{
+   // Small text centred on the top edge. A dark plate behind it hides
+   // the frame line where the text sits.
+   int fontSize = (int)(m_fontSize * 0.7f);
+   if (fontSize < 8)
+   {
+      fontSize = 8;
+   }
+
+   m_tapLabel = new Actor();
+   m_tapLabel->setPosition(m_messageDisplayWidth / 2.0f, 0.0f);
+   m_tapLabel->setTouchEnabled(false, false);
+   m_tapLabel->attachTo(this);
+
+   spTextField text = new TextField();
+   TextStyle style = TextStyle(g_GraphRes.getResources(GraphicResources::ResourceTypeEnum::hud).getResFont("lf_font"))
+      .withColor(Color::White)
+      .alignMiddle();
+   style.fontSize = fontSize;
+   text->setStyle(style);
+   text->setColor(g_Layout.getPhosphorColor());
+   text->setText("Tap to continue");
+
+   const Rect& rect = text->getTextRect();
+   float padX = fontSize * 0.5f;
+   float plateW = rect.size.x + 2.0f * padX;
+   float plateH = rect.size.y + fontSize * 0.2f;
+
+   spColorRectSprite plate = new ColorRectSprite();
+   plate->setColor(Color(12, 20, 6, 255));
+   plate->setAnchor(0.5f, 0.5f);
+   plate->setSize(plateW, plateH);
+   plate->setPosition(0.0f, 0.0f);
+   plate->attachTo(m_tapLabel);
+
+   // With middle alignment the text is centred on the field's rect
+   text->setAnchor(0.0f, 0.0f);
+   text->setSize(plateW, plateH);
+   text->setPosition(-plateW / 2.0f, -plateH / 2.0f);
+   text->attachTo(m_tapLabel);
 }
 
 void MessageDisplay::doUpdate(const oxygine::UpdateState& us)
@@ -371,6 +528,9 @@ void MessageDisplay::atNewBubbleFinished(oxygine::Event* event)
 {
    if (m_messageQueue[0].m_postWait > 0)
    {
+      // On display now, so a redraw must include it; the queue entry
+      // stays until the post wait is over
+      m_displayedMessages.push_back(m_messageQueue[0]);
       m_ticks = 0;
       m_state = postWait;
    }
@@ -384,7 +544,20 @@ void MessageDisplay::atNewBubbleFinished(oxygine::Event* event)
 
 void MessageDisplay::redrawMessages(void)
 {
+   // A bubble that is still animating would be lost by the redraw (its
+   // tween is on an actor that gets removed, so its done callback never
+   // comes). Count it as displayed and let the queue carry on.
+   if (((m_state == inTransit) || (m_state == newBubbleAnimation)) && !m_messageQueue.empty())
+   {
+      m_displayedMessages.push_back(m_messageQueue.front());
+      m_messageQueue.erase(m_messageQueue.begin());
+      m_state = idle;
+   }
+
+   // clearMessageDisplay also empties the queue, which a resize must not do
+   std::vector<MessageItem> queue = m_messageQueue;
    clearMessageDisplay();
+   m_messageQueue = queue;
 
    for (auto it = m_displayedMessages.begin(); it != m_displayedMessages.end(); ++it)
    {
