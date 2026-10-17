@@ -1,4 +1,6 @@
 #include "leapfrog.h"
+
+#include <algorithm>
 #include "leapfrogevents.h"
 
 #include "physdispconvert.h"
@@ -233,6 +235,43 @@ void LeapFrog::setEnvPropHandler(oxygine::Event *ev)
    goToEnvironment(static_cast<EnvironmentEnum>((int)value));
 }
 
+// Velocity of the centre of mass of the whole craft (main body, legs,
+// feet, steering boosters). The main body alone also moves when the
+// craft rotates, since its centre is not the centre of the assembly,
+// which made the HDD speed bars react to steering.
+b2Vec2 LeapFrog::getCraftVelocity(void)
+{
+   b2Vec2 momentum(0.0f, 0.0f);
+   float mass = 0.0f;
+   std::vector<b2Body*> counted;
+
+   for (auto it = m_shapes.begin(); it != m_shapes.end(); ++it)
+   {
+      b2Body* body = ActorUserData::getBody((const void*)(*it)->getUserData());
+
+      if ((body == NULL) || (body->GetType() != b2_dynamicBody) || !body->IsActive())
+      {
+         continue;
+      }
+
+      if (std::find(counted.begin(), counted.end(), body) != counted.end())
+      {
+         continue;
+      }
+
+      counted.push_back(body);
+      momentum += body->GetMass() * body->GetLinearVelocity();
+      mass += body->GetMass();
+   }
+
+   if (mass <= 0.0f)
+   {
+      return m_mainBody->GetLinearVelocity();
+   }
+
+   return (1.0f / mass) * momentum;
+}
+
 oxygine::Actor* LeapFrog::getMainActor(void)
 {
    return m_leapfrogActor.get();
@@ -264,7 +303,7 @@ void LeapFrog::doUpdate(const UpdateState &us)
    if (m_properties.size() > LeapfroPropertiesEnum::damage)
    {
       LeapfrogTelemetry telemetry;
-      telemetry.m_velocity = m_mainBody->GetLinearVelocity();
+      telemetry.m_velocity = getCraftVelocity();
       telemetry.m_shieldInUse = (m_environment != ENV_GROUND) && (m_environment != ENV_LAUNCH);
       telemetry.m_ammo = m_properties[LeapfroPropertiesEnum::ammo].getProperty();
       telemetry.m_shield = m_properties[LeapfroPropertiesEnum::shield].getProperty();

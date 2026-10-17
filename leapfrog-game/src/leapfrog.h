@@ -207,6 +207,7 @@ public:
 
 
    oxygine::Actor* getMainActor(void);
+   b2Vec2 getCraftVelocity(void);
 
    /*
    To be controlled by Game Manager:
