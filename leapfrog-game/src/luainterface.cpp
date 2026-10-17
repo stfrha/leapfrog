@@ -2,6 +2,7 @@
 
 #include "mainactor.h"
 #include "messagedisplay.h"
+#include "headdowndisplay.h"
 #include "objectproperty.h"
 #include "sceneactorevents.h"
 
@@ -311,6 +312,20 @@ static int c_addDialogMessage(lua_State *L)
    return 0;
 }
 
+// c_hudLog(text [, critical]): a short line in the HDD event log
+static int c_hudLog(lua_State *L)
+{
+   const char* text = lua_tostring(L, 1);
+   bool critical = lua_toboolean(L, 2);
+
+   if (text != NULL)
+   {
+      g_HeadDownDisplay->logMessage(text, critical);
+   }
+
+   return 0;
+}
+
 static int c_setPanningObject(lua_State *L)
 {
    std::string objectName = lua_tostring(L, 1);
@@ -504,6 +519,7 @@ void LuaInterface::initLuaInterface(void)
    lua_register(m_L, "c_addMissionStateSceneObjects", c_addMissionStateSceneObjects);
    lua_register(m_L, "c_addPositionedChildObject", c_addPositionedChildObject);
    lua_register(m_L, "c_addDialogMessage", c_addDialogMessage);
+   lua_register(m_L, "c_hudLog", c_hudLog);
    lua_register(m_L, "c_setPanningObject", c_setPanningObject);
    lua_register(m_L, "c_setObjectProperty", c_setObjectProperty);
    lua_register(m_L, "c_getObjectProperty", c_getObjectProperty);

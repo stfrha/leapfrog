@@ -260,6 +260,19 @@ void LeapFrog::doUpdate(const UpdateState &us)
    m_properties[LeapfroPropertiesEnum::propXPos].setProperty(pos.x);
    m_properties[LeapfroPropertiesEnum::propYPos].setProperty(pos.y);
 
+   // Feed the speed bars and resource warnings of the head-down display
+   if (m_properties.size() > LeapfroPropertiesEnum::damage)
+   {
+      LeapfrogTelemetry telemetry;
+      telemetry.m_velocity = m_mainBody->GetLinearVelocity();
+      telemetry.m_shieldInUse = (m_environment != ENV_GROUND) && (m_environment != ENV_LAUNCH);
+      telemetry.m_ammo = m_properties[LeapfroPropertiesEnum::ammo].getProperty();
+      telemetry.m_shield = m_properties[LeapfroPropertiesEnum::shield].getProperty();
+      telemetry.m_fuel = m_properties[LeapfroPropertiesEnum::fuel].getProperty();
+      telemetry.m_damage = m_properties[LeapfroPropertiesEnum::damage].getProperty();
+      g_HeadDownDisplay->setLeapfrogTelemetry(telemetry);
+   }
+
    float angle = 0.0f;
    b2Vec2 boostForce = b2Vec2(0.0f, 0.0f);
    float magAngVel = 0.0f;

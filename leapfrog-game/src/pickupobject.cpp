@@ -6,6 +6,7 @@
 #include "freespaceactor.h"
 #include "blastemitter.h"
 #include "actoruserdata.h"
+#include "headdowndisplay.h"
 
 
 using namespace std;
@@ -50,9 +51,17 @@ PickupItem::PickupItem()
 
 void PickupItem::doPickupAmountCalculation(ObjectResources* status)
 {
+   // Only the Leapfrog's own pickups go to the HDD log, not those
+   // made by other steerable objects
+   bool logIt = (status == g_GameStatus.getResources());
+
    if (m_pickUpType == PickupTypeEnum::inventory)
    {
       // TODO: Do nothing yet, later add inventory to game status
+      if (logIt && !m_inventoryDescription.empty())
+      {
+         g_HeadDownDisplay->logMessage("Picked up " + m_inventoryDescription);
+      }
       return;
    }
 
@@ -68,27 +77,54 @@ void PickupItem::doPickupAmountCalculation(ObjectResources* status)
       amount = static_cast<float>(rand() / static_cast<float>(RAND_MAX + 1)) * (m_amountMax - m_amountMin + 1.0f) + m_amountMin;
    }
    
+   // The resources are capped, so the log reports what was actually
+   // gained rather than the nominal amount of the pickup
    if (m_pickUpType == PickupTypeEnum::resourceAmmo)
    {
+      int before = status->getShots();
       status->deltaShots(static_cast<int>(amount));
+      if (logIt)
+      {
+         int gained = status->getShots() - before;
+         if (gained > 0) g_HeadDownDisplay->logAmount("ammo", "Picked up %d ammo", gained);
+         else g_HeadDownDisplay->logMessage("Ammo full");
+      }
       return;
    }
    
    if (m_pickUpType == PickupTypeEnum::resourceShield)
    {
+      float before = status->getShield();
       status->deltaShield(amount);
+      if (logIt)
+      {
+         int gained = static_cast<int>(status->getShield() - before + 0.5f);
+         if (gained > 0) g_HeadDownDisplay->logAmount("shield", "Shield recharged %d", gained);
+         else g_HeadDownDisplay->logMessage("Shield full");
+      }
       return;
    }
 
    if (m_pickUpType == PickupTypeEnum::resourceFuel)
    {
+      float before = status->getFuel();
       status->deltaFuel(amount);
+      if (logIt)
+      {
+         int gained = static_cast<int>(status->getFuel() - before + 0.5f);
+         if (gained > 0) g_HeadDownDisplay->logAmount("fuel", "Picked up %d fuel", gained);
+         else g_HeadDownDisplay->logMessage("Fuel tank full");
+      }
       return;
    }
 
    if (m_pickUpType == PickupTypeEnum::resourceCoin)
    {
       status->deltaCredits(static_cast<int>(amount));
+      if (logIt)
+      {
+         g_HeadDownDisplay->logAmount("credits", "Picked up %d credits", static_cast<int>(amount));
+      }
       return;
    }
 }
