@@ -106,8 +106,8 @@ void MainActor::initMainActor(void)
       getStage().get(), 
       0.0f, 
       g_Layout.getButtonWidth(), 
-      0.0f, 
-      g_Layout.getButtonWidth() * 2.0f, 
+      g_Layout.getXFromLeft(0), 
+      g_Layout.getXFromLeft(2), 
       g_Layout.getViewPortBounds().y, 
       g_Layout.getYFromBottom(1) - g_Layout.getButtonWidth() / 2.0f,
       g_Layout.getDefaultFontSize());

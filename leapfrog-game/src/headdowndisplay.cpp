@@ -889,7 +889,9 @@ void HeadDownDisplay::initialiseHdd(
    m_menuSizeY = g_Layout.getViewPortBounds().y - 2.0f * (g_Layout.getViewPortBounds().y - mapBottom);
 
    // m_orbitSizeX = g_Layout.getViewPortBounds().x;
-   m_orbitSizeX = g_Layout.getXFromRight(4);
+   // From the left safe edge (clear of a camera notch) to the buttons on the right
+   m_orbitSizeX = g_Layout.getXFromRight(4) - g_Layout.getXFromLeft(0);
+   m_orbitPosX = g_Layout.getXFromLeft(0) + m_orbitSizeX / 2.0f;
    
 
    m_orbitSizeY = m_menuSizeY;
@@ -1039,7 +1041,7 @@ void HeadDownDisplay::goToOrbit(void)
    spTween tween = addTween(Actor::TweenSize(m_orbitSizeX, m_orbitSizeY), 500);
    tween->setDoneCallback(CLOSURE(this, &HeadDownDisplay::orbitStartTransitionComplete));
 
-   spTween moveTween = addTween(Actor::TweenPosition(m_orbitSizeX / 2.0f, m_orbitSizeY), 500);
+   spTween moveTween = addTween(Actor::TweenPosition(m_orbitPosX, m_orbitSizeY), 500);
 }
 
 void HeadDownDisplay::goToMenu(void)

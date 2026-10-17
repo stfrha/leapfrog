@@ -10,6 +10,10 @@
 // m_stageSize          : This is the map size in stage coordinates (1.0f is 1 meter)
 //                        it starts at 0,0 and goes to the width and height stated
 //                        in the sceneProperties.
+// Safe area         : The HUD column getters (getXFromLeft/Right) start at the
+//                        safe area edges, so buttons and frames stay clear of
+//                        an iPhone camera notch. The game view still uses the
+//                        whole screen.
 // m_stageBounds        : This is the stage framed by soft boundaries. This start at
 //                        (-boundaryWidth , -boundaryWidth) and extends to 
 //                        (m_stageSize + boundaryWidth). It is the maximum extent 
@@ -25,6 +29,14 @@ private:
    float m_ddpi;
    float m_hdpi;
    float m_vdpi;
+
+   // Screen edges covered by a camera notch etc. [stage pixels]. Only
+   // left/right are used: the game is landscape only and the bottom
+   // home indicator doesn't hide anything.
+   float m_safeInsetLeft;
+   float m_safeInsetRight;
+
+   void initSafeArea(void);
 
 
 public:
@@ -47,6 +59,8 @@ public:
    float getHorizontalDpi(void);
    float getVerticalDpi(void);
    float getMaxDpi(void);
+   float getSafeInsetLeft(void);
+   float getSafeInsetRight(void);
 };
 
 extern Layout g_Layout;

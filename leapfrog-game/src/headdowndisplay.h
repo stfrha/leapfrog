@@ -271,6 +271,7 @@ public:
    float m_mapSizeY;
    float m_orbitSizeX;
    float m_orbitSizeY;
+   float m_orbitPosX;
    float m_menuSizeX;
    float m_menuSizeY;
 
