@@ -154,7 +154,7 @@ void run(int sizeCode = 0)
    getStage()->setSize(size);
 
    // DebugActor is a helper actor node. It shows FPS, memory usage and other useful stuff
-   DebugActor::show();
+   // DebugActor::show();
 
    g_Layout.initLayout(sizeCode);
 
