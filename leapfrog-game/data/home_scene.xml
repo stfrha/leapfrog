@@ -134,14 +134,15 @@
   <spriteBox
     name="noName"
     texture="ore_building_blink"
-    posX="1217.4610317326665"
-    posY="633.42529744165813"
+    posX="1222.1985152886182"
+    posY="631.9896963640972"
     angle="0"
     zLevel="34"
     collisionEntity="notApplicable"
     collisionCategory="1"
     collisionMask="65534"
-    width="57.65"
+    animatePeriod="1.5"
+    width="72.4"
     height="50.5"
     parallaxAmount="0" />
   <spritePolygon
@@ -150,7 +151,7 @@
     posX="1433.2960079352692"
     posY="662.63879878649777"
     angle="0"
-    zLevel="0"
+    zLevel="33"
     collisionEntity="notApplicable"
     collisionCategory="1"
     collisionMask="65534"
@@ -420,7 +421,7 @@
     posX="1049.7404791339422"
     posY="620.98897332849674"
     angle="0"
-    zLevel="0"
+    zLevel="33"
     collisionEntity="notApplicable"
     collisionCategory="1"
     collisionMask="65534"
@@ -443,26 +444,35 @@
         y="43.042556103432162" />
       <vertex
         id="4"
-        x="47.999889113210884"
-        y="49.037859711028432" />
+        x="69.029201772798842"
+        y="47.986394078048761" />
       <vertex
         id="5"
-        x="130.56897391761504"
-        y="24.899794979285161" />
+        x="121.09596983552342"
+        y="27.621854528134577" />
+      <vertex
+        id="6"
+        x="137.07404130031455"
+        y="24.675482310916323" />
     </vertices>
     <triangles>
       <triangle
         id="1"
         v1="1"
+        v2="6"
+        v3="5" />
+      <triangle
+        id="2"
+        v1="1"
         v2="5"
         v3="4" />
       <triangle
-        id="2"
+        id="3"
         v1="1"
         v2="4"
         v3="3" />
       <triangle
-        id="3"
+        id="4"
         v1="3"
         v2="2"
         v3="1" />
@@ -520,12 +530,12 @@
       needsGroupIndex="false">
       <staticBox
         name="noName"
-        texture="default"
+        texture="transparent"
         posX="0"
         posY="0"
         angle="0"
         zLevel="192"
-        collisionEntity="notApplicable"
+        collisionEntity="landingPad"
         collisionCategory="1"
         collisionMask="65533"
         width="50"
@@ -536,8 +546,8 @@
   </childObject>
   <childObject
     name="oreLanding"
-    posX="1239.3366895339359"
-    posY="630.36355288593">
+    posX="1243.1058522058859"
+    posY="628.92898672957563">
     <compoundObject
       needsGroupIndex="false">
       <staticBox
@@ -547,13 +557,13 @@
         posY="0"
         angle="0"
         zLevel="192"
-        collisionEntity="notApplicable"
+        collisionEntity="landingPad"
         collisionCategory="1"
         collisionMask="65533"
-        width="14"
+        width="28"
         height="5" />
       <behaviour
-        type="notApplicable" />
+        type="landingPad" />
     </compoundObject>
   </childObject>
 </compoundObject>
