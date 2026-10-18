@@ -1,20 +1,21 @@
 """
 amb_hut - first ambient piece: a small habitation module for a village on a
-parallax layer (landing scene, parallaxAmount 0.6).
+parallax layer (landing scene, parallaxAmount 0.4).
 
 A prefab module on a concrete plinth: ribbed walls, a rusty roof slab with an
 overhang, a door on the left, lit windows, a water tank on the right side
 (the side the camera sees), a roof vent and a mast with an amber light.
 
 Ambient pieces differ from the foreground sprites:
-  * 10 px/unit by default (a layer at 0.6 is drawn at about 0.4 of the
-    foreground size when zoomed in, so 20 * 0.4 = 8 px/unit is enough).
+  * 14 px/unit by default (a layer at 0.4 is drawn at about 0.6 of the
+    foreground size when zoomed in, so 20 * 0.6 = 12 px/unit plus some
+    margin).
     --ppu overrides it, e.g. to try the piece on another layer.
   * Orthographic 3/4 camera (render_axo), the same angles for every piece,
     so pieces can stand side by side anywhere on the layer. The bottom edge
     of the image is the front of the plinth on the ground.
   * Saved in data/images/mining/ambient/ and registered in res_mining.xml in
-    the shared ambient atlas, with ppu="10" for the editor.
+    the shared ambient atlas, with ppu="14" for the editor.
   * Bold shapes over fine detail: at this size only silhouettes, a few
     contrasting parts and the lit windows read.
 
@@ -48,7 +49,7 @@ def options(p):
 
 
 args = sk.parse_args(options)
-kit = sk.Kit(args, rig="axo", res="res_mining.xml", ambient=True, ppu=10)
+kit = sk.Kit(args, rig="axo", res="res_mining.xml", ambient=True, ppu=14)
 M = kit.material
 
 W = args.width

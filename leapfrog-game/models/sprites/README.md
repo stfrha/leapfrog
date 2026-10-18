@@ -41,12 +41,12 @@ Script-specific options are listed with `-- --help`.
 * Static scenery (buildings): perspective 3/4 view like the silo, `kit.render_persp()`. The frame
   is fitted around the geometry at 20 px/unit at the object's depth.
 * Ambient pieces (small background buildings for parallax layers, named `amb_*`, e.g.
-  `amb_hut.py`): `sk.Kit(args, rig="axo", res="res_mining.xml", ambient=True, ppu=10)` and
+  `amb_hut.py`): `sk.Kit(args, rig="axo", res="res_mining.xml", ambient=True, ppu=14)` and
   `kit.render_axo()`, an orthographic 3/4 view with the same yaw/pitch for every piece, so
   pieces can stand side by side anywhere on a layer. The image bottom is the front of the
   footprint on the ground. They go to `data/images/<world>/ambient/` and share one atlas
   there (oxygine's default extend, i.e. 2 px padding). For a layer with
-  `parallaxAmount` a, about 20 × (1 − a) px/unit is enough (0.6 → 8–10).
+  `parallaxAmount` a, about 20 × (1 − a) px/unit is enough (0.6 → 8–10, 0.4 → 12–14).
 * Lighting and materials come from the theme. Scripts ask for material roles
   (`frame_main`, `frame_brace`, ...) and the theme decides what they look like.
 * Every file in `data/images` ships with the game (Android packs all of `data/`, iOS has
