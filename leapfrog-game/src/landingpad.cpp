@@ -182,6 +182,12 @@ void LandingPad::releaseLeapfrog(void)
    m_holdJoints.clear();
 
    logs::messageln("Landing pad %s: released the Leapfrog", getName().c_str());
+
+   // Taking off: back out to the scene's default zoom
+   if (m_sceneActor != NULL)
+   {
+      m_sceneActor->zoomOutToDefault(c_takeOffZoomMs);
+   }
 }
 
 void LandingPad::leapfrogFootLift(b2Contact* contact, bool leftFoot, LeapFrog* leapfrog)

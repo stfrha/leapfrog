@@ -148,6 +148,7 @@ SceneActor::SceneActor(
    CompoundObject(this, NULL),
    m_world(world),
    m_zoomScale(initialZoomScale),
+   m_defaultZoomScale(zoomScale),
    m_stageToViewPortScale(m_zoomScale* Scales::c_stageToViewPortScale),
    m_physToStageScale(1.0f),
    m_panorateMode(center),
@@ -378,6 +379,33 @@ void SceneActor::setZoom(const float& zoom)
    m_zoomScale = zoom;
    m_stageToViewPortScale = m_zoomScale * Scales::c_stageToViewPortScale;
    setScale(m_stageToViewPortScale);
+}
+
+void SceneActor::zoomOutToDefault(timeMS duration)
+{
+   // The default may be further out than the stage allows; doUpdate limits
+   // the zoom so the whole stage just fits, so aim for that limit instead.
+   float zoom = m_defaultZoomScale;
+   float fitX = g_Layout.getViewPortBounds().x / g_Layout.getStageSize().x / Scales::c_stageToViewPortScale;
+   float fitY = g_Layout.getViewPortBounds().y / g_Layout.getStageSize().y / Scales::c_stageToViewPortScale;
+   if (zoom < fitX)
+   {
+      zoom = fitX;
+   }
+   if (zoom < fitY)
+   {
+      zoom = fitY;
+   }
+
+   if (zoom >= m_zoomScale)
+   {
+      // Already at least this far out
+      return;
+   }
+
+   removeTweensByName("sceneZoom");
+   spTween zoomTween = addTween(SceneActor::TweenZoom(zoom), duration, 1, false, 0, Tween::ease_inOutQuad);
+   zoomTween->setName("sceneZoom");
 }
 
 void SceneActor::zoomInToVisibleWidth(float width, timeMS duration)

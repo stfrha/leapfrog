@@ -96,6 +96,7 @@ private:
 
 protected:
    float	m_zoomScale;
+   float	m_defaultZoomScale;   // where the zoom-out at scene start ends
    float	m_stageToViewPortScale;
    float	m_physToStageScale;
    b2World * m_world;
@@ -118,6 +119,10 @@ public:
    // screen, e.g. when the Leapfrog has landed on a pad. Only zooms in:
    // if the view is already closer than that, it is left alone.
    void zoomInToVisibleWidth(float width, oxygine::timeMS duration);
+
+   // Zoom smoothly back out to the scene's default zoom, the one the
+   // zoom-out at scene start ends at. Only zooms out.
+   void zoomOutToDefault(oxygine::timeMS duration);
 
 	SceneActor(
       b2World* world, 
