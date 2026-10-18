@@ -54,7 +54,8 @@ private:
    bool m_armHold;
    std::vector<b2Joint*> m_holdJoints;
 
-   static const oxygine::timeMS c_touchWindowMs = 400;
+   static const oxygine::timeMS c_touchWindowMs = 400;   // both feet down within this
+   static const oxygine::timeMS c_landedZoomMs = 5000;   // zoom-in duration after landing
 
    static bool isSafeLandingVelocity(const b2Vec2& v);
    bool jointExists(b2Joint* joint);

@@ -148,7 +148,6 @@ SceneActor::SceneActor(
    CompoundObject(this, NULL),
    m_world(world),
    m_zoomScale(initialZoomScale),
-   m_initialZoomScale(initialZoomScale),
    m_stageToViewPortScale(m_zoomScale* Scales::c_stageToViewPortScale),
    m_physToStageScale(1.0f),
    m_panorateMode(center),
@@ -381,11 +380,20 @@ void SceneActor::setZoom(const float& zoom)
    setScale(m_stageToViewPortScale);
 }
 
-void SceneActor::zoomToInitial(timeMS duration)
+void SceneActor::zoomInToVisibleWidth(float width, timeMS duration)
 {
+   // Visible width in stage units = view port width / (zoom * stage-to-view-port scale)
+   float zoom = g_Layout.getViewPortBounds().x / (width * Scales::c_stageToViewPortScale);
+
+   if (zoom <= m_zoomScale)
+   {
+      // Already at least this close
+      return;
+   }
+
    // Replace any zoom tween still running (e.g. the zoom-out at scene start)
    removeTweensByName("sceneZoom");
-   spTween zoomTween = addTween(SceneActor::TweenZoom(m_initialZoomScale), duration, 1, false, 0, Tween::ease_inOutQuad);
+   spTween zoomTween = addTween(SceneActor::TweenZoom(zoom), duration, 1, false, 0, Tween::ease_inOutQuad);
    zoomTween->setName("sceneZoom");
 }
 

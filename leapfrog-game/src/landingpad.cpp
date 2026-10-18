@@ -12,6 +12,13 @@
 #include "headdowndisplay.h"
 #include "landinglimits.h"
 
+namespace
+{
+   // How much of the scene to show after landing: wide enough to see the
+   // buildings around the pad (the silo is about 128 units wide)
+   const float c_landedVisibleWidth = 220.0f;
+}
+
 using namespace oxygine;
 using namespace std;
 
@@ -147,14 +154,19 @@ void LandingPad::holdLeapfrog(void)
 
       b2WeldJointDef def;
       def.Initialize(m_padBody, body, body->GetWorldCenter());
-      def.collideConnected = false;
+      // Keep the contacts between the feet and the pad: with false, Box2D
+      // removes them, the pad sees both feet leave (take-off, leg joints
+      // unlocked), and sees them land again when the hold is released.
+      def.collideConnected = true;
       m_holdJoints.push_back(m_world->CreateJoint(&def));
    }
 
-   // Back to the close zoom the scene started with
+   logs::messageln("Landing pad %s: holding the Leapfrog", getName().c_str());
+
+   // Zoom in on the landing site, keeping the buildings around it in view
    if (m_sceneActor != NULL)
    {
-      m_sceneActor->zoomToInitial();
+      m_sceneActor->zoomInToVisibleWidth(c_landedVisibleWidth, c_landedZoomMs);
    }
 }
 
@@ -168,6 +180,8 @@ void LandingPad::releaseLeapfrog(void)
       }
    }
    m_holdJoints.clear();
+
+   logs::messageln("Landing pad %s: released the Leapfrog", getName().c_str());
 }
 
 void LandingPad::leapfrogFootLift(b2Contact* contact, bool leftFoot, LeapFrog* leapfrog)

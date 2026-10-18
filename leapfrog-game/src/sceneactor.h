@@ -96,7 +96,6 @@ private:
 
 protected:
    float	m_zoomScale;
-   float	m_initialZoomScale;
    float	m_stageToViewPortScale;
    float	m_physToStageScale;
    b2World * m_world;
@@ -115,9 +114,10 @@ public:
    const float& getZoom() const;
    void setZoom(const float& pos);
 
-   // Zoom smoothly back to the zoom the scene starts with (close in),
-   // e.g. when the Leapfrog has landed on a pad.
-   void zoomToInitial(oxygine::timeMS duration = 2000);
+   // Zoom smoothly so that `width` game units are visible across the
+   // screen, e.g. when the Leapfrog has landed on a pad. Only zooms in:
+   // if the view is already closer than that, it is left alone.
+   void zoomInToVisibleWidth(float width, oxygine::timeMS duration);
 
 	SceneActor(
       b2World* world, 
