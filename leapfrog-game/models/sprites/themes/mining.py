@@ -62,8 +62,9 @@ def setup_world(scene, models_dir, hdri=None):
 
 def setup_lights(scene, rig):
     sun_data = bpy.data.lights.new("Sun", 'SUN')
-    if rig == "persp":
-        # Scenery: softer and a bit dimmer, like the big area light over the silo.
+    if rig in ("persp", "axo"):
+        # Scenery and ambient pieces: softer and a bit dimmer, like the big
+        # area light over the silo.
         sun_data.energy = SUN_STRENGTH * 0.75
         sun_data.angle = math.radians(25.0)
     else:

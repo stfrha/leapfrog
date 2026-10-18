@@ -18,6 +18,7 @@ Useful options (after `--`):
 |---|---|
 | `--samples 16` | fast preview render (default 128) |
 | `--name ls_tower_test` | write to a different texture name instead of overwriting |
+| `--ppu 10` | pixels per game unit (default 20, or the script's own default) |
 | `--gpu` | render on the GPU |
 | `--save-blend` | also save the generated scene to `_blend/<name>.blend` for inspection |
 | `--no-render` | build the scene only (with `--save-blend`) |
@@ -29,15 +30,23 @@ Script-specific options are listed with `-- --help`.
 ## Conventions
 
 * 1 Blender unit = 1 game unit.
-* 20 px per unit, the same as `GlobalConstants.TexturePixelsPerUnit` in the
-  editor, so "Set Width and Height from texture pixel size" gives the right size.
-  Parts longer than 2048 px are rendered at a lower whole px/unit (with a warning);
-  enter their size by hand.
+* 20 px per unit by default, the same as `GlobalConstants.TexturePixelsPerUnit` in the
+  editor. Parts longer than 2048 px are rendered at a lower px/unit. The px/unit an image
+  was rendered at is written to its resource entry (`ppu="10"`) and updated on re-renders,
+  and "Set Width and Height from texture pixel size" in the editor divides by it (and uses
+  one frame of an animation strip). oxygine ignores the attribute.
 * The image frame is the part's box, not its visible pixels, so the sprite lines
   up with the body's width x height.
 * Mechanical parts: orthographic front view (camera looks along +Y, Z up), `kit.render_ortho()`.
 * Static scenery (buildings): perspective 3/4 view like the silo, `kit.render_persp()`. The frame
   is fitted around the geometry at 20 px/unit at the object's depth.
+* Ambient pieces (small background buildings for parallax layers, named `amb_*`, e.g.
+  `amb_hut.py`): `sk.Kit(args, rig="axo", res="res_mining.xml", ambient=True, ppu=10)` and
+  `kit.render_axo()`, an orthographic 3/4 view with the same yaw/pitch for every piece, so
+  pieces can stand side by side anywhere on a layer. The image bottom is the front of the
+  footprint on the ground. They go to `data/images/<world>/ambient/` and share one atlas
+  there (oxygine's default extend, i.e. 2 px padding). For a layer with
+  `parallaxAmount` a, about 20 × (1 − a) px/unit is enough (0.6 → 8–10).
 * Lighting and materials come from the theme. Scripts ask for material roles
   (`frame_main`, `frame_brace`, ...) and the theme decides what they look like.
 * Every file in `data/images` ships with the game (Android packs all of `data/`, iOS has
@@ -46,7 +55,7 @@ Script-specific options are listed with `-- --help`.
   plus `rows`/`cols` for animations). The atlas is a plain `<atlas>` (clamp to edge); only
   textures that tile use `clamp2edge="false"`, and those must be power-of-two or they render
   black on iOS. It skips `*_test` names, custom `--out` and `--no-register`,
-  and never changes entries that already exist.
+  and never changes entries that already exist, except their `ppu`.
 * Big scenery goes in a per-world resource set instead of `res.xml`, e.g. `res_mining.xml`
   (`kit = sk.Kit(args, res="res_mining.xml")` or `--res`). The game loads a set only while a
   scene that uses it runs; `data/scene_resources.xml` says which scenes use which set.

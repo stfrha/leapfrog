@@ -192,6 +192,26 @@ def find_texture(filename):
     return None, None
 
 
+def is_shared_folder(folder):
+    """Images in a folder named 'ambient' (e.g. images/mining/ambient) share one atlas."""
+    return folder.replace("\\", "/").strip("/").split("/")[-1] == "ambient"
+
+
+def _add_to_shared_atlas(text, folder, image_line, nl):
+    """
+    Insert image_line into the shared atlas for `folder` (the <atlas> right
+    after <set path = "folder" />). Returns the new text, or None if the
+    file has no such atlas yet.
+    """
+    m = re.search(r'<set\s+path\s*=\s*"%s"\s*/>[ \t]*\r?\n[ \t]*<atlas\b[^>]*>(.*?)</atlas>'
+                  % re.escape(folder), text, re.S)
+    if not m:
+        return None
+    close = m.end() - len("</atlas>")
+    line_start = text.rfind("\n", 0, close) + 1
+    return text[:line_start] + image_line + nl + text[line_start:]
+
+
 def register_texture(res_name, filename, attrs="", folder="images", repeat=False):
     """
     Add an image to data/<res_name> in its own atlas, loaded from data/<folder>.
@@ -200,6 +220,11 @@ def register_texture(res_name, filename, attrs="", folder="images", repeat=False
     repeat=False (default) gives a plain <atlas> (clamp to edge), right for
     sprites. repeat=True writes <atlas clamp2edge="false"> for textures that
     tile; on iOS (GLES2) those must have power-of-two sizes or render black.
+
+    Images in an 'ambient' folder (small background pieces) all go in one
+    shared atlas per folder instead, so a village of them is one texture.
+    They keep oxygine's default extend (2 px padding with the edge pixels
+    repeated), so neighbours in the atlas don't bleed into each other.
     """
     path = os.path.join(DATA_DIR, res_name)
     if res_name != "res.xml":
@@ -213,9 +238,21 @@ def register_texture(res_name, filename, attrs="", folder="images", repeat=False
         return False
     nl = _nl(text)
     extra = (" " + attrs.strip()) if attrs and attrs.strip() else ""
+    if is_shared_folder(folder) and not repeat:
+        image_line = '\t\t<image file="%s"%s trim="false"/>' % (filename, extra)
+        shared = _add_to_shared_atlas(text, folder, image_line, nl)
+        if shared is not None:
+            _write(path, shared)
+            print("project_files: added %s to %s (shared atlas, data/%s)" % (filename, res_name, folder))
+            return True
+        # First image in this folder: a new block, written below like any other
+    if is_shared_folder(folder) and not repeat:
+        image_line = '\t\t<image file="%s"%s trim="false"/>' % (filename, extra)
+    else:
+        image_line = '\t\t<image file="%s"%s trim="false" extend="false"/>' % (filename, extra)
     block = ('\t<set path = "%s" />' % folder + nl +
              ('\t<atlas clamp2edge="false">' if repeat else '\t<atlas>') + nl +
-             '\t\t<image file="%s"%s trim="false" extend="false"/>' % (filename, extra) + nl +
+             image_line + nl +
              '\t</atlas>' + nl)
     last_atlas = text.rfind("</atlas>")
     if last_atlas >= 0:
@@ -242,6 +279,47 @@ def register_texture(res_name, filename, attrs="", folder="images", repeat=False
     _write(path, text)
     print("project_files: added %s to %s (from data/%s)" % (filename, res_name, folder))
     return True
+
+
+def set_image_attr(filename, attr, value):
+    """
+    Set (or with value None remove) one attribute on filename's <image> entry,
+    in whichever resource file lists it. Used for ppu, which follows the
+    image when it is re-rendered at another density. Returns True if changed.
+    """
+    res, _folder = find_texture(filename)
+    if res is None:
+        return False
+    path = os.path.join(DATA_DIR, res)
+    text = _read(path)
+    m = re.search(r'<image\s+file="%s"[^>]*?/>' % re.escape(filename), text)
+    if not m:
+        return False
+    tag = m.group(0)
+    a = re.search(r'\s%s="[^"]*"' % re.escape(attr), tag)
+    if value is None:
+        new_tag = tag if not a else tag[:a.start()] + tag[a.end():]
+    elif a:
+        new_tag = tag[:a.start()] + ' %s="%s"' % (attr, value) + tag[a.end():]
+    else:
+        f = re.match(r'<image\s+file="[^"]*"', tag)
+        new_tag = tag[:f.end()] + ' %s="%s"' % (attr, value) + tag[f.end():]
+    if new_tag == tag:
+        return False
+    _write(path, text[:m.start()] + new_tag + text[m.end():])
+    print("project_files: %s in %s: %s" % (filename, res, ('%s="%s"' % (attr, value)) if value is not None
+                                           else "removed " + attr))
+    return True
+
+
+def image_attr(filename, attr):
+    """Value of one attribute on filename's <image> entry, or None."""
+    res, _folder = find_texture(filename)
+    if res is None:
+        return None
+    m = re.search(r'<image\s+file="%s"[^>]*?/>' % re.escape(filename), _read(os.path.join(DATA_DIR, res)))
+    a = re.search(r'\s%s="([^"]*)"' % re.escape(attr), m.group(0)) if m else None
+    return a.group(1) if a else None
 
 
 def _atlas_repeats(atlas_tag):
@@ -399,7 +477,9 @@ if __name__ == "__main__":
         for n in names:
             fn = n if n.endswith(".png") else n + ".png"
             res, folder = find_texture(fn)
-            print("%-40s %-20s %s" % (fn, res or "-", ("data/" + folder) if res else "-"))
+            ppu = image_attr(fn, "ppu") if res else None
+            print("%-40s %-20s %-32s %s" % (fn, res or "-", ("data/" + folder) if res else "-",
+                                            ("ppu " + ppu) if ppu else ""))
     else:
         p.print_help()
         sys.exit(1)

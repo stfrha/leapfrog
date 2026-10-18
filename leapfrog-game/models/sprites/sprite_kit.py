@@ -17,9 +17,14 @@ Conventions
   X is right and Z is up in Blender. (The game's y axis points down,
   but that only matters for joints/positions, which are made in the editor.)
 * Images are rendered at PPU pixels per unit (default 20, the same as
-  GlobalConstants.TexturePixelsPerUnit in leapfrog-editor). A part whose
-  longest side would exceed --max-px is rendered at the largest whole PPU
-  that fits, and a warning is printed.
+  GlobalConstants.TexturePixelsPerUnit in leapfrog-editor; a script can set
+  its own default, e.g. 10 for ambient pieces). A part whose longest side
+  would exceed --max-px is rendered at the largest PPU that fits, and a
+  warning is printed.
+* The PPU an image was rendered at is written to its resource entry
+  (ppu="10"), and updated when it is re-rendered at another density. The
+  editor's "Set Width and Height from texture pixel size" reads it; oxygine
+  ignores it.
 * The image frame is exactly the box you pass to render_ortho(), not the
   visible pixels, so the sprite lines up with the width x height body box.
 * Output: <name>.png straight into leapfrog-game/data/images/, and the
@@ -29,6 +34,10 @@ Conventions
 * Editor-only images (e.g. a single frame used to fit bodies in the editor
   when the game uses an animation) go to leapfrog-game/editor_images/,
   which no build project includes.
+* Ambient pieces (small buildings etc. for parallax layers, named amb_*)
+  use Kit(..., ambient=True): they go to data/images/<world>/ambient/ and
+  share one atlas there, and are rendered with render_axo() so pieces can
+  be placed side by side.
 """
 
 import argparse
@@ -68,7 +77,8 @@ def parse_args(add_extra=None):
     p = argparse.ArgumentParser(prog="blender -b -P <sprite>.py --")
     p.add_argument("--theme", default="mining", help="world theme in themes/ (default: mining)")
     p.add_argument("--out", default=DEFAULT_OUT, help="output folder (default: leapfrog-game/data/images)")
-    p.add_argument("--ppu", type=float, default=DEFAULT_PPU, help="pixels per game unit (default 20)")
+    p.add_argument("--ppu", type=float, default=None,
+                   help="pixels per game unit (default 20, or the script's own default)")
     p.add_argument("--max-px", type=int, default=DEFAULT_MAX_PX, help="max image side in pixels (default 2048)")
     p.add_argument("--samples", type=int, default=128, help="Cycles samples (default 128, use ~16 for previews)")
     p.add_argument("--gpu", action="store_true", help="render on the GPU if one is available")
@@ -413,12 +423,21 @@ def register_texture(filename, attrs="", res_xml=RES_XML, folder="images"):
 class Kit:
     """Owns the scene for one sprite script."""
 
-    def __init__(self, args, rig="ortho", res=None):
+    def __init__(self, args, rig="ortho", res=None, ambient=False, ppu=None):
         """res: resource file this script's textures belong in (default res.xml).
         Big scenery should go in a per-world set (e.g. res_mining.xml) that is
-        only loaded while a scene using it runs; see data/scene_resources.xml."""
+        only loaded while a scene using it runs; see data/scene_resources.xml.
+
+        ambient: small background pieces for parallax layers. They go in the
+        world's ambient/ subfolder and share one atlas (project_files).
+        ppu: the script's default pixels per unit (--ppu overrides it).
+        For a parallax layer with parallaxAmount a, about 20 * (1 - a) is
+        enough (0.6 -> 8-10)."""
         self.args = args
         self.rig = rig
+        self.ambient = ambient
+        if args.ppu is None:
+            args.ppu = float(ppu) if ppu else DEFAULT_PPU
         self.res = args.res or res or "res.xml"
         if args.folder:
             self.folder = args.folder.replace("\\", "/").strip("/")
@@ -426,6 +445,8 @@ class Kit:
             self.folder = self.res[len("res_"):-len(".xml")]
         else:
             self.folder = "common"
+        if ambient and not args.folder:
+            self.folder += "/ambient"
         reset_scene()
         self.scene = bpy.context.scene
         setup_render(self.scene, args)
@@ -507,8 +528,8 @@ class Kit:
             ppu = math.floor(ppu * scale * 10) / 10.0
             res_x = uspan * depth * ppu + 2 * margin_px
             res_y = vspan * depth * ppu + 2 * margin_px
-            print("sprite_kit: WARNING %s too large for %d px, using %g px/unit. "
-                  "Enter its size by hand in the editor." % (name, self.args.max_px, ppu))
+            print("sprite_kit: NOTE %s too large for %d px, using %g px/unit "
+                  "(written to its resource entry for the editor)." % (name, self.args.max_px, ppu))
         res_x = int(math.ceil(res_x))
         res_y = int(math.ceil(res_y))
 
@@ -567,10 +588,17 @@ class Kit:
             return False
         return True
 
-    def register(self, filename, attrs=""):
-        """Add a shipped texture to the script's resource file (skipped for test renders / custom --out)."""
+    def register(self, filename, attrs="", ppu=None):
+        """
+        Add a shipped texture to the script's resource file (skipped for test
+        renders / custom --out). ppu is written as an attribute; for a texture
+        that is already listed only its ppu is updated.
+        """
         if not self._may_register(os.path.splitext(filename)[0]):
             return
+        ppu_text = ("%g" % ppu) if ppu else None
+        if ppu_text:
+            attrs = ('ppu="%s" ' % ppu_text) + (attrs or "")
         if self.res != "res.xml":
             project_files.ensure_res_file(self.res)
             if not project_files.scenes_using(self.res):
@@ -581,6 +609,8 @@ class Kit:
                       "loaded for the whole game" % filename)
         if project_files.find_texture(filename)[0] is None:
             project_files.register_texture(self.res, filename, attrs, "images/" + self.folder)
+        elif ppu_text:
+            project_files.set_image_attr(filename, "ppu", ppu_text)
 
     def make_strip(self, frame_paths, name, layout="auto"):
         """Combine frames into <name>.png (shipped) and register it as an animation."""
@@ -588,7 +618,8 @@ class Kit:
         os.makedirs(out_dir, exist_ok=True)
         out_path = os.path.join(out_dir, name + ".png")
         cols, rows = make_strip(frame_paths, out_path, layout, self.args.max_px)
-        self.register(name + ".png", ('cols="%d"' % cols) if cols > 1 else ('rows="%d"' % rows))
+        ppu = self._last[3] if getattr(self, "_last", None) else self.args.ppu
+        self.register(name + ".png", ('cols="%d"' % cols) if cols > 1 else ('rows="%d"' % rows), ppu=ppu)
         return out_path
 
     def _finish(self, name, res_x, res_y, ppu, size_text, editor_only=False):
@@ -613,7 +644,7 @@ class Kit:
         print("sprite_kit:   %s, %d x %d px, %g px/unit" % (size_text, res_x, res_y, ppu))
         print("")
         if not editor_only:
-            self.register(name + ".png")
+            self.register(name + ".png", ppu=ppu)
         return out_path
 
     def render_variant(self, name, keep_unchanged=True):
@@ -651,9 +682,9 @@ class Kit:
         ppu = self.args.ppu
         if max(w, h) * ppu > self.args.max_px:
             ppu = float(math.floor(self.args.max_px / max(w, h)))
-            print("sprite_kit: WARNING %s is too large for %d px at %g px/unit, "
-                  "using %g px/unit instead. Enter its size by hand in the editor "
-                  "(don't use 'set size from texture')." % (name, self.args.max_px, self.args.ppu, ppu))
+            print("sprite_kit: NOTE %s is too large for %d px at %g px/unit, "
+                  "using %g px/unit instead (written to its resource entry for the editor)."
+                  % (name, self.args.max_px, self.args.ppu, ppu))
 
         res_x = max(1, int(round(w * ppu)))
         res_y = max(1, int(round(h * ppu)))
@@ -675,3 +706,91 @@ class Kit:
 
         return self._finish(name, res_x, res_y, ppu, "size %.3f x %.3f units" % (w, h),
                             editor_only=editor_only)
+
+    def render_axo(self, name, yaw_deg=10.0, pitch_deg=12.0, ground_z=0.0, margin_px=2, editor_only=False):
+        """
+        Orthographic 3/4 view for ambient pieces (render with rig="axo").
+
+        The camera is turned yaw_deg to the right (seeing the right side) and
+        pitched pitch_deg down, but has no perspective, so every piece rendered
+        with the same angles has the same projection and pieces can stand side
+        by side anywhere on a layer. Keep yaw small: with yaw 0 the front edge
+        of the footprint is a level line in the image.
+
+        Framing: tight around all geometry above ground_z, with margin_px on
+        the top, left and right. The bottom edge of the image is the lowest
+        ground point (the front of the footprint), so pieces placed on the
+        same line in the editor share a ground line.
+        """
+        scene = self.scene
+        yaw = math.radians(yaw_deg)
+        pitch = math.radians(pitch_deg)
+
+        cam_data = bpy.data.cameras.new(name + "_cam")
+        cam_data.type = 'ORTHO'
+        cam_data.sensor_fit = 'AUTO'
+        cam_data.clip_start = 0.1
+        cam_data.clip_end = 2000.0
+        cam = bpy.data.objects.new(name + "_cam", cam_data)
+        scene.collection.objects.link(cam)
+        cam.rotation_euler = (math.pi / 2 - pitch, 0.0, yaw)
+        forward = Vector((-math.sin(yaw) * math.cos(pitch), math.cos(yaw) * math.cos(pitch), -math.sin(pitch)))
+        cam.location = -forward * 500.0
+        scene.camera = cam
+        bpy.context.view_layer.update()
+
+        # Project every vertex above ground onto the camera plane
+        to_cam = cam.matrix_world.inverted()
+        dg = bpy.context.evaluated_depsgraph_get()
+        umin = vmin = float("inf")
+        umax = vmax = float("-inf")
+        for ob in scene.objects:
+            if ob.type not in ('MESH', 'CURVE', 'FONT') or ob.hide_render:
+                continue
+            ev = ob.evaluated_get(dg)
+            me = ev.to_mesh()
+            mw = ob.matrix_world
+            for v in me.vertices:
+                w = mw @ v.co
+                if w.z < ground_z - 1e-4:
+                    continue
+                c = to_cam @ w
+                umin = min(umin, c.x)
+                umax = max(umax, c.x)
+                vmin = min(vmin, c.y)
+                vmax = max(vmax, c.y)
+            ev.to_mesh_clear()
+        if umin == float("inf"):
+            raise RuntimeError("render_axo: no geometry above ground_z")
+
+        uspan = umax - umin
+        vspan = vmax - vmin
+        ppu = self.args.ppu
+        res_x = uspan * ppu + 2 * margin_px
+        res_y = vspan * ppu + margin_px
+        if max(res_x, res_y) > self.args.max_px:
+            ppu = math.floor((self.args.max_px - 2 * margin_px) / max(uspan, vspan) * 10) / 10.0
+            print("sprite_kit: NOTE %s too large for %d px, using %g px/unit "
+                  "(written to its resource entry for the editor)." % (name, self.args.max_px, ppu))
+        res_x = int(math.ceil(uspan * ppu + 2 * margin_px))
+        res_y = int(math.ceil(vspan * ppu + margin_px))
+
+        # Frame in camera units: margins on top/left/right, the rounding slack
+        # split left/right and put on top, bottom exactly at vmin.
+        fw = res_x / ppu
+        fh = res_y / ppu
+        u0 = (umin + umax) / 2 - fw / 2
+        v0 = vmin
+        cam_data.ortho_scale = max(fw, fh)
+        # Move the camera sideways so the frame centre is on its axis
+        uc = u0 + fw / 2
+        vc = v0 + fh / 2
+        right = cam.matrix_world.to_3x3() @ Vector((1.0, 0.0, 0.0))
+        up = cam.matrix_world.to_3x3() @ Vector((0.0, 1.0, 0.0))
+        cam.location = cam.location + right * uc + up * vc
+
+        scene.render.resolution_x = res_x
+        scene.render.resolution_y = res_y
+
+        return self._finish(name, res_x, res_y, ppu,
+                            "size %.2f x %.2f units" % (fw, fh), editor_only=editor_only)
