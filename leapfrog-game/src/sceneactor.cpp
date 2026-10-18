@@ -98,6 +98,8 @@ SceneActor* SceneActor::defineScene(
 
    baseScene->setSize(size);
 
+   baseScene->m_parallaxKeepAspect = root.child("behaviour").child("sceneProperties").attribute("parallaxKeepAspect").as_bool(true);
+
    spSoftBoundary sb;
 
    bool boundary = root.child("behaviour").child("sceneProperties").attribute("hasUpperBoundary").as_bool(false);
@@ -750,8 +752,28 @@ void SceneActor::doUpdate(const UpdateState& us)
          float xScale = size.x / g_Layout.getStageSize().x;
          float yScale = size.y / g_Layout.getStageSize().y;
 
+         Vector2 layerPos = -stagePos / m_stageToViewPortScale * it->m_parallaxAmount;
+
+         if (m_parallaxKeepAspect)
+         {
+            // xScale and yScale differ when the screen's aspect ratio differs
+            // from the stage's, which stretches everything on the layer. Use
+            // the larger of them for both axes so the layer still covers the
+            // area the per-axis scaling covered.
+            float scale = (xScale > yScale) ? xScale : yScale;
+            Vector2 stageSize = g_Layout.getStageSize();
+
+            // Keep the bottom edge in place (ground lines stay put) and
+            // split the extra width evenly between left and right.
+            layerPos.x += (xScale - scale) * stageSize.x * 0.5f;
+            layerPos.y += (yScale - scale) * stageSize.y;
+
+            xScale = scale;
+            yScale = scale;
+         }
+
          it->m_sprite->setScale(xScale, yScale);
-         it->m_sprite->setPosition(-stagePos  / m_stageToViewPortScale * it->m_parallaxAmount);
+         it->m_sprite->setPosition(layerPos);
 
       }
    }

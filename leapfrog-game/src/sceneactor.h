@@ -78,6 +78,13 @@ private:
 
    std::vector<ParallaxBackground> m_parallaxBackgrounds;
 
+   // When true, each parallax layer gets one uniform scale (the larger of
+   // the x and y scales) so sprites on it keep their aspect ratio. The
+   // layer's bottom edge stays where the per-axis scaling put it and the
+   // extra size is split evenly left and right. Set from the scene's
+   // sceneProperties attribute parallaxKeepAspect (default true).
+   bool m_parallaxKeepAspect = true;
+
    // wantedVpPos is the position in main actor coordinates where we
    // want to keep the panorating body. The whole scene is moved to
    // make the body at the specified position.
