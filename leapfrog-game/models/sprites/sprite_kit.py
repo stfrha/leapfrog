@@ -77,6 +77,8 @@ def parse_args(add_extra=None):
     p = argparse.ArgumentParser(prog="blender -b -P <sprite>.py --")
     p.add_argument("--theme", default="mining", help="world theme in themes/ (default: mining)")
     p.add_argument("--out", default=DEFAULT_OUT, help="output folder (default: leapfrog-game/data/images)")
+    p.add_argument("--scale", type=float, default=None,
+                   help="ambient pieces: build size x this (default: the script's own, usually 1)")
     p.add_argument("--ppu", type=float, default=None,
                    help="pixels per game unit (default 20, or the script's own default)")
     p.add_argument("--max-px", type=int, default=DEFAULT_MAX_PX, help="max image side in pixels (default 2048)")
@@ -423,7 +425,7 @@ def register_texture(filename, attrs="", res_xml=RES_XML, folder="images"):
 class Kit:
     """Owns the scene for one sprite script."""
 
-    def __init__(self, args, rig="ortho", res=None, ambient=False, ppu=None):
+    def __init__(self, args, rig="ortho", res=None, ambient=False, ppu=None, scale=None):
         """res: resource file this script's textures belong in (default res.xml).
         Big scenery should go in a per-world set (e.g. res_mining.xml) that is
         only loaded while a scene using it runs; see data/scene_resources.xml.
@@ -431,11 +433,16 @@ class Kit:
         ambient: small background pieces for parallax layers. They go in the
         world's ambient/ subfolder and share one atlas (project_files).
         ppu: the script's default pixels per unit (--ppu overrides it).
+        scale: render_axo scales the whole piece by this before framing
+        (--scale overrides it). A piece on a far layer can be modelled at a
+        natural size and still come out big enough on screen, with enough
+        pixels, instead of being stretched in the editor.
         For a parallax layer with parallaxAmount a, about 20 * (1 - a) is
         enough (0.6 -> 8-10)."""
         self.args = args
         self.rig = rig
         self.ambient = ambient
+        self.scale = args.scale if args.scale else (scale if scale else 1.0)
         if args.ppu is None:
             args.ppu = float(ppu) if ppu else DEFAULT_PPU
         self.res = args.res or res or "res.xml"
@@ -723,6 +730,8 @@ class Kit:
         same line in the editor share a ground line.
         """
         scene = self.scene
+        if self.scale != 1.0:
+            self._scale_scene(self.scale)
         yaw = math.radians(yaw_deg)
         pitch = math.radians(pitch_deg)
 
@@ -794,3 +803,23 @@ class Kit:
 
         return self._finish(name, res_x, res_y, ppu,
                             "size %.2f x %.2f units" % (fw, fh), editor_only=editor_only)
+
+    def _scale_scene(self, factor):
+        """
+        Scale everything built so far by `factor` about the origin (the
+        ground stays at z = 0). Point lights keep their look (energy x f^2,
+        size x f); the sun and the world are unaffected by scale.
+        """
+        root = bpy.data.objects.new("_scale_root", None)
+        self.scene.collection.objects.link(root)
+        parts = [ob for ob in self.scene.objects
+                 if ob is not root and ob.parent is None and ob.type not in ('CAMERA',)
+                 and not (ob.type == 'LIGHT' and ob.data.type == 'SUN')]
+        parent_keep_transform(parts, root)
+        root.scale = (factor, factor, factor)
+        for ob in self.scene.objects:
+            if ob.type == 'LIGHT' and ob.data.type != 'SUN':
+                ob.data.energy *= factor * factor
+                ob.data.shadow_soft_size *= factor
+        bpy.context.view_layer.update()
+        print("sprite_kit: piece scaled x%g" % factor)

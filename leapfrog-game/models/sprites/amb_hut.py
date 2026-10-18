@@ -11,6 +11,9 @@ Ambient pieces differ from the foreground sprites:
     foreground size when zoomed in, so 20 * 0.6 = 12 px/unit plus some
     margin).
     --ppu overrides it, e.g. to try the piece on another layer.
+  * Built at natural size and scaled x2 by the kit before rendering
+    (--scale), so it reads at the right size on the 0.4 layer with enough
+    pixels. Sizes below (--width etc.) are before scaling.
   * Orthographic 3/4 camera (render_axo), the same angles for every piece,
     so pieces can stand side by side anywhere on the layer. The bottom edge
     of the image is the front of the plinth on the ground.
@@ -49,7 +52,7 @@ def options(p):
 
 
 args = sk.parse_args(options)
-kit = sk.Kit(args, rig="axo", res="res_mining.xml", ambient=True, ppu=14)
+kit = sk.Kit(args, rig="axo", res="res_mining.xml", ambient=True, ppu=14, scale=2.0)
 M = kit.material
 
 W = args.width
