@@ -218,6 +218,7 @@ public:
    void goToMode(LeapFrogModeEnum mode);
    void goToEnvironment(EnvironmentEnum env);
    void fireMainBooster(bool fire, bool flamesOnly = false);
+   bool isMainBoosterFiring(void) const { return m_boostFireLastUpdate; }   // the player is pressing boost
 	void fireSteeringBooster(int dir); // -1 is counter clockwise, 1 is clockwise
    void fireGun(bool fire);
    void fireReentryFlames(bool fire);

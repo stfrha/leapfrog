@@ -8,7 +8,9 @@
 #include "gamestatus.h"
 
 #include "actoruserdata.h"
+#include "bodyuserdata.h"
 #include "headdowndisplay.h"
+#include "landinglimits.h"
 
 using namespace oxygine;
 using namespace std;
@@ -25,7 +27,15 @@ LandingPad::LandingPad(
    m_leftFootContact(false),
    m_rightFootContact(false),
    m_state(LandingPadState::unstable),
-   m_stableTicks(0)
+   m_stableTicks(0),
+   m_latestLeapfrog(NULL),
+   m_world(world),
+   m_padBody(NULL),
+   m_leftTouchTime(0),
+   m_rightTouchTime(0),
+   m_leftTouchVelocity(0.0f, 0.0f),
+   m_rightTouchVelocity(0.0f, 0.0f),
+   m_armHold(true)
 {
 	initCompoundObjectParts(sceneParent, sceneParent, parentObject, world, pos, root, groupIndex);
 
@@ -63,14 +73,101 @@ void LandingPad::leapfrogFootTouch(b2Contact* contact, bool leftFoot, LeapFrog* 
 {
    m_latestLeapfrog = leapfrog;
 
+   // The pad's body is the one in the contact that belongs to this pad
+   b2Body* bodyA = contact->GetFixtureA()->GetBody();
+   b2Body* bodyB = contact->GetFixtureB()->GetBody();
+   if (BodyUserData::getParentObjectOfType<LandingPad*>(bodyA->GetUserData()) == this)
+   {
+      m_padBody = bodyA;
+   }
+   else if (BodyUserData::getParentObjectOfType<LandingPad*>(bodyB->GetUserData()) == this)
+   {
+      m_padBody = bodyB;
+   }
+
+   // Remember when and how fast each foot came down. This is called during
+   // the physics step, so the hold itself is made in doUpdate.
+   timeMS now = getTimeMS();
+   b2Vec2 velocity = leapfrog->getCraftVelocity();
+
    if (leftFoot)
    {
       m_leftFootContact = true;
+      m_leftTouchTime = now;
+      m_leftTouchVelocity = velocity;
    }
    else
    {
       m_rightFootContact = true;
+      m_rightTouchTime = now;
+      m_rightTouchVelocity = velocity;
    }
+}
+
+bool LandingPad::isSafeLandingVelocity(const b2Vec2& v)
+{
+   return (fabs(v.x) <= LandingLimits::c_maxHorizontalSpeed) &&
+      (v.y <= LandingLimits::c_maxDescentSpeed);
+}
+
+// Box2D destroys the joints of a body that is destroyed (e.g. when the
+// Leapfrog breaks up), so check that a joint still exists before using it.
+bool LandingPad::jointExists(b2Joint* joint)
+{
+   for (b2Joint* j = m_world->GetJointList(); j != NULL; j = j->GetNext())
+   {
+      if (j == joint)
+      {
+         return true;
+      }
+   }
+   return false;
+}
+
+void LandingPad::holdLeapfrog(void)
+{
+   if ((m_latestLeapfrog == NULL) || (m_padBody == NULL) || !m_holdJoints.empty())
+   {
+      return;
+   }
+
+   const char* parts[] = { "lfMainBody", "lfLeftFoot", "lfRightFoot" };
+
+   for (const char* part : parts)
+   {
+      b2Body* body = m_latestLeapfrog->getBody(part);
+      if (body == NULL)
+      {
+         continue;
+      }
+
+      // Stop it where it is: no bounce left in it
+      body->SetLinearVelocity(b2Vec2(0.0f, 0.0f));
+      body->SetAngularVelocity(0.0f);
+
+      b2WeldJointDef def;
+      def.Initialize(m_padBody, body, body->GetWorldCenter());
+      def.collideConnected = false;
+      m_holdJoints.push_back(m_world->CreateJoint(&def));
+   }
+
+   // Back to the close zoom the scene started with
+   if (m_sceneActor != NULL)
+   {
+      m_sceneActor->zoomToInitial();
+   }
+}
+
+void LandingPad::releaseLeapfrog(void)
+{
+   for (b2Joint* joint : m_holdJoints)
+   {
+      if (jointExists(joint))
+      {
+         m_world->DestroyJoint(joint);
+      }
+   }
+   m_holdJoints.clear();
 }
 
 void LandingPad::leapfrogFootLift(b2Contact* contact, bool leftFoot, LeapFrog* leapfrog)
@@ -89,6 +186,42 @@ void LandingPad::leapfrogFootLift(b2Contact* contact, bool leftFoot, LeapFrog* l
 
 void LandingPad::doUpdate(const UpdateState &us)
 {
+   // Hold the Leapfrog on the pad after a good landing, let go when it boosts
+   if (!m_holdJoints.empty())
+   {
+      if ((m_latestLeapfrog == NULL) || m_latestLeapfrog->isMainBoosterFiring())
+      {
+         releaseLeapfrog();
+         m_armHold = false;
+      }
+   }
+   else if (m_leftFootContact && m_rightFootContact)
+   {
+      if (m_armHold && (m_latestLeapfrog != NULL))
+      {
+         timeMS apart = (m_leftTouchTime > m_rightTouchTime) ?
+            m_leftTouchTime - m_rightTouchTime : m_rightTouchTime - m_leftTouchTime;
+
+         if ((apart <= c_touchWindowMs) &&
+            isSafeLandingVelocity(m_leftTouchVelocity) &&
+            isSafeLandingVelocity(m_rightTouchVelocity) &&
+            !m_latestLeapfrog->isMainBoosterFiring())
+         {
+            holdLeapfrog();
+         }
+         else
+         {
+            // Too hard, too uneven or under power: no hold until the feet
+            // have left the pad again
+            m_armHold = false;
+         }
+      }
+   }
+   else if (!m_leftFootContact && !m_rightFootContact)
+   {
+      m_armHold = true;
+   }
+
    switch (m_state)
    {
    case LandingPadState::unstable:

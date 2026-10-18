@@ -148,6 +148,7 @@ SceneActor::SceneActor(
    CompoundObject(this, NULL),
    m_world(world),
    m_zoomScale(initialZoomScale),
+   m_initialZoomScale(initialZoomScale),
    m_stageToViewPortScale(m_zoomScale* Scales::c_stageToViewPortScale),
    m_physToStageScale(1.0f),
    m_panorateMode(center),
@@ -190,7 +191,8 @@ SceneActor::SceneActor(
 
    setUserData(aud);
 
-   addTween(SceneActor::TweenZoom(zoomScale), 4000, 1, false, 0, Tween::ease_inOutQuad);
+   spTween zoomTween = addTween(SceneActor::TweenZoom(zoomScale), 4000, 1, false, 0, Tween::ease_inOutQuad);
+   zoomTween->setName("sceneZoom");
 }
 
 SceneActor::~SceneActor()
@@ -377,6 +379,14 @@ void SceneActor::setZoom(const float& zoom)
    m_zoomScale = zoom;
    m_stageToViewPortScale = m_zoomScale * Scales::c_stageToViewPortScale;
    setScale(m_stageToViewPortScale);
+}
+
+void SceneActor::zoomToInitial(timeMS duration)
+{
+   // Replace any zoom tween still running (e.g. the zoom-out at scene start)
+   removeTweensByName("sceneZoom");
+   spTween zoomTween = addTween(SceneActor::TweenZoom(m_initialZoomScale), duration, 1, false, 0, Tween::ease_inOutQuad);
+   zoomTween->setName("sceneZoom");
 }
 
 void SceneActor::setPanorateObject(CompoundObject* co)

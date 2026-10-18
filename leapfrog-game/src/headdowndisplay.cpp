@@ -5,6 +5,7 @@
 #include "bodyuserdata.h"
 #include "layout.h"
 #include "graphicresources.h"
+#include "landinglimits.h"
 
 #include <cmath>
 #include <cstdio>
@@ -204,8 +205,8 @@ namespace
 {
    // Speed bars
    const float c_speedBarFullScale = 40.0f;           // [m/s] at the end of a bar
-   const float c_safeHorizontalLandingSpeed = 2.0f;   // [m/s] tick marks, no game rule yet
-   const float c_safeVerticalLandingSpeed = 4.0f;     // [m/s] descent, tick mark below centre
+   const float c_safeHorizontalLandingSpeed = LandingLimits::c_maxHorizontalSpeed;  // [m/s] tick marks
+   const float c_safeVerticalLandingSpeed = LandingLimits::c_maxDescentSpeed;       // [m/s] descent, tick below centre
    const int c_telemetryTimeoutMs = 300;              // bars show "--" without telemetry
    const unsigned char c_barFrameAlpha = 200;
    const unsigned char c_barFillAlpha = 170;

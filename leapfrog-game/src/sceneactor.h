@@ -96,6 +96,7 @@ private:
 
 protected:
    float	m_zoomScale;
+   float	m_initialZoomScale;
    float	m_stageToViewPortScale;
    float	m_physToStageScale;
    b2World * m_world;
@@ -113,6 +114,10 @@ public:
 
    const float& getZoom() const;
    void setZoom(const float& pos);
+
+   // Zoom smoothly back to the zoom the scene starts with (close in),
+   // e.g. when the Leapfrog has landed on a pad.
+   void zoomToInitial(oxygine::timeMS duration = 2000);
 
 	SceneActor(
       b2World* world, 
