@@ -21,6 +21,10 @@ frame is fitted to the building at 20 px/unit at the building's depth, so
 "Set Width and Height from texture pixel size" in the editor gives its size.
 
 Pads are part of the image; draw their collision bodies in the editor.
+The mission giver's pad has been lengthened to take the Leapfrog (its feet
+span ~21 units, the original pads are 14 long): a rustier deck section is
+bolted onto its end, held by an extra long beam and stay cables
+(--giver-pad, default 26; 14 for the old look).
 
 Two frames are rendered from the same scene, for a blinking neon:
     editor_images/ore_building.png    Beer neon on, single image for fitting the
@@ -74,6 +78,9 @@ def options(p):
     p.add_argument("--beer-power", type=float, default=600.0, help="watts of pink light from the Beer neon")
     p.add_argument("--no-blink", action="store_true", help="skip the second render with the Beer neon off")
     p.add_argument("--keep-frames", action="store_true", help="also keep <name>_beer_off.png as a separate file")
+    p.add_argument("--giver-pad", type=float, default=26.0,
+                   help="length of the mission giver's pad with its extension; the Leapfrog's feet span "
+                        "about 21.4 (default 26, 14 = no extension)")
     p.add_argument("--no-level-pad", action="store_true",
                    help="leave the mission giver's pad leaning with the building (no beam extensions)")
     p.add_argument("--ground-depth", type=float, default=1.8,
@@ -97,7 +104,9 @@ LEVELS = 3
 WALL_TOP = PLINTH + LEVELS * FH          # 35.5
 PARAPET = 1.2
 
-PL = 14.0           # pad length (out from the wall), the ship is 11.2 wide
+PL = 14.0           # pad length (out from the wall); the ship's body is 11.2 wide
+                    # but its feet span ~21.4, so the mission giver's pad is
+                    # extended (--giver-pad)
 PD = 9.0            # pad depth
 PT = 0.7            # pad thickness
 TILT = 20.0         # degrees for pads without support
@@ -301,6 +310,69 @@ def spliced_struts(name, s, z0, angle):
     return objects
 
 
+def pad_extension(name, pad, s, length):
+    """
+    A second, rustier deck section bolted onto the outer end of a pad, so the
+    pad is `length` long in all. Built in the pad's own coordinates (hinge at
+    the origin, top at z = 0) and parented to it, so it follows the pad's
+    levelling. The original hazard stripe stays where the old edge was; a new
+    one marks the new edge.
+    """
+    ext = length - PL
+    parts = []
+
+    def part(n, center, size, role):
+        bm = bmesh.new()
+        sk.box(bm, center, size)
+        ob = sk.mesh_object("%s_%s" % (name, n), bm, M(role))
+        ob.parent = pad
+        parts.append(ob)
+        return ob
+
+    deck = part("deck", (s * (PL + ext / 2), 0, -PT * 0.4), (ext, PD - 0.5, PT * 0.8), "rusty_metal")
+    sk.bevel(deck, 0.04)
+    # Flange where the sections meet, with a row of bolt heads on top
+    part("flange", (s * PL, 0, -PT - 0.15), (0.6, PD - 0.3, 0.5), "frame_main")
+    bolts = bmesh.new()
+    for k in range(7):
+        y = -PD / 2 + 0.8 + (PD - 1.6) * k / 6
+        for dx in (-0.22, 0.22):
+            sk.box(bolts, (s * PL + dx, y, 0.06), (0.16, 0.16, 0.12))
+    ob = sk.mesh_object(name + "_bolts", bolts, M("frame_main"))
+    ob.parent = pad
+    parts.append(ob)
+    # Stringers under the new deck, the kerb carried on, and the new edge stripe
+    for y in (-PD / 2 + 1.2, PD / 2 - 1.2):
+        part("stringer_%g" % y, (s * (PL + ext / 2), y, -PT - 0.3), (ext, 0.35, 0.45), "frame_main")
+    part("kerb", (s * (PL + ext / 2), PD / 2 - 0.2, 0.25), (ext, 0.4, 0.5), "rusty_metal")
+    part("stripe", (s * (length - 0.9), 0, 0.02), (0.8, PD - 0.9, 0.06), "hazard_paint")
+    return parts
+
+
+def extension_supports(name, s, z0, angle, length):
+    """
+    Extra support for an extended pad, in building coordinates: a long beam
+    from lower down the wall to under the new outer end, and stay cables from
+    higher up the wall to the outer corners. `angle` is the pad's levelling.
+    """
+    rot = Matrix.Rotation(angle, 3, 'Y')
+    hinge_x = s * CW / 2
+    beams = bmesh.new()
+    cables = bmesh.new()
+    for y in (-PD / 2 + 1.2, PD / 2 - 1.2):
+        hinge = Vector((hinge_x, y, z0))
+        foot = Vector((hinge_x, y, z0 - 9.5))
+        end = hinge + rot @ Vector((s * (length - 1.2), 0.0, -PT - 0.5))
+        sk.box(beams, (foot.x + s * 0.1, y, foot.z), (0.2, 1.1, 1.5))           # wall bracket
+        sk.strut(beams, foot, end, 0.2)
+        anchor = Vector((hinge_x + s * 0.15, y, z0 + 6.5))
+        tip = hinge + rot @ Vector((s * (length - 0.4), 0.0, 0.1))
+        sk.strut(cables, anchor, tip, 0.06, 6)
+        sk.box(cables, (anchor.x, y, anchor.z), (0.3, 0.5, 0.5))                 # cable eye on the wall
+    return [sk.mesh_object(name + "_beams", beams, M("rusty_metal"), smooth_quads=True),
+            sk.mesh_object(name + "_cables", cables, M("frame_main"), smooth_quads=True)]
+
+
 def struts(name, s, z0, broken):
     bm = bmesh.new()
     for y in (-PD / 2 + 1.2, PD / 2 - 1.2):
@@ -327,13 +399,18 @@ for (side, level), state in PADS.items():
 
     if state == "intact":
         pad, parts = pad_mesh(name, s)
+        giver = (side, level) == MISSION_GIVER
+        if giver and args.giver_pad > PL + 0.5:
+            parts += pad_extension(name + "_ext", pad, s, args.giver_pad)
         pad.location = (s * CW / 2, 0, z0)
         building += [pad] + parts
-        if (side, level) == MISSION_GIVER and level_angle != 0.0:
+        if giver and level_angle != 0.0:
             pad.rotation_euler = (0.0, level_angle, 0.0)
             building += spliced_struts(name + "_struts", s, z0, level_angle)
         else:
             building.append(struts(name + "_struts", s, z0, broken=False))
+        if giver and args.giver_pad > PL + 0.5:
+            building += extension_supports(name + "_ext", s, z0, level_angle if giver else 0.0, args.giver_pad)
 
     elif state == "tilted":
         pad, parts = pad_mesh(name, s)
