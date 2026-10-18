@@ -31,9 +31,12 @@ Conventions
   texture is added to data/res.xml if it isn't listed yet. Every file in
   data/images ships with the game (Android packs all of data/, iOS has
   data/images as a folder reference).
-* Editor-only images (e.g. a single frame used to fit bodies in the editor
-  when the game uses an animation) go to leapfrog-game/editor_images/,
-  which no build project includes.
+* Animations: render each frame with frame_only=True (it goes to
+  sprites/_frames/, neither shipped nor registered), then make_strip()
+  combines them into the shipped, registered image with rows/cols. The
+  editor shows an animation's first frame, so no editor-only image is
+  needed. (editor_only=True still writes to leapfrog-game/editor_images/,
+  which no build project includes.)
 * Ambient pieces (small buildings etc. for parallax layers, named amb_*)
   use Kit(..., ambient=True): they go to data/images/<world>/ambient/ and
   share one atlas there, and are rendered with render_axo() so pieces can
@@ -57,6 +60,7 @@ DEFAULT_OUT = os.path.join(GAME_DIR, "data", "images")
 EDITOR_OUT = os.path.join(GAME_DIR, "editor_images")      # editor-only images, not shipped
 RES_XML = os.path.join(GAME_DIR, "data", "res.xml")
 BLEND_OUT = os.path.join(KIT_DIR, "_blend")
+FRAMES_OUT = os.path.join(KIT_DIR, "_frames")            # single frames before make_strip (not shipped)
 
 DEFAULT_PPU = 20.0       # keep equal to GlobalConstants.TexturePixelsPerUnit
 DEFAULT_MAX_PX = 2048    # safe texture / atlas size on older phones
@@ -477,7 +481,7 @@ class Kit:
         return self._materials[role]
 
     def render_persp(self, name, target, yaw_deg=18.0, pitch_deg=6.0, lens=50.0, distance=90.0,
-                     ground_z=0.0, margin_px=2, editor_only=False):
+                     ground_z=0.0, margin_px=2, editor_only=False, frame_only=False):
         """
         Perspective render for static scenery (3/4 view like the silo).
 
@@ -570,12 +574,12 @@ class Kit:
 
         return self._finish(name, res_x, res_y, ppu,
                             "size %.2f x %.2f units at the target's depth" % (res_x / ppu, res_y / ppu),
-                            editor_only=editor_only)
+                            editor_only=editor_only, frame_only=frame_only)
 
     def _custom_out(self):
         return os.path.normcase(os.path.abspath(self.args.out)) != os.path.normcase(os.path.abspath(DEFAULT_OUT))
 
-    def _out_dir(self, name, editor_only):
+    def _out_dir(self, name, editor_only, frame_only=False):
         """
         Where <name>.png goes:
           editor-only images      editor_images/<folder>/
@@ -583,6 +587,8 @@ class Kit:
           already registered      wherever its resource entry points (so re-renders never break it)
           new                     data/images/<folder>/
         """
+        if frame_only:
+            return FRAMES_OUT
         if editor_only:
             return os.path.join(EDITOR_OUT, self.folder)
         if self._custom_out():
@@ -637,7 +643,7 @@ class Kit:
         self.register(name + ".png", ('cols="%d"' % cols) if cols > 1 else ('rows="%d"' % rows), ppu=ppu)
         return out_path
 
-    def _finish(self, name, res_x, res_y, ppu, size_text, editor_only=False):
+    def _finish(self, name, res_x, res_y, ppu, size_text, editor_only=False, frame_only=False):
         if self.args.save_blend:
             os.makedirs(BLEND_OUT, exist_ok=True)
             path = os.path.join(BLEND_OUT, name + ".blend")
@@ -647,7 +653,7 @@ class Kit:
         if self.args.no_render:
             return None
 
-        out_dir = self._out_dir(name, editor_only)
+        out_dir = self._out_dir(name, editor_only, frame_only)
         os.makedirs(out_dir, exist_ok=True)
         out_path = os.path.join(out_dir, name + ".png")
         self.scene.render.filepath = out_path
@@ -655,10 +661,11 @@ class Kit:
         self._last = (out_path, res_x, res_y, ppu, size_text)
 
         print("")
-        print("sprite_kit: %s%s" % (out_path, "  (editor only, not shipped)" if editor_only else ""))
+        print("sprite_kit: %s%s" % (out_path, "  (frame, combined by make_strip)" if frame_only else
+                                    ("  (editor only, not shipped)" if editor_only else "")))
         print("sprite_kit:   %s, %d x %d px, %g px/unit" % (size_text, res_x, res_y, ppu))
         print("")
-        if not editor_only:
+        if not editor_only and not frame_only:
             self.register(name + ".png", ppu=ppu)
         return out_path
 
@@ -685,7 +692,7 @@ class Kit:
         print("")
         return out_path
 
-    def render_ortho(self, name, box_xz, editor_only=False):
+    def render_ortho(self, name, box_xz, editor_only=False, frame_only=False):
         """
         Render the front view of everything in the scene, framed exactly to
         box_xz = (xmin, zmin, xmax, zmax) in Blender units.
@@ -720,9 +727,10 @@ class Kit:
         self.scene.render.resolution_y = res_y
 
         return self._finish(name, res_x, res_y, ppu, "size %.3f x %.3f units" % (w, h),
-                            editor_only=editor_only)
+                            editor_only=editor_only, frame_only=frame_only)
 
-    def render_axo(self, name, yaw_deg=10.0, pitch_deg=12.0, ground_z=0.0, margin_px=2, editor_only=False):
+    def render_axo(self, name, yaw_deg=10.0, pitch_deg=12.0, ground_z=0.0, margin_px=2, editor_only=False,
+                   frame_only=False):
         """
         Orthographic 3/4 view for ambient pieces (render with rig="axo").
 
@@ -810,7 +818,7 @@ class Kit:
         scene.render.resolution_y = res_y
 
         return self._finish(name, res_x, res_y, ppu,
-                            "size %.2f x %.2f units" % (fw, fh), editor_only=editor_only)
+                            "size %.2f x %.2f units" % (fw, fh), editor_only=editor_only, frame_only=frame_only)
 
     def _transform_scene(self, factor, turn_deg=0.0):
         """

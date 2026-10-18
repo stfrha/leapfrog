@@ -26,12 +26,12 @@ span ~21 units, the original pads are 14 long): a rustier deck section is
 bolted onto its end, held by an extra long beam and stay cables
 (--giver-pad, default 26; 14 for the old look).
 
-Two frames are rendered from the same scene, for a blinking neon:
-    editor_images/ore_building.png    Beer neon on, single image for fitting the
-                                      body in the editor (not shipped)
-    data/images/ore_building_blink.png  both frames, on then off, for an
-                                      oxygine animation; added to res.xml with
-                                      rows="2" or cols="2"
+Two frames are rendered from the same scene, for a blinking neon (Beer on,
+then off) and combined into data/images/mining/ore_building_blink.png, with
+rows="2" (or cols="2") in its resource entry. The editor shows its first
+frame, so fit the body to ore_building_blink directly; set animatePeriod on
+the shape to make it blink in the game. The single frames are only kept in
+sprites/_frames/ (--keep-frames).
 In the off frame, pixels that differ only by render noise are copied from
 the on frame, so the rest of the building doesn't shimmer when it blinks.
 
@@ -77,7 +77,7 @@ def options(p):
     p.add_argument("--font", default=None, help="TTF/OTF for the signs (default: Blender's font)")
     p.add_argument("--beer-power", type=float, default=600.0, help="watts of pink light from the Beer neon")
     p.add_argument("--no-blink", action="store_true", help="skip the second render with the Beer neon off")
-    p.add_argument("--keep-frames", action="store_true", help="also keep <name>_beer_off.png as a separate file")
+    p.add_argument("--keep-frames", action="store_true", help="keep the single frames in sprites/_frames/")
     p.add_argument("--giver-pad", type=float, default=26.0,
                    help="length of the mission giver's pad with its extension; the Leapfrog's feet span "
                         "about 21.4 (default 26, 14 = no extension)")
@@ -569,13 +569,13 @@ lean.rotation_euler = (0.0, math.radians(args.lean), 0.0)
 # sinks into the ground.
 lean.location = (0.0, 0.0, args.heave - (CW + 0.8) / 2 * math.sin(abs(math.radians(args.lean))))
 
-# With blinking, the single lit image is only for fitting bodies in the editor
-# (editor_images/, not shipped); the game uses the <name>_blink animation.
+# With blinking, the single lit frame only goes to sprites/_frames/; the game
+# and the editor use the <name>_blink animation.
 blink = not args.no_blink
 on_path = kit.render_persp(args.name, target=(0.0, 0.0, WALL_TOP / 2 + 2.0),
                  yaw_deg=args.yaw, pitch_deg=args.pitch, distance=args.distance,
                  ground_z=-args.ground_depth - 0.01,
-                 editor_only=blink)
+                 frame_only=blink)
 
 # Second frame for blinking: same camera, Beer neon off.
 if blink:
@@ -588,4 +588,5 @@ if blink:
         # in data/images and registered in res.xml with rows/cols.
         kit.make_strip([on_path, off_path], args.name + "_blink")
         if not args.keep_frames:
+            os.remove(on_path)
             os.remove(off_path)

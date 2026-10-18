@@ -52,6 +52,11 @@ Script-specific options are listed with `-- --help`.
   neatly lined up; the camera stays the same for all pieces. Shared building blocks (windows,
   doors, ribbed and corrugated walls, masts, railings) are in `amb_parts.py`. Village pieces:
   `amb_hut`, `amb_bunkhouse`, `amb_container_home`, `amb_dome`, `amb_water_tower`.
+* Animations (e.g. a blinking neon): render each frame with `frame_only=True` (to `_frames/`,
+  not shipped or registered), then `kit.make_strip()` combines them into one image with
+  `rows`/`cols` in its resource entry. The editor shows an animation's first frame, so bodies
+  are fitted to the animation texture itself; `animatePeriod` (seconds per cycle) on the shape
+  makes the game play it.
 * Lighting and materials come from the theme. Scripts ask for material roles
   (`frame_main`, `frame_brace`, ...) and the theme decides what they look like.
 * Every file in `data/images` ships with the game (Android packs all of `data/`, iOS has
