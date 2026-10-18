@@ -22,6 +22,7 @@ namespace LeapfrogEditor
       private string _collisionEntity;
       private uint _collisionCategory;
       private uint _collisionMask;
+      private double _animatePeriod;
 
       #endregion
 
@@ -107,6 +108,21 @@ namespace LeapfrogEditor
       {
          get { return _collisionMask; }
          set { _collisionMask = value; }
+      }
+
+      // Seconds for one cycle through all frames of an animated texture
+      // (rows/cols in its resource entry). 0 = no animation; then the
+      // attribute is not written.
+      [XmlAttribute("animatePeriod")]
+      public double AnimatePeriod
+      {
+         get { return _animatePeriod; }
+         set { _animatePeriod = value; }
+      }
+
+      public bool ShouldSerializeAnimatePeriod()
+      {
+         return _animatePeriod > 0.0;
       }
 
       #endregion

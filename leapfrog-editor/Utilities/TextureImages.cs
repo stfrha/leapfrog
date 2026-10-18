@@ -14,12 +14,39 @@ namespace LeapfrogEditor
    // the file's last write time and reloaded when the file has changed. The
    // file is read completely and closed (BitmapCacheOption.OnLoad), so the
    // editor never keeps a PNG locked and Blender can overwrite it.
+   //
+   // For an animation strip (rows/cols in its resource entry, see
+   // TextureDensity) only the first frame is returned, so the editor shows
+   // and fits bodies to one frame, as the game shows it.
    public static class TextureImages
    {
       private class Entry
       {
          public DateTime WriteTime;
          public BitmapImage Image;
+         public int Cols = 1;
+         public int Rows = 1;
+         public ImageSource Frame;      // first frame (Image itself for a still image)
+      }
+
+      // The first frame of an image laid out as cols x rows frames
+      private static ImageSource FirstFrame(BitmapImage image, int cols, int rows)
+      {
+         if ((cols <= 1) && (rows <= 1))
+         {
+            return image;
+         }
+
+         int w = image.PixelWidth / Math.Max(1, cols);
+         int h = image.PixelHeight / Math.Max(1, rows);
+         if ((w <= 0) || (h <= 0))
+         {
+            return image;
+         }
+
+         CroppedBitmap cb = new CroppedBitmap(image, new System.Windows.Int32Rect(0, 0, w, h));
+         cb.Freeze();
+         return cb;
       }
 
       private static Dictionary<string, Entry> _cache = new Dictionary<string, Entry>(StringComparer.OrdinalIgnoreCase);
@@ -155,10 +182,20 @@ namespace LeapfrogEditor
 
          DateTime writeTime = File.GetLastWriteTimeUtc(fileName);
 
+         int cols, rows;
+         TextureDensity.Frames(texture, out cols, out rows);
+
          Entry e;
          if (_cache.TryGetValue(fileName, out e) && (e.WriteTime == writeTime))
          {
-            return e.Image;
+            if ((e.Cols != cols) || (e.Rows != rows) || (e.Frame == null))
+            {
+               // The resource entry's rows/cols changed
+               e.Cols = cols;
+               e.Rows = rows;
+               e.Frame = FirstFrame(e.Image, cols, rows);
+            }
+            return e.Frame;
          }
 
          try
@@ -171,14 +208,15 @@ namespace LeapfrogEditor
             bi.EndInit();
             bi.Freeze();
 
-            _cache[fileName] = new Entry { WriteTime = writeTime, Image = bi };
-            return bi;
+            ImageSource frame = FirstFrame(bi, cols, rows);
+            _cache[fileName] = new Entry { WriteTime = writeTime, Image = bi, Cols = cols, Rows = rows, Frame = frame };
+            return frame;
          }
          catch (Exception)
          {
             // Probably being written right now; the file watcher will
             // trigger a new attempt when the write is done.
-            return (e != null) ? e.Image : null;
+            return (e != null) ? (e.Frame ?? e.Image) : null;
          }
       }
    }

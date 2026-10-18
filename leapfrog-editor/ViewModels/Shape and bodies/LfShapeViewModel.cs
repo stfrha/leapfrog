@@ -82,6 +82,24 @@ namespace LeapfrogEditor
          }
       }
 
+      // Seconds per cycle through the texture's frames in the game; 0 = still
+      public double AnimatePeriod
+      {
+         get
+         {
+            if (_modelObject == null) return 0.0;
+
+            return _modelObject.AnimatePeriod;
+         }
+         set
+         {
+            if (_modelObject == null) return;
+
+            _modelObject.AnimatePeriod = (value > 0.0) ? value : 0.0;
+            OnPropertyChanged("AnimatePeriod");
+         }
+      }
+
       public virtual double PosX
       {
          get
