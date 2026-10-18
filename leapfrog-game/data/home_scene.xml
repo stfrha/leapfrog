@@ -163,8 +163,8 @@
     <vertices>
       <vertex
         id="1"
-        x="18.815869611109292"
-        y="236.87818314486242" />
+        x="20.617364141248572"
+        y="265.7020956270859" />
       <vertex
         id="2"
         x="104.02355783389135"
@@ -187,8 +187,8 @@
         y="-4.9145755653089509" />
       <vertex
         id="7"
-        x="953.151327708998"
-        y="261.82585351907665" />
+        x="942.34236052816414"
+        y="276.23780976018907" />
     </vertices>
     <triangles>
       <triangle
@@ -217,6 +217,32 @@
         v2="2"
         v3="1" />
     </triangles>
+    <border
+      leftGroundAngle="-45"
+      rightGroundAngle="45"
+      leftCeilingAngle="-135"
+      rightCeilingAngle="135">
+      <groundBorder
+        texture="grotto_floor"
+        horisontalMeterOffset="4"
+        textureMeterWidth="128"
+        textureMeterHeight="10" />
+      <ceilingBorder
+        texture="notDefined"
+        horisontalMeterOffset="0"
+        textureMeterWidth="0"
+        textureMeterHeight="0" />
+      <leftWallBorder
+        texture="notDefined"
+        horisontalMeterOffset="0"
+        textureMeterWidth="0"
+        textureMeterHeight="0" />
+      <rightWallBorder
+        texture="notDefined"
+        horisontalMeterOffset="0"
+        textureMeterWidth="0"
+        textureMeterHeight="0" />
+    </border>
   </spritePolygon>
   <staticPolygon
     name="mainGround"
@@ -535,7 +561,7 @@
         posY="0"
         angle="0"
         zLevel="192"
-        collisionEntity="notApplicable"
+        collisionEntity="landingPad"
         collisionCategory="1"
         collisionMask="65533"
         width="50"
@@ -557,7 +583,7 @@
         posY="0"
         angle="0"
         zLevel="192"
-        collisionEntity="notApplicable"
+        collisionEntity="landingPad"
         collisionCategory="1"
         collisionMask="65533"
         width="28"
