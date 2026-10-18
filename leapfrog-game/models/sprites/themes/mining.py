@@ -107,6 +107,12 @@ def make_material(role, models_dir):
         return _emission("neon_pink", (1.0, 0.12, 0.45), 25.0)
     if role == "neon_amber":
         return _emission("neon_amber", (1.0, 0.45, 0.08), 14.0)
+    if role == "window_lit_warm":
+        return _emission("window_lit_warm", (1.0, 0.58, 0.25), 5.0)
+    if role == "container_red":
+        return _weathered_paint("container_red", paint=(0.30, 0.07, 0.04), rust=0.45, streak_scale=0.25)
+    if role == "container_blue":
+        return _weathered_paint("container_blue", paint=(0.05, 0.12, 0.19), rust=0.45, streak_scale=0.25)
     if role == "ground_dirt":
         return _ground_dirt("ground_dirt")
     if role == "neon_dead":

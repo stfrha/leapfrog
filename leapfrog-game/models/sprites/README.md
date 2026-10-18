@@ -47,6 +47,11 @@ Script-specific options are listed with `-- --help`.
   footprint on the ground. They go to `data/images/<world>/ambient/` and share one atlas
   there (oxygine's default extend, i.e. 2 px padding). For a layer with
   `parallaxAmount` a, about 20 × (1 − a) px/unit is enough (0.6 → 8–10, 0.4 → 12–14).
+  `scale=` / `--scale` builds the piece bigger than its natural size (the village on the 0.4
+  layer uses ×2), and `turn=` / `--turn` turns it about its vertical axis so pieces don't stand
+  neatly lined up; the camera stays the same for all pieces. Shared building blocks (windows,
+  doors, ribbed and corrugated walls, masts, railings) are in `amb_parts.py`. Village pieces:
+  `amb_hut`, `amb_bunkhouse`, `amb_container_home`, `amb_dome`, `amb_water_tower`.
 * Lighting and materials come from the theme. Scripts ask for material roles
   (`frame_main`, `frame_brace`, ...) and the theme decides what they look like.
 * Every file in `data/images` ships with the game (Android packs all of `data/`, iOS has

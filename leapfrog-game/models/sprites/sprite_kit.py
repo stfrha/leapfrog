@@ -77,6 +77,9 @@ def parse_args(add_extra=None):
     p = argparse.ArgumentParser(prog="blender -b -P <sprite>.py --")
     p.add_argument("--theme", default="mining", help="world theme in themes/ (default: mining)")
     p.add_argument("--out", default=DEFAULT_OUT, help="output folder (default: leapfrog-game/data/images)")
+    p.add_argument("--turn", type=float, default=None,
+                   help="ambient pieces: turn the piece this many degrees about its vertical axis "
+                        "(+ = counter-clockwise seen from above; default: the script's own)")
     p.add_argument("--scale", type=float, default=None,
                    help="ambient pieces: build size x this (default: the script's own, usually 1)")
     p.add_argument("--ppu", type=float, default=None,
@@ -425,7 +428,7 @@ def register_texture(filename, attrs="", res_xml=RES_XML, folder="images"):
 class Kit:
     """Owns the scene for one sprite script."""
 
-    def __init__(self, args, rig="ortho", res=None, ambient=False, ppu=None, scale=None):
+    def __init__(self, args, rig="ortho", res=None, ambient=False, ppu=None, scale=None, turn=None):
         """res: resource file this script's textures belong in (default res.xml).
         Big scenery should go in a per-world set (e.g. res_mining.xml) that is
         only loaded while a scene using it runs; see data/scene_resources.xml.
@@ -437,12 +440,17 @@ class Kit:
         (--scale overrides it). A piece on a far layer can be modelled at a
         natural size and still come out big enough on screen, with enough
         pixels, instead of being stretched in the editor.
+        turn: render_axo turns the piece this many degrees about the vertical
+        axis through the origin (--turn overrides it). The camera stays the
+        same for every piece, so a turned house just shows more of one side,
+        as if it was put down without lining it up with its neighbours.
         For a parallax layer with parallaxAmount a, about 20 * (1 - a) is
         enough (0.6 -> 8-10)."""
         self.args = args
         self.rig = rig
         self.ambient = ambient
         self.scale = args.scale if args.scale else (scale if scale else 1.0)
+        self.turn = args.turn if args.turn is not None else (turn if turn else 0.0)
         if args.ppu is None:
             args.ppu = float(ppu) if ppu else DEFAULT_PPU
         self.res = args.res or res or "res.xml"
@@ -730,8 +738,8 @@ class Kit:
         same line in the editor share a ground line.
         """
         scene = self.scene
-        if self.scale != 1.0:
-            self._scale_scene(self.scale)
+        if self.scale != 1.0 or self.turn:
+            self._transform_scene(self.scale, self.turn)
         yaw = math.radians(yaw_deg)
         pitch = math.radians(pitch_deg)
 
@@ -804,11 +812,12 @@ class Kit:
         return self._finish(name, res_x, res_y, ppu,
                             "size %.2f x %.2f units" % (fw, fh), editor_only=editor_only)
 
-    def _scale_scene(self, factor):
+    def _transform_scene(self, factor, turn_deg=0.0):
         """
         Scale everything built so far by `factor` about the origin (the
-        ground stays at z = 0). Point lights keep their look (energy x f^2,
-        size x f); the sun and the world are unaffected by scale.
+        ground stays at z = 0) and turn it turn_deg about the Z axis. Point
+        lights keep their look (energy x f^2, size x f); the sun and the
+        world are not affected.
         """
         root = bpy.data.objects.new("_scale_root", None)
         self.scene.collection.objects.link(root)
@@ -817,9 +826,10 @@ class Kit:
                  and not (ob.type == 'LIGHT' and ob.data.type == 'SUN')]
         parent_keep_transform(parts, root)
         root.scale = (factor, factor, factor)
+        root.rotation_euler = (0.0, 0.0, math.radians(turn_deg))
         for ob in self.scene.objects:
             if ob.type == 'LIGHT' and ob.data.type != 'SUN':
                 ob.data.energy *= factor * factor
                 ob.data.shadow_soft_size *= factor
         bpy.context.view_layer.update()
-        print("sprite_kit: piece scaled x%g" % factor)
+        print("sprite_kit: piece scaled x%g, turned %g deg" % (factor, turn_deg))
