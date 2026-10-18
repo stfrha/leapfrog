@@ -297,6 +297,19 @@ namespace LeapfrogEditor
          {
             _editedCpVm = value;
             OnPropertyChanged("EditedCpVm");
+            UpdateEditArea();
+         }
+      }
+
+      // Resize the white edit area to the edited object (see MainWindow.UpdateEditArea)
+      public void UpdateEditArea()
+      {
+         // Deferred, so it runs after the caller has finished building or
+         // loading the object (the bounding box needs its shapes).
+         MainWindow mw = System.Windows.Application.Current.MainWindow as MainWindow;
+         if (mw != null)
+         {
+            mw.Dispatcher.BeginInvoke(new Action(mw.UpdateEditArea), System.Windows.Threading.DispatcherPriority.Background);
          }
       }
 
@@ -1973,12 +1986,11 @@ namespace LeapfrogEditor
 
       public bool BackgroundMouseUp(Point clickPoint, MouseButton button, bool shift, bool ctrl, bool alt)
       {
-         // Shift click because of CenteredCanvas
-         // How to get size of thGrid?
-         double h = ((MainWindow)System.Windows.Application.Current.MainWindow).theGrid.Height;
-         double w = ((MainWindow)System.Windows.Application.Current.MainWindow).theGrid.Width;
+         // The click is in edit area coordinates; (0, 0) of the edited
+         // object is at the CenteredCanvas's origin.
+         Point origin = ((MainWindow)System.Windows.Application.Current.MainWindow).ContentOrigin;
 
-         clickPoint.Offset(-w / 2, -h / 2);
+         clickPoint.Offset(-origin.X, -origin.Y);
 
          if (EditedCpVm == null) return false;
 

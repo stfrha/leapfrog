@@ -604,8 +604,99 @@ namespace LeapfrogEditor
          this.Close();
       }
 
+      // Size of the white edit area around what is being edited, and the
+      // smallest size it gets (the old fixed size).
+      private const double EditAreaMargin = 1000.0;
+      private const double EditAreaMinSize = 4000.0;
+
+      // Where (0, 0) of the edited object is on the edit area (theGrid)
+      public Point ContentOrigin
+      {
+         get { return content.EffectiveOrigin; }
+      }
+
+      // Makes the white edit area big enough for the edited object: its
+      // shapes and children, and for a scene its whole width and height
+      // including the boundaries, plus a margin. The view stays where it was.
+      public void UpdateEditArea()
+      {
+         if ((myMainViewModel == null) || (content == null) || (theGrid == null))
+         {
+            return;
+         }
+
+         Rect r = new Rect(0.0, 0.0, 0.0, 0.0);          // always include the origin
+         CompoundObjectViewModel cp = myMainViewModel.EditedCpVm;
+
+         if (cp != null)
+         {
+            try
+            {
+               // An object without shapes gives an "inside out" box spanning
+               // the whole double range; only use sensible boxes.
+               Rect bb = cp.BoundingBox;
+               if (!bb.IsEmpty && IsFinite(bb) && (bb.Width < 1e6) && (bb.Height < 1e6))
+               {
+                  r.Union(bb);
+               }
+            }
+            catch (Exception)
+            {
+               // Object still being built; the scene size alone will do
+            }
+
+            ScenePropertiesViewModel sp = (cp.Behaviour != null) ? cp.Behaviour.BehaviourProperties as ScenePropertiesViewModel : null;
+            if (sp != null)
+            {
+               // Boundaries are drawn 150 wide, centred on the scene's edges
+               r.Union(new Rect(-75.0, -75.0, sp.Width + 150.0, sp.Height + 150.0));
+            }
+         }
+
+         r.Inflate(EditAreaMargin, EditAreaMargin);
+         if (r.Width < EditAreaMinSize)
+         {
+            r.Inflate((EditAreaMinSize - r.Width) / 2, 0.0);
+         }
+         if (r.Height < EditAreaMinSize)
+         {
+            r.Inflate(0.0, (EditAreaMinSize - r.Height) / 2);
+         }
+
+         Point oldOrigin = ContentOrigin;
+         Point newOrigin = new Point(-r.X, -r.Y);
+
+         theGrid.Width = r.Width;
+         theGrid.Height = r.Height;
+         content.Origin = newOrigin;
+
+         axisX.X1 = r.Left;
+         axisX.X2 = r.Right;
+         axisY.Y1 = r.Top;
+         axisY.Y2 = r.Bottom;
+
+         // Let the zoom control measure the new size first; it limits the
+         // content offset to the content's extent.
+         zoomAndPanControl.UpdateLayout();
+
+         // Keep the same part of the object in view
+         if (!double.IsNaN(oldOrigin.X) && !double.IsNaN(oldOrigin.Y))
+         {
+            zoomAndPanControl.ContentOffsetX += newOrigin.X - oldOrigin.X;
+            zoomAndPanControl.ContentOffsetY += newOrigin.Y - oldOrigin.Y;
+         }
+      }
+
+      private static bool IsFinite(Rect r)
+      {
+         return !(double.IsNaN(r.X) || double.IsNaN(r.Y) || double.IsInfinity(r.X) || double.IsInfinity(r.Y) ||
+                  double.IsNaN(r.Width) || double.IsNaN(r.Height) || double.IsInfinity(r.Width) || double.IsInfinity(r.Height));
+      }
+
       public void ShowThisRect(Rect bb)
       {
+         UpdateEditArea();
+
          double w = zoomAndPanControl.ActualWidth;
          double h = zoomAndPanControl.ActualHeight;
 
@@ -623,8 +714,9 @@ namespace LeapfrogEditor
          double offsetX = bb.X + bb.Width / 2 - scaledActualWidth / 2;
          double offsetY = bb.Y + bb.Height / 2 - scaledActualHeight / 2;
 
-         zoomAndPanControl.ContentOffsetX = offsetX + 2000;
-         zoomAndPanControl.ContentOffsetY = offsetY + 2000;
+         Point origin = ContentOrigin;
+         zoomAndPanControl.ContentOffsetX = offsetX + origin.X;
+         zoomAndPanControl.ContentOffsetY = offsetY + origin.Y;
          zoomAndPanControl.ContentScale = scale;
 
       }

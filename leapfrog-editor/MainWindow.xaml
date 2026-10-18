@@ -382,6 +382,7 @@
                         MouseDown="Canvas_MouseDown"
                         MouseWheel="MouseWheel_Rotate">
                         <Line 
+                           x:Name="axisX"
                            Stroke="Pink"
                            StrokeThickness="1"
                            X1="-2000"
@@ -389,6 +390,7 @@
                            X2="2000"
                            Y2="0" />
                         <Line 
+                           x:Name="axisY"
                            Stroke="Pink"
                            StrokeThickness="1"
                            X1="0"

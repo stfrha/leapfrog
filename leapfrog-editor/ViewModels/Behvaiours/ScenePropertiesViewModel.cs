@@ -72,6 +72,10 @@ namespace LeapfrogEditor
          {
             ModelObject.Width = value;
             OnPropertyChanged("Width");
+            if (MainVm != null)
+            {
+               MainVm.UpdateEditArea();
+            }
          }
       }
 
@@ -82,6 +86,10 @@ namespace LeapfrogEditor
          {
             ModelObject.Height = value;
             OnPropertyChanged("Height");
+            if (MainVm != null)
+            {
+               MainVm.UpdateEditArea();
+            }
          }
       }
 
