@@ -569,6 +569,45 @@ bool CompoundObject::initCompoundObjectParts(
    return true;
 }
 
+namespace
+{
+   // Plays all frames of a ResAnim (any rows/cols layout) over the tween's
+   // duration. Unlike oxygine's TweenAnim it keeps the sprite's size: a new
+   // frame would otherwise reset the size to the frame's pixel size, while
+   // shapes here are sized in game units from the XML.
+   class TweenFramesKeepSize
+   {
+   public:
+      typedef Sprite type;
+
+      TweenFramesKeepSize(const ResAnim* resAnim) : m_resAnim(resAnim) {}
+
+      void init(Sprite& actor) { setFrame(actor, 0); }
+      void done(Sprite& actor) {}
+
+      void update(Sprite& actor, float p, const UpdateState& us)
+      {
+         int n = m_resAnim->getTotalFrames();
+         int frame = (int)(n * p);
+         if (frame >= n)
+         {
+            frame = n - 1;
+         }
+         setFrame(actor, frame);
+      }
+
+   private:
+      void setFrame(Sprite& actor, int frame)
+      {
+         Vector2 size = actor.getSize();
+         actor.setAnimFrame(m_resAnim->getFrame(frame));
+         actor.setSize(size);
+      }
+
+      const ResAnim* m_resAnim;
+   };
+}
+
 void CompoundObject::doCommonShapeDefinitions(
    Sprite* sprite,
    xml_node& objectNode)
@@ -577,6 +616,23 @@ void CompoundObject::doCommonShapeDefinitions(
    sprite->setName(objectNode.attribute("name").as_string());
    sprite->setPriority((short)objectNode.attribute("zLevel").as_int());
    sprite->setTouchChildrenEnabled(false);
+
+   // animatePeriod (seconds): loop through all frames of the texture (rows
+   // and cols in its resource entry) once per period. Without it, or for a
+   // texture with a single frame, the first frame is shown. Not for
+   // polygons, which tile their texture.
+   float animatePeriod = objectNode.attribute("animatePeriod").as_float(0.0f);
+   const ResAnim* resAnim = sprite->getResAnim();
+   if ((animatePeriod > 0.0f) &&
+      (resAnim != NULL) &&
+      (resAnim->getTotalFrames() > 1) &&
+      (dynamic_cast<oxygine::Polygon*>(sprite) == NULL))
+   {
+      sprite->addTween(
+         TweenFramesKeepSize(resAnim),
+         (timeMS)(animatePeriod * 1000.0f),
+         -1);
+   }
 }
 
 void CompoundObject::doCollisionDefinitions(
