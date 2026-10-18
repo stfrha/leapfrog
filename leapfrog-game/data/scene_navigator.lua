@@ -39,7 +39,7 @@ function lua_startInitialScene()
    lfDefined = false
 
    if currentMission == 0 or currentMission == 1 then
-      currentScene = "landing_scene.xml"
+      currentScene = "home_scene.xml"
       currentSceneType = 0
       currentMission = 1
       currentState = 1
@@ -123,7 +123,7 @@ function lua_sceneExitHandler(exitSceneType, exitParameter)
    if exitSceneType == 0 then
       -- We are leaving landing scene
       -- Determine next scene
-      if currentScene == "landing_scene.xml" then
+      if currentScene == "landing_scene.xml" or currentScene == "home_scene.xml" then
          if exitParameter == 1 then
             currentScene = "deep_space_scene.xml"
             currentSceneType = 1

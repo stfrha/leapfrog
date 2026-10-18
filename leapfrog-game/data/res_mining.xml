@@ -32,4 +32,12 @@
 	<atlas>
 		<image file="cloud.png" trim="false" extend="false"/>
 	</atlas>
+	<set path = "images/mining/ambient" />
+	<atlas>
+		<image file="amb_hut.png" ppu="14" trim="false"/>
+		<image file="amb_bunkhouse.png" ppu="14" trim="false"/>
+		<image file="amb_container_home.png" ppu="14" trim="false"/>
+		<image file="amb_dome.png" ppu="14" trim="false"/>
+		<image file="amb_water_tower.png" ppu="14" trim="false"/>
+	</atlas>
 </resources>

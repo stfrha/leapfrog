@@ -1,0 +1,559 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<compoundObject
+  needsGroupIndex="false">
+  <spriteBox
+    name="farBackground"
+    texture="night_sky"
+    posX="1506.4141647478996"
+    posY="393.12043375507119"
+    angle="0"
+    zLevel="0"
+    collisionEntity="notApplicable"
+    collisionCategory="1"
+    collisionMask="65534"
+    width="3000"
+    height="900"
+    parallaxAmount="1" />
+  <spriteBox
+    name="cloud1"
+    texture="cloud"
+    posX="1499.3406250278595"
+    posY="454.75211444956358"
+    angle="0"
+    zLevel="0"
+    collisionEntity="notApplicable"
+    collisionCategory="1"
+    collisionMask="65534"
+    width="250"
+    height="100"
+    parallaxAmount="0.8" />
+  <spriteBox
+    name="cloud5"
+    texture="cloud"
+    posX="2125.54250861984"
+    posY="394.43573270005436"
+    angle="0"
+    zLevel="0"
+    collisionEntity="notApplicable"
+    collisionCategory="1"
+    collisionMask="65534"
+    width="250"
+    height="100"
+    parallaxAmount="0.8" />
+  <spriteBox
+    name="siloHome"
+    texture="silo_home"
+    posX="2250.1390002921571"
+    posY="583.25753725618551"
+    angle="0"
+    zLevel="40"
+    collisionEntity="notApplicable"
+    collisionCategory="1"
+    collisionMask="65534"
+    width="128"
+    height="44"
+    parallaxAmount="0" />
+  <spriteBox
+    name="bunkhouse"
+    texture="amb_bunkhouse"
+    posX="1747.0806111605943"
+    posY="583.33569357057468"
+    angle="0"
+    zLevel="35"
+    collisionEntity="notApplicable"
+    collisionCategory="1"
+    collisionMask="65534"
+    width="23.95"
+    height="13.55"
+    parallaxAmount="0.4" />
+  <spriteBox
+    name="container"
+    texture="amb_container_home"
+    posX="1775.3333983877915"
+    posY="602.66480559660977"
+    angle="0"
+    zLevel="34"
+    collisionEntity="notApplicable"
+    collisionCategory="1"
+    collisionMask="65534"
+    width="10.85"
+    height="11.4"
+    parallaxAmount="0.4" />
+  <spriteBox
+    name="waterTower"
+    texture="amb_water_tower"
+    posX="1729.5717193531864"
+    posY="580.92736897811074"
+    angle="0"
+    zLevel="34"
+    collisionEntity="notApplicable"
+    collisionCategory="1"
+    collisionMask="65534"
+    width="7.95"
+    height="17.9"
+    parallaxAmount="0.4" />
+  <spriteBox
+    name="dome"
+    texture="amb_dome"
+    posX="1758.2959549782886"
+    posY="595.623003700131"
+    angle="0"
+    zLevel="34"
+    collisionEntity="notApplicable"
+    collisionCategory="1"
+    collisionMask="65534"
+    width="14.65"
+    height="13.75"
+    parallaxAmount="0.4" />
+  <spriteBox
+    name="hut1"
+    texture="amb_hut"
+    posX="1786.5687461950301"
+    posY="585.70592982743392"
+    angle="0"
+    zLevel="35"
+    collisionEntity="notApplicable"
+    collisionCategory="1"
+    collisionMask="65534"
+    width="31.5"
+    height="20.214285714285715"
+    parallaxAmount="0.4" />
+  <spriteBox
+    name="hut2"
+    texture="amb_hut"
+    posX="1718.6640668819382"
+    posY="593.85861885998747"
+    angle="0"
+    zLevel="35"
+    collisionEntity="notApplicable"
+    collisionCategory="1"
+    collisionMask="65534"
+    width="31.5"
+    height="20.214285714285715"
+    parallaxAmount="0.4" />
+  <spriteBox
+    name="noName"
+    texture="ore_building_blink"
+    posX="1217.4610317326665"
+    posY="633.42529744165813"
+    angle="0"
+    zLevel="34"
+    collisionEntity="notApplicable"
+    collisionCategory="1"
+    collisionMask="65534"
+    width="57.65"
+    height="50.5"
+    parallaxAmount="0" />
+  <spritePolygon
+    name="villageGround"
+    texture="grotto"
+    posX="1433.2960079352692"
+    posY="662.63879878649777"
+    angle="0"
+    zLevel="0"
+    collisionEntity="notApplicable"
+    collisionCategory="1"
+    collisionMask="65534"
+    textureMeterWidth="200"
+    textureMeterHeight="200"
+    textureOffsetMeterX="0"
+    textureOffsetMeterY="0"
+    parallaxAmount="0.4">
+    <vertices>
+      <vertex
+        id="1"
+        x="18.815869611109292"
+        y="236.87818314486242" />
+      <vertex
+        id="2"
+        x="104.02355783389135"
+        y="3.997826600354756" />
+      <vertex
+        id="3"
+        x="223.12744972103565"
+        y="-71.951247940636677" />
+      <vertex
+        id="4"
+        x="372.705363962039"
+        y="-81.3283396754448" />
+      <vertex
+        id="5"
+        x="540.03403081143529"
+        y="-77.404465814747141" />
+      <vertex
+        id="6"
+        x="931.2285791613981"
+        y="-4.9145755653089509" />
+      <vertex
+        id="7"
+        x="953.151327708998"
+        y="261.82585351907665" />
+    </vertices>
+    <triangles>
+      <triangle
+        id="1"
+        v1="1"
+        v2="7"
+        v3="6" />
+      <triangle
+        id="2"
+        v1="1"
+        v2="6"
+        v3="5" />
+      <triangle
+        id="3"
+        v1="1"
+        v2="5"
+        v3="4" />
+      <triangle
+        id="4"
+        v1="1"
+        v2="4"
+        v3="3" />
+      <triangle
+        id="5"
+        v1="3"
+        v2="2"
+        v3="1" />
+    </triangles>
+  </spritePolygon>
+  <staticPolygon
+    name="mainGround"
+    texture="grotto_light"
+    posX="167.27293621221497"
+    posY="778.16776665047382"
+    angle="0"
+    zLevel="169"
+    collisionEntity="notApplicable"
+    collisionCategory="1"
+    collisionMask="65533"
+    textureMeterWidth="200"
+    textureMeterHeight="200"
+    textureOffsetMeterX="0"
+    textureOffsetMeterY="0">
+    <vertices>
+      <vertex
+        id="1"
+        x="-173.73316240392296"
+        y="120.72297380582313" />
+      <vertex
+        id="2"
+        x="2812.3426118920461"
+        y="139.77677613148717" />
+      <vertex
+        id="3"
+        x="2812.797888196566"
+        y="-78.163967199275248" />
+      <vertex
+        id="4"
+        x="2552.2665310846924"
+        y="-164.74757651130437" />
+      <vertex
+        id="5"
+        x="2047.8365115321344"
+        y="-177.08861457146077" />
+      <vertex
+        id="6"
+        x="1132.1023417759909"
+        y="-126.73720485563172" />
+      <vertex
+        id="7"
+        x="982.13048542962042"
+        y="-118.78805888967645" />
+      <vertex
+        id="8"
+        x="801.83800910384662"
+        y="-110.0642293900421" />
+      <vertex
+        id="9"
+        x="682.11974098993824"
+        y="-97.752222637499926" />
+      <vertex
+        id="10"
+        x="632.330119350966"
+        y="-87.2714284231879" />
+      <vertex
+        id="11"
+        x="585.36292422222959"
+        y="-52.430442764796226" />
+      <vertex
+        id="12"
+        x="510.18367910732741"
+        y="-34.936669501410506" />
+      <vertex
+        id="13"
+        x="447.922586966924"
+        y="-12.978356999580683" />
+      <vertex
+        id="14"
+        x="394.85693760528466"
+        y="-7.2171998032254123" />
+      <vertex
+        id="15"
+        x="355.51712256355859"
+        y="3.1380952381514362" />
+      <vertex
+        id="16"
+        x="211.66877586421742"
+        y="14.189009182409336" />
+      <vertex
+        id="17"
+        x="91.403957879665541"
+        y="28.760397028615444" />
+      <vertex
+        id="18"
+        x="-170.38937739224957"
+        y="37.261529494761362" />
+    </vertices>
+    <triangles>
+      <triangle
+        id="1"
+        v1="18"
+        v2="1"
+        v3="2" />
+      <triangle
+        id="2"
+        v1="2"
+        v2="3"
+        v3="4" />
+      <triangle
+        id="3"
+        v1="2"
+        v2="4"
+        v3="5" />
+      <triangle
+        id="4"
+        v1="2"
+        v2="5"
+        v3="6" />
+      <triangle
+        id="5"
+        v1="2"
+        v2="6"
+        v3="7" />
+      <triangle
+        id="6"
+        v1="2"
+        v2="7"
+        v3="8" />
+      <triangle
+        id="7"
+        v1="2"
+        v2="8"
+        v3="9" />
+      <triangle
+        id="8"
+        v1="2"
+        v2="9"
+        v3="10" />
+      <triangle
+        id="9"
+        v1="2"
+        v2="10"
+        v3="11" />
+      <triangle
+        id="10"
+        v1="2"
+        v2="11"
+        v3="12" />
+      <triangle
+        id="11"
+        v1="2"
+        v2="12"
+        v3="13" />
+      <triangle
+        id="12"
+        v1="2"
+        v2="13"
+        v3="14" />
+      <triangle
+        id="13"
+        v1="2"
+        v2="14"
+        v3="15" />
+      <triangle
+        id="14"
+        v1="2"
+        v2="15"
+        v3="16" />
+      <triangle
+        id="15"
+        v1="2"
+        v2="16"
+        v3="17" />
+      <triangle
+        id="16"
+        v1="2"
+        v2="17"
+        v3="18" />
+    </triangles>
+    <border
+      leftGroundAngle="-45"
+      rightGroundAngle="45"
+      leftCeilingAngle="-135"
+      rightCeilingAngle="135">
+      <groundBorder
+        texture="grotto_floor"
+        horisontalMeterOffset="4"
+        textureMeterWidth="256"
+        textureMeterHeight="25" />
+      <ceilingBorder
+        texture="notDefined"
+        horisontalMeterOffset="2"
+        textureMeterWidth="128"
+        textureMeterHeight="10" />
+      <leftWallBorder
+        texture="notDefined"
+        horisontalMeterOffset="2"
+        textureMeterWidth="128"
+        textureMeterHeight="10" />
+      <rightWallBorder
+        texture="notDefined"
+        horisontalMeterOffset="2"
+        textureMeterWidth="128"
+        textureMeterHeight="10" />
+    </border>
+  </staticPolygon>
+  <staticPolygon
+    name="oarGround"
+    texture="grotto"
+    posX="1049.7404791339422"
+    posY="620.98897332849674"
+    angle="0"
+    zLevel="0"
+    collisionEntity="notApplicable"
+    collisionCategory="1"
+    collisionMask="65534"
+    textureMeterWidth="200"
+    textureMeterHeight="200"
+    textureOffsetMeterX="0"
+    textureOffsetMeterY="0">
+    <vertices>
+      <vertex
+        id="1"
+        x="189.52227673672678"
+        y="23.167538203611457" />
+      <vertex
+        id="2"
+        x="213.91544267164272"
+        y="27.968528208798489" />
+      <vertex
+        id="3"
+        x="273.0512152811466"
+        y="43.042556103432162" />
+      <vertex
+        id="4"
+        x="47.999889113210884"
+        y="49.037859711028432" />
+      <vertex
+        id="5"
+        x="130.56897391761504"
+        y="24.899794979285161" />
+    </vertices>
+    <triangles>
+      <triangle
+        id="1"
+        v1="1"
+        v2="5"
+        v3="4" />
+      <triangle
+        id="2"
+        v1="1"
+        v2="4"
+        v3="3" />
+      <triangle
+        id="3"
+        v1="3"
+        v2="2"
+        v3="1" />
+    </triangles>
+    <border
+      leftGroundAngle="0"
+      rightGroundAngle="0"
+      leftCeilingAngle="0"
+      rightCeilingAngle="0">
+      <groundBorder
+        texture="notDefined"
+        horisontalMeterOffset="0"
+        textureMeterWidth="0"
+        textureMeterHeight="0" />
+      <ceilingBorder
+        texture="notDefined"
+        horisontalMeterOffset="0"
+        textureMeterWidth="0"
+        textureMeterHeight="0" />
+      <leftWallBorder
+        texture="notDefined"
+        horisontalMeterOffset="0"
+        textureMeterWidth="0"
+        textureMeterHeight="0" />
+      <rightWallBorder
+        texture="notDefined"
+        horisontalMeterOffset="0"
+        textureMeterWidth="0"
+        textureMeterHeight="0" />
+    </border>
+  </staticPolygon>
+  <behaviour
+    type="scene">
+    <sceneProperties
+      sceneType="ground"
+      width="3000"
+      height="900"
+      hasUpperBoundary="true"
+      hasLowerBoundary="true"
+      hasLeftBoundary="true"
+      hasRightBoundary="true">
+      <states />
+    </sceneProperties>
+  </behaviour>
+  <childObject
+    name="launchSite1"
+    file="launch_site.xml"
+    posX="99.923698716349151"
+    posY="815.27924550775845" />
+  <childObject
+    name="siloLandingPad"
+    posX="2214.9854505415183"
+    posY="600.72941663913514">
+    <compoundObject
+      needsGroupIndex="false">
+      <staticBox
+        name="noName"
+        texture="default"
+        posX="0"
+        posY="0"
+        angle="0"
+        zLevel="192"
+        collisionEntity="notApplicable"
+        collisionCategory="1"
+        collisionMask="65533"
+        width="50"
+        height="25" />
+      <behaviour
+        type="landingPad" />
+    </compoundObject>
+  </childObject>
+  <childObject
+    name="oreLanding"
+    posX="1239.3366895339359"
+    posY="630.36355288593">
+    <compoundObject
+      needsGroupIndex="false">
+      <staticBox
+        name="noName"
+        texture="transparent"
+        posX="0"
+        posY="0"
+        angle="0"
+        zLevel="192"
+        collisionEntity="notApplicable"
+        collisionCategory="1"
+        collisionMask="65533"
+        width="14"
+        height="5" />
+      <behaviour
+        type="notApplicable" />
+    </compoundObject>
+  </childObject>
+</compoundObject>

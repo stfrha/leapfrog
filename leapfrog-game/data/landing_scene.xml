@@ -53,6 +53,32 @@
     width="128"
     height="44"
     parallaxAmount="0" />
+  <spriteBox
+    name="noName"
+    texture="amb_hut"
+    posX="507.94515991535081"
+    posY="667.42833962734085"
+    angle="0"
+    zLevel="34"
+    collisionEntity="notApplicable"
+    collisionCategory="1"
+    collisionMask="65534"
+    width="31.5"
+    height="20.214285714285715"
+    parallaxAmount="0.4" />
+  <spriteBox
+    name="noName2"
+    texture="amb_hut"
+    posX="536.51607130312232"
+    posY="668.35341322455861"
+    angle="0"
+    zLevel="34"
+    collisionEntity="notApplicable"
+    collisionCategory="1"
+    collisionMask="65534"
+    width="31.5"
+    height="20.214285714285715"
+    parallaxAmount="0.4" />
   <spritePolygon
     name="innerWall"
     texture="grotto_light"
@@ -186,7 +212,7 @@
     posX="288.84813975206634"
     posY="507.205375475899"
     angle="0"
-    zLevel="0"
+    zLevel="34"
     collisionEntity="notApplicable"
     collisionCategory="1"
     collisionMask="65534"
@@ -194,20 +220,20 @@
     textureMeterHeight="100"
     textureOffsetMeterX="0"
     textureOffsetMeterY="0"
-    parallaxAmount="0.6">
+    parallaxAmount="0.4">
     <vertices>
       <vertex
         id="1"
-        x="-0.43694762842051205"
-        y="69.47467291883504" />
+        x="89.433747871009018"
+        y="170.49419441354939" />
       <vertex
         id="2"
-        x="-24.482442197482669"
-        y="112.97436820706025" />
+        x="33.2288236093641"
+        y="198.72462803877352" />
       <vertex
         id="3"
-        x="-45.252749969086381"
-        y="172.72336410210664" />
+        x="1.3097745780278274"
+        y="238.61372902726816" />
       <vertex
         id="4"
         x="-193.07536341841251"
@@ -218,20 +244,20 @@
         y="279.26972208734696" />
       <vertex
         id="6"
-        x="105.15711757609961"
-        y="213.762009498957" />
+        x="333.4814643606087"
+        y="256.51209996073749" />
       <vertex
         id="7"
-        x="73.6715616537399"
-        y="101.97754413985149" />
+        x="344.20725037619923"
+        y="191.74750939735804" />
       <vertex
         id="8"
-        x="49.369817844319186"
-        y="65.0095832734205" />
+        x="299.31656795048"
+        y="170.30535970876281" />
       <vertex
         id="9"
-        x="25.505021663318985"
-        y="57.844410333604174" />
+        x="201.73412401655105"
+        y="167.5666897517076" />
     </vertices>
     <triangles>
       <triangle
@@ -1201,7 +1227,7 @@
       hasUpperBoundary="false"
       hasLowerBoundary="true"
       hasLeftBoundary="true"
-      hasRightBoundary="true">
+      hasRightBoundary="false">
       <states />
     </sceneProperties>
   </behaviour>

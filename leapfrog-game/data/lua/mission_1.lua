@@ -15,7 +15,24 @@ mission1.setupMissionStateScene = function()
    -- Clear triggers and event handler
    c_clearAllTriggersAndEvents()
 
-   if currentScene == "landing_scene.xml" then
+   if currentScene == "home_scene.xml" then
+
+      -- The launch site takes the leapfrog to deep space
+      c_registerEventHandler("launchSite1", "LsLL", 0, 0)
+
+      if lfDefined == false then
+         if useInitialLfPos == true then
+            -- New game: start at home, hovering just above the silo's
+            -- landing pad (the pad's top is at y = 588; in landing mode the
+            -- leapfrog's origin is about 14 above its feet)
+            c_addPositionedChildObject("leapfrog_landing.xml", "leapfrog1", 2215, 562)
+            -- Reconfigure leapfrog to landing mode
+            c_setObjectProperty("leapfrog1", 0, 2)
+            lfDefined = true
+         end
+      end
+
+   elseif currentScene == "landing_scene.xml" then
 
       -- Regardless of state, we always want to listen to leapfrog has landed 
       -- on the launch site
@@ -112,7 +129,14 @@ end
 
 mission1.missionStateSceneEventHandler = function(eventId, actorName, parameter1)
 
-   if currentScene == "landing_scene.xml" then
+   if currentScene == "home_scene.xml" then
+
+      if eventId == "LsLL" then
+         c_addDialogMessage("You will now be launched into deep space.", "DEBUG", true, 0, 0)
+         c_setObjectProperty("launchSite1", 1, 0)
+      end
+
+   elseif currentScene == "landing_scene.xml" then
 
       -- Regardless of state, we always want to listen to leapfrog has landed 
       -- on the launch site
