@@ -1,3 +1,4 @@
+#include <algorithm>
 #include "oxygine-framework.h"
 #include "polygonvertices.h"
 #include "physdispconvert.h"
@@ -272,9 +273,28 @@ void PolygonVertices::createChainBodyPolygon(
 
 void PolygonVertices::createPolygonBorders(
    oxygine::Polygon* polygon,
-   vector<Vector2>& vertices,
+   vector<Vector2>& polygonVertices,
    pugi::xml_node objectNode)
 {
+   // Which border an edge gets (ground, ceiling, walls) depends on the
+   // edge's direction, so it depends on which way round the polygon was
+   // drawn. All polygons with borders so far go round with a negative
+   // signed area (y axis down); a polygon drawn the other way round is
+   // walked backwards here, so its ground border still ends up on the ground.
+   float doubleArea = 0.0f;
+   for (size_t i = 0; i < polygonVertices.size(); i++)
+   {
+      const Vector2& a = polygonVertices[i];
+      const Vector2& b = polygonVertices[(i + 1) % polygonVertices.size()];
+      doubleArea += a.x * b.y - b.x * a.y;
+   }
+
+   vector<Vector2> vertices(polygonVertices);
+   if (doubleArea > 0.0f)
+   {
+      std::reverse(vertices.begin(), vertices.end());
+   }
+
    // Here we should attach border to all edges of the polygon
    int edgeNum = vertices.size();
 

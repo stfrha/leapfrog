@@ -19,6 +19,24 @@ namespace LeapfrogEditor
          return origP;
       }
 
+      // True if the polygon goes round the "normal" way for borders: negative
+      // signed area with the y axis down, as all bordered polygons so far.
+      // The border type of an edge depends on its direction, so a polygon
+      // drawn the other way round is walked backwards (see the game's
+      // PolygonVertices::createPolygonBorders, which does the same).
+      private static bool IsNormalWinding(LfScalableTexturePolygonViewModel polygon)
+      {
+         double doubleArea = 0;
+         int n = polygon.PointVms.Count();
+         for (int k = 0; k < n; k++)
+         {
+            LfDragablePointViewModel a = polygon.PointVms[k];
+            LfDragablePointViewModel b = polygon.PointVms[(k + 1) % n];
+            doubleArea += a.PosX * b.PosY - b.PosX * a.PosY;
+         }
+         return doubleArea <= 0;
+      }
+
       public static Point GetPreviousPoint(LfDragablePointViewModel myPoint)
       {
          LfScalableTexturePolygonViewModel polygon = (LfScalableTexturePolygonViewModel)myPoint.Parent;
@@ -30,15 +48,17 @@ namespace LeapfrogEditor
             return new Point(0, 0);
          }
 
+         int n = polygon.PointVms.Count();
          LfDragablePointViewModel previousVertex;
 
-         if (i > 0)
+         if (IsNormalWinding(polygon))
          {
-            previousVertex = polygon.PointVms[i - 1];
+            previousVertex = polygon.PointVms[(i + n - 1) % n];
          }
          else
          {
-            previousVertex = polygon.PointVms[polygon.PointVms.Count() - 1];
+            // Walking backwards: the "previous" point is the next one
+            previousVertex = polygon.PointVms[(i + 1) % n];
          }
 
          Point prevP = new Point(previousVertex.PosX, previousVertex.PosY);
