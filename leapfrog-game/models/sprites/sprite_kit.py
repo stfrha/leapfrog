@@ -603,7 +603,9 @@ class Kit:
         return os.path.join(DEFAULT_OUT, self.folder)
 
     def _may_register(self, name):
-        if self.args.no_register or name.endswith("_test"):
+        # Test renders are never registered, including images derived from
+        # them (e.g. ore_building_test_blink from make_strip)
+        if self.args.no_register or name.endswith("_test") or "_test_" in name:
             return False
         if self._custom_out():
             return False
