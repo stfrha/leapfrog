@@ -25,7 +25,8 @@ namespace LeapfrogEditor
       void SetWidthToTextureAspectRatio();
 
       // Sets both Width and Height from the texture's pixel size divided by
-      // GlobalConstants.TexturePixelsPerUnit.
+      // its ppu (TextureDensity; default GlobalConstants.TexturePixelsPerUnit),
+      // using one frame of an animation strip.
       void SetSizeFromTexture();
    }
 }

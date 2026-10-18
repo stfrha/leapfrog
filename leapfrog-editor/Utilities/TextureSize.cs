@@ -52,7 +52,9 @@ namespace LeapfrogEditor
       }
 
       // Sets width and height of a shape from its texture's pixel size,
-      // using GlobalConstants.TexturePixelsPerUnit.
+      // using the texture's ppu from the resource files (default
+      // GlobalConstants.TexturePixelsPerUnit). For an animation strip
+      // (rows/cols in the resource entry) the size of one frame is used.
       public static void SetSizeFromTexture(IWidthHeightInterface iwh, string texture)
       {
          int pw, ph;
@@ -68,8 +70,12 @@ namespace LeapfrogEditor
             return;
          }
 
-         iwh.Width = pw / GlobalConstants.TexturePixelsPerUnit;
-         iwh.Height = ph / GlobalConstants.TexturePixelsPerUnit;
+         double ppu = TextureDensity.PixelsPerUnit(texture);
+         int cols, rows;
+         TextureDensity.Frames(texture, out cols, out rows);
+
+         iwh.Width = (double)(pw / cols) / ppu;
+         iwh.Height = (double)(ph / rows) / ppu;
       }
    }
 }
