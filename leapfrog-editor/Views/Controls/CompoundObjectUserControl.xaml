@@ -30,19 +30,23 @@
             <DataTemplate DataType="{x:Type local:RopeViewModel}" />
             <DataTemplate DataType="{x:Type local:CoSystemViewModel}" />-->
             <DataTemplate DataType="{x:Type local:LfSpritePolygonViewModel}">
-               <local:ScalableTexturePolygonControl>
-                  <local:ScalableTexturePolygonControl.ContextMenu>
-                     <ContextMenu>
-                        <MenuItem Header="Locate in browser" 
-                           CommandParameter="{Binding}"
-                           Command="{Binding Path=Data.LocateInBrowser, Source={StaticResource DataContextProxy}}" />
-                        <Separator />
-                        <MenuItem Header="Delete" 
-                           CommandParameter="{Binding}"
-                           Command="{Binding Path=Data.DeleteThisObject, Source={StaticResource DataContextProxy}}" />
-                     </ContextMenu>
-                  </local:ScalableTexturePolygonControl.ContextMenu>
-               </local:ScalableTexturePolygonControl>
+               <Grid>
+                  <local:ScalableTexturePolygonControl>
+                     <local:ScalableTexturePolygonControl.ContextMenu>
+                        <ContextMenu>
+                           <MenuItem Header="Locate in browser" 
+                              CommandParameter="{Binding}"
+                              Command="{Binding Path=Data.LocateInBrowser, Source={StaticResource DataContextProxy}}" />
+                           <Separator />
+                           <MenuItem Header="Delete" 
+                              CommandParameter="{Binding}"
+                              Command="{Binding Path=Data.DeleteThisObject, Source={StaticResource DataContextProxy}}" />
+                        </ContextMenu>
+                     </local:ScalableTexturePolygonControl.ContextMenu>
+                  </local:ScalableTexturePolygonControl>
+                  <local:DecoratedPolygonBorderControl 
+                     Visibility="{Binding Converter={StaticResource DecoratedBorderPolygonToVisibilityValueConverter}}" />
+               </Grid>
             </DataTemplate>
             <DataTemplate DataType="{x:Type local:LfScalableTexturePolygonViewModel}">
                <Grid>

@@ -13,6 +13,11 @@ namespace LeapfrogEditor
    {
       #region Declarations
 
+      private BorderTextureViewModel _groundBorder = null;
+      private BorderTextureViewModel _ceilingBorder = null;
+      private BorderTextureViewModel _leftWallBorder = null;
+      private BorderTextureViewModel _rightWallBorder = null;
+
       #endregion
 
       #region Constructors
@@ -34,6 +39,97 @@ namespace LeapfrogEditor
       {
          get { return (LfScalableTexturePolygon)ModelObject; }
       }
+
+      // --- Polygon border (shared by static and sprite polygons) ---------
+
+      public double LeftGroundAngle
+      {
+         get { return LocalModelObject.PolygonBorder.LeftGroundAngle; }
+         set
+         {
+            LocalModelObject.PolygonBorder.LeftGroundAngle = value;
+            OnPropertyChanged("LeftGroundAngle");
+            InvalidateAllVertices();
+         }
+      }
+
+      public double RightGroundAngle
+      {
+         get { return LocalModelObject.PolygonBorder.RightGroundAngle; }
+         set
+         {
+            LocalModelObject.PolygonBorder.RightGroundAngle = value;
+            OnPropertyChanged("RightGroundAngle");
+            InvalidateAllVertices();
+         }
+      }
+
+      public double LeftCeilingAngle
+      {
+         get { return LocalModelObject.PolygonBorder.LeftCeilingAngle; }
+         set
+         {
+            LocalModelObject.PolygonBorder.LeftCeilingAngle = value;
+            OnPropertyChanged("LeftCeilingAngle");
+            InvalidateAllVertices();
+         }
+      }
+
+      public double RightCeilingAngle
+      {
+         get { return LocalModelObject.PolygonBorder.RightCeilingAngle; }
+         set
+         {
+            LocalModelObject.PolygonBorder.RightCeilingAngle = value;
+            OnPropertyChanged("RightCeilingAngle");
+            InvalidateAllVertices();
+         }
+      }
+
+      public BorderTextureViewModel GroundBorder
+      {
+         get { return _groundBorder; }
+         set
+         {
+            _groundBorder = value;
+            OnPropertyChanged("GroundBorder");
+            InvalidateAllVertices();
+         }
+      }
+
+      public BorderTextureViewModel CeilingBorder
+      {
+         get { return _ceilingBorder; }
+         set
+         {
+            _ceilingBorder = value;
+            OnPropertyChanged("CeilingBorder");
+            InvalidateAllVertices();
+         }
+      }
+
+      public BorderTextureViewModel LeftWallBorder
+      {
+         get { return _leftWallBorder; }
+         set
+         {
+            _leftWallBorder = value;
+            OnPropertyChanged("LeftWallBorder");
+            InvalidateAllVertices();
+         }
+      }
+
+      public BorderTextureViewModel RightWallBorder
+      {
+         get { return _rightWallBorder; }
+         set
+         {
+            _rightWallBorder = value;
+            OnPropertyChanged("RightWallBorder");
+            InvalidateAllVertices();
+         }
+      }
+
 
 
       public double TextureWidth
@@ -107,5 +203,29 @@ namespace LeapfrogEditor
 
       #endregion
 
+   
+      // Called by derived view models once ModelObject is set
+      protected void CreateBorderVms()
+      {
+         PolygonBorder pb = LocalModelObject.PolygonBorder;
+         GroundBorder = new BorderTextureViewModel(this, pb.GroundBorder);
+         CeilingBorder = new BorderTextureViewModel(this, pb.CeilingBorder);
+         LeftWallBorder = new BorderTextureViewModel(this, pb.LeftWallBorder);
+         RightWallBorder = new BorderTextureViewModel(this, pb.RightWallBorder);
+      }
+
+      public void InvalidateAllVertices()
+      // If there is a change in any of the properties
+      // that affects the border decorations, all the
+      // vertices need to be updated. This is done here
+      {
+         foreach (LfDragablePointViewModel dpvm in PointVms)
+         {
+            dpvm.OnPropertyChanged("");
+         }
+         OnPropertyChanged("Points");
+         OnPropertyChanged("AbsPoints");
+
+      }
    }
 }

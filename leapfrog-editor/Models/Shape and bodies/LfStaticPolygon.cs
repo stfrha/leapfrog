@@ -11,27 +11,12 @@ namespace LeapfrogEditor
    [Serializable]
    public class LfStaticPolygon : LfScalableTexturePolygon
    {
-      #region Declarations
-
-      private PolygonBorder _polygonBorder = new PolygonBorder();
-
-      #endregion
+      // The polygon border is in LfScalableTexturePolygon, shared with sprite polygons
 
       #region Constructors
 
       public LfStaticPolygon()
       {
-      }
-
-      #endregion
-
-      #region Properties
-
-      [XmlElement("border")]
-      public PolygonBorder PolygonBorder
-      {
-         get { return _polygonBorder; }
-         set { _polygonBorder = value; }
       }
 
       #endregion

@@ -11,7 +11,7 @@ namespace LeapfrogEditor
    {
       #region Declarations
 
-      private LfStaticPolygonViewModel _parentVm;
+      private LfScalableTexturePolygonViewModel _parentVm;
 
       private BorderTexture _modelObject;
 
@@ -19,7 +19,7 @@ namespace LeapfrogEditor
 
       #region Constructors
 
-      public BorderTextureViewModel(LfStaticPolygonViewModel parentVm, BorderTexture modelObject)
+      public BorderTextureViewModel(LfScalableTexturePolygonViewModel parentVm, BorderTexture modelObject)
       {
          _parentVm = parentVm;
          _modelObject = modelObject;
@@ -29,7 +29,7 @@ namespace LeapfrogEditor
 
       #region Properties
 
-      public LfStaticPolygonViewModel ParentVm
+      public LfScalableTexturePolygonViewModel ParentVm
       {
          get { return _parentVm; }
          set

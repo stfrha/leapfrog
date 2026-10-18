@@ -21,6 +21,20 @@
             <local:DoubleEditorControl Headline="Texture Offset Y" MyValue="{Binding TextureOffsetY, Mode=TwoWay}" />
             <local:DoubleEditorControl Headline="Parallax Amount" MyValue="{Binding ParallaxAmount, Mode=TwoWay}" />
             <local:ZLevelEditorControl Headline="Z-level" MyValue="{Binding ZLevel, Mode=TwoWay}" />
+            <Expander Header="Polygon Borders">
+               <StackPanel>
+                  <local:DoubleEditorControl Headline="Lft Grnd Angle" MyValue="{Binding LeftGroundAngle, Mode=TwoWay}" />
+                  <local:DoubleEditorControl Headline="Rgt Grnd Angle" MyValue="{Binding RightGroundAngle, Mode=TwoWay}" />
+                  <local:DoubleEditorControl Headline="Lft Ciel Angle" MyValue="{Binding LeftCeilingAngle, Mode=TwoWay}" />
+                  <local:DoubleEditorControl Headline="Rgt Ciel Angle" MyValue="{Binding RightCeilingAngle, Mode=TwoWay}" />
+                  <StackPanel>
+                     <local:TextureBorderPropEditor Headline="Ground Border" TextureBorder="{Binding GroundBorder}"/>
+                     <local:TextureBorderPropEditor Headline="Ceiling Border" TextureBorder="{Binding CeilingBorder}"/>
+                     <local:TextureBorderPropEditor Headline="Left Wall Border" TextureBorder="{Binding LeftWallBorder}"/>
+                     <local:TextureBorderPropEditor Headline="Right Wall Border" TextureBorder="{Binding RightWallBorder}"/>
+                  </StackPanel>
+               </StackPanel>
+            </Expander>
          </StackPanel>
       </Border>
    </DockPanel>

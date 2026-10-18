@@ -726,6 +726,10 @@ void CompoundObject::defineSpritePolygon(
 
    PolygonVertices::createSpritePolygon(sprite.get(), vertices, objectNode);
 
+   // Border decorations along the edges, as for static polygons. They are
+   // children of the polygon, so they follow it onto a parallax layer.
+   PolygonVertices::createPolygonBorders(sprite.get(), vertices, objectNode);
+
    m_shapes.push_back(sprite.get());
 
    if (parentIsScene)

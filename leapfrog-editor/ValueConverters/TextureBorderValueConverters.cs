@@ -21,7 +21,7 @@ namespace LeapfrogEditor
 
       public static Point GetPreviousPoint(LfDragablePointViewModel myPoint)
       {
-         LfStaticPolygonViewModel polygon = (LfStaticPolygonViewModel)myPoint.Parent;
+         LfScalableTexturePolygonViewModel polygon = (LfScalableTexturePolygonViewModel)myPoint.Parent;
 
          int i = polygon.PointVms.IndexOf(myPoint);
 
@@ -48,7 +48,7 @@ namespace LeapfrogEditor
 
       public static double GetAngle(LfDragablePointViewModel myPoint, Point origP, Point prevP)
       {
-         LfStaticPolygonViewModel polygon = (LfStaticPolygonViewModel)myPoint.Parent;
+         LfScalableTexturePolygonViewModel polygon = (LfScalableTexturePolygonViewModel)myPoint.Parent;
 
          Vector diffV = origP - prevP;
 
@@ -79,7 +79,7 @@ namespace LeapfrogEditor
       public static BorderTextureViewModel GetTextureViewModel(LfDragablePointViewModel myPoint, double angle)
       {
          // Select view model accordingly to angle
-         LfStaticPolygonViewModel polygon = (LfStaticPolygonViewModel)myPoint.Parent;
+         LfScalableTexturePolygonViewModel polygon = (LfScalableTexturePolygonViewModel)myPoint.Parent;
 
          double degAngle = angle;
 

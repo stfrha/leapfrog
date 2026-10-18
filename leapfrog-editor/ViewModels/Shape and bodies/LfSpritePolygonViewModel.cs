@@ -26,6 +26,7 @@ namespace LeapfrogEditor
          base(treeParent, parentVm, mainVm, enabled)
       {
          ModelObject = modelObject;
+         CreateBorderVms();
 
          //LfSpritePolygon modelSP = ModelObject as LfSpritePolygon;
 

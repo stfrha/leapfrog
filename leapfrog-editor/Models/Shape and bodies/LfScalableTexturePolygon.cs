@@ -17,6 +17,7 @@ namespace LeapfrogEditor
       private double _textureHeight;
       private double _textureOffsetX;
       private double _textureOffsetY;
+      private PolygonBorder _polygonBorder = new PolygonBorder();
 
       #endregion
 
@@ -60,6 +61,15 @@ namespace LeapfrogEditor
       {
          get { return _textureOffsetY; }
          set { _textureOffsetY = value; }
+      }
+
+      // Border decorations along the edges (ground, ceiling and walls by
+      // edge angle). Static and sprite polygons both have them.
+      [XmlElement("border")]
+      public PolygonBorder PolygonBorder
+      {
+         get { return _polygonBorder; }
+         set { _polygonBorder = value; }
       }
 
       #endregion

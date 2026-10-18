@@ -12,7 +12,8 @@ namespace LeapfrogEditor
    {
       public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
       {
-         if (value is LfStaticPolygonViewModel)
+         // Static, dynamic and sprite polygons can all have border decorations
+         if (value is LfScalableTexturePolygonViewModel)
          {
             return Visibility.Visible;
          }
