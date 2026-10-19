@@ -13,6 +13,11 @@ local homeEdithDialogDone = false
 local homeEdithDialogTicks = 660
 local homeLaunchSiteTimer = -1
 
+-- With the job comes fuel to reach the launch site: when the mission has
+-- been given, the tank is filled up to what the game started with
+-- (leapfrog property 7 = fuel), read when the new game starts.
+local homeStartFuel = 30
+
 -- c_addDialogMessage(message, sender, leftSide, preDelay, postDelay)
 -- Others on the left, the pilot on the right. Delays are in frames.
 local function playTaskgiverCall()
@@ -87,6 +92,8 @@ mission1.setupMissionStateScene = function()
             -- Reconfigure leapfrog to landing mode
             c_setObjectProperty("leapfrog1", 0, 2)
             lfDefined = true
+
+            homeStartFuel = c_getObjectProperty("leapfrog1", 7)
 
             playTaskgiverCall()
 
@@ -204,6 +211,12 @@ mission1.missionStateSceneEventHandler = function(eventId, actorName, parameter1
 
       if eventId == "ScTO" and parameter1 == homeLaunchSiteTimer then
          c_setObjectMapShown("launchSite1", "mainTank", true)
+
+         -- Fill up, but never take fuel away
+         if c_getObjectProperty("leapfrog1", 7) < homeStartFuel then
+            c_setObjectProperty("leapfrog1", 7, homeStartFuel)
+            c_hudLog("Fuel refilled")
+         end
       end
 
       if eventId == "LsLL" then
