@@ -25,6 +25,10 @@ namespace
    const float c_expandedZoom = 1.1f;
    const float c_expandedWidthPart = 0.6f;
 
+   // The bubbles are clipped this far inside the top and bottom of the
+   // display, so they don't draw over the frame line (display_thin)
+   const float c_clipInset = 4.0f;
+
    // Testing: true puts the message text in the affiliation colour too,
    // false keeps it phosphor green (only the bubble frame is coloured).
    // Uncategorised senders (none) are phosphor green either way.
@@ -169,7 +173,7 @@ void MessageDisplay::initialiseMessageDisplay(
 
    spActor scrollActor = new Actor();
    scrollActor->setAnchor(0.0f, 0.0f);
-   scrollActor->setPosition(0.0f, 0.0f);
+   scrollActor->setPosition(0.0f, -c_clipInset);
    scrollActor->attachTo(messageActor);
    m_scrollActor = scrollActor.get();
 
@@ -201,7 +205,12 @@ void MessageDisplay::applySize(float width, float height)
    m_messageDisplayHeight = height;
 
    setSize(m_messageDisplayWidth, m_messageDisplayHeight);
-   m_messageActor->setSize(m_messageDisplayWidth, m_messageDisplayHeight);
+
+   // The clip rect is inset at the top and bottom; the scroll actor is
+   // moved back up by the same amount, so the bubbles keep their
+   // coordinates in the display (see setScrollOffset)
+   m_messageActor->setPosition(0.0f, c_clipInset);
+   m_messageActor->setSize(m_messageDisplayWidth, m_messageDisplayHeight - 2.0f * c_clipInset);
    m_mdFrame->setSize(m_messageDisplayWidth, m_messageDisplayHeight);
 
    if (m_tapLabel)
@@ -284,7 +293,7 @@ void MessageDisplay::setScrollOffset(float offset)
 
    if (m_scrollActor)
    {
-      m_scrollActor->setY(m_scrollOffset);
+      m_scrollActor->setY(m_scrollOffset - c_clipInset);
    }
 }
 
@@ -296,8 +305,9 @@ float MessageDisplay::getMaxScrollOffset(void)
    }
 
    // Bubbles are anchored at their bottom edge. Nothing to scroll while
-   // the oldest bubble is still within the top gap.
-   float top = 4.0f;
+   // the oldest bubble is still within the top gap (inside the clip).
+   const float topGap = c_clipInset + 4.0f;
+   float top = topGap;
    spActor actor = m_scrollActor->getFirstChild();
    while (actor)
    {
@@ -310,7 +320,7 @@ float MessageDisplay::getMaxScrollOffset(void)
    }
 
    // Leave the same small gap above the oldest bubble as below the newest
-   float maxOffset = 4.0f - top;
+   float maxOffset = topGap - top;
    return maxOffset > 0.0f ? maxOffset : 0.0f;
 }
 
@@ -579,12 +589,12 @@ void MessageDisplay::drawMessage(const MessageItem& message)
    if (message.m_leftBubble)
    {
       m_newBubble->setAnchor(0.0f, 1.0f);
-      m_newBubble->setPosition(4.0f, m_messageDisplayHeight - 4.0f);
+      m_newBubble->setPosition(4.0f, m_messageDisplayHeight - c_clipInset - 4.0f);
    }
    else
    {
       m_newBubble->setAnchor(1.0f, 1.0f);
-      m_newBubble->setPosition(m_messageDisplayWidth - 4.0f, m_messageDisplayHeight - 4.0f);
+      m_newBubble->setPosition(m_messageDisplayWidth - 4.0f, m_messageDisplayHeight - c_clipInset - 4.0f);
    }
 
    spTextField msgTextField = new TextField();
