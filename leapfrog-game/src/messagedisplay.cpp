@@ -18,6 +18,11 @@ spMessageDisplay g_MessageDisplay;
 
 namespace
 {
+   // Testing: true puts the message text in the affiliation colour too,
+   // false keeps it phosphor green (only the bubble frame is coloured).
+   // Uncategorised senders (none) are phosphor green either way.
+   const bool c_textInAffiliationColour = true;
+
    std::map<std::string, Affiliation>& senderAffiliations(void)
    {
       static std::map<std::string, Affiliation> s_senderAffiliations;
@@ -462,7 +467,14 @@ void MessageDisplay::drawMessage(const MessageItem& message)
    msgTextField->setAnchor(0.0f, 0.0f);
    msgTextField->setPosition(8.0f, 8.0f);
    msgTextField->setText(message.m_message);
-   msgTextField->setColor(g_Layout.getPhosphorColor());
+   if (c_textInAffiliationColour)
+   {
+      msgTextField->setColor(g_Layout.getAffiliationColor(message.m_affiliation));
+   }
+   else
+   {
+      msgTextField->setColor(g_Layout.getPhosphorColor());
+   }
 
    const Rect& rect = msgTextField->getTextRect();
 
