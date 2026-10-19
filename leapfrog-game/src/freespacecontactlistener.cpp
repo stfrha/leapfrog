@@ -11,39 +11,8 @@
 #include "gamestatus.h"
 
 
-// TEMPORARY DIAGNOSTIC: logs the contacts flame particles get, to find
-// the stray flame particles. Set to 0 (or remove) when done.
-#define LF_DEBUG_FLAME_CONTACTS 1
-
 void FreeSpaceContactListener::PreSolve(b2Contact* contact, const b2Manifold* oldManifold)
 {
-#if LF_DEBUG_FLAME_CONTACTS
-   b2Fixture* fA = contact->GetFixtureA();
-   b2Fixture* fB = contact->GetFixtureB();
-   CollisionEntity::CollisionEntityTypeEnum eA = BodyUserData::getCollisionType(fA->GetUserData());
-   CollisionEntity::CollisionEntityTypeEnum eB = BodyUserData::getCollisionType(fB->GetUserData());
-
-   if ((eA == CollisionEntity::flameParticle) || (eB == CollisionEntity::flameParticle))
-   {
-      static int s_count = 0;
-      s_count++;
-
-      // The first 30, then every 50th, so the log stays readable
-      if ((s_count <= 30) || (s_count % 50 == 0))
-      {
-         b2Fixture* particle = (eA == CollisionEntity::flameParticle) ? fA : fB;
-         b2Fixture* other = (eA == CollisionEntity::flameParticle) ? fB : fA;
-         CollisionEntity::CollisionEntityTypeEnum eOther = (eA == CollisionEntity::flameParticle) ? eB : eA;
-         const b2Filter& pf = particle->GetFilterData();
-         const b2Filter& of = other->GetFilterData();
-
-         logs::messageln("FLAME CONTACT #%d: other type %d, other cat %d mask %d group %d; particle cat %d mask %d group %d",
-            s_count, (int)eOther,
-            (int)of.categoryBits, (int)of.maskBits, (int)of.groupIndex,
-            (int)pf.categoryBits, (int)pf.maskBits, (int)pf.groupIndex);
-      }
-   }
-#endif
 }
 
 void FreeSpaceContactListener::PostSolve(b2Contact* contact, const b2ContactImpulse* impulse)

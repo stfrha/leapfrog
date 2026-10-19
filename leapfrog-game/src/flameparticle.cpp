@@ -3,7 +3,6 @@
 #include "bodyuserdata.h"
 #include "actoruserdata.h"
 #include "graphicresources.h"
-#include "compoundobject.h"
 
 using namespace oxygine;
 
@@ -15,12 +14,7 @@ FlameParticle::FlameParticle(
    b2Vec2 impulseForce,
    float radius,
    int groupIndex) :
-   m_world(world),
-   m_body(NULL),
-   m_startVel(0.0f, 0.0f),
-   m_startPos(0.0f, 0.0f),
-   m_groupIndex(groupIndex),
-   m_strayReported(false)
+   m_world(world)
 {
    // If lifetime is zero, for instance if scale is zero,
    // We do not create any body
@@ -82,94 +76,10 @@ FlameParticle::FlameParticle(
    body->ApplyLinearImpulse(impulseForce, body->GetWorldCenter(), true);
 
    m_body = body;
-   m_startVel = body->GetLinearVelocity();
-   m_startPos = pos;
 }
 
 void FlameParticle::doUpdate(const oxygine::UpdateState& us)
 {
-   // TEMPORARY DIAGNOSTIC (stray flame particles): report a particle whose
-   // velocity changes noticeably after it was created, and what it is
-   // touching then. Particles move in a straight line otherwise (no
-   // gravity in space), so a change means something pushed it.
-   if ((m_body == NULL) || m_strayReported)
-   {
-      return;
-   }
-
-   b2Vec2 vel = m_body->GetLinearVelocity();
-   b2Vec2 change = vel - m_startVel;
-
-   if (change.Length() > 5.0f)
-   {
-      m_strayReported = true;
-
-      // Bounces off mines (18) and explosion pieces (17) are expected;
-      // leave them out so the log shows the unexplained ones
-      for (b2ContactEdge* ce = m_body->GetContactList(); ce; ce = ce->next)
-      {
-         b2Fixture* other = (ce->contact->GetFixtureA()->GetBody() == m_body) ?
-            ce->contact->GetFixtureB() : ce->contact->GetFixtureA();
-         int t = (int)BodyUserData::getCollisionType(other->GetUserData());
-         if ((t == 17) || (t == 18))
-         {
-            return;
-         }
-      }
-
-      static int s_strays = 0;
-      s_strays++;
-      if (s_strays > 80)
-      {
-         return;
-      }
-
-      std::string touching;
-      for (b2ContactEdge* ce = m_body->GetContactList(); ce; ce = ce->next)
-      {
-         b2Fixture* other = (ce->contact->GetFixtureA()->GetBody() == m_body) ?
-            ce->contact->GetFixtureB() : ce->contact->GetFixtureA();
-         // What is it, where is it relative to where the particle was
-         // created (the nozzle), and does it move with the ship?
-         b2Body* ob = other->GetBody();
-         b2Vec2 rel = ob->GetPosition() - m_startPos;
-         b2Vec2 ov = ob->GetLinearVelocity();
-         const b2AABB& box = other->GetAABB(0);
-         b2Vec2 size = box.upperBound - box.lowerBound;
-         oxygine::Actor* act = BodyUserData::getActor<oxygine::Actor*>(other->GetUserData());
-         std::string name = "?";
-         std::string parentName = "?";
-         int attached = -1;
-         int visible = -1;
-         if (act)
-         {
-            name = act->getName();
-            attached = (act->getParent() != NULL) ? 1 : 0;
-            visible = (act->getVisible() && act->getAlpha() > 0) ? 1 : 0;
-            CompoundObject* co = ActorUserData::getParentObject(act->getUserData());
-            if (co)
-            {
-               parentName = co->getName();
-            }
-         }
-         char buf[320];
-         snprintf(buf, sizeof(buf),
-            " [type %d group %d touching %d, '%s' in '%s', attached %d visible %d, %.1f m from nozzle (%.1f, %.1f), its vel (%.1f, %.1f), size %.1f x %.1f]",
-            (int)BodyUserData::getCollisionType(other->GetUserData()),
-            (int)other->GetFilterData().groupIndex,
-            (int)ce->contact->IsTouching(),
-            name.c_str(), parentName.c_str(), attached, visible,
-            rel.Length(), rel.x, rel.y, ov.x, ov.y,
-            size.x, size.y);
-         touching += buf;
-      }
-
-      b2Vec2 pos = m_body->GetPosition();
-      logs::messageln("STRAY #%d group %d at (%.1f, %.1f): vel (%.1f, %.1f) -> (%.1f, %.1f), contacts:%s",
-         s_strays, -m_groupIndex, pos.x, pos.y,
-         m_startVel.x, m_startVel.y, vel.x, vel.y,
-         touching.empty() ? " none" : touching.c_str());
-   }
 }
 
 void FlameParticle::atParticleDeath(oxygine::Event* event)
