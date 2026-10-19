@@ -158,6 +158,13 @@ public:
 
    void addBoundingBody(b2Body* body);
    void removeBoundingBody(b2Body* body);
+
+   // Destroys a body and takes it off the bounded-bodies list first. Use
+   // this instead of b2World::DestroyBody for bodies that may be bounded:
+   // a destroyed body left on the list kept getting the boundary force
+   // through the stale pointer, which Box2D reuses for the next body it
+   // creates (often a flame particle, shot back into the scene).
+   void destroyBody(b2Body* body);
    void testForBoundaryRepel(void);
    int isInsideTransitField(b2Body* body);
 

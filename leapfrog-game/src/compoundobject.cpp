@@ -95,7 +95,14 @@ void CompoundObject::killAllChildBodies(void)
 
       if (b)
       {
-         b->GetWorld()->DestroyBody(b);
+         if (m_sceneActor)
+         {
+            m_sceneActor->destroyBody(b);
+         }
+         else
+         {
+            b->GetWorld()->DestroyBody(b);
+         }
       }
 
       child = child->getNextSibling();

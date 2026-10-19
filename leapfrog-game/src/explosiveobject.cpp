@@ -169,7 +169,7 @@ void ExplosiveObject::doExplosion(void)
 
          // Now that we have saved the position, it is safe to remove
          // the body.
-         m_world->DestroyBody(myBody);
+         m_sceneActor->destroyBody(myBody);
          m_shapes[0]->detach();
 
          // The object itself stays (it runs the blast), so don't leave it

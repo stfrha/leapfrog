@@ -240,6 +240,17 @@ void SceneActor::removeBoundingBody(b2Body* body)
       m_boundedBodies.end());
 }
 
+void SceneActor::destroyBody(b2Body* body)
+{
+   if (body == NULL)
+   {
+      return;
+   }
+
+   removeBoundingBody(body);
+   body->GetWorld()->DestroyBody(body);
+}
+
 void SceneActor::testForBoundaryRepel(void)
 {
    for (auto it = m_boundedBodies.begin(); it != m_boundedBodies.end(); ++it)
@@ -842,8 +853,7 @@ void SceneActor::sweepKillList(void)
 
       if (myBody)
       {
-         myBody->GetWorld()->DestroyBody(myBody);
-
+         destroyBody(myBody);
       }
 
       actor->detach();
