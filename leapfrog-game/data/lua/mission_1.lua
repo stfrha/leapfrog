@@ -2,6 +2,40 @@
 
 local mission1 = {}
 
+-- Home scene, first mission: the taskgiver's call and Edith cutting in.
+-- The Orb is the ore building (oreLanding pad at x = 1243); the leapfrog
+-- starts on the silo pad at x = 2215. Edith speaks up when the leapfrog is
+-- a third of the way there.
+local homeOrbThirdX = 2215 - (2215 - 1243) / 3
+local homeEdithDialogDone = false
+
+-- c_addDialogMessage(message, sender, leftSide, preDelay, postDelay)
+-- Others on the left, the pilot on the right. Delays are in frames.
+local function playTaskgiverCall()
+   c_addDialogMessage("Hey! I hear you are in bad shape. Low fuel, low ammo, low everything.", "Taskgiver", true, 60, 0)
+   c_addDialogMessage("Your so-called ship is falling apart, eh?", "Taskgiver", true, 90, 0)
+   c_addDialogMessage("No. I'm in good shape. Where did you hear that?", "Leapfrog", false, 90, 0)
+   c_addDialogMessage("Grapevine. If you are so strong, I can give this little job to someone else.", "Taskgiver", true, 120, 0)
+   c_addDialogMessage("Hold up, let's talk about it.", "Leapfrog", false, 60, 0)
+   c_addDialogMessage("Get over to the Orb. I repaired the pentahouse suite.", "Taskgiver", true, 90, 0)
+end
+
+local function playEdithCutsIn()
+   c_addDialogMessage("I agree, you need that job.", "Edith", true, 0, 0)
+   c_addDialogMessage("What!? Who is this?", "Leapfrog", false, 60, 0)
+   c_addDialogMessage("Nobody.", "Edith", true, 90, 0)
+   c_addDialogMessage("This signal... it's coming from... you are in my home!", "Leapfrog", false, 90, 0)
+   c_addDialogMessage("Wait till I get back there...", "Leapfrog", false, 60, 0)
+   c_addDialogMessage("Not enough fuel. You'll be stranded.", "Edith", true, 90, 0)
+end
+
+-- Event handlers of the home scene, also set again after a trigger is
+-- removed (c_clearAllTriggersAndEvents removes them all)
+local function registerHomeHandlers()
+   -- The launch site takes the leapfrog to deep space
+   c_registerEventHandler("launchSite1", "LsLL", 0, 0)
+end
+
 
 -- This script is related to one mission. It holds all specifics
 -- for that mission in all states for all relevant scenes
@@ -23,11 +57,12 @@ mission1.setupMissionStateScene = function()
    c_setSenderAffiliation("Edith", "leapfrog")
    c_setSenderAffiliation("Silo", "leapfrog")
    c_setSenderAffiliation("DEBUG", "leapfrog")
+   c_setSenderAffiliation("Leapfrog", "leapfrog")
+   c_setSenderAffiliation("Taskgiver", "neutral")
 
    if currentScene == "home_scene.xml" then
 
-      -- The launch site takes the leapfrog to deep space
-      c_registerEventHandler("launchSite1", "LsLL", 0, 0)
+      registerHomeHandlers()
 
       if lfDefined == false then
          if useInitialLfPos == true then
@@ -38,6 +73,14 @@ mission1.setupMissionStateScene = function()
             -- Reconfigure leapfrog to landing mode
             c_setObjectProperty("leapfrog1", 0, 2)
             lfDefined = true
+
+            playTaskgiverCall()
+
+            -- Edith cuts in a third of the way to the Orb: leapfrog
+            -- property 3 (xPos) below homeOrbThirdX
+            homeEdithDialogDone = false
+            c_registerPropertyTrigger("leapfrog1", 1, 3, "insideRange", -100000, homeOrbThirdX)
+            c_registerEventHandler("leapfrog1", "OpTr", 0, 0)
          end
       end
 
@@ -139,6 +182,17 @@ end
 mission1.missionStateSceneEventHandler = function(eventId, actorName, parameter1)
 
    if currentScene == "home_scene.xml" then
+
+      if actorName == "leapfrog1" and eventId == "OpTr" and parameter1 == 3 then
+         -- The trigger fires on every move while inside the range, so play
+         -- once and remove it
+         if homeEdithDialogDone == false then
+            homeEdithDialogDone = true
+            playEdithCutsIn()
+            c_clearAllTriggersAndEvents()
+            registerHomeHandlers()
+         end
+      end
 
       if eventId == "LsLL" then
          c_addDialogMessage("You will now be launched into deep space.", "DEBUG", true, 0, 0)
