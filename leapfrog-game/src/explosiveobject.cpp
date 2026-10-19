@@ -171,6 +171,16 @@ void ExplosiveObject::doExplosion(void)
          // the body.
          m_world->DestroyBody(myBody);
          m_shapes[0]->detach();
+
+         // The object itself stays (it runs the blast), so don't leave it
+         // pointing at the destroyed body: Box2D reuses that memory for the
+         // next body it creates (a second explosion would destroy it again,
+         // and a magnetic mine would keep pushing it, see MagneticMine)
+         ActorUserData* aud = static_cast<ActorUserData*>(const_cast<void*>(m_shapes[0]->getUserData()));
+         if (aud)
+         {
+            aud->m_body = NULL;
+         }
          
          int groupIndex = -g_GroupIndexSource.getNewGroupIndex();
 

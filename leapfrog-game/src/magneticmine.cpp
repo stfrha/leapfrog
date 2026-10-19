@@ -2,6 +2,7 @@
 #include "magneticmine.h"
 
 #include "bodyuserdata.h"
+#include "actoruserdata.h"
 #include "sceneactor.h"
 //#include "freespaceactor.h"
 //#include "blastemitter.h"
@@ -47,6 +48,30 @@ void MagneticMine::readMagneticMineNode(const pugi::xml_node& node)
 void MagneticMine::doUpdate(const oxygine::UpdateState& us)
 {
    ExplosiveObject::doUpdate(us);
+
+   // When the mine has exploded its body is destroyed, but this object
+   // keeps running. Without this check it went on applying the magnetic
+   // force through the old pointer, to whatever body Box2D created next
+   // in that memory: usually a flame particle, which shot off at full
+   // speed towards the leapfrog ("stray" flame particles that never
+   // stopped once a mine had gone off).
+   if (m_magenticMineBody)
+   {
+      bool stillAlive = false;
+      for (auto it = m_shapes.begin(); it != m_shapes.end(); ++it)
+      {
+         if (ActorUserData::getBody((*it)->getUserData()) == m_magenticMineBody)
+         {
+            stillAlive = true;
+            break;
+         }
+      }
+
+      if (!stillAlive)
+      {
+         m_magenticMineBody = NULL;
+      }
+   }
 
    if (!m_magenticMineBody)
    {
