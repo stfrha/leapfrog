@@ -4,11 +4,12 @@
     <LocalDebuggerWorkingDirectory>..\data</LocalDebuggerWorkingDirectory>
     <LocalDebuggerEnvironment>PATH=../data;%PATH%;</LocalDebuggerEnvironment>
     <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
-    <LocalDebuggerCommandArguments>2</LocalDebuggerCommandArguments>
+    <LocalDebuggerCommandArguments>1</LocalDebuggerCommandArguments>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <LocalDebuggerWorkingDirectory>../data</LocalDebuggerWorkingDirectory>
+    <LocalDebuggerWorkingDirectory>..\data</LocalDebuggerWorkingDirectory>
     <LocalDebuggerEnvironment>PATH=../data;%PATH%;</LocalDebuggerEnvironment>
     <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
+    <LocalDebuggerCommandArguments>1</LocalDebuggerCommandArguments>
   </PropertyGroup>
 </Project>
