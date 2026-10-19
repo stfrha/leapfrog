@@ -6,6 +6,60 @@
 using namespace oxygine;
 using namespace pugi;
 
+namespace
+{
+   // Same rule as Box2D's default contact filter
+   bool filtersCollide(const b2Filter& a, const b2Filter& b)
+   {
+      if ((a.groupIndex == b.groupIndex) && (a.groupIndex != 0))
+      {
+         return a.groupIndex > 0;
+      }
+
+      return ((a.maskBits & b.categoryBits) != 0) && ((a.categoryBits & b.maskBits) != 0);
+   }
+
+   // Finds out if a flame particle created at a point would start inside
+   // something it collides with (an asteroid the leapfrog is pressed
+   // against, for instance). Box2D pushes such a body out at high speed,
+   // which throws the particle forward or sideways.
+   class SpawnBlockedQuery : public b2QueryCallback
+   {
+   public:
+      b2CircleShape m_shape;
+      b2Transform m_xf;
+      b2Filter m_filter;
+      bool m_blocked;
+
+      SpawnBlockedQuery(const b2Vec2& pos, float radius, const b2Filter& filter) :
+         m_filter(filter),
+         m_blocked(false)
+      {
+         m_shape.m_radius = radius;
+         m_xf.Set(pos, 0.0f);
+      }
+
+      bool ReportFixture(b2Fixture* fixture) override
+      {
+         if (fixture->IsSensor() || !filtersCollide(m_filter, fixture->GetFilterData()))
+         {
+            return true;   // continue
+         }
+
+         for (int32 child = 0; child < fixture->GetShape()->GetChildCount(); child++)
+         {
+            if (b2TestOverlap(&m_shape, 0, fixture->GetShape(), child, m_xf, fixture->GetBody()->GetTransform()))
+            {
+               m_blocked = true;
+               return false;   // stop
+            }
+         }
+
+         return true;
+      }
+   };
+}
+
 FlameEmitter::FlameEmitter(
    SceneActor* sceneActor,
    CompoundObject* parent,
@@ -92,9 +146,23 @@ void FlameEmitter::doUpdate(const oxygine::UpdateState& us)
 
       b2Vec2 impulse = b2Vec2((ri + m_impulseMagnitude) * cos(emitAngle), (ri + m_impulseMagnitude) * sin(emitAngle));
 
-      if (m_groupIndex != 7)
+      // Don't create a particle inside something it would collide with
+      // (radius and filter as in FlameParticle). Against a rock the flame
+      // just disappears into it.
+      b2Filter particleFilter;
+      particleFilter.categoryBits = 8;
+      particleFilter.maskBits = 65525;
+      particleFilter.groupIndex = (int16)-m_groupIndex;
+
+      SpawnBlockedQuery query(emitPos, 0.5f, particleFilter);
+      b2AABB aabb;
+      aabb.lowerBound = emitPos - b2Vec2(0.5f, 0.5f);
+      aabb.upperBound = emitPos + b2Vec2(0.5f, 0.5f);
+      m_emitterBody->GetWorld()->QueryAABB(&query, aabb);
+
+      if (query.m_blocked)
       {
-         int a = 10;
+         return;
       }
 
       // Create one test flame particle
