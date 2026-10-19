@@ -7,6 +7,8 @@
 #include "graphicresources.h"
 #include "mainactor.h"
 
+#include <map>
+
 using namespace std;
 using namespace oxygine;
 
@@ -14,15 +16,41 @@ using namespace oxygine;
 // Instanciate global instance of the HDD
 spMessageDisplay g_MessageDisplay;
 
+namespace
+{
+   std::map<std::string, Affiliation>& senderAffiliations(void)
+   {
+      static std::map<std::string, Affiliation> s_senderAffiliations;
+      return s_senderAffiliations;
+   }
+}
+
+void MessageDisplay::setSenderAffiliation(const std::string& sender, Affiliation affiliation)
+{
+   senderAffiliations()[sender] = affiliation;
+}
+
+Affiliation MessageDisplay::getSenderAffiliation(const std::string& sender)
+{
+   auto it = senderAffiliations().find(sender);
+   if (it == senderAffiliations().end())
+   {
+      return Affiliation::none;
+   }
+   return it->second;
+}
+
 MessageItem::MessageItem(
    string message,
    string sender,
    bool leftBubble,
+   Affiliation affiliation,
    int preWait,
    int postWait) :
    m_message(message),
    m_sender(sender),
    m_leftBubble(leftBubble),
+   m_affiliation(affiliation),
    m_preWait(preWait),
    m_postWait(postWait)
 {
@@ -340,7 +368,20 @@ void MessageDisplay::initMessage(
    int preWait,
    int postWait)
 {
-   MessageItem newMessage(messageString, senderString, leftBubble, preWait, postWait);
+   initMessage(leftBubble, messageString, senderString, getSenderAffiliation(senderString), preWait, postWait);
+}
+
+void MessageDisplay::initMessage(
+   bool leftBubble,
+   const char* messageString,
+   const char* senderString,
+   Affiliation affiliation,
+   int preWait,
+   int postWait)
+{
+   // The affiliation is taken now, so a message keeps its colour if the
+   // sender changes side later
+   MessageItem newMessage(messageString, senderString, leftBubble, affiliation, preWait, postWait);
 
    m_messageQueue.push_back(newMessage);
 }
@@ -387,6 +428,9 @@ void MessageDisplay::drawMessage(const MessageItem& message)
       m_newBubble->setResAnim(g_GraphRes.getResources(GraphicResources::ResourceTypeEnum::hud).getResAnim("msg_bbl_right"));
    }
 
+
+   // The bubble texture is white; the frame shows the sender's affiliation
+   m_newBubble->setColor(g_Layout.getAffiliationColor(message.m_affiliation));
 
    m_newBubble->setVerticalMode(Box9Sprite::STRETCHING);
    m_newBubble->setHorizontalMode(Box9Sprite::STRETCHING);

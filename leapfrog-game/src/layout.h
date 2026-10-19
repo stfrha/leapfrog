@@ -2,6 +2,30 @@
 
 #include "oxygine-framework.h"
 
+#include <string>
+
+// Who a character or map item belongs to. Shown as the colour of message
+// bubble frames and of the squares on the HDD map. The colours are set in
+// Layout::getAffiliationColor.
+//   none      not categorised: phosphor green, like the rest of the HUD
+//   leapfrog  the pilot, the silo and Edith
+//   neutral, enemy, friendly
+// An affiliation can change during the story (the pirates go from enemy
+// to friendly in Act 3), see c_setSenderAffiliation and
+// c_setObjectMapAffiliation.
+enum class Affiliation
+{
+   none,
+   leapfrog,
+   neutral,
+   enemy,
+   friendly
+};
+
+// "none", "leapfrog", "neutral", "enemy" or "friendly". Returns false
+// (and leaves result unchanged) for anything else.
+bool parseAffiliation(const std::string& name, Affiliation& result);
+
 // This class define geometrics of the display
 // The following members exists:
 // View Port Bounds     : This is, per definition, starting at 0,0 to the 
@@ -56,6 +80,7 @@ public:
    oxygine::RectF getStageBounds(void);
    float getBoundaryWidth();
    oxygine::Color getPhosphorColor(void);
+   oxygine::Color getAffiliationColor(Affiliation affiliation);
    float getHorizontalDpi(void);
    float getVerticalDpi(void);
    float getMaxDpi(void);

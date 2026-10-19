@@ -222,6 +222,36 @@ Color Layout::getPhosphorColor(void)
    return oxygine::Color(0x55d400ff);
 }
 
+// The textures that get these colours (message bubble frames, map
+// squares) are white, so the colour shows as given here.
+Color Layout::getAffiliationColor(Affiliation affiliation)
+{
+   switch (affiliation)
+   {
+   case Affiliation::leapfrog:
+      return oxygine::Color(0xffffffff);
+   case Affiliation::neutral:
+      return oxygine::Color(0x4da6ffff);
+   case Affiliation::enemy:
+      return oxygine::Color(0xff3030ff);
+   case Affiliation::friendly:
+      return oxygine::Color(0x40ffa0ff);
+   case Affiliation::none:
+   default:
+      return getPhosphorColor();
+   }
+}
+
+bool parseAffiliation(const std::string& name, Affiliation& result)
+{
+   if (name == "none")     { result = Affiliation::none;     return true; }
+   if (name == "leapfrog") { result = Affiliation::leapfrog; return true; }
+   if (name == "neutral")  { result = Affiliation::neutral;  return true; }
+   if (name == "enemy")    { result = Affiliation::enemy;    return true; }
+   if (name == "friendly") { result = Affiliation::friendly; return true; }
+   return false;
+}
+
 float Layout::getHorizontalDpi(void)
 {
    return m_hdpi;

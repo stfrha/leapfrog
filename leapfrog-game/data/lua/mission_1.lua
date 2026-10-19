@@ -15,6 +15,15 @@ mission1.setupMissionStateScene = function()
    -- Clear triggers and event handler
    c_clearAllTriggersAndEvents()
 
+   -- Who's who, for the colour of the message bubble frames. Senders not
+   -- set here stay phosphor green. A message can also be given its own
+   -- affiliation as a sixth argument to c_addDialogMessage.
+   -- Set every scene setup, so it follows the mission state after a load
+   -- (in Act 3: c_setSenderAffiliation("<pirate>", "friendly")).
+   c_setSenderAffiliation("Edith", "leapfrog")
+   c_setSenderAffiliation("Silo", "leapfrog")
+   c_setSenderAffiliation("DEBUG", "leapfrog")
+
    if currentScene == "home_scene.xml" then
 
       -- The launch site takes the leapfrog to deep space

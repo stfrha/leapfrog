@@ -24,6 +24,7 @@ MapItem::MapItem(
    oxygine::spActor actor) :
    m_itemId(id),
    m_type(type),
+   m_affiliation(affiliationFromType(type)),
    m_state(state),
    m_parentMap(NULL),
    m_realActor(actor)
@@ -41,6 +42,7 @@ MapItem::MapItem(
    float scale) :
    m_itemId(id),
    m_type(type),
+   m_affiliation(affiliationFromType(type)),
    m_state(state),
    m_parentMap(hddMapActor),
    m_realActor(actor)
@@ -71,6 +73,9 @@ MapItem::MapItem(
    }
 
    setState(m_state);
+
+   // The square textures are white, the colour comes from the affiliation
+   setColor(g_Layout.getAffiliationColor(m_affiliation));
 
    setPriority(231);
    setTouchChildrenEnabled(false);
@@ -115,6 +120,9 @@ void MapItem::addToMapActor(
    }
 
    setState(m_state);
+
+   // The square textures are white, the colour comes from the affiliation
+   setColor(g_Layout.getAffiliationColor(m_affiliation));
 
    setPriority(231);
    setTouchChildrenEnabled(false);
@@ -168,6 +176,41 @@ void MapItem::setState(MapItem::MapItemStateEnum state)
    }
 }
 
+
+Affiliation MapItem::affiliationFromType(MapItemTypeEnum type)
+{
+   switch (type)
+   {
+   case MapItemTypeEnum::me:
+      return Affiliation::leapfrog;
+   case MapItemTypeEnum::friendlyMoving:
+   case MapItemTypeEnum::friendlyStationary:
+      return Affiliation::friendly;
+   case MapItemTypeEnum::enemyMoving:
+   case MapItemTypeEnum::enemyStationary:
+      return Affiliation::enemy;
+   case MapItemTypeEnum::neutralMoving:
+   case MapItemTypeEnum::neutralStationary:
+   default:
+      return Affiliation::neutral;
+   }
+}
+
+void MapItem::setAffiliation(Affiliation affiliation)
+{
+   m_affiliation = affiliation;
+
+   // Before the map exists the colour is set in addToMapActor
+   if (m_parentMap != NULL)
+   {
+      setColor(g_Layout.getAffiliationColor(m_affiliation));
+   }
+}
+
+Affiliation MapItem::getAffiliation(void)
+{
+   return m_affiliation;
+}
 
 void MapItem::doUpdate(const oxygine::UpdateState& us)
 {
@@ -1018,6 +1061,30 @@ void HeadDownDisplay::setState(oxygine::spActor actor, MapItem::MapItemStateEnum
    }
 }
 
+
+void HeadDownDisplay::setAffiliation(int itemId, Affiliation affiliation)
+{
+   for (auto it = m_mapActors.begin(); it != m_mapActors.end(); ++it)
+   {
+      if ((*it)->getId() == itemId)
+      {
+         (*it)->setAffiliation(affiliation);
+         return;
+      }
+   }
+}
+
+void HeadDownDisplay::setAffiliation(oxygine::spActor actor, Affiliation affiliation)
+{
+   for (auto it = m_mapActors.begin(); it != m_mapActors.end(); ++it)
+   {
+      if ((*it)->getActor() == actor)
+      {
+         (*it)->setAffiliation(affiliation);
+         return;
+      }
+   }
+}
 
 void HeadDownDisplay::doUpdate(const oxygine::UpdateState& us)
 {

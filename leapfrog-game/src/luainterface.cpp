@@ -299,6 +299,26 @@ static int c_addPositionedChildObject(lua_State *L)
    return 0;
 }
 
+// Reads an affiliation name from the Lua stack. Logs and returns false if
+// it isn't one of none, leapfrog, neutral, enemy, friendly.
+static bool readAffiliation(lua_State *L, int index, const char* function, Affiliation& result)
+{
+   const char* name = lua_tostring(L, index);
+
+   if ((name == NULL) || !parseAffiliation(name, result))
+   {
+      logs::warning("%s: unknown affiliation '%s', expected none, leapfrog, neutral, enemy or friendly",
+         function, name ? name : "(nil)");
+      return false;
+   }
+
+   return true;
+}
+
+// c_addDialogMessage(message, sender, leftSide, preDelay, postDelay [, affiliation])
+// The bubble frame gets the colour of the affiliation. Without it, the
+// sender's affiliation from c_setSenderAffiliation is used (none, i.e.
+// phosphor green, for a sender that hasn't been set).
 static int c_addDialogMessage(lua_State *L)
 {
    std::string message = lua_tostring(L, 1);
@@ -307,7 +327,30 @@ static int c_addDialogMessage(lua_State *L)
    int preDelay = lua_tointeger(L, 4);
    int postDelay = lua_tointeger(L, 5);
 
-   g_MessageDisplay->initMessage(leftSide, message.c_str(), sender.c_str(), preDelay, postDelay);
+   Affiliation affiliation = MessageDisplay::getSenderAffiliation(sender);
+
+   if (lua_gettop(L) >= 6 && !lua_isnil(L, 6))
+   {
+      readAffiliation(L, 6, "c_addDialogMessage", affiliation);
+   }
+
+   g_MessageDisplay->initMessage(leftSide, message.c_str(), sender.c_str(), affiliation, preDelay, postDelay);
+
+   return 0;
+}
+
+// c_setSenderAffiliation(sender, affiliation)
+// The affiliation used for this sender's messages from now on. Messages
+// already shown keep their colour.
+static int c_setSenderAffiliation(lua_State *L)
+{
+   std::string sender = lua_tostring(L, 1);
+   Affiliation affiliation;
+
+   if (readAffiliation(L, 2, "c_setSenderAffiliation", affiliation))
+   {
+      MessageDisplay::setSenderAffiliation(sender, affiliation);
+   }
 
    return 0;
 }
@@ -388,6 +431,35 @@ static int c_setObjectMapState(lua_State *L)
       if (act != NULL)
       {
          g_HeadDownDisplay->setState(act, (MapItem::MapItemStateEnum)itemState);
+      }
+   }
+
+   return 0;
+}
+
+// c_setObjectMapAffiliation(objectName, actorName, affiliation)
+// Changes the colour of an object's square on the HDD map. Same object
+// and actor names as c_setObjectMapState.
+static int c_setObjectMapAffiliation(lua_State *L)
+{
+   std::string objectName = lua_tostring(L, 1);
+   std::string actorName = lua_tostring(L, 2);
+   Affiliation affiliation;
+
+   if (!readAffiliation(L, 3, "c_setObjectMapAffiliation", affiliation))
+   {
+      return 0;
+   }
+
+   CompoundObject* obj = g_LuaInterface.getSceneActor()->getObject(objectName);
+
+   if (obj != NULL)
+   {
+      spActor act = obj->getActor(actorName);
+
+      if (act != NULL)
+      {
+         g_HeadDownDisplay->setAffiliation(act, affiliation);
       }
    }
 
@@ -519,11 +591,13 @@ void LuaInterface::initLuaInterface(void)
    lua_register(m_L, "c_addMissionStateSceneObjects", c_addMissionStateSceneObjects);
    lua_register(m_L, "c_addPositionedChildObject", c_addPositionedChildObject);
    lua_register(m_L, "c_addDialogMessage", c_addDialogMessage);
+   lua_register(m_L, "c_setSenderAffiliation", c_setSenderAffiliation);
    lua_register(m_L, "c_hudLog", c_hudLog);
    lua_register(m_L, "c_setPanningObject", c_setPanningObject);
    lua_register(m_L, "c_setObjectProperty", c_setObjectProperty);
    lua_register(m_L, "c_getObjectProperty", c_getObjectProperty);
    lua_register(m_L, "c_setObjectMapState", c_setObjectMapState);
+   lua_register(m_L, "c_setObjectMapAffiliation", c_setObjectMapAffiliation);
    lua_register(m_L, "c_startSceneTimer", c_startSceneTimer);
    lua_register(m_L, "c_exitSceneSaveGameStatus", c_exitSceneSaveGameStatus);
    lua_register(m_L, "c_saveGameStatus", c_saveGameStatus);

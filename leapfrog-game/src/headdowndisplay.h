@@ -5,6 +5,7 @@
 #include "scales.h"
 #include "physdispconvert.h"
 #include "collisionentity.h"
+#include "layout.h"
 
 #include <string>
 #include <vector>
@@ -39,6 +40,7 @@ public:
 private:
    oxygine::ResAnim* m_resAnim;
    MapItemTypeEnum m_type;
+   Affiliation m_affiliation;
    oxygine::spActor m_realActor;
    HeadDownDisplay* m_parentMap;
    MapItem::MapItemStateEnum m_state;
@@ -79,6 +81,13 @@ public:
    oxygine::spActor getActor(void);
    int getId(void);
    void setState(MapItem::MapItemStateEnum state);
+
+   // The square's colour. It starts from the type (me is leapfrog,
+   // friendly*, neutral* and enemy* are friendly, neutral and enemy) and
+   // can be changed later; the shape (moving or stationary) stays.
+   void setAffiliation(Affiliation affiliation);
+   Affiliation getAffiliation(void);
+   static Affiliation affiliationFromType(MapItemTypeEnum type);
 
 protected:
    void doUpdate(const oxygine::UpdateState& us);
@@ -302,6 +311,9 @@ public:
 
    // Slow version, the item is looked up
    void setState(oxygine::spActor actor, MapItem::MapItemStateEnum state);
+
+   void setAffiliation(int itemId, Affiliation affiliation);
+   void setAffiliation(oxygine::spActor actor, Affiliation affiliation);
 
    void goToOrbit(void);
    void goToMenu(void);

@@ -5,6 +5,7 @@
 #include "scales.h"
 #include "physdispconvert.h"
 #include "collisionentity.h"
+#include "layout.h"
 
 DECLARE_SMART(MessageDisplay, spMessageDisplay);
 
@@ -14,6 +15,7 @@ public:
    std::string m_message;
    std::string m_sender;
    bool m_leftBubble;
+   Affiliation m_affiliation;
    bool m_inTransit;
    int m_preWait;
    int m_postWait;
@@ -22,6 +24,7 @@ public:
       std::string message,
       std::string sender,
       bool leftBubble,
+      Affiliation affiliation,
       int preWait,
       int postWait);
 };
@@ -97,12 +100,29 @@ public:
 
    void cleanAndClearMessageDisplay(void);
 
+   // The bubble frame gets the colour of the sender's affiliation, as set
+   // with setSenderAffiliation (none if the sender has not been set).
    void initMessage(
       bool leftBubble,
       const char* messageString,
       const char* senderString,
       int preWait,
       int postWait);
+
+   // Same, with the affiliation given for this message only
+   void initMessage(
+      bool leftBubble,
+      const char* messageString,
+      const char* senderString,
+      Affiliation affiliation,
+      int preWait,
+      int postWait);
+
+   // Sender name -> affiliation. Kept for the whole run (not cleared with
+   // the display), but not saved: missions set it up in
+   // setupMissionStateScene, so it follows the mission state after a load.
+   static void setSenderAffiliation(const std::string& sender, Affiliation affiliation);
+   static Affiliation getSenderAffiliation(const std::string& sender);
 
    void prepareFirstInQueue(void);
    void processFirstInQueue(void);
