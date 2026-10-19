@@ -172,6 +172,11 @@ void FlameParticle::atParticleDeath(oxygine::Event* event)
 
    myBody->GetWorld()->DestroyBody(myBody);
 
+   // This runs from the death tween, inside this actor's update, and
+   // doUpdate is still called after it in the same frame: don't leave it
+   // a destroyed body
+   m_body = NULL;
+
    this->detach();
 }
 
