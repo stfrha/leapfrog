@@ -16,6 +16,7 @@ private:
 
    // TEMPORARY DIAGNOSTIC (stray flame particles)
    b2Vec2 m_startVel;
+   b2Vec2 m_startPos;
    int m_groupIndex;
    bool m_strayReported;
 

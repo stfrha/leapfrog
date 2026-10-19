@@ -3,6 +3,7 @@
 #include "bodyuserdata.h"
 #include "actoruserdata.h"
 #include "graphicresources.h"
+#include "compoundobject.h"
 
 using namespace oxygine;
 
@@ -17,6 +18,7 @@ FlameParticle::FlameParticle(
    m_world(world),
    m_body(NULL),
    m_startVel(0.0f, 0.0f),
+   m_startPos(0.0f, 0.0f),
    m_groupIndex(groupIndex),
    m_strayReported(false)
 {
@@ -81,6 +83,7 @@ FlameParticle::FlameParticle(
 
    m_body = body;
    m_startVel = body->GetLinearVelocity();
+   m_startPos = pos;
 }
 
 void FlameParticle::doUpdate(const oxygine::UpdateState& us)
@@ -113,11 +116,38 @@ void FlameParticle::doUpdate(const oxygine::UpdateState& us)
       {
          b2Fixture* other = (ce->contact->GetFixtureA()->GetBody() == m_body) ?
             ce->contact->GetFixtureB() : ce->contact->GetFixtureA();
-         char buf[96];
-         snprintf(buf, sizeof(buf), " [type %d group %d touching %d]",
+         // What is it, where is it relative to where the particle was
+         // created (the nozzle), and does it move with the ship?
+         b2Body* ob = other->GetBody();
+         b2Vec2 rel = ob->GetPosition() - m_startPos;
+         b2Vec2 ov = ob->GetLinearVelocity();
+         const b2AABB& box = other->GetAABB(0);
+         b2Vec2 size = box.upperBound - box.lowerBound;
+         oxygine::Actor* act = BodyUserData::getActor<oxygine::Actor*>(other->GetUserData());
+         std::string name = "?";
+         std::string parentName = "?";
+         int attached = -1;
+         int visible = -1;
+         if (act)
+         {
+            name = act->getName();
+            attached = (act->getParent() != NULL) ? 1 : 0;
+            visible = (act->getVisible() && act->getAlpha() > 0) ? 1 : 0;
+            CompoundObject* co = ActorUserData::getParentObject(act->getUserData());
+            if (co)
+            {
+               parentName = co->getName();
+            }
+         }
+         char buf[320];
+         snprintf(buf, sizeof(buf),
+            " [type %d group %d touching %d, '%s' in '%s', attached %d visible %d, %.1f m from nozzle (%.1f, %.1f), its vel (%.1f, %.1f), size %.1f x %.1f]",
             (int)BodyUserData::getCollisionType(other->GetUserData()),
             (int)other->GetFilterData().groupIndex,
-            (int)ce->contact->IsTouching());
+            (int)ce->contact->IsTouching(),
+            name.c_str(), parentName.c_str(), attached, visible,
+            rel.Length(), rel.x, rel.y, ov.x, ov.y,
+            size.x, size.y);
          touching += buf;
       }
 
