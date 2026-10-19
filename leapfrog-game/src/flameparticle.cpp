@@ -104,9 +104,22 @@ void FlameParticle::doUpdate(const oxygine::UpdateState& us)
    {
       m_strayReported = true;
 
+      // Bounces off mines (18) and explosion pieces (17) are expected;
+      // leave them out so the log shows the unexplained ones
+      for (b2ContactEdge* ce = m_body->GetContactList(); ce; ce = ce->next)
+      {
+         b2Fixture* other = (ce->contact->GetFixtureA()->GetBody() == m_body) ?
+            ce->contact->GetFixtureB() : ce->contact->GetFixtureA();
+         int t = (int)BodyUserData::getCollisionType(other->GetUserData());
+         if ((t == 17) || (t == 18))
+         {
+            return;
+         }
+      }
+
       static int s_strays = 0;
       s_strays++;
-      if (s_strays > 40)
+      if (s_strays > 80)
       {
          return;
       }
