@@ -12,6 +12,8 @@
             <local:HeadlineControl Headline="Dynamic Circle" />
             <local:StringEditorControl Headline="Name" MyValue="{Binding Name, Mode=TwoWay}" />
             <local:TexturePickerEditorControl Headline="Texture" MyValue="{Binding Texture, Mode=TwoWay}" />
+            <local:StringEditorControl Headline="Color" MyValue="{Binding Color, Mode=TwoWay}" />
+            <local:StringEditorControl Headline="Add Color" MyValue="{Binding AddColor, Mode=TwoWay}" />
             <local:DoubleEditorControl Headline="Animate Period" MyValue="{Binding AnimatePeriod, Mode=TwoWay}" />
             <local:DoubleEditorControl Headline="PosX" MyValue="{Binding PosX, Mode=TwoWay}" />
             <local:DoubleEditorControl Headline="PosY" MyValue="{Binding PosY, Mode=TwoWay}" />

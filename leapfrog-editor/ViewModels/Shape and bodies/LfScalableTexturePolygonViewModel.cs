@@ -204,6 +204,13 @@ namespace LeapfrogEditor
       #endregion
 
    
+      // The border decorations are tinted like the polygon
+      protected override void OnTintChanged()
+      {
+         base.OnTintChanged();
+         InvalidateAllVertices();
+      }
+
       // Called by derived view models once ModelObject is set
       protected void CreateBorderVms()
       {

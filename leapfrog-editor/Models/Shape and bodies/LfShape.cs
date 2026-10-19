@@ -23,6 +23,8 @@ namespace LeapfrogEditor
       private uint _collisionCategory;
       private uint _collisionMask;
       private double _animatePeriod;
+      private string _color = "";
+      private string _addColor = "";
 
       #endregion
 
@@ -123,6 +125,32 @@ namespace LeapfrogEditor
       public bool ShouldSerializeAnimatePeriod()
       {
          return _animatePeriod > 0.0;
+      }
+
+      // Tint: multiplied colour, "rrggbb" or "rrggbbaa" ("" = none)
+      [XmlAttribute("color")]
+      public string Color
+      {
+         get { return _color; }
+         set { _color = value ?? ""; }
+      }
+
+      public bool ShouldSerializeColor()
+      {
+         return !string.IsNullOrEmpty(_color);
+      }
+
+      // Tint: colour added on top, "rrggbb" or "rrggbbaa" ("" = none)
+      [XmlAttribute("addColor")]
+      public string AddColor
+      {
+         get { return _addColor; }
+         set { _addColor = value ?? ""; }
+      }
+
+      public bool ShouldSerializeAddColor()
+      {
+         return !string.IsNullOrEmpty(_addColor);
       }
 
       #endregion

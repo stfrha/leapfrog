@@ -1,4 +1,6 @@
 #include <algorithm>
+#include <cstdio>
+#include <cstring>
 
 #include "compoundobject.h"
 #include "compoundobjectevents.h"
@@ -608,6 +610,31 @@ namespace
    };
 }
 
+// "rrggbb" or "rrggbbaa", with or without a leading '#'. With six digits
+// the alpha is defaultAlpha: 255 for a multiplied colour, but 0 for an added
+// colour (an added alpha would make semi-transparent edges more opaque).
+Color CompoundObject::parseHexColor(const char* str, unsigned char defaultAlpha)
+{
+   if (str[0] == '#')
+   {
+      str++;
+   }
+
+   unsigned int v = 0;
+   size_t len = strlen(str);
+   if (((len != 6) && (len != 8)) || (sscanf(str, "%x", &v) != 1))
+   {
+      logs::warning("Bad colour '%s', expected rrggbb or rrggbbaa", str);
+      return Color(255, 255, 255, defaultAlpha);
+   }
+
+   if (len == 6)
+   {
+      return Color((v >> 16) & 0xff, (v >> 8) & 0xff, v & 0xff, defaultAlpha);
+   }
+   return Color((v >> 24) & 0xff, (v >> 16) & 0xff, (v >> 8) & 0xff, v & 0xff);
+}
+
 void CompoundObject::doCommonShapeDefinitions(
    Sprite* sprite,
    xml_node& objectNode)
@@ -616,6 +643,22 @@ void CompoundObject::doCommonShapeDefinitions(
    sprite->setName(objectNode.attribute("name").as_string());
    sprite->setPriority((short)objectNode.attribute("zLevel").as_int());
    sprite->setTouchChildrenEnabled(false);
+
+   // Tint, so one texture can be reused in another tone or brightness:
+   //   color     multiplies the texture (rrggbb or rrggbbaa, default ffffffff)
+   //   addColor  is added on top, scaled by the texture's alpha, to lighten
+   //             or haze towards a colour (rrggbb or rrggbbaa, default 0)
+   // Border decorations of polygons get the same tint (createPolygonBorders).
+   const char* colorStr = objectNode.attribute("color").as_string("");
+   if (colorStr[0] != 0)
+   {
+      sprite->setColor(parseHexColor(colorStr, 255));
+   }
+   const char* addColorStr = objectNode.attribute("addColor").as_string("");
+   if (addColorStr[0] != 0)
+   {
+      sprite->setAddColor(parseHexColor(addColorStr, 0));
+   }
 
    // animatePeriod (seconds): loop through all frames of the texture (rows
    // and cols in its resource entry) once per period. Without it, or for a

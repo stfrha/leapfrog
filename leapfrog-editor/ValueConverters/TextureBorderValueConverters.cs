@@ -327,6 +327,11 @@ namespace LeapfrogEditor
                   return null;
                }
 
+               LfShapeViewModel tintSource = origVertex.Parent as LfShapeViewModel;
+               if (tintSource != null)
+               {
+                  return TextureTint.Get(texture, tintSource.Color, tintSource.AddColor);
+               }
                return TextureImages.Get(texture);
             }
          }

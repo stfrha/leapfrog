@@ -274,6 +274,8 @@ public:
       const oxygine::Vector2& pos,
       pugi::xml_node& objectNode);
 
+   static oxygine::Color parseHexColor(const char* str, unsigned char defaultAlpha);
+
    static void doCommonShapeDefinitions(
       oxygine::Sprite* sprite,
       pugi::xml_node& objectNode);

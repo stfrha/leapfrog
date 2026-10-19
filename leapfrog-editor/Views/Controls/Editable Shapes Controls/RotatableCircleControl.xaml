@@ -19,7 +19,7 @@
       <Image
          Width="{Binding Radius, Converter={StaticResource TwiceDoubleValueConverter}}"
          Height="{Binding Radius, Converter={StaticResource TwiceDoubleValueConverter}}"
-         Source="{Binding Texture, Converter={StaticResource TexturePathValueConverter}}"
+         Source="{Binding TextureImage}"
          Stretch="Fill"
 		   MouseDown="Shape_MouseDown"
 		   MouseUp="Shape_MouseUp"

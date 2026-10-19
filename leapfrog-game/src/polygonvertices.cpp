@@ -33,8 +33,14 @@ vertexPCT2* PolygonVertices::createTriangleVertices(
    const vector<Vector2>& vertices, 
    const vector<VectorT3<int> >& triangles, 
    const Vector2& textureMeterSize, 
-   const Vector2& textureMeterOffset)
+   const Vector2& textureMeterOffset,
+   const Color& color)
 {
+   // oxygine::Polygon ignores Sprite::setColor and draws with the vertex
+   // colours, so a polygon's tint is put in its vertices (premultiplied,
+   // like the textures).
+   const unsigned int vertexColor = color.premultiplied().rgba();
+
    // find alignment so bitmap "starts" at the left-most point of the polygon
    // This is done by finding the min of the x and y coordinates of all 
    // vertices
@@ -67,26 +73,26 @@ vertexPCT2* PolygonVertices::createTriangleVertices(
          vertices[(size_t)triangles[t].x - 1].x,
          vertices[(size_t)triangles[t].x - 1].y);
 
-      *p = initVertex(pos, Color::White, textureMeterSize, alignment, textureMeterOffset);
+      *p = initVertex(pos, vertexColor, textureMeterSize, alignment, textureMeterOffset);
       ++p;
 
       pos = Vector2(
          vertices[(size_t)triangles[t].y - 1].x,
          vertices[(size_t)triangles[t].y - 1].y);
 
-      *p = initVertex(pos, Color::White, textureMeterSize, alignment, textureMeterOffset);
+      *p = initVertex(pos, vertexColor, textureMeterSize, alignment, textureMeterOffset);
       ++p;
 
       pos = Vector2(
          vertices[(size_t)triangles[t].z - 1].x,
          vertices[(size_t)triangles[t].z - 1].y);
 
-      *p = initVertex(pos, Color::White, textureMeterSize, alignment, textureMeterOffset);
+      *p = initVertex(pos, vertexColor, textureMeterSize, alignment, textureMeterOffset);
       ++p;
 
       //Oxygine uses "triangles strip" rendering mode
       //dublicate last vertex (degenerate triangles)
-      *p = initVertex(pos, Color::White, textureMeterSize, alignment, textureMeterOffset);
+      *p = initVertex(pos, vertexColor, textureMeterSize, alignment, textureMeterOffset);
       ++p;
    }
 
@@ -126,7 +132,8 @@ void PolygonVertices::createLocalSpritePolygon(
       vertices,
       triangles,
       textureMeterSize,
-      textureMeterOffset);
+      textureMeterOffset,
+      polygon->getColor());
 
    polygon->setVertices(vs, sizeof(vertexPCT2) *  triangles.size() * 4, vertexPCT2::FORMAT, true);
 
@@ -179,7 +186,8 @@ void PolygonVertices::createSpritePolygon(
       vertices,
       triangles,
       textureMeterSize,
-      textureMeterOffset);
+      textureMeterOffset,
+      polygon->getColor());      // tint from the shape's color attribute
 
    polygon->setVertices(vs, sizeof(vertexPCT2) *  triangles.size() * 4, vertexPCT2::FORMAT, true);
 }
@@ -453,6 +461,7 @@ void PolygonVertices::createPolygonBorders(
                spPolygon border = new oxygine::Polygon();
                border->setResAnim(g_GraphRes.getResAnim(texture));
                border->setAnchor(0.0f, 0.5f);
+               border->setAddColor(polygon->getAddColor());      // same tint as the polygon
 
                vector<Vector2> vertices(4);
                vertices[0] = Vector2(0.0f, 0.0f);
@@ -469,7 +478,8 @@ void PolygonVertices::createPolygonBorders(
                   vertices,
                   triangles,
                   Vector2(textMeterWidth, textMeterHeight),
-                  Vector2(0.0f, 0.0f));
+                  Vector2(0.0f, 0.0f),
+                  polygon->getColor());
 
                border->setVertices(vs, sizeof(vertexPCT2) *  triangles.size() * 4, vertexPCT2::FORMAT, true);
 
@@ -559,6 +569,7 @@ void PolygonVertices::createPolygonBorders(
             spPolygon border = new oxygine::Polygon();
             border->setResAnim(g_GraphRes.getResAnim(texture));
             border->setAnchor(0.0f, 0.5f);
+            border->setAddColor(polygon->getAddColor());         // same tint as the polygon
 
             vector<Vector2> vertices(4);
             vertices[0] = Vector2(0.0f, 0.0f);
@@ -575,7 +586,8 @@ void PolygonVertices::createPolygonBorders(
                vertices,
                triangles,
                Vector2(textMeterWidth, textMeterHeight),
-               Vector2(0.0f, 0.0f));
+               Vector2(0.0f, 0.0f),
+               polygon->getColor());
 
             border->setVertices(vs, sizeof(vertexPCT2) *  triangles.size() * 4, vertexPCT2::FORMAT, true);
 

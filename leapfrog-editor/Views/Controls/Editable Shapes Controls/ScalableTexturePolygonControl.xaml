@@ -26,7 +26,7 @@
                      Stretch="Uniform"
                      AlignmentX="Center"
                      AlignmentY="Center" 
-                     ImageSource="{Binding Texture, Converter={StaticResource TexturePathValueConverter}}" >
+                     ImageSource="{Binding TextureImage}" >
                <ImageBrush.Viewport>
                   <MultiBinding Converter="{StaticResource TextureRectMultiValueConverter}" >
                      <Binding Path="TextureOffsetX" />

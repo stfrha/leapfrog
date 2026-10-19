@@ -30,7 +30,8 @@ public:
       const std::vector<oxygine::Vector2>& vertices,
       const std::vector<oxygine::VectorT3<int> >& triangles,
       const oxygine::Vector2& mSize,
-      const oxygine::Vector2& mOffset);      
+      const oxygine::Vector2& mOffset,
+      const oxygine::Color& color = oxygine::Color(oxygine::Color::White));
 
    static void readVertices(
       std::vector<oxygine::Vector2>& vertices,

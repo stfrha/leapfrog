@@ -79,7 +79,62 @@ namespace LeapfrogEditor
 
             _modelObject.Texture = value;
             OnPropertyChanged("Texture");
+            OnPropertyChanged("TextureImage");
          }
+      }
+
+      // The texture as the game shows it: first frame, with the tint
+      public System.Windows.Media.ImageSource TextureImage
+      {
+         get
+         {
+            if (_modelObject == null) return null;
+
+            return TextureTint.Get(_modelObject.Texture, _modelObject.Color, _modelObject.AddColor);
+         }
+      }
+
+      // Tint multiplied with the texture, "rrggbb" or "rrggbbaa" (empty = none)
+      public string Color
+      {
+         get
+         {
+            if (_modelObject == null) return "";
+
+            return _modelObject.Color;
+         }
+         set
+         {
+            if (_modelObject == null) return;
+
+            _modelObject.Color = TextureTint.Normalize(value, false);
+            OnPropertyChanged("Color");
+            OnTintChanged();
+         }
+      }
+
+      // Tint added on top of the texture, "rrggbb" or "rrggbbaa" (empty = none)
+      public string AddColor
+      {
+         get
+         {
+            if (_modelObject == null) return "";
+
+            return _modelObject.AddColor;
+         }
+         set
+         {
+            if (_modelObject == null) return;
+
+            _modelObject.AddColor = TextureTint.Normalize(value, true);
+            OnPropertyChanged("AddColor");
+            OnTintChanged();
+         }
+      }
+
+      protected virtual void OnTintChanged()
+      {
+         OnPropertyChanged("TextureImage");
       }
 
       // Seconds per cycle through the texture's frames in the game; 0 = still
