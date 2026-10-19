@@ -24,6 +24,7 @@
     collisionEntity="notApplicable"
     collisionCategory="1"
     collisionMask="65534"
+    color="ffb0a090"
     width="250"
     height="100"
     parallaxAmount="0.8" />
@@ -37,6 +38,7 @@
     collisionEntity="notApplicable"
     collisionCategory="1"
     collisionMask="65534"
+    color="ffb0a030"
     width="250"
     height="100"
     parallaxAmount="0.8" />
@@ -63,53 +65,53 @@
     collisionEntity="notApplicable"
     collisionCategory="1"
     collisionMask="65534"
-    width="23.95"
-    height="13.55"
+    width="34.214285714285715"
+    height="19.357142857142858"
     parallaxAmount="0.4" />
   <spriteBox
     name="container"
     texture="amb_container_home"
-    posX="1775.3333983877915"
-    posY="602.66480559660977"
+    posX="1787.8805787536148"
+    posY="590.88581994706146"
     angle="0"
     zLevel="34"
     collisionEntity="notApplicable"
     collisionCategory="1"
     collisionMask="65534"
-    width="10.85"
-    height="11.4"
+    width="15.5"
+    height="16.285714285714285"
     parallaxAmount="0.4" />
   <spriteBox
     name="waterTower"
     texture="amb_water_tower"
-    posX="1729.5717193531864"
-    posY="580.92736897811074"
+    posX="1715.3619799298322"
+    posY="578.98169841884464"
     angle="0"
     zLevel="34"
     collisionEntity="notApplicable"
     collisionCategory="1"
     collisionMask="65534"
-    width="7.95"
-    height="17.9"
+    width="11.357142857142858"
+    height="25.571428571428573"
     parallaxAmount="0.4" />
   <spriteBox
     name="dome"
     texture="amb_dome"
-    posX="1758.2959549782886"
-    posY="595.623003700131"
+    posX="1689.4144954189742"
+    posY="591.26990030790694"
     angle="0"
     zLevel="34"
     collisionEntity="notApplicable"
     collisionCategory="1"
     collisionMask="65534"
-    width="14.65"
-    height="13.75"
+    width="20.928571428571427"
+    height="19.642857142857142"
     parallaxAmount="0.4" />
   <spriteBox
     name="hut1"
     texture="amb_hut"
-    posX="1786.5687461950301"
-    posY="585.70592982743392"
+    posX="1761.930612215454"
+    posY="594.35714119057138"
     angle="0"
     zLevel="35"
     collisionEntity="notApplicable"
@@ -121,8 +123,8 @@
   <spriteBox
     name="hut2"
     texture="amb_hut"
-    posX="1718.6640668819382"
-    posY="593.85861885998747"
+    posX="1718.5309583277585"
+    posY="600.64769007356153"
     angle="0"
     zLevel="35"
     collisionEntity="notApplicable"
@@ -450,7 +452,7 @@
     zLevel="33"
     collisionEntity="notApplicable"
     collisionCategory="1"
-    collisionMask="65534"
+    collisionMask="65533"
     textureMeterWidth="200"
     textureMeterHeight="200"
     textureOffsetMeterX="0"
@@ -458,26 +460,46 @@
     <vertices>
       <vertex
         id="1"
+        x="153.94331348996434"
+        y="23.63634912081352" />
+      <vertex
+        id="2"
+        x="155.66372849154482"
+        y="-9.1617803240591229" />
+      <vertex
+        id="3"
+        x="178.43126758993594"
+        y="-8.2209969727940688" />
+      <vertex
+        id="4"
+        x="180.46380611827317"
+        y="-7.5063840798158026" />
+      <vertex
+        id="5"
+        x="177.3819436494457"
+        y="22.050680800973851" />
+      <vertex
+        id="6"
         x="189.52227673672678"
         y="23.167538203611457" />
       <vertex
-        id="2"
+        id="7"
         x="213.91544267164272"
         y="27.968528208798489" />
       <vertex
-        id="3"
+        id="8"
         x="273.0512152811466"
         y="43.042556103432162" />
       <vertex
-        id="4"
+        id="9"
         x="69.029201772798842"
         y="47.986394078048761" />
       <vertex
-        id="5"
+        id="10"
         x="121.09596983552342"
         y="27.621854528134577" />
       <vertex
-        id="6"
+        id="11"
         x="137.07404130031455"
         y="24.675482310916323" />
     </vertices>
@@ -485,20 +507,45 @@
       <triangle
         id="1"
         v1="1"
+        v2="11"
+        v3="10" />
+      <triangle
+        id="2"
+        v1="1"
+        v2="10"
+        v3="9" />
+      <triangle
+        id="3"
+        v1="1"
+        v2="9"
+        v3="8" />
+      <triangle
+        id="4"
+        v1="1"
+        v2="8"
+        v3="7" />
+      <triangle
+        id="5"
+        v1="1"
+        v2="7"
+        v3="6" />
+      <triangle
+        id="6"
+        v1="1"
         v2="6"
         v3="5" />
       <triangle
-        id="2"
+        id="7"
         v1="1"
         v2="5"
         v3="4" />
       <triangle
-        id="3"
+        id="8"
         v1="1"
         v2="4"
         v3="3" />
       <triangle
-        id="4"
+        id="9"
         v1="3"
         v2="2"
         v3="1" />
