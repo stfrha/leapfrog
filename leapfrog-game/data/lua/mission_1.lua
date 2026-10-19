@@ -3,10 +3,8 @@
 local mission1 = {}
 
 -- Home scene, first mission: the taskgiver's call and Edith cutting in.
--- The Orb is the ore building (oreLanding pad at x = 1243); the leapfrog
--- starts on the silo pad at x = 2215. Edith speaks up when the leapfrog is
--- a third of the way there.
-local homeOrbThirdX = 2215 - (2215 - 1243) / 3
+-- Edith speaks up when the leapfrog has landed on the Orb's pad
+-- (oreLanding), so the dialog isn't read while flying.
 local homeEdithDialogDone = false
 
 -- c_addDialogMessage(message, sender, leftSide, preDelay, postDelay)
@@ -34,6 +32,9 @@ end
 local function registerHomeHandlers()
    -- The launch site takes the leapfrog to deep space
    c_registerEventHandler("launchSite1", "LsLL", 0, 0)
+
+   -- Landed on the Orb's pad: Edith cuts in (once)
+   c_registerEventHandler("oreLanding", "LpLL", 0, 0)
 end
 
 
@@ -80,11 +81,7 @@ mission1.setupMissionStateScene = function()
 
             playTaskgiverCall()
 
-            -- Edith cuts in a third of the way to the Orb: leapfrog
-            -- property 3 (xPos) below homeOrbThirdX
             homeEdithDialogDone = false
-            c_registerPropertyTrigger("leapfrog1", 1, 3, "insideRange", -100000, homeOrbThirdX)
-            c_registerEventHandler("leapfrog1", "OpTr", 0, 0)
          end
       end
 
@@ -187,14 +184,11 @@ mission1.missionStateSceneEventHandler = function(eventId, actorName, parameter1
 
    if currentScene == "home_scene.xml" then
 
-      if actorName == "leapfrog1" and eventId == "OpTr" and parameter1 == 3 then
-         -- The trigger fires on every move while inside the range, so play
-         -- once and remove it
+      if actorName == "oreLanding" and eventId == "LpLL" then
+         -- Every landing there sends the event, so play only the first time
          if homeEdithDialogDone == false then
             homeEdithDialogDone = true
             playEdithCutsIn()
-            c_clearAllTriggersAndEvents()
-            registerHomeHandlers()
          end
       end
 
