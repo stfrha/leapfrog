@@ -17,7 +17,7 @@ local function playTaskgiverCall()
    c_addDialogMessage("No. I'm in good shape. Where did you hear that?", "Leapfrog", false, 90, 0)
    c_addDialogMessage("Grapevine. If you are so strong, I can give this little job to someone else.", "Taskgiver", true, 120, 0)
    c_addDialogMessage("Hold up, let's talk about it.", "Leapfrog", false, 60, 0)
-   c_addDialogMessage("Get over to the Orb. I repaired the pentahouse suite.", "Taskgiver", true, 90, 0)
+   c_addDialogMessage("Get over to the Orb. I repaired the penthouse suite.", "Taskgiver", true, 90, 0)
 end
 
 local function playEdithCutsIn()
@@ -66,7 +66,7 @@ mission1.setupMissionStateScene = function()
 
       -- The silo's pad is home: white on the map (landing pads are
       -- neutral by default). "noName" is the pad's box in home_scene.xml.
-      c_setObjectMapAffiliation("siloLandingPad", "noName", "leapfrog")
+      c_setObjectMapAffiliation("siloLandingPad", "siloHome", "leapfrog")
 
       if lfDefined == false then
          if useInitialLfPos == true then

@@ -602,7 +602,7 @@
     <compoundObject
       needsGroupIndex="false">
       <staticBox
-        name="noName"
+        name="siloHome"
         texture="transparent"
         posX="0"
         posY="0"
