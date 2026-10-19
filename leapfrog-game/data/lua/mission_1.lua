@@ -64,6 +64,10 @@ mission1.setupMissionStateScene = function()
 
       registerHomeHandlers()
 
+      -- The silo's pad is home: white on the map (landing pads are
+      -- neutral by default). "noName" is the pad's box in home_scene.xml.
+      c_setObjectMapAffiliation("siloLandingPad", "noName", "leapfrog")
+
       if lfDefined == false then
          if useInitialLfPos == true then
             -- New game: start at home, hovering just above the silo's
