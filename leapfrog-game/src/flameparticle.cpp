@@ -71,7 +71,9 @@ FlameParticle::FlameParticle(
    // Give particle the same speed as the emitter body
    body->SetLinearVelocity(vel);
 
-   body->ApplyLinearImpulse(impulseForce, b2Vec2(0.5, 0.5), true);
+   // At the centre: the point is in world coordinates, so the old fixed
+   // (0.5, 0.5) also set the particle spinning
+   body->ApplyLinearImpulse(impulseForce, body->GetWorldCenter(), true);
 
    m_body = body;
 }

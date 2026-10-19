@@ -84,8 +84,11 @@ void FlameEmitter::doUpdate(const oxygine::UpdateState& us)
 
       b2Vec2 emitPos = b2Vec2(dist * cos(bodyAngle), dist * sin(bodyAngle)) + originPos;
 
-      // Randomise impulse magnistude to get spread
-      float ri = static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / 250.0f)) - 125.0f;
+      // Randomise impulse magnitude to get spread: +/- 40 % of the
+      // magnitude. (It was +/- 125 whatever the magnitude, which with the
+      // magnitudes used now, 35-90, made some particles get a negative
+      // impulse and fly forward instead of out of the engine.)
+      float ri = (static_cast <float> (rand()) / static_cast <float> (RAND_MAX) - 0.5f) * 0.8f * m_impulseMagnitude;
 
       b2Vec2 impulse = b2Vec2((ri + m_impulseMagnitude) * cos(emitAngle), (ri + m_impulseMagnitude) * sin(emitAngle));
 
@@ -95,10 +98,14 @@ void FlameEmitter::doUpdate(const oxygine::UpdateState& us)
       }
 
       // Create one test flame particle
+      // The particle starts with the velocity of the engine nozzle, not of
+      // the body's centre: when the leapfrog turns, the nozzle (far from the
+      // centre) moves sideways, and the centre's velocity would throw the
+      // particles to the side.
       spFlameParticle flameParticle = new FlameParticle(
          m_emitterBody->GetWorld(), 
          emitPos, 
-         m_emitterBody->GetLinearVelocity(),
+         m_emitterBody->GetLinearVelocityFromWorldPoint(emitPos),
          (int)((float)m_lifetime * m_scale), 
          m_scale * impulse,
          m_radius * m_scale,
