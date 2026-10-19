@@ -14,6 +14,11 @@ private:
    b2World* m_world;
    b2Body* m_body;
 
+   // TEMPORARY DIAGNOSTIC (stray flame particles)
+   b2Vec2 m_startVel;
+   int m_groupIndex;
+   bool m_strayReported;
+
 public:
 	FlameParticle(
       b2World* world, 

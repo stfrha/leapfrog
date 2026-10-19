@@ -14,7 +14,11 @@ FlameParticle::FlameParticle(
    b2Vec2 impulseForce,
    float radius,
    int groupIndex) :
-   m_world(world)
+   m_world(world),
+   m_body(NULL),
+   m_startVel(0.0f, 0.0f),
+   m_groupIndex(groupIndex),
+   m_strayReported(false)
 {
    // If lifetime is zero, for instance if scale is zero,
    // We do not create any body
@@ -76,10 +80,53 @@ FlameParticle::FlameParticle(
    body->ApplyLinearImpulse(impulseForce, body->GetWorldCenter(), true);
 
    m_body = body;
+   m_startVel = body->GetLinearVelocity();
 }
 
 void FlameParticle::doUpdate(const oxygine::UpdateState& us)
 {
+   // TEMPORARY DIAGNOSTIC (stray flame particles): report a particle whose
+   // velocity changes noticeably after it was created, and what it is
+   // touching then. Particles move in a straight line otherwise (no
+   // gravity in space), so a change means something pushed it.
+   if ((m_body == NULL) || m_strayReported)
+   {
+      return;
+   }
+
+   b2Vec2 vel = m_body->GetLinearVelocity();
+   b2Vec2 change = vel - m_startVel;
+
+   if (change.Length() > 5.0f)
+   {
+      m_strayReported = true;
+
+      static int s_strays = 0;
+      s_strays++;
+      if (s_strays > 40)
+      {
+         return;
+      }
+
+      std::string touching;
+      for (b2ContactEdge* ce = m_body->GetContactList(); ce; ce = ce->next)
+      {
+         b2Fixture* other = (ce->contact->GetFixtureA()->GetBody() == m_body) ?
+            ce->contact->GetFixtureB() : ce->contact->GetFixtureA();
+         char buf[96];
+         snprintf(buf, sizeof(buf), " [type %d group %d touching %d]",
+            (int)BodyUserData::getCollisionType(other->GetUserData()),
+            (int)other->GetFilterData().groupIndex,
+            (int)ce->contact->IsTouching());
+         touching += buf;
+      }
+
+      b2Vec2 pos = m_body->GetPosition();
+      logs::messageln("STRAY #%d group %d at (%.1f, %.1f): vel (%.1f, %.1f) -> (%.1f, %.1f), contacts:%s",
+         s_strays, -m_groupIndex, pos.x, pos.y,
+         m_startVel.x, m_startVel.y, vel.x, vel.y,
+         touching.empty() ? " none" : touching.c_str());
+   }
 }
 
 void FlameParticle::atParticleDeath(oxygine::Event* event)
