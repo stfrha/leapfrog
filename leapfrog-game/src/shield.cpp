@@ -149,6 +149,9 @@ void Shield::evaluatShieldDamage(void)
       filt.categoryBits = 0;
       filt.maskBits = 65533;
       bf->SetFilterData(filt);
+
+      // TEMPORARY DIAGNOSTIC (stray flame particles)
+      logs::messageln("SHIELD DOWN: cat %d mask %d group %d", (int)filt.categoryBits, (int)filt.maskBits, (int)filt.groupIndex);
    }
 }
 
@@ -188,6 +191,10 @@ void Shield::restartShield(void)
    filt.categoryBits = 1;
    filt.maskBits = 65533;
    bf->SetFilterData(filt);
+
+   // TEMPORARY DIAGNOSTIC (stray flame particles)
+   logs::messageln("SHIELD RESTART: cat %d mask %d group %d, shield body active %d",
+      (int)filt.categoryBits, (int)filt.maskBits, (int)filt.groupIndex, (int)m_body->IsActive());
 }
 
 
