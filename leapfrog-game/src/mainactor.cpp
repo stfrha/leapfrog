@@ -106,7 +106,7 @@ void MainActor::initMainActor(void)
    g_MessageDisplay->initialiseMessageDisplay(
       getStage().get(), 
       0.0f, 
-      g_Layout.getButtonWidth(), 
+      g_Layout.getButtonWidth() * 0.1f,   // normal top: nothing above it on the left
       g_Layout.getXFromLeft(0), 
       g_Layout.getXFromLeft(2), 
       g_Layout.getViewPortBounds().y, 

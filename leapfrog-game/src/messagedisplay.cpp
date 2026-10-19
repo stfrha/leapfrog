@@ -18,6 +18,13 @@ spMessageDisplay g_MessageDisplay;
 
 namespace
 {
+   // Messages kept for scrolling back in the expanded display
+   const size_t c_maxKeptMessages = 40;
+
+   // Expanded display: zoom, and width as a part of the screen width
+   const float c_expandedZoom = 1.1f;
+   const float c_expandedWidthPart = 0.6f;
+
    // Testing: true puts the message text in the affiliation colour too,
    // false keeps it phosphor green (only the bubble frame is coloured).
    // Uncategorised senders (none) are phosphor green either way.
@@ -63,6 +70,10 @@ MessageItem::MessageItem(
 
 
 MessageDisplay::MessageDisplay()  :
+   m_scrollActor(NULL),
+   m_scrollOffset(0.0f),
+   m_dragging(false),
+   m_dragLastY(0.0f),
    m_state(idle),
    m_noPreviousMessages(true),
    m_fullHeight(false),
@@ -75,8 +86,9 @@ void MessageDisplay::clearMessageDisplay(void)
    m_noPreviousMessages = true;
    m_messageQueue.clear();
 
-   // Clear the m_messageActor from bubble actors
-   spActor actor = m_messageActor->getFirstChild();
+   // Clear the scroll actor from bubble actors
+   setScrollOffset(0.0f);
+   spActor actor = m_scrollActor->getFirstChild();
 
    while (actor)
    {
@@ -132,6 +144,9 @@ void MessageDisplay::initialiseMessageDisplay(
    setTouchEnabled(true);
    setTouchChildrenEnabled(false);
    addTouchDownListener(CLOSURE(this, &MessageDisplay::touchDownHandler));
+   addEventListener(TouchEvent::MOVE, CLOSURE(this, &MessageDisplay::touchMoveHandler));
+   addTouchUpListener(CLOSURE(this, &MessageDisplay::touchUpHandler));
+   addEventListener(TouchEvent::WHEEL_DIR, CLOSURE(this, &MessageDisplay::wheelHandler));
    setAnchor(0.0f, 0.0f);
    //setSize(m_messageDisplayWidth, m_messageDisplayHeight);
    setPriority(250);
@@ -151,6 +166,12 @@ void MessageDisplay::initialiseMessageDisplay(
    messageActor->attachTo(mdFrame);
 
    m_messageActor = messageActor.get();
+
+   spActor scrollActor = new Actor();
+   scrollActor->setAnchor(0.0f, 0.0f);
+   scrollActor->setPosition(0.0f, 0.0f);
+   scrollActor->attachTo(messageActor);
+   m_scrollActor = scrollActor.get();
 
    setFullHeight(m_fullHeight);
 }
@@ -195,7 +216,10 @@ void MessageDisplay::touchDownHandler(oxygine::Event* event)
 {
    if (m_expanded)
    {
-      collapse(true);
+      // Start dragging to scroll
+      TouchEvent* te = static_cast<TouchEvent*>(event);
+      m_dragging = true;
+      m_dragLastY = te->localPosition.y;
    }
    else if (g_MainActor && g_MainActor->canPauseForMessages())
    {
@@ -203,9 +227,114 @@ void MessageDisplay::touchDownHandler(oxygine::Event* event)
    }
 }
 
+void MessageDisplay::touchMoveHandler(oxygine::Event* event)
+{
+   if (!m_expanded || !m_dragging)
+   {
+      return;
+   }
+
+   // localPosition is in the display's own (unscaled) coordinates, like
+   // the bubbles, so the content follows the finger
+   TouchEvent* te = static_cast<TouchEvent*>(event);
+   float y = te->localPosition.y;
+   setScrollOffset(m_scrollOffset + (y - m_dragLastY));
+   m_dragLastY = y;
+}
+
+void MessageDisplay::touchUpHandler(oxygine::Event* event)
+{
+   m_dragging = false;
+}
+
+void MessageDisplay::wheelHandler(oxygine::Event* event)
+{
+   // Mouse wheel on the desktop builds
+   if (m_expanded)
+   {
+      TouchEvent* te = static_cast<TouchEvent*>(event);
+      setScrollOffset(m_scrollOffset + te->wheelDirection.y * m_fontSize * 2.0f);
+   }
+}
+
+void MessageDisplay::dimmerTouchHandler(oxygine::Event* event)
+{
+   if (m_expanded)
+   {
+      collapse(true);
+   }
+}
+
+// 0 shows the newest message at the bottom; larger values move the
+// bubbles down to show older ones, up to the oldest kept bubble at the top
+void MessageDisplay::setScrollOffset(float offset)
+{
+   float maxOffset = getMaxScrollOffset();
+
+   if (offset > maxOffset)
+   {
+      offset = maxOffset;
+   }
+   if (offset < 0.0f)
+   {
+      offset = 0.0f;
+   }
+
+   m_scrollOffset = offset;
+
+   if (m_scrollActor)
+   {
+      m_scrollActor->setY(m_scrollOffset);
+   }
+}
+
+float MessageDisplay::getMaxScrollOffset(void)
+{
+   if (m_scrollActor == NULL)
+   {
+      return 0.0f;
+   }
+
+   // Bubbles are anchored at their bottom edge. Nothing to scroll while
+   // the oldest bubble is still within the top gap.
+   float top = 4.0f;
+   spActor actor = m_scrollActor->getFirstChild();
+   while (actor)
+   {
+      float bubbleTop = actor->getY() - actor->getHeight() * actor->getScaleY();
+      if (bubbleTop < top)
+      {
+         top = bubbleTop;
+      }
+      actor = actor->getNextSibling();
+   }
+
+   // Leave the same small gap above the oldest bubble as below the newest
+   float maxOffset = 4.0f - top;
+   return maxOffset > 0.0f ? maxOffset : 0.0f;
+}
+
+// Keeps the last c_maxKeptMessages bubbles. (m_displayedMessages is
+// trimmed in atNewBubbleFinished, not here: a redraw loops over it.)
+void MessageDisplay::pruneOldBubbles(void)
+{
+   size_t count = 0;
+   for (spActor a = m_scrollActor->getFirstChild(); a; a = a->getNextSibling())
+   {
+      count++;
+   }
+
+   while (count > c_maxKeptMessages)
+   {
+      // Oldest first
+      m_scrollActor->getFirstChild()->detach();
+      count--;
+   }
+}
+
 void MessageDisplay::expand(void)
 {
-   const float zoom = 1.3f;
+   const float zoom = c_expandedZoom;
    Vector2 viewport = g_Layout.getViewPortBounds();
    float margin = g_Layout.getButtonWidth() * 0.2f;
 
@@ -220,14 +349,19 @@ void MessageDisplay::expand(void)
    m_dimmer->setPosition(0.0f, 0.0f);
    m_dimmer->setSize(viewport);
    m_dimmer->setPriority(getPriority() - 1);
-   m_dimmer->addTouchDownListener(CLOSURE(this, &MessageDisplay::touchDownHandler));
+   m_dimmer->addTouchDownListener(CLOSURE(this, &MessageDisplay::dimmerTouchHandler));
    m_dimmer->attachTo(getParent());
    m_dimmer->addTween(Actor::TweenAlpha(140), 250);
 
-   // Same width as normal (so the bubbles keep their line breaks), all
-   // the height there is, then scaled up and centred
+   // Wider than normal and all the height there is, so more text fits,
+   // slightly scaled up and centred. The bubbles are redrawn for the new
+   // width (applySize).
    float height = (viewport.y - 2.0f * margin) / zoom;
-   float width = m_right - m_left;
+   float width = viewport.x * c_expandedWidthPart / zoom;
+   if (width < m_right - m_left)
+   {
+      width = m_right - m_left;
+   }
 
    removeTweens();
    applySize(width, height);
@@ -242,6 +376,7 @@ void MessageDisplay::expand(void)
 void MessageDisplay::collapse(bool animate)
 {
    m_expanded = false;
+   m_dragging = false;
 
    if (m_tapLabel)
    {
@@ -304,7 +439,7 @@ void MessageDisplay::createTapLabel(void)
    style.fontSize = fontSize;
    text->setStyle(style);
    text->setColor(g_Layout.getPhosphorColor());
-   text->setText("Tap to continue");
+   text->setText("Drag to scroll, tap outside to continue");
 
    const Rect& rect = text->getTextRect();
    float padX = fontSize * 0.5f;
@@ -406,10 +541,11 @@ void MessageDisplay::prepareFirstInQueue(void)
    else
    {
       // New message but there are already old messages on display
-      // we need to move old messages to make space for the new
-      startTransit();
-
+      // we need to move old messages to make space for the new.
+      // (State first: startTransit may finish at once and move on.)
       m_state = inTransit;
+
+      startTransit();
    }
 }
 
@@ -491,25 +627,29 @@ void MessageDisplay::startTransit(void)
    // Now we know the size of the new entry. We can now move all other children 
    // up by that same amount
 
+   // Bubbles that move out of view are kept (for scrolling back in the
+   // expanded display); only the oldest beyond c_maxKeptMessages go
+   pruneOldBubbles();
+
+   // A new message brings the view back to the newest
+   setScrollOffset(0.0f);
+
    spTween tween;
 
-   spActor actor = m_messageActor->getFirstChild();
-
-   vector<spActor> toOldToLiveList;
+   spActor actor = m_scrollActor->getFirstChild();
 
    while (actor)
    {
       Vector2 pos = actor->getPosition();
 
-      // Check if message is no longer visible
-      if (pos.y < 0)
+      // Only those that can be seen are animated, the others just move
+      if (pos.y >= 0)
       {
-         // TODO: remove actor
-         toOldToLiveList.push_back(actor);
+         tween = actor->addTween(Actor::TweenPosition(pos.x, pos.y - m_newMessageHeight - 4.0f), 500);
       }
       else
       {
-         tween = actor->addTween(Actor::TweenPosition(pos.x, pos.y - m_newMessageHeight - 4.0f), 500);
+         actor->setPosition(pos.x, pos.y - m_newMessageHeight - 4.0f);
       }
 
       actor = actor->getNextSibling();
@@ -520,10 +660,10 @@ void MessageDisplay::startTransit(void)
       // Lets use the last tween to get a call back when it is finished
       tween->setDoneCallback(CLOSURE(this, &MessageDisplay::atTransitFinished));
    }
-
-   for (auto it = toOldToLiveList.begin(); it !=  toOldToLiveList.end(); ++it)
+   else
    {
-      (*it)->detach();
+      // Nothing visible to move; carry on right away
+      atTransitFinished(NULL);
    }
 }
 
@@ -532,31 +672,15 @@ void MessageDisplay::instantTransit(void)
    // Now we know the size of the new entry. We can now move all other children 
    // up by that same amount
 
-   spActor actor = m_messageActor->getFirstChild();
+   pruneOldBubbles();
 
-   vector<spActor> toOldToLiveList;
+   spActor actor = m_scrollActor->getFirstChild();
 
    while (actor)
    {
       Vector2 pos = actor->getPosition();
-
-      // Check if message is no longer visible
-      if (pos.y < 0)
-      {
-         // TODO: remove actor
-         toOldToLiveList.push_back(actor);
-      }
-      else
-      {
-         actor->setPosition(pos.x, pos.y - m_newMessageHeight - 4.0f);
-      }
-
+      actor->setPosition(pos.x, pos.y - m_newMessageHeight - 4.0f);
       actor = actor->getNextSibling();
-   }
-
-   for (auto it = toOldToLiveList.begin(); it != toOldToLiveList.end(); ++it)
-   {
-      (*it)->detach();
    }
 }
 
@@ -565,7 +689,7 @@ void MessageDisplay::startMessageAnimation(void)
    // When all old messages are pushed up, 
    // we add the new actors
    m_newBubble->setScale(0.0f);
-   m_newBubble->attachTo(m_messageActor);
+   m_newBubble->attachTo(m_scrollActor);
 
    spTween tween = m_newBubble->addTween(Actor::TweenScale(1.0f, 1.0f), 250, 1, false, 0, Tween::EASE::ease_inOutBack);
 
@@ -596,6 +720,12 @@ void MessageDisplay::atNewBubbleFinished(oxygine::Event* event)
       m_displayedMessages.push_back(*(m_messageQueue.begin()));
       m_messageQueue.erase(m_messageQueue.begin());
    }
+
+   // The same number of messages as bubbles is kept for a redraw
+   while (m_displayedMessages.size() > c_maxKeptMessages)
+   {
+      m_displayedMessages.erase(m_displayedMessages.begin());
+   }
 }
 
 void MessageDisplay::redrawMessages(void)
@@ -624,7 +754,7 @@ void MessageDisplay::redrawMessages(void)
          m_noPreviousMessages = false;
 
          m_newBubble->setScale(1.0f);
-         m_newBubble->attachTo(m_messageActor);
+         m_newBubble->attachTo(m_scrollActor);
       }
       else
       {
@@ -632,7 +762,7 @@ void MessageDisplay::redrawMessages(void)
          // we need to move old messages to make space for the new
          instantTransit();
          m_newBubble->setScale(1.0f);
-         m_newBubble->attachTo(m_messageActor);
+         m_newBubble->attachTo(m_scrollActor);
       }
    }
 }

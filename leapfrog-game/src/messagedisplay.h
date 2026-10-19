@@ -45,6 +45,12 @@ private:
    bool m_fullHeight; 
 
    oxygine::ClipRectActor* m_messageActor;
+   // Holds the bubbles, inside the clip rect. Moved down to scroll back
+   // to older messages in the expanded display.
+   oxygine::Actor* m_scrollActor;
+   float m_scrollOffset;
+   bool m_dragging;
+   float m_dragLastY;
    oxygine::Actor* m_mdFrame;
 
    float m_highTop;
@@ -68,8 +74,9 @@ private:
    float m_newMessageHeight;
 
    // Tap to enlarge: the game pauses and the display is shown in the
-   // middle of the screen, full height and a bit zoomed in. Another
-   // tap anywhere puts it back and continues the game.
+   // middle of the screen, full height, wider and slightly zoomed in.
+   // Dragging on it scrolls back through older messages; a tap outside
+   // puts it back and continues the game.
    bool m_expanded;
    oxygine::spColorRectSprite m_dimmer;
    oxygine::spActor m_tapLabel;
@@ -77,6 +84,13 @@ private:
    void clearMessageDisplay(void);
    void applySize(float width, float height);
    void touchDownHandler(oxygine::Event* event);
+   void touchMoveHandler(oxygine::Event* event);
+   void touchUpHandler(oxygine::Event* event);
+   void wheelHandler(oxygine::Event* event);
+   void dimmerTouchHandler(oxygine::Event* event);
+   void setScrollOffset(float offset);
+   float getMaxScrollOffset(void);
+   void pruneOldBubbles(void);
    void expand(void);
    void collapse(bool animate);
    void collapseTweenDone(oxygine::Event* event);
