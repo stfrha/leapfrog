@@ -7,6 +7,12 @@ local mission1 = {}
 -- (oreLanding), so the dialog isn't read while flying.
 local homeEdithDialogDone = false
 
+-- The launch site's square on the map shows up once the mission has been
+-- received, i.e. when Edith has had her say. The timer is started with
+-- her dialog and lasts about as long as it takes to show (frames).
+local homeEdithDialogTicks = 660
+local homeLaunchSiteTimer = -1
+
 -- c_addDialogMessage(message, sender, leftSide, preDelay, postDelay)
 -- Others on the left, the pilot on the right. Delays are in frames.
 local function playTaskgiverCall()
@@ -64,6 +70,9 @@ mission1.setupMissionStateScene = function()
    if currentScene == "home_scene.xml" then
 
       registerHomeHandlers()
+
+      -- Launch site on the map only after the mission has been received
+      c_setObjectMapShown("launchSite1", "mainTank", homeEdithDialogDone)
 
       -- The silo's pad is home: white on the map (landing pads are
       -- neutral by default). "noName" is the pad's box in home_scene.xml.
@@ -189,7 +198,12 @@ mission1.missionStateSceneEventHandler = function(eventId, actorName, parameter1
          if homeEdithDialogDone == false then
             homeEdithDialogDone = true
             playEdithCutsIn()
+            homeLaunchSiteTimer = c_startSceneTimer(homeEdithDialogTicks)
          end
+      end
+
+      if eventId == "ScTO" and parameter1 == homeLaunchSiteTimer then
+         c_setObjectMapShown("launchSite1", "mainTank", true)
       end
 
       if eventId == "LsLL" then

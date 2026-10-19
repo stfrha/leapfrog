@@ -466,6 +466,30 @@ static int c_setObjectMapAffiliation(lua_State *L)
    return 0;
 }
 
+// c_setObjectMapShown(objectName, actorName, shown)
+// Shows (true) or hides (false) an object's square on the HDD map, e.g.
+// to reveal a mission objective. Same names as c_setObjectMapState.
+static int c_setObjectMapShown(lua_State *L)
+{
+   std::string objectName = lua_tostring(L, 1);
+   std::string actorName = lua_tostring(L, 2);
+   bool shown = lua_toboolean(L, 3);
+
+   CompoundObject* obj = g_LuaInterface.getSceneActor()->getObject(objectName);
+
+   if (obj != NULL)
+   {
+      spActor act = obj->getActor(actorName);
+
+      if (act != NULL)
+      {
+         g_HeadDownDisplay->setItemShown(act, shown);
+      }
+   }
+
+   return 0;
+}
+
 static int c_startSceneTimer(lua_State *L)
 {
    int numOfTicks = lua_tointeger(L, 1);
@@ -598,6 +622,7 @@ void LuaInterface::initLuaInterface(void)
    lua_register(m_L, "c_getObjectProperty", c_getObjectProperty);
    lua_register(m_L, "c_setObjectMapState", c_setObjectMapState);
    lua_register(m_L, "c_setObjectMapAffiliation", c_setObjectMapAffiliation);
+   lua_register(m_L, "c_setObjectMapShown", c_setObjectMapShown);
    lua_register(m_L, "c_startSceneTimer", c_startSceneTimer);
    lua_register(m_L, "c_exitSceneSaveGameStatus", c_exitSceneSaveGameStatus);
    lua_register(m_L, "c_saveGameStatus", c_saveGameStatus);

@@ -25,6 +25,7 @@ MapItem::MapItem(
    m_itemId(id),
    m_type(type),
    m_affiliation(affiliationFromType(type)),
+   m_shownOnMap(true),
    m_state(state),
    m_parentMap(NULL),
    m_realActor(actor)
@@ -43,6 +44,7 @@ MapItem::MapItem(
    m_itemId(id),
    m_type(type),
    m_affiliation(affiliationFromType(type)),
+   m_shownOnMap(true),
    m_state(state),
    m_parentMap(hddMapActor),
    m_realActor(actor)
@@ -76,6 +78,7 @@ MapItem::MapItem(
 
    // The square textures are white, the colour comes from the affiliation
    setColor(g_Layout.getAffiliationColor(m_affiliation));
+   setVisible(m_shownOnMap);
 
    setPriority(231);
    setTouchChildrenEnabled(false);
@@ -123,6 +126,7 @@ void MapItem::addToMapActor(
 
    // The square textures are white, the colour comes from the affiliation
    setColor(g_Layout.getAffiliationColor(m_affiliation));
+   setVisible(m_shownOnMap);
 
    setPriority(231);
    setTouchChildrenEnabled(false);
@@ -205,6 +209,12 @@ void MapItem::setAffiliation(Affiliation affiliation)
    {
       setColor(g_Layout.getAffiliationColor(m_affiliation));
    }
+}
+
+void MapItem::setShownOnMap(bool shown)
+{
+   m_shownOnMap = shown;
+   setVisible(shown);
 }
 
 Affiliation MapItem::getAffiliation(void)
@@ -1081,6 +1091,18 @@ void HeadDownDisplay::setAffiliation(oxygine::spActor actor, Affiliation affilia
       if ((*it)->getActor() == actor)
       {
          (*it)->setAffiliation(affiliation);
+         return;
+      }
+   }
+}
+
+void HeadDownDisplay::setItemShown(oxygine::spActor actor, bool shown)
+{
+   for (auto it = m_mapActors.begin(); it != m_mapActors.end(); ++it)
+   {
+      if ((*it)->getActor() == actor)
+      {
+         (*it)->setShownOnMap(shown);
          return;
       }
    }

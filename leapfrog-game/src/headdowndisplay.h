@@ -41,6 +41,7 @@ private:
    oxygine::ResAnim* m_resAnim;
    MapItemTypeEnum m_type;
    Affiliation m_affiliation;
+   bool m_shownOnMap;
    oxygine::spActor m_realActor;
    HeadDownDisplay* m_parentMap;
    MapItem::MapItemStateEnum m_state;
@@ -88,6 +89,10 @@ public:
    void setAffiliation(Affiliation affiliation);
    Affiliation getAffiliation(void);
    static Affiliation affiliationFromType(MapItemTypeEnum type);
+
+   // Hidden items stay in the map's collection (so they keep their state
+   // and colour) but are not drawn. Kept when the map is rebuilt.
+   void setShownOnMap(bool shown);
 
 protected:
    void doUpdate(const oxygine::UpdateState& us);
@@ -314,6 +319,8 @@ public:
 
    void setAffiliation(int itemId, Affiliation affiliation);
    void setAffiliation(oxygine::spActor actor, Affiliation affiliation);
+
+   void setItemShown(oxygine::spActor actor, bool shown);
 
    void goToOrbit(void);
    void goToMenu(void);
