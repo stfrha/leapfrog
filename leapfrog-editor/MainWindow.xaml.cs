@@ -164,6 +164,12 @@ namespace LeapfrogEditor
       /// </summary>
       private void zoomAndPanControl_MouseMove(object sender, MouseEventArgs e)
       {
+         // Remember where the mouse is, in the edited object's coordinates,
+         // for pasting at the mouse
+         Point contentPoint = e.GetPosition(content);
+         Point origin = ContentOrigin;
+         myMainViewModel.LastMousePoint = new Point(contentPoint.X - origin.X, contentPoint.Y - origin.Y);
+
          if (mouseHandlingMode == MouseHandlingMode.Panning)
          {
             //
@@ -592,6 +598,43 @@ namespace LeapfrogEditor
       private void MouseWheel_Rotate(object sender, MouseWheelEventArgs e)
       {
 
+      }
+
+      // Dragging the parallax view's window by its frame or its centre marker
+      private bool _parallaxDragging = false;
+      private Point _parallaxDragPoint;
+
+      private void ParallaxWindow_MouseDown(object sender, MouseButtonEventArgs e)
+      {
+         _parallaxDragging = true;
+         _parallaxDragPoint = e.GetPosition(content);
+         ((UIElement)sender).CaptureMouse();
+         e.Handled = true;
+      }
+
+      private void ParallaxWindow_MouseMove(object sender, MouseEventArgs e)
+      {
+         if (!_parallaxDragging)
+         {
+            return;
+         }
+
+         Point p = e.GetPosition(content);
+         myMainViewModel.MoveParallaxWindow(p - _parallaxDragPoint);
+         _parallaxDragPoint = p;
+         e.Handled = true;
+      }
+
+      private void ParallaxWindow_MouseUp(object sender, MouseButtonEventArgs e)
+      {
+         if (!_parallaxDragging)
+         {
+            return;
+         }
+
+         _parallaxDragging = false;
+         ((UIElement)sender).ReleaseMouseCapture();
+         e.Handled = true;
       }
 
       private void HandleCloseApplication(object sender, System.ComponentModel.CancelEventArgs e)

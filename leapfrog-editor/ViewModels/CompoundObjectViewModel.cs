@@ -810,6 +810,132 @@ namespace LeapfrogEditor
 
       }
 
+      // Adds an existing shape model (e.g. a pasted copy) to this object and
+      // creates its view model, the same way as when a file is read.
+      // The exact type decides the list, since e.g. LfDynamicBox derives
+      // from LfStaticBox. Returns null for an unknown type.
+      public LfShapeViewModel AddShapeModel(LfShape shape)
+      {
+         LfShapeViewModel vm = null;
+         Type t = shape.GetType();
+
+         if (t == typeof(LfSpriteBox))
+         {
+            ModelObject.SpriteBoxes.Add((LfSpriteBox)shape);
+            vm = new LfSpriteBoxViewModel(ShapeCollection, this, MainVm, (LfSpriteBox)shape);
+         }
+         else if (t == typeof(LfSpritePolygon))
+         {
+            ModelObject.SpritePolygons.Add((LfSpritePolygon)shape);
+            vm = new LfSpritePolygonViewModel(ShapeCollection, this, MainVm, (LfSpritePolygon)shape);
+         }
+         else if (t == typeof(LfStaticBox))
+         {
+            ModelObject.StaticBoxes.Add((LfStaticBox)shape);
+            vm = new LfStaticBoxViewModel(ShapeCollection, this, MainVm, (LfStaticBox)shape);
+         }
+         else if (t == typeof(LfStaticCircle))
+         {
+            ModelObject.StaticCircles.Add((LfStaticCircle)shape);
+            vm = new LfStaticCircleViewModel(ShapeCollection, this, MainVm, (LfStaticCircle)shape);
+         }
+         else if (t == typeof(LfStaticPolygon))
+         {
+            ModelObject.StaticPolygons.Add((LfStaticPolygon)shape);
+            vm = new LfStaticPolygonViewModel(ShapeCollection, this, MainVm, (LfStaticPolygon)shape);
+         }
+         else if (t == typeof(LfDynamicBox))
+         {
+            ModelObject.DynamicBoxes.Add((LfDynamicBox)shape);
+            vm = new LfDynamicBoxViewModel(ShapeCollection, this, MainVm, (LfDynamicBox)shape);
+         }
+         else if (t == typeof(LfDynamicCircle))
+         {
+            ModelObject.DynamicCircles.Add((LfDynamicCircle)shape);
+            vm = new LfDynamicCircleViewModel(ShapeCollection, this, MainVm, (LfDynamicCircle)shape);
+         }
+         else if (t == typeof(LfDynamicPolygon))
+         {
+            ModelObject.DynamicPolygons.Add((LfDynamicPolygon)shape);
+            vm = new LfDynamicPolygonViewModel(ShapeCollection, this, MainVm, (LfDynamicPolygon)shape);
+         }
+         else if (t == typeof(LfStaticBoxedSpritePolygon))
+         {
+            ModelObject.StaticBoxedSpritePolygons.Add((LfStaticBoxedSpritePolygon)shape);
+            vm = new LfStaticBoxedSpritePolygonViewModel(ShapeCollection, this, MainVm, (LfStaticBoxedSpritePolygon)shape);
+         }
+         else if (t == typeof(LfDynamicBoxedSpritePolygon))
+         {
+            ModelObject.DynamicBoxedSpritePolygons.Add((LfDynamicBoxedSpritePolygon)shape);
+            vm = new LfDynamicBoxedSpritePolygonViewModel(ShapeCollection, this, MainVm, (LfDynamicBoxedSpritePolygon)shape);
+         }
+
+         if (vm == null)
+         {
+            return null;
+         }
+
+         if ((vm is LfPolygonViewModel) && (shape is LfPolygon))
+         {
+            LfPolygonViewModel polyVm = (LfPolygonViewModel)vm;
+
+            foreach (LfDragablePoint dragPoint in ((LfPolygon)shape).Points)
+            {
+               polyVm.PointVms.Add(new LfDragablePointViewModel(polyVm, this, MainVm, polyVm, dragPoint));
+            }
+         }
+
+         ShapeCollection.Shapes.Add(vm);
+
+         return vm;
+      }
+
+      // Adds an existing joint model (e.g. a pasted copy) and creates its
+      // view model. Returns null for an unknown type.
+      public WeldJointViewModel AddJointModel(WeldJoint joint)
+      {
+         WeldJointViewModel vm = null;
+         Type t = joint.GetType();
+
+         if (t == typeof(WeldJoint))
+         {
+            ModelObject.WeldJoints.Add(joint);
+            vm = new WeldJointViewModel(JointCollection, this, MainVm, joint);
+         }
+         else if (t == typeof(RevoluteJoint))
+         {
+            ModelObject.RevoluteJoints.Add((RevoluteJoint)joint);
+            vm = new RevoluteJointViewModel(JointCollection, this, MainVm, (RevoluteJoint)joint);
+         }
+         else if (t == typeof(PrismaticJoint))
+         {
+            ModelObject.PrismaticJoints.Add((PrismaticJoint)joint);
+            vm = new PrismaticJointViewModel(JointCollection, this, MainVm, (PrismaticJoint)joint);
+         }
+         else if (t == typeof(Rope))
+         {
+            ModelObject.Ropes.Add((Rope)joint);
+            vm = new RopeViewModel(JointCollection, this, MainVm, (Rope)joint);
+         }
+
+         if (vm != null)
+         {
+            JointCollection.Joints.Add(vm);
+         }
+
+         return vm;
+      }
+
+      // Adds an existing child object model (e.g. a pasted copy) and creates
+      // its view model.
+      public ChildObjectViewModel AddChildObjectModel(ChildObject child)
+      {
+         ModelObject.ChildObjects.Add(child);
+         ChildObjectViewModel vm = new ChildObjectViewModel(ChildObjectCollection, this, MainVm, child, true);
+         ChildObjectCollection.Children.Add(vm);
+         return vm;
+      }
+
       public void RemoveShape(LfShapeViewModel svm)
       {
          // Check if there are any joints connected to this svm, if so, removed them

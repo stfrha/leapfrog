@@ -17,10 +17,17 @@
    </Window.DataContext>
    <Window.InputBindings>
       <KeyBinding Key="F5" Command="{Binding RefreshTextures}" />
+      <!-- Text boxes handle their own copy and paste first -->
+      <KeyBinding Key="C" Modifiers="Control" Command="{Binding Copy}" />
+      <KeyBinding Key="V" Modifiers="Control" Command="{Binding Paste}" CommandParameter="mouse" />
+      <KeyBinding Key="V" Modifiers="Control+Shift" Command="{Binding Paste}" CommandParameter="inPlace" />
+      <KeyBinding Key="F6" Command="{Binding ToggleParallaxView}" />
    </Window.InputBindings>
    <Window.Resources>
       <local:ToCollectionValueConverter x:Key="ToCollectionValueConverter" />
       <local:BindingProxy x:Key="DataContextProxy" Data="{Binding}" />
+      <local:BoolToVisibilityValueConverter x:Key="BoolToVisibilityValueConverter" />
+      <local:ScreenPixelsValueConverter x:Key="ScreenPixelsValueConverter" />
    </Window.Resources>
    <Grid>
       <Grid.RowDefinitions>
@@ -30,6 +37,8 @@
       <Grid Grid.Row="0" >
          <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="Auto" />
+            <ColumnDefinition Width="Auto" />
             <ColumnDefinition Width="200" />
          </Grid.ColumnDefinitions>
          <Menu Grid.Column="0">
@@ -74,6 +83,10 @@
                   <MenuItem Header="Import Compound Object File" Command="{Binding ImportCompoundObject}" />
                </MenuItem>
                <Separator/>
+               <MenuItem Header="Copy" InputGestureText="Ctrl+C" Command="{Binding Copy}" />
+               <MenuItem Header="Paste at Mouse" InputGestureText="Ctrl+V" Command="{Binding Paste}" CommandParameter="mouse" />
+               <MenuItem Header="Paste in Place" InputGestureText="Ctrl+Shift+V" Command="{Binding Paste}" CommandParameter="inPlace" />
+               <Separator/>
                <MenuItem Header="Delete" Command="{Binding Delete}" />
             </MenuItem>
             <MenuItem Header="Publish">
@@ -95,10 +108,33 @@
                   <MenuItem Header="Triangles" IsCheckable="True" IsChecked="{Binding ShowTriangles}" />
                   <MenuItem Header="Backgrounds" IsCheckable="True" IsChecked="{Binding ShowBackgrounds}" />
                </MenuItem>
+               <Separator />
+               <MenuItem Header="Parallax View" InputGestureText="F6" IsCheckable="True" IsChecked="{Binding ParallaxView}" />
+               <MenuItem Header="Parallax Window">
+                  <MenuItem Header="Default Zoom (384 wide)" Command="{Binding ParallaxWindowSize}" CommandParameter="default" />
+                  <MenuItem Header="Landed on a Pad (220 wide)" Command="{Binding ParallaxWindowSize}" CommandParameter="landed" />
+                  <MenuItem Header="Zoomed Out (whole scene)" Command="{Binding ParallaxWindowSize}" CommandParameter="fit" />
+                  <MenuItem Header="Wider" Command="{Binding ParallaxWindowSize}" CommandParameter="wider" />
+                  <MenuItem Header="Narrower" Command="{Binding ParallaxWindowSize}" CommandParameter="narrower" />
+                  <Separator />
+                  <MenuItem Header="Screen 2:1 (phones)" Command="{Binding ParallaxWindowSize}" CommandParameter="aspect2" />
+                  <MenuItem Header="Screen 3:2 (960 x 640 window)" Command="{Binding ParallaxWindowSize}" CommandParameter="aspect15" />
+               </MenuItem>
+               <Separator />
                <MenuItem Header="Halt to debug" Command="{Binding DebugHalt}" />
             </MenuItem>
          </Menu>
-         <Button Grid.Column="1" 
+         <TextBlock Grid.Column="1"
+            VerticalAlignment="Center" Margin="6,0"
+            Foreground="DimGray"
+            Text="{Binding ParallaxWindowDescription}"
+            ToolTip="Parallax window: size and centre (where the Leapfrog is)"
+            Visibility="{Binding ParallaxView, Converter={StaticResource BoolToVisibilityValueConverter}}" />
+         <ToggleButton Grid.Column="2"
+            Content="Parallax View" Padding="8,0" Margin="0,0,4,0"
+            ToolTip="Show the scene through a game-sized window, with the parallax layers where the game draws them. Drag the window's frame or the Leapfrog in its centre to move it. (F6)"
+            IsChecked="{Binding ParallaxView}" />
+         <Button Grid.Column="3" 
             Content="Publish" 
             Command="{Binding Publish}" />
       </Grid>
@@ -407,6 +443,39 @@
                               </DataTemplate>
                            </ContentControl.Resources>
                         </ContentControl>
+                        <!-- Parallax view: everything outside the game window
+                             darkened, the window's frame and a Leapfrog-sized
+                             marker in its centre to drag it by -->
+                        <Canvas Visibility="{Binding ParallaxView, Converter={StaticResource BoolToVisibilityValueConverter}}">
+                           <Path IsHitTestVisible="False" Fill="#E0383838" Data="{Binding ParallaxMaskGeometry}" />
+                           <Rectangle
+                              Canvas.Left="{Binding ParallaxWindowRect.Left}"
+                              Canvas.Top="{Binding ParallaxWindowRect.Top}"
+                              Width="{Binding ParallaxWindowRect.Width}"
+                              Height="{Binding ParallaxWindowRect.Height}"
+                              Stroke="Orange"
+                              StrokeThickness="{Binding ContentScale, ElementName=zoomAndPanControl, Converter={StaticResource ScreenPixelsValueConverter}, ConverterParameter=6}"
+                              Cursor="SizeAll"
+                              ToolTip="Drag to move the window"
+                              MouseLeftButtonDown="ParallaxWindow_MouseDown"
+                              MouseMove="ParallaxWindow_MouseMove"
+                              MouseLeftButtonUp="ParallaxWindow_MouseUp" />
+                           <Ellipse
+                              Canvas.Left="{Binding ParallaxWindowCenter.X}"
+                              Canvas.Top="{Binding ParallaxWindowCenter.Y}"
+                              Width="22" Height="14"
+                              Fill="#60FFA500" Stroke="Orange"
+                              StrokeThickness="{Binding ContentScale, ElementName=zoomAndPanControl, Converter={StaticResource ScreenPixelsValueConverter}, ConverterParameter=2}"
+                              Cursor="SizeAll"
+                              ToolTip="The Leapfrog (the window's centre): drag to move the window"
+                              MouseLeftButtonDown="ParallaxWindow_MouseDown"
+                              MouseMove="ParallaxWindow_MouseMove"
+                              MouseLeftButtonUp="ParallaxWindow_MouseUp">
+                              <Ellipse.RenderTransform>
+                                 <TranslateTransform X="-11" Y="-7" />
+                              </Ellipse.RenderTransform>
+                           </Ellipse>
+                        </Canvas>
                      </local:CenteredCanvas>
 
                      <!--

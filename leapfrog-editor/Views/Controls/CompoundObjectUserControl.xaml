@@ -15,6 +15,7 @@
       <local:BoolToVisibilityValueConverter x:Key="BoolToVisibilityValueConverter" />
       <local:DecoratedBorderPolygonToVisibilityValueConverter x:Key="DecoratedBorderPolygonToVisibilityValueConverter" />
       <local:IsSceneToVisibilityValueConverter x:Key="IsSceneToVisibilityValueConverter" />
+      <local:ParallaxTransformConverter x:Key="ParallaxTransformConverter" />
    </UserControl.Resources>
    <Canvas x:Name="myCoUserControl" >
       <!-- The first itemscontrol is for the images of the objects, like what is shown 
@@ -151,9 +152,75 @@
                <Setter Property="Canvas.Left" Value="{Binding AbsPosX}"/>
                <Setter Property="Canvas.Top" Value="{Binding AbsPosY}"/>
                <Setter Property="Canvas.ZIndex" Value="{Binding ZLevel}"/>
+               <!-- In the parallax view, shapes on a parallax layer are drawn
+                    where the game shows them for the window's position -->
+               <Setter Property="RenderTransform">
+                  <Setter.Value>
+                     <MultiBinding Converter="{StaticResource ParallaxTransformConverter}">
+                        <Binding />
+                        <Binding Path="AbsPosX" />
+                        <Binding Path="AbsPosY" />
+                        <Binding Path="DataContext.ParallaxState" RelativeSource="{RelativeSource FindAncestor, AncestorType=Window}" />
+                        <Binding Path="ParallaxAmount" FallbackValue="0" />
+                     </MultiBinding>
+                  </Setter.Value>
+               </Setter>
             </Style>
          </ItemsControl.ItemContainerStyle>
       </ItemsControl>
+      <!-- Limits of the scene (if this is a scene), over the images but
+           under the editor handles. A push-back boundary
+           is drawn as in the game (SoftBoundary): a 150 wide band inside
+           the scene edge, white at the edge and fading out over the inner
+           half (the deep_space_boundary mask). -->
+      <Grid IsHitTestVisible="False"
+         Width="{Binding Behaviour.BehaviourProperties.Width}"
+         Height="{Binding Behaviour.BehaviourProperties.Height}"
+         Visibility="{Binding Behaviour.BehaviourProperties, Converter={StaticResource IsSceneToVisibilityValueConverter}}">
+         <Rectangle VerticalAlignment="Top" Height="150"
+            Visibility="{Binding Behaviour.BehaviourProperties.HasUpperBoundary, Converter={StaticResource BoolToVisibilityValueConverter}}">
+            <Rectangle.Fill>
+               <LinearGradientBrush StartPoint="0,1" EndPoint="0,0">
+                  <GradientStop Color="#00FFFFFF" Offset="0" />
+                  <GradientStop Color="#FFFFFFFF" Offset="0.52" />
+                  <GradientStop Color="#FFFFFFFF" Offset="1" />
+               </LinearGradientBrush>
+            </Rectangle.Fill>
+         </Rectangle>
+         <Rectangle VerticalAlignment="Bottom" Height="150"
+            Visibility="{Binding Behaviour.BehaviourProperties.HasLowerBoundary, Converter={StaticResource BoolToVisibilityValueConverter}}">
+            <Rectangle.Fill>
+               <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
+                  <GradientStop Color="#00FFFFFF" Offset="0" />
+                  <GradientStop Color="#FFFFFFFF" Offset="0.52" />
+                  <GradientStop Color="#FFFFFFFF" Offset="1" />
+               </LinearGradientBrush>
+            </Rectangle.Fill>
+         </Rectangle>
+         <Rectangle HorizontalAlignment="Left" Width="150"
+            Visibility="{Binding Behaviour.BehaviourProperties.HasLeftBoundary, Converter={StaticResource BoolToVisibilityValueConverter}}">
+            <Rectangle.Fill>
+               <LinearGradientBrush StartPoint="1,0" EndPoint="0,0">
+                  <GradientStop Color="#00FFFFFF" Offset="0" />
+                  <GradientStop Color="#FFFFFFFF" Offset="0.52" />
+                  <GradientStop Color="#FFFFFFFF" Offset="1" />
+               </LinearGradientBrush>
+            </Rectangle.Fill>
+         </Rectangle>
+         <Rectangle HorizontalAlignment="Right" Width="150"
+            Visibility="{Binding Behaviour.BehaviourProperties.HasRightBoundary, Converter={StaticResource BoolToVisibilityValueConverter}}">
+            <Rectangle.Fill>
+               <LinearGradientBrush StartPoint="0,0" EndPoint="1,0">
+                  <GradientStop Color="#00FFFFFF" Offset="0" />
+                  <GradientStop Color="#FFFFFFFF" Offset="0.52" />
+                  <GradientStop Color="#FFFFFFFF" Offset="1" />
+               </LinearGradientBrush>
+            </Rectangle.Fill>
+         </Rectangle>
+         <!-- The scene's edge, thin and dashed, so it shows on the white edit area -->
+         <Rectangle Stroke="Gray" StrokeDashArray="4 4"
+            StrokeThickness="{Binding ContentScale, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type ZoomAndPan:ZoomAndPanControl}}, Converter={StaticResource ZoomThicknessValueConverter}}" />
+      </Grid>
       <!-- This second itemscontrol is for all editor handles
            which must be overlayed over the images, ignoring the relative Z-level of the 
            images. -->
@@ -374,6 +441,18 @@
             <Style TargetType="ContentPresenter">
                <Setter Property="Canvas.Left" Value="{Binding AbsPosX}"/>
                <Setter Property="Canvas.Top" Value="{Binding AbsPosY}"/>
+               <!-- Handles follow their shape in the parallax view -->
+               <Setter Property="RenderTransform">
+                  <Setter.Value>
+                     <MultiBinding Converter="{StaticResource ParallaxTransformConverter}">
+                        <Binding />
+                        <Binding Path="AbsPosX" />
+                        <Binding Path="AbsPosY" />
+                        <Binding Path="DataContext.ParallaxState" RelativeSource="{RelativeSource FindAncestor, AncestorType=Window}" />
+                        <Binding Path="ParallaxAmount" FallbackValue="0" />
+                     </MultiBinding>
+                  </Setter.Value>
+               </Setter>
             </Style>
          </ItemsControl.ItemContainerStyle>
       </ItemsControl>
@@ -418,72 +497,6 @@
             </ItemsPanelTemplate>
          </ItemsControl.ItemsPanel>
       </ItemsControl>
-      <!-- Show limits of the scene (if this is a scene) and indicate 
-      with thickness if it is a push-back limit in the game -->
-      <Canvas IsHitTestVisible="False"
-         Visibility="{Binding Behaviour.BehaviourProperties, Converter={StaticResource IsSceneToVisibilityValueConverter}}">
-         <Line Stroke="Red" Opacity="0.5"
-            X1="0" Y1="0" 
-            X2="{Binding Behaviour.BehaviourProperties.Width}" 
-            Y2="0">
-            <Line.Style>
-               <Style TargetType="{x:Type Line}">
-                  <Setter Property="StrokeThickness" Value="5"/>
-                  <Style.Triggers>
-                     <DataTrigger Binding="{Binding Behaviour.BehaviourProperties.HasUpperBoundary}" Value="True">
-                        <Setter Property="StrokeThickness" Value="150"/>
-                     </DataTrigger>
-                  </Style.Triggers>
-               </Style>
-            </Line.Style>
-         </Line>
-         <Line Stroke="Red"  Opacity="0.5"
-            X1="0" Y1="0" X2="0" 
-            Y2="{Binding Behaviour.BehaviourProperties.Height}">
-            <Line.Style>
-               <Style TargetType="{x:Type Line}">
-                  <Setter Property="StrokeThickness" Value="5"/>
-                  <Style.Triggers>
-                     <DataTrigger Binding="{Binding Behaviour.BehaviourProperties.HasLeftBoundary}" Value="True">
-                        <Setter Property="StrokeThickness" Value="150"/>
-                     </DataTrigger>
-                  </Style.Triggers>
-               </Style>
-            </Line.Style>
-         </Line>
-         <Line Stroke="Red"  Opacity="0.5"
-            X1="{Binding Behaviour.BehaviourProperties.Width}" 
-            Y1="0" 
-            X2="{Binding Behaviour.BehaviourProperties.Width}" 
-            Y2="{Binding Behaviour.BehaviourProperties.Height}" >
-            <Line.Style>
-               <Style TargetType="{x:Type Line}">
-                  <Setter Property="StrokeThickness" Value="5"/>
-                  <Style.Triggers>
-                     <DataTrigger Binding="{Binding Behaviour.BehaviourProperties.HasRightBoundary}" Value="True">
-                        <Setter Property="StrokeThickness" Value="150"/>
-                     </DataTrigger>
-                  </Style.Triggers>
-               </Style>
-            </Line.Style>
-         </Line>
-         <Line Stroke="Red"  Opacity="0.5"
-            X1="0" 
-            Y1="{Binding Behaviour.BehaviourProperties.Height}" 
-            X2="{Binding Behaviour.BehaviourProperties.Width}" 
-            Y2="{Binding Behaviour.BehaviourProperties.Height}" >
-            <Line.Style>
-               <Style TargetType="{x:Type Line}">
-                  <Setter Property="StrokeThickness" Value="5"/>
-                  <Style.Triggers>
-                     <DataTrigger Binding="{Binding Behaviour.BehaviourProperties.HasLowerBoundary}" Value="True">
-                        <Setter Property="StrokeThickness" Value="150"/>
-                     </DataTrigger>
-                  </Style.Triggers>
-               </Style>
-            </Line.Style>
-         </Line>
-      </Canvas>
 
 
    </Canvas>

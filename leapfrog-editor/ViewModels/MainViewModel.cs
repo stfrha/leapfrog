@@ -304,6 +304,9 @@ namespace LeapfrogEditor
       // Resize the white edit area to the edited object (see MainWindow.UpdateEditArea)
       public void UpdateEditArea()
       {
+         // The scene size may have changed, which limits the parallax window
+         ParallaxChanged();
+
          // Deferred, so it runs after the caller has finished building or
          // loading the object (the bounding box needs its shapes).
          MainWindow mw = System.Windows.Application.Current.MainWindow as MainWindow;
@@ -1360,6 +1363,430 @@ namespace LeapfrogEditor
             return new MicroMvvm.RelayCommand<Object>(parameter => AddChildObjectFileExecute(parameter), parameter => CanAddChildObjectFileExecute(parameter));
          }
       }
+
+      #region Parallax view
+
+      // The parallax view shows the scene as the game does through a window
+      // the size of the game's screen: parallax layers (sprites directly in
+      // the scene with parallaxAmount > 0) are moved and scaled for where
+      // the window is, as if the Leapfrog were in its centre.
+
+      // Visible stage width at the game's default zoom: the zoom is set to
+      // view port width / 3840 and the stage is scaled x10 (SceneActor), so
+      // 384 units across on any screen. 220 is the width when landed on a
+      // pad (LandingPad, c_landedVisibleWidth).
+      public const double ParallaxDefaultWidth = 384.0;
+      public const double ParallaxLandedWidth = 220.0;
+
+      private bool _parallaxView = false;
+      private double _parallaxWidth = ParallaxDefaultWidth;
+      private double _parallaxAspect = 2.0;          // width / height; phones are about 2:1
+      private double _parallaxCenterX = double.NaN;
+      private double _parallaxCenterY = double.NaN;
+
+      public bool ParallaxView
+      {
+         get { return _parallaxView; }
+         set
+         {
+            if (_parallaxView == value)
+            {
+               return;
+            }
+
+            _parallaxView = value;
+
+            if (_parallaxView && (double.IsNaN(_parallaxCenterX) || double.IsNaN(_parallaxCenterY)))
+            {
+               Size stage = ParallaxStageSize;
+               _parallaxCenterX = stage.Width / 2;
+               _parallaxCenterY = stage.Height / 2;
+            }
+
+            OnPropertyChanged("ParallaxView");
+            ParallaxChanged();
+         }
+      }
+
+      // Size of the edited scene (its sceneProperties), or a default size
+      // if the edited object isn't a scene
+      public Size ParallaxStageSize
+      {
+         get
+         {
+            ScenePropertiesViewModel sp = null;
+            if ((EditedCpVm != null) && (EditedCpVm.Behaviour != null))
+            {
+               sp = EditedCpVm.Behaviour.BehaviourProperties as ScenePropertiesViewModel;
+            }
+
+            if ((sp != null) && (sp.Width > 0) && (sp.Height > 0))
+            {
+               return new Size(sp.Width, sp.Height);
+            }
+
+            return new Size(1000, 500);
+         }
+      }
+
+      // The window in scene coordinates. Like the game, it can't be larger
+      // than the stage (the zoom stops when the whole stage fits) and it
+      // stays inside the stage (the pan limit).
+      public Rect ParallaxWindowRect
+      {
+         get
+         {
+            Size stage = ParallaxStageSize;
+            double w = _parallaxWidth;
+            double h = _parallaxWidth / _parallaxAspect;
+            double f = Math.Max(1.0, Math.Max(w / stage.Width, h / stage.Height));
+            w /= f;
+            h /= f;
+
+            double cx = double.IsNaN(_parallaxCenterX) ? stage.Width / 2 : _parallaxCenterX;
+            double cy = double.IsNaN(_parallaxCenterY) ? stage.Height / 2 : _parallaxCenterY;
+            cx = Math.Min(Math.Max(cx, w / 2), stage.Width - w / 2);
+            cy = Math.Min(Math.Max(cy, h / 2), stage.Height - h / 2);
+
+            return new Rect(cx - w / 2, cy - h / 2, w, h);
+         }
+      }
+
+      // The window's centre, where the Leapfrog would be
+      public Point ParallaxWindowCenter
+      {
+         get
+         {
+            Rect r = ParallaxWindowRect;
+            return new Point(r.X + r.Width / 2, r.Y + r.Height / 2);
+         }
+      }
+
+      // Everything the parallax transforms depend on, as one value. A new
+      // object every time something changes, so bindings to it update.
+      public ParallaxViewState ParallaxState
+      {
+         get
+         {
+            Size stage = ParallaxStageSize;
+            return new ParallaxViewState(_parallaxView, ParallaxWindowRect, stage.Width, stage.Height);
+         }
+      }
+
+      public void MoveParallaxWindow(Vector delta)
+      {
+         // Start from the clamped position, so dragging back from beyond
+         // an edge moves the window straight away
+         Point c = ParallaxWindowCenter;
+         SetParallaxWindowCenter(new Point(c.X + delta.X, c.Y + delta.Y));
+      }
+
+      public void SetParallaxWindowCenter(Point center)
+      {
+         _parallaxCenterX = center.X;
+         _parallaxCenterY = center.Y;
+         ParallaxChanged();
+      }
+
+      // Everything outside the window, for darkening it
+      public System.Windows.Media.Geometry ParallaxMaskGeometry
+      {
+         get
+         {
+            Rect window = ParallaxWindowRect;
+            Rect all = new Rect(window.X - 100000, window.Y - 100000, 200000 + window.Width, 200000 + window.Height);
+            System.Windows.Media.Geometry g = new System.Windows.Media.CombinedGeometry(
+               System.Windows.Media.GeometryCombineMode.Exclude,
+               new System.Windows.Media.RectangleGeometry(all),
+               new System.Windows.Media.RectangleGeometry(window));
+            g.Freeze();
+            return g;
+         }
+      }
+
+      public ICommand ToggleParallaxView
+      {
+         get
+         {
+            return new MicroMvvm.RelayCommand<Object>(parameter => { ParallaxView = !ParallaxView; }, parameter => true);
+         }
+      }
+
+      private void ParallaxChanged()
+      {
+         OnPropertyChanged("ParallaxMaskGeometry");
+         OnPropertyChanged("ParallaxWindowRect");
+         OnPropertyChanged("ParallaxWindowCenter");
+         OnPropertyChanged("ParallaxState");
+         OnPropertyChanged("ParallaxWindowDescription");
+      }
+
+      public string ParallaxWindowDescription
+      {
+         get
+         {
+            Rect r = ParallaxWindowRect;
+            return string.Format(System.Globalization.CultureInfo.InvariantCulture,
+               "{0:0} x {1:0} at ({2:0}, {3:0})", r.Width, r.Height, r.X + r.Width / 2, r.Y + r.Height / 2);
+         }
+      }
+
+      // Parameter: "default" (the game's normal zoom), "landed" (zoomed in
+      // on a pad), "fit" (zoomed out as far as the game allows), "wider" /
+      // "narrower" (one zoom step), "aspect2" (2:1, phones), "aspect15"
+      // (3:2, the 960 x 640 window).
+      void ParallaxWindowSizeExecute(Object parameter)
+      {
+         string p = parameter as string;
+         Size stage = ParallaxStageSize;
+
+         switch (p)
+         {
+            case "default": _parallaxWidth = ParallaxDefaultWidth; break;
+            case "landed": _parallaxWidth = ParallaxLandedWidth; break;
+            case "fit": _parallaxWidth = Math.Max(stage.Width, stage.Height * _parallaxAspect); break;
+            case "wider": _parallaxWidth = Math.Min(ParallaxWindowRect.Width * 1.25, Math.Max(stage.Width, stage.Height * _parallaxAspect)); break;
+            case "narrower": _parallaxWidth = Math.Max(ParallaxWindowRect.Width / 1.25, 20.0); break;
+            case "aspect2": _parallaxAspect = 2.0; break;
+            case "aspect15": _parallaxAspect = 1.5; break;
+         }
+
+         ParallaxChanged();
+      }
+
+      public ICommand ParallaxWindowSize
+      {
+         get
+         {
+            return new MicroMvvm.RelayCommand<Object>(parameter => ParallaxWindowSizeExecute(parameter), parameter => true);
+         }
+      }
+
+      #endregion
+
+      #region Copy and paste
+
+      private EditorClipboard _clipboard = new EditorClipboard();
+
+      // Last mouse position over the edit area, in the coordinates of the
+      // edited object (set by MainWindow). Null until the mouse has been
+      // over the edit area.
+      public Point? LastMousePoint { get; set; }
+
+      void CopyExecute(Object parameter)
+      {
+         CompoundObjectViewModel covm = EditedCpVm;
+         _clipboard.Clear();
+
+         double minX = double.MaxValue, minY = double.MaxValue;
+         double maxX = double.MinValue, maxY = double.MinValue;
+         HashSet<string> copiedNames = new HashSet<string>();
+
+         foreach (LfShapeViewModel svm in SelectedShapes)
+         {
+            if (svm.ModelObject == null)
+            {
+               continue;
+            }
+
+            _clipboard.Shapes.Add(EditorClipboard.Clone(svm.ModelObject));
+            copiedNames.Add(svm.Name);
+            minX = Math.Min(minX, svm.PosX);
+            maxX = Math.Max(maxX, svm.PosX);
+            minY = Math.Min(minY, svm.PosY);
+            maxY = Math.Max(maxY, svm.PosY);
+         }
+
+         foreach (ChildObjectViewModel chvm in SelectedChildObjects)
+         {
+            _clipboard.Children.Add(EditorClipboard.CloneChild(chvm.ModelObject));
+            minX = Math.Min(minX, chvm.PosX);
+            maxX = Math.Max(maxX, chvm.PosX);
+            minY = Math.Min(minY, chvm.PosY);
+            maxY = Math.Max(maxY, chvm.PosY);
+         }
+
+         // Joints come along when all the bodies they join are copied
+         // (a rope may be tied to one body only)
+         if (covm != null)
+         {
+            foreach (object o in covm.JointCollection.Joints)
+            {
+               WeldJointViewModel jvm = o as WeldJointViewModel;
+               if ((jvm == null) || (jvm.ModelObject == null))
+               {
+                  continue;
+               }
+
+               WeldJoint j = jvm.ModelObject;
+               bool aCopied = copiedNames.Contains(j.AName);
+               bool bCopied = copiedNames.Contains(j.BName);
+               bool bUnused = string.IsNullOrEmpty(j.BName) || (j.BName == "notDefined");
+
+               if (aCopied && (bCopied || ((j is Rope) && bUnused)))
+               {
+                  _clipboard.Joints.Add(EditorClipboard.Clone(j));
+               }
+            }
+         }
+
+         if (!_clipboard.IsEmpty)
+         {
+            _clipboard.CenterX = (minX + maxX) / 2;
+            _clipboard.CenterY = (minY + maxY) / 2;
+         }
+      }
+
+      bool CanCopyExecute(Object parameter)
+      {
+         return (EditedCpVm != null) && ((SelectedShapes.Count > 0) || (SelectedChildObjects.Count > 0));
+      }
+
+      public ICommand Copy
+      {
+         get
+         {
+            return new MicroMvvm.RelayCommand<Object>(parameter => CopyExecute(parameter), parameter => CanCopyExecute(parameter));
+         }
+      }
+
+      // Parameter "inPlace" keeps the copied positions; otherwise the copies
+      // are centred on the mouse (or moved a little if the mouse hasn't been
+      // over the edit area). Names are made unique in the edited object, and
+      // pasted joints are connected to the pasted shapes.
+      void PasteExecute(Object parameter)
+      {
+         CompoundObjectViewModel covm = EditedCpVm;
+         if ((covm == null) || _clipboard.IsEmpty)
+         {
+            return;
+         }
+
+         double dx = 0, dy = 0;
+         if ((parameter as string) != "inPlace")
+         {
+            if (LastMousePoint.HasValue)
+            {
+               dx = LastMousePoint.Value.X - _clipboard.CenterX;
+               dy = LastMousePoint.Value.Y - _clipboard.CenterY;
+            }
+            else
+            {
+               dx = 10;
+               dy = 10;
+            }
+         }
+
+         HashSet<string> shapeNames = new HashSet<string>();
+         foreach (object o in covm.ShapeCollection.Shapes)
+         {
+            if (o is LfShapeViewModel)
+            {
+               shapeNames.Add(((LfShapeViewModel)o).Name);
+            }
+         }
+
+         HashSet<string> jointNames = new HashSet<string>();
+         foreach (object o in covm.JointCollection.Joints)
+         {
+            if (o is WeldJointViewModel)
+            {
+               jointNames.Add(((WeldJointViewModel)o).Name);
+            }
+         }
+
+         HashSet<string> childNames = new HashSet<string>();
+         foreach (ChildObjectViewModel chvm in covm.ChildObjectCollection.Children)
+         {
+            childNames.Add(chvm.Name);
+         }
+
+         DeselectAll();
+
+         List<TreeViewViewModel> pasted = new List<TreeViewViewModel>();
+         Dictionary<string, string> renamed = new Dictionary<string, string>();
+
+         foreach (LfShape original in _clipboard.Shapes)
+         {
+            LfShape shape = EditorClipboard.Clone(original);
+            string newName = EditorClipboard.UniqueName(shape.Name, shapeNames);
+            shapeNames.Add(newName);
+            if ((shape.Name != null) && !renamed.ContainsKey(shape.Name))
+            {
+               renamed[shape.Name] = newName;
+            }
+            shape.Name = newName;
+            shape.PosX += dx;
+            shape.PosY += dy;
+
+            LfShapeViewModel vm = covm.AddShapeModel(shape);
+            if (vm != null)
+            {
+               pasted.Add(vm);
+            }
+         }
+
+         foreach (WeldJoint original in _clipboard.Joints)
+         {
+            WeldJoint joint = EditorClipboard.Clone(original);
+            if ((joint.AName != null) && renamed.ContainsKey(joint.AName))
+            {
+               joint.AName = renamed[joint.AName];
+            }
+            if ((joint.BName != null) && renamed.ContainsKey(joint.BName))
+            {
+               joint.BName = renamed[joint.BName];
+            }
+            joint.Name = EditorClipboard.UniqueName(joint.Name, jointNames);
+            jointNames.Add(joint.Name);
+
+            WeldJointViewModel vm = covm.AddJointModel(joint);
+            if (vm != null)
+            {
+               pasted.Add(vm);
+            }
+         }
+
+         foreach (ChildObject original in _clipboard.Children)
+         {
+            ChildObject child = EditorClipboard.CloneChild(original);
+            child.Name = EditorClipboard.UniqueName(child.Name, childNames);
+            childNames.Add(child.Name);
+            child.PosX += dx;
+            child.PosY += dy;
+
+            pasted.Add(covm.AddChildObjectModel(child));
+         }
+
+         covm.BuildGlobalShapeCollection(ShowJoints, ShowSystems, ShowBackgrounds);
+         if (_clipboard.Joints.Count > 0)
+         {
+            covm.InvalidateJoints();
+         }
+
+         // Select what was pasted, so it can be moved straight away
+         foreach (TreeViewViewModel vm in pasted)
+         {
+            vm.IsSelected = true;
+         }
+
+         UpdateEditArea();
+      }
+
+      bool CanPasteExecute(Object parameter)
+      {
+         return (EditedCpVm != null) && !_clipboard.IsEmpty;
+      }
+
+      public ICommand Paste
+      {
+         get
+         {
+            return new MicroMvvm.RelayCommand<Object>(parameter => PasteExecute(parameter), parameter => CanPasteExecute(parameter));
+         }
+      }
+
+      #endregion
 
       void LocateInBrowserExecute(Object parameter)
       {
