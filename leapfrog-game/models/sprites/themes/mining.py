@@ -24,8 +24,11 @@ from mathutils import Vector
 
 from . import shared
 
+# Relative to leapfrog-game/models. Not in git: download from
+# https://polyhaven.com/a/kloetzle_blei (see the README).
 HDRI_CANDIDATES = [
-    os.path.join("HDRI", "kloetzle_blei_16k.hdr"),        # leapfrog-game/models/HDRI (not in git)
+    os.path.join("..", "..", "..", "leapfrog-hdr", "kloetzle_blei_4k.exr"),   # leapfrog-hdr/ next to the repo
+    os.path.join("HDRI", "kloetzle_blei_16k.hdr"),                           # older place, leapfrog-game/models/HDRI
 ]
 HDRI_STRENGTH = 0.6
 
@@ -50,7 +53,8 @@ def setup_world(scene, models_dir, hdri=None):
     bg.inputs["Strength"].default_value = HDRI_STRENGTH
 
     candidates = [hdri] if hdri else [os.path.join(models_dir, c) for c in HDRI_CANDIDATES]
-    path = next((p for p in candidates if p and os.path.exists(p)), None)
+    candidates = [os.path.normpath(c) for c in candidates if c]
+    path = next((p for p in candidates if os.path.exists(p)), None)
     if path:
         env = nt.nodes.new("ShaderNodeTexEnvironment")
         env.image = bpy.data.images.load(path, check_existing=True)

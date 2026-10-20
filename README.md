@@ -49,3 +49,8 @@ https://github.com/stfrha/lua.git
 
 
 For Linux:
+
+
+Sprite rendering (Blender, leapfrog-game/models/sprites):
+
+The sprite scripts light the scenes with the Kloetzle Blei HDRI, which is not in git. Download the 4K EXR from [Kloetzle Blei HDRI • Poly Haven](https://polyhaven.com/a/kloetzle_blei) and store it next to the leapfrog repo as `leapfrog-hdr/kloetzle_blei_4k.exr` (i.e. `..\leapfrog-hdr\kloetzle_blei_4k.exr` relative to the repo). Without it the scripts fall back to a flat grey sky.

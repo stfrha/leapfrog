@@ -23,7 +23,7 @@ Useful options (after `--`):
 | `--save-blend` | also save the generated scene to `_blend/<name>.blend` for inspection |
 | `--no-render` | build the scene only (with `--save-blend`) |
 | `--theme mining` | world theme (palette + lighting), see `themes/` |
-| `--hdri <path>` | HDRI to use instead of `models/HDRI/kloetzle_blei_16k.hdr` |
+| `--hdri <path>` | HDRI to use instead of `../leapfrog-hdr/kloetzle_blei_4k.exr` (next to the repo, see the main README) |
 
 Script-specific options are listed with `-- --help`.
 
