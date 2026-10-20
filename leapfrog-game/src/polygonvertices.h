@@ -2,6 +2,40 @@
 #include "oxygine-framework.h"
 #include "Box2D/Box2D.h"
 
+// A fade over a polygon (its fill and its border decorations), read from a
+// <fade> child of the polygon's xml node:
+//   amount  how strong the fade is where it is complete, 0..1 (0 = off)
+//   angle   the direction the fade grows in, degrees: 0 = downwards,
+//           90 = to the right, 180 = upwards, 270 = to the left
+//   start   where the fade begins, as a fraction 0..1 of the polygon's
+//           extent in that direction (default 0)
+//   end     where the fade is complete (default 1); it grows linearly
+//           from start to end
+//   color   rrggbb: fade towards this colour (haze); empty or missing:
+//           fade to transparent
+// The fade is exact: triangles are split along the lines where it starts
+// and ends, so the vertex colours (which are interpolated linearly) give
+// the right gradient.
+struct PolygonFade
+{
+   bool m_enabled;
+   bool m_toColor;
+   oxygine::Color m_color;
+   oxygine::Vector2 m_dir;
+   float m_s0;
+   float m_s1;
+   float m_amount;
+
+   PolygonFade() :
+      m_enabled(false), m_toColor(false), m_color(0, 0, 0, 0), m_dir(0.0f, 1.0f),
+      m_s0(0.0f), m_s1(1.0f), m_amount(0.0f)
+   {
+   }
+
+   // Strength 0..amount at position s along m_dir (polygon coordinates)
+   float strength(float s) const;
+};
+
 
 class PolygonVertices
 {
@@ -32,6 +66,47 @@ public:
       const oxygine::Vector2& mSize,
       const oxygine::Vector2& mOffset,
       const oxygine::Color& color = oxygine::Color(oxygine::Color::White));
+
+   static PolygonFade readFade(
+      pugi::xml_node objectNode,
+      const std::vector<oxygine::Vector2>& polygonVertices);
+
+   // Like createTriangleVertices, with the fade applied: triangles are split
+   // where the fade starts and ends, and each vertex gets the fade's
+   // strength there. The vertices are local to an actor at `origin`, rotated
+   // by `angle` (radians), in the polygon's coordinates (for a border
+   // decoration; identity for the polygon itself), so the fade lines up.
+   //   overlay = false: the colour's alpha is reduced (fade to transparent)
+   //   overlay = true:  vertex colour (0, 0, 0, strength) for a haze overlay
+   //                    drawn with the same texture and add colour = the
+   //                    fade colour, so it covers what the texture covers
+   // Returns new[] vertices (4 per triangle, oxygine's strip format) and
+   // the number of triangles in numTriangles.
+   static oxygine::vertexPCT2* createFadedTriangleVertices(
+      const std::vector<oxygine::Vector2>& vertices,
+      const std::vector<oxygine::VectorT3<int> >& triangles,
+      const oxygine::Vector2& mSize,
+      const oxygine::Vector2& mOffset,
+      const oxygine::Color& color,
+      const PolygonFade& fade,
+      const oxygine::Vector2& origin,
+      float angle,
+      bool overlay,
+      int& numTriangles);
+
+   // Puts the polygon's vertices on `polygon`, faded if the fade is to
+   // transparent, and for a fade to a colour adds the haze overlay as a
+   // child (drawn before anything attached later, e.g. the borders).
+   static void setFadedVertices(
+      oxygine::Polygon* polygon,
+      const std::vector<oxygine::Vector2>& vertices,
+      const std::vector<oxygine::VectorT3<int> >& triangles,
+      const oxygine::Vector2& mSize,
+      const oxygine::Vector2& mOffset,
+      const oxygine::Color& color,
+      const PolygonFade& fade,
+      const oxygine::Vector2& origin,
+      float angle);
 
    static void readVertices(
       std::vector<oxygine::Vector2>& vertices,

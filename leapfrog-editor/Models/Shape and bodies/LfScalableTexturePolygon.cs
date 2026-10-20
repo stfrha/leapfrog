@@ -18,6 +18,7 @@ namespace LeapfrogEditor
       private double _textureOffsetX;
       private double _textureOffsetY;
       private PolygonBorder _polygonBorder = new PolygonBorder();
+      private PolygonFade _fade = null;
 
       #endregion
 
@@ -70,6 +71,19 @@ namespace LeapfrogEditor
       {
          get { return _polygonBorder; }
          set { _polygonBorder = value; }
+      }
+
+      // Fade over the polygon and its borders (null or amount 0 = none)
+      [XmlElement("fade")]
+      public PolygonFade Fade
+      {
+         get { return _fade; }
+         set { _fade = value; }
+      }
+
+      public bool ShouldSerializeFade()
+      {
+         return (_fade != null) && (_fade.Amount > 0);
       }
 
       #endregion

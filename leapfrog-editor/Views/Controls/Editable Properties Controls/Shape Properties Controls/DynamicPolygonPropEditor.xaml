@@ -27,6 +27,15 @@
             <local:CollisionEntityEditorControl Headline="Collision Entity" MyValue="{Binding CollisionEntity, Mode=TwoWay}" />
             <local:CollisionCategoryEditorControl Headline="Coll. Category" MyValue="{Binding CollisionCategory, Mode=TwoWay}" />
             <local:CollisionCategoryEditorControl Headline="Collision Mask" MyValue="{Binding CollisionMask, Mode=TwoWay}" />
+            <Expander Header="Fade">
+               <StackPanel ToolTip="Fades the polygon and its borders: to transparent, or towards Fade Color (rrggbb, haze). Direction: 0 = down, 90 = right, 180 = up, 270 = left. Start and End are fractions 0..1 of the polygon's extent in that direction; the fade grows linearly between them up to Amount.">
+                  <local:DoubleEditorControl Headline="Amount (0-1)" MyValue="{Binding FadeAmount, Mode=TwoWay}" />
+                  <local:DoubleEditorControl Headline="Direction" MyValue="{Binding FadeAngle, Mode=TwoWay}" />
+                  <local:DoubleEditorControl Headline="Start (0-1)" MyValue="{Binding FadeStart, Mode=TwoWay}" />
+                  <local:DoubleEditorControl Headline="End (0-1)" MyValue="{Binding FadeEnd, Mode=TwoWay}" />
+                  <local:StringEditorControl Headline="Fade Color" MyValue="{Binding FadeColor, Mode=TwoWay}" />
+               </StackPanel>
+            </Expander>
          </StackPanel>
       </Border>
    </DockPanel>

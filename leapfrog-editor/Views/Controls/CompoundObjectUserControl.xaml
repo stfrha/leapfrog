@@ -16,6 +16,7 @@
       <local:DecoratedBorderPolygonToVisibilityValueConverter x:Key="DecoratedBorderPolygonToVisibilityValueConverter" />
       <local:IsSceneToVisibilityValueConverter x:Key="IsSceneToVisibilityValueConverter" />
       <local:ParallaxTransformConverter x:Key="ParallaxTransformConverter" />
+      <local:FadeMaskConverter x:Key="FadeMaskConverter" />
    </UserControl.Resources>
    <Canvas x:Name="myCoUserControl" >
       <!-- The first itemscontrol is for the images of the objects, like what is shown 
@@ -32,6 +33,18 @@
             <DataTemplate DataType="{x:Type local:CoSystemViewModel}" />-->
             <DataTemplate DataType="{x:Type local:LfSpritePolygonViewModel}">
                <Grid>
+                  <!-- Polygon fade: to transparent through this mask -->
+                  <Grid.OpacityMask>
+                     <MultiBinding Converter="{StaticResource FadeMaskConverter}" ConverterParameter="mask">
+                        <Binding Path="AbsPoints" />
+                        <Binding Path="FadeAmount" />
+                        <Binding Path="FadeAngle" />
+                        <Binding Path="FadeStart" />
+                        <Binding Path="FadeEnd" />
+                        <Binding Path="FadeColor" />
+                        <Binding Path="Angle" />
+                     </MultiBinding>
+                  </Grid.OpacityMask>
                   <local:ScalableTexturePolygonControl>
                      <local:ScalableTexturePolygonControl.ContextMenu>
                         <ContextMenu>
@@ -47,10 +60,45 @@
                   </local:ScalableTexturePolygonControl>
                   <local:DecoratedPolygonBorderControl 
                      Visibility="{Binding Converter={StaticResource DecoratedBorderPolygonToVisibilityValueConverter}}" />
+                  <!-- Polygon fade to a colour: a haze layer over the polygon
+                       and its borders -->
+                  <Grid IsHitTestVisible="False">
+                     <Grid.OpacityMask>
+                        <MultiBinding Converter="{StaticResource FadeMaskConverter}" ConverterParameter="overlay">
+                           <Binding Path="AbsPoints" />
+                           <Binding Path="FadeAmount" />
+                           <Binding Path="FadeAngle" />
+                           <Binding Path="FadeStart" />
+                           <Binding Path="FadeEnd" />
+                           <Binding Path="FadeColor" />
+                           <Binding Path="Angle" />
+                        </MultiBinding>
+                     </Grid.OpacityMask>
+                     <Polygon StrokeThickness="0" Points="{Binding AbsPoints}" Fill="{Binding FadeColorBrush}">
+                        <Polygon.RenderTransform>
+                           <RotateTransform Angle="{Binding Angle}" CenterX="0" CenterY="0" />
+                        </Polygon.RenderTransform>
+                     </Polygon>
+                     <local:DecoratedPolygonBorderControl 
+                        HazeBrush="{Binding FadeColorBrush}"
+                        Visibility="{Binding Converter={StaticResource DecoratedBorderPolygonToVisibilityValueConverter}}" />
+                  </Grid>
                </Grid>
             </DataTemplate>
             <DataTemplate DataType="{x:Type local:LfScalableTexturePolygonViewModel}">
                <Grid>
+                  <!-- Polygon fade: to transparent through this mask -->
+                  <Grid.OpacityMask>
+                     <MultiBinding Converter="{StaticResource FadeMaskConverter}" ConverterParameter="mask">
+                        <Binding Path="AbsPoints" />
+                        <Binding Path="FadeAmount" />
+                        <Binding Path="FadeAngle" />
+                        <Binding Path="FadeStart" />
+                        <Binding Path="FadeEnd" />
+                        <Binding Path="FadeColor" />
+                        <Binding Path="Angle" />
+                     </MultiBinding>
+                  </Grid.OpacityMask>
                   <local:ScalableTexturePolygonControl>
                      <local:ScalableTexturePolygonControl.ContextMenu>
                         <ContextMenu>
@@ -66,6 +114,29 @@
                   </local:ScalableTexturePolygonControl>
                   <local:DecoratedPolygonBorderControl 
                      Visibility="{Binding Converter={StaticResource DecoratedBorderPolygonToVisibilityValueConverter}}" />
+                  <!-- Polygon fade to a colour: a haze layer over the polygon
+                       and its borders -->
+                  <Grid IsHitTestVisible="False">
+                     <Grid.OpacityMask>
+                        <MultiBinding Converter="{StaticResource FadeMaskConverter}" ConverterParameter="overlay">
+                           <Binding Path="AbsPoints" />
+                           <Binding Path="FadeAmount" />
+                           <Binding Path="FadeAngle" />
+                           <Binding Path="FadeStart" />
+                           <Binding Path="FadeEnd" />
+                           <Binding Path="FadeColor" />
+                           <Binding Path="Angle" />
+                        </MultiBinding>
+                     </Grid.OpacityMask>
+                     <Polygon StrokeThickness="0" Points="{Binding AbsPoints}" Fill="{Binding FadeColorBrush}">
+                        <Polygon.RenderTransform>
+                           <RotateTransform Angle="{Binding Angle}" CenterX="0" CenterY="0" />
+                        </Polygon.RenderTransform>
+                     </Polygon>
+                     <local:DecoratedPolygonBorderControl 
+                        HazeBrush="{Binding FadeColorBrush}"
+                        Visibility="{Binding Converter={StaticResource DecoratedBorderPolygonToVisibilityValueConverter}}" />
+                  </Grid>
                   <!--<ContentControl Content="{Binding}">
                      <ContentControl.Resources>
                         <DataTemplate DataType="{x:Type local:LfStaticPolygonViewModel}">

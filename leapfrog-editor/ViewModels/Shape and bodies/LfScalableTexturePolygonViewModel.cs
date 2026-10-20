@@ -200,6 +200,107 @@ namespace LeapfrogEditor
          }
       }
 
+      // --- Fade (see PolygonFade) ------------------------------------------
+
+      private PolygonFade Fade
+      {
+         get
+         {
+            if (LocalModelObject.Fade == null)
+            {
+               LocalModelObject.Fade = new PolygonFade();
+            }
+            return LocalModelObject.Fade;
+         }
+      }
+
+      // 0..1, 0 = no fade
+      public double FadeAmount
+      {
+         get { return (LocalModelObject == null) ? 0 : Fade.Amount; }
+         set
+         {
+            if (LocalModelObject == null) return;
+            Fade.Amount = Math.Max(0.0, Math.Min(1.0, value));
+            OnPropertyChanged("FadeAmount");
+         }
+      }
+
+      // Direction the fade grows in, degrees: 0 = down, 90 = right, 180 = up, 270 = left
+      public double FadeAngle
+      {
+         get { return (LocalModelObject == null) ? 0 : Fade.Angle; }
+         set
+         {
+            if (LocalModelObject == null) return;
+            Fade.Angle = value;
+            OnPropertyChanged("FadeAngle");
+         }
+      }
+
+      // Where the fade begins, 0..1 of the polygon's extent in its direction
+      public double FadeStart
+      {
+         get { return (LocalModelObject == null) ? 0 : Fade.Start; }
+         set
+         {
+            if (LocalModelObject == null) return;
+            Fade.Start = value;
+            OnPropertyChanged("FadeStart");
+         }
+      }
+
+      // Where the fade is complete, 0..1
+      public double FadeEnd
+      {
+         get { return (LocalModelObject == null) ? 1 : Fade.End; }
+         set
+         {
+            if (LocalModelObject == null) return;
+            Fade.End = value;
+            OnPropertyChanged("FadeEnd");
+         }
+      }
+
+      // rrggbb to fade towards (haze); empty = fade to transparent. An
+      // invalid value is cleared, as for Color.
+      public string FadeColor
+      {
+         get { return (LocalModelObject == null) ? "" : (Fade.Color ?? ""); }
+         set
+         {
+            if (LocalModelObject == null) return;
+            byte r, g, b, a;
+            if (TextureTint.TryParse(value, 0, out r, out g, out b, out a))
+            {
+               string t = value.Trim().TrimStart('#').ToLowerInvariant();
+               Fade.Color = t.Substring(0, 6);
+            }
+            else
+            {
+               Fade.Color = "";
+            }
+            OnPropertyChanged("FadeColor");
+            OnPropertyChanged("FadeColorBrush");
+         }
+      }
+
+      // The fade colour as a brush for the editor's haze layer (null when
+      // the fade is to transparent)
+      public Brush FadeColorBrush
+      {
+         get
+         {
+            byte r, g, b, a;
+            if (!TextureTint.TryParse(FadeColor, 0, out r, out g, out b, out a))
+            {
+               return null;
+            }
+            SolidColorBrush brush = new SolidColorBrush(System.Windows.Media.Color.FromRgb(r, g, b));
+            brush.Freeze();
+            return brush;
+         }
+      }
 
       #endregion
 

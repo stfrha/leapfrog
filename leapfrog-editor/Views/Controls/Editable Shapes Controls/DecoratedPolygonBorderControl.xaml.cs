@@ -37,6 +37,17 @@ namespace LeapfrogEditor
 
 
 
+      // When set, the decorations are drawn in this brush, masked by their
+      // textures (the haze layer of a polygon fade to a colour)
+      public Brush HazeBrush
+      {
+         get { return (Brush)GetValue(HazeBrushProperty); }
+         set { SetValue(HazeBrushProperty, value); }
+      }
+
+      public static readonly DependencyProperty HazeBrushProperty =
+          DependencyProperty.Register("HazeBrush", typeof(Brush), typeof(DecoratedPolygonBorderControl), new PropertyMetadata(null));
+
       private void Shape_MouseDown(object sender, MouseButtonEventArgs e)
       {
          CompoundObjectUserControl parentControl = ParentalFinder.FindParent<CompoundObjectUserControl>(this);

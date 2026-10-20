@@ -17,6 +17,7 @@
       <local:TextureBorderRectMultiValueConverter x:Key="TextureBorderRectMultiValueConverter" />
       <local:TextureBorderOffsetMultiConverter x:Key="TextureBorderOffsetMultiConverter" />
       <local:TextureBorderAngleMultiConverter x:Key="TextureBorderAngleMultiConverter" />
+      <local:NullToVisibilityConverter x:Key="NullToVisibilityConverter" />
    </UserControl.Resources>
    <Grid>
       <!-- Below is the borders of the polygon. I.e. the border decorations used in the game -->
@@ -51,52 +52,83 @@
          </ItemsControl.ItemContainerStyle>
          <ItemsControl.ItemTemplate>
             <DataTemplate>
-               <Rectangle>
-                  <Rectangle.Height>
+               <Grid>
+                  <Grid.Height>
                      <MultiBinding Converter="{StaticResource TextureBorderHeightMultiConverter}" >
                         <Binding Path="AbsPosX" />
                         <Binding Path="AbsPosY" />
                         <Binding />
                      </MultiBinding>
-                  </Rectangle.Height>
-                  <Rectangle.Width>
+                  </Grid.Height>
+                  <Grid.Width>
                      <MultiBinding Converter="{StaticResource TextureBorderWidthMultiConverter}" >
                         <Binding Path="AbsPosX" />
                         <Binding Path="AbsPosY" />
                         <Binding />
                      </MultiBinding>
-                  </Rectangle.Width>
-                  <Rectangle.Visibility>
+                  </Grid.Width>
+                  <Grid.Visibility>
                      <MultiBinding Converter="{StaticResource TextureBorderVisibilityMultiConverter}" >
                         <Binding Path="AbsPosX" />
                         <Binding Path="AbsPosY" />
                         <Binding />
                      </MultiBinding>
-                  </Rectangle.Visibility>
-                  <Rectangle.Fill>
-                     <ImageBrush
-                        ViewportUnits="Absolute"
-                        TileMode="Tile"
-                        Stretch="Uniform"
-                        AlignmentX="Left"
-                        AlignmentY="Top">
-                        <ImageBrush.ImageSource>
-                           <MultiBinding Converter="{StaticResource TextureBorderTexturePathMultiConverter}" >
-                              <Binding Path="AbsPosX" />
-                              <Binding Path="AbsPosY" />
-                              <Binding />
-                           </MultiBinding>
-                        </ImageBrush.ImageSource>
-                        <ImageBrush.Viewport>
-                           <MultiBinding Converter="{StaticResource TextureBorderRectMultiValueConverter}" >
-                              <Binding Path="AbsPosX" />
-                              <Binding Path="AbsPosY" />
-                              <Binding />
-                           </MultiBinding>
-                        </ImageBrush.Viewport>
-                     </ImageBrush>
-                  </Rectangle.Fill>
-                  <Rectangle.RenderTransform >
+                  </Grid.Visibility>
+                  <!-- The decoration itself, or (when HazeBrush is set, for a
+                       polygon fade to a colour) the haze brush where the
+                       decoration's texture is -->
+                  <Rectangle Visibility="{Binding HazeBrush, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:DecoratedPolygonBorderControl}}, Converter={StaticResource NullToVisibilityConverter}}">
+                     <Rectangle.Fill>
+                        <ImageBrush
+                           ViewportUnits="Absolute"
+                           TileMode="Tile"
+                           Stretch="Uniform"
+                           AlignmentX="Left"
+                           AlignmentY="Top">
+                           <ImageBrush.ImageSource>
+                              <MultiBinding Converter="{StaticResource TextureBorderTexturePathMultiConverter}" >
+                                 <Binding Path="AbsPosX" />
+                                 <Binding Path="AbsPosY" />
+                                 <Binding />
+                              </MultiBinding>
+                           </ImageBrush.ImageSource>
+                           <ImageBrush.Viewport>
+                              <MultiBinding Converter="{StaticResource TextureBorderRectMultiValueConverter}" >
+                                 <Binding Path="AbsPosX" />
+                                 <Binding Path="AbsPosY" />
+                                 <Binding />
+                              </MultiBinding>
+                           </ImageBrush.Viewport>
+                        </ImageBrush>
+                     </Rectangle.Fill>
+                  </Rectangle>
+                  <Rectangle Fill="{Binding HazeBrush, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:DecoratedPolygonBorderControl}}}"
+                     Visibility="{Binding HazeBrush, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:DecoratedPolygonBorderControl}}, Converter={StaticResource NullToVisibilityConverter}, ConverterParameter=notNull}">
+                     <Rectangle.OpacityMask>
+                        <ImageBrush
+                           ViewportUnits="Absolute"
+                           TileMode="Tile"
+                           Stretch="Uniform"
+                           AlignmentX="Left"
+                           AlignmentY="Top">
+                           <ImageBrush.ImageSource>
+                              <MultiBinding Converter="{StaticResource TextureBorderTexturePathMultiConverter}" >
+                                 <Binding Path="AbsPosX" />
+                                 <Binding Path="AbsPosY" />
+                                 <Binding />
+                              </MultiBinding>
+                           </ImageBrush.ImageSource>
+                           <ImageBrush.Viewport>
+                              <MultiBinding Converter="{StaticResource TextureBorderRectMultiValueConverter}" >
+                                 <Binding Path="AbsPosX" />
+                                 <Binding Path="AbsPosY" />
+                                 <Binding />
+                              </MultiBinding>
+                           </ImageBrush.Viewport>
+                        </ImageBrush>
+                     </Rectangle.OpacityMask>
+                  </Rectangle>
+                  <Grid.RenderTransform >
                      <TransformGroup>
                         <TranslateTransform x:Name="d2">
                            <TranslateTransform.X>
@@ -125,8 +157,8 @@
                            </RotateTransform.Angle>
                         </RotateTransform>
                      </TransformGroup>
-                  </Rectangle.RenderTransform>
-               </Rectangle>
+                  </Grid.RenderTransform>
+               </Grid>
             </DataTemplate>
          </ItemsControl.ItemTemplate>
       </ItemsControl>
