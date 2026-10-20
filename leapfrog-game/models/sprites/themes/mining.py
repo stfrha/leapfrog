@@ -11,6 +11,9 @@ Materials are procedural and selected by role:
     frame_brace  - lighter bracing steel, mid grey paint, weathered
     hull_white   - the Leapfrog's white hex plating (shared.hex_plate, needs UVs)
     nozzle       - dark burnt metal (shared.burnt_metal)
+    gravel_white - white stone chips, neutral grey-white (per-stone
+                   'stone_rand' attribute), for repeating gravel textures
+    gravel_bed   - the dark ground showing between gravel stones
 """
 
 import math
@@ -62,9 +65,9 @@ def setup_world(scene, models_dir, hdri=None):
 
 def setup_lights(scene, rig):
     sun_data = bpy.data.lights.new("Sun", 'SUN')
-    if rig in ("persp", "axo"):
-        # Scenery and ambient pieces: softer and a bit dimmer, like the big
-        # area light over the silo.
+    if rig in ("persp", "axo", "tile"):
+        # Scenery, ambient pieces and repeating ground textures: softer and a
+        # bit dimmer, like the big area light over the silo.
         sun_data.energy = SUN_STRENGTH * 0.75
         sun_data.angle = math.radians(25.0)
     else:
@@ -115,6 +118,10 @@ def make_material(role, models_dir):
         return _weathered_paint("container_blue", paint=(0.05, 0.12, 0.19), rust=0.45, streak_scale=0.25)
     if role == "ground_dirt":
         return _ground_dirt("ground_dirt")
+    if role == "gravel_white":
+        return _gravel_stone("gravel_white")
+    if role == "gravel_bed":
+        return _simple("gravel_bed", base=(0.10, 0.10, 0.10), rough=0.95, metallic=0.0)
     if role == "neon_dead":
         return _simple("neon_dead", base=(0.10, 0.07, 0.08), rough=0.25, metallic=0.0)
     raise KeyError("mining theme has no material role '%s'" % role)
@@ -289,6 +296,98 @@ def _ground_dirt(name):
     l.new(bump_grit.outputs["Normal"], bsdf.inputs["Normal"])
 
     return mat
+
+
+def _gravel_stone(name):
+    """
+    White stone chips (marble / quartz gravel). Neutral, so the editor's
+    color attribute tints it. Each stone's brightness comes from its
+    'stone_rand' attribute (0..1, set per stone by the script), so stones
+    differ a little from each other; texture coordinates are the object's,
+    so repeated copies of a tile look the same.
+    """
+    mat = bpy.data.materials.new(name)
+    mat.use_nodes = True
+    nt = mat.node_tree
+    n = nt.nodes
+    l = nt.links
+    n.clear()
+
+    out = n.new("ShaderNodeOutputMaterial")
+    bsdf = n.new("ShaderNodeBsdfPrincipled")
+    l.new(bsdf.outputs["BSDF"], out.inputs["Surface"])
+    bsdf.inputs["Metallic"].default_value = 0.0
+    _try_input(bsdf, "Subsurface Weight", 0.12)
+    _try_input(bsdf, "Subsurface Scale", 0.04)
+
+    coord = n.new("ShaderNodeTexCoord")
+    attr = n.new("ShaderNodeAttribute")
+    attr.attribute_type = 'GEOMETRY'
+    attr.attribute_name = "stone_rand"
+
+    # Per-stone brightness (linear albedo)
+    per_stone = n.new("ShaderNodeMapRange")
+    per_stone.inputs["To Min"].default_value = 0.55
+    per_stone.inputs["To Max"].default_value = 0.86
+    l.new(attr.outputs["Fac"], per_stone.inputs["Value"])
+
+    # Cloudy veins inside a stone
+    cloud = n.new("ShaderNodeTexNoise")
+    cloud.inputs["Scale"].default_value = 5.0
+    cloud.inputs["Detail"].default_value = 4.0
+    l.new(coord.outputs["Object"], cloud.inputs["Vector"])
+    cloud_map = n.new("ShaderNodeMapRange")
+    cloud_map.inputs["To Min"].default_value = 0.88
+    cloud_map.inputs["To Max"].default_value = 1.08
+    l.new(cloud.outputs["Fac"], cloud_map.inputs["Value"])
+
+    # A few dark specks
+    speck = n.new("ShaderNodeTexNoise")
+    speck.inputs["Scale"].default_value = 45.0
+    speck.inputs["Detail"].default_value = 2.0
+    l.new(coord.outputs["Object"], speck.inputs["Vector"])
+    speck_map = n.new("ShaderNodeMapRange")
+    speck_map.inputs["From Min"].default_value = 0.66
+    speck_map.inputs["From Max"].default_value = 0.74
+    speck_map.inputs["To Min"].default_value = 1.0
+    speck_map.inputs["To Max"].default_value = 0.6
+    l.new(speck.outputs["Fac"], speck_map.inputs["Value"])
+
+    v1 = n.new("ShaderNodeMath")
+    v1.operation = 'MULTIPLY'
+    l.new(per_stone.outputs["Result"], v1.inputs[0])
+    l.new(cloud_map.outputs["Result"], v1.inputs[1])
+    v2 = n.new("ShaderNodeMath")
+    v2.operation = 'MULTIPLY'
+    v2.use_clamp = True
+    l.new(v1.outputs["Value"], v2.inputs[0])
+    l.new(speck_map.outputs["Result"], v2.inputs[1])
+    l.new(v2.outputs["Value"], bsdf.inputs["Base Color"])
+
+    # Some stones a bit shinier than others
+    rough = n.new("ShaderNodeMapRange")
+    rough.inputs["To Min"].default_value = 0.42
+    rough.inputs["To Max"].default_value = 0.72
+    l.new(attr.outputs["Fac"], rough.inputs["Value"])
+    l.new(rough.outputs["Result"], bsdf.inputs["Roughness"])
+
+    # Pitted, chipped surface
+    pits = n.new("ShaderNodeTexNoise")
+    pits.inputs["Scale"].default_value = 16.0
+    pits.inputs["Detail"].default_value = 6.0
+    l.new(coord.outputs["Object"], pits.inputs["Vector"])
+    bump = n.new("ShaderNodeBump")
+    bump.inputs["Strength"].default_value = 0.35
+    bump.inputs["Distance"].default_value = 0.02
+    l.new(pits.outputs["Fac"], bump.inputs["Height"])
+    l.new(bump.outputs["Normal"], bsdf.inputs["Normal"])
+
+    return mat
+
+
+def _try_input(node, name, value):
+    if name in node.inputs:
+        node.inputs[name].default_value = value
 
 
 def _socket(sockets, identifier):

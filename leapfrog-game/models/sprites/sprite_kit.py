@@ -41,6 +41,11 @@ Conventions
   use Kit(..., ambient=True): they go to data/images/<world>/ambient/ and
   share one atlas there, and are rendered with render_axo() so pieces can
   be placed side by side.
+* Repeating textures (polygon fills, polygon borders) use rig="tile" and
+  render_tile(): a front view of one period of a scene the script builds
+  to repeat, rendered with overscan and cropped, power-of-two, registered
+  in its own <atlas clamp2edge="false">. tile_tools.py has the numpy
+  post-processing (crop, neutral grey, levels, fades); see white_gravel.py.
 """
 
 import argparse
@@ -611,11 +616,13 @@ class Kit:
             return False
         return True
 
-    def register(self, filename, attrs="", ppu=None):
+    def register(self, filename, attrs="", ppu=None, repeat=False):
         """
         Add a shipped texture to the script's resource file (skipped for test
         renders / custom --out). ppu is written as an attribute; for a texture
-        that is already listed only its ppu is updated.
+        that is already listed only its ppu is updated. repeat=True puts it
+        in its own <atlas clamp2edge="false"> (textures that tile on polygons
+        and polygon borders; they must be power-of-two).
         """
         if not self._may_register(os.path.splitext(filename)[0]):
             return
@@ -631,7 +638,7 @@ class Kit:
                 print("sprite_kit: NOTE %s is also listed in res.xml; remove it there so it isn't "
                       "loaded for the whole game" % filename)
         if project_files.find_texture(filename)[0] is None:
-            project_files.register_texture(self.res, filename, attrs, "images/" + self.folder)
+            project_files.register_texture(self.res, filename, attrs, "images/" + self.folder, repeat=repeat)
         elif ppu_text:
             project_files.set_image_attr(filename, "ppu", ppu_text)
 
@@ -821,6 +828,95 @@ class Kit:
 
         return self._finish(name, res_x, res_y, ppu,
                             "size %.2f x %.2f units" % (fw, fh), editor_only=editor_only, frame_only=frame_only)
+
+    def render_tile(self, name, origin_xz, size_px, overscan_px=16, post=None):
+        """
+        Front view (orthographic, looking along +Y) of a rectangle in the X/Z
+        plane for a texture that repeats: polygon fills and polygon borders.
+        Render with rig="tile".
+
+        origin_xz: bottom-left corner of the rectangle in Blender units.
+        size_px:   (width, height) of the image; both must be powers of two
+                   (repeat-mode textures render black on iOS otherwise).
+        The rectangle is size_px / PPU units. The script must build the
+        scene so that it repeats with that period (e.g. the same geometry
+        copied one period left, right, up and down); the frame is rendered
+        overscan_px larger on every side and cropped, so the denoiser sees
+        the neighbours of the edge pixels as well.
+
+        post(img) -> img gets the cropped image as a numpy array (rows top
+        down, RGBA 0..1, see tile_tools) and returns what is saved.
+        The texture is registered in its own repeating atlas
+        (clamp2edge="false") with its ppu. Returns the image path.
+        """
+        import numpy as np
+        pw, ph = size_px
+        for n in (pw, ph):
+            if n <= 0 or (n & (n - 1)):
+                raise ValueError("render_tile: %s must be a power of two in both directions, got %d x %d"
+                                 % (name, pw, ph))
+        ppu = self.args.ppu
+        w = pw / ppu
+        h = ph / ppu
+        m = int(overscan_px)
+        res_x = pw + 2 * m
+        res_y = ph + 2 * m
+
+        cam_data = bpy.data.cameras.new(name + "_cam")
+        cam_data.type = 'ORTHO'
+        cam_data.ortho_scale = max(res_x, res_y) / ppu
+        cam_data.sensor_fit = 'AUTO'
+        cam_data.clip_start = 0.1
+        cam_data.clip_end = 1000.0
+        cam = bpy.data.objects.new(name + "_cam", cam_data)
+        self.scene.collection.objects.link(cam)
+        cam.location = (origin_xz[0] + w / 2, -300.0, origin_xz[1] + h / 2)
+        cam.rotation_euler = (math.pi / 2, 0.0, 0.0)          # look along +Y, Z up
+        self.scene.camera = cam
+        self.scene.render.resolution_x = res_x
+        self.scene.render.resolution_y = res_y
+
+        if self.args.save_blend:
+            os.makedirs(BLEND_OUT, exist_ok=True)
+            path = os.path.join(BLEND_OUT, name + ".blend")
+            bpy.ops.wm.save_as_mainfile(filepath=path)
+            print("sprite_kit: saved %s" % path)
+        if self.args.no_render:
+            return None
+
+        # Render with overscan to _frames/ (not shipped), then crop
+        os.makedirs(FRAMES_OUT, exist_ok=True)
+        raw_path = os.path.join(FRAMES_OUT, name + "_overscan.png")
+        self.scene.render.filepath = raw_path
+        bpy.ops.render.render(write_still=True)
+
+        import tile_tools
+        px, _w, _h = _load_pixels(raw_path)
+        img = px[::-1]                                   # top row first
+        img = tile_tools.crop(img, m, m, pw, ph)
+        if post is not None:
+            img = post(img)
+
+        out_dir = self._out_dir(name, False)
+        os.makedirs(out_dir, exist_ok=True)
+        out_path = os.path.join(out_dir, name + ".png")
+        out = bpy.data.images.new(name, pw, ph, alpha=True)
+        out.pixels.foreach_set(np.ascontiguousarray(img[::-1]).astype(np.float32).ravel())
+        out.filepath_raw = out_path
+        out.file_format = 'PNG'
+        out.save()
+        bpy.data.images.remove(out)
+        sx, sy = tile_tools.seam_error(img)
+        self._last = (out_path, pw, ph, ppu, "tile %.2f x %.2f units" % (w, h))
+
+        print("")
+        print("sprite_kit: %s" % out_path)
+        print("sprite_kit:   repeating texture, %d x %d px, %g px/unit = %g x %g units per repeat"
+              % (pw, ph, ppu, w, h))
+        print("sprite_kit:   seam check (1 = seams like the rest of the image): x %.2f, y %.2f" % (sx, sy))
+        print("")
+        self.register(name + ".png", ppu=ppu, repeat=True)
+        return out_path
 
     def _transform_scene(self, factor, turn_deg=0.0):
         """
