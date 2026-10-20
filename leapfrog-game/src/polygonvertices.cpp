@@ -376,15 +376,12 @@ void PolygonVertices::createPolygonBorders(
 
       if (groundBorder || ceilingBorder || leftWallBorder || rightWallBorder)
       {
-
-         // Polygon of a body shape is physical coordinates, i.e. in meters
-         for (int i = 1; i < edgeNum - 1; i++)
+         // One border sprite per edge, from each vertex back to the one
+         // before it (the editor draws them the same way). All edges get
+         // one, including the closing edge from the last vertex to the first.
+         for (int i = 0; i < edgeNum; i++)
          {
-            // We draw a border sprite from prev to current. Set anchor to 0,0.5
-            // So position should be prev. Calculate angle between points and
-            // set that to sprite. Then attach it to polygon.
-
-            Vector2 prev = vertices[i - 1];
+            Vector2 prev = vertices[(i + edgeNum - 1) % edgeNum];
             Vector2 current = vertices[i];
             Vector2 diffV = current - prev;
             float compAngle = atan2(diffV.y, diffV.x);
@@ -488,115 +485,7 @@ void PolygonVertices::createPolygonBorders(
                border->setRotation(angle);
 
                border->attachTo(polygon);
-
             }
-         }
-
-         Vector2 prev = vertices[edgeNum - 1];
-         Vector2 current = vertices[0];
-         Vector2 diffV = current - prev;
-         float compAngle = atan2(diffV.y, diffV.x);
-         float angle = compAngle + MATH_PI;
-
-         if (angle > MATH_PI)
-         {
-            angle -= 2.0f * MATH_PI;
-         }
-
-         compAngle = angle;
-
-         float distance = diffV.length();
-         Vector2 rotatedNormal = Vector2(-sin(angle), cos(angle));
-
-         bool doThisBorder = false;
-         float horOffset;
-         float textMeterWidth;
-         float textMeterHeight;
-         string texture;
-
-         // Select border data by the angle and the angle limits
-         if ((compAngle <= groundRightAngle) && (compAngle > groundLeftAngle))
-         {
-            // This is a ground border
-            if (doThisBorder)
-            {
-               doThisBorder = groundBorder;
-               horOffset = groundHorOffset;
-               textMeterWidth = groundTextMeterWidth;
-               textMeterHeight = groundTextMeterHeight;
-               texture = groundTexture;
-            }
-         }
-         else if ((compAngle > groundRightAngle) && (compAngle < ceilingRightAngle))
-         {
-            // This is a right wall border
-            doThisBorder = rightWallBorder;
-            if (doThisBorder)
-            {
-               horOffset = rightWallHorOffset;
-               textMeterWidth = rightWallTextMeterWidth;
-               textMeterHeight = rightWallTextMeterHeight;
-               texture = rightWallTexture;
-            }
-         }
-         else if ((compAngle < groundLeftAngle) && (compAngle > ceilingLeftAngle))
-         {
-            // This is a left wall border
-            doThisBorder = leftWallBorder;
-            if (doThisBorder)
-            {
-               horOffset = leftWallHorOffset;
-               textMeterWidth = leftWallTextMeterWidth;
-               textMeterHeight = leftWallTextMeterHeight;
-               texture = leftWallTexture;
-            }
-         }
-         else
-         {
-            // This is a ceiling border
-            doThisBorder = ceilingBorder;
-            if (doThisBorder)
-            {
-               horOffset = ceilingHorOffset;
-               textMeterWidth = ceilingTextMeterWidth;
-               textMeterHeight = ceilingTextMeterHeight;
-               texture = ceilingTexture;
-            }
-         }
-
-         if (doThisBorder)
-         {
-            spPolygon border = new oxygine::Polygon();
-            border->setResAnim(g_GraphRes.getResAnim(texture));
-            border->setAnchor(0.0f, 0.5f);
-            border->setAddColor(polygon->getAddColor());         // same tint as the polygon
-
-            vector<Vector2> vertices(4);
-            vertices[0] = Vector2(0.0f, 0.0f);
-            vertices[1] = Vector2(0.0f, textMeterHeight);
-            vertices[2] = Vector2(distance, textMeterHeight);
-            vertices[3] = Vector2(distance, 0.0f);
-
-            vector<VectorT3<int> > triangles(2);
-
-            triangles[0] = VectorT3<int>(1, 2, 3);
-            triangles[1] = VectorT3<int>(1, 3, 4);
-
-            vertexPCT2* vs = PolygonVertices::createTriangleVertices(
-               vertices,
-               triangles,
-               Vector2(textMeterWidth, textMeterHeight),
-               Vector2(0.0f, 0.0f),
-               polygon->getColor());
-
-            border->setVertices(vs, sizeof(vertexPCT2) *  triangles.size() * 4, vertexPCT2::FORMAT, true);
-
-            border->setAnchor(0.0f, 0.0f);
-            border->setPosition(current - rotatedNormal * horOffset);
-            border->setRotation(angle);
-
-            border->attachTo(polygon);
-
          }
       }
    }
