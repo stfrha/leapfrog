@@ -17,6 +17,7 @@
       <local:IsSceneToVisibilityValueConverter x:Key="IsSceneToVisibilityValueConverter" />
       <local:ParallaxTransformConverter x:Key="ParallaxTransformConverter" />
       <local:FadeMaskConverter x:Key="FadeMaskConverter" />
+      <local:EditorHiddenToVisibilityValueConverter x:Key="EditorHiddenToVisibilityValueConverter" />
    </UserControl.Resources>
    <Canvas x:Name="myCoUserControl" >
       <!-- The first itemscontrol is for the images of the objects, like what is shown 
@@ -223,6 +224,8 @@
                <Setter Property="Canvas.Left" Value="{Binding AbsPosX}"/>
                <Setter Property="Canvas.Top" Value="{Binding AbsPosY}"/>
                <Setter Property="Canvas.ZIndex" Value="{Binding ZLevel}"/>
+               <!-- Shapes with Hide in Editor ticked are not shown -->
+               <Setter Property="Visibility" Value="{Binding EditorHidden, Converter={StaticResource EditorHiddenToVisibilityValueConverter}, FallbackValue=Visible}"/>
                <!-- In the parallax view, shapes on a parallax layer are drawn
                     where the game shows them for the window's position -->
                <Setter Property="RenderTransform">
@@ -512,6 +515,8 @@
             <Style TargetType="ContentPresenter">
                <Setter Property="Canvas.Left" Value="{Binding AbsPosX}"/>
                <Setter Property="Canvas.Top" Value="{Binding AbsPosY}"/>
+               <!-- No handles for hidden shapes -->
+               <Setter Property="Visibility" Value="{Binding EditorHidden, Converter={StaticResource EditorHiddenToVisibilityValueConverter}, FallbackValue=Visible}"/>
                <!-- Handles follow their shape in the parallax view -->
                <Setter Property="RenderTransform">
                   <Setter.Value>

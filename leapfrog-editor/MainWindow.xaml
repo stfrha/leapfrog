@@ -27,6 +27,8 @@
       <KeyBinding Key="Y" Modifiers="Control" Command="{Binding Redo}" />
       <KeyBinding Key="Z" Modifiers="Control+Shift" Command="{Binding Redo}" />
       <KeyBinding Key="A" Modifiers="Control" Command="{Binding SelectAll}" />
+      <KeyBinding Key="H" Modifiers="Control" Command="{Binding HideSelected}" />
+      <KeyBinding Key="H" Modifiers="Control+Shift" Command="{Binding UnhideAll}" />
    </Window.InputBindings>
    <Window.Resources>
       <local:ToCollectionValueConverter x:Key="ToCollectionValueConverter" />
@@ -111,6 +113,8 @@
                   <MenuItem Header="Zoom Out" />
                </MenuItem>
                <MenuItem Header="Refresh Textures" InputGestureText="F5" Command="{Binding RefreshTextures}" />
+               <MenuItem Header="Hide Selected in Editor" InputGestureText="Ctrl+H" Command="{Binding HideSelected}" />
+               <MenuItem Header="Show All Hidden" InputGestureText="Ctrl+Shift+H" Command="{Binding UnhideAll}" />
                <MenuItem Header="Generate Triangles" Command="{Binding CreateTriangles}" />
                <MenuItem Header="Show">
                   <MenuItem Header="Joints" IsCheckable="True" IsChecked="{Binding ShowJoints}" />
@@ -305,6 +309,16 @@
                   </HierarchicalDataTemplate>
                   <HierarchicalDataTemplate DataType="{x:Type local:LfShapeViewModel}" >
                      <TextBlock Margin="2"  Text="{Binding Name}">
+                        <TextBlock.Style>
+                           <Style TargetType="TextBlock">
+                              <Style.Triggers>
+                                 <DataTrigger Binding="{Binding EditorHidden}" Value="True">
+                                    <Setter Property="Foreground" Value="Gray" />
+                                    <Setter Property="FontStyle" Value="Italic" />
+                                 </DataTrigger>
+                              </Style.Triggers>
+                           </Style>
+                        </TextBlock.Style>
                         <TextBlock.ContextMenu>
                            <ContextMenu>
                               <Separator />
@@ -318,6 +332,16 @@
                   <HierarchicalDataTemplate DataType="{x:Type local:LfPolygonViewModel}"
                      ItemsSource="{Binding PointVms}">
                      <TextBlock Margin="2"  Text="{Binding Name}" >
+                        <TextBlock.Style>
+                           <Style TargetType="TextBlock">
+                              <Style.Triggers>
+                                 <DataTrigger Binding="{Binding EditorHidden}" Value="True">
+                                    <Setter Property="Foreground" Value="Gray" />
+                                    <Setter Property="FontStyle" Value="Italic" />
+                                 </DataTrigger>
+                              </Style.Triggers>
+                           </Style>
+                        </TextBlock.Style>
                         <TextBlock.ContextMenu>
                            <ContextMenu>
                               <Separator />

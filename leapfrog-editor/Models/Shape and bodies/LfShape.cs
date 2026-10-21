@@ -25,6 +25,7 @@ namespace LeapfrogEditor
       private double _animatePeriod;
       private string _color = "";
       private string _addColor = "";
+      private bool _editorHidden = false;
 
       #endregion
 
@@ -151,6 +152,20 @@ namespace LeapfrogEditor
       public bool ShouldSerializeAddColor()
       {
          return !string.IsNullOrEmpty(_addColor);
+      }
+
+      // Editor only: the shape is hidden on the edit area while editing
+      // (the game ignores this attribute). Written only when set.
+      [XmlAttribute("editorHidden")]
+      public bool EditorHidden
+      {
+         get { return _editorHidden; }
+         set { _editorHidden = value; }
+      }
+
+      public bool ShouldSerializeEditorHidden()
+      {
+         return _editorHidden;
       }
 
       #endregion

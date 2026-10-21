@@ -155,6 +155,28 @@ namespace LeapfrogEditor
          }
       }
 
+      // "Hide in Editor": not drawn or clickable on the edit area. Selected
+      // in the tree view (where it is shown grey and in italics).
+      public bool EditorHidden
+      {
+         get
+         {
+            if (_modelObject == null) return false;
+
+            return _modelObject.EditorHidden;
+         }
+         set
+         {
+            if (_modelObject == null) return;
+
+            if (_modelObject.EditorHidden != value)
+            {
+               _modelObject.EditorHidden = value;
+               OnPropertyChanged("EditorHidden");
+            }
+         }
+      }
+
       public virtual double PosX
       {
          get

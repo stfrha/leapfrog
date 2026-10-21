@@ -2924,7 +2924,10 @@ namespace LeapfrogEditor
       {
          foreach (LfShapeViewModel svm in SelectedShapes)
          {
-            svm.RotateShape(delta, fine);
+            if (!svm.EditorHidden)
+            {
+               svm.RotateShape(delta, fine);
+            }
          }
 
          foreach (CoSystemViewModel syvm in SelectedSystems)
@@ -3520,7 +3523,7 @@ namespace LeapfrogEditor
             foreach (object o in EditedCpVm.ShapeCollection.Shapes)
             {
                LfShapeViewModel svm = o as LfShapeViewModel;
-               if (svm == null)
+               if ((svm == null) || svm.EditorHidden)
                {
                   continue;
                }
@@ -3557,8 +3560,15 @@ namespace LeapfrogEditor
       // Everything a drag moves: selected shapes, child objects and systems
       private void MoveSelection(Vector dragVector)
       {
-         foreach (IPositionInterface shape in SelectedShapes)
+         foreach (LfShapeViewModel shape in SelectedShapes)
          {
+            // A hidden shape that is still selected (from the tree view)
+            // isn't dragged along with what can be seen
+            if (shape.EditorHidden)
+            {
+               continue;
+            }
+
             shape.PosX += dragVector.X;
             shape.PosY += dragVector.Y;
          }
@@ -3595,7 +3605,7 @@ namespace LeapfrogEditor
             foreach (object o in EditedCpVm.ShapeCollection.Shapes)
             {
                LfShapeViewModel svm = o as LfShapeViewModel;
-               if (svm != null)
+               if ((svm != null) && !svm.EditorHidden)
                {
                   svm.IsSelected = true;
                }
@@ -3609,6 +3619,61 @@ namespace LeapfrogEditor
          finally
          {
             EndSelectionBatch();
+         }
+      }
+
+      // Hide in Editor for all selected shapes. They are deselected, so the
+      // next drag doesn't move something that can't be seen.
+      void HideSelectedExecute(Object parameter)
+      {
+         List<LfShapeViewModel> shapes = new List<LfShapeViewModel>(SelectedShapes);
+
+         BeginSelectionBatch();
+         try
+         {
+            foreach (LfShapeViewModel svm in shapes)
+            {
+               svm.EditorHidden = true;
+               svm.IsSelected = false;
+            }
+         }
+         finally
+         {
+            EndSelectionBatch();
+         }
+      }
+
+      public ICommand HideSelected
+      {
+         get
+         {
+            return new MicroMvvm.RelayCommand<Object>(parameter => HideSelectedExecute(parameter), parameter => (EditedCpVm != null) && (SelectedShapes.Count > 0));
+         }
+      }
+
+      // Shows every hidden shape of the edited object again
+      void UnhideAllExecute(Object parameter)
+      {
+         if (EditedCpVm == null)
+         {
+            return;
+         }
+
+         foreach (object o in EditedCpVm.ShapeCollection.Shapes)
+         {
+            LfShapeViewModel svm = o as LfShapeViewModel;
+            if (svm != null)
+            {
+               svm.EditorHidden = false;
+            }
+         }
+      }
+
+      public ICommand UnhideAll
+      {
+         get
+         {
+            return new MicroMvvm.RelayCommand<Object>(parameter => UnhideAllExecute(parameter), parameter => EditedCpVm != null);
          }
       }
 

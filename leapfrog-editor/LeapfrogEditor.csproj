@@ -358,6 +358,7 @@
     <Compile Include="ValueConverters\TextureOffsetValueConverters.cs" />
     <Compile Include="ValueConverters\DebugDummyConverter.cs" />
     <Compile Include="ValueConverters\BoolToVisibilityValueConverter.cs" />
+    <Compile Include="ValueConverters\EditorHiddenToVisibilityValueConverter.cs" />
     <Compile Include="ValueConverters\ZoomHandleTranslateValueConverter.cs" />
     <Compile Include="ValueConverters\ZoomHandleSizeValueConverter.cs" />
     <Compile Include="ValueConverters\ZoomThicknessValueConverter.cs" />
