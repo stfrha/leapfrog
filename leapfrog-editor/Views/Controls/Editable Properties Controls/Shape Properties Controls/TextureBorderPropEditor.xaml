@@ -9,7 +9,7 @@
              d:DesignHeight="450" d:DesignWidth="800">
    <Expander Header="{Binding Headline, ElementName=root}">
       <StackPanel>
-         <local:TexturePickerEditorControl Headline="Texture" MyValue="{Binding TextureBorder.Texture, ElementName=root, Mode=TwoWay}" />
+         <local:TexturePickerEditorControl Headline="Texture" NoneValue="notDefined" MyValue="{Binding TextureBorder.Texture, ElementName=root, Mode=TwoWay}" />
          <local:DoubleEditorControl Headline="Horis Offset" MyValue="{Binding TextureBorder.HorisontalOffset, ElementName=root, Mode=TwoWay}" />
          <local:DoubleEditorControl Headline="Texture Width" MyValue="{Binding TextureBorder.TextureWidth, ElementName=root, Mode=TwoWay}" />
          <local:DoubleEditorControl Headline="Texture Height" MyValue="{Binding TextureBorder.TextureHeight, ElementName=root, Mode=TwoWay}" />

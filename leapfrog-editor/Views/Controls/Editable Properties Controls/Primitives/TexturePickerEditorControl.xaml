@@ -27,7 +27,7 @@
          IsTabStop="False"
          FontSize="10" 
          Height="15"
-         Text="{Binding MyValue, ElementName=root}"
+         Text="{Binding DisplayText, ElementName=root}"
       />
       <ToggleButton Name="button" Grid.Column="2" Margin="1" Height="13" FontSize="8" Content="..." IsTabStop="False" >
          <!--<ToggleButton.Template>
@@ -38,6 +38,13 @@
       </ToggleButton>
       <Popup IsOpen="{Binding IsChecked, ElementName=button}" StaysOpen="False">
          <Border Width="400" Height="316" Background="LightYellow">
+            <DockPanel>
+            <!-- Only where a texture can be left out (the polygon borders) -->
+            <Button DockPanel.Dock="Top" Margin="4,4,4,2" HorizontalAlignment="Left" Padding="8,1" FontSize="10"
+               Content="No texture"
+               ToolTip="Use no texture here"
+               Visibility="{Binding NoneVisibility, ElementName=root}"
+               Click="NoTexture_Click" />
             <ScrollViewer>
                <ListView 
                   ScrollViewer.HorizontalScrollBarVisibility="Disabled"
@@ -63,6 +70,7 @@
                   </ListView.ItemsPanel>
                </ListView>
             </ScrollViewer>
+            </DockPanel>
          </Border>
       </Popup>
    </Grid>
