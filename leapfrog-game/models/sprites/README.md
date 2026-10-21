@@ -52,6 +52,15 @@ Script-specific options are listed with `-- --help`.
   neatly lined up; the camera stays the same for all pieces. Shared building blocks (windows,
   doors, ribbed and corrugated walls, masts, railings) are in `amb_parts.py`. Village pieces:
   `amb_hut`, `amb_bunkhouse`, `amb_container_home`, `amb_dome`, `amb_water_tower`.
+  Mine site pieces (same layer, camera and scale; machines face right and are dead by
+  default, `--lit` / `--dark` switch their few lights): `amb_excavator` (tracked excavator;
+  `--lift`, `--curl` pose the arm), `amb_haul_truck` (dump truck; `--tip`, `--empty`,
+  `--flat`), `amb_crusher` (crusher tower, conveyor and ore stockpile), `amb_headframe`
+  (shaft headframe with the winding house; its sheave wheels turn: 4 frames by default,
+  `--still` for one image; set Animate Period to what the script prints, about 0.56 s).
+  `--rusty` makes the excavator or truck a wreck. Their parts (beams, rams, tracks,
+  tyres, cabs, heaps, sheaves, trusses, trestles) are in `amb_mine_parts.py`; material
+  roles `machine_yellow`, `rubber` and `ore_rock` are in the mining theme.
 * Animations (e.g. a blinking neon): render each frame with `frame_only=True` (to `_frames/`,
   not shipped or registered), then `kit.make_strip()` combines them into one image with
   `rows`/`cols` in its resource entry. The editor shows an animation's first frame, so bodies

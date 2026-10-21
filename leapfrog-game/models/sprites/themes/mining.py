@@ -14,6 +14,9 @@ Materials are procedural and selected by role:
     gravel_white - white stone chips, neutral grey-white (per-stone
                    'stone_rand' attribute), for repeating gravel textures
     gravel_bed   - the dark ground showing between gravel stones
+    machine_yellow - mining machines' faded yellow paint, weathered and rusty
+    rubber       - big off-road tyres, dusty black
+    ore_rock     - loose ore in heaps and truck bodies, rust-brown and grey
 """
 
 import math
@@ -126,6 +129,12 @@ def make_material(role, models_dir):
         return _gravel_stone("gravel_white")
     if role == "gravel_bed":
         return _simple("gravel_bed", base=(0.10, 0.10, 0.10), rough=0.95, metallic=0.0)
+    if role == "machine_yellow":
+        return _weathered_paint("machine_yellow", paint=(0.50, 0.33, 0.035), rust=0.5, streak_scale=0.3)
+    if role == "rubber":
+        return _simple("rubber", base=(0.028, 0.027, 0.026), rough=0.88, metallic=0.0)
+    if role == "ore_rock":
+        return _ground_dirt("ore_rock", dark=(0.07, 0.045, 0.035), light=(0.33, 0.20, 0.13), stone_scale=1.6)
     if role == "neon_dead":
         return _simple("neon_dead", base=(0.10, 0.07, 0.08), rough=0.25, metallic=0.0)
     raise KeyError("mining theme has no material role '%s'" % role)
@@ -238,8 +247,10 @@ def _dirty_concrete(name):
     return mat
 
 
-def _ground_dirt(name):
-    """Dusty grey-brown dirt with small stones, for ground under scenery."""
+def _ground_dirt(name, dark=(0.07, 0.06, 0.05), light=(0.24, 0.21, 0.17), stone_scale=2.5):
+    """Dusty grey-brown dirt with small stones, for ground under scenery.
+    dark / light are the patch colours; stone_scale is Voronoi cells per
+    unit (smaller = bigger stones, e.g. loose ore)."""
     mat = bpy.data.materials.new(name)
     mat.use_nodes = True
     nt = mat.node_tree
@@ -261,13 +272,13 @@ def _ground_dirt(name):
     mottle.inputs["Detail"].default_value = 6.0
     l.new(coord.outputs["Object"], mottle.inputs["Vector"])
     mottle_ramp = n.new("ShaderNodeValToRGB")
-    mottle_ramp.color_ramp.elements[0].color = (0.07, 0.06, 0.05, 1.0)
-    mottle_ramp.color_ramp.elements[1].color = (0.24, 0.21, 0.17, 1.0)
+    mottle_ramp.color_ramp.elements[0].color = (dark[0], dark[1], dark[2], 1.0)
+    mottle_ramp.color_ramp.elements[1].color = (light[0], light[1], light[2], 1.0)
     l.new(mottle.outputs["Fac"], mottle_ramp.inputs["Fac"])
 
     # Small stones: Voronoi cells, darker in the gaps between them
     stones = n.new("ShaderNodeTexVoronoi")
-    stones.inputs["Scale"].default_value = 2.5
+    stones.inputs["Scale"].default_value = stone_scale
     l.new(coord.outputs["Object"], stones.inputs["Vector"])
     stone_ramp = n.new("ShaderNodeValToRGB")
     stone_ramp.color_ramp.elements[0].position = 0.0
