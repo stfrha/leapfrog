@@ -34,11 +34,16 @@
 	</atlas>
 	<set path = "images/mining/ambient" />
 	<atlas>
-		<image file="amb_hut.png" ppu="14" trim="false"/>
+		<image file="amb_hut.png" rows="3" cols="2" ppu="14" trim="false"/>
 		<image file="amb_bunkhouse.png" ppu="14" trim="false"/>
-		<image file="amb_container_home.png" ppu="14" trim="false"/>
-		<image file="amb_dome.png" ppu="14" trim="false"/>
-		<image file="amb_water_tower.png" ppu="14" trim="false"/>
+		<image file="amb_container_home.png" rows="3" cols="2" ppu="14" trim="false"/>
+		<image file="amb_dome.png" rows="3" cols="2" ppu="14" trim="false"/>
+		<image file="amb_water_tower.png" rows="2" cols="3" ppu="14" trim="false"/>
+		<image file="amb_excavator.png" ppu="14" trim="false"/>
+		<image file="amb_haul_truck.png" ppu="14" trim="false"/>
+		<image file="amb_crusher.png" ppu="14" trim="false"/>
+		<image file="amb_headframe.png" rows="2" ppu="14" cols="2" trim="false"/>
+		<image file="amb_crusher.png" ppu="14" trim="false"/>
 	</atlas>
 	<set path = "images/mining" />
 	<atlas clamp2edge="false">
@@ -47,5 +52,13 @@
 	<set path = "images/mining" />
 	<atlas clamp2edge="false">
 		<image file="white_gravel_border.png" ppu="20" trim="false" extend="false"/>
+	</atlas>
+	<set path = "images/mining" />
+	<atlas clamp2edge="false">
+		<image file="ore_ground.png" ppu="14" trim="false" extend="false"/>
+	</atlas>
+	<set path = "images/mining" />
+	<atlas clamp2edge="false">
+		<image file="ore_ground_border.png" ppu="14" trim="false" extend="false"/>
 	</atlas>
 </resources>
