@@ -60,7 +60,8 @@
             <DataTemplate>
                <Grid>
                   <Line
-                     StrokeThickness="{Binding ContentScale, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type ZoomAndPan:ZoomAndPanControl}}, Converter={StaticResource ZoomThicknessValueConverter}}"
+                     StrokeThickness="{Binding SelectionLine, Source={x:Static local:EditorZoom.Instance}}"
+                     StrokeStartLineCap="Square" StrokeEndLineCap="Square"
                      Stroke="DarkBlue"
                      MouseDown="PolygonBorder_MouseDown"
 			            MouseUp="PolygonBorder_MouseUp"

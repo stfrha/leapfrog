@@ -36,6 +36,13 @@ namespace LeapfrogEditor
       /// </summary>
       private MouseButton mouseButtonDown;
 
+      /// <summary>
+      /// Where the drag began, and whether the mouse has moved far enough
+      /// from there for it to be a drag rather than a click.
+      /// </summary>
+      private Point pressContentPoint;
+      private bool dragStarted = false;
+
 
 
       public ChildCOObjectUserControl()
@@ -97,13 +104,17 @@ namespace LeapfrogEditor
 
                if (obj.MainVm.LeftClickState == LeftClickState.none)
                {
-                  // If ctrl is held down, we never intent to drag things
-                  if (!ctrl && (mouseButtonDown == MouseButton.Left))
+                  // If ctrl or shift is held down, we never intent to drag things
+                  // (they add to or take away from the selection, and with shift
+                  // a drag selects with a rubber band)
+                  if (!ctrl && !shift && (mouseButtonDown == MouseButton.Left))
                   {
                      if (down)
                      {
                         mouseHandlingMode = ZoomAndPan.MouseHandlingMode.DraggingObjects;
                         origContentMouseDownPoint = e.GetPosition(parentCanvas);
+                        pressContentPoint = origContentMouseDownPoint;
+                        dragStarted = false;
 
                         UIElement dragObject = (UIElement)sender;
                         dragObject.CaptureMouse();
@@ -157,6 +168,22 @@ namespace LeapfrogEditor
                UIElement parentCanvas = ParentalFinder.FindParent<Canvas>(myCoUserControl);
 
                Point curContentPoint = e.GetPosition(parentCanvas);
+
+               // Nothing moves until the mouse is a few pixels from where the
+               // button went down, so a click doesn't nudge things. Then
+               // everything catches up with the mouse at once.
+               if (!dragStarted)
+               {
+                  if ((curContentPoint - pressContentPoint).Length < EditorZoom.Instance.ToScene(EditorZoom.DragThresholdPixels))
+                  {
+                     e.Handled = true;
+                     return;
+                  }
+
+                  dragStarted = true;
+                  origContentMouseDownPoint = pressContentPoint;
+               }
+
                Vector rectangleDragVector = curContentPoint - origContentMouseDownPoint;
 
                origContentMouseDownPoint = curContentPoint;

@@ -67,6 +67,8 @@
     <Compile Include="Utilities\TextureDensity.cs" />
     <Compile Include="Utilities\TextureTint.cs" />
     <Compile Include="Utilities\EditorClipboard.cs" />
+    <Compile Include="Utilities\EditorZoom.cs" />
+    <Compile Include="Utilities\UndoHistory.cs" />
     <Compile Include="Models\Shape and bodies\PolygonFade.cs" />
     <Compile Include="ValueConverters\FadeConverters.cs" />
     <Compile Include="ValueConverters\ParallaxViewConverters.cs" />

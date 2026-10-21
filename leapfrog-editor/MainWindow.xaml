@@ -22,6 +22,11 @@
       <KeyBinding Key="V" Modifiers="Control" Command="{Binding Paste}" CommandParameter="mouse" />
       <KeyBinding Key="V" Modifiers="Control+Shift" Command="{Binding Paste}" CommandParameter="inPlace" />
       <KeyBinding Key="F6" Command="{Binding ToggleParallaxView}" />
+      <!-- Text boxes have their own undo and select all, which they handle first -->
+      <KeyBinding Key="Z" Modifiers="Control" Command="{Binding Undo}" />
+      <KeyBinding Key="Y" Modifiers="Control" Command="{Binding Redo}" />
+      <KeyBinding Key="Z" Modifiers="Control+Shift" Command="{Binding Redo}" />
+      <KeyBinding Key="A" Modifiers="Control" Command="{Binding SelectAll}" />
    </Window.InputBindings>
    <Window.Resources>
       <local:ToCollectionValueConverter x:Key="ToCollectionValueConverter" />
@@ -51,6 +56,9 @@
                <MenuItem Header="Exit" Click="HandleExitClick" />
             </MenuItem>
             <MenuItem Header="Edit">
+               <MenuItem Header="Undo" InputGestureText="Ctrl+Z" Command="{Binding Undo}" />
+               <MenuItem Header="Redo" InputGestureText="Ctrl+Y" Command="{Binding Redo}" />
+               <Separator/>
                <MenuItem Header="Add" >
                   <MenuItem Header="Sprite Box" Command="{Binding NewShape}" CommandParameter="spriteBox" />
                   <MenuItem Header="Sprite Polygon" Command="{Binding NewShape}" CommandParameter="spritePolygon"  />
@@ -86,6 +94,8 @@
                <MenuItem Header="Copy" InputGestureText="Ctrl+C" Command="{Binding Copy}" />
                <MenuItem Header="Paste at Mouse" InputGestureText="Ctrl+V" Command="{Binding Paste}" CommandParameter="mouse" />
                <MenuItem Header="Paste in Place" InputGestureText="Ctrl+Shift+V" Command="{Binding Paste}" CommandParameter="inPlace" />
+               <Separator/>
+               <MenuItem Header="Select All" InputGestureText="Ctrl+A" Command="{Binding SelectAll}" />
                <Separator/>
                <MenuItem Header="Delete" Command="{Binding Delete}" />
             </MenuItem>
@@ -416,6 +426,7 @@
 						      Background="White"
 					         MouseUp="Canvas_MouseUp"
                         MouseDown="Canvas_MouseDown"
+                        MouseMove="Canvas_MouseMove"
                         MouseWheel="MouseWheel_Rotate">
                         <Line 
                            x:Name="axisX"
@@ -476,6 +487,14 @@
                               </Ellipse.RenderTransform>
                            </Ellipse>
                         </Canvas>
+                        <!-- Rubber band for selecting what lies inside it -->
+                        <Rectangle
+                           x:Name="selectionBand"
+                           Visibility="Collapsed"
+                           IsHitTestVisible="False"
+                           Fill="#203399FF"
+                           Stroke="#FF3399FF"
+                           StrokeThickness="{Binding HairLine, Source={x:Static local:EditorZoom.Instance}}" />
                      </local:CenteredCanvas>
 
                      <!--

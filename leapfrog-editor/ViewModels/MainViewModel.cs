@@ -295,9 +295,17 @@ namespace LeapfrogEditor
          get { return _editedCpVm; }
          set
          {
+            // Keep the last changes to the object being left as an undo step
+            // (each edited object has its own undo history)
+            if ((_editedCpVm != null) && (_editedCpVm != value))
+            {
+               UndoCheckpoint();
+            }
+
             _editedCpVm = value;
             OnPropertyChanged("EditedCpVm");
             UpdateEditArea();
+            StartUndoHistory();
          }
       }
 
@@ -662,10 +670,14 @@ namespace LeapfrogEditor
          {
             FileCOViewModel fcovm = parameter as FileCOViewModel;
 
+            UndoCheckpoint();
+
             // Generate Triangles before saving
             fcovm.GenerateTriangles();
 
             fcovm.ModelObject.WriteToFile(fcovm.FullPathFileName);
+
+            UndoRebaseline(fcovm);
 
             // Now, since we potentially have changed the contents of this file,
             // lets look if any object has this object as a child, in which case we 
@@ -725,9 +737,13 @@ namespace LeapfrogEditor
          {
             FileCOViewModel fvm = EditedCpVm as FileCOViewModel;
 
+            UndoCheckpoint();
+
             fvm.GenerateTriangles();
 
             fvm.ModelObject.WriteToFile(fvm.FullPathFileName);
+
+            UndoRebaseline(fvm);
 
             // Now, since we potentially have changed the contents of this file,
             // lets look if any object has this object as a child, in which case we 
@@ -761,10 +777,14 @@ namespace LeapfrogEditor
 
             if (sfd.ShowDialog() == true)
             {
+               UndoCheckpoint();
+
                // Generate Triangles before saving
                fvm.GenerateTriangles();
                fvm.FileName = sfd.SafeFileName;
                fvm.ModelObject.WriteToFile(fvm.FullPathFileName);
+
+               UndoRebaseline(fvm);
             }
          }
       }
@@ -1564,6 +1584,251 @@ namespace LeapfrogEditor
 
       #endregion
 
+      #region Undo and redo
+
+      // One history per edited object (see UndoHistory). Weak, so histories
+      // of objects that are closed or rebuilt go away with them.
+      private System.Runtime.CompilerServices.ConditionalWeakTable<CompoundObjectViewModel, UndoHistory> _undoHistories =
+         new System.Runtime.CompilerServices.ConditionalWeakTable<CompoundObjectViewModel, UndoHistory>();
+
+      private bool _restoringUndo = false;
+
+      private UndoHistory HistoryOf(CompoundObjectViewModel covm, bool create)
+      {
+         if ((covm == null) || (covm.ModelObject == null))
+         {
+            return null;
+         }
+
+         UndoHistory h;
+         if (!_undoHistories.TryGetValue(covm, out h) && create)
+         {
+            h = new UndoHistory(covm.ModelObject);
+            _undoHistories.Add(covm, h);
+         }
+
+         return h;
+      }
+
+      // The edited object as it is when editing begins is the first state.
+      // Deferred until the caller has built the view models (which may
+      // tidy the model).
+      private void StartUndoHistory()
+      {
+         System.Windows.Application app = System.Windows.Application.Current;
+         if (app == null)
+         {
+            return;
+         }
+
+         CompoundObjectViewModel covm = EditedCpVm;
+         app.Dispatcher.BeginInvoke(new Action(() =>
+         {
+            if (covm == EditedCpVm)
+            {
+               try
+               {
+                  // A history already there (the object was edited before)
+                  // takes changes made meanwhile as a step
+                  UndoHistory h = HistoryOf(covm, false);
+                  if (h != null)
+                  {
+                     h.Checkpoint(covm.ModelObject);
+                  }
+                  else
+                  {
+                     HistoryOf(covm, true);
+                  }
+               }
+               catch (Exception)
+               {
+                  // Undo isn't worth stopping the editor for
+               }
+            }
+         }), System.Windows.Threading.DispatcherPriority.Background);
+      }
+
+      // Makes any change to the edited object since the last checkpoint one
+      // undo step. MainWindow calls this shortly after each mouse button
+      // release, key release and mouse wheel turn.
+      public void UndoCheckpoint()
+      {
+         if (_restoringUndo)
+         {
+            return;
+         }
+
+         try
+         {
+            UndoHistory h = HistoryOf(EditedCpVm, true);
+            if (h != null)
+            {
+               h.Checkpoint(EditedCpVm.ModelObject);
+            }
+         }
+         catch (Exception)
+         {
+            // E.g. an object being built while the checkpoint runs; the next
+            // checkpoint will catch the change
+         }
+      }
+
+      private void UndoRebaseline(CompoundObjectViewModel covm)
+      {
+         try
+         {
+            UndoHistory h = HistoryOf(covm, false);
+            if (h != null)
+            {
+               h.Rebaseline(covm.ModelObject);
+            }
+         }
+         catch (Exception)
+         {
+         }
+      }
+
+      void UndoExecute(Object parameter)
+      {
+         CompoundObjectViewModel covm = EditedCpVm;
+         UndoHistory h = HistoryOf(covm, true);
+         if (h == null)
+         {
+            return;
+         }
+
+         CompoundObject state = h.Undo(covm.ModelObject);
+         if (state == null)
+         {
+            SystemSounds.Beep.Play();
+            return;
+         }
+
+         ApplyUndoState(covm, h, state);
+      }
+
+      void RedoExecute(Object parameter)
+      {
+         CompoundObjectViewModel covm = EditedCpVm;
+         UndoHistory h = HistoryOf(covm, true);
+         if (h == null)
+         {
+            return;
+         }
+
+         CompoundObject state = h.Redo(covm.ModelObject);
+         if (state == null)
+         {
+            SystemSounds.Beep.Play();
+            return;
+         }
+
+         ApplyUndoState(covm, h, state);
+      }
+
+      bool CanUndoExecute(Object parameter)
+      {
+         // Changes not yet checkpointed can be undone too, so this is only
+         // a hint for the menu
+         UndoHistory h = HistoryOf(EditedCpVm, false);
+         return (h != null) && h.CanUndo;
+      }
+
+      bool CanRedoExecute(Object parameter)
+      {
+         UndoHistory h = HistoryOf(EditedCpVm, false);
+         return (h != null) && h.CanRedo;
+      }
+
+      public ICommand Undo
+      {
+         get
+         {
+            return new MicroMvvm.RelayCommand<Object>(parameter => UndoExecute(parameter), parameter => CanUndoExecute(parameter));
+         }
+      }
+
+      public ICommand Redo
+      {
+         get
+         {
+            return new MicroMvvm.RelayCommand<Object>(parameter => RedoExecute(parameter), parameter => CanRedoExecute(parameter));
+         }
+      }
+
+      // Puts a state from the history into the edited object, rebuilds what
+      // is shown and selects again what was selected (by name).
+      private void ApplyUndoState(CompoundObjectViewModel covm, UndoHistory h, CompoundObject state)
+      {
+         HashSet<string> selectedShapes = new HashSet<string>();
+         foreach (LfShapeViewModel svm in SelectedShapes)
+         {
+            if (svm.Name != null)
+            {
+               selectedShapes.Add(svm.Name);
+            }
+         }
+
+         HashSet<string> selectedChildren = new HashSet<string>();
+         foreach (ChildObjectViewModel chvm in SelectedChildObjects)
+         {
+            if (chvm.Name != null)
+            {
+               selectedChildren.Add(chvm.Name);
+            }
+         }
+
+         _LeftClickState = LeftClickState.none;
+         _restoringUndo = true;
+
+         BeginSelectionBatch();
+         try
+         {
+            DeselectAll();
+
+            covm.RestoreModelContents(state);
+            covm.BuildGlobalShapeCollection(ShowJoints, ShowSystems, ShowBackgrounds);
+            covm.InvalidateJoints();
+            covm.InvalidateChildObjects();
+
+            foreach (object o in covm.ShapeCollection.Shapes)
+            {
+               LfShapeViewModel svm = o as LfShapeViewModel;
+               if ((svm != null) && (svm.Name != null) && selectedShapes.Contains(svm.Name))
+               {
+                  svm.IsSelected = true;
+               }
+            }
+
+            foreach (ChildObjectViewModel chvm in covm.ChildObjectCollection.Children)
+            {
+               if ((chvm.Name != null) && selectedChildren.Contains(chvm.Name))
+               {
+                  SetChildSelected(chvm, true);
+               }
+            }
+
+            // The objects this one is inside of have new bounding boxes
+            CompoundObjectViewModel p = covm.ParentVm;
+            while (p != null)
+            {
+               p.OnPropertyChanged("BoundingBox");
+               p = p.ParentVm;
+            }
+
+            h.Rebaseline(covm.ModelObject);
+         }
+         finally
+         {
+            _restoringUndo = false;
+            EndSelectionBatch();
+         }
+
+         UpdateEditArea();
+      }
+
+      #endregion
+
       #region Copy and paste
 
       private EditorClipboard _clipboard = new EditorClipboard();
@@ -1875,6 +2140,7 @@ namespace LeapfrogEditor
       {
          if (button == MouseButton.Left)
          {
+            _movedSincePress = false;
 
             if (clickCount > 1)
             {
@@ -1902,8 +2168,16 @@ namespace LeapfrogEditor
             switch (objectType)
             {
                case MouseEventObjectType.shape:
-                  // So far we do not do anything here
-                  //LfShapeViewModel shvm = (LfShapeViewModel)sender;
+                  // Pressing on a shape selects it (or the child object it is
+                  // part of) straight away, so it can be dragged by its inside.
+                  // If it already was selected, the selection stays as it is,
+                  // so everything selected can be dragged together. With ctrl
+                  // or shift the selection changes on release instead (see
+                  // MainWindow: the press goes on to the rubber band).
+                  if ((button == MouseButton.Left) && !ctrl && !shift && (sender is LfShapeViewModel))
+                  {
+                     PressSelect((LfShapeViewModel)sender);
+                  }
                   return false;
 
                case MouseEventObjectType.gunSystem:
@@ -1978,38 +2252,22 @@ namespace LeapfrogEditor
          Point rotPoint;
          Vector rotatedDragVector;
 
+         // Something is being dragged (the views only call this once the
+         // mouse has moved a few pixels with the button down)
+         _movedSincePress = true;
+
 
          // Decode target ViewModel and view oobject that was clicked
          switch (objectType)
          {
             case MouseEventObjectType.shape:
-               return false;
-
             case MouseEventObjectType.dragableBorder:
             case MouseEventObjectType.dragablePolygonBorder:
             case MouseEventObjectType.compoundObjectBoundaryBox:
 
-               foreach (IPositionInterface shape in SelectedShapes)
-               {
-                  shape.PosX += dragVector.X;
-                  shape.PosY += dragVector.Y;
-               }
-
-               foreach (IPositionInterface child in SelectedChildObjects)
-               {
-                  child.PosX += dragVector.X;
-                  child.PosY += dragVector.Y;
-               }
-
-               foreach (CoSystemViewModel child in SelectedSystems)
-               {
-                  if (child.Properties is IPositionInterface)
-                  {
-                     IPositionInterface sysPos = child.Properties as IPositionInterface;
-                     sysPos.PosX += dragVector.X;
-                     sysPos.PosY += dragVector.Y;
-                  }
-               }
+               // Dragging a shape by its inside or its outline, or a child
+               // object by its frame, moves everything that is selected
+               MoveSelection(dragVector);
 
                return true;
 
@@ -2249,48 +2507,55 @@ namespace LeapfrogEditor
                   // Mouse up on Shape
                   LfShapeViewModel shvm = (LfShapeViewModel)sender;
 
-                  // If the clicked shape is children of the edited object but is not 
-                  // the tree-child of a Parallaxbackground, it should
-                  // be selected (assessing the ctrl key in the process for multiple 
-                  // selection)
-                  // If it is not part of the Editable object, the parent should be selected
-                  // also assessing ctrl-key
-                  // If it is the child of the Editable object but is also 
-                  // the tree-child of a ParallaxBackgroundViewModel, the ParallaxBackground 
-                  // should be selected in the tree view.
+                  // The clicked shape is selected if it belongs to the edited
+                  // object; if it is part of a child object, that child object
+                  // is selected instead (see SelectionTarget).
 
-                  if (AmISelectable(shvm))
+                  if (button == MouseButton.Right)
                   {
-                     if (!ctrl)
+                     // Right click selects what was clicked (unless it already
+                     // is) and lets the event go on to open the context menu
+                     if (!IsTargetSelected(shvm))
                      {
-                        DeselectAll();
+                        if (!ctrl && !shift)
+                        {
+                           DeselectAll();
+                        }
+
+                        SetTargetSelected(shvm, true);
                      }
 
-                     shvm.IsSelected = true;
-                  }
-                  else
-                  {
-                     // The clicked shape is part of a child object, select it or add
-                     // it to selected childs
-                     if (!ctrl)
-                     {
-                        DeselectAll();
-                     }
-
-                     shvm.ParentVm.IsSelected = true;
-
-                     // Also select the ChildObjectViewModel associated to the ChildCOViewModel
-                     if (shvm.ParentVm.TreeParent is ChildObjectViewModel)
-                     {
-                        ChildObjectViewModel chvm = shvm.ParentVm.TreeParent as ChildObjectViewModel;
-                        chvm.IsSelected = true;
-                     }
+                     return false;
                   }
 
-                  // If we pressed right click to select, we want to the rest
-                  // of the even handling to handle context menu, so we does
-                  // not mark the event as handled if we right click
-                  return (button != MouseButton.Right);
+                  if (_movedSincePress)
+                  {
+                     // End of a drag: the selection stays
+                     return true;
+                  }
+
+                  if (ctrl || shift)
+                  {
+                     // Add to or take away from the selection
+                     SetTargetSelected(shvm, !IsTargetSelected(shvm));
+                  }
+                  else if (_pressTargetWasSelected)
+                  {
+                     // A click (not a drag) on something that was already
+                     // selected selects just that
+                     BeginSelectionBatch();
+                     try
+                     {
+                        DeselectAll();
+                        SetTargetSelected(shvm, true);
+                     }
+                     finally
+                     {
+                        EndSelectionBatch();
+                     }
+                  }
+
+                  return true;
 
                case MouseEventObjectType.objectFactory:
                case MouseEventObjectType.gunSystem:
@@ -2742,6 +3007,19 @@ namespace LeapfrogEditor
          // Here we assess the current selection and updates 
          // the selection collection of different types
 
+         // While many objects are selected or deselected at once, this is
+         // done once at the end (EndSelectionBatch)
+         if (_selectionBatch > 0)
+         {
+            _selectionBatchDirty = true;
+            return;
+         }
+
+         if (EditedCpVm == null)
+         {
+            return;
+         }
+
          SelectedChildObjects.Clear();
          SelectedShapes.Clear();
          SelectedJoints.Clear();
@@ -2989,12 +3267,298 @@ namespace LeapfrogEditor
       {
          //((MainWindow)System.Windows.Application.Current.MainWindow).TheTreeView.ClearSelection();
 
-         foreach (FileCOViewModel coFile in FileCollectionViewModel)
+         BeginSelectionBatch();
+         try
          {
-            coFile.IsSelected = false;
-            coFile.DeselectAllChildren();
+            foreach (FileCOViewModel coFile in FileCollectionViewModel)
+            {
+               coFile.IsSelected = false;
+               coFile.DeselectAllChildren();
+            }
+         }
+         finally
+         {
+            EndSelectionBatch();
          }
       }
+
+      #region Selection
+
+      // Every change of an object's IsSelected rebuilds the selection
+      // collections (and with them the properties panel). When many change
+      // at once, that is done once, at the end.
+      private int _selectionBatch = 0;
+      private bool _selectionBatchDirty = false;
+
+      // Set when the mouse has dragged something since the left button went
+      // down (a release is then the end of a drag, not a click)
+      private bool _movedSincePress = false;
+
+      // Whether what was pressed on was selected before the press
+      private bool _pressTargetWasSelected = false;
+
+      public void BeginSelectionBatch()
+      {
+         _selectionBatch++;
+      }
+
+      public void EndSelectionBatch()
+      {
+         if (_selectionBatch > 0)
+         {
+            _selectionBatch--;
+         }
+
+         if ((_selectionBatch == 0) && _selectionBatchDirty)
+         {
+            _selectionBatchDirty = false;
+            BuildSelectionCollections();
+         }
+      }
+
+      // The child object of the edited object that a shape is part of (also
+      // when it is in a child of a child), or null if the shape isn't in a
+      // child object of the edited object.
+      private ChildObjectViewModel EditedChildOf(LfShapeViewModel shvm)
+      {
+         CompoundObjectViewModel covm = shvm.ParentVm;
+
+         while (covm != null)
+         {
+            ChildObjectViewModel chvm = covm.TreeParent as ChildObjectViewModel;
+
+            if (chvm == null)
+            {
+               return null;
+            }
+
+            if (chvm.ParentVm == EditedCpVm)
+            {
+               return chvm;
+            }
+
+            covm = chvm.ParentVm;
+         }
+
+         return null;
+      }
+
+      // What clicking a shape selects: the shape if it belongs to the edited
+      // object, otherwise the child object it is part of.
+      private bool IsTargetSelected(LfShapeViewModel shvm)
+      {
+         if (AmISelectable(shvm))
+         {
+            return shvm.IsSelected;
+         }
+
+         ChildObjectViewModel chvm = EditedChildOf(shvm);
+         if (chvm != null)
+         {
+            return chvm.IsSelected;
+         }
+
+         return (shvm.ParentVm != null) && shvm.ParentVm.IsSelected;
+      }
+
+      private void SetTargetSelected(LfShapeViewModel shvm, bool selected)
+      {
+         if (AmISelectable(shvm))
+         {
+            shvm.IsSelected = selected;
+            return;
+         }
+
+         ChildObjectViewModel chvm = EditedChildOf(shvm);
+         if (chvm != null)
+         {
+            SetChildSelected(chvm, selected);
+            return;
+         }
+
+         // Not in the edited object (e.g. an imported file): as before,
+         // select the object the shape belongs to
+         if (shvm.ParentVm != null)
+         {
+            shvm.ParentVm.IsSelected = selected;
+         }
+      }
+
+      // A child object is shown as selected by its ChildCOViewModel (the
+      // frame) and is moved through its ChildObjectViewModel
+      private void SetChildSelected(ChildObjectViewModel chvm, bool selected)
+      {
+         BeginSelectionBatch();
+         try
+         {
+            chvm.IsSelected = selected;
+            if (chvm.CompObj != null)
+            {
+               chvm.CompObj.IsSelected = selected;
+            }
+         }
+         finally
+         {
+            EndSelectionBatch();
+         }
+      }
+
+      // Left button pressed on a shape (no ctrl or shift): select what it
+      // stands for unless that already is selected
+      private void PressSelect(LfShapeViewModel shvm)
+      {
+         _pressTargetWasSelected = IsTargetSelected(shvm);
+
+         if (!_pressTargetWasSelected)
+         {
+            BeginSelectionBatch();
+            try
+            {
+               DeselectAll();
+               SetTargetSelected(shvm, true);
+            }
+            finally
+            {
+               EndSelectionBatch();
+            }
+         }
+      }
+
+      // Ctrl or shift click on a shape: add it to the selection or take it
+      // away
+      public void ToggleSelection(LfShapeViewModel shvm)
+      {
+         if ((shvm == null) || (EditedCpVm == null))
+         {
+            return;
+         }
+
+         SetTargetSelected(shvm, !IsTargetSelected(shvm));
+      }
+
+      // Rubber band: select the shapes and child objects of the edited object
+      // that lie completely inside the rectangle (in the edited object's
+      // coordinates). With add, they are added to the selection; otherwise
+      // they replace it.
+      public void SelectInRect(Rect r, bool add)
+      {
+         if (EditedCpVm == null)
+         {
+            return;
+         }
+
+         BeginSelectionBatch();
+         try
+         {
+            if (!add)
+            {
+               DeselectAll();
+            }
+
+            foreach (object o in EditedCpVm.ShapeCollection.Shapes)
+            {
+               LfShapeViewModel svm = o as LfShapeViewModel;
+               if (svm == null)
+               {
+                  continue;
+               }
+
+               Rect b = svm.BoundingBox;
+               b.Offset(new Vector(svm.PosX, svm.PosY));
+               if (!b.IsEmpty && r.Contains(b))
+               {
+                  svm.IsSelected = true;
+               }
+            }
+
+            foreach (ChildObjectViewModel chvm in EditedCpVm.ChildObjectCollection.Children)
+            {
+               if (chvm.CompObj == null)
+               {
+                  continue;
+               }
+
+               Rect b = chvm.CompObj.BoundingBox;
+               b.Offset(new Vector(chvm.PosX, chvm.PosY));
+               if (!b.IsEmpty && r.Contains(b))
+               {
+                  SetChildSelected(chvm, true);
+               }
+            }
+         }
+         finally
+         {
+            EndSelectionBatch();
+         }
+      }
+
+      // Everything a drag moves: selected shapes, child objects and systems
+      private void MoveSelection(Vector dragVector)
+      {
+         foreach (IPositionInterface shape in SelectedShapes)
+         {
+            shape.PosX += dragVector.X;
+            shape.PosY += dragVector.Y;
+         }
+
+         foreach (IPositionInterface child in SelectedChildObjects)
+         {
+            child.PosX += dragVector.X;
+            child.PosY += dragVector.Y;
+         }
+
+         foreach (CoSystemViewModel child in SelectedSystems)
+         {
+            if (child.Properties is IPositionInterface)
+            {
+               IPositionInterface sysPos = child.Properties as IPositionInterface;
+               sysPos.PosX += dragVector.X;
+               sysPos.PosY += dragVector.Y;
+            }
+         }
+      }
+
+      void SelectAllExecute(Object parameter)
+      {
+         if (EditedCpVm == null)
+         {
+            return;
+         }
+
+         BeginSelectionBatch();
+         try
+         {
+            DeselectAll();
+
+            foreach (object o in EditedCpVm.ShapeCollection.Shapes)
+            {
+               LfShapeViewModel svm = o as LfShapeViewModel;
+               if (svm != null)
+               {
+                  svm.IsSelected = true;
+               }
+            }
+
+            foreach (ChildObjectViewModel chvm in EditedCpVm.ChildObjectCollection.Children)
+            {
+               SetChildSelected(chvm, true);
+            }
+         }
+         finally
+         {
+            EndSelectionBatch();
+         }
+      }
+
+      public ICommand SelectAll
+      {
+         get
+         {
+            return new MicroMvvm.RelayCommand<Object>(parameter => SelectAllExecute(parameter), parameter => (EditedCpVm != null) && (_LeftClickState == LeftClickState.none));
+         }
+      }
+
+      #endregion
 
       private void DeselectAllPoints()
       {

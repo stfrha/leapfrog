@@ -1334,6 +1334,23 @@ namespace LeapfrogEditor
          BuildTreeViewCollection();
       }
 
+      // Undo and redo: give this object the contents of `state` (an earlier
+      // copy of it, see UndoHistory) and build its view models again. The
+      // model object itself stays, since its parent child object (or the
+      // open file) refers to it.
+      public void RestoreModelContents(CompoundObject state)
+      {
+         UndoHistory.CopyContents(state, ModelObject);
+
+         // As in the constructor
+         Behaviour = new CoBehaviourViewModel(TreeParent, this, MainVm, ModelObject.Behaviour);
+         SelectedBehaviourIndex = Behaviours.IndexOf(ModelObject.Behaviour.Type);
+
+         BuildViewModel(true);
+
+         OnPropertyChanged("");
+      }
+
       public void BuildGlobalShapeCollection(bool showJoints, bool showSystems, bool showBackgrounds)
       {
          if (AmIAnImportedFile())

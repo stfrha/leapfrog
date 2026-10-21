@@ -23,7 +23,7 @@
                Canvas.Top="{Binding Radius, Converter={StaticResource EllipseCenterValueConverter}}"
                Width="{Binding Radius, Converter={StaticResource TwiceDoubleValueConverter}}"
                Height="{Binding Radius, Converter={StaticResource TwiceDoubleValueConverter}}"
-               StrokeThickness="{Binding ContentScale, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type ZoomAndPan:ZoomAndPanControl}}, Converter={StaticResource ZoomThicknessValueConverter}}"
+               StrokeThickness="{Binding SelectionLine, Source={x:Static local:EditorZoom.Instance}}"
                Stroke="DarkBlue"
                MouseDown="EllipseBorder_MouseDown"
 			      MouseUp="EllipseBorder_MouseUp"

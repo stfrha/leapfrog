@@ -37,5 +37,12 @@ namespace LeapfrogEditor
          parentControl.GeneralMouse<LfShapeViewModel>(false, MouseEventObjectType.shape, sender, e);
       }
 
+      // Dragging a shape by its inside moves everything that is selected
+      private void Shape_MouseMove(object sender, MouseEventArgs e)
+      {
+         CompoundObjectUserControl parentControl = ParentalFinder.FindParent<CompoundObjectUserControl>(this);
+         parentControl.GeneralMouseMove<LfShapeViewModel>(MouseEventObjectType.shape, sender, e);
+      }
+
    }
 }

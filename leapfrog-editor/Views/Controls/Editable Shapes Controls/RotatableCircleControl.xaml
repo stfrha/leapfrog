@@ -23,6 +23,7 @@
          Stretch="Fill"
 		   MouseDown="Shape_MouseDown"
 		   MouseUp="Shape_MouseUp"
+		   MouseMove="Shape_MouseMove"
          RenderTransformOrigin="0, 0" >
          <Image.RenderTransform >
             <TransformGroup>

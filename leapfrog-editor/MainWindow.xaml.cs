@@ -81,6 +81,47 @@ namespace LeapfrogEditor
             this.Cursor = null;
          };
 
+         // Selection outlines and drag distances are kept the same on screen
+         // at every zoom (EditorZoom)
+         System.ComponentModel.DependencyPropertyDescriptor scaleDescriptor =
+            System.ComponentModel.DependencyPropertyDescriptor.FromName("ContentScale", typeof(ZoomAndPanControl), typeof(ZoomAndPanControl));
+         if (scaleDescriptor != null)
+         {
+            scaleDescriptor.AddValueChanged(zoomAndPanControl, (s, e) => { EditorZoom.Instance.Scale = zoomAndPanControl.ContentScale; });
+         }
+         EditorZoom.Instance.Scale = zoomAndPanControl.ContentScale;
+
+         // Undo: after each mouse button release, key release or wheel turn
+         // (once things have settled) the edited object is compared with its
+         // last saved state, and any change becomes one undo step.
+         _undoCheckpointTimer = new System.Windows.Threading.DispatcherTimer();
+         _undoCheckpointTimer.Interval = TimeSpan.FromMilliseconds(300);
+         _undoCheckpointTimer.Tick += UndoCheckpointTimer_Tick;
+         PreviewMouseUp += (s, e) => ScheduleUndoCheckpoint();
+         PreviewKeyUp += (s, e) => ScheduleUndoCheckpoint();
+         PreviewMouseWheel += (s, e) => ScheduleUndoCheckpoint();
+
+         content.LostMouseCapture += Content_LostMouseCapture;
+      }
+
+      private System.Windows.Threading.DispatcherTimer _undoCheckpointTimer;
+
+      private void ScheduleUndoCheckpoint()
+      {
+         _undoCheckpointTimer.Stop();
+         _undoCheckpointTimer.Start();
+      }
+
+      private void UndoCheckpointTimer_Tick(object sender, EventArgs e)
+      {
+         // Not in the middle of a drag; wait for the button to be released
+         if ((Mouse.LeftButton == MouseButtonState.Pressed) || (Mouse.RightButton == MouseButtonState.Pressed))
+         {
+            return;
+         }
+
+         _undoCheckpointTimer.Stop();
+         myMainViewModel.UndoCheckpoint();
       }
 
 
@@ -566,9 +607,153 @@ namespace LeapfrogEditor
          bool ctrl = ((Keyboard.Modifiers & ModifierKeys.Control) != 0);
          bool alt = ((Keyboard.Modifiers & ModifierKeys.Alt) != 0);
 
+         if ((_band != BandState.None) && (e.ChangedButton == MouseButton.Left))
+         {
+            BandState band = _band;
+            LfShapeViewModel pressedShape = _bandPressedShape;
+
+            EndBand();
+
+            if (band == BandState.Active)
+            {
+               // Select what lies inside the band; with ctrl or shift, add
+               // it to the selection
+               myMainViewModel.SelectInRect(BandRect(e.GetPosition(content)), shift || ctrl);
+            }
+            else if (pressedShape != null)
+            {
+               // Ctrl or shift click on a shape: add it to the selection or
+               // take it away
+               myMainViewModel.ToggleSelection(pressedShape);
+            }
+            else if (!shift && !ctrl)
+            {
+               // Plain click on the background: deselect everything
+               myMainViewModel.BackgroundMouseUp(e.GetPosition(content), e.ChangedButton, shift, ctrl, alt);
+            }
+
+            e.Handled = true;
+            return;
+         }
+
          if (myMainViewModel.BackgroundMouseUp(e.GetPosition(content), e.ChangedButton, shift, ctrl, alt))
          {
             e.Handled = true;
+         }
+      }
+
+      // Rubber band selection. A left press on the background, or on a shape
+      // with ctrl or shift held, may start one: once the mouse has moved a few
+      // pixels, a rectangle follows it, and on release everything of the
+      // edited object that lies completely inside is selected. Without moving
+      // it is a click.
+      private enum BandState
+      {
+         None,
+         Pending,       // button down, not moved far enough yet
+         Active         // the band is shown
+      }
+
+      private BandState _band = BandState.None;
+      private Point _bandStart;                          // in edit area coordinates
+      private LfShapeViewModel _bandPressedShape = null; // shape pressed with ctrl or shift
+
+      private bool TryStartBand(MouseButtonEventArgs e)
+      {
+         if ((e.ChangedButton != MouseButton.Left) || (e.ClickCount != 1) ||
+            (myMainViewModel.EditedCpVm == null) ||
+            (myMainViewModel.LeftClickState != LeftClickState.none))
+         {
+            return false;
+         }
+
+         bool shift = ((Keyboard.Modifiers & ModifierKeys.Shift) != 0);
+         bool ctrl = ((Keyboard.Modifiers & ModifierKeys.Control) != 0);
+
+         // What was pressed: the background itself (or the axes), or a shape
+         // (a press on a shape only gets here with ctrl or shift; without,
+         // the shape starts a drag)
+         object dc = null;
+         FrameworkElement fe = e.OriginalSource as FrameworkElement;
+         if (fe != null)
+         {
+            dc = fe.DataContext;
+         }
+
+         bool onBackground = (e.OriginalSource == content) || (dc == null) || (dc is MainViewModel);
+         LfShapeViewModel shape = dc as LfShapeViewModel;
+
+         if (!onBackground && ((shape == null) || !(shift || ctrl)))
+         {
+            // Something else (a joint handle, a polygon edge to add a
+            // point to, ...): leave it to that
+            return false;
+         }
+
+         _band = BandState.Pending;
+         _bandStart = e.GetPosition(content);
+         _bandPressedShape = onBackground ? null : shape;
+         content.CaptureMouse();
+         return true;
+      }
+
+      private void Canvas_MouseMove(object sender, MouseEventArgs e)
+      {
+         if (_band == BandState.None)
+         {
+            return;
+         }
+
+         Point p = e.GetPosition(content);
+
+         if (_band == BandState.Pending)
+         {
+            if ((p - _bandStart).Length < EditorZoom.Instance.ToScene(EditorZoom.DragThresholdPixels))
+            {
+               return;
+            }
+
+            _band = BandState.Active;
+            selectionBand.Visibility = Visibility.Visible;
+         }
+
+         Rect r = BandRect(p);
+         Canvas.SetLeft(selectionBand, r.X);
+         Canvas.SetTop(selectionBand, r.Y);
+         selectionBand.Width = r.Width;
+         selectionBand.Height = r.Height;
+      }
+
+      // The band from where it started to p, in the edited object's
+      // coordinates (edit area coordinates minus the origin)
+      private Rect BandRect(Point p)
+      {
+         Point origin = ContentOrigin;
+         Point a = new Point(_bandStart.X - origin.X, _bandStart.Y - origin.Y);
+         Point b = new Point(p.X - origin.X, p.Y - origin.Y);
+         return new Rect(a, b);
+      }
+
+      private void EndBand()
+      {
+         _band = BandState.None;
+         _bandPressedShape = null;
+         selectionBand.Visibility = Visibility.Collapsed;
+
+         if (content.IsMouseCaptured)
+         {
+            content.ReleaseMouseCapture();
+         }
+      }
+
+      private void Content_LostMouseCapture(object sender, MouseEventArgs e)
+      {
+         // E.g. switching to another window in the middle of a band
+         if (_band != BandState.None)
+         {
+            _band = BandState.None;
+            _bandPressedShape = null;
+            selectionBand.Visibility = Visibility.Collapsed;
          }
       }
 
@@ -590,6 +775,12 @@ namespace LeapfrogEditor
          bool alt = ((Keyboard.Modifiers & ModifierKeys.Alt) != 0);
 
          if (myMainViewModel.BackgroundMouseDown(e.GetPosition(content), e.ChangedButton, e.ClickCount, shift, ctrl, alt))
+         {
+            e.Handled = true;
+            return;
+         }
+
+         if (TryStartBand(e))
          {
             e.Handled = true;
          }

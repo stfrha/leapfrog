@@ -21,7 +21,7 @@
          Canvas.Top="{Binding BoundingBox.Top}" 
          Width="{Binding BoundingBox.Width}"
          Height="{Binding BoundingBox.Height}"
-         StrokeThickness="{Binding ContentScale, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type ZoomAndPan:ZoomAndPanControl}}, Converter={StaticResource ZoomThicknessValueConverter}}"
+         StrokeThickness="{Binding SelectionLine, Source={x:Static local:EditorZoom.Instance}}"
          Stroke="DarkBlue"
          MouseDown="CompoundObject_MouseDown"
 			MouseUp="CompoundObject_MouseUp"
