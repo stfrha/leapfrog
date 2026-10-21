@@ -1,0 +1,146 @@
+﻿<UserControl x:Class="LeapfrogEditor.ColorEditorControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:local="clr-namespace:LeapfrogEditor"
+             x:Name="root"
+             mc:Ignorable="d"
+             d:DesignHeight="15" d:DesignWidth="200">
+   <UserControl.Resources>
+      <!-- Shows through transparent colours -->
+      <DrawingBrush x:Key="Checker" TileMode="Tile" Viewport="0,0,8,8" ViewportUnits="Absolute">
+         <DrawingBrush.Drawing>
+            <DrawingGroup>
+               <GeometryDrawing Brush="White" Geometry="M0,0 H2 V2 H0 Z" />
+               <GeometryDrawing Brush="LightGray" Geometry="M0,0 H1 V1 H0 Z M1,1 H2 V2 H1 Z" />
+            </DrawingGroup>
+         </DrawingBrush.Drawing>
+      </DrawingBrush>
+      <Style x:Key="PresetButton" TargetType="Button">
+         <Setter Property="Width" Value="16" />
+         <Setter Property="Height" Value="16" />
+         <Setter Property="Margin" Value="1" />
+         <Setter Property="Template">
+            <Setter.Value>
+               <ControlTemplate TargetType="Button">
+                  <Border Background="{TemplateBinding Background}" BorderBrush="DimGray" BorderThickness="1" />
+               </ControlTemplate>
+            </Setter.Value>
+         </Setter>
+      </Style>
+   </UserControl.Resources>
+   <Grid>
+      <Grid.ColumnDefinitions>
+         <ColumnDefinition Width="75" />
+         <ColumnDefinition Width="100" />
+         <ColumnDefinition Width="25" />
+      </Grid.ColumnDefinitions>
+      <TextBlock Grid.Column="0"
+         VerticalAlignment="Center"
+         FontSize="10"
+         Text="{Binding Headline, ElementName=root}" />
+      <!-- The colour can still be typed: rrggbb or rrggbbaa, empty for none -->
+      <TextBox Grid.Column="1"
+         VerticalAlignment="Center"
+         FontSize="10"
+         Height="15"
+         Text="{Binding MyValue, ElementName=root}" />
+      <!-- Swatch showing the colour; opens the picker -->
+      <ToggleButton x:Name="swatchButton" Grid.Column="2" Margin="2,1,1,1" Height="13"
+         ToolTip="Pick a colour">
+         <ToggleButton.Template>
+            <ControlTemplate TargetType="ToggleButton">
+               <Grid>
+                  <Border Background="{StaticResource Checker}" />
+                  <Border x:Name="swatch" Background="{Binding SwatchBrush, RelativeSource={RelativeSource AncestorType={x:Type local:ColorEditorControl}}}" BorderBrush="DimGray" BorderThickness="1" />
+                  <!-- No colour set: a red slash -->
+                  <Line X1="1" Y1="11" X2="20" Y2="1" Stroke="Red" StrokeThickness="1"
+                     Visibility="{Binding NoneVisibility, RelativeSource={RelativeSource AncestorType={x:Type local:ColorEditorControl}}}" />
+               </Grid>
+            </ControlTemplate>
+         </ToggleButton.Template>
+      </ToggleButton>
+      <Popup x:Name="popup" IsOpen="{Binding IsChecked, ElementName=swatchButton}" StaysOpen="False"
+         PlacementTarget="{Binding ElementName=swatchButton}" Placement="Bottom"
+         Opened="Popup_Opened">
+         <Border Background="WhiteSmoke" BorderBrush="DimGray" BorderThickness="1" Padding="6">
+            <StackPanel>
+               <StackPanel Orientation="Horizontal">
+                  <!-- Saturation (left to right) and brightness (bottom to top)
+                       for the hue chosen on the bar to the right -->
+                  <Grid x:Name="svArea" Width="160" Height="160" Cursor="Cross" Background="Transparent"
+                     MouseLeftButtonDown="SvArea_MouseDown" MouseMove="SvArea_MouseMove" MouseLeftButtonUp="Area_MouseUp">
+                     <Rectangle Fill="{Binding HueBrush, ElementName=root}" />
+                     <Rectangle>
+                        <Rectangle.Fill>
+                           <LinearGradientBrush StartPoint="0,0" EndPoint="1,0">
+                              <GradientStop Color="#FFFFFFFF" Offset="0" />
+                              <GradientStop Color="#00FFFFFF" Offset="1" />
+                           </LinearGradientBrush>
+                        </Rectangle.Fill>
+                     </Rectangle>
+                     <Rectangle>
+                        <Rectangle.Fill>
+                           <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
+                              <GradientStop Color="#00000000" Offset="0" />
+                              <GradientStop Color="#FF000000" Offset="1" />
+                           </LinearGradientBrush>
+                        </Rectangle.Fill>
+                     </Rectangle>
+                     <Canvas IsHitTestVisible="False">
+                        <Ellipse x:Name="svMarker" Width="10" Height="10" Stroke="White" StrokeThickness="2" />
+                     </Canvas>
+                  </Grid>
+                  <!-- Hue -->
+                  <Grid x:Name="hueArea" Width="18" Height="160" Margin="6,0,0,0" Cursor="Hand" Background="Transparent"
+                     MouseLeftButtonDown="HueArea_MouseDown" MouseMove="HueArea_MouseMove" MouseLeftButtonUp="Area_MouseUp">
+                     <Rectangle>
+                        <Rectangle.Fill>
+                           <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
+                              <GradientStop Color="#FFFF0000" Offset="0" />
+                              <GradientStop Color="#FFFFFF00" Offset="0.1667" />
+                              <GradientStop Color="#FF00FF00" Offset="0.3333" />
+                              <GradientStop Color="#FF00FFFF" Offset="0.5" />
+                              <GradientStop Color="#FF0000FF" Offset="0.6667" />
+                              <GradientStop Color="#FFFF00FF" Offset="0.8333" />
+                              <GradientStop Color="#FFFF0000" Offset="1" />
+                           </LinearGradientBrush>
+                        </Rectangle.Fill>
+                     </Rectangle>
+                     <Canvas IsHitTestVisible="False">
+                        <Rectangle x:Name="hueMarker" Width="18" Height="4" Stroke="Black" StrokeThickness="1" Fill="#80FFFFFF" />
+                     </Canvas>
+                  </Grid>
+               </StackPanel>
+               <!-- Alpha (not for colours without one, e.g. the fade colour) -->
+               <Grid Margin="0,6,0,0" Visibility="{Binding AlphaVisibility, ElementName=root}">
+                  <Grid.ColumnDefinitions>
+                     <ColumnDefinition Width="40" />
+                     <ColumnDefinition Width="*" />
+                     <ColumnDefinition Width="28" />
+                  </Grid.ColumnDefinitions>
+                  <TextBlock Grid.Column="0" FontSize="10" VerticalAlignment="Center" Text="Alpha" />
+                  <Slider x:Name="alphaSlider" Grid.Column="1" Minimum="0" Maximum="255" SmallChange="1" LargeChange="16"
+                     IsMoveToPointEnabled="True" ValueChanged="AlphaSlider_ValueChanged" />
+                  <TextBlock Grid.Column="2" FontSize="10" VerticalAlignment="Center" HorizontalAlignment="Right"
+                     Text="{Binding Value, ElementName=alphaSlider, StringFormat={}{0:0}}" />
+               </Grid>
+               <!-- Presets -->
+               <WrapPanel x:Name="presets" Margin="0,6,0,0" Width="184" />
+               <DockPanel Margin="0,6,0,0" LastChildFill="False">
+                  <Grid Width="40" Height="18" DockPanel.Dock="Left">
+                     <Border Background="{StaticResource Checker}" />
+                     <Border Background="{Binding SwatchBrush, ElementName=root}" BorderBrush="DimGray" BorderThickness="1" />
+                  </Grid>
+                  <TextBlock DockPanel.Dock="Left" Margin="6,0,0,0" FontSize="10" VerticalAlignment="Center"
+                     Text="{Binding MyValue, ElementName=root}" />
+                  <Button DockPanel.Dock="Right" Content="Close" FontSize="10" Padding="6,0" Margin="4,0,0,0" Click="Close_Click" />
+                  <Button DockPanel.Dock="Right" Content="None" FontSize="10" Padding="6,0" Click="None_Click"
+                     ToolTip="No colour (the field is cleared)" />
+               </DockPanel>
+            </StackPanel>
+         </Border>
+      </Popup>
+   </Grid>
+</UserControl>

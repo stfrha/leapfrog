@@ -320,6 +320,9 @@
     <Compile Include="Views\Controls\Editable Properties Controls\Primitives\HeadlineControl.xaml.cs">
       <DependentUpon>HeadlineControl.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Views\Controls\Editable Properties Controls\Primitives\ColorEditorControl.xaml.cs">
+      <DependentUpon>ColorEditorControl.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\Controls\Editable Properties Controls\Primitives\StringEditorControl.xaml.cs">
       <DependentUpon>StringEditorControl.xaml</DependentUpon>
     </Compile>
@@ -646,6 +649,10 @@
     <Page Include="Views\Controls\Editable Properties Controls\Primitives\HeadlineControl.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\Controls\Editable Properties Controls\Primitives\ColorEditorControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\Controls\Editable Properties Controls\Primitives\StringEditorControl.xaml">
       <Generator>MSBuild:Compile</Generator>
