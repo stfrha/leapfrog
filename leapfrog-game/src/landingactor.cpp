@@ -46,6 +46,11 @@ void LandingActor::runFadeOut(void)
 
    zoomInToStartZoom(c_launchFadeTime);
 
+   // During the climb the Leapfrog is kept near the top of the screen
+   // (the launch site's midTop). The deep space scene starts with it in
+   // the centre, so glide it there while zooming in.
+   setPanorateMode(center, c_launchFadeTime);
+
    // The fader covers the view port, not the stage: the Leapfrog may have
    // flown above the top of the stage by now. The scene's parent is the
    // view port window (MainActor), which isn't scaled or panned.

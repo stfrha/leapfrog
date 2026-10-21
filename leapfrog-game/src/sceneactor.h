@@ -173,7 +173,9 @@ public:
    void testForBoundaryRepel(void);
    int isInsideTransitField(b2Body* body);
 
-   void setPanorateMode(PanorateModeEnum mode);
+   // Where on the screen the followed object is kept; the view glides
+   // there over `duration`
+   void setPanorateMode(PanorateModeEnum mode, oxygine::timeMS duration = 4000);
    void setPanorateObject(CompoundObject* co);
    void enablePanorateLimit(bool enable);
 

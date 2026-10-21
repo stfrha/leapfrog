@@ -337,7 +337,7 @@ b2World* SceneActor::getWorld(void)
    return m_world;
 }
 
-void SceneActor::setPanorateMode(PanorateModeEnum mode)
+void SceneActor::setPanorateMode(PanorateModeEnum mode, timeMS duration)
 {
    m_panorateMode = mode;
 
@@ -368,7 +368,10 @@ void SceneActor::setPanorateMode(PanorateModeEnum mode)
       newWantedPos = Vector2(g_Layout.getViewPortBounds().x * 0.1f, g_Layout.getViewPortBounds().y * 0.1f);
    }
       
-   addTween(SceneActor::TweenWantedVpPos(newWantedPos), 4000, 1, false, 0, Tween::ease_inOutQuad);
+   // Replace a glide still running, so the newest mode wins
+   removeTweensByName("scenePanorate");
+   spTween panTween = addTween(SceneActor::TweenWantedVpPos(newWantedPos), duration, 1, false, 0, Tween::ease_inOutQuad);
+   panTween->setName("scenePanorate");
 }
 
 const Vector2& SceneActor::getWantedVpPos() const
