@@ -861,15 +861,77 @@ namespace LeapfrogEditor
             fvm.GenerateTriangles();
             fvm.ModelObject.WriteToFile("updated_scene.xml");
 
+            NetworkCredential login = ReadPublishLogin();
+            if (login == null)
+            {
+               MessageBox.Show(
+                  "No FTP login for publishing. Create the file\n\n" + PublishLoginFile +
+                  "\n\nwith the user name on the first line and the password on the second, " +
+                  "or set the environment variables LEAPFROG_FTP_USER and LEAPFROG_FTP_PASSWORD.",
+                  "Publish Scene", MessageBoxButton.OK, MessageBoxImage.Information);
+               return;
+            }
+
             using (var client = new WebClient())
             {
-               client.Credentials = new NetworkCredential("fredrikhoffman.se", "jessica21h");
+               client.Credentials = login;
                byte[] responseArray = client.UploadFile("ftp://ftp.fredrikhoffman.se/leapfrog/updated_scene.xml", WebRequestMethods.Ftp.UploadFile, "updated_scene.xml");
 
                Console.WriteLine("\nResponse Received. The contents of the file uploaded are:\n{0}", System.Text.Encoding.ASCII.GetString(responseArray));
             }
 
          }
+      }
+
+      // The FTP login for Publish is kept out of the repository: in
+      // %APPDATA%\LeapfrogEditor\publish_login.txt (user name on the first
+      // line, password on the second), or in the environment variables
+      // LEAPFROG_FTP_USER and LEAPFROG_FTP_PASSWORD.
+      private static string PublishLoginFile
+      {
+         get
+         {
+            return System.IO.Path.Combine(
+               Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
+               "LeapfrogEditor", "publish_login.txt");
+         }
+      }
+
+      private static NetworkCredential ReadPublishLogin()
+      {
+         string user = Environment.GetEnvironmentVariable("LEAPFROG_FTP_USER");
+         string password = Environment.GetEnvironmentVariable("LEAPFROG_FTP_PASSWORD");
+
+         if (string.IsNullOrEmpty(user) || string.IsNullOrEmpty(password))
+         {
+            try
+            {
+               if (!File.Exists(PublishLoginFile))
+               {
+                  return null;
+               }
+
+               string[] lines = File.ReadAllLines(PublishLoginFile);
+               if (lines.Length < 2)
+               {
+                  return null;
+               }
+
+               user = lines[0].Trim();
+               password = lines[1].Trim();
+            }
+            catch (Exception)
+            {
+               return null;
+            }
+         }
+
+         if (string.IsNullOrEmpty(user) || string.IsNullOrEmpty(password))
+         {
+            return null;
+         }
+
+         return new NetworkCredential(user, password);
       }
 
       bool CanPublishExecute(Object parameter)
