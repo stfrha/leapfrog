@@ -17,6 +17,9 @@ Materials are procedural and selected by role:
     machine_yellow - mining machines' faded yellow paint, weathered and rusty
     rubber       - big off-road tyres, dusty black
     ore_rock     - loose ore in heaps and truck bodies, rust-brown and grey
+    ore_stone    - single ore stones for repeating ground textures (per-stone
+                   'stone_rand' attribute picks between rust-brown and grey)
+    ore_bed      - the dark dirt between ore stones
 """
 
 import math
@@ -135,6 +138,10 @@ def make_material(role, models_dir):
         return _simple("rubber", base=(0.028, 0.027, 0.026), rough=0.88, metallic=0.0)
     if role == "ore_rock":
         return _ground_dirt("ore_rock", dark=(0.07, 0.045, 0.035), light=(0.33, 0.20, 0.13), stone_scale=1.6)
+    if role == "ore_stone":
+        return _ore_stone("ore_stone")
+    if role == "ore_bed":
+        return _simple("ore_bed", base=(0.045, 0.03, 0.022), rough=0.95, metallic=0.0)
     if role == "neon_dead":
         return _simple("neon_dead", base=(0.10, 0.07, 0.08), rough=0.25, metallic=0.0)
     raise KeyError("mining theme has no material role '%s'" % role)
@@ -395,6 +402,68 @@ def _gravel_stone(name):
     bump.inputs["Strength"].default_value = 0.35
     bump.inputs["Distance"].default_value = 0.02
     l.new(pits.outputs["Fac"], bump.inputs["Height"])
+    l.new(bump.outputs["Normal"], bsdf.inputs["Normal"])
+
+    return mat
+
+
+def _ore_stone(name):
+    """
+    Ore stones in the colours of ore_rock: each stone (its 'stone_rand'
+    attribute) somewhere between grey rock and rust-brown ore, with a
+    little mottling and a rough, dull surface. Little fine detail: these
+    are for ground far away.
+    """
+    mat = bpy.data.materials.new(name)
+    mat.use_nodes = True
+    nt = mat.node_tree
+    n = nt.nodes
+    l = nt.links
+    n.clear()
+
+    out = n.new("ShaderNodeOutputMaterial")
+    bsdf = n.new("ShaderNodeBsdfPrincipled")
+    l.new(bsdf.outputs["BSDF"], out.inputs["Surface"])
+    bsdf.inputs["Metallic"].default_value = 0.0
+    bsdf.inputs["Roughness"].default_value = 0.9
+
+    coord = n.new("ShaderNodeTexCoord")
+    attr = n.new("ShaderNodeAttribute")
+    attr.attribute_type = 'GEOMETRY'
+    attr.attribute_name = "stone_rand"
+
+    # Per stone: grey rock -> rust-brown ore (linear colours, the ends of ore_rock)
+    ramp = n.new("ShaderNodeValToRGB")
+    ramp.color_ramp.elements[0].position = 0.0
+    ramp.color_ramp.elements[0].color = (0.14, 0.12, 0.105, 1.0)
+    ramp.color_ramp.elements[1].position = 1.0
+    ramp.color_ramp.elements[1].color = (0.33, 0.19, 0.11, 1.0)
+    mid = ramp.color_ramp.elements.new(0.55)
+    mid.color = (0.22, 0.14, 0.095, 1.0)
+    l.new(attr.outputs["Fac"], ramp.inputs["Fac"])
+
+    # Gentle mottling inside a stone
+    mottle = n.new("ShaderNodeTexNoise")
+    mottle.inputs["Scale"].default_value = 2.5
+    mottle.inputs["Detail"].default_value = 2.0
+    l.new(coord.outputs["Object"], mottle.inputs["Vector"])
+    mottle_map = n.new("ShaderNodeMapRange")
+    mottle_map.inputs["To Min"].default_value = 0.8
+    mottle_map.inputs["To Max"].default_value = 1.1
+    l.new(mottle.outputs["Fac"], mottle_map.inputs["Value"])
+
+    color = n.new("ShaderNodeMix")
+    color.data_type = 'RGBA'
+    color.blend_type = 'MULTIPLY'
+    _socket(color.inputs, "Factor_Float").default_value = 1.0
+    l.new(ramp.outputs["Color"], _socket(color.inputs, "A_Color"))
+    l.new(mottle_map.outputs["Result"], _socket(color.inputs, "B_Color"))
+    l.new(_socket(color.outputs, "Result_Color"), bsdf.inputs["Base Color"])
+
+    bump = n.new("ShaderNodeBump")
+    bump.inputs["Strength"].default_value = 0.25
+    bump.inputs["Distance"].default_value = 0.05
+    l.new(mottle.outputs["Fac"], bump.inputs["Height"])
     l.new(bump.outputs["Normal"], bsdf.inputs["Normal"])
 
     return mat

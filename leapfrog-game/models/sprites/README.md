@@ -61,6 +61,10 @@ Script-specific options are listed with `-- --help`.
   `--rusty` makes the excavator or truck a wreck. Their parts (beams, rams, tracks,
   tyres, cabs, heaps, sheaves, trusses, trestles) are in `amb_mine_parts.py`; material
   roles `machine_yellow`, `rubber` and `ore_rock` are in the mining theme.
+  Ground for the mine site: `ore_ground.py` renders `ore_ground` (polygon fill) and
+  `ore_ground_border` by running `white_gravel.py` with ore stones (`ore_stone` on
+  `ore_bed`), their own colour and brightness (no tint needed), 14 px/unit and few big
+  stones (1.2 units, 256 px tile = 18.3 units). It prints the polygon and border values.
 * Animations (e.g. a blinking neon): render each frame with `frame_only=True` (to `_frames/`,
   not shipped or registered), then `kit.make_strip()` combines them into one image with
   `rows`/`cols` in its resource entry. The editor shows an animation's first frame, so bodies

@@ -42,7 +42,9 @@ Only one of them:
 Options: --stone 0.6 (mean stone size, units), --seed 1, --px 512 (fill
 size, power of two), --border-px 64 (border height, power of two),
 --rugged 0.8 (height of the humps along the edge), --color (keep the
-render's own colour instead of neutral grey).
+render's own colour instead of neutral grey), --stone-role / --bed-role
+(material roles, default gravel_white / gravel_bed), --no-level (keep the
+render's brightness). ore_ground.py runs this script with ore settings.
 """
 
 import json
@@ -73,6 +75,10 @@ def options(p):
     p.add_argument("--rugged", type=float, default=0.8,
                    help="border: height of the humps along the edge, units (default 0.8)")
     p.add_argument("--color", action="store_true", help="keep the render's colour (default: neutral grey)")
+    p.add_argument("--stone-role", default="gravel_white", help="material role of the stones (default gravel_white)")
+    p.add_argument("--bed-role", default="gravel_bed", help="material role of the bed between them (default gravel_bed)")
+    p.add_argument("--no-level", action="store_true",
+                   help="keep the render's brightness (default: level so the brightest stones are near white)")
 
 
 args = sk.parse_args(options)
@@ -144,8 +150,8 @@ def build_tile_mesh(name, stones, bed_quads):
     bm.to_mesh(me)
     bm.free()
     me.polygons.foreach_set("use_smooth", [True] * stone_faces + [False] * (len(me.polygons) - stone_faces))
-    me.materials.append(kit.material("gravel_white"))
-    me.materials.append(kit.material("gravel_bed"))
+    me.materials.append(kit.material(args.stone_role))
+    me.materials.append(kit.material(args.bed_role))
     return me
 
 
@@ -189,7 +195,7 @@ def render_fill():
     place_copies(args.name, me, [(dx * T, dz * T) for dx in (-1, 0, 1) for dz in (-1, 0, 1)])
 
     def post(img):
-        gain = tile_tools.level_gain(img)
+        gain = 1.0 if args.no_level else tile_tools.level_gain(img)
         post.gain = gain
         if not args.name.endswith("_test"):
             save_levels(gain)       # for a later --only border
@@ -262,7 +268,7 @@ def render_border(gain=None):
     edge_row = (H - z_edge) * PPU        # rows from the top
 
     def post(img):
-        g = gain if gain is not None else tile_tools.level_gain(img)
+        g = gain if gain is not None else (1.0 if args.no_level else tile_tools.level_gain(img))
         img = tile_tools.neutral_grey(img, g, keep_color=args.color)
         # Solid down to 0.6 units below the edge line, then fade into the fill
         img = tile_tools.fade_bottom(img, edge_row + 0.6 * PPU, rows - 2)
