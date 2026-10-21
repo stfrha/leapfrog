@@ -27,7 +27,7 @@
          Height="15"
          Text="{Binding MyValue, ElementName=root}"
       />
-      <ToggleButton Name="button" Grid.Column="2" Margin="1" Height="13" FontSize="8" Content="..." >
+      <ToggleButton Name="button" Grid.Column="2" Margin="1" Height="13" FontSize="8" Content="..." IsTabStop="False" >
          <!--<ToggleButton.Template>
             <ControlTemplate TargetType="ToggleButton">
                <TextBlock >...</TextBlock>

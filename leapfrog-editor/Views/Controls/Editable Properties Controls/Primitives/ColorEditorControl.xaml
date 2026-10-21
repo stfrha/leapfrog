@@ -47,7 +47,7 @@
          Height="15"
          Text="{Binding MyValue, ElementName=root}" />
       <!-- Swatch showing the colour; opens the picker -->
-      <ToggleButton x:Name="swatchButton" Grid.Column="2" Margin="2,1,1,1" Height="13"
+      <ToggleButton x:Name="swatchButton" Grid.Column="2" Margin="2,1,1,1" Height="13" IsTabStop="False"
          ToolTip="Pick a colour">
          <ToggleButton.Template>
             <ControlTemplate TargetType="ToggleButton">
