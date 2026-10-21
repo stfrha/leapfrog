@@ -286,7 +286,7 @@ void LaunchSite::doUpdate(const UpdateState &us)
          m_world->DestroyJoint(m_grabLeapfrogJoint1);
          m_world->DestroyJoint(m_grabLeapfrogJoint2);
          m_mainTankBody->ApplyForceToCenter(b2Vec2(0.0f, 10000.0f), true);
-         m_leapFrog->fireMainBooster(true);
+         m_leapFrog->fireMainBooster(true, false, true);
 
          m_stateStartTime = us.time;
          m_state = dropMainBooster;
@@ -295,7 +295,7 @@ void LaunchSite::doUpdate(const UpdateState &us)
       break;
    case dropMainBooster:
       m_mainTankBody->ApplyForceToCenter(b2Vec2(0.0f, 10000.0f), true);
-      m_leapFrog->fireMainBooster(true);
+      m_leapFrog->fireMainBooster(true, false, true);
       m_leapFrog->setHoldAngle(MATH_PI / 2.0f);
 
       if (us.time >= m_stateStartTime + 4000)
@@ -311,7 +311,7 @@ void LaunchSite::doUpdate(const UpdateState &us)
    case finishSequence:
       // We wait here idenfinetly for someone to kill us
       m_mainTankBody->ApplyForceToCenter(b2Vec2(0.0f, 10000.0f), true);
-      m_leapFrog->fireMainBooster(true);
+      m_leapFrog->fireMainBooster(true, false, true);
       m_leapFrog->setHoldAngle(MATH_PI / 2.0f);
 
       break;

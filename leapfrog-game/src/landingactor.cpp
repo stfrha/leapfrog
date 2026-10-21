@@ -36,19 +36,40 @@ LandingActor::LandingActor(
 
 }
 
+// The end of the launch: zoom in and fade the view to white over the
+// same time as the deep space scene fades in from white (FreeSpaceActor::
+// runFadeIn), ending at the zoom that scene starts at, so the change of
+// scene happens behind a white screen.
 void LandingActor::runFadeOut(void)
 {
+   const timeMS c_launchFadeTime = 2000;
+
+   zoomInToStartZoom(c_launchFadeTime);
+
+   // The fader covers the view port, not the stage: the Leapfrog may have
+   // flown above the top of the stage by now. The scene's parent is the
+   // view port window (MainActor), which isn't scaled or panned.
    spColorRectSprite fader = new ColorRectSprite();
    fader->setColor(Color::White);
    fader->setPosition(Vector2(0.0f, 0.0f));
-   fader->setSize(g_Layout.getStageSize());
-   fader->setAlpha(255);
+   fader->setSize(g_Layout.getViewPortBounds());
+   fader->setAlpha(0);
    fader->setPriority(255);
-   fader->attachTo(this);
-   spTween tween = fader->addTween(Actor::TweenAlpha(255), 1000);
+   fader->setTouchEnabled(false);
 
+   Actor* window = getParent();
+   if (window != NULL)
+   {
+      fader->attachTo(window);
+   }
+   else
+   {
+      fader->setSize(g_Layout.getStageSize());
+      fader->attachTo(this);
+   }
+
+   spTween tween = fader->addTween(Actor::TweenAlpha(255), c_launchFadeTime);
    tween->setDoneCallback(CLOSURE(this, &LandingActor::fadeOutComplete));
-   tween->detachWhenDone();
 }
 
 

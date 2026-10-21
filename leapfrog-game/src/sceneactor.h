@@ -97,6 +97,7 @@ private:
 protected:
    float	m_zoomScale;
    float	m_defaultZoomScale;   // where the zoom-out at scene start ends
+   float	m_startZoomScale;     // where every scene starts (zoomed in)
    float	m_stageToViewPortScale;
    float	m_physToStageScale;
    b2World * m_world;
@@ -123,6 +124,10 @@ public:
    // Zoom smoothly back out to the scene's default zoom, the one the
    // zoom-out at scene start ends at. Only zooms out.
    void zoomOutToDefault(oxygine::timeMS duration);
+
+   // Zoom smoothly in to the zoom every scene starts at, so a scene
+   // that ends this way matches the start of the next one.
+   void zoomInToStartZoom(oxygine::timeMS duration);
 
 	SceneActor(
       b2World* world, 
