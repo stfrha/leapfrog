@@ -26,6 +26,8 @@ LaunchSite::LaunchSite(
    m_rightFootContact(false),
    m_angleHoldStartTime(0),
    m_angleHoldDuration(16000),
+   m_countdownCounter(0),
+   m_enginesIgnited(false),
    m_armInitialRegistration(true)
 {
 	initCompoundObjectParts(sceneParent, sceneParent, parentObject, world, pos, root, groupIndex);
@@ -157,8 +159,9 @@ void LaunchSite::doUpdate(const UpdateState &us)
    case attachLeapfrog:
       if (us.time >= m_stateStartTime + 4000)
       {
-         m_countdownCounter = 7;
-         showCountdownNumber(m_countdownCounter);
+         m_countdownCounter = 5;
+         m_enginesIgnited = false;
+         logCountdown(m_countdownCounter);
 
          ((SceneActor*)m_sceneParent)->takeControlOfLeapfrog(true);
 
@@ -168,38 +171,38 @@ void LaunchSite::doUpdate(const UpdateState &us)
       }
       break;
    case countdown:
-      if (us.time >= m_stateStartTime + 1000)
-      {
-         if (m_countdownCounter > 3)
-         {
-            m_countdownCounter--;
-            showCountdownNumber(m_countdownCounter);
-            m_stateStartTime = us.time;
-         }
-         else
-         {
-            m_countdownCounter--;
-            showCountdownNumber(m_countdownCounter);
-            m_boosterFlame->startEmitter();
-            m_leftFlame->startEmitter();
-            m_rightFlame->startEmitter();
-            m_stateStartTime = us.time;
-            m_state = ignite;
-            m_properties[state].setProperty((float)m_state);
-         }
-      }
-      break;
    case ignite:
+      // The count is logged on the HUD once a second. Half a second after
+      // "4 seconds to launch" the engines are ignited.
+      if (!m_enginesIgnited && (m_countdownCounter <= 4) && (us.time >= m_stateStartTime + 500))
+      {
+         igniteEngines();
+
+         m_state = ignite;
+         m_properties[state].setProperty((float)m_state);
+      }
+
       if (us.time >= m_stateStartTime + 1000)
       {
+         m_countdownCounter--;
+         m_stateStartTime = us.time;
+
          if (m_countdownCounter > 0)
          {
-            m_countdownCounter--;
-            showCountdownNumber(m_countdownCounter);
-            m_stateStartTime = us.time;
+            logCountdown(m_countdownCounter);
          }
          else
          {
+            if (!m_enginesIgnited)
+            {
+               igniteEngines();
+            }
+
+            if (g_HeadDownDisplay)
+            {
+               g_HeadDownDisplay->logMessage("Liftoff", true);
+            }
+
             m_mainTankBody->ApplyForceToCenter(b2Vec2(0.0f, -100000.0f), true);
 
             m_grabberJoint->SetLimits(m_grabberJoint->GetJointTranslation(), m_grabberJoint->GetJointTranslation());
@@ -369,44 +372,33 @@ void LaunchSite::startLaunchSequence(void)
    }
 }
 
-void LaunchSite::showCountdownNumber(int n)
+// "5 seconds to launch" ... "1 second to launch" on the HUD log, in the
+// critical style
+void LaunchSite::logCountdown(int secondsLeft)
 {
-   spTextField t = new TextField();
-   t->setAnchor(0.5f, 0.5f);
-   t->setPriority(255);
-   t->attachTo(m_sceneParent);
+   if (!g_HeadDownDisplay)
+   {
+      return;
+   }
 
-   TextStyle style = TextStyle(g_GraphRes.getResources(GraphicResources::ResourceTypeEnum::game).getResFont("main")).withColor(Color::White).alignMiddle();
-
-   t->setStyle(style);
-   
-   char text[5];
-
-   sprintf(text, "%d", n);
-   t->setText(text);
-
-   Vector2 p = m_tankActor->getPosition();
-
-   t->setPosition(p - Vector2(6.0f, 15.0f));
-
-   t->setScale(10.0f);
-   t->setAlpha(0);
-   spTween tween = t->addTween(Actor::TweenScale(1.0f), 125);
-   t->addTween(Actor::TweenAlpha(255), 125);
-   tween->setDoneCallback(CLOSURE(this, &LaunchSite::countDownFadeInComplete));
+   char text[48];
+   snprintf(text, sizeof(text), (secondsLeft == 1) ? "%d second to launch" : "%d seconds to launch", secondsLeft);
+   g_HeadDownDisplay->logMessage(text, true);
 }
 
-void LaunchSite::countDownFadeInComplete(Event *event)
+void LaunchSite::igniteEngines(void)
 {
-   TweenEvent* te = (TweenEvent*)event;
+   m_enginesIgnited = true;
 
-   Actor* ta = te->getActor();
+   m_boosterFlame->startEmitter();
+   m_leftFlame->startEmitter();
+   m_rightFlame->startEmitter();
 
-   spTween tween = ta->addTween(Actor::TweenAlpha(0), 1500);
-
-   tween->detachWhenDone();
+   if (g_HeadDownDisplay)
+   {
+      g_HeadDownDisplay->logMessage("Engine ignition", true);
+   }
 }
-
 
 void LaunchSite::setLaunchTriggerProperty(Event *event)
 {

@@ -25,8 +25,9 @@ Available states:
 - grabLeapfrog, Leapfrog is grabbed, i.e. welded to the extended grabber
 - lowerFootRests, Foot rests are rotated down
 - attachLeapfrog, grabber is retacted pulling Leapfrog with it, Leapfrog goes to Deep Space Mode
-- countdown, count down from ten to three
-- ignite, start engine flame emitters, countdown to zero
+- countdown, count down from five on the HUD log; the engines are
+             ignited half a second after "4 seconds to launch"
+- ignite, engines running, count down to zero
 - tZero, apply force to main booster, stay for 0.5 s
 - release, release joints holding main tank booster
 
@@ -75,6 +76,7 @@ private:
    LaunchStateEnum m_state;
    oxygine::timeMS m_stateStartTime;
    int m_countdownCounter;
+   bool m_enginesIgnited;
    bool m_armInitialRegistration;
 
    b2RevoluteJoint* m_leftFootRestJoint;
@@ -109,9 +111,8 @@ private:
 
 
 
-   void showCountdownNumber(int n);
-   
-   void countDownFadeInComplete(oxygine::Event *event);
+   void logCountdown(int secondsLeft);
+   void igniteEngines(void);
    void setLaunchTriggerProperty(oxygine::Event *ev);
    void updateHoldAngle(oxygine::timeMS now);
 

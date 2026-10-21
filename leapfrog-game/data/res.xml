@@ -106,6 +106,4 @@
 	<atlas clamp2edge="false">
 		<image file="grotto.png" trim="false" extend="false"/>
 	</atlas>
-	<set path = "fonts" />
-	<font file="main.fnt" />	
 </resources>
