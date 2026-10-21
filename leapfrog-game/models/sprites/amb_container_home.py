@@ -28,6 +28,9 @@ import amb_parts as ap            # noqa: E402
 def options(p):
     p.add_argument("--name", default="amb_container_home", help="texture name (default amb_container_home)")
     p.add_argument("--dark", action="store_true", help="no lit windows")
+    p.add_argument("--no-smoke", action="store_true", help="no smoke from the stovepipe")
+    p.add_argument("--frames", type=int, default=6, help="animation frames (default 6; --still for one image)")
+    p.add_argument("--period", type=float, default=2.4, help="seconds per animation loop (default 2.4)")
     p.add_argument("--lower", default="container_red", help="material role of the lower container")
     p.add_argument("--upper", default="container_blue", help="material role of the upper container")
     p.add_argument("--yaw", type=float, default=10.0, help="camera yaw, keep equal for all pieces (default 10)")
@@ -88,4 +91,8 @@ sk.strut(pipe, (ux + 0.5, 0.6, uz + H), (ux + 0.5, 0.6, uz + H + 1.6), 0.12, 10)
 sk.mesh_object("stovepipe", pipe, M("rusty_metal"))
 sk.box_object("stovepipe_cap", (ux + 0.5, 0.6, uz + H + 1.7), (0.45, 0.45, 0.08), M("frame_main"))
 
-kit.render_axo(args.name, yaw_deg=args.yaw, pitch_deg=args.pitch, ground_z=0.0)
+# Smoke from the stovepipe: somebody is home
+life = [] if args.no_smoke else [ap.smoke_column("smoke", M, (ux + 0.5, 0.6, uz + H + 1.8))]
+
+kit.render_axo_animated(args.name, args.frames if life else 1, lambda i: [f(i, args.frames) for f in life], period=args.period,
+                        yaw_deg=args.yaw, pitch_deg=args.pitch, ground_z=0.0)

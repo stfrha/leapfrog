@@ -64,7 +64,7 @@ def side_window_row(prefix, M, y0, y1, x, z, count, size=(1.0, 0.8), rnd=None, l
 
 
 def mast(name, M, base, height, light=True, dark=False):
-    """Thin mast with two stays and an optional light on top."""
+    """Thin mast with two stays and an optional light on top (returned, e.g. for blink())."""
     bx, by, bz = base
     bm = bmesh.new()
     sk.strut(bm, (bx, by, bz), (bx, by, bz + height), 0.09)
@@ -73,8 +73,9 @@ def mast(name, M, base, height, light=True, dark=False):
     sk.strut(bm, (bx - 0.45, by, bz + height * 0.85), (bx + 0.45, by, bz + height * 0.85), 0.05)
     sk.mesh_object(name, bm, M("frame_main"))
     if light:
-        sk.box_object(name + "_light", (bx, by, bz + height + 0.12), (0.3, 0.3, 0.24),
-                      M("neon_dead") if dark else M("neon_amber"))
+        return sk.box_object(name + "_light", (bx, by, bz + height + 0.12), (0.3, 0.3, 0.24),
+                             M("neon_dead") if dark else M("neon_amber"))
+    return None
 
 
 def ribbed_box(name, M, center, size, role, rib_role="frame_main", rib_every=2.0, ribs_on=("front", "right"),
@@ -151,3 +152,75 @@ def railing(name, M, p0, p1, height=1.0, post_every=1.5):
     sk.strut(bm, (x0, y0, z0 + height), (x1, y1, z1 + height), 0.05, 6)
     sk.strut(bm, (x0, y0, z0 + height / 2), (x1, y1, z1 + height / 2), 0.03, 6)
     sk.mesh_object(name, bm, M("frame_brace"))
+
+
+# ---------------------------------------------------------------------------
+# Signs of life, for Kit.render_axo_animated
+# ---------------------------------------------------------------------------
+
+def smoke_column(name, M, base, puffs=5, spacing=0.9, radius=0.35, drift=0.45, grow=0.9):
+    """
+    Smoke rising from `base` (the top of a chimney or stack) and drifting to
+    the right: `puffs` soft puffs `spacing` apart. Returns set_frame(i, n):
+    in frame i of n every puff has risen i/n of a spacing, so after n frames
+    each puff is where the next one was and the loop is seamless. Puffs
+    swell as they rise, start from nothing at the chimney and shrink away
+    at the top. drift: sideways movement per unit of height.
+    """
+    bx, by, bz = base
+    obs = []
+    for k in range(puffs):
+        bm = bmesh.new()
+        bmesh.ops.create_icosphere(bm, subdivisions=2, radius=1.0)
+        ob = sk.mesh_object("%s_%d" % (name, k), bm, M("smoke"), smooth_quads=False)
+        for poly in ob.data.polygons:
+            poly.use_smooth = True
+        obs.append(ob)
+
+    def place(t):
+        """Location and size of a puff t spacings up (0 .. puffs)."""
+        z = t * spacing
+        size = radius * (1.0 + grow * t / puffs)
+        size *= min(1.0, t * 1.5)                       # born small at the chimney
+        size *= min(1.0, max(0.0, (puffs - t) / 1.2))   # and gone at the top
+        # A slight sideways wobble that depends on height only, so the loop
+        # stays seamless
+        x = bx + z * drift + 0.12 * math.sin(z * 2.1)
+        return (x, by, bz + z + size * 0.6), max(size, 1e-3)
+
+    def set_frame(i, n):
+        if i is None:                   # a still image: as frame 0
+            i = 0
+        for k, ob in enumerate(obs):
+            t = k + i / float(max(1, n))
+            loc, size = place(t)
+            ob.location = loc
+            ob.scale = (size, size * 0.8, size * 0.85)
+            ob.hide_render = size < 0.02
+
+    # Hidden box round the whole column, so render_axo frames the image for
+    # the highest puff of any frame (puffs move between frames)
+    top = puffs * spacing + radius * (1.0 + grow) * 1.2
+    env = sk.box_object(name + "_extent", (bx + top * drift / 2, by, bz + top / 2),
+                        (top * drift + 2.4 * radius * (1.0 + grow), 2.0 * radius, top), M("smoke"))
+    env.hide_render = True
+    env["kit_frame_extent"] = True
+
+    set_frame(0, 1)
+    return set_frame
+
+
+def blink(ob, M, pattern, on_role="neon_amber", off_role="neon_dead"):
+    """
+    A lamp that blinks: pattern is a string of '1' (on) and '0' (off), one
+    character per animation frame, e.g. '110000'. Returns set_frame(i, n);
+    i = None (a still image) means on.
+    """
+    on = M(on_role)
+    off = M(off_role)
+
+    def set_frame(i, n):
+        lit = (i is None) or pattern[i % len(pattern)] == "1"
+        ob.data.materials[0] = on if lit else off
+
+    return set_frame

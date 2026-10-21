@@ -29,6 +29,10 @@ def options(p):
     p.add_argument("--name", default="amb_water_tower", help="texture name (default amb_water_tower)")
     p.add_argument("--height", type=float, default=8.0, help="height of the legs (default 8)")
     p.add_argument("--dark", action="store_true", help="beacon off")
+    p.add_argument("--frames", type=int, default=6, help="animation frames (default 6; --still for one image)")
+    p.add_argument("--period", type=float, default=2.4, help="seconds per animation loop (default 2.4)")
+    p.add_argument("--blink", default="001100",
+                   help="lamp on/off per frame, 1 = on (default 001100; other pieces use other phases)")
     p.add_argument("--yaw", type=float, default=10.0, help="camera yaw, keep equal for all pieces (default 10)")
     p.add_argument("--pitch", type=float, default=12.0, help="camera pitch, keep equal for all pieces (default 12)")
 
@@ -101,7 +105,9 @@ for z in (HT * 0.5, HT + 0.1):
 sk.mesh_object("ladder", lad, M("frame_brace"))
 
 # Beacon on the roof
-sk.box_object("beacon", (0.0, 0.0, HT + 0.2 + TH + 1.0), (0.35, 0.35, 0.3),
-              M("neon_dead") if args.dark else M("neon_amber"))
+beacon = sk.box_object("beacon", (0.0, 0.0, HT + 0.2 + TH + 1.0), (0.35, 0.35, 0.3),
+                       M("neon_dead") if args.dark else M("neon_amber"))
+life = [] if args.dark else [ap.blink(beacon, M, args.blink)]
 
-kit.render_axo(args.name, yaw_deg=args.yaw, pitch_deg=args.pitch, ground_z=0.0)
+kit.render_axo_animated(args.name, args.frames if life else 1, lambda i: [f(i, args.frames) for f in life], period=args.period,
+                        yaw_deg=args.yaw, pitch_deg=args.pitch, ground_z=0.0)

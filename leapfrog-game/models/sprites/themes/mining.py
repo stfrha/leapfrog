@@ -20,6 +20,7 @@ Materials are procedural and selected by role:
     ore_stone    - single ore stones for repeating ground textures (per-stone
                    'stone_rand' attribute picks between rust-brown and grey)
     ore_bed      - the dark dirt between ore stones
+    smoke        - thin grey smoke puffs (partly transparent)
 """
 
 import math
@@ -42,12 +43,25 @@ SUN_DIRECTION = Vector((0.45, 0.75, -0.5))   # light travels right, into the sce
 SUN_STRENGTH = 3.0
 SUN_ANGLE_DEG = 8.0                          # soft-ish shadow edges
 
+# Night (ambient pieces on the night-time parallax layers): a dim, cool sky
+# and a moon high up, so shadows fall behind and a little to the right of a
+# piece and stay short. Lit windows and lamps then stand out.
+NIGHT_SKY_COLOR = (0.010, 0.014, 0.030)      # world colour (linear), barely any fill light
+NIGHT_SKY_STRENGTH = 1.0
+MOON_DIRECTION = Vector((0.35, 0.55, -1.0))  # steeper than the sun: shadows about 0.65 x height long
+MOON_COLOR = (0.62, 0.72, 1.0)
+MOON_STRENGTH = 0.7                          # --moon overrides it
+MOON_ANGLE_DEG = 1.5                         # a small, crisp light
+
+# Colour the night sky is drawn with in the game (sRGB 0..1), for haze
+NIGHT_HAZE_COLOR = (0.118, 0.176, 0.333)     # about #1E2D55
+
 
 # ---------------------------------------------------------------------------
 # World and lights
 # ---------------------------------------------------------------------------
 
-def setup_world(scene, models_dir, hdri=None):
+def setup_world(scene, models_dir, hdri=None, night=False):
     world = bpy.data.worlds.new("mining")
     scene.world = world
     world.use_nodes = True
@@ -57,6 +71,12 @@ def setup_world(scene, models_dir, hdri=None):
     bg = nt.nodes.new("ShaderNodeBackground")
     nt.links.new(bg.outputs["Background"], out.inputs["Surface"])
     bg.inputs["Strength"].default_value = HDRI_STRENGTH
+
+    if night:
+        bg.inputs["Color"].default_value = (NIGHT_SKY_COLOR[0], NIGHT_SKY_COLOR[1], NIGHT_SKY_COLOR[2], 1.0)
+        bg.inputs["Strength"].default_value = NIGHT_SKY_STRENGTH
+        print("mining theme: night sky")
+        return
 
     candidates = [hdri] if hdri else [os.path.join(models_dir, c) for c in HDRI_CANDIDATES]
     candidates = [os.path.normpath(c) for c in candidates if c]
@@ -73,7 +93,17 @@ def setup_world(scene, models_dir, hdri=None):
         print("mining theme: HDRI not found (looked for %s), using flat grey sky" % candidates)
 
 
-def setup_lights(scene, rig):
+def setup_lights(scene, rig, night=False, moon=None):
+    if night:
+        moon_data = bpy.data.lights.new("Sun", 'SUN')      # named Sun: the kit treats it as the key light
+        moon_data.energy = MOON_STRENGTH if moon is None else moon
+        moon_data.color = MOON_COLOR
+        moon_data.angle = math.radians(MOON_ANGLE_DEG)
+        ob = bpy.data.objects.new("Sun", moon_data)
+        scene.collection.objects.link(ob)
+        ob.rotation_euler = MOON_DIRECTION.normalized().to_track_quat('-Z', 'Y').to_euler()
+        return
+
     sun_data = bpy.data.lights.new("Sun", 'SUN')
     if rig in ("persp", "axo", "tile"):
         # Scenery, ambient pieces and repeating ground textures: softer and a
@@ -142,6 +172,8 @@ def make_material(role, models_dir):
         return _ore_stone("ore_stone")
     if role == "ore_bed":
         return _simple("ore_bed", base=(0.045, 0.03, 0.022), rough=0.95, metallic=0.0)
+    if role == "smoke":
+        return _smoke("smoke")
     if role == "neon_dead":
         return _simple("neon_dead", base=(0.10, 0.07, 0.08), rough=0.25, metallic=0.0)
     raise KeyError("mining theme has no material role '%s'" % role)
@@ -466,6 +498,13 @@ def _ore_stone(name):
     l.new(mottle.outputs["Fac"], bump.inputs["Height"])
     l.new(bump.outputs["Normal"], bsdf.inputs["Normal"])
 
+    return mat
+
+
+def _smoke(name):
+    """Thin grey smoke: a soft, partly transparent surface (Cycles reads the Alpha input)."""
+    mat = _simple(name, base=(0.30, 0.30, 0.32), rough=1.0, metallic=0.0)
+    _try_input(mat.node_tree.nodes.get("Principled BSDF"), "Alpha", 0.35)
     return mat
 
 

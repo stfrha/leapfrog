@@ -41,6 +41,13 @@ Conventions
   use Kit(..., ambient=True): they go to data/images/<world>/ambient/ and
   share one atlas there, and are rendered with render_axo() so pieces can
   be placed side by side.
+* Ambient pieces are rendered at night by default (the theme's moon and
+  dark sky; --day for the old daylight), on a shadow catcher so they cast
+  their shadow on the ground they will stand on (--no-shadow), with a
+  little haze towards the night sky baked in (--haze 0..1) and a soft glow
+  round lit windows and lamps (--glow). Animated pieces (smoke, blinking
+  lights, turning wheels) use Kit.render_axo_animated(); --still renders one
+  frame without animation.
 * Repeating textures (polygon fills, polygon borders) use rig="tile" and
   render_tile(): a front view of one period of a scene the script builds
   to repeat, rendered with overscan and cropped, power-of-two, registered
@@ -107,6 +114,15 @@ def parse_args(add_extra=None):
                         "Scenery belongs in a per-world set like res_mining.xml")
     p.add_argument("--no-register", action="store_true",
                    help="don't add new textures to data/res.xml (never done for *_test names)")
+    p.add_argument("--night", action="store_true", help="night lighting (the default for ambient pieces)")
+    p.add_argument("--day", action="store_true", help="daylight, also for ambient pieces")
+    p.add_argument("--moon", type=float, default=None, help="night: moon strength (default: the theme's, 0.7)")
+    p.add_argument("--haze", type=float, default=None,
+                   help="ambient pieces: blend this much towards the night sky colour, 0..1 (default 0.18 at night)")
+    p.add_argument("--glow", type=float, default=None,
+                   help="ambient pieces: glow round lit windows and lamps (default 1 at night, 0 = none)")
+    p.add_argument("--no-shadow", action="store_true", help="ambient pieces: no shadow on the ground")
+    p.add_argument("--still", action="store_true", help="animated pieces: one image, no animation")
     if add_extra:
         add_extra(p)
     return p.parse_args(argv)
@@ -386,9 +402,11 @@ def merge_unchanged(base_path, variant_path, t0=0.012, t1=0.05, blur_px=4):
 def make_strip(frame_paths, out_path, layout="auto", max_px=DEFAULT_MAX_PX):
     """
     Combine equally sized frames into one image for an oxygine animation
-    (<image file="..." cols="N"/> or rows="N" in res.xml). Frame 0 is
-    left / top. layout: "cols", "rows" or "auto" (whichever keeps the image
-    smallest, preferring a size within max_px). Returns (cols, rows).
+    (<image file="..." cols="C" rows="R"/> in res.xml; frames run left to
+    right, then top to bottom). Frame 0 is top left. layout: "cols" (one
+    row), "rows" (one column), or "auto": the arrangement, including grids,
+    whose longest side is smallest (so it fits within max_px if any does).
+    Returns (cols, rows).
     """
     import numpy as np
     frames = [_load_pixels(p) for p in frame_paths]
@@ -396,17 +414,18 @@ def make_strip(frame_paths, out_path, layout="auto", max_px=DEFAULT_MAX_PX):
     if any((f[1], f[2]) != (w, h) for f in frames):
         raise ValueError("make_strip: frames have different sizes")
     n = len(frames)
-    if layout == "auto":
-        as_cols = max(w * n, h)
-        as_rows = max(w, h * n)
-        layout = "cols" if (as_cols <= as_rows) else "rows"
     if layout == "cols":
-        data = np.concatenate([f[0] for f in frames], axis=1)
         cols, rows = n, 1
-    else:
-        # Blender's pixel rows run bottom-up, so frame 0 (top) goes last.
-        data = np.concatenate([f[0] for f in reversed(frames)], axis=0)
+    elif layout == "rows":
         cols, rows = 1, n
+    else:
+        options = [(c, n // c) for c in range(1, n + 1) if n % c == 0]
+        cols, rows = min(options, key=lambda cr: (max(w * cr[0], h * cr[1]), w * cr[0] * h * cr[1]))
+    # Blender's pixel rows run bottom-up, so the top row of frames goes last
+    bands = []
+    for r in range(rows):
+        bands.append(np.concatenate([frames[r * cols + c][0] for c in range(cols)], axis=1))
+    data = np.concatenate(list(reversed(bands)), axis=0)
     sh, sw = data.shape[0], data.shape[1]
     img = bpy.data.images.new("strip", sw, sh, alpha=True)
     img.pixels.foreach_set(data.astype(np.float32).ravel())
@@ -415,14 +434,23 @@ def make_strip(frame_paths, out_path, layout="auto", max_px=DEFAULT_MAX_PX):
     img.save()
     bpy.data.images.remove(img)
 
-    attr = ('cols="%d"' % cols) if cols > 1 else ('rows="%d"' % rows)
     print("")
-    print("sprite_kit: %s, %d frames, %d x %d px" % (out_path, n, sw, sh))
+    print("sprite_kit: %s, %d frames (%d x %d), %d x %d px" % (out_path, n, cols, rows, sw, sh))
     if max(sw, sh) > max_px:
         print("sprite_kit: WARNING the animation image is larger than %d px" % max_px)
-    print("sprite_kit:   res.xml:  <image file=\"%s\" %s/>" % (os.path.basename(out_path), attr))
+    print("sprite_kit:   resource entry: <image file=\"%s\" %s/>" % (os.path.basename(out_path), strip_attrs(cols, rows)))
     print("")
     return cols, rows
+
+
+def strip_attrs(cols, rows):
+    """cols="C" rows="R" for an animation's resource entry (only those above 1)."""
+    parts = []
+    if cols > 1:
+        parts.append('cols="%d"' % cols)
+    if rows > 1:
+        parts.append('rows="%d"' % rows)
+    return " ".join(parts)
 
 
 def register_texture(filename, attrs="", res_xml=RES_XML, folder="images"):
@@ -471,13 +499,28 @@ class Kit:
             self.folder = "common"
         if ambient and not args.folder:
             self.folder += "/ambient"
+        self.night = (args.night or (ambient and rig == "axo")) and not args.day
         reset_scene()
         self.scene = bpy.context.scene
         setup_render(self.scene, args)
         self.theme = importlib.import_module("themes." + args.theme)
-        self.theme.setup_world(self.scene, MODELS_DIR, hdri=args.hdri)
-        self.theme.setup_lights(self.scene, rig)
+        if self.night:
+            self.theme.setup_world(self.scene, MODELS_DIR, hdri=args.hdri, night=True)
+            self.theme.setup_lights(self.scene, rig, night=True, moon=args.moon)
+        else:
+            self.theme.setup_world(self.scene, MODELS_DIR, hdri=args.hdri)
+            self.theme.setup_lights(self.scene, rig)
         self._materials = {}
+        self._post_axo = False          # render_axo: haze and glow after each render
+        self._raw_base = None           # unprocessed first frame, for render_variant
+        if ambient and rig == "axo":
+            self.haze = args.haze if args.haze is not None else (0.18 if self.night else 0.0)
+            self.glow = args.glow if args.glow is not None else (1.0 if self.night else 0.0)
+            self.shadow = not args.no_shadow
+        else:
+            self.haze = args.haze or 0.0
+            self.glow = args.glow or 0.0
+            self.shadow = False
 
     def material(self, role):
         """Material for a role (e.g. 'frame_main'), as defined by the theme."""
@@ -616,13 +659,16 @@ class Kit:
             return False
         return True
 
-    def register(self, filename, attrs="", ppu=None, repeat=False):
+    def register(self, filename, attrs="", ppu=None, repeat=False, frames=None):
         """
         Add a shipped texture to the script's resource file (skipped for test
         renders / custom --out). ppu is written as an attribute; for a texture
         that is already listed only its ppu is updated. repeat=True puts it
         in its own <atlas clamp2edge="false"> (textures that tile on polygons
         and polygon borders; they must be power-of-two).
+        frames=(cols, rows): also keep an existing entry's cols/rows right,
+        e.g. when a piece that was a single image becomes an animation, or
+        the other way round ((1, 1) removes them).
         """
         if not self._may_register(os.path.splitext(filename)[0]):
             return
@@ -639,8 +685,13 @@ class Kit:
                       "loaded for the whole game" % filename)
         if project_files.find_texture(filename)[0] is None:
             project_files.register_texture(self.res, filename, attrs, "images/" + self.folder, repeat=repeat)
-        elif ppu_text:
-            project_files.set_image_attr(filename, "ppu", ppu_text)
+        else:
+            if ppu_text:
+                project_files.set_image_attr(filename, "ppu", ppu_text)
+            if frames is not None:
+                cols, rows = frames
+                project_files.set_image_attr(filename, "cols", str(cols) if cols > 1 else None)
+                project_files.set_image_attr(filename, "rows", str(rows) if rows > 1 else None)
 
     def make_strip(self, frame_paths, name, layout="auto"):
         """Combine frames into <name>.png (shipped) and register it as an animation."""
@@ -649,7 +700,7 @@ class Kit:
         out_path = os.path.join(out_dir, name + ".png")
         cols, rows = make_strip(frame_paths, out_path, layout, self.args.max_px)
         ppu = self._last[3] if getattr(self, "_last", None) else self.args.ppu
-        self.register(name + ".png", ('cols="%d"' % cols) if cols > 1 else ('rows="%d"' % rows), ppu=ppu)
+        self.register(name + ".png", strip_attrs(cols, rows), ppu=ppu, frames=(cols, rows))
         return out_path
 
     def _finish(self, name, res_x, res_y, ppu, size_text, editor_only=False, frame_only=False):
@@ -668,6 +719,9 @@ class Kit:
         self.scene.render.filepath = out_path
         bpy.ops.render.render(write_still=True)
         self._last = (out_path, res_x, res_y, ppu, size_text)
+        if self._post_axo:
+            self._raw_base = self._keep_raw(out_path, name)
+            self._post_process(out_path, ppu)
 
         print("")
         print("sprite_kit: %s%s" % (out_path, "  (frame, combined by make_strip)" if frame_only else
@@ -675,7 +729,7 @@ class Kit:
         print("sprite_kit:   %s, %d x %d px, %g px/unit" % (size_text, res_x, res_y, ppu))
         print("")
         if not editor_only and not frame_only:
-            self.register(name + ".png", ppu=ppu)
+            self.register(name + ".png", ppu=ppu, frames=(1, 1))
         return out_path
 
     def render_variant(self, name, keep_unchanged=True):
@@ -694,7 +748,10 @@ class Kit:
         self.scene.render.filepath = out_path
         bpy.ops.render.render(write_still=True)
         if keep_unchanged:
-            merge_unchanged(base_path, out_path)
+            # Compare with the first frame as rendered, before haze and glow
+            merge_unchanged(self._raw_base or base_path, out_path)
+        if self._post_axo:
+            self._post_process(out_path, ppu)
         print("")
         print("sprite_kit: %s (variant of %s)" % (out_path, os.path.basename(base_path)))
         print("sprite_kit:   %s, %d x %d px, %g px/unit" % (size_text, res_x, res_y, ppu))
@@ -757,6 +814,9 @@ class Kit:
         scene = self.scene
         if self.scale != 1.0 or self.turn:
             self._transform_scene(self.scale, self.turn)
+        if self.shadow:
+            self._add_shadow_catcher(ground_z)
+        self._post_axo = (self.haze > 0.0) or (self.glow > 0.0)
         yaw = math.radians(yaw_deg)
         pitch = math.radians(pitch_deg)
 
@@ -773,13 +833,18 @@ class Kit:
         scene.camera = cam
         bpy.context.view_layer.update()
 
-        # Project every vertex above ground onto the camera plane
+        # Project every vertex above ground onto the camera plane, and where
+        # it casts its shadow on the ground (so the shadow isn't cut off)
         to_cam = cam.matrix_world.inverted()
+        light = self._key_light_direction() if self.shadow else None
         dg = bpy.context.evaluated_depsgraph_get()
         umin = vmin = float("inf")
         umax = vmax = float("-inf")
+        shadow_v = []
         for ob in scene.objects:
-            if ob.type not in ('MESH', 'CURVE', 'FONT') or ob.hide_render:
+            if ob.type not in ('MESH', 'CURVE', 'FONT') or ob.get("kit_no_frame"):
+                continue
+            if ob.hide_render and not ob.get("kit_frame_extent"):
                 continue
             ev = ob.evaluated_get(dg)
             me = ev.to_mesh()
@@ -793,7 +858,16 @@ class Kit:
                 umax = max(umax, c.x)
                 vmin = min(vmin, c.y)
                 vmax = max(vmax, c.y)
+                if light is not None and w.z > ground_z + 1e-3:
+                    g = w + light * ((w.z - ground_z) / -light.z)
+                    shadow_v.append(to_cam @ g)
             ev.to_mesh_clear()
+        for c in shadow_v:
+            # Shadows fall behind the piece; they may widen the frame and
+            # raise its top, but the bottom stays the front of the footprint
+            umin = min(umin, c.x)
+            umax = max(umax, c.x)
+            vmax = max(vmax, c.y)
         if umin == float("inf"):
             raise RuntimeError("render_axo: no geometry above ground_z")
 
@@ -917,6 +991,96 @@ class Kit:
         print("")
         self.register(name + ".png", ppu=ppu, repeat=True)
         return out_path
+
+    def render_axo_animated(self, name, frames, set_frame, period=None, yaw_deg=10.0, pitch_deg=12.0,
+                            ground_z=0.0):
+        """
+        An ambient piece with an animation (smoke, a blinking lamp, turning
+        wheels): set_frame(i) puts the scene in frame i of `frames`; frame 0
+        is rendered with render_axo, the others with render_variant (same
+        camera; pixels that only differ by noise are taken from frame 0),
+        and make_strip makes <name>.png with cols/rows. period: seconds per
+        loop, printed as the Animate Period to set in the editor.
+        With --still, or frames < 2, set_frame(None) asks for the still look
+        (lamps on, smoke as in frame 0) and a single image is rendered.
+        """
+        if self.args.still or frames < 2:
+            set_frame(None)
+            return self.render_axo(name, yaw_deg=yaw_deg, pitch_deg=pitch_deg, ground_z=ground_z)
+        set_frame(0)
+        paths = [self.render_axo(name + "_f0", yaw_deg=yaw_deg, pitch_deg=pitch_deg, ground_z=ground_z,
+                                 frame_only=True)]
+        for i in range(1, frames):
+            set_frame(i)
+            paths.append(self.render_variant(name + "_f%d" % i))
+        if not all(paths):
+            return None
+        out = self.make_strip(paths, name)
+        if period:
+            print("sprite_kit: %s: %d frames; in the editor set Animate Period to %.2f s" % (name, frames, period))
+        return out
+
+    def _key_light_direction(self):
+        """Direction the key light (the sun or moon, an object named Sun) travels, or None."""
+        sun = self.scene.objects.get("Sun")
+        if sun is None or sun.type != 'LIGHT':
+            return None
+        d = sun.matrix_world.to_3x3() @ Vector((0.0, 0.0, -1.0))
+        if d.z > -0.05:
+            return None
+        return d.normalized()
+
+    def _add_shadow_catcher(self, ground_z):
+        """A large ground plane that is only visible where shadows fall on it (Cycles shadow catcher)."""
+        bm = bmesh.new()
+        bmesh.ops.create_grid(bm, x_segments=1, y_segments=1, size=500.0)
+        ob = mesh_object("_shadow_catcher", bm)
+        ob.location = (0.0, 0.0, ground_z)
+        ob.is_shadow_catcher = True
+        ob["kit_no_frame"] = True
+
+    def _keep_raw(self, path, name):
+        """A copy of a render as it came out of Blender (in _frames/), before post-processing."""
+        import shutil
+        os.makedirs(FRAMES_OUT, exist_ok=True)
+        raw = os.path.join(FRAMES_OUT, name + "_raw.png")
+        if os.path.abspath(raw) != os.path.abspath(path):
+            shutil.copyfile(path, raw)
+        return raw
+
+    def _post_process(self, path, ppu):
+        """Haze towards the night sky, then a glow round the brightest pixels (lit windows, lamps)."""
+        import numpy as np
+        px, w, h = _load_pixels(path)
+        rgb = px[:, :, :3]
+        a = px[:, :, 3]
+
+        if self.haze > 0.0:
+            c = np.array(getattr(self.theme, "NIGHT_HAZE_COLOR", (0.5, 0.55, 0.6)), dtype=np.float32)
+            rgb = rgb * (1.0 - self.haze) + c[None, None, :] * self.haze
+
+        if self.glow > 0.0:
+            lum = (rgb * np.array([0.2126, 0.7152, 0.0722], dtype=np.float32)).sum(axis=2)
+            bright = np.clip((lum - 0.62) / 0.25, 0.0, 1.0) * a
+            r = max(2, int(round(3.0 * ppu / 14.0)))
+            glow = np.empty_like(rgb)
+            for ch in range(3):
+                src = rgb[:, :, ch] * bright
+                glow[:, :, ch] = _box_blur(_box_blur(src, r), r) * 1.6 * self.glow
+            prem = rgb * a[:, :, None] + glow
+            a = np.maximum(a, np.clip(glow.max(axis=2), 0.0, 1.0))
+            rgb = prem / np.maximum(a, 1e-6)[:, :, None]
+
+        out = np.empty_like(px)
+        out[:, :, :3] = np.clip(rgb, 0.0, 1.0)
+        out[:, :, 3] = np.clip(a, 0.0, 1.0)
+        img = bpy.data.images.new("post", w, h, alpha=True)
+        img.pixels.foreach_set(out.astype(np.float32).ravel())
+        img.filepath_raw = path
+        img.file_format = 'PNG'
+        img.save()
+        bpy.data.images.remove(img)
+        print("sprite_kit: %s: haze %.2f, glow %.2f" % (os.path.basename(path), self.haze, self.glow))
 
     def _transform_scene(self, factor, turn_deg=0.0):
         """

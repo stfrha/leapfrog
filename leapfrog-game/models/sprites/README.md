@@ -61,6 +61,16 @@ Script-specific options are listed with `-- --help`.
   `--rusty` makes the excavator or truck a wreck. Their parts (beams, rams, tracks,
   tyres, cabs, heaps, sheaves, trusses, trestles) are in `amb_mine_parts.py`; material
   roles `machine_yellow`, `rubber` and `ore_rock` are in the mining theme.
+  Ambient pieces render at night by default: the theme's dark sky and a moon high up
+  (`--moon` strength, `--day` for daylight), standing on a shadow catcher so their shadow
+  falls on the ground behind them (`--no-shadow`; the frame grows to hold the shadow), with
+  haze towards the night sky baked in (`--haze`, default 0.18) and a glow round lit
+  windows and lamps (`--glow`, default 1). Signs of life use
+  `kit.render_axo_animated(name, frames, set_frame, period)`: the hut, dome and water
+  tower lights blink (`--blink 110000`, different phases per piece), the container home
+  has stovepipe smoke (`amb_parts.smoke_column`), the headframe's wheels turn. Default 6
+  frames per 2.4 s loop; `--still` for one image. Strips may be grids (cols and rows);
+  re-rendering keeps the resource entry's cols/rows right.
   Ground for the mine site: `ore_ground.py` renders `ore_ground` (polygon fill) and
   `ore_ground_border` by running `white_gravel.py` with ore stones (`ore_stone` on
   `ore_bed`), their own colour and brightness (no tint needed), 14 px/unit and few big

@@ -34,6 +34,10 @@ def options(p):
     p.add_argument("--windows", type=int, default=10, help="windows around the dome (default 10)")
     p.add_argument("--lit", type=float, default=0.5, help="share of lit windows, 0..1 (default 0.5)")
     p.add_argument("--dark", action="store_true", help="no lit windows or mast light")
+    p.add_argument("--frames", type=int, default=6, help="animation frames (default 6; --still for one image)")
+    p.add_argument("--period", type=float, default=2.4, help="seconds per animation loop (default 2.4)")
+    p.add_argument("--blink", default="000011",
+                   help="lamp on/off per frame, 1 = on (default 000011; other pieces use other phases)")
     p.add_argument("--seed", type=int, default=5, help="which windows are lit")
     p.add_argument("--yaw", type=float, default=10.0, help="camera yaw, keep equal for all pieces (default 10)")
     p.add_argument("--pitch", type=float, default=12.0, help="camera pitch, keep equal for all pieces (default 12)")
@@ -120,6 +124,8 @@ for i, y in enumerate((end_y + 0.33, end_y + 1.5)):
 # Mast on top
 mx, my = R * 0.25, R * 0.2
 mz = RING + 0.82 * math.sqrt(R * R - mx * mx - my * my) - 0.1      # just inside the dome surface
-ap.mast("mast", M, (mx, my, mz), 3.2, dark=args.dark)
+mast_light = ap.mast("mast", M, (mx, my, mz), 3.2, dark=args.dark)
+life = [] if args.dark else [ap.blink(mast_light, M, args.blink)]
 
-kit.render_axo(args.name, yaw_deg=args.yaw, pitch_deg=args.pitch, ground_z=0.0)
+kit.render_axo_animated(args.name, args.frames if life else 1, lambda i: [f(i, args.frames) for f in life], period=args.period,
+                        yaw_deg=args.yaw, pitch_deg=args.pitch, ground_z=0.0)

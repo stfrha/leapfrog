@@ -36,6 +36,7 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 import bmesh                      # noqa: E402
 import sprite_kit as sk           # noqa: E402
+import amb_parts as ap            # noqa: E402
 
 
 def options(p):
@@ -47,6 +48,10 @@ def options(p):
     p.add_argument("--dark", action="store_true", help="unlit windows and mast light")
     p.add_argument("--no-tank", action="store_true", help="leave out the side tank")
     p.add_argument("--no-mast", action="store_true", help="leave out the mast")
+    p.add_argument("--frames", type=int, default=6, help="animation frames (default 6; --still for one image)")
+    p.add_argument("--period", type=float, default=2.4, help="seconds per animation loop (default 2.4)")
+    p.add_argument("--blink", default="110000",
+                   help="lamp on/off per frame, 1 = on (default 110000; other pieces use other phases)")
     p.add_argument("--yaw", type=float, default=10.0, help="camera yaw, keep equal for all pieces (default 10)")
     p.add_argument("--pitch", type=float, default=12.0, help="camera pitch, keep equal for all pieces (default 12)")
 
@@ -54,6 +59,8 @@ def options(p):
 args = sk.parse_args(options)
 kit = sk.Kit(args, rig="axo", res="res_mining.xml", ambient=True, ppu=14, scale=2.0)
 M = kit.material
+
+life = []                      # set_frame(i, n) of each animated part
 
 W = args.width
 D = args.depth
@@ -115,8 +122,10 @@ if not args.no_mast:
     sk.strut(mast, (mx + 0.6, my, Z1 + 0.4), (mx, my, Z1 + 2.0), 0.05)
     sk.strut(mast, (mx - 0.5, my, Z1 + 3.4), (mx + 0.5, my, Z1 + 3.4), 0.05)
     sk.mesh_object("mast", mast, M("frame_main"))
-    sk.box_object("mast_light", (mx, my, Z1 + 4.12), (0.3, 0.3, 0.24),
-                  M("neon_dead") if args.dark else M("neon_amber"))
+    mast_light = sk.box_object("mast_light", (mx, my, Z1 + 4.12), (0.3, 0.3, 0.24),
+                               M("neon_dead") if args.dark else M("neon_amber"))
+    if not args.dark:
+        life.append(ap.blink(mast_light, M, args.blink))
 
 # Side tank (right, the side the camera sees) --------------------------------
 if not args.no_tank:
@@ -138,4 +147,5 @@ if not args.no_tank:
     sk.strut(pipe, (tx - TR + 0.1, ty - 0.4, PLINTH + 1.2), (RIGHT, ty - 0.4, PLINTH + 1.2), 0.12)
     sk.mesh_object("pipe", pipe, M("rusty_metal"))
 
-kit.render_axo(args.name, yaw_deg=args.yaw, pitch_deg=args.pitch, ground_z=0.0)
+kit.render_axo_animated(args.name, args.frames if life else 1, lambda i: [f(i, args.frames) for f in life], period=args.period,
+                        yaw_deg=args.yaw, pitch_deg=args.pitch, ground_z=0.0)

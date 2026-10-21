@@ -9,13 +9,10 @@ from its roof up over the wheels and down into the shaft. The beacon on
 top and a window in the winding house are lit (--dark turns them off): the
 lift still runs, whatever else at the mine has stopped.
 
-Animation: the wheels turn. With S spokes the picture repeats every
-360/S degrees, so N frames turning (360/S)/N degrees each loop seamlessly.
-Frame 0 is rendered with render_axo, the others with render_variant (same
-camera, noise-only pixels copied from frame 0 so the tower doesn't
-shimmer), then make_strip puts them side by side and registers the image
-with cols="N". In the editor set the sprite box's Animate Period (the
-script prints a suggestion). --still renders one image without animation.
+Animation: the wheels turn (Kit.render_axo_animated: frame 0 with
+render_axo, the others with render_variant, then make_strip registers the
+image with cols="N"). In the editor set the sprite box's Animate Period to
+what the script prints. --still renders one image without animation.
 
 Like the village pieces: 14 px/unit, built at natural size and scaled x2,
 orthographic 3/4 view (render_axo). Turned 25 degrees by default so the
@@ -44,7 +41,6 @@ def options(p):
     p.add_argument("--height", type=float, default=13.0, help="height of the tower top (default 13)")
     p.add_argument("--frames", type=int, default=4, help="animation frames (default 4)")
     p.add_argument("--spokes", type=int, default=6, help="spokes per wheel (default 6)")
-    p.add_argument("--still", action="store_true", help="one image, no animation")
     p.add_argument("--dark", action="store_true", help="beacon and window off")
     p.add_argument("--yaw", type=float, default=10.0, help="camera yaw, keep equal for all pieces (default 10)")
     p.add_argument("--pitch", type=float, default=12.0, help="camera pitch, keep equal for all pieces (default 12)")
@@ -146,22 +142,18 @@ for wy in (-WHEEL_Y, WHEEL_Y):
 sk.mesh_object("ropes", ropes, M("frame_main"))
 
 # Render ------------------------------------------------------------------------------
-if args.still or args.frames < 2:
-    kit.render_axo(args.name, yaw_deg=args.yaw, pitch_deg=args.pitch, ground_z=0.0)
-else:
-    n = args.frames
-    step = (360.0 / max(1, args.spokes)) / n           # degrees per frame
-    paths = [kit.render_axo(args.name + "_f0", yaw_deg=args.yaw, pitch_deg=args.pitch, ground_z=0.0,
-                            frame_only=True)]
-    for i in range(1, n):
-        for w in wheels:
-            w.rotation_euler = (0.0, math.radians(step * i), 0.0)
-        paths.append(kit.render_variant(args.name + "_f%d" % i))
-    if all(paths):
-        kit.make_strip(paths, args.name)
-        # Rope speed of about 3 units/s at natural size looks like a hoist
-        # running at a steady pace from this distance
-        rope_per_frame = math.radians(step) * R
-        period = rope_per_frame * n / 3.0
-        print("sprite_kit: %s: %d frames, %g deg per frame; in the editor set Animate Period to about %.2f s"
-              % (args.name, n, step, period))
+# With S spokes the wheels look the same every 360/S degrees, so N frames of
+# (360/S)/N degrees each loop seamlessly. A rope speed of about 3 units/s
+# at natural size looks like a hoist running at a steady pace.
+n = args.frames
+step = (360.0 / max(1, args.spokes)) / max(1, n)          # degrees per frame
+period = math.radians(step) * R * n / 3.0
+
+
+def set_frame(i):
+    for w in wheels:
+        w.rotation_euler = (0.0, math.radians(step * (i or 0)), 0.0)
+
+
+kit.render_axo_animated(args.name, n, set_frame, period=period,
+                        yaw_deg=args.yaw, pitch_deg=args.pitch, ground_z=0.0)
