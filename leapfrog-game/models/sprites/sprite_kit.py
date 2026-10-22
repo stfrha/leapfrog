@@ -564,7 +564,11 @@ class Kit:
         umin = vmin = float("inf")
         umax = vmax = float("-inf")
         for ob in scene.objects:
-            if ob.type not in ('MESH', 'CURVE', 'FONT') or ob.hide_render:
+            if ob.type not in ('MESH', 'CURVE', 'FONT') or ob.get("kit_no_frame"):
+                continue
+            # Hidden objects marked kit_frame_extent still count, so variants
+            # of a piece (e.g. lit/unlit, closed/open) get the same frame
+            if ob.hide_render and not ob.get("kit_frame_extent"):
                 continue
             ev = ob.evaluated_get(dg)
             me = ev.to_mesh()
@@ -619,6 +623,7 @@ class Kit:
 
         scene.render.resolution_x = res_x
         scene.render.resolution_y = res_y
+        self._frame = (cam, res_x, res_y, ppu)
 
         return self._finish(name, res_x, res_y, ppu,
                             "size %.2f x %.2f units at the target's depth" % (res_x / ppu, res_y / ppu),
@@ -731,6 +736,121 @@ class Kit:
         if not editor_only and not frame_only:
             self.register(name + ".png", ppu=ppu, frames=(1, 1))
         return out_path
+
+    def image_point(self, world):
+        """
+        Where a world point lands in the last render_persp / render_axo
+        image: (px, py) in pixels from the top left, and (ux, uy) in game
+        units from the image centre, x to the right and y down (the editor's
+        and the game's sprite coordinates, at the image's px/unit).
+        """
+        from bpy_extras.object_utils import world_to_camera_view
+        cam, res_x, res_y, ppu = self._frame
+        c = world_to_camera_view(self.scene, cam, Vector(world))
+        px = c.x * res_x
+        py = (1.0 - c.y) * res_y
+        return (px, py), ((px - res_x / 2.0) / ppu, (py - res_y / 2.0) / ppu)
+
+    def report_points(self, title, points):
+        """
+        Print where named world points land in the image (see image_point),
+        e.g. the corners of a landing surface, so collision bodies can be
+        placed exactly in the editor. points: list of (label, (x, y, z)).
+        """
+        if not getattr(self, "_frame", None):
+            return
+        cam, res_x, res_y, ppu = self._frame
+        print("")
+        print("sprite_kit: %s (image %d x %d px, %g px/unit = %.2f x %.2f units)" %
+              (title, res_x, res_y, ppu, res_x / ppu, res_y / ppu))
+        print("sprite_kit:   offsets from the image centre in game units, x right, y down:")
+        for label, world in points:
+            (px, py), (ux, uy) = self.image_point(world)
+            print("sprite_kit:   %-34s x %8.2f  y %8.2f   (pixel %7.1f, %7.1f)" % (label, ux, uy, px, py))
+        print("")
+
+    def render_crop(self, name, objects, frames, set_frame, margin_px=4, hide_others=True):
+        """
+        An animated overlay for part of the last render_persp / render_axo
+        image, e.g. a flickering neon sign on a big building whose whole
+        image would be far too large as an animation strip.
+
+        Renders `frames` frames with the same camera, cropped to the pixels
+        that `objects` cover (plus margin_px), with every other mesh hidden
+        (hide_others; lights stay, so the objects are lit the same). Before
+        each frame set_frame(i) changes the scene. The frames go into
+        <name>.png as a strip (registered with cols/rows and the main
+        image's px/unit). Prints where the overlay's centre goes relative to
+        the main image's centre, in game units, for placing it in the editor
+        on top of the main sprite (give it a higher zLevel).
+
+        The objects must cover what changes completely (e.g. the sign's
+        board), so the overlay hides the main image's version of it.
+        """
+        if self.args.no_render or not getattr(self, "_frame", None):
+            return None
+        cam, res_x, res_y, ppu = self._frame
+        scene = self.scene
+        bpy.context.view_layer.update()
+        dg = bpy.context.evaluated_depsgraph_get()
+        xs, ys = [], []
+        for ob in objects:
+            ev = ob.evaluated_get(dg)
+            me = ev.to_mesh()
+            for v in me.vertices:
+                (px, py), _u = self.image_point(ob.matrix_world @ v.co)
+                xs.append(px)
+                ys.append(py)
+            ev.to_mesh_clear()
+        if not xs:
+            raise RuntimeError("render_crop: the objects have no geometry")
+        x0 = max(0, int(math.floor(min(xs))) - margin_px)
+        x1 = min(res_x, int(math.ceil(max(xs))) + margin_px)
+        y0 = max(0, int(math.floor(min(ys))) - margin_px)
+        y1 = min(res_y, int(math.ceil(max(ys))) + margin_px)
+
+        keep = set(o.name for o in objects)
+        hidden = []
+        if hide_others:
+            for ob in scene.objects:
+                if ob.type in ('MESH', 'CURVE', 'FONT') and ob.name not in keep and not ob.hide_render:
+                    ob.hide_render = True
+                    hidden.append(ob)
+        r = scene.render
+        r.use_border = True
+        r.use_crop_to_border = True
+        r.border_min_x = x0 / float(res_x)
+        r.border_max_x = x1 / float(res_x)
+        r.border_min_y = 1.0 - y1 / float(res_y)
+        r.border_max_y = 1.0 - y0 / float(res_y)
+
+        os.makedirs(FRAMES_OUT, exist_ok=True)
+        paths = []
+        try:
+            for i in range(frames):
+                set_frame(i)
+                path = os.path.join(FRAMES_OUT, "%s_f%d.png" % (name, i))
+                r.filepath = path
+                bpy.ops.render.render(write_still=True)
+                if paths:
+                    merge_unchanged(paths[0], path)
+                paths.append(path)
+        finally:
+            r.use_border = False
+            r.use_crop_to_border = False
+            for ob in hidden:
+                ob.hide_render = False
+
+        out = self.make_strip(paths, name)
+        cx = ((x0 + x1) / 2.0 - res_x / 2.0) / ppu
+        cy = ((y0 + y1) / 2.0 - res_y / 2.0) / ppu
+        print("")
+        print("sprite_kit: %s: overlay of %d x %d px (%.2f x %.2f units), %d frames" %
+              (name, x1 - x0, y1 - y0, (x1 - x0) / ppu, (y1 - y0) / ppu, frames))
+        print("sprite_kit:   place its centre at x %+.2f, y %+.2f game units from the main sprite's centre "
+              "(y down), on a higher zLevel" % (cx, cy))
+        print("")
+        return out
 
     def render_variant(self, name, keep_unchanged=True):
         """
@@ -899,6 +1019,7 @@ class Kit:
 
         scene.render.resolution_x = res_x
         scene.render.resolution_y = res_y
+        self._frame = (cam, res_x, res_y, ppu)
 
         return self._finish(name, res_x, res_y, ppu,
                             "size %.2f x %.2f units" % (fw, fh), editor_only=editor_only, frame_only=frame_only)

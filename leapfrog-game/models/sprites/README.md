@@ -40,6 +40,24 @@ Script-specific options are listed with `-- --help`.
 * Mechanical parts: orthographic front view (camera looks along +Y, Z up), `kit.render_ortho()`.
 * Static scenery (buildings): perspective 3/4 view like the silo, `kit.render_persp()`. The frame
   is fitted around the geometry at 20 px/unit at the object's depth.
+* Buildings you land on (the Orb): `workshop.py` (two storeys, the open top floor is the landing
+  area between two side walls, tools inside; seen face-on, yaw 0, distance 60), `fuel_station.py`
+  (three lying tanks stacked 2 + 1, a pad with dispenser and kiosk, a half-broken FUEL neon) and
+  `pad_house.py` (a house with a landing deck on its roof, closed by default, `--open` renders the
+  in-use look as `pad_house_open` with exactly the same frame). They render at night by default
+  (`--day`). Landing surfaces are laid out square to the camera so their front edge is level in
+  the image, and the camera aims at the pad's *standing line* (where the feet come down), so
+  1 unit there is 1 game unit and the Leapfrog (feet 21.4 apart) stands on the painted foot marks.
+  After the render each script prints where the pad's edges, standing line and foot marks land
+  (`kit.report_points`): offsets from the image centre in game units, y down, ready for the
+  collision bodies in the editor.
+* `kit.image_point(world)` / `kit.report_points(title, [(label, world), ...])`: where world points
+  land in the last render_persp/render_axo image. `kit.render_crop(name, objects, frames,
+  set_frame)`: an animated overlay cropped to some objects (e.g. a flickering neon sign) with the
+  same camera, as a strip `<name>.png`; it prints where to place it on the main sprite. Use it when
+  the whole image as a strip would be over 2048 px. `ob["kit_frame_extent"] = True` on a hidden
+  object makes render_persp (like render_axo) still frame it, so variants get the same frame.
+  Theme role `neon_cyan` (the fuel sign).
 * Ambient pieces (small background buildings for parallax layers, named `amb_*`, e.g.
   `amb_hut.py`): `sk.Kit(args, rig="axo", res="res_mining.xml", ambient=True, ppu=14)` and
   `kit.render_axo()`, an orthographic 3/4 view with the same yaw/pitch for every piece, so

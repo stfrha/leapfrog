@@ -21,6 +21,7 @@ Materials are procedural and selected by role:
                    'stone_rand' attribute picks between rust-brown and grey)
     ore_bed      - the dark dirt between ore stones
     smoke        - thin grey smoke puffs (partly transparent)
+    neon_cyan    - cyan neon tubes (the fuel station's sign)
 """
 
 import math
@@ -148,6 +149,8 @@ def make_material(role, models_dir):
         return _emission("window_lit_blue", (0.30, 0.55, 1.0), 6.0)
     if role == "neon_pink":
         return _emission("neon_pink", (1.0, 0.12, 0.45), 25.0)
+    if role == "neon_cyan":
+        return _emission("neon_cyan", (0.15, 0.8, 1.0), 18.0)
     if role == "neon_amber":
         return _emission("neon_amber", (1.0, 0.45, 0.08), 14.0)
     if role == "window_lit_warm":
