@@ -43,7 +43,6 @@
 		<image file="amb_haul_truck.png" ppu="14" trim="false"/>
 		<image file="amb_crusher.png" ppu="14" trim="false"/>
 		<image file="amb_headframe.png" rows="2" ppu="14" cols="2" trim="false"/>
-		<image file="amb_crusher.png" ppu="14" trim="false"/>
 	</atlas>
 	<set path = "images/mining" />
 	<atlas clamp2edge="false">
