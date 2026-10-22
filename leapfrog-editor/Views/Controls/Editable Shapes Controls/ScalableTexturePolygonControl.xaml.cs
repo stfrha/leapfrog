@@ -44,6 +44,31 @@ namespace LeapfrogEditor
          parentControl.GeneralMouseMove<LfShapeViewModel>(MouseEventObjectType.shape, sender, e);
       }
 
+      // Drag Textures mode: the wheel over a selected polygon scales its
+      // texture about the point under the mouse instead of zooming the view
+      // (ctrl + wheel still rotates the selection). The position is taken in
+      // the polygon's own coordinates (its rotation undone), which is where
+      // the ImageBrush viewport lives.
+      private void Shape_MouseWheel(object sender, MouseWheelEventArgs e)
+      {
+         if ((Keyboard.Modifiers & ModifierKeys.Control) != 0)
+         {
+            return;
+         }
+
+         FrameworkElement fwe = sender as FrameworkElement;
+         LfScalableTexturePolygonViewModel poly = (fwe != null) ? fwe.DataContext as LfScalableTexturePolygonViewModel : null;
+         if ((poly == null) || (poly.MainVm == null))
+         {
+            return;
+         }
+
+         if (poly.MainVm.ScaleTexture(poly, e.GetPosition(fwe), e.Delta))
+         {
+            e.Handled = true;
+         }
+      }
+
 
    }
 }

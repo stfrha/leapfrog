@@ -20,7 +20,8 @@
                Points="{Binding AbsPoints}"
 				   MouseDown="Shape_MouseDown"
 				   MouseUp="Shape_MouseUp"
-				   MouseMove="Shape_MouseMove">
+				   MouseMove="Shape_MouseMove"
+				   MouseWheel="Shape_MouseWheel">
          <!-- Drag Textures mode (F7): a move cursor shows that dragging slides the texture -->
          <Polygon.Style>
             <Style TargetType="Polygon">

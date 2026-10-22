@@ -150,7 +150,7 @@
             Visibility="{Binding ParallaxView, Converter={StaticResource BoolToVisibilityValueConverter}}" />
          <ToggleButton Grid.Column="2"
             Content="Drag Textures" Padding="8,0" Margin="0,0,4,0"
-            ToolTip="Drag a selected polygon by its inside to slide its texture (texture offset) instead of moving the polygon. All selected polygons slide together. (F7)"
+            ToolTip="Drag a selected polygon by its inside to slide its texture (texture offset) instead of moving the polygon; all selected polygons slide together. The mouse wheel over a selected polygon scales its texture about the mouse (ctrl + wheel still rotates). (F7)"
             IsChecked="{Binding DragTextures}" />
          <ToggleButton Grid.Column="3"
             Content="Parallax View" Padding="8,0" Margin="0,0,4,0"

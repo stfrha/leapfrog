@@ -1647,6 +1647,46 @@ namespace LeapfrogEditor
          }
       }
 
+      // Drag Textures mode, mouse wheel over a selected textured polygon:
+      // scale its texture evenly on both axes about the point under the
+      // mouse (localPoint, in the polygon's own unrotated coordinates, the
+      // same as the ImageBrush viewport's), so that point of the texture
+      // stays under the mouse. One wheel notch (120) scales by 10 %; up
+      // makes the texture bigger. Returns false if nothing was scaled.
+      public bool ScaleTexture(LfScalableTexturePolygonViewModel poly, Point localPoint, int wheelDelta)
+      {
+         if (!DragTextures || (poly == null) || !poly.IsSelected || poly.EditorHidden || (wheelDelta == 0))
+         {
+            return false;
+         }
+
+         double w = poly.TextureWidth;
+         double h = poly.TextureHeight;
+         if ((w <= 0) || (h <= 0))
+         {
+            return false;
+         }
+
+         double factor = Math.Pow(1.1, wheelDelta / 120.0);
+
+         // Keep the texture sizes sensible: 0.01 to 100 000 game units
+         double newW = Math.Max(0.01, Math.Min(100000.0, w * factor));
+         factor = newW / w;
+         double newH = h * factor;
+
+         // The texture point under the mouse is (p - offset) / size; keep it
+         // there: offset' = p - (p - offset) * factor
+         double offX = localPoint.X - (localPoint.X - poly.TextureOffsetX) * factor;
+         double offY = localPoint.Y - (localPoint.Y - poly.TextureOffsetY) * factor;
+
+         poly.TextureWidth = Math.Round(newW, 4);
+         poly.TextureHeight = Math.Round(newH, 4);
+         poly.TextureOffsetX = WrapTextureOffset(offX, poly.TextureWidth);
+         poly.TextureOffsetY = WrapTextureOffset(offY, poly.TextureHeight);
+
+         return true;
+      }
+
       private static double WrapTextureOffset(double offset, double period)
       {
          if (period > 0)
