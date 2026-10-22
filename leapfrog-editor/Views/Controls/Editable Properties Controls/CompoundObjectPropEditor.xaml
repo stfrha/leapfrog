@@ -25,6 +25,27 @@
                MyValue="{Binding Behaviour.Active, Mode=TwoWay}"
                Visibility="{Binding Behaviour.HasActiveFlag, Converter={StaticResource BoolToVisibilityValueConverter}}"
                ToolTip="Landing pads and launch sites: an inactive one can be landed on, but nothing happens there. Lua can switch it (property 2)." />
+            <local:StringListSelectionEditorControl 
+               Headline="Fuel" 
+               Strings="{Binding Behaviour.FuelServices}"
+               SelectionIndex="{Binding Behaviour.SelectedFuelIndex, Mode=TwoWay}"
+               Visibility="{Binding Behaviour.HasFuelSettings, Converter={StaticResource BoolToVisibilityValueConverter}}"
+               ToolTip="none: no fuel here. sell: fuel for credits (a fuel station). free: fuel at no cost from a limited supply. Fuel flows only while the pad is active." />
+            <local:DoubleEditorControl 
+               Headline="Fuel per Second" 
+               MyValue="{Binding Behaviour.FuelRate, Mode=TwoWay}"
+               Visibility="{Binding Behaviour.ShowsFuelRate, Converter={StaticResource BoolToVisibilityValueConverter}}"
+               ToolTip="How fast fuel flows in while standing on the pad (the tank holds 100)" />
+            <local:DoubleEditorControl 
+               Headline="Credits per Fuel" 
+               MyValue="{Binding Behaviour.FuelPrice, Mode=TwoWay}"
+               Visibility="{Binding Behaviour.ShowsFuelPrice, Converter={StaticResource BoolToVisibilityValueConverter}}"
+               ToolTip="Price of one unit of fuel (a full tank is 100 units)" />
+            <local:DoubleEditorControl 
+               Headline="Fuel Supply" 
+               MyValue="{Binding Behaviour.FuelSupply, Mode=TwoWay}"
+               Visibility="{Binding Behaviour.ShowsFuelSupply, Converter={StaticResource BoolToVisibilityValueConverter}}"
+               ToolTip="How much free fuel the pad has; -1 = no limit. Lua can read and refill it (property 3)." />
             <ContentControl 
                DataContext="{Binding Behaviour.BehaviourProperties}"
                Content="{Binding}">

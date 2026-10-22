@@ -69,7 +69,87 @@ namespace LeapfrogEditor
             OnPropertyChanged("Type");
             OnPropertyChanged("BehaviourProperties");
             OnPropertyChanged("HasActiveFlag");
+            OnPropertyChanged("HasFuelSettings");
+            OnPropertyChanged("ShowsFuelRate");
+            OnPropertyChanged("ShowsFuelPrice");
+            OnPropertyChanged("ShowsFuelSupply");
          }
+      }
+
+      // Landing pads: fuel service (see CoBehaviour.Fuel)
+      private static readonly List<string> _fuelServices =
+         new List<string> { "none", "sell", "free" };
+
+      public List<string> FuelServices
+      {
+         get { return _fuelServices; }
+      }
+
+      public int SelectedFuelIndex
+      {
+         get
+         {
+            int i = _fuelServices.IndexOf(ModelObject.Fuel);
+            return (i < 0) ? 0 : i;
+         }
+         set
+         {
+            ModelObject.Fuel = _fuelServices[((value < 0) || (value >= _fuelServices.Count)) ? 0 : value];
+            OnPropertyChanged("SelectedFuelIndex");
+            OnPropertyChanged("ShowsFuelRate");
+            OnPropertyChanged("ShowsFuelPrice");
+            OnPropertyChanged("ShowsFuelSupply");
+         }
+      }
+
+      public double FuelRate
+      {
+         get { return ModelObject.FuelRate; }
+         set
+         {
+            ModelObject.FuelRate = value;
+            OnPropertyChanged("FuelRate");
+         }
+      }
+
+      public double FuelPrice
+      {
+         get { return ModelObject.FuelPrice; }
+         set
+         {
+            ModelObject.FuelPrice = value;
+            OnPropertyChanged("FuelPrice");
+         }
+      }
+
+      public double FuelSupply
+      {
+         get { return ModelObject.FuelSupply; }
+         set
+         {
+            ModelObject.FuelSupply = value;
+            OnPropertyChanged("FuelSupply");
+         }
+      }
+
+      public bool HasFuelSettings
+      {
+         get { return Type == "landingPad"; }
+      }
+
+      public bool ShowsFuelRate
+      {
+         get { return HasFuelSettings && (ModelObject.Fuel != "none"); }
+      }
+
+      public bool ShowsFuelPrice
+      {
+         get { return HasFuelSettings && (ModelObject.Fuel == "sell"); }
+      }
+
+      public bool ShowsFuelSupply
+      {
+         get { return HasFuelSettings && (ModelObject.Fuel == "free"); }
       }
 
       // Landing pads and launch sites have an Active flag (see CoBehaviour)

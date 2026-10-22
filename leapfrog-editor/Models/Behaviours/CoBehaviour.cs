@@ -21,6 +21,10 @@ namespace LeapfrogEditor
       private PickupObjectProperties _pickupProps = new PickupObjectProperties();
       private SceneProperties _sceneProperties = new SceneProperties();
       private bool _active = true;
+      private string _fuel = "none";
+      private double _fuelRate = 12.0;
+      private double _fuelPrice = 5.0;
+      private double _fuelSupply = 100.0;
 
       #endregion
 
@@ -60,6 +64,58 @@ namespace LeapfrogEditor
       public static bool HasActiveFlag(string type)
       {
          return (type == "landingPad") || (type == "launchSite");
+      }
+
+      // Landing pads: fuel service. "none" (default), "sell" (for credits,
+      // fuelPrice credits per unit) or "free" (from a supply of fuelSupply,
+      // -1 = no limit). fuelRate is fuel per second (the tank holds 100).
+      // Only written for pads that have fuel.
+      [XmlAttribute("fuel")]
+      public string Fuel
+      {
+         get { return _fuel; }
+         set { _fuel = value; }
+      }
+
+      public bool ShouldSerializeFuel()
+      {
+         return (Type == "landingPad") && (Fuel != "none");
+      }
+
+      [XmlAttribute("fuelRate")]
+      public double FuelRate
+      {
+         get { return _fuelRate; }
+         set { _fuelRate = value; }
+      }
+
+      public bool ShouldSerializeFuelRate()
+      {
+         return ShouldSerializeFuel();
+      }
+
+      [XmlAttribute("fuelPrice")]
+      public double FuelPrice
+      {
+         get { return _fuelPrice; }
+         set { _fuelPrice = value; }
+      }
+
+      public bool ShouldSerializeFuelPrice()
+      {
+         return ShouldSerializeFuel() && (Fuel == "sell");
+      }
+
+      [XmlAttribute("fuelSupply")]
+      public double FuelSupply
+      {
+         get { return _fuelSupply; }
+         set { _fuelSupply = value; }
+      }
+
+      public bool ShouldSerializeFuelSupply()
+      {
+         return ShouldSerializeFuel() && (Fuel == "free");
       }
 
       [XmlElement("steerableObjectProperties")]

@@ -24,6 +24,22 @@ Properties (for Lua: c_getObjectProperty / c_setObjectProperty):
   happens: no events and no refuelling. Set from the behaviour's
   active attribute (default true). Activating the pad while the
   Leapfrog stands on it sends the landed event at once.
+- 3 fuelSupply: fuel left at a free fuel pad; -1 = no limit. Lua can
+  read it and refill it.
+- 4 fuelService: 0 none, 1 sell, 2 free (Lua can change it)
+
+Fuel (attributes on <behaviour>, all optional):
+- fuel="none|sell|free"  none (default): no fuel here. sell: fuel for
+                         credits (a fuel station). free: fuel at no
+                         cost from a limited supply (a mining pad)
+- fuelRate               fuel per second while standing on the pad
+                         (default 12; the tank holds 100)
+- fuelPrice              sell: credits per unit of fuel (default 5)
+- fuelSupply             free: how much fuel the pad has (default 100,
+                         -1 = no limit)
+Fuel only flows while the pad is active and the Leapfrog is held on it.
+Fuel given by mission characters is set from Lua on the Leapfrog
+(property 7), not through pads.
 */
 
 class LandingPad : public CompoundObject
@@ -33,8 +49,17 @@ public:
 	{
 		state = 0,
 		lfLanded = 1,
-		active = 2
+		active = 2,
+		fuelSupply = 3,
+		fuelService = 4
 	};
+
+   enum FuelServiceEnum
+   {
+      fuelNone = 0,
+      fuelSell = 1,
+      fuelFree = 2
+   };
 
    enum LandingPadState
    {
@@ -50,6 +75,15 @@ private:
    LandingPadState m_state;
    bool m_active;
    bool m_announceLanded;     // activated while landed: send the landed event in doUpdate
+
+   FuelServiceEnum m_fuelService;
+   float m_fuelRate;          // fuel per second
+   float m_fuelPrice;         // credits per unit of fuel (sell)
+   float m_fuelSupply;        // fuel left (free), -1 = no limit
+   float m_creditsOwed;       // part of a credit not yet charged (sell)
+   bool m_fuelMessageShown;   // "empty" / "no credits" logged once per landing
+
+   void refuel(oxygine::timeMS dt);
 
    LeapFrog* m_latestLeapfrog;
 
