@@ -68,7 +68,24 @@ namespace LeapfrogEditor
             ModelObject.Type = value;
             OnPropertyChanged("Type");
             OnPropertyChanged("BehaviourProperties");
+            OnPropertyChanged("HasActiveFlag");
          }
+      }
+
+      // Landing pads and launch sites have an Active flag (see CoBehaviour)
+      public bool Active
+      {
+         get { return ModelObject.Active; }
+         set
+         {
+            ModelObject.Active = value;
+            OnPropertyChanged("Active");
+         }
+      }
+
+      public bool HasActiveFlag
+      {
+         get { return CoBehaviour.HasActiveFlag(Type); }
       }
 
       // To be general, all behaviour need to provide the DisplayedStateIndex

@@ -20,6 +20,7 @@ namespace LeapfrogEditor
       private MagneticMineProperties _magneticMineProps = new MagneticMineProperties();
       private PickupObjectProperties _pickupProps = new PickupObjectProperties();
       private SceneProperties _sceneProperties = new SceneProperties();
+      private bool _active = true;
 
       #endregion
 
@@ -39,6 +40,26 @@ namespace LeapfrogEditor
       {
          get { return _type; }
          set { _type = value; }
+      }
+
+      // Landing pads and launch sites: an inactive one can be landed on, but
+      // nothing happens there (no events, no refuelling). Lua can change it
+      // (property 2). Written only when false, so existing files don't change.
+      [XmlAttribute("active")]
+      public bool Active
+      {
+         get { return _active; }
+         set { _active = value; }
+      }
+
+      public bool ShouldSerializeActive()
+      {
+         return HasActiveFlag(Type) && !Active;
+      }
+
+      public static bool HasActiveFlag(string type)
+      {
+         return (type == "landingPad") || (type == "launchSite");
       }
 
       [XmlElement("steerableObjectProperties")]

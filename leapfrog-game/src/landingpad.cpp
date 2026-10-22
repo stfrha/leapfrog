@@ -34,6 +34,8 @@ LandingPad::LandingPad(
    m_leftFootContact(false),
    m_rightFootContact(false),
    m_state(LandingPadState::unstable),
+   m_active(true),
+   m_announceLanded(false),
    m_stableTicks(0),
    m_latestLeapfrog(NULL),
    m_world(world),
@@ -45,6 +47,13 @@ LandingPad::LandingPad(
    m_armHold(true)
 {
 	initCompoundObjectParts(sceneParent, sceneParent, parentObject, world, pos, root, groupIndex);
+
+   // Active unless the behaviour says otherwise; Lua can change it (property 2)
+   m_active = root.child("behaviour").attribute("active").as_bool(true);
+
+   m_properties.push_back(ObjectProperty(this, NULL, state, (float)m_state, true));
+   m_properties.push_back(ObjectProperty(this, NULL, lfLanded, 0.0f, true));
+   m_properties.push_back(ObjectProperty(this, NULL, active, m_active ? 1.0f : 0.0f));
 
    // This CompoundObject is also an actor who normally has
    // a userData that points to its parent. However, the parent
@@ -256,8 +265,13 @@ void LandingPad::doUpdate(const UpdateState &us)
          if (m_stableTicks > 15)
          {
             m_state = LandingPadState::stableAir;
-            LandingPadLeapfrogTakeOffEvent event;
-            dispatchEvent(&event);
+            m_properties[state].setProperty((float)m_state);
+            m_properties[lfLanded].setProperty(0.0f);
+            if (m_active)
+            {
+               LandingPadLeapfrogTakeOffEvent event;
+               dispatchEvent(&event);
+            }
          }
       }
       else if (m_leftFootContact && m_rightFootContact)
@@ -269,8 +283,14 @@ void LandingPad::doUpdate(const UpdateState &us)
          if (m_stableTicks > 15)
          {
             m_state = LandingPadState::stableLand;
-            LandingPadLeapfrogLandedEvent event;
-            dispatchEvent(&event);
+            m_properties[state].setProperty((float)m_state);
+            m_properties[lfLanded].setProperty(1.0f);
+            m_announceLanded = false;
+            if (m_active)
+            {
+               LandingPadLeapfrogLandedEvent event;
+               dispatchEvent(&event);
+            }
          }
       }
       else
@@ -285,6 +305,7 @@ void LandingPad::doUpdate(const UpdateState &us)
       {
          m_stableTicks = 0;
          m_state = LandingPadState::unstable;
+         m_properties[state].setProperty((float)m_state);
       }
       break;
 
@@ -294,9 +315,19 @@ void LandingPad::doUpdate(const UpdateState &us)
       {
          m_stableTicks = 0;
          m_state = LandingPadState::unstable;
-
+         m_properties[state].setProperty((float)m_state);
+         m_announceLanded = false;
       }
-      else
+      else if (m_announceLanded)
+      {
+         // Activated (by Lua) while the Leapfrog stood here: act as if it
+         // had just landed. Done here, not in setPropertyImpl, so the event
+         // doesn't reach Lua from inside its own c_setObjectProperty call.
+         m_announceLanded = false;
+         LandingPadLeapfrogLandedEvent event;
+         dispatchEvent(&event);
+      }
+      else if (m_active)
       {
          if (!g_MainActor->isInPause())
          {
@@ -316,3 +347,22 @@ void LandingPad::doUpdate(const UpdateState &us)
    }
 }
 
+void LandingPad::setPropertyImpl(int propId, float value)
+{
+   if (propId == active)
+   {
+      bool wasActive = m_active;
+      m_active = (value != 0.0f);
+
+      if (m_active && !wasActive && (m_state == LandingPadState::stableLand))
+      {
+         m_announceLanded = true;
+      }
+      else if (!m_active)
+      {
+         m_announceLanded = false;
+      }
+
+      logs::messageln("Landing pad %s: %s", getName().c_str(), m_active ? "active" : "inactive");
+   }
+}

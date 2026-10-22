@@ -7,6 +7,9 @@
              x:Name="root"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
+   <UserControl.Resources>
+      <local:BoolToVisibilityValueConverter x:Key="BoolToVisibilityValueConverter" />
+   </UserControl.Resources>
    <DockPanel Margin="2">
       <Border CornerRadius="5" BorderBrush="DarkGray" BorderThickness="2">
          <StackPanel Margin="2">
@@ -17,6 +20,11 @@
                Headline="Behaviour" 
                Strings="{Binding Behaviours}"
                SelectionIndex="{Binding SelectedBehaviourIndex, Mode=TwoWay}" />
+            <local:BoolEditorControl 
+               Headline="Active" 
+               MyValue="{Binding Behaviour.Active, Mode=TwoWay}"
+               Visibility="{Binding Behaviour.HasActiveFlag, Converter={StaticResource BoolToVisibilityValueConverter}}"
+               ToolTip="Landing pads and launch sites: an inactive one can be landed on, but nothing happens there. Lua can switch it (property 2)." />
             <ContentControl 
                DataContext="{Binding Behaviour.BehaviourProperties}"
                Content="{Binding}">

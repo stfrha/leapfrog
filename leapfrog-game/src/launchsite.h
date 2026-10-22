@@ -34,6 +34,15 @@ Available states:
 - prepare, leg rests rotate down, leapfrog is attached to spring which is draged into main tank, (leapfrog goes to deep space mode)
 - launch sequence - Stoppable countdown, smoke and small engine fire, 
 - launch execute - Unstoppable countdown, booster fire, is released and all goes up
+
+Properties (for Lua: c_getObjectProperty / c_setObjectProperty):
+- 0 state: LaunchStateEnum (read only)
+- 1 trigger launch: setting it starts the launch sequence (works whether
+  the site is active or not: the script decides)
+- 2 active: 1 = active, 0 = inactive. The Leapfrog can land on an
+  inactive launch site, but it sends no landed event (LsLL), so nothing
+  starts. Set from the behaviour's active attribute (default true).
+  Activating it while the Leapfrog stands on it sends the event at once.
 */
 
 
@@ -45,7 +54,8 @@ public:
 	enum propertyId
 	{
 		state = 0,
-		lfLanded = 1
+		lfLanded = 1,     // property 1 is the launch trigger
+		active = 2
 	};
 
    enum LaunchStateEnum
@@ -78,6 +88,8 @@ private:
    int m_countdownCounter;
    bool m_enginesIgnited;
    bool m_armInitialRegistration;
+   bool m_active;
+   bool m_announceLanded;     // activated while landed: send the landed event in doUpdate
 
    b2RevoluteJoint* m_leftFootRestJoint;
    b2RevoluteJoint* m_rightFootRestJoint;
@@ -130,8 +142,11 @@ public:
 
    void startLaunchSequence(void);
 
+   bool isActive(void) const { return m_active; }
+
 protected:
    void doUpdate(const oxygine::UpdateState &us) override;
+   void setPropertyImpl(int propId, float value) override;
 
 };
 

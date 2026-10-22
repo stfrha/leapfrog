@@ -13,7 +13,17 @@ DECLARE_SMART(LandingPad, spLandingPad);
 
 /*
 Available events:
-- leapfrog landed  
+- leapfrog landed (LpLL), leapfrog took off (LpTO): only while the pad
+  is active
+
+Properties (for Lua: c_getObjectProperty / c_setObjectProperty):
+- 0 state: 0 unstable, 1 landed, 2 in the air (read only)
+- 1 lfLanded: 1 while the Leapfrog stands on the pad (read only)
+- 2 active: 1 = active, 0 = inactive. The Leapfrog can land on an
+  inactive pad (it is held and zoomed in on as usual), but nothing
+  happens: no events and no refuelling. Set from the behaviour's
+  active attribute (default true). Activating the pad while the
+  Leapfrog stands on it sends the landed event at once.
 */
 
 class LandingPad : public CompoundObject
@@ -22,7 +32,8 @@ public:
 	enum propertyId
 	{
 		state = 0,
-		lfLanded = 1
+		lfLanded = 1,
+		active = 2
 	};
 
    enum LandingPadState
@@ -37,6 +48,8 @@ private:
    bool m_rightFootContact;
    int m_stableTicks;
    LandingPadState m_state;
+   bool m_active;
+   bool m_announceLanded;     // activated while landed: send the landed event in doUpdate
 
    LeapFrog* m_latestLeapfrog;
 
@@ -75,8 +88,11 @@ public:
    void leapfrogFootTouch(b2Contact* contact, bool leftFoot, LeapFrog* leapfrog);
    void leapfrogFootLift(b2Contact* contact, bool leftFoot, LeapFrog* leapfrog);
 
+   bool isActive(void) const { return m_active; }
+
 protected:
    void doUpdate(const oxygine::UpdateState &us) override;
+   void setPropertyImpl(int propId, float value) override;
 
 };
 

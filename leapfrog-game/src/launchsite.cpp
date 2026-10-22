@@ -28,7 +28,9 @@ LaunchSite::LaunchSite(
    m_angleHoldDuration(16000),
    m_countdownCounter(0),
    m_enginesIgnited(false),
-   m_armInitialRegistration(true)
+   m_armInitialRegistration(true),
+   m_active(true),
+   m_announceLanded(false)
 {
 	initCompoundObjectParts(sceneParent, sceneParent, parentObject, world, pos, root, groupIndex);
 
@@ -66,6 +68,10 @@ LaunchSite::LaunchSite(
    m_properties.push_back(ObjectProperty(this, NULL, 0, 0.0f, true)); // State
    m_properties.push_back(ObjectProperty(this, new LaunchSiteExtTriggerLaunchEvent, 1, 0.0f)); // Trigger launch property
 
+   // Active unless the behaviour says otherwise; Lua can change it (property 2)
+   m_active = root.child("behaviour").attribute("active").as_bool(true);
+   m_properties.push_back(ObjectProperty(this, NULL, active, m_active ? 1.0f : 0.0f));
+
    addEventListener(LaunchSiteExtTriggerLaunchEvent::EVENT, CLOSURE(this, &LaunchSite::setLaunchTriggerProperty));
 
    b2PrismaticJoint* grabberJoint = (b2PrismaticJoint*)getJoint("grabberSpringJoint");
@@ -101,6 +107,18 @@ void LaunchSite::doUpdate(const UpdateState &us)
    switch (m_state)
    {
    case idle:
+      // Activated (by Lua) while the Leapfrog stood here: act as if it had
+      // just landed. Done here, not in setPropertyImpl, so the event doesn't
+      // reach Lua from inside its own c_setObjectProperty call.
+      if (m_announceLanded)
+      {
+         m_announceLanded = false;
+         if (m_active && m_leftFootContact && m_rightFootContact)
+         {
+            LaunchSiteLeapfrogLandedEvent event(this);
+            dispatchEvent(&event);
+         }
+      }
       break;
    case leapfrogLanded:
       m_grabberJoint->EnableMotor(true);
@@ -339,7 +357,8 @@ void LaunchSite::leapfrogFootTouch(b2Contact* contact, bool leftFoot, LeapFrog* 
          m_rightFootContact = true;
       }
 
-      if (m_leftFootContact && m_rightFootContact)
+      // An inactive launch site can be landed on, but nothing happens
+      if (m_leftFootContact && m_rightFootContact && m_active)
       {
          // Start timer and at the end of that, if both feet still
          // are in contact, send event for Leapfrog has landed.
@@ -449,3 +468,17 @@ void LaunchSite::updateHoldAngle(timeMS now)
    }
 }
 
+void LaunchSite::setPropertyImpl(int propId, float value)
+{
+   if (propId == active)
+   {
+      bool wasActive = m_active;
+      m_active = (value != 0.0f);
+
+      // Standing on it when it becomes active: announce the landing
+      m_announceLanded = m_active && !wasActive && (m_state == idle) &&
+         m_leftFootContact && m_rightFootContact;
+
+      logs::messageln("Launch site %s: %s", getName().c_str(), m_active ? "active" : "inactive");
+   }
+}
