@@ -20,13 +20,13 @@ local homeStartFuel = 30
 
 -- c_addDialogMessage(message, sender, leftSide, preDelay, postDelay)
 -- Others on the left, the pilot on the right. Delays are in frames.
-local function playTaskgiverCall()
-   c_addDialogMessage("Hey! I hear you are in bad shape. Low fuel, low ammo, low everything.", "Taskgiver", true, 60, 0)
-   c_addDialogMessage("Your so-called ship is falling apart, eh?", "Taskgiver", true, 90, 0)
+local function playBrunoCall()
+   c_addDialogMessage("Hey! I hear you are in bad shape. Low fuel, low ammo, low everything.", "Bruno", true, 60, 0)
+   c_addDialogMessage("Your so-called ship is falling apart, eh?", "Bruno", true, 90, 0)
    c_addDialogMessage("No. I'm in good shape. Where did you hear that?", "Leapfrog", false, 90, 0)
-   c_addDialogMessage("Grapevine. If you are so strong, I can give this little job to someone else.", "Taskgiver", true, 120, 0)
+   c_addDialogMessage("Grapevine. If you are so strong, I can give this little job to someone else.", "Bruno", true, 120, 0)
    c_addDialogMessage("Hold up, let's talk about it.", "Leapfrog", false, 60, 0)
-   c_addDialogMessage("Get over to the Orb. I repaired the penthouse suite.", "Taskgiver", true, 90, 0)
+   c_addDialogMessage("Get over to the Orb. I repaired the penthouse suite.", "Bruno", true, 90, 0)
 end
 
 local function playEdithCutsIn()
@@ -70,7 +70,7 @@ mission1.setupMissionStateScene = function()
    c_setSenderAffiliation("Silo", "leapfrog")
    c_setSenderAffiliation("DEBUG", "leapfrog")
    c_setSenderAffiliation("Leapfrog", "leapfrog")
-   c_setSenderAffiliation("Taskgiver", "neutral")
+   c_setSenderAffiliation("Bruno", "neutral")
 
    if currentScene == "home_scene.xml" then
 
@@ -95,7 +95,7 @@ mission1.setupMissionStateScene = function()
 
             homeStartFuel = c_getObjectProperty("leapfrog1", 7)
 
-            playTaskgiverCall()
+            playBrunoCall()
 
             homeEdithDialogDone = false
          end
