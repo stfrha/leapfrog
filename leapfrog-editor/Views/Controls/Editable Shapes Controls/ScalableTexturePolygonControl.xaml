@@ -21,6 +21,16 @@
 				   MouseDown="Shape_MouseDown"
 				   MouseUp="Shape_MouseUp"
 				   MouseMove="Shape_MouseMove">
+         <!-- Drag Textures mode (F7): a move cursor shows that dragging slides the texture -->
+         <Polygon.Style>
+            <Style TargetType="Polygon">
+               <Style.Triggers>
+                  <DataTrigger Binding="{Binding MainVm.DragTextures}" Value="True">
+                     <Setter Property="Cursor" Value="ScrollAll" />
+                  </DataTrigger>
+               </Style.Triggers>
+            </Style>
+         </Polygon.Style>
          <Polygon.Fill>
             <ImageBrush
                      ViewportUnits="Absolute"

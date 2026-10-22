@@ -1594,6 +1594,73 @@ namespace LeapfrogEditor
          }
       }
 
+      // --- Drag Textures ----------------------------------------------------
+      // While on, dragging a selected polygon by its inside slides the texture
+      // inside it (textureOffsetMeterX/Y) instead of moving the polygon.
+
+      private bool _dragTextures = false;
+
+      public bool DragTextures
+      {
+         get { return _dragTextures; }
+         set
+         {
+            if (_dragTextures == value)
+            {
+               return;
+            }
+
+            _dragTextures = value;
+            OnPropertyChanged("DragTextures");
+         }
+      }
+
+      public ICommand ToggleDragTextures
+      {
+         get
+         {
+            return new MicroMvvm.RelayCommand<Object>(parameter => { DragTextures = !DragTextures; }, parameter => true);
+         }
+      }
+
+      // Slide the textures of all selected textured polygons by dragVector
+      // (edited object's coordinates). The texture follows the mouse: the
+      // vector is turned into each polygon's own (unrotated) frame, where both
+      // the editor's ImageBrush viewport and the game's UVs
+      // (u = (x - offset) / textureMeterWidth) put the texture at +offset.
+      // Offsets are kept within one texture period, which looks the same.
+      private void MoveTextures(Vector dragVector)
+      {
+         foreach (LfShapeViewModel shape in SelectedShapes)
+         {
+            LfScalableTexturePolygonViewModel poly = shape as LfScalableTexturePolygonViewModel;
+
+            if ((poly == null) || poly.EditorHidden)
+            {
+               continue;
+            }
+
+            Point local = CoordinateTransformations.LocalPointFromRotated(new Point(dragVector.X, dragVector.Y), poly.Angle);
+
+            poly.TextureOffsetX = WrapTextureOffset(poly.TextureOffsetX + local.X, poly.TextureWidth);
+            poly.TextureOffsetY = WrapTextureOffset(poly.TextureOffsetY + local.Y, poly.TextureHeight);
+         }
+      }
+
+      private static double WrapTextureOffset(double offset, double period)
+      {
+         if (period > 0)
+         {
+            offset %= period;
+            if (offset < 0)
+            {
+               offset += period;
+            }
+         }
+
+         return Math.Round(offset, 3);
+      }
+
       private void ParallaxChanged()
       {
          OnPropertyChanged("ParallaxMaskGeometry");
@@ -2323,6 +2390,18 @@ namespace LeapfrogEditor
          switch (objectType)
          {
             case MouseEventObjectType.shape:
+               // In Drag Textures mode, dragging a shape by its inside slides
+               // the textures of the selected polygons; nothing moves
+               if (DragTextures)
+               {
+                  MoveTextures(dragVector);
+                  return true;
+               }
+
+               MoveSelection(dragVector);
+
+               return true;
+
             case MouseEventObjectType.dragableBorder:
             case MouseEventObjectType.dragablePolygonBorder:
             case MouseEventObjectType.compoundObjectBoundaryBox:

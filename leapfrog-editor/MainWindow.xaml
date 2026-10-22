@@ -22,6 +22,7 @@
       <KeyBinding Key="V" Modifiers="Control" Command="{Binding Paste}" CommandParameter="mouse" />
       <KeyBinding Key="V" Modifiers="Control+Shift" Command="{Binding Paste}" CommandParameter="inPlace" />
       <KeyBinding Key="F6" Command="{Binding ToggleParallaxView}" />
+      <KeyBinding Key="F7" Command="{Binding ToggleDragTextures}" />
       <!-- Text boxes have their own undo and select all, which they handle first -->
       <KeyBinding Key="Z" Modifiers="Control" Command="{Binding Undo}" />
       <KeyBinding Key="Y" Modifiers="Control" Command="{Binding Redo}" />
@@ -44,6 +45,7 @@
       <Grid Grid.Row="0" >
          <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="Auto" />
             <ColumnDefinition Width="Auto" />
             <ColumnDefinition Width="Auto" />
             <ColumnDefinition Width="200" />
@@ -123,6 +125,8 @@
                   <MenuItem Header="Backgrounds" IsCheckable="True" IsChecked="{Binding ShowBackgrounds}" />
                </MenuItem>
                <Separator />
+               <MenuItem Header="Drag Textures" InputGestureText="F7" IsCheckable="True" IsChecked="{Binding DragTextures}" />
+               <Separator />
                <MenuItem Header="Parallax View" InputGestureText="F6" IsCheckable="True" IsChecked="{Binding ParallaxView}" />
                <MenuItem Header="Parallax Window">
                   <MenuItem Header="Default Zoom (384 wide)" Command="{Binding ParallaxWindowSize}" CommandParameter="default" />
@@ -145,10 +149,14 @@
             ToolTip="Parallax window: size and centre (where the Leapfrog is)"
             Visibility="{Binding ParallaxView, Converter={StaticResource BoolToVisibilityValueConverter}}" />
          <ToggleButton Grid.Column="2"
+            Content="Drag Textures" Padding="8,0" Margin="0,0,4,0"
+            ToolTip="Drag a selected polygon by its inside to slide its texture (texture offset) instead of moving the polygon. All selected polygons slide together. (F7)"
+            IsChecked="{Binding DragTextures}" />
+         <ToggleButton Grid.Column="3"
             Content="Parallax View" Padding="8,0" Margin="0,0,4,0"
             ToolTip="Show the scene through a game-sized window, with the parallax layers where the game draws them. Drag the window's frame or the Leapfrog in its centre to move it. (F6)"
             IsChecked="{Binding ParallaxView}" />
-         <Button Grid.Column="3" 
+         <Button Grid.Column="4" 
             Content="Publish" 
             Command="{Binding Publish}" />
       </Grid>
