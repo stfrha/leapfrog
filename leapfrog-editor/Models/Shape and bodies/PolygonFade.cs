@@ -45,3 +45,56 @@ namespace LeapfrogEditor
       }
    }
 }
+
+namespace LeapfrogEditor
+{
+   // An edge fade: the polygon's fill turns transparent towards its outline.
+   // Saved as the polygon's <edgeFade> element (see PolygonFade in the
+   // game's polygonvertices.h, which reads it):
+   //   width   how far in from the edge it reaches (game units)
+   //   amount  0..1, how transparent the fill is at the edge
+   //   sides   which edges fade, by the way their outside faces: any of
+   //           "top bottom left right" (within 45 degrees of the edge's
+   //           outward normal), or "all"
+   // Border decorations are not edge-faded.
+   [Serializable]
+   public class PolygonEdgeFade
+   {
+      public PolygonEdgeFade()
+      {
+         Width = 0;
+         Amount = 1;
+         Sides = "all";
+      }
+
+      [XmlAttribute("width")]
+      public double Width { get; set; }
+
+      [XmlAttribute("amount")]
+      public double Amount { get; set; }
+
+      [XmlAttribute("sides")]
+      public string Sides { get; set; }
+
+      public bool ShouldSerializeSides()
+      {
+         return Sides != "all";
+      }
+
+      public bool HasSide(string side)
+      {
+         string s = Sides ?? "";
+         return s.Contains("all") || s.Contains(side);
+      }
+
+      // Off when it has no width, no amount or no sides
+      public bool IsActive
+      {
+         get
+         {
+            return (Width > 0) && (Amount > 0) &&
+               (HasSide("top") || HasSide("bottom") || HasSide("left") || HasSide("right"));
+         }
+      }
+   }
+}

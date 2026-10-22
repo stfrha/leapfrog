@@ -16,6 +16,19 @@
 // The fade is exact: triangles are split along the lines where it starts
 // and ends, so the vertex colours (which are interpolated linearly) give
 // the right gradient.
+//
+// An edge fade, read from an <edgeFade> child of the polygon's xml node,
+// makes the polygon's fill transparent towards its outline:
+//   width   how far in from the edge the fade reaches (game units)
+//   amount  0..1, how transparent the fill is at the edge (default 1)
+//   sides   which edges fade, by the direction their outside faces:
+//           any of "top bottom left right" (each edge belongs to the
+//           side within 45 degrees of its outward normal), or "all"
+//           (default)
+// The fill's opacity follows a smooth curve over the width, measured as
+// the distance to the nearest fading edge. Triangles are cut on a grid
+// near those edges (a third of the width) so the vertex colours can carry
+// the curve. Border decorations are not edge-faded.
 struct PolygonFade
 {
    bool m_enabled;
@@ -26,14 +39,27 @@ struct PolygonFade
    float m_s1;
    float m_amount;
 
+   bool m_edgeEnabled;
+   float m_edgeWidth;
+   float m_edgeAmount;
+   std::vector<oxygine::Vector2> m_edgeA;   // fading edges, polygon coordinates
+   std::vector<oxygine::Vector2> m_edgeB;
+
    PolygonFade() :
       m_enabled(false), m_toColor(false), m_color(0, 0, 0, 0), m_dir(0.0f, 1.0f),
-      m_s0(0.0f), m_s1(1.0f), m_amount(0.0f)
+      m_s0(0.0f), m_s1(1.0f), m_amount(0.0f),
+      m_edgeEnabled(false), m_edgeWidth(0.0f), m_edgeAmount(0.0f)
    {
    }
 
    // Strength 0..amount at position s along m_dir (polygon coordinates)
    float strength(float s) const;
+
+   // Opacity factor 1 - edgeAmount .. 1 at p (polygon coordinates)
+   float edgeOpacity(const oxygine::Vector2& p) const;
+
+   // Distance from p to the nearest fading edge
+   float edgeDistance(const oxygine::Vector2& p) const;
 };
 
 
@@ -73,7 +99,8 @@ public:
 
    // Like createTriangleVertices, with the fade applied: triangles are split
    // where the fade starts and ends, and each vertex gets the fade's
-   // strength there. The vertices are local to an actor at `origin`, rotated
+   // strength there. With an edge fade the pieces are also cut on a grid
+   // near the fading edges and each vertex gets its edge opacity. The vertices are local to an actor at `origin`, rotated
    // by `angle` (radians), in the polygon's coordinates (for a border
    // decoration; identity for the polygon itself), so the fade lines up.
    //   overlay = false: the colour's alpha is reduced (fade to transparent)

@@ -33,6 +33,16 @@
                   <local:ColorEditorControl Headline="Fade Color" AllowAlpha="False" MyValue="{Binding FadeColor, Mode=TwoWay}" />
                </StackPanel>
             </Expander>
+            <Expander Header="Edge Fade">
+               <StackPanel ToolTip="Makes the fill transparent towards its edges (not the border decorations). Width: how far in from the edge it reaches, in game units (0 = off). Amount: how transparent at the edge, 0..1. Sides: which edges fade, by the way their outside faces.">
+                  <local:DoubleEditorControl Headline="Width" MyValue="{Binding EdgeFadeWidth, Mode=TwoWay}" />
+                  <local:DoubleEditorControl Headline="Amount (0-1)" MyValue="{Binding EdgeFadeAmount, Mode=TwoWay}" />
+                  <local:BoolEditorControl Headline="Top" MyValue="{Binding EdgeFadeTop, Mode=TwoWay}" />
+                  <local:BoolEditorControl Headline="Bottom" MyValue="{Binding EdgeFadeBottom, Mode=TwoWay}" />
+                  <local:BoolEditorControl Headline="Left" MyValue="{Binding EdgeFadeLeft, Mode=TwoWay}" />
+                  <local:BoolEditorControl Headline="Right" MyValue="{Binding EdgeFadeRight, Mode=TwoWay}" />
+               </StackPanel>
+            </Expander>
             <Expander Header="Polygon Borders">
                <StackPanel>
                   <local:DoubleEditorControl Headline="Lft Grnd Angle" MyValue="{Binding LeftGroundAngle, Mode=TwoWay}" />

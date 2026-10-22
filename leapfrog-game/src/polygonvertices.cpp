@@ -213,6 +213,45 @@ float PolygonFade::strength(float s) const
    return g * m_amount;
 }
 
+static float distanceToSegment(const Vector2& p, const Vector2& a, const Vector2& b)
+{
+   Vector2 ab = b - a;
+   Vector2 ap = p - a;
+   float len2 = ab.x * ab.x + ab.y * ab.y;
+   float t = (len2 > 1e-12f) ? (ap.x * ab.x + ap.y * ab.y) / len2 : 0.0f;
+   if (t < 0.0f) t = 0.0f;
+   if (t > 1.0f) t = 1.0f;
+   Vector2 d = ap - ab * t;
+   return sqrt(d.x * d.x + d.y * d.y);
+}
+
+float PolygonFade::edgeDistance(const Vector2& p) const
+{
+   float best = FLT_MAX;
+   for (size_t i = 0; i < m_edgeA.size(); i++)
+   {
+      float d = distanceToSegment(p, m_edgeA[i], m_edgeB[i]);
+      if (d < best) best = d;
+   }
+   return best;
+}
+
+float PolygonFade::edgeOpacity(const Vector2& p) const
+{
+   if (!m_edgeEnabled)
+   {
+      return 1.0f;
+   }
+   float t = edgeDistance(p) / m_edgeWidth;
+   if (t >= 1.0f)
+   {
+      return 1.0f;
+   }
+   if (t < 0.0f) t = 0.0f;
+   float s = t * t * (3.0f - 2.0f * t);          // smooth start and end
+   return 1.0f - m_edgeAmount * (1.0f - s);
+}
+
 static bool parseFadeColor(const char* str, Color& color)
 {
    if ((str == NULL) || (str[0] == 0))
@@ -244,14 +283,93 @@ static bool parseFadeColor(const char* str, Color& color)
    return true;
 }
 
+// Reads <edgeFade width amount sides> into fade (see PolygonFade)
+static void readEdgeFade(
+   pugi::xml_node objectNode,
+   const vector<Vector2>& vertices,
+   PolygonFade& fade)
+{
+   xml_node edgeNode = objectNode.child("edgeFade");
+   if (edgeNode.empty() || (vertices.size() < 3))
+   {
+      return;
+   }
+
+   float width = edgeNode.attribute("width").as_float(0.0f);
+   float amount = edgeNode.attribute("amount").as_float(1.0f);
+   if (amount > 1.0f) amount = 1.0f;
+   if ((width <= 0.0f) || (amount <= 0.0f))
+   {
+      return;
+   }
+
+   string sides = edgeNode.attribute("sides").as_string("all");
+   bool all = (sides.find("all") != string::npos) || (sides.find_first_not_of(" \t,") == string::npos);
+   bool top = all || (sides.find("top") != string::npos);
+   bool bottom = all || (sides.find("bottom") != string::npos);
+   bool left = all || (sides.find("left") != string::npos);
+   bool right = all || (sides.find("right") != string::npos);
+
+   // Which way the outline goes round decides which side of an edge is out
+   float doubleArea = 0.0f;
+   size_t n = vertices.size();
+   for (size_t i = 0; i < n; i++)
+   {
+      const Vector2& a = vertices[i];
+      const Vector2& b = vertices[(i + 1) % n];
+      doubleArea += a.x * b.y - b.x * a.y;
+   }
+
+   for (size_t i = 0; i < n; i++)
+   {
+      const Vector2& a = vertices[i];
+      const Vector2& b = vertices[(i + 1) % n];
+      Vector2 d = b - a;
+      if ((d.x == 0.0f) && (d.y == 0.0f))
+      {
+         continue;
+      }
+      // Outward normal (y axis down)
+      Vector2 out = (doubleArea > 0.0f) ? Vector2(d.y, -d.x) : Vector2(-d.y, d.x);
+
+      bool use;
+      if (-out.y >= fabs(out.x)) use = top;
+      else if (out.y >= fabs(out.x)) use = bottom;
+      else if (out.x < 0.0f) use = left;
+      else use = right;
+
+      if (use)
+      {
+         fade.m_edgeA.push_back(a);
+         fade.m_edgeB.push_back(b);
+      }
+   }
+
+   if (fade.m_edgeA.empty())
+   {
+      return;
+   }
+
+   fade.m_edgeWidth = width;
+   fade.m_edgeAmount = amount;
+   fade.m_edgeEnabled = true;
+}
+
 PolygonFade PolygonVertices::readFade(
    pugi::xml_node objectNode,
    const vector<Vector2>& polygonVertices)
 {
    PolygonFade fade;
 
+   if (polygonVertices.empty())
+   {
+      return fade;
+   }
+
+   readEdgeFade(objectNode, polygonVertices, fade);
+
    xml_node fadeNode = objectNode.child("fade");
-   if (fadeNode.empty() || polygonVertices.empty())
+   if (fadeNode.empty())
    {
       return fade;
    }
@@ -297,9 +415,15 @@ namespace
       float s;       // position along the fade direction, polygon coordinates
    };
 
-   // Sutherland-Hodgman: the part of a convex polygon with s <= cut
-   // (keepLess) or s >= cut
-   void clipFade(const vector<FadePoint>& in, float cut, bool keepLess, vector<FadePoint>& out)
+   // axis 0: x, 1: y (of the local position), 2: s
+   inline float fadeAxis(const FadePoint& f, int axis)
+   {
+      return (axis == 0) ? f.p.x : ((axis == 1) ? f.p.y : f.s);
+   }
+
+   // Sutherland-Hodgman: the part of a convex polygon with value <= cut
+   // (keepLess) or value >= cut, along one axis
+   void clipFade(const vector<FadePoint>& in, int axis, float cut, bool keepLess, vector<FadePoint>& out)
    {
       out.clear();
       size_t n = in.size();
@@ -307,8 +431,10 @@ namespace
       {
          const FadePoint& a = in[i];
          const FadePoint& b = in[(i + 1) % n];
-         bool inA = keepLess ? (a.s <= cut) : (a.s >= cut);
-         bool inB = keepLess ? (b.s <= cut) : (b.s >= cut);
+         float va = fadeAxis(a, axis);
+         float vb = fadeAxis(b, axis);
+         bool inA = keepLess ? (va <= cut) : (va >= cut);
+         bool inB = keepLess ? (vb <= cut) : (vb >= cut);
 
          if (inA)
          {
@@ -316,11 +442,110 @@ namespace
          }
          if (inA != inB)
          {
-            float t = (cut - a.s) / (b.s - a.s);
+            float t = (cut - va) / (vb - va);
             FadePoint m;
             m.p = a.p + (b.p - a.p) * t;
-            m.s = cut;
+            m.s = a.s + (b.s - a.s) * t;
+            if (axis == 0) m.p.x = cut;
+            else if (axis == 1) m.p.y = cut;
+            else m.s = cut;
             out.push_back(m);
+         }
+      }
+   }
+
+   float cross2(const Vector2& a, const Vector2& b)
+   {
+      return a.x * b.y - a.y * b.x;
+   }
+
+   bool segmentsCross(const Vector2& a, const Vector2& b, const Vector2& c, const Vector2& d)
+   {
+      float d1 = cross2(b - a, c - a);
+      float d2 = cross2(b - a, d - a);
+      float d3 = cross2(d - c, a - c);
+      float d4 = cross2(d - c, b - c);
+      return (((d1 > 0) != (d2 > 0)) && ((d3 > 0) != (d4 > 0)));
+   }
+
+   bool insideConvex(const vector<FadePoint>& poly, const Vector2& p)
+   {
+      bool pos = false;
+      bool neg = false;
+      size_t n = poly.size();
+      for (size_t i = 0; i < n; i++)
+      {
+         float c = cross2(poly[(i + 1) % n].p - poly[i].p, p - poly[i].p);
+         if (c > 0) pos = true;
+         if (c < 0) neg = true;
+      }
+      return !(pos && neg);
+   }
+
+   // True if every point of the convex piece is at least the edge fade's
+   // width from every fading edge (so it needs no cutting)
+   bool farFromFadingEdges(const vector<FadePoint>& piece, const PolygonFade& fade)
+   {
+      float w = fade.m_edgeWidth;
+      size_t n = piece.size();
+      for (size_t e = 0; e < fade.m_edgeA.size(); e++)
+      {
+         const Vector2& a = fade.m_edgeA[e];
+         const Vector2& b = fade.m_edgeB[e];
+         if (insideConvex(piece, a) || insideConvex(piece, b))
+         {
+            return false;
+         }
+         for (size_t i = 0; i < n; i++)
+         {
+            const Vector2& c = piece[i].p;
+            const Vector2& d = piece[(i + 1) % n].p;
+            if (segmentsCross(a, b, c, d))
+            {
+               return false;
+            }
+            if ((distanceToSegment(c, a, b) < w) || (distanceToSegment(a, c, d) < w) ||
+               (distanceToSegment(b, c, d) < w))
+            {
+               return false;
+            }
+         }
+      }
+      return true;
+   }
+
+   // Cuts a convex piece into the cells of a grid of `step` along x and y
+   // (lines at whole multiples of step, so neighbouring pieces are cut at
+   // the same places) and appends the cells to out.
+   void cutOnGrid(const vector<FadePoint>& piece, float step, vector<vector<FadePoint> >& out)
+   {
+      float minX = FLT_MAX, maxX = -FLT_MAX, minY = FLT_MAX, maxY = -FLT_MAX;
+      for (size_t i = 0; i < piece.size(); i++)
+      {
+         minX = std::min(minX, piece[i].p.x);
+         maxX = std::max(maxX, piece[i].p.x);
+         minY = std::min(minY, piece[i].p.y);
+         maxY = std::max(maxY, piece[i].p.y);
+      }
+      int x0 = (int)floor(minX / step);
+      int x1 = (int)floor(maxX / step);
+      int y0 = (int)floor(minY / step);
+      int y1 = (int)floor(maxY / step);
+
+      vector<FadePoint> a, column, b, cell;
+      for (int ix = x0; ix <= x1; ix++)
+      {
+         clipFade(piece, 0, (float)ix * step, false, a);
+         if (a.size() < 3) continue;
+         clipFade(a, 0, (float)(ix + 1) * step, true, column);
+         if (column.size() < 3) continue;
+         for (int iy = y0; iy <= y1; iy++)
+         {
+            clipFade(column, 1, (float)iy * step, false, b);
+            if (b.size() < 3) continue;
+            clipFade(b, 1, (float)(iy + 1) * step, true, cell);
+            if (cell.size() < 3) continue;
+            out.push_back(cell);
          }
       }
    }
@@ -344,12 +569,23 @@ vertexPCT2* PolygonVertices::createFadedTriangleVertices(
    float hi = (fade.m_s0 < fade.m_s1) ? fade.m_s1 : fade.m_s0;
    Vector2 unused(0.0f, 0.0f);
 
+   // The fill's own alpha follows the linear fade only when that fades to
+   // transparent; a fade to a colour is drawn by the overlay
+   bool linearAlpha = fade.m_enabled && !fade.m_toColor;
+
+   // Edge fade: cells of a third of the width near the fading edges, in
+   // coarse cells of 12 of those (a coarse cell far from them stays whole)
+   float step = fade.m_edgeWidth / 3.0f;
+   float coarse = step * 12.0f;
+
    vector<vertexPCT2> out;
    out.reserve(triangles.size() * 4 * 3);
 
    vector<FadePoint> tri(3);
    vector<FadePoint> piece;
    vector<FadePoint> tmp;
+   vector<vector<FadePoint> > coarseCells;
+   vector<vector<FadePoint> > cells;
 
    for (size_t t = 0; t < triangles.size(); t++)
    {
@@ -362,21 +598,27 @@ vertexPCT2* PolygonVertices::createFadedTriangleVertices(
          tri[k].s = q.x * fade.m_dir.x + q.y * fade.m_dir.y;
       }
 
-      // Three bands: before the fade, the gradient, after it
+      // Three bands: before the linear fade, the gradient, after it (or
+      // the whole triangle when there is no linear fade)
       for (int band = 0; band < 3; band++)
       {
-         if (band == 0)
+         if (!fade.m_enabled)
          {
-            clipFade(tri, lo, true, piece);
+            if (band > 0) break;
+            piece = tri;
+         }
+         else if (band == 0)
+         {
+            clipFade(tri, 2, lo, true, piece);
          }
          else if (band == 1)
          {
-            clipFade(tri, lo, false, tmp);
-            clipFade(tmp, hi, true, piece);
+            clipFade(tri, 2, lo, false, tmp);
+            clipFade(tmp, 2, hi, true, piece);
          }
          else
          {
-            clipFade(tri, hi, false, piece);
+            clipFade(tri, 2, hi, false, piece);
          }
 
          if (piece.size() < 3)
@@ -384,28 +626,56 @@ vertexPCT2* PolygonVertices::createFadedTriangleVertices(
             continue;
          }
 
-         for (size_t k = 1; k + 1 < piece.size(); k++)
+         cells.clear();
+         if (!fade.m_edgeEnabled)
          {
-            const FadePoint* corner[3] = { &piece[0], &piece[k], &piece[k + 1] };
-            vertexPCT2 v[3];
-            for (int c = 0; c < 3; c++)
+            cells.push_back(piece);
+         }
+         else
+         {
+            coarseCells.clear();
+            cutOnGrid(piece, coarse, coarseCells);
+            for (size_t c = 0; c < coarseCells.size(); c++)
             {
-               float f = fade.strength(corner[c]->s);
-               Color vc;
-               if (overlay)
+               if (farFromFadingEdges(coarseCells[c], fade))
                {
-                  vc = Color(0, 0, 0, (unsigned char)(color.a * f + 0.5f));
+                  cells.push_back(coarseCells[c]);
                }
                else
                {
-                  vc = Color(color.r, color.g, color.b, (unsigned char)(color.a * (1.0f - f) + 0.5f));
+                  cutOnGrid(coarseCells[c], step, cells);
                }
-               v[c] = initVertex(corner[c]->p, vc.premultiplied().rgba(), textureMeterSize, unused, textureMeterOffset);
             }
-            out.push_back(v[0]);
-            out.push_back(v[1]);
-            out.push_back(v[2]);
-            out.push_back(v[2]);      // degenerate, as createTriangleVertices
+         }
+
+         for (size_t c = 0; c < cells.size(); c++)
+         {
+            const vector<FadePoint>& cell = cells[c];
+            for (size_t k = 1; k + 1 < cell.size(); k++)
+            {
+               const FadePoint* corner[3] = { &cell[0], &cell[k], &cell[k + 1] };
+               vertexPCT2 v[3];
+               for (int i = 0; i < 3; i++)
+               {
+                  float f = fade.m_enabled ? fade.strength(corner[i]->s) : 0.0f;
+                  float e = fade.edgeOpacity(corner[i]->p);
+                  Color vc;
+                  if (overlay)
+                  {
+                     vc = Color(0, 0, 0, (unsigned char)(color.a * f * e + 0.5f));
+                  }
+                  else
+                  {
+                     float keep = linearAlpha ? (1.0f - f) : 1.0f;
+                     vc = Color(color.r, color.g, color.b, (unsigned char)(color.a * keep * e + 0.5f));
+                  }
+                  v[i] = initVertex(corner[i]->p, vc.premultiplied().rgba(), textureMeterSize, unused, textureMeterOffset);
+               }
+               out.push_back(v[0]);
+               out.push_back(v[1]);
+               out.push_back(v[2]);
+               out.push_back(v[2]);      // degenerate, as createTriangleVertices
+            }
          }
       }
    }
@@ -430,17 +700,18 @@ void PolygonVertices::setFadedVertices(
    const Vector2& origin,
    float angle)
 {
-   if (fade.m_enabled && !fade.m_toColor)
+   if ((fade.m_enabled && !fade.m_toColor) || fade.m_edgeEnabled)
    {
       int n = 0;
       vertexPCT2* vs = createFadedTriangleVertices(vertices, triangles, textureMeterSize, textureMeterOffset,
          color, fade, origin, angle, false, n);
       polygon->setVertices(vs, sizeof(vertexPCT2) * n * 4, vertexPCT2::FORMAT, true);
-      return;
    }
-
-   vertexPCT2* vs = createTriangleVertices(vertices, triangles, textureMeterSize, textureMeterOffset, color);
-   polygon->setVertices(vs, sizeof(vertexPCT2) * triangles.size() * 4, vertexPCT2::FORMAT, true);
+   else
+   {
+      vertexPCT2* vs = createTriangleVertices(vertices, triangles, textureMeterSize, textureMeterOffset, color);
+      polygon->setVertices(vs, sizeof(vertexPCT2) * triangles.size() * 4, vertexPCT2::FORMAT, true);
+   }
 
    if (fade.m_enabled && fade.m_toColor)
    {
@@ -448,7 +719,7 @@ void PolygonVertices::setFadedVertices(
       // with the fade's strength as alpha, and the fade colour as add colour.
       // oxygine's shader gives base * vertex colour + add colour * alpha, so
       // the overlay is the fade colour wherever the texture is, as strong as
-      // the fade there.
+      // the fade there (and edge-faded like the fill).
       int n = 0;
       vertexPCT2* ovs = createFadedTriangleVertices(vertices, triangles, textureMeterSize, textureMeterOffset,
          color, fade, origin, angle, true, n);
@@ -646,6 +917,7 @@ void PolygonVertices::createPolygonBorders(
       if (groundBorder || ceilingBorder || leftWallBorder || rightWallBorder)
       {
          PolygonFade fade = readFade(objectNode, polygonVertices);
+         fade.m_edgeEnabled = false;      // borders are not edge-faded
 
          // One border sprite per edge, from each vertex back to the one
          // before it (the editor draws them the same way). All edges get

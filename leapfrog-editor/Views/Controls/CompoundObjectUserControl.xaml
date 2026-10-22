@@ -17,6 +17,7 @@
       <local:IsSceneToVisibilityValueConverter x:Key="IsSceneToVisibilityValueConverter" />
       <local:ParallaxTransformConverter x:Key="ParallaxTransformConverter" />
       <local:FadeMaskConverter x:Key="FadeMaskConverter" />
+      <local:EdgeFadeMaskConverter x:Key="EdgeFadeMaskConverter" />
       <local:EditorHiddenToVisibilityValueConverter x:Key="EditorHiddenToVisibilityValueConverter" />
    </UserControl.Resources>
    <Canvas x:Name="myCoUserControl" >
@@ -76,6 +77,14 @@
                         </MultiBinding>
                      </Grid.OpacityMask>
                      <Polygon StrokeThickness="0" Points="{Binding AbsPoints}" Fill="{Binding FadeColorBrush}">
+                        <Polygon.OpacityMask>
+                           <MultiBinding Converter="{StaticResource EdgeFadeMaskConverter}">
+                              <Binding Path="AbsPoints" />
+                              <Binding Path="EdgeFadeWidth" />
+                              <Binding Path="EdgeFadeAmount" />
+                              <Binding Path="EdgeFadeSides" />
+                           </MultiBinding>
+                        </Polygon.OpacityMask>
                         <Polygon.RenderTransform>
                            <RotateTransform Angle="{Binding Angle}" CenterX="0" CenterY="0" />
                         </Polygon.RenderTransform>
@@ -130,6 +139,14 @@
                         </MultiBinding>
                      </Grid.OpacityMask>
                      <Polygon StrokeThickness="0" Points="{Binding AbsPoints}" Fill="{Binding FadeColorBrush}">
+                        <Polygon.OpacityMask>
+                           <MultiBinding Converter="{StaticResource EdgeFadeMaskConverter}">
+                              <Binding Path="AbsPoints" />
+                              <Binding Path="EdgeFadeWidth" />
+                              <Binding Path="EdgeFadeAmount" />
+                              <Binding Path="EdgeFadeSides" />
+                           </MultiBinding>
+                        </Polygon.OpacityMask>
                         <Polygon.RenderTransform>
                            <RotateTransform Angle="{Binding Angle}" CenterX="0" CenterY="0" />
                         </Polygon.RenderTransform>

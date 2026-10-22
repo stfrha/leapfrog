@@ -11,6 +11,7 @@
    <UserControl.Resources>
       <local:TexturePathValueConverter x:Key="TexturePathValueConverter" />
       <local:TextureRectMultiValueConverter x:Key="TextureRectMultiValueConverter" />
+      <local:EdgeFadeMaskConverter x:Key="EdgeFadeMaskConverter" />
    </UserControl.Resources>
    <Grid>
       <Polygon 
@@ -38,6 +39,15 @@
                </ImageBrush.Viewport>
             </ImageBrush>
          </Polygon.Fill>
+         <!-- Edge fade, in the polygon's own coordinates (as the game) -->
+         <Polygon.OpacityMask>
+            <MultiBinding Converter="{StaticResource EdgeFadeMaskConverter}">
+               <Binding Path="AbsPoints" />
+               <Binding Path="EdgeFadeWidth" />
+               <Binding Path="EdgeFadeAmount" />
+               <Binding Path="EdgeFadeSides" />
+            </MultiBinding>
+         </Polygon.OpacityMask>
          <Polygon.RenderTransform>
             <TransformGroup>
                <RotateTransform x:Name="d1"

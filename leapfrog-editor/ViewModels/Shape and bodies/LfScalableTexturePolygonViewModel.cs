@@ -302,6 +302,97 @@ namespace LeapfrogEditor
          }
       }
 
+      // --- Edge fade (see PolygonEdgeFade) ---------------------------------
+
+      private PolygonEdgeFade EdgeFade
+      {
+         get
+         {
+            if (LocalModelObject.EdgeFade == null)
+            {
+               LocalModelObject.EdgeFade = new PolygonEdgeFade();
+            }
+            return LocalModelObject.EdgeFade;
+         }
+      }
+
+      // How far in from the edge the fill fades (game units), 0 = off
+      public double EdgeFadeWidth
+      {
+         get { return (LocalModelObject == null) ? 0 : EdgeFade.Width; }
+         set
+         {
+            if (LocalModelObject == null) return;
+            EdgeFade.Width = Math.Max(0.0, value);
+            OnPropertyChanged("EdgeFadeWidth");
+         }
+      }
+
+      // 0..1, how transparent the fill is at the edge
+      public double EdgeFadeAmount
+      {
+         get { return (LocalModelObject == null) ? 1 : EdgeFade.Amount; }
+         set
+         {
+            if (LocalModelObject == null) return;
+            EdgeFade.Amount = Math.Max(0.0, Math.Min(1.0, value));
+            OnPropertyChanged("EdgeFadeAmount");
+         }
+      }
+
+      // The sides as saved: "all", or some of "top bottom left right"
+      public string EdgeFadeSides
+      {
+         get { return (LocalModelObject == null) ? "all" : (EdgeFade.Sides ?? "all"); }
+      }
+
+      public bool EdgeFadeTop
+      {
+         get { return (LocalModelObject != null) && EdgeFade.HasSide("top"); }
+         set { SetEdgeFadeSide("top", value); }
+      }
+
+      public bool EdgeFadeBottom
+      {
+         get { return (LocalModelObject != null) && EdgeFade.HasSide("bottom"); }
+         set { SetEdgeFadeSide("bottom", value); }
+      }
+
+      public bool EdgeFadeLeft
+      {
+         get { return (LocalModelObject != null) && EdgeFade.HasSide("left"); }
+         set { SetEdgeFadeSide("left", value); }
+      }
+
+      public bool EdgeFadeRight
+      {
+         get { return (LocalModelObject != null) && EdgeFade.HasSide("right"); }
+         set { SetEdgeFadeSide("right", value); }
+      }
+
+      private void SetEdgeFadeSide(string side, bool on)
+      {
+         if (LocalModelObject == null) return;
+
+         string[] all = { "top", "bottom", "left", "right" };
+         List<string> sides = new List<string>();
+         foreach (string sd in all)
+         {
+            bool has = (sd == side) ? on : EdgeFade.HasSide(sd);
+            if (has)
+            {
+               sides.Add(sd);
+            }
+         }
+         EdgeFade.Sides = (sides.Count == all.Length) ? "all" : string.Join(" ", sides);
+
+         OnPropertyChanged("EdgeFadeSides");
+         OnPropertyChanged("EdgeFadeTop");
+         OnPropertyChanged("EdgeFadeBottom");
+         OnPropertyChanged("EdgeFadeLeft");
+         OnPropertyChanged("EdgeFadeRight");
+      }
+
       #endregion
 
    
