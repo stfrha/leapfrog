@@ -43,6 +43,7 @@
 		<image file="amb_haul_truck.png" ppu="14" trim="false"/>
 		<image file="amb_crusher.png" ppu="14" trim="false"/>
 		<image file="amb_headframe.png" rows="2" ppu="14" cols="2" trim="false"/>
+		<image file="amb_mine_shaft.png" ppu="14" cols="2" rows="3" trim="false"/>
 	</atlas>
 	<set path = "images/mining" />
 	<atlas clamp2edge="false">
@@ -59,5 +60,9 @@
 	<set path = "images/mining" />
 	<atlas clamp2edge="false">
 		<image file="ore_ground_border.png" ppu="14" trim="false" extend="false"/>
+	</atlas>
+	<set path = "images/mining" />
+	<atlas clamp2edge="false">
+		<image file="ash_slope.png" ppu="10" trim="false" extend="false"/>
 	</atlas>
 </resources>
