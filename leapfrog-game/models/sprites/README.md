@@ -58,6 +58,13 @@ Script-specific options are listed with `-- --help`.
   `--flat`), `amb_crusher` (crusher tower, conveyor and ore stockpile), `amb_headframe`
   (shaft headframe with the winding house; its sheave wheels turn: 4 frames by default,
   `--still` for one image; set Animate Period to what the script prints, about 0.56 s).
+  `amb_mine_shaft` is an open shaft (an oval hole with a concrete collar and a fence, rock
+  walls into the dark) with a cantilever hoist on a tower beside it lifting a kibble of ore
+  out (`--bucket-z`); two strings of lamps run down the far wall one lamp at a time
+  (`--all-blink` to blink them together), 6 frames, `--still`/`--dark`. A piece with a hole
+  in the ground marks its opening with `ob["kit_catcher_hole"] = True`: the shadow catcher
+  gets that hole, and a holdout ring just under the ground hides what is below ground
+  outside it.
   `--rusty` makes the excavator or truck a wreck. Their parts (beams, rams, tracks,
   tyres, cabs, heaps, sheaves, trusses, trestles) are in `amb_mine_parts.py`; material
   roles `machine_yellow`, `rubber` and `ore_rock` are in the mining theme.

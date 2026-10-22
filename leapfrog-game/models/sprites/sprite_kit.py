@@ -1031,9 +1031,52 @@ class Kit:
         return d.normalized()
 
     def _add_shadow_catcher(self, ground_z):
-        """A large ground plane that is only visible where shadows fall on it (Cycles shadow catcher)."""
+        """
+        A large ground plane that is only visible where shadows fall on it (Cycles shadow catcher).
+
+        A piece with a hole in the ground (a mine shaft) marks an object with
+        ob["kit_catcher_hole"] = True (hidden, e.g. a flat outline of the
+        opening): the plane then gets a hole of that outline, seen from
+        above, so it doesn't cover what is below ground. The outline must be
+        star-shaped around its centre (an oval is fine); one hole per piece.
+        """
+        holes = [o for o in self.scene.objects if o.type == 'MESH' and o.get("kit_catcher_hole")]
+        if len(holes) > 1:
+            raise RuntimeError("shadow catcher: only one kit_catcher_hole object is supported")
         bm = bmesh.new()
-        bmesh.ops.create_grid(bm, x_segments=1, y_segments=1, size=500.0)
+        if not holes:
+            bmesh.ops.create_grid(bm, x_segments=1, y_segments=1, size=500.0)
+        else:
+            bpy.context.view_layer.update()
+            mw = holes[0].matrix_world
+            pts = [(mw @ v.co) for v in holes[0].data.vertices]
+            cx = sum(p.x for p in pts) / len(pts)
+            cy = sum(p.y for p in pts) / len(pts)
+            pts.sort(key=lambda p: math.atan2(p.y - cy, p.x - cx))
+            # A ring of quads from the outline out to a circle 500 units away
+            inner = [bm.verts.new((p.x, p.y, 0.0)) for p in pts]
+            outer = []
+            for p in pts:
+                a = math.atan2(p.y - cy, p.x - cx)
+                outer.append(bm.verts.new((cx + 500.0 * math.cos(a), cy + 500.0 * math.sin(a), 0.0)))
+            n = len(pts)
+            for i in range(n):
+                j = (i + 1) % n
+                bm.faces.new((inner[i], outer[i], outer[j], inner[j]))      # facing up
+            # The same ring as a holdout just under the ground, so whatever is
+            # below ground outside the hole (the outside of the shaft walls)
+            # can't be seen past the edge of the piece
+            hold = bpy.data.materials.new("_ground_holdout")
+            hold.use_nodes = True
+            hold.node_tree.nodes.clear()
+            hn = hold.node_tree.nodes.new("ShaderNodeHoldout")
+            ho = hold.node_tree.nodes.new("ShaderNodeOutputMaterial")
+            hold.node_tree.links.new(hn.outputs["Holdout"], ho.inputs["Surface"])
+            hb = bm.copy()
+            hob = mesh_object("_ground_holdout", hb, hold)
+            hob.location = (0.0, 0.0, ground_z - 0.02)
+            hob.visible_shadow = False
+            hob["kit_no_frame"] = True
         ob = mesh_object("_shadow_catcher", bm)
         ob.location = (0.0, 0.0, ground_z)
         ob.is_shadow_catcher = True
