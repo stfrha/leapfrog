@@ -549,6 +549,29 @@ namespace
          }
       }
    }
+
+   // Splits a convex cell of a grid of `size` into quarters, again and again,
+   // where it lies within the edge fade's width of a fading edge, down to
+   // cells of `step` (size must be step times a power of two). A cell that
+   // is far from the fading edges stays whole: its opacity is 1 all over,
+   // so its edges match whatever the neighbouring cells are cut into.
+   void subdivideNearEdges(const vector<FadePoint>& cell, float size, float step, const PolygonFade& fade,
+      vector<vector<FadePoint> >& out)
+   {
+      if ((size <= step * 1.001f) || farFromFadingEdges(cell, fade))
+      {
+         out.push_back(cell);
+         return;
+      }
+
+      float half = size * 0.5f;
+      vector<vector<FadePoint> > quarters;
+      cutOnGrid(cell, half, quarters);
+      for (size_t q = 0; q < quarters.size(); q++)
+      {
+         subdivideNearEdges(quarters[q], half, step, fade, out);
+      }
+   }
 }
 
 vertexPCT2* PolygonVertices::createFadedTriangleVertices(
@@ -573,10 +596,17 @@ vertexPCT2* PolygonVertices::createFadedTriangleVertices(
    // transparent; a fade to a colour is drawn by the overlay
    bool linearAlpha = fade.m_enabled && !fade.m_toColor;
 
-   // Edge fade: cells of a third of the width near the fading edges, in
-   // coarse cells of 12 of those (a coarse cell far from them stays whole)
-   float step = fade.m_edgeWidth / 3.0f;
-   float coarse = step * 12.0f;
+   // Edge fade: the polygon is cut on a coarse grid, and only the cells
+   // within the fade's width of a fading edge are split further (in
+   // quarters) down to cells as wide as the fade (the opacity then ramps
+   // almost linearly over the width rather than along the smooth curve,
+   // which can't be told apart at these sizes). Every vertex is transformed
+   // by oxygine on the CPU each frame, so the count matters: a grid of a
+   // third of the width over every coarse cell near an edge made 16 700
+   // triangles of 11 for a 110 x 23 polygon with width 1 (8-10 fps for that
+   // one polygon in a Debug build); this makes about 5 500.
+   float step = fade.m_edgeWidth;
+   float coarse = step * 16.0f;
 
    vector<vertexPCT2> out;
    out.reserve(triangles.size() * 4 * 3);
@@ -637,14 +667,7 @@ vertexPCT2* PolygonVertices::createFadedTriangleVertices(
             cutOnGrid(piece, coarse, coarseCells);
             for (size_t c = 0; c < coarseCells.size(); c++)
             {
-               if (farFromFadingEdges(coarseCells[c], fade))
-               {
-                  cells.push_back(coarseCells[c]);
-               }
-               else
-               {
-                  cutOnGrid(coarseCells[c], step, cells);
-               }
+               subdivideNearEdges(coarseCells[c], coarse, step, fade, cells);
             }
          }
 

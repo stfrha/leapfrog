@@ -27,8 +27,11 @@
 //           (default)
 // The fill's opacity follows a smooth curve over the width, measured as
 // the distance to the nearest fading edge. Triangles are cut on a grid
-// near those edges (a third of the width) so the vertex colours can carry
-// the curve. Border decorations are not edge-faded.
+// near those edges (cells as wide as the fade, split from coarse cells
+// only where they are near a fading edge) so the vertex colours can carry
+// it. A narrow fade on a long outline still makes thousands of triangles
+// (width 1 on a 370-unit outline: about 5 500), so keep the width
+// reasonable. Border decorations are not edge-faded.
 struct PolygonFade
 {
    bool m_enabled;
