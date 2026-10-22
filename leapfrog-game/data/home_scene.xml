@@ -200,8 +200,8 @@
   <spriteBox
     name="noName"
     texture="amb_haul_truck"
-    posX="1488.9348172630812"
-    posY="577.06519147598055"
+    posX="1483.0011057106594"
+    posY="578.23560086844191"
     angle="0"
     zLevel="26"
     collisionEntity="notApplicable"
@@ -240,8 +240,8 @@
   <spriteBox
     name="noName"
     texture="amb_headframe"
-    posX="1491.4037499272181"
-    posY="559.42481475486329"
+    posX="1499.1537000489093"
+    posY="555.765116086287"
     angle="0"
     zLevel="26"
     collisionEntity="notApplicable"
@@ -418,11 +418,14 @@
         textureMeterHeight="0" />
     </border>
     <fade
-      amount="0.7"
-      angle="0"
-      start="1"
-      end="0"
-      color="594a43" />
+      amount="1"
+      angle="180"
+      start="0.5"
+      end="1"
+      color="252529" />
+    <edgeFade
+      width="3"
+      amount="1" />
   </spritePolygon>
   <spritePolygon
     name="villageGround_2"
@@ -434,6 +437,7 @@
     collisionEntity="notApplicable"
     collisionCategory="1"
     collisionMask="65534"
+    color="4e505e"
     textureMeterWidth="200"
     textureMeterHeight="200"
     textureOffsetMeterX="60.809"
@@ -576,6 +580,15 @@
         textureMeterWidth="0"
         textureMeterHeight="0" />
     </border>
+    <fade
+      amount="0.3"
+      angle="180"
+      start="0.3"
+      end="1"
+      color="101215" />
+    <edgeFade
+      width="4"
+      amount="1" />
   </spritePolygon>
   <spritePolygon
     name="edgeFadePolygon"
@@ -587,7 +600,7 @@
     collisionEntity="notApplicable"
     collisionCategory="1"
     collisionMask="65534"
-    color="5c483e"
+    color="3e322c"
     textureMeterWidth="50"
     textureMeterHeight="50"
     textureOffsetMeterX="0"
@@ -596,36 +609,36 @@
     <vertices>
       <vertex
         id="1"
-        x="15.096041422565577"
-        y="0.77814646508113583" />
+        x="19.527272994566829"
+        y="-1.2670373373807706" />
       <vertex
         id="2"
         x="44.976865681664549"
         y="-1.7119222231776803" />
       <vertex
         id="3"
-        x="89.9537313633291"
-        y="9.4933868739844911" />
+        x="101.05167748148006"
+        y="7.5633092882189885" />
       <vertex
         id="4"
-        x="57.738467708988082"
-        y="9.18212828795231" />
+        x="71.152506930057825"
+        y="8.8926166500873478" />
       <vertex
         id="5"
-        x="91.665653586506323"
-        y="14.629153543517077" />
+        x="122.64339883804132"
+        y="18.1032931978948" />
       <vertex
         id="6"
-        x="56.9603212439074"
-        y="13.228489906372033" />
+        x="70.084848827112182"
+        y="14.772551974984708" />
       <vertex
         id="7"
-        x="75.480207112827884"
-        y="17.89736869685612" />
+        x="85.709618317384411"
+        y="18.76590361045055" />
       <vertex
         id="8"
-        x="63.18549296455285"
-        y="19.6092909200338" />
+        x="67.817679170389965"
+        y="21.732376264375944" />
       <vertex
         id="9"
         x="40.930504063244825"
@@ -640,8 +653,8 @@
         y="5.2913959625489042" />
       <vertex
         id="12"
-        x="6.0695424276295853"
-        y="4.980137376516268" />
+        x="-0.86135823626955244"
+        y="3.1621962187723511" />
       <vertex
         id="13"
         x="-18.364256575904164"
@@ -731,42 +744,42 @@
         textureMeterHeight="0" />
     </border>
     <edgeFade
-      width="1"
+      width="2"
       amount="1" />
   </spritePolygon>
   <spritePolygon
     name="noName_2"
-    texture="white_gravel"
-    posX="1636.228784838142"
-    posY="567.61103939487475"
+    texture="ash_slope"
+    posX="1636.9705476124395"
+    posY="567.42559870130071"
     angle="0"
     zLevel="34"
     collisionEntity="notApplicable"
     collisionCategory="1"
     collisionMask="65534"
-    color="515050"
-    textureMeterWidth="10"
-    textureMeterHeight="10"
-    textureOffsetMeterX="0"
-    textureOffsetMeterY="0"
+    color="454648"
+    textureMeterWidth="150"
+    textureMeterHeight="150"
+    textureOffsetMeterX="137.185"
+    textureOffsetMeterY="36.05"
     parallaxAmount="0.4">
     <vertices>
       <vertex
         id="1"
-        x="-9.3478784390463261"
-        y="1.8384991531420383" />
+        x="-10.798662305487596"
+        y="0.69314346910960012" />
       <vertex
         id="2"
-        x="10.710731446436967"
-        y="0.24135904430295341" />
+        x="10.405303264028589"
+        y="-1.1330677765363362" />
       <vertex
         id="3"
-        x="91.393112960043254"
-        y="1.0432910065517262" />
+        x="91.505489122493145"
+        y="-0.52997526774493053" />
       <vertex
         id="4"
-        x="127.79533021626867"
-        y="6.3688511888794892" />
+        x="133.35855102349933"
+        y="4.6998849467104264" />
       <vertex
         id="5"
         x="109.23544474127584"
@@ -777,20 +790,20 @@
         y="14.397706455731623" />
       <vertex
         id="7"
-        x="91.098766692277877"
-        y="17.278813942619763" />
+        x="98.390591468731145"
+        y="17.506683466884169" />
       <vertex
         id="8"
-        x="119.10798316040655"
-        y="21.831969189210213" />
+        x="117.58885299864551"
+        y="25.098099036996246" />
       <vertex
         id="9"
-        x="63.18549296455285"
-        y="19.6092909200338" />
+        x="61.9701888351442"
+        y="22.951377275907817" />
       <vertex
         id="10"
-        x="32.945579534643"
-        y="22.366687456073578" />
+        x="36.21170938242949"
+        y="25.025165239155285" />
       <vertex
         id="11"
         x="4.5691926317999787"
@@ -914,6 +927,9 @@
         textureMeterWidth="0"
         textureMeterHeight="0" />
     </border>
+    <edgeFade
+      width="3"
+      amount="1" />
   </spritePolygon>
   <staticPolygon
     name="mainGround"
@@ -925,6 +941,7 @@
     collisionEntity="notApplicable"
     collisionCategory="1"
     collisionMask="65533"
+    color="c1c1c1"
     textureMeterWidth="200"
     textureMeterHeight="200"
     textureOffsetMeterX="0"
