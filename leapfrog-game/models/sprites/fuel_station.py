@@ -280,7 +280,7 @@ pattern = (args.flicker * frames)[:frames] if args.flicker else "1" * frames
 def set_frame(i):
     u_on = pattern[i % len(pattern)] == "1"
     fuel.data.body_format[1].material_index = 0 if u_on else 1
-    neon_light.energy = args.neon_power * (3.0 if u_on else 2.0) / 3.0
+    neon_light.data.energy = args.neon_power * (3.0 if u_on else 2.0) / 3.0
 
 
 set_frame(0)
