@@ -15,6 +15,14 @@
 extern "C" { FILE __iob_func[3] = { *stdin,*stdout,*stderr }; }
 #endif
 
+#if defined(__APPLE__)
+#include <TargetConditionals.h>
+#if !TARGET_OS_IPHONE
+#include <unistd.h>
+#include "SDL_filesystem.h"
+#endif
+#endif
+
 using namespace oxygine;
 
 
@@ -234,6 +242,18 @@ extern "C"
 
    int main(int argc, char* argv[])
    {
+#if defined(__APPLE__) && !TARGET_OS_IPHONE
+      // macOS: the game reads its data relative to the working directory
+      // (as on Windows, where it runs from data/). SDL changes to the app
+      // bundle's Resources folder on iOS but not on macOS, so do it here.
+      char* basePath = SDL_GetBasePath();
+      if (basePath)
+      {
+         chdir(basePath);
+         SDL_free(basePath);
+      }
+#endif
+
       if (argc == 2)
       {
          run(argv[1][0] - '0');
