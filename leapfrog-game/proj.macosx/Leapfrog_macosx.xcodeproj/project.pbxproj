@@ -1552,7 +1552,7 @@
 					../../../Box2d,
 					../../../lua,
 				);
-				MACOSX_DEPLOYMENT_TARGET = 11.0;
+				MACOSX_DEPLOYMENT_TARGET = 12.0;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = macosx;
 				USER_HEADER_SEARCH_PATHS = "../../../oxygine-framework//oxygine/src ../../..//SDL/include";
@@ -1590,7 +1590,7 @@
 					../../../Box2d,
 					../../../lua,
 				);
-				MACOSX_DEPLOYMENT_TARGET = 11.0;
+				MACOSX_DEPLOYMENT_TARGET = 12.0;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = macosx;
 				USER_HEADER_SEARCH_PATHS = "../../../oxygine-framework//oxygine/src ../../..//SDL/include";

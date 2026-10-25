@@ -40,7 +40,7 @@ fi
 
 echo "== Building Leapfrog_macosx ($CONFIG, $(uname -m))"
 xcodebuild -project "$PROJ" -target Leapfrog_macosx -configuration "$CONFIG" \
-  SYMROOT="$BD/Products" OBJROOT="$BD/Intermediates" \
+  MACOSX_DEPLOYMENT_TARGET=12.0 ENABLE_USER_SCRIPT_SANDBOXING=NO SYMROOT="$BD/Products" OBJROOT="$BD/Intermediates" \
   -quiet build 2>&1 | tee "$LOG" \
   | grep -E "error:|Undefined symbol|symbol\(s\) not found|BUILD (SUCCEEDED|FAILED)" --line-buffered
 STATUS=${PIPESTATUS[0]}
