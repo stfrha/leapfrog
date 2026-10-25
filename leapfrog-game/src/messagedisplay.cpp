@@ -46,6 +46,36 @@ void MessageDisplay::setSenderAffiliation(const std::string& sender, Affiliation
    senderAffiliations()[sender] = affiliation;
 }
 
+namespace
+{
+   std::map<std::string, Color>& senderColors(void)
+   {
+      static std::map<std::string, Color> s_senderColors;
+      return s_senderColors;
+   }
+}
+
+void MessageDisplay::setSenderColor(const std::string& sender, const Color& color)
+{
+   senderColors()[sender] = color;
+}
+
+void MessageDisplay::clearSenderColor(const std::string& sender)
+{
+   senderColors().erase(sender);
+}
+
+bool MessageDisplay::getSenderColor(const std::string& sender, Color& color)
+{
+   auto it = senderColors().find(sender);
+   if (it == senderColors().end())
+   {
+      return false;
+   }
+   color = it->second;
+   return true;
+}
+
 Affiliation MessageDisplay::getSenderAffiliation(const std::string& sender)
 {
    auto it = senderAffiliations().find(sender);
@@ -61,12 +91,14 @@ MessageItem::MessageItem(
    string sender,
    bool leftBubble,
    Affiliation affiliation,
+   const Color& color,
    int preWait,
    int postWait) :
    m_message(message),
    m_sender(sender),
    m_leftBubble(leftBubble),
    m_affiliation(affiliation),
+   m_color(color),
    m_preWait(preWait),
    m_postWait(postWait)
 {
@@ -527,11 +559,18 @@ void MessageDisplay::initMessage(
    const char* senderString,
    Affiliation affiliation,
    int preWait,
-   int postWait)
+   int postWait,
+   bool useSenderColor)
 {
-   // The affiliation is taken now, so a message keeps its colour if the
+   // The colour is taken now, so a message keeps its colour if the
    // sender changes side later
-   MessageItem newMessage(messageString, senderString, leftBubble, affiliation, preWait, postWait);
+   Color color = g_Layout.getAffiliationColor(affiliation);
+   if (useSenderColor)
+   {
+      getSenderColor(senderString, color);
+   }
+
+   MessageItem newMessage(messageString, senderString, leftBubble, affiliation, color, preWait, postWait);
 
    m_messageQueue.push_back(newMessage);
 }
@@ -580,8 +619,9 @@ void MessageDisplay::drawMessage(const MessageItem& message)
    }
 
 
-   // The bubble texture is white; the frame shows the sender's affiliation
-   m_newBubble->setColor(g_Layout.getAffiliationColor(message.m_affiliation));
+   // The bubble texture is white; the frame shows the sender's colour
+   // (their own, or their affiliation's)
+   m_newBubble->setColor(message.m_color);
 
    m_newBubble->setVerticalMode(Box9Sprite::STRETCHING);
    m_newBubble->setHorizontalMode(Box9Sprite::STRETCHING);
@@ -615,7 +655,7 @@ void MessageDisplay::drawMessage(const MessageItem& message)
    msgTextField->setText(message.m_message);
    if (c_textInAffiliationColour)
    {
-      msgTextField->setColor(g_Layout.getAffiliationColor(message.m_affiliation));
+      msgTextField->setColor(message.m_color);
    }
    else
    {

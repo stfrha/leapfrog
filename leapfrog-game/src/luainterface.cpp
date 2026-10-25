@@ -328,13 +328,16 @@ static int c_addDialogMessage(lua_State *L)
    int postDelay = lua_tointeger(L, 5);
 
    Affiliation affiliation = MessageDisplay::getSenderAffiliation(sender);
+   bool useSenderColor = true;
 
    if (lua_gettop(L) >= 6 && !lua_isnil(L, 6))
    {
-      readAffiliation(L, 6, "c_addDialogMessage", affiliation);
+      // An affiliation given for this message shows in its colour, even
+      // for a sender with a colour of their own
+      useSenderColor = !readAffiliation(L, 6, "c_addDialogMessage", affiliation);
    }
 
-   g_MessageDisplay->initMessage(leftSide, message.c_str(), sender.c_str(), affiliation, preDelay, postDelay);
+   g_MessageDisplay->initMessage(leftSide, message.c_str(), sender.c_str(), affiliation, preDelay, postDelay, useSenderColor);
 
    return 0;
 }
@@ -352,6 +355,41 @@ static int c_setSenderAffiliation(lua_State *L)
       MessageDisplay::setSenderAffiliation(sender, affiliation);
    }
 
+   return 0;
+}
+
+// c_setSenderColor(sender, "rrggbb")
+// The sender's own colour for their message bubbles and text from now on,
+// instead of their affiliation's (e.g. Edith, who is on the Leapfrog's side
+// but shouldn't be white like the pilot). nil or "" removes it, so the
+// affiliation's colour is used again. Messages already shown keep their
+// colour.
+static int c_setSenderColor(lua_State *L)
+{
+   std::string sender = lua_tostring(L, 1);
+   const char* text = lua_tostring(L, 2);
+
+   if ((text == NULL) || (text[0] == 0))
+   {
+      MessageDisplay::clearSenderColor(sender);
+      return 0;
+   }
+
+   std::string hex = text;
+   if (!hex.empty() && (hex[0] == '#'))
+   {
+      hex = hex.substr(1);
+   }
+
+   char* end = NULL;
+   unsigned long rgb = strtoul(hex.c_str(), &end, 16);
+   if ((hex.size() != 6) || (end == NULL) || (*end != 0))
+   {
+      logs::warning("c_setSenderColor: '%s' is not a colour, expected rrggbb", text);
+      return 0;
+   }
+
+   MessageDisplay::setSenderColor(sender, Color((unsigned int)((rgb << 8) | 0xff)));
    return 0;
 }
 
@@ -616,6 +654,7 @@ void LuaInterface::initLuaInterface(void)
    lua_register(m_L, "c_addPositionedChildObject", c_addPositionedChildObject);
    lua_register(m_L, "c_addDialogMessage", c_addDialogMessage);
    lua_register(m_L, "c_setSenderAffiliation", c_setSenderAffiliation);
+   lua_register(m_L, "c_setSenderColor", c_setSenderColor);
    lua_register(m_L, "c_hudLog", c_hudLog);
    lua_register(m_L, "c_setPanningObject", c_setPanningObject);
    lua_register(m_L, "c_setObjectProperty", c_setObjectProperty);

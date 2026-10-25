@@ -16,6 +16,7 @@ public:
    std::string m_sender;
    bool m_leftBubble;
    Affiliation m_affiliation;
+   oxygine::Color m_color;    // bubble frame (and text): the sender's own colour, or the affiliation's
    bool m_inTransit;
    int m_preWait;
    int m_postWait;
@@ -25,6 +26,7 @@ public:
       std::string sender,
       bool leftBubble,
       Affiliation affiliation,
+      const oxygine::Color& color,
       int preWait,
       int postWait);
 };
@@ -123,20 +125,32 @@ public:
       int preWait,
       int postWait);
 
-   // Same, with the affiliation given for this message only
+   // Same, with the affiliation given for this message only. With
+   // useSenderColor, a colour set for the sender (setSenderColor) still
+   // wins over the affiliation's colour; without it, the message shows the
+   // affiliation's colour.
    void initMessage(
       bool leftBubble,
       const char* messageString,
       const char* senderString,
       Affiliation affiliation,
       int preWait,
-      int postWait);
+      int postWait,
+      bool useSenderColor = true);
 
    // Sender name -> affiliation. Kept for the whole run (not cleared with
    // the display), but not saved: missions set it up in
    // setupMissionStateScene, so it follows the mission state after a load.
    static void setSenderAffiliation(const std::string& sender, Affiliation affiliation);
    static Affiliation getSenderAffiliation(const std::string& sender);
+
+   // A sender's own message colour (e.g. Edith, so her messages stand out
+   // from the pilot's white although she is on the Leapfrog's side). It
+   // replaces the affiliation's colour for that sender's bubbles and text;
+   // the affiliation itself is unchanged. Kept like the affiliations.
+   static void setSenderColor(const std::string& sender, const oxygine::Color& color);
+   static void clearSenderColor(const std::string& sender);
+   static bool getSenderColor(const std::string& sender, oxygine::Color& color);
 
    void prepareFirstInQueue(void);
    void processFirstInQueue(void);

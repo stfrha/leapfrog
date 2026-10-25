@@ -72,6 +72,10 @@ mission1.setupMissionStateScene = function()
    c_setSenderAffiliation("Leapfrog", "leapfrog")
    c_setSenderAffiliation("Bruno", "neutral")
 
+   -- Edith is on the Leapfrog's side, but her messages get a colour of
+   -- their own so they don't look like the pilot's white ones
+   c_setSenderColor("Edith", "ff80d5")
+
    if currentScene == "home_scene.xml" then
 
       registerHomeHandlers()
