@@ -508,6 +508,18 @@ void MessageDisplay::doUpdate(const oxygine::UpdateState& us)
    // are active during tween animation and the end of 
    // tween handlers will set state back to idel (eventually).
 
+   // While the game is paused (the pause menu, or the expanded message
+   // display), the queue waits: no new messages and no counting of their
+   // delays. A message already sliding in finishes its animation.
+   if (g_MainActor->isInPause())
+   {
+      return;
+   }
+
+   // The delays are in 1/60 s whatever the frame rate (they were counted
+   // in frames, which ran twice as fast on a 120 Hz screen)
+   float ticks = us.dtf * 60.0f;
+
    switch (m_state)
    {
    case idle:
@@ -515,7 +527,7 @@ void MessageDisplay::doUpdate(const oxygine::UpdateState& us)
       {
          if ((m_messageQueue[0].m_preWait > 0))
          {
-            m_ticks = 0;
+            m_ticks = 0.0f;
             m_state = preWait;
          }
          else
@@ -526,14 +538,14 @@ void MessageDisplay::doUpdate(const oxygine::UpdateState& us)
       break;
 
    case preWait:
-      m_ticks++;
+      m_ticks += ticks;
       if (m_ticks > m_messageQueue[0].m_preWait)
       {
          prepareFirstInQueue();
       }
       break;
    case postWait:
-      m_ticks++;
+      m_ticks += ticks;
       if (m_ticks > m_messageQueue[0].m_postWait)
       {
          m_state = idle;
@@ -761,7 +773,7 @@ void MessageDisplay::atNewBubbleFinished(oxygine::Event* event)
       // On display now, so a redraw must include it; the queue entry
       // stays until the post wait is over
       m_displayedMessages.push_back(m_messageQueue[0]);
-      m_ticks = 0;
+      m_ticks = 0.0f;
       m_state = postWait;
    }
    else

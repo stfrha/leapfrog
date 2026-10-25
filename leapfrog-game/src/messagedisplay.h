@@ -70,7 +70,9 @@ private:
    std::vector<MessageItem> m_messageQueue;
    std::vector<MessageItem> m_displayedMessages;
    MsgDispStateEnum m_state;
-   int m_ticks;
+   // Time waited before/after the current message, in 1/60 s (the unit of
+   // c_addDialogMessage's preDelay and postDelay), counted from real time
+   float m_ticks;
    bool m_noPreviousMessages;
    oxygine::spBox9Sprite m_newBubble;
    float m_newMessageHeight;
