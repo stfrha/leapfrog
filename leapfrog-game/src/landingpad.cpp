@@ -351,7 +351,7 @@ void LandingPad::doUpdate(const UpdateState &us)
          {
             // Perhaps add fuel to some class of properties that are not allowed to change
             // while in pause, instead of this type of if statements.
-            refuel(us.dt);
+            refuel(us.dtf);
          }
       }
 
@@ -394,10 +394,10 @@ void LandingPad::setPropertyImpl(int propId, float value)
 
 // Fuel flows into the Leapfrog while it stands on an active pad that has
 // fuel: bought with credits (sell) or from the pad's supply (free)
-void LandingPad::refuel(timeMS dt)
+void LandingPad::refuel(float dt)
 {
    if ((m_fuelService == fuelNone) || (m_latestLeapfrog == NULL) || (m_latestLeapfrog->m_resources == NULL) ||
-      (dt <= 0))
+      (dt <= 0.0f))
    {
       return;
    }
@@ -409,7 +409,7 @@ void LandingPad::refuel(timeMS dt)
       return;
    }
 
-   float amount = m_fuelRate * (float)dt / 1000.0f;
+   float amount = m_fuelRate * dt;
    if (amount > room)
    {
       amount = room;

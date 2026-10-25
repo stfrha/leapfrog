@@ -172,8 +172,7 @@ SceneActor::SceneActor(
    m_manualPan(NULL),
    m_timerIdCounter(0),
    m_armPauseChange(true),
-   m_leapfrog(NULL),
-   m_secondsPerUpdate(1.0f / g_MainActor->m_fps)
+   m_leapfrog(NULL)
 {
 	setScale(m_stageToViewPortScale);
 
@@ -537,7 +536,9 @@ void SceneActor::doUpdate(const UpdateState& us)
 
    testForBoundaryRepel();
 
-   float spu = m_secondsPerUpdate;
+   // The scene's clock calls doUpdate at a fixed step (see
+   // MainActor::createSceneClock), so this keeps the physics in real time
+   float spu = Scales::c_updateStep;
    if (g_MainActor->isInPause())
    {
       spu = 0.0f;

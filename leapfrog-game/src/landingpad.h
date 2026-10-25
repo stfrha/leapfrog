@@ -83,7 +83,7 @@ private:
    float m_creditsOwed;       // part of a credit not yet charged (sell)
    bool m_fuelMessageShown;   // "empty" / "no credits" logged once per landing
 
-   void refuel(oxygine::timeMS dt);
+   void refuel(float dt);     // dt in seconds
 
    LeapFrog* m_latestLeapfrog;
 

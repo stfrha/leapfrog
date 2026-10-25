@@ -34,7 +34,7 @@ private:
 
    // Working member variable
    bool m_fire;
-   int m_timeSinceLast;
+   float m_timeSinceLast;      // ms
    int m_groupIndex;
 
 

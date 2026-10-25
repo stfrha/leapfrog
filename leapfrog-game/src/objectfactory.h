@@ -30,7 +30,7 @@ private:
    // Working member variable
    pugi::xml_document* m_coNodeHolder;
    pugi::xml_node m_coNode;
-   int m_timeSinceLast;
+   float m_timeSinceLast;      // ms
    spSpawnObjectList m_spawnObjects;
 
    void readObjectFactoryNode(const pugi::xml_node& objectNode);

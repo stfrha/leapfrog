@@ -66,6 +66,7 @@ private:
 
    void showSplashScreen(void);
    void initMainActor(void);
+   oxygine::spClock createSceneClock(void);
    void exitLandingScene(oxygine::Event *ev);
    void exitDeepSpaceScene(oxygine::Event *ev);
    void exitOrbitScene(oxygine::Event *ev);
@@ -81,7 +82,7 @@ private:
 
 public:
    bool m_reloadPressed;
-   float m_fps;
+   float m_fps;      // measured at start-up, only logged (scenes update at Scales::c_updateStep)
 
 	MainActor();
 	~MainActor();

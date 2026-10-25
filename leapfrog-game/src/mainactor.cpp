@@ -216,7 +216,7 @@ void MainActor::startScene(void)
 
       window->addChild(sceneObj);
 
-      m_clock = new Clock;
+      m_clock = createSceneClock();
       sceneObj->setClock(m_clock);
 
       if (m_nextScene.m_nextSceneType == SceneActor::SceneTypeEnum::landing)
@@ -241,7 +241,7 @@ void MainActor::startScene(void)
 
       window->addChild(sceneObj);
 
-      m_clock = new Clock;
+      m_clock = createSceneClock();
       sceneObj->setClock(m_clock);
 
       m_sceneObject = sceneObj->m_space;
@@ -426,6 +426,23 @@ void MainActor::httpLoaded(Event* event)
    ox::HttpRequestTask::release();
 
 
+}
+
+// The clock of a scene. It runs at a fixed step (Scales::c_updateStep), so
+// the scene is updated 60 times per second of real time: once per frame on a
+// 60 Hz display, about every other frame at 120 Hz, twice per frame at 30 fps.
+// (The physics used to step 1 / (frame rate measured at start-up) per frame,
+// which ran slow whenever the game drew fewer frames than measured, e.g. on
+// Android in Release, where the splash screen ran at the display's 120 Hz.)
+// The clock's time starts half a step ahead, so the small jitter in frame
+// times on a 60 Hz display doesn't give frames with 0 and then 2 updates
+// (oxygine's Clock also snaps frame times within 1 ms of a whole step).
+spClock MainActor::createSceneClock(void)
+{
+   spClock clock = new Clock;
+   clock->setFixedStepF(Scales::c_updateStep);
+   clock->update(getTimeMS() - (timeMS)(Scales::c_updateStep * 500.0f));
+   return clock;
 }
 
 void MainActor::doUpdate(const UpdateState& us)

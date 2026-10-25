@@ -49,7 +49,7 @@ void Gun::startGun(void)
       // we reset m_timeSinceLast
       // Setting this to above m_interval will cause an immediate shot
       // when fire is pressed
-      m_timeSinceLast = (int)m_interval + 1;
+      m_timeSinceLast = m_interval + 1.0f;
    }
 
    m_fire = true;
@@ -65,7 +65,7 @@ void Gun::doUpdate(const oxygine::UpdateState& us)
 {
    if (m_fire)
    {
-      m_timeSinceLast += us.dt;
+      m_timeSinceLast += us.dtf * 1000.0f;
 
       if (m_timeSinceLast >= m_interval)
       {
@@ -92,7 +92,7 @@ void Gun::doUpdate(const oxygine::UpdateState& us)
             // Attach to parent's parent which is the view actor
             bullet->attachTo(m_sceneActor);
 
-            m_timeSinceLast = 0;
+            m_timeSinceLast = 0.0f;
 
             m_parent->m_resources->deltaShots(-1);
          }

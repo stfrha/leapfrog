@@ -66,7 +66,6 @@ public:
    };
 
 private:
-   float m_secondsPerUpdate = 1.0f / 60.0f;
    spCompoundObject m_panObject;
    bool m_armManPanEnableChange;
    bool m_armPauseChange;

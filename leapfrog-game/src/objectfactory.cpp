@@ -14,7 +14,7 @@ ObjectFactory::ObjectFactory(
    b2World* world,
    const xml_node& objectNode) :
    System(sceneParent, world, parentObject),
-   m_timeSinceLast(0),
+   m_timeSinceLast(0.0f),
    m_initialSpawn(0),
    m_attachedBody(NULL)
 {
@@ -67,13 +67,13 @@ void ObjectFactory::doUpdate(const oxygine::UpdateState& us)
 {
    if (!g_MainActor->isInPause())
    {
-      m_timeSinceLast += us.dt;
+      m_timeSinceLast += us.dtf * 1000.0f;
 
       if (m_timeSinceLast >= m_interval)
       {
          spawnObjects(1);
 
-         m_timeSinceLast = 0;
+         m_timeSinceLast = 0.0f;
       }
    }
 }
