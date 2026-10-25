@@ -45,6 +45,12 @@ OrbitWindow::OrbitWindow(
       Vector2(0.0f, 0.0f),
       spaceSceneFile));
 
+   // Every SceneActor starts a 4 s tween from its initial zoom to its
+   // default zoom (both 0.4 for the orbit space scene). Here the zoom is
+   // set for the window instead, which is sized from the button width, so
+   // stop that tween; it would end at 0.4 whatever the window's size and
+   // make the close-up depend on the screen size.
+   sceneObj->removeTweensByName("sceneZoom");
    sceneObj->setZoom(spaceZoomScale);
 
    //spOrbitSpaceScene orbitSpaceActor = new OrbitSpaceScene(
