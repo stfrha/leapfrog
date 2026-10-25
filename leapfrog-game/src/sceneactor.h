@@ -153,6 +153,7 @@ public:
    bool m_zoomOutPressed;
    bool m_panButtonPressed;
    bool m_manPanEnablePressed;
+   bool m_fuelCheatHeld = false;     // F (fuel cheat) held since the last frame
    oxygine::Vector2 m_panVector;
    LeapFrog* m_leapfrog;
 

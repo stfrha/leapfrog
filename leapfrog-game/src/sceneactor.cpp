@@ -10,6 +10,8 @@
 #include "polygonvertices.h"
 #include "headdowndisplay.h"
 #include "messagedisplay.h"
+#include "gamestatus.h"
+#include "objectresources.h"
 
 using namespace oxygine;
 using namespace std;
@@ -609,6 +611,24 @@ void SceneActor::doUpdate(const UpdateState& us)
       else if (data[SDL_SCANCODE_KP_8])
       {
          m_leapfrog->fireReentryFlames(false);
+      }
+
+      // Cheat (keyboard only, so Windows and macOS): F adds 25 % of a full
+      // tank (100) of fuel, once per key press
+      if (data[SDL_SCANCODE_F])
+      {
+         if (!m_fuelCheatHeld && (g_HeadDownDisplay != NULL))
+         {
+            ObjectResources* res = g_GameStatus.getResources();
+            float before = res->getFuel();
+            res->deltaFuel(25.0f);
+            g_HeadDownDisplay->logMessage("Cheat: +" + std::to_string(static_cast<int>(res->getFuel() - before + 0.5f)) + " fuel");
+         }
+         m_fuelCheatHeld = true;
+      }
+      else
+      {
+         m_fuelCheatHeld = false;
       }
 
       if (data[SDL_SCANCODE_P])

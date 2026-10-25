@@ -8,6 +8,8 @@
 #include "actoruserdata.h"
 #include "headdowndisplay.h"
 
+#include <cmath>
+
 
 using namespace std;
 using namespace oxygine;
@@ -74,7 +76,16 @@ void PickupItem::doPickupAmountCalculation(ObjectResources* status)
    else
    {
       // amount = static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (m_amountMax - m_amountMin)) + m_amountMin);
-      amount = static_cast<float>(rand() / static_cast<float>(RAND_MAX + 1)) * (m_amountMax - m_amountMin + 1.0f) + m_amountMin;
+      // A whole number from amountMin to amountMax. (RAND_MAX + 1 in int
+      // overflowed on macOS, where RAND_MAX is 2^31 - 1, and gave negative
+      // amounts, so pickups took resources away.)
+      double u = static_cast<double>(rand()) / (static_cast<double>(RAND_MAX) + 1.0);    // [0, 1)
+      float span = m_amountMax - m_amountMin;
+      if (span < 0.0f)
+      {
+         span = 0.0f;
+      }
+      amount = m_amountMin + static_cast<float>(floor(u * (static_cast<double>(span) + 1.0)));
    }
    
    // The resources are capped, so the log reports what was actually
