@@ -40,7 +40,6 @@
 		<image file="ls_support_booster.png"/>	
 		<image file="ls_tower.png"/>	
 		<image file="ls_foundation.png"/>	
-		<image file="landing_pad.png"/>	
 		<image file="alpha_mine1.png"/>	
 		<image file="alpha_city1.png"/>	
 		<image file="hammer.png"/>	
@@ -65,9 +64,6 @@
 	</atlas>	
 	<atlas clamp2edge="false"> 
 		<image file="ls_right_foot_glider.png" trim="false" extend="false"/>
-	</atlas>	
-	<atlas clamp2edge="false"> 
-		<image file="rock.png" trim="false" extend="false"/>
 	</atlas>	
 	<atlas clamp2edge="false"> 
 		<image file="grotto_border.png" trim="false" extend="false"/>

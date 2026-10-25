@@ -43,6 +43,12 @@ function lua_startInitialScene()
       currentSceneType = 0
       currentMission = 1
       currentState = 1
+
+      -- Start in the deep_space scene for test purposes. 
+      -- currentScene = "deep_space_scene.xml"
+      -- currentSceneType = 1
+      -- currentMission = 1
+      -- currentState = 5
    end
 
    useInitialLfPos = true -- For initial start, the LF file, pos and prop data is set by the setupMissionStateScene    

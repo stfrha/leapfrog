@@ -88,7 +88,8 @@ mission1.setupMissionStateScene = function()
             -- New game: start at home, hovering just above the silo's
             -- landing pad (the pad's top is at y = 588; in landing mode the
             -- leapfrog's origin is about 14 above its feet)
-            c_addPositionedChildObject("leapfrog_landing.xml", "leapfrog1", 2581, 501)
+            c_addPositionedChildObject("leapfrog_landing.xml", "leapfrog1", 2736, 503)
+            
             -- Reconfigure leapfrog to landing mode
             c_setObjectProperty("leapfrog1", 0, 2)
             lfDefined = true
@@ -179,6 +180,11 @@ mission1.setupMissionStateScene = function()
                -- Initialise leapfrog as descenting
                -- c_addPositionedChildObject("leapfrog_deep_space.xml", "leapfrog1", 20, 780)
                c_addPositionedChildObject("leapfrog_deep_space.xml", "leapfrog1", 20, 730)
+               
+               -- For test purposes, place leapfrog close to exit corner av  space scene.
+               -- c_addPositionedChildObject("leapfrog_deep_space.xml", "leapfrog1", 1350, 680)            
+            
+               
                
                -- We dont want to change the mode since it makes leapfrog instable (and the mode is already correct)
 

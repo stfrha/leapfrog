@@ -17,8 +17,8 @@
   <spriteBox
     name="cloud1"
     texture="cloud"
-    posX="838.841982788862"
-    posY="150.956873316381"
+    posX="1239.5219879635424"
+    posY="300.36297694083828"
     angle="0"
     zLevel="0"
     collisionEntity="notApplicable"
@@ -30,8 +30,8 @@
   <spriteBox
     name="cloud5"
     texture="cloud"
-    posX="2277.4401291864319"
-    posY="196.45681151213762"
+    posX="2018.4048716037692"
+    posY="273.10020233247587"
     angle="0"
     zLevel="0"
     collisionEntity="notApplicable"
@@ -43,8 +43,8 @@
   <spriteBox
     name="siloHome"
     texture="silo_home"
-    posX="2614.9019583114841"
-    posY="509.71055916506748"
+    posX="2771.0510750033236"
+    posY="511.75002897249237"
     angle="0"
     zLevel="40"
     collisionEntity="notApplicable"
@@ -143,12 +143,12 @@
     height="20.214285714285715"
     parallaxAmount="0.4" />
   <spriteBox
-    name="noName"
+    name="oreSprite"
     texture="ore_building_blink"
-    posX="1053.5573298808936"
-    posY="499.45288154826062"
+    posX="881.91365607055172"
+    posY="580.87978539377332"
     angle="0"
-    zLevel="34"
+    zLevel="40"
     collisionEntity="notApplicable"
     collisionCategory="1"
     collisionMask="65534"
@@ -172,8 +172,8 @@
   <spriteBox
     name="cloud5_3"
     texture="cloud"
-    posX="1727.8560981640344"
-    posY="183.1585993970798"
+    posX="1625.0181307342132"
+    posY="213.23385402278223"
     angle="0"
     zLevel="0"
     collisionEntity="notApplicable"
@@ -265,6 +265,261 @@
     width="40"
     height="21.68224299065421"
     parallaxAmount="0.6" />
+  <spriteBox
+    name="noName"
+    texture="fuel_station"
+    posX="946.257932198602"
+    posY="586.22528921637786"
+    angle="0"
+    zLevel="40"
+    collisionEntity="notApplicable"
+    collisionCategory="1"
+    collisionMask="65534"
+    width="83.85"
+    height="24.15"
+    parallaxAmount="0" />
+  <spriteBox
+    name="noName"
+    texture="pad_house"
+    posX="1014.1208039590247"
+    posY="597.94807668375643"
+    angle="0"
+    zLevel="40"
+    collisionEntity="notApplicable"
+    collisionCategory="1"
+    collisionMask="65534"
+    width="56.35"
+    height="32.35"
+    parallaxAmount="0" />
+  <spriteBox
+    name="noName"
+    texture="workshop"
+    posX="1074.5157398608826"
+    posY="594.765294156819"
+    angle="0"
+    zLevel="40"
+    collisionEntity="notApplicable"
+    collisionCategory="1"
+    collisionMask="65534"
+    width="54.55"
+    height="31"
+    parallaxAmount="0" />
+  <spriteBox
+    name="bunkhouse_2"
+    texture="amb_bunkhouse"
+    posX="1014.1662563900923"
+    posY="575.433894869619"
+    angle="0"
+    zLevel="35"
+    collisionEntity="notApplicable"
+    collisionCategory="1"
+    collisionMask="65534"
+    color="7c7474"
+    width="34.214285714285715"
+    height="19.357142857142858"
+    parallaxAmount="0.4" />
+  <spriteBox
+    name="container_3"
+    texture="amb_container_home"
+    posX="1047.064685776513"
+    posY="566.09404207538046"
+    angle="0"
+    zLevel="35"
+    collisionEntity="notApplicable"
+    collisionCategory="1"
+    collisionMask="65534"
+    animatePeriod="0.25"
+    color="7c7474"
+    width="29.642857142857142"
+    height="27"
+    parallaxAmount="0.4" />
+  <spriteBox
+    name="waterTower_2"
+    texture="amb_water_tower"
+    posX="980.6283316421534"
+    posY="553.4695749952275"
+    angle="0"
+    zLevel="35"
+    collisionEntity="notApplicable"
+    collisionCategory="1"
+    collisionMask="65534"
+    animatePeriod="0.89"
+    color="7c7474"
+    width="20.5"
+    height="25.571428571428573"
+    parallaxAmount="0.4" />
+  <spriteBox
+    name="dome_2"
+    texture="amb_dome"
+    posX="1005.7794368469142"
+    posY="589.5660436626431"
+    angle="0"
+    zLevel="35"
+    collisionEntity="notApplicable"
+    collisionCategory="1"
+    collisionMask="65534"
+    animatePeriod="1.58"
+    color="7c7474"
+    width="20.928571428571427"
+    height="19.642857142857142"
+    parallaxAmount="0.4" />
+  <spriteBox
+    name="hut1_2"
+    texture="amb_hut"
+    posX="947.87057568635714"
+    posY="586.91890146611331"
+    angle="0"
+    zLevel="35"
+    collisionEntity="notApplicable"
+    collisionCategory="1"
+    collisionMask="65534"
+    animatePeriod="0.76"
+    color="7c7474"
+    width="31.5"
+    height="20.214285714285715"
+    parallaxAmount="0.4" />
+  <spriteBox
+    name="hut2_2"
+    texture="amb_hut"
+    posX="976.73119006812158"
+    posY="577.84082385398551"
+    angle="0"
+    zLevel="35"
+    collisionEntity="notApplicable"
+    collisionCategory="1"
+    collisionMask="65534"
+    animatePeriod="0.82"
+    color="7c7474"
+    width="31.5"
+    height="20.214285714285715"
+    parallaxAmount="0.4" />
+  <spriteBox
+    name="container_4"
+    texture="amb_container_home"
+    posX="924.59179300695837"
+    posY="588.98059642450653"
+    angle="0"
+    zLevel="35"
+    collisionEntity="notApplicable"
+    collisionCategory="1"
+    collisionMask="65534"
+    animatePeriod="0.38"
+    color="7c7474"
+    width="29.642857142857142"
+    height="27"
+    parallaxAmount="0.4" />
+  <spriteBox
+    name="bunkhouse_3"
+    texture="amb_bunkhouse"
+    posX="944.03690820931638"
+    posY="560.09690984290387"
+    angle="0"
+    zLevel="35"
+    collisionEntity="notApplicable"
+    collisionCategory="1"
+    collisionMask="65534"
+    color="7c7474"
+    width="34.214285714285715"
+    height="19.357142857142858"
+    parallaxAmount="0.4" />
+  <spriteBox
+    name="hut2_3"
+    texture="amb_hut"
+    posX="1135.0494064847785"
+    posY="599.1642936123269"
+    angle="0"
+    zLevel="35"
+    collisionEntity="notApplicable"
+    collisionCategory="1"
+    collisionMask="65534"
+    animatePeriod="0.82"
+    color="7c7474"
+    width="31.5"
+    height="20.214285714285715"
+    parallaxAmount="0.4" />
+  <spriteBox
+    name="dome_3"
+    texture="amb_dome"
+    posX="1026.7426986290298"
+    posY="596.8033844492586"
+    angle="0"
+    zLevel="35"
+    collisionEntity="notApplicable"
+    collisionCategory="1"
+    collisionMask="65534"
+    animatePeriod="1.58"
+    color="7c7474"
+    width="20.928571428571427"
+    height="19.642857142857142"
+    parallaxAmount="0.4" />
+  <spriteBox
+    name="cloud1_2"
+    texture="cloud"
+    posX="886.61582339043"
+    posY="229.42498272001944"
+    angle="0"
+    zLevel="0"
+    collisionEntity="notApplicable"
+    collisionCategory="1"
+    collisionMask="65534"
+    width="250"
+    height="100"
+    parallaxAmount="0.8" />
+  <spriteBox
+    name="cloud1_3"
+    texture="cloud"
+    posX="489.81649623196904"
+    posY="327.41210262956588"
+    angle="-2"
+    zLevel="0"
+    collisionEntity="notApplicable"
+    collisionCategory="1"
+    collisionMask="65534"
+    width="250"
+    height="100"
+    parallaxAmount="0.8" />
+  <spriteBox
+    name="noName"
+    texture="gen_landing_pad_blink"
+    posX="2459.7184185597134"
+    posY="529.86818131000246"
+    angle="0"
+    zLevel="40"
+    collisionEntity="notApplicable"
+    collisionCategory="1"
+    collisionMask="65534"
+    animatePeriod="1.2"
+    width="64"
+    height="32"
+    parallaxAmount="0" />
+  <spriteBox
+    name="noName_5"
+    texture="gen_landing_pad_blink"
+    posX="2113.2606594172312"
+    posY="523.23158229424234"
+    angle="0"
+    zLevel="40"
+    collisionEntity="notApplicable"
+    collisionCategory="1"
+    collisionMask="65534"
+    animatePeriod="1.2"
+    width="64"
+    height="32"
+    parallaxAmount="0" />
+  <spriteBox
+    name="noName"
+    texture="fuel_station_neon"
+    posX="925.38433111616769"
+    posY="575.97965998299424"
+    angle="0"
+    zLevel="41"
+    collisionEntity="notApplicable"
+    collisionCategory="1"
+    collisionMask="65534"
+    animatePeriod="0.57"
+    width="11.95"
+    height="3.75"
+    parallaxAmount="0" />
   <spritePolygon
     name="villageGround"
     texture="ash_slope"
@@ -446,54 +701,42 @@
     <vertices>
       <vertex
         id="1"
-        x="99.978795107423821"
-        y="286.6645452824265" />
+        x="257.787013318007"
+        y="266.93851800610321" />
       <vertex
         id="2"
-        x="162.94314502943939"
-        y="119.46440309354375" />
+        x="258.20411383103533"
+        y="93.477208683001209" />
       <vertex
         id="3"
-        x="185.5763292552499"
-        y="90.3924681828048" />
+        x="307.1940914530378"
+        y="62.799527824974348" />
       <vertex
         id="4"
-        x="201.96587645325076"
-        y="71.661557099375614" />
+        x="358.475950002633"
+        y="45.143091433230211" />
       <vertex
         id="5"
-        x="222.29262827670414"
-        y="53.519358559167813" />
-      <vertex
-        id="6"
-        x="275.32897046820835"
-        y="32.451793553708512" />
-      <vertex
-        id="7"
-        x="330.15139801611804"
-        y="27.946042012845965" />
-      <vertex
-        id="8"
         x="449.44278429490305"
         y="29.035625938772228" />
       <vertex
-        id="9"
+        id="6"
         x="485.55230712306275"
         y="27.634270571594129" />
       <vertex
-        id="10"
+        id="7"
         x="528.73191353098082"
         y="29.698186511635129" />
       <vertex
-        id="11"
+        id="8"
         x="598.9003484551406"
         y="40.91617230564907" />
       <vertex
-        id="12"
+        id="9"
         x="648.27696340735633"
         y="63.309386686800167" />
       <vertex
-        id="13"
+        id="10"
         x="875.80637765132633"
         y="173.16486416173711" />
     </vertices>
@@ -501,55 +744,40 @@
       <triangle
         id="1"
         v1="1"
-        v2="13"
-        v3="12" />
-      <triangle
-        id="2"
-        v1="1"
-        v2="12"
-        v3="11" />
-      <triangle
-        id="3"
-        v1="1"
-        v2="11"
-        v3="10" />
-      <triangle
-        id="4"
-        v1="1"
         v2="10"
         v3="9" />
       <triangle
-        id="5"
+        id="2"
         v1="1"
         v2="9"
         v3="8" />
       <triangle
-        id="6"
+        id="3"
         v1="1"
         v2="8"
         v3="7" />
       <triangle
-        id="7"
+        id="4"
         v1="1"
         v2="7"
         v3="6" />
       <triangle
-        id="8"
+        id="5"
         v1="1"
         v2="6"
         v3="5" />
       <triangle
-        id="9"
+        id="6"
         v1="1"
         v2="5"
         v3="4" />
       <triangle
-        id="10"
+        id="7"
         v1="1"
         v2="4"
         v3="3" />
       <triangle
-        id="11"
+        id="8"
         v1="3"
         v2="2"
         v3="1" />
@@ -931,6 +1159,723 @@
       width="3"
       amount="1" />
   </spritePolygon>
+  <spritePolygon
+    name="villageGround_3"
+    texture="ash_slope"
+    posX="600.018713011835"
+    posY="532.79071976690966"
+    angle="0"
+    zLevel="33"
+    collisionEntity="notApplicable"
+    collisionCategory="1"
+    collisionMask="65534"
+    textureMeterWidth="300"
+    textureMeterHeight="300"
+    textureOffsetMeterX="264.328"
+    textureOffsetMeterY="296.048"
+    parallaxAmount="0.4">
+    <vertices>
+      <vertex
+        id="1"
+        x="99.978795107423821"
+        y="286.6645452824265" />
+      <vertex
+        id="2"
+        x="162.94314502943939"
+        y="119.46440309354375" />
+      <vertex
+        id="3"
+        x="185.5763292552499"
+        y="90.3924681828048" />
+      <vertex
+        id="4"
+        x="201.96587645325076"
+        y="71.661557099375614" />
+      <vertex
+        id="5"
+        x="222.29262827670414"
+        y="53.519358559167813" />
+      <vertex
+        id="6"
+        x="275.32897046820835"
+        y="32.451793553708512" />
+      <vertex
+        id="7"
+        x="330.15139801611804"
+        y="27.946042012845965" />
+      <vertex
+        id="8"
+        x="449.44278429490305"
+        y="29.035625938772228" />
+      <vertex
+        id="9"
+        x="492.50377935510642"
+        y="34.856613121752957" />
+      <vertex
+        id="10"
+        x="525.58869984165358"
+        y="34.587630028366391" />
+      <vertex
+        id="11"
+        x="595.52430412215949"
+        y="42.662402133053092" />
+      <vertex
+        id="12"
+        x="635.77100280519221"
+        y="65.095952487109" />
+      <vertex
+        id="13"
+        x="748.960205829374"
+        y="218.72229206962174" />
+    </vertices>
+    <triangles>
+      <triangle
+        id="1"
+        v1="1"
+        v2="13"
+        v3="12" />
+      <triangle
+        id="2"
+        v1="1"
+        v2="12"
+        v3="11" />
+      <triangle
+        id="3"
+        v1="1"
+        v2="11"
+        v3="10" />
+      <triangle
+        id="4"
+        v1="1"
+        v2="10"
+        v3="9" />
+      <triangle
+        id="5"
+        v1="1"
+        v2="9"
+        v3="8" />
+      <triangle
+        id="6"
+        v1="1"
+        v2="8"
+        v3="7" />
+      <triangle
+        id="7"
+        v1="1"
+        v2="7"
+        v3="6" />
+      <triangle
+        id="8"
+        v1="1"
+        v2="6"
+        v3="5" />
+      <triangle
+        id="9"
+        v1="1"
+        v2="5"
+        v3="4" />
+      <triangle
+        id="10"
+        v1="1"
+        v2="4"
+        v3="3" />
+      <triangle
+        id="11"
+        v1="3"
+        v2="2"
+        v3="1" />
+    </triangles>
+    <border
+      leftGroundAngle="-45"
+      rightGroundAngle="45"
+      leftCeilingAngle="-135"
+      rightCeilingAngle="135">
+      <groundBorder
+        texture="transparent"
+        horisontalMeterOffset="4"
+        textureMeterWidth="128"
+        textureMeterHeight="10" />
+      <ceilingBorder
+        texture="notDefined"
+        horisontalMeterOffset="0"
+        textureMeterWidth="0"
+        textureMeterHeight="0" />
+      <leftWallBorder
+        texture="notDefined"
+        horisontalMeterOffset="0"
+        textureMeterWidth="0"
+        textureMeterHeight="0" />
+      <rightWallBorder
+        texture="notDefined"
+        horisontalMeterOffset="0"
+        textureMeterWidth="0"
+        textureMeterHeight="0" />
+    </border>
+    <fade
+      amount="1"
+      angle="180"
+      start="0.5"
+      end="1"
+      color="252529" />
+    <edgeFade
+      width="3"
+      amount="1" />
+  </spritePolygon>
+  <spritePolygon
+    name="noName_3"
+    texture="ash_slope"
+    posX="920.60326576011744"
+    posY="560.06849604710624"
+    angle="0"
+    zLevel="34"
+    collisionEntity="notApplicable"
+    collisionCategory="1"
+    collisionMask="65534"
+    color="454648"
+    textureMeterWidth="150"
+    textureMeterHeight="150"
+    textureOffsetMeterX="137.185"
+    textureOffsetMeterY="36.05"
+    parallaxAmount="0.4">
+    <vertices>
+      <vertex
+        id="1"
+        x="-10.798662305487596"
+        y="0.69314346910960012" />
+      <vertex
+        id="2"
+        x="10.405303264028589"
+        y="-1.1330677765363362" />
+      <vertex
+        id="3"
+        x="91.505489122493145"
+        y="-0.52997526774493053" />
+      <vertex
+        id="4"
+        x="133.35855102349933"
+        y="4.6998849467104264" />
+      <vertex
+        id="5"
+        x="109.23544474127584"
+        y="10.455087270772765" />
+      <vertex
+        id="6"
+        x="125.10975777151998"
+        y="14.397706455731623" />
+      <vertex
+        id="7"
+        x="98.390591468731145"
+        y="17.506683466884169" />
+      <vertex
+        id="8"
+        x="117.58885299864551"
+        y="25.098099036996246" />
+      <vertex
+        id="9"
+        x="61.9701888351442"
+        y="22.951377275907817" />
+      <vertex
+        id="10"
+        x="36.21170938242949"
+        y="25.025165239155285" />
+      <vertex
+        id="11"
+        x="4.5691926317999787"
+        y="28.096952802030955" />
+      <vertex
+        id="12"
+        x="-23.6196779215079"
+        y="23.807162985393916" />
+      <vertex
+        id="13"
+        x="-43.344410814588173"
+        y="19.214133275328095" />
+      <vertex
+        id="14"
+        x="-5.56754325463362"
+        y="18.079047861296203" />
+      <vertex
+        id="15"
+        x="-12.973850063771806"
+        y="11.251358771622108" />
+      <vertex
+        id="16"
+        x="-38.84732384492645"
+        y="6.4126567845314639" />
+    </vertices>
+    <triangles>
+      <triangle
+        id="1"
+        v1="1"
+        v2="16"
+        v3="15" />
+      <triangle
+        id="2"
+        v1="1"
+        v2="15"
+        v3="14" />
+      <triangle
+        id="3"
+        v1="14"
+        v2="13"
+        v3="12" />
+      <triangle
+        id="4"
+        v1="14"
+        v2="12"
+        v3="11" />
+      <triangle
+        id="5"
+        v1="1"
+        v2="14"
+        v3="11" />
+      <triangle
+        id="6"
+        v1="1"
+        v2="11"
+        v3="10" />
+      <triangle
+        id="7"
+        v1="1"
+        v2="10"
+        v3="9" />
+      <triangle
+        id="8"
+        v1="1"
+        v2="9"
+        v3="8" />
+      <triangle
+        id="9"
+        v1="1"
+        v2="8"
+        v3="7" />
+      <triangle
+        id="10"
+        v1="1"
+        v2="7"
+        v3="6" />
+      <triangle
+        id="11"
+        v1="1"
+        v2="6"
+        v3="5" />
+      <triangle
+        id="12"
+        v1="1"
+        v2="5"
+        v3="4" />
+      <triangle
+        id="13"
+        v1="1"
+        v2="4"
+        v3="3" />
+      <triangle
+        id="14"
+        v1="3"
+        v2="2"
+        v3="1" />
+    </triangles>
+    <border
+      leftGroundAngle="90"
+      rightGroundAngle="-90"
+      leftCeilingAngle="0"
+      rightCeilingAngle="0">
+      <groundBorder
+        texture="notDefined"
+        horisontalMeterOffset="0"
+        textureMeterWidth="0"
+        textureMeterHeight="0" />
+      <ceilingBorder
+        texture="notDefined"
+        horisontalMeterOffset="0"
+        textureMeterWidth="0"
+        textureMeterHeight="0" />
+      <leftWallBorder
+        texture="notDefined"
+        horisontalMeterOffset="0"
+        textureMeterWidth="0"
+        textureMeterHeight="0" />
+      <rightWallBorder
+        texture="notDefined"
+        horisontalMeterOffset="0"
+        textureMeterWidth="0"
+        textureMeterHeight="0" />
+    </border>
+    <edgeFade
+      width="3"
+      amount="1" />
+  </spritePolygon>
+  <spritePolygon
+    name="noName"
+    texture="concrete"
+    posX="902.68147333625211"
+    posY="604.85064697756593"
+    angle="0"
+    zLevel="170"
+    collisionEntity="notApplicable"
+    collisionCategory="1"
+    collisionMask="65534"
+    color="65628b"
+    textureMeterWidth="18.4591"
+    textureMeterHeight="18.4591"
+    textureOffsetMeterX="4.676"
+    textureOffsetMeterY="16.709"
+    parallaxAmount="0">
+    <vertices>
+      <vertex
+        id="1"
+        x="0"
+        y="0" />
+      <vertex
+        id="2"
+        x="1.8681035795309526"
+        y="-8.2934793375875415" />
+      <vertex
+        id="3"
+        x="85.5757103828796"
+        y="-7.9213825053702749" />
+      <vertex
+        id="4"
+        x="89.12100862796251"
+        y="-0.5775937942762539" />
+    </vertices>
+    <triangles>
+      <triangle
+        id="1"
+        v1="1"
+        v2="4"
+        v3="3" />
+      <triangle
+        id="2"
+        v1="3"
+        v2="2"
+        v3="1" />
+    </triangles>
+    <border
+      leftGroundAngle="0"
+      rightGroundAngle="0"
+      leftCeilingAngle="0"
+      rightCeilingAngle="0">
+      <groundBorder
+        texture="notDefined"
+        horisontalMeterOffset="0"
+        textureMeterWidth="0"
+        textureMeterHeight="0" />
+      <ceilingBorder
+        texture="notDefined"
+        horisontalMeterOffset="0"
+        textureMeterWidth="0"
+        textureMeterHeight="0" />
+      <leftWallBorder
+        texture="notDefined"
+        horisontalMeterOffset="0"
+        textureMeterWidth="0"
+        textureMeterHeight="0" />
+      <rightWallBorder
+        texture="notDefined"
+        horisontalMeterOffset="0"
+        textureMeterWidth="0"
+        textureMeterHeight="0" />
+    </border>
+  </spritePolygon>
+  <spritePolygon
+    name="villageGround_4"
+    texture="ash_slope"
+    posX="1932.2804659764915"
+    posY="464.18316052866885"
+    angle="0"
+    zLevel="33"
+    collisionEntity="notApplicable"
+    collisionCategory="1"
+    collisionMask="65534"
+    textureMeterWidth="300"
+    textureMeterHeight="300"
+    textureOffsetMeterX="264.328"
+    textureOffsetMeterY="296.048"
+    parallaxAmount="0.4">
+    <vertices>
+      <vertex
+        id="1"
+        x="99.978795107423821"
+        y="286.6645452824265" />
+      <vertex
+        id="2"
+        x="162.94314502943939"
+        y="119.46440309354375" />
+      <vertex
+        id="3"
+        x="185.5763292552499"
+        y="90.3924681828048" />
+      <vertex
+        id="4"
+        x="201.96587645325076"
+        y="71.661557099375614" />
+      <vertex
+        id="5"
+        x="222.29262827670414"
+        y="53.519358559167813" />
+      <vertex
+        id="6"
+        x="275.32897046820835"
+        y="32.451793553708512" />
+      <vertex
+        id="7"
+        x="330.15139801611804"
+        y="27.946042012845965" />
+      <vertex
+        id="8"
+        x="449.44278429490305"
+        y="29.035625938772228" />
+      <vertex
+        id="9"
+        x="492.50377935510642"
+        y="34.856613121752957" />
+      <vertex
+        id="10"
+        x="525.58869984165358"
+        y="34.587630028366391" />
+      <vertex
+        id="11"
+        x="595.52430412215949"
+        y="42.662402133053092" />
+      <vertex
+        id="12"
+        x="635.77100280519221"
+        y="65.095952487109" />
+      <vertex
+        id="13"
+        x="748.960205829374"
+        y="218.72229206962174" />
+    </vertices>
+    <triangles>
+      <triangle
+        id="1"
+        v1="1"
+        v2="13"
+        v3="12" />
+      <triangle
+        id="2"
+        v1="1"
+        v2="12"
+        v3="11" />
+      <triangle
+        id="3"
+        v1="1"
+        v2="11"
+        v3="10" />
+      <triangle
+        id="4"
+        v1="1"
+        v2="10"
+        v3="9" />
+      <triangle
+        id="5"
+        v1="1"
+        v2="9"
+        v3="8" />
+      <triangle
+        id="6"
+        v1="1"
+        v2="8"
+        v3="7" />
+      <triangle
+        id="7"
+        v1="1"
+        v2="7"
+        v3="6" />
+      <triangle
+        id="8"
+        v1="1"
+        v2="6"
+        v3="5" />
+      <triangle
+        id="9"
+        v1="1"
+        v2="5"
+        v3="4" />
+      <triangle
+        id="10"
+        v1="1"
+        v2="4"
+        v3="3" />
+      <triangle
+        id="11"
+        v1="3"
+        v2="2"
+        v3="1" />
+    </triangles>
+    <border
+      leftGroundAngle="-45"
+      rightGroundAngle="45"
+      leftCeilingAngle="-135"
+      rightCeilingAngle="135">
+      <groundBorder
+        texture="transparent"
+        horisontalMeterOffset="4"
+        textureMeterWidth="128"
+        textureMeterHeight="10" />
+      <ceilingBorder
+        texture="notDefined"
+        horisontalMeterOffset="0"
+        textureMeterWidth="0"
+        textureMeterHeight="0" />
+      <leftWallBorder
+        texture="notDefined"
+        horisontalMeterOffset="0"
+        textureMeterWidth="0"
+        textureMeterHeight="0" />
+      <rightWallBorder
+        texture="notDefined"
+        horisontalMeterOffset="0"
+        textureMeterWidth="0"
+        textureMeterHeight="0" />
+    </border>
+    <fade
+      amount="1"
+      angle="180"
+      start="0.5"
+      end="1"
+      color="252529" />
+    <edgeFade
+      width="3"
+      amount="1" />
+  </spritePolygon>
+  <spritePolygon
+    name="villageGround_5"
+    texture="ash_slope"
+    posX="2205.1258400233173"
+    posY="439.36180122388259"
+    angle="0"
+    zLevel="24"
+    collisionEntity="notApplicable"
+    collisionCategory="1"
+    collisionMask="65534"
+    color="4e505e"
+    textureMeterWidth="200"
+    textureMeterHeight="200"
+    textureOffsetMeterX="60.809"
+    textureOffsetMeterY="180.464"
+    parallaxAmount="0.6">
+    <vertices>
+      <vertex
+        id="1"
+        x="153.22887945779507"
+        y="292.5969557632103" />
+      <vertex
+        id="2"
+        x="111.95101861552325"
+        y="215.99624897318836" />
+      <vertex
+        id="3"
+        x="307.1940914530378"
+        y="62.799527824974348" />
+      <vertex
+        id="4"
+        x="358.475950002633"
+        y="45.143091433230211" />
+      <vertex
+        id="5"
+        x="449.44278429490305"
+        y="29.035625938772228" />
+      <vertex
+        id="6"
+        x="485.55230712306275"
+        y="27.634270571594129" />
+      <vertex
+        id="7"
+        x="528.73191353098082"
+        y="29.698186511635129" />
+      <vertex
+        id="8"
+        x="598.9003484551406"
+        y="40.91617230564907" />
+      <vertex
+        id="9"
+        x="648.27696340735633"
+        y="63.309386686800167" />
+      <vertex
+        id="10"
+        x="875.80637765132633"
+        y="173.16486416173711" />
+    </vertices>
+    <triangles>
+      <triangle
+        id="1"
+        v1="1"
+        v2="10"
+        v3="9" />
+      <triangle
+        id="2"
+        v1="1"
+        v2="9"
+        v3="8" />
+      <triangle
+        id="3"
+        v1="1"
+        v2="8"
+        v3="7" />
+      <triangle
+        id="4"
+        v1="1"
+        v2="7"
+        v3="6" />
+      <triangle
+        id="5"
+        v1="1"
+        v2="6"
+        v3="5" />
+      <triangle
+        id="6"
+        v1="1"
+        v2="5"
+        v3="4" />
+      <triangle
+        id="7"
+        v1="1"
+        v2="4"
+        v3="3" />
+      <triangle
+        id="8"
+        v1="3"
+        v2="2"
+        v3="1" />
+    </triangles>
+    <border
+      leftGroundAngle="-45"
+      rightGroundAngle="45"
+      leftCeilingAngle="-135"
+      rightCeilingAngle="135">
+      <groundBorder
+        texture="notDefined"
+        horisontalMeterOffset="4"
+        textureMeterWidth="128"
+        textureMeterHeight="10" />
+      <ceilingBorder
+        texture="notDefined"
+        horisontalMeterOffset="0"
+        textureMeterWidth="0"
+        textureMeterHeight="0" />
+      <leftWallBorder
+        texture="notDefined"
+        horisontalMeterOffset="0"
+        textureMeterWidth="0"
+        textureMeterHeight="0" />
+      <rightWallBorder
+        texture="notDefined"
+        horisontalMeterOffset="0"
+        textureMeterWidth="0"
+        textureMeterHeight="0" />
+    </border>
+    <fade
+      amount="0.3"
+      angle="180"
+      start="0.3"
+      end="1"
+      color="101215" />
+    <edgeFade
+      width="4"
+      amount="1" />
+  </spritePolygon>
   <staticPolygon
     name="mainGround"
     texture="grotto_light"
@@ -949,8 +1894,8 @@
     <vertices>
       <vertex
         id="1"
-        x="-155.69737374240003"
-        y="243.36633670418132" />
+        x="921.69454039840161"
+        y="217.21195194430266" />
       <vertex
         id="2"
         x="2212.1115652365506"
@@ -993,12 +1938,12 @@
         y="-142.2436109138589" />
       <vertex
         id="12"
-        x="2010.2756376529528"
-        y="-115.43418250128775" />
+        x="1982.8471471840035"
+        y="-113.87990137471365" />
       <vertex
         id="13"
-        x="1936.0252221186438"
-        y="-101.65921853338432" />
+        x="1934.6981220357943"
+        y="-104.50300442520484" />
       <vertex
         id="14"
         x="1880.2534167851804"
@@ -1037,241 +1982,151 @@
         y="-85.053628631907827" />
       <vertex
         id="23"
-        x="1089.5864552878"
-        y="-104.74622908587776" />
+        x="1104.7603224234333"
+        y="-101.71145565875099" />
       <vertex
         id="24"
-        x="982.13048542962042"
-        y="-118.78805888967645" />
+        x="1038.2737938314622"
+        y="-76.807026481091725" />
       <vertex
         id="25"
-        x="801.83800910384662"
-        y="-110.0642293900421" />
+        x="982.4070280178787"
+        y="-29.136937999999418" />
       <vertex
         id="26"
-        x="682.11974098993824"
-        y="-97.752222637499926" />
+        x="967.38844313983782"
+        y="8.4648473119304981" />
       <vertex
         id="27"
-        x="632.330119350966"
-        y="-87.2714284231879" />
-      <vertex
-        id="28"
-        x="585.36292422222959"
-        y="-52.430442764796226" />
-      <vertex
-        id="29"
-        x="510.18367910732741"
-        y="-34.936669501410506" />
-      <vertex
-        id="30"
-        x="416.66803944941785"
-        y="-6.5853813710000395" />
-      <vertex
-        id="31"
-        x="371.23732662161933"
-        y="-11.14774955097505" />
-      <vertex
-        id="32"
-        x="360.05073696078921"
-        y="5.5687514539363292" />
-      <vertex
-        id="33"
-        x="336.5013469676469"
-        y="11.144737594324852" />
-      <vertex
-        id="34"
-        x="265.39806343733727"
-        y="10.872499836358429" />
-      <vertex
-        id="35"
-        x="252.86795213729397"
-        y="-7.1209095795270514" />
-      <vertex
-        id="36"
-        x="91.403957879665541"
-        y="28.760397028615444" />
-      <vertex
-        id="37"
-        x="-152.35358873072619"
-        y="40.868687227065948" />
+        x="944.37810045115339"
+        y="30.044320196539047" />
     </vertices>
     <triangles>
       <triangle
         id="1"
-        v1="37"
+        v1="27"
         v2="1"
         v3="2" />
       <triangle
         id="2"
-        v1="2"
-        v2="3"
-        v3="4" />
+        v1="27"
+        v2="2"
+        v3="3" />
       <triangle
         id="3"
-        v1="2"
-        v2="4"
-        v3="5" />
-      <triangle
-        id="4"
-        v1="2"
+        v1="4"
         v2="5"
         v3="6" />
       <triangle
-        id="5"
-        v1="2"
+        id="4"
+        v1="4"
         v2="6"
         v3="7" />
       <triangle
-        id="6"
-        v1="2"
+        id="5"
+        v1="4"
         v2="7"
         v3="8" />
       <triangle
-        id="7"
-        v1="2"
+        id="6"
+        v1="4"
         v2="8"
         v3="9" />
       <triangle
-        id="8"
-        v1="2"
+        id="7"
+        v1="4"
         v2="9"
         v3="10" />
       <triangle
+        id="8"
+        v1="3"
+        v2="4"
+        v3="10" />
+      <triangle
         id="9"
-        v1="2"
+        v1="3"
         v2="10"
         v3="11" />
       <triangle
         id="10"
-        v1="2"
+        v1="3"
         v2="11"
         v3="12" />
       <triangle
         id="11"
-        v1="2"
+        v1="3"
         v2="12"
         v3="13" />
       <triangle
         id="12"
-        v1="2"
-        v2="13"
-        v3="14" />
-      <triangle
-        id="13"
         v1="14"
         v2="15"
         v3="16" />
       <triangle
-        id="14"
+        id="13"
         v1="14"
         v2="16"
         v3="17" />
       <triangle
-        id="15"
-        v1="2"
+        id="14"
+        v1="13"
         v2="14"
         v3="17" />
       <triangle
-        id="16"
-        v1="2"
+        id="15"
+        v1="13"
         v2="17"
         v3="18" />
       <triangle
+        id="16"
+        v1="3"
+        v2="13"
+        v3="18" />
+      <triangle
         id="17"
-        v1="2"
+        v1="3"
         v2="18"
         v3="19" />
       <triangle
         id="18"
-        v1="37"
-        v2="2"
+        v1="27"
+        v2="3"
         v3="19" />
       <triangle
         id="19"
-        v1="37"
+        v1="27"
         v2="19"
         v3="20" />
       <triangle
         id="20"
-        v1="21"
+        v1="27"
+        v2="20"
+        v3="21" />
+      <triangle
+        id="21"
+        v1="27"
+        v2="21"
+        v3="22" />
+      <triangle
+        id="22"
+        v1="27"
         v2="22"
         v3="23" />
       <triangle
-        id="21"
-        v1="21"
-        v2="23"
-        v3="24" />
-      <triangle
-        id="22"
-        v1="21"
+        id="23"
+        v1="23"
         v2="24"
         v3="25" />
       <triangle
-        id="23"
-        v1="21"
+        id="24"
+        v1="23"
         v2="25"
         v3="26" />
       <triangle
-        id="24"
-        v1="20"
-        v2="21"
-        v3="26" />
-      <triangle
         id="25"
-        v1="20"
+        v1="23"
         v2="26"
         v3="27" />
-      <triangle
-        id="26"
-        v1="20"
-        v2="27"
-        v3="28" />
-      <triangle
-        id="27"
-        v1="20"
-        v2="28"
-        v3="29" />
-      <triangle
-        id="28"
-        v1="20"
-        v2="29"
-        v3="30" />
-      <triangle
-        id="29"
-        v1="30"
-        v2="31"
-        v3="32" />
-      <triangle
-        id="30"
-        v1="20"
-        v2="30"
-        v3="32" />
-      <triangle
-        id="31"
-        v1="20"
-        v2="32"
-        v3="33" />
-      <triangle
-        id="32"
-        v1="34"
-        v2="35"
-        v3="36" />
-      <triangle
-        id="33"
-        v1="33"
-        v2="34"
-        v3="36" />
-      <triangle
-        id="34"
-        v1="20"
-        v2="33"
-        v3="36" />
-      <triangle
-        id="35"
-        v1="20"
-        v2="36"
-        v3="37" />
     </triangles>
     <border
       leftGroundAngle="-45"
@@ -1303,14 +2158,14 @@
   <staticPolygon
     name="oarGround"
     texture="white_gravel"
-    posX="880.88813510392583"
-    posY="488.02984126807655"
+    posX="709.244461293584"
+    posY="569.45674511358925"
     angle="0"
-    zLevel="33"
+    zLevel="30"
     collisionEntity="notApplicable"
     collisionCategory="1"
     collisionMask="65533"
-    color="f7f5f4"
+    color="302d2b"
     textureMeterWidth="50"
     textureMeterHeight="50"
     textureOffsetMeterX="0"
@@ -1342,68 +2197,275 @@
         y="23.167538203611457" />
       <vertex
         id="7"
-        x="213.91544267164272"
-        y="27.968528208798489" />
+        x="195.48742419039263"
+        y="26.575954408176244" />
       <vertex
         id="8"
-        x="273.0512152811466"
-        y="43.042556103432162" />
+        x="208.27097194219346"
+        y="22.427331364195652" />
       <vertex
         id="9"
-        x="69.029201772798842"
-        y="47.986394078048761" />
+        x="262.13066416389734"
+        y="22.521841852400144" />
       <vertex
         id="10"
-        x="121.09596983552342"
-        y="27.621854528134577" />
+        x="262.10981788731328"
+        y="18.503137928744081" />
       <vertex
         id="11"
-        x="137.07404130031455"
-        y="24.675482310916323" />
+        x="268.92998403692059"
+        y="18.338796575741981" />
+      <vertex
+        id="12"
+        x="270.16254418444009"
+        y="18.91399131125047" />
+      <vertex
+        id="13"
+        x="270.0529832824385"
+        y="22.61167175380865" />
+      <vertex
+        id="14"
+        x="278.56204655986573"
+        y="26.882841070831091" />
+      <vertex
+        id="15"
+        x="282.67360129450549"
+        y="34.624811156269857" />
+      <vertex
+        id="16"
+        x="288.66597362052255"
+        y="34.406111436342371" />
+      <vertex
+        id="17"
+        x="287.96613451675478"
+        y="17.500623085934649" />
+      <vertex
+        id="18"
+        x="315.24892457772876"
+        y="17.33659829598912" />
+      <vertex
+        id="19"
+        x="315.45490865638772"
+        y="12.784584919682402" />
+      <vertex
+        id="20"
+        x="323.03312828095636"
+        y="12.6650532368202" />
+      <vertex
+        id="21"
+        x="322.45866180148346"
+        y="33.381960383262253" />
+      <vertex
+        id="22"
+        x="345.02794727971968"
+        y="32.708923591424423" />
+      <vertex
+        id="23"
+        x="344.22106583774848"
+        y="11.385736684923131" />
+      <vertex
+        id="24"
+        x="345.73800294865464"
+        y="11.256635654208708" />
+      <vertex
+        id="25"
+        x="346.49109229449391"
+        y="25.134996456118643" />
+      <vertex
+        id="26"
+        x="383.78724151444"
+        y="24.903198178184084" />
+      <vertex
+        id="27"
+        x="384.28383520641432"
+        y="11.493394030745549" />
+      <vertex
+        id="28"
+        x="386.134737395201"
+        y="11.550159618320322" />
+      <vertex
+        id="29"
+        x="386.13467630964283"
+        y="32.823467337333113" />
+      <vertex
+        id="30"
+        x="398.58254728984161"
+        y="32.787754466390084" />
+      <vertex
+        id="31"
+        x="406.35279375785331"
+        y="48.0065242675455" />
+      <vertex
+        id="32"
+        x="138.32538767784422"
+        y="35.98067189997073" />
+      <vertex
+        id="33"
+        x="136.47171929165802"
+        y="32.045015330584306" />
+      <vertex
+        id="34"
+        x="141.70782880764273"
+        y="24.464855606037872" />
     </vertices>
     <triangles>
       <triangle
         id="1"
         v1="1"
-        v2="11"
-        v3="10" />
+        v2="34"
+        v3="33" />
       <triangle
         id="2"
         v1="1"
-        v2="10"
-        v3="9" />
+        v2="33"
+        v3="32" />
       <triangle
         id="3"
         v1="1"
+        v2="32"
+        v3="31" />
+      <triangle
+        id="4"
+        v1="31"
+        v2="30"
+        v3="29" />
+      <triangle
+        id="5"
+        v1="29"
+        v2="28"
+        v3="27" />
+      <triangle
+        id="6"
+        v1="29"
+        v2="27"
+        v3="26" />
+      <triangle
+        id="7"
+        v1="29"
+        v2="26"
+        v3="25" />
+      <triangle
+        id="8"
+        v1="31"
+        v2="29"
+        v3="25" />
+      <triangle
+        id="9"
+        v1="25"
+        v2="24"
+        v3="23" />
+      <triangle
+        id="10"
+        v1="25"
+        v2="23"
+        v3="22" />
+      <triangle
+        id="11"
+        v1="31"
+        v2="25"
+        v3="22" />
+      <triangle
+        id="12"
+        v1="31"
+        v2="22"
+        v3="21" />
+      <triangle
+        id="13"
+        v1="21"
+        v2="20"
+        v3="19" />
+      <triangle
+        id="14"
+        v1="21"
+        v2="19"
+        v3="18" />
+      <triangle
+        id="15"
+        v1="21"
+        v2="18"
+        v3="17" />
+      <triangle
+        id="16"
+        v1="21"
+        v2="17"
+        v3="16" />
+      <triangle
+        id="17"
+        v1="31"
+        v2="21"
+        v3="16" />
+      <triangle
+        id="18"
+        v1="31"
+        v2="16"
+        v3="15" />
+      <triangle
+        id="19"
+        v1="1"
+        v2="31"
+        v3="15" />
+      <triangle
+        id="20"
+        v1="15"
+        v2="14"
+        v3="13" />
+      <triangle
+        id="21"
+        v1="13"
+        v2="12"
+        v3="11" />
+      <triangle
+        id="22"
+        v1="13"
+        v2="11"
+        v3="10" />
+      <triangle
+        id="23"
+        v1="15"
+        v2="13"
+        v3="10" />
+      <triangle
+        id="24"
+        v1="15"
+        v2="10"
+        v3="9" />
+      <triangle
+        id="25"
+        v1="15"
         v2="9"
         v3="8" />
       <triangle
-        id="4"
-        v1="1"
+        id="26"
+        v1="15"
         v2="8"
         v3="7" />
       <triangle
-        id="5"
+        id="27"
+        v1="1"
+        v2="15"
+        v3="7" />
+      <triangle
+        id="28"
         v1="1"
         v2="7"
         v3="6" />
       <triangle
-        id="6"
+        id="29"
         v1="1"
         v2="6"
         v3="5" />
       <triangle
-        id="7"
+        id="30"
         v1="1"
         v2="5"
         v3="4" />
       <triangle
-        id="8"
+        id="31"
         v1="1"
         v2="4"
         v3="3" />
       <triangle
-        id="9"
+        id="32"
         v1="3"
         v2="2"
         v3="1" />
@@ -1438,14 +2500,14 @@
   <staticPolygon
     name="noName"
     texture="white_gravel"
-    posX="2535.8816914217332"
-    posY="548.326038623939"
+    posX="2536.5061730880743"
+    posY="548.415250290559"
     angle="0"
     zLevel="170"
     collisionEntity="notApplicable"
     collisionCategory="1"
     collisionMask="65533"
-    color="707070"
+    color="434242"
     textureMeterWidth="50"
     textureMeterHeight="50"
     textureOffsetMeterX="0"
@@ -1453,42 +2515,66 @@
     <vertices>
       <vertex
         id="1"
-        x="-153.06651088492117"
-        y="18.2183679941395" />
+        x="-166.78576340487871"
+        y="7.131128886735155" />
       <vertex
         id="2"
+        x="-162.11856592058166"
+        y="5.339807517663985" />
+      <vertex
+        id="3"
+        x="-156.92566358802424"
+        y="6.22936305938606" />
+      <vertex
+        id="4"
+        x="-147.30838407375632"
+        y="12.484788027483774" />
+      <vertex
+        id="5"
+        x="-127.85373921563632"
+        y="7.7852312999962123" />
+      <vertex
+        id="6"
         x="-111.18229591228965"
         y="-2.626345058543393" />
       <vertex
-        id="3"
-        x="-50.45733299298081"
-        y="-16.480658332221537" />
+        id="7"
+        x="-54.426190139228765"
+        y="-5.5069165842610346" />
       <vertex
-        id="4"
+        id="8"
+        x="-41.873823822874328"
+        y="-14.033905434551912" />
+      <vertex
+        id="9"
         x="40.455972876400665"
         y="-19.943061838476865" />
       <vertex
-        id="5"
-        x="136.64053904154343"
-        y="-18.098561081027924" />
+        id="10"
+        x="138.0558684791913"
+        y="-18.484560018568231" />
       <vertex
-        id="6"
-        x="262.180937853469"
-        y="-6.8915466890966854" />
+        id="11"
+        x="166.3183555428318"
+        y="-14.714237896044438" />
       <vertex
-        id="7"
+        id="12"
+        x="305.72310024393664"
+        y="-18.417413204220566" />
+      <vertex
+        id="13"
         x="378.23500237821372"
         y="11.176750781821625" />
       <vertex
-        id="8"
+        id="14"
         x="463.71194810602037"
         y="33.414655361413679" />
       <vertex
-        id="9"
+        id="15"
         x="464.34087457969827"
         y="345.85430197508776" />
       <vertex
-        id="10"
+        id="16"
         x="-266.86766305649326"
         y="344.4958039148014" />
     </vertices>
@@ -1496,40 +2582,70 @@
       <triangle
         id="1"
         v1="1"
+        v2="16"
+        v3="15" />
+      <triangle
+        id="2"
+        v1="15"
+        v2="14"
+        v3="13" />
+      <triangle
+        id="3"
+        v1="15"
+        v2="13"
+        v3="12" />
+      <triangle
+        id="4"
+        v1="15"
+        v2="12"
+        v3="11" />
+      <triangle
+        id="5"
+        v1="15"
+        v2="11"
+        v3="10" />
+      <triangle
+        id="6"
+        v1="15"
         v2="10"
         v3="9" />
       <triangle
-        id="2"
-        v1="1"
+        id="7"
+        v1="15"
         v2="9"
         v3="8" />
       <triangle
-        id="3"
-        v1="1"
+        id="8"
+        v1="15"
         v2="8"
         v3="7" />
       <triangle
-        id="4"
-        v1="1"
+        id="9"
+        v1="15"
         v2="7"
         v3="6" />
       <triangle
-        id="5"
-        v1="1"
+        id="10"
+        v1="15"
         v2="6"
         v3="5" />
       <triangle
-        id="6"
-        v1="1"
+        id="11"
+        v1="15"
         v2="5"
         v3="4" />
       <triangle
-        id="7"
+        id="12"
+        v1="1"
+        v2="15"
+        v3="4" />
+      <triangle
+        id="13"
         v1="1"
         v2="4"
         v3="3" />
       <triangle
-        id="8"
+        id="14"
         v1="3"
         v2="2"
         v3="1" />
@@ -1561,11 +2677,713 @@
         textureMeterHeight="0" />
     </border>
     <fade
-      amount="0.2"
-      angle="0"
-      start="1"
-      end="0"
-      color="ffffff" />
+      amount="0.7"
+      angle="180"
+      start="0.8"
+      end="1"
+      color="494646" />
+  </staticPolygon>
+  <staticPolygon
+    name="mainGround_2"
+    texture="grotto_light"
+    posX="162.67114118896461"
+    posY="643.60742031548671"
+    angle="0"
+    zLevel="169"
+    collisionEntity="notApplicable"
+    collisionCategory="1"
+    collisionMask="65533"
+    color="c1c1c1"
+    textureMeterWidth="200"
+    textureMeterHeight="200"
+    textureOffsetMeterX="0"
+    textureOffsetMeterY="0">
+    <vertices>
+      <vertex
+        id="1"
+        x="-155.69737374240003"
+        y="243.36633670418132" />
+      <vertex
+        id="2"
+        x="708.47777757177914"
+        y="240.2029626780876" />
+      <vertex
+        id="3"
+        x="666.049492050018"
+        y="71.342297939456671" />
+      <vertex
+        id="4"
+        x="621.33393100893522"
+        y="-44.24320890258673" />
+      <vertex
+        id="5"
+        x="585.36292422222959"
+        y="-52.430442764796226" />
+      <vertex
+        id="6"
+        x="510.18367910732741"
+        y="-34.936669501410506" />
+      <vertex
+        id="7"
+        x="416.66803944941785"
+        y="-6.5853813710000395" />
+      <vertex
+        id="8"
+        x="371.23732662161933"
+        y="-11.14774955097505" />
+      <vertex
+        id="9"
+        x="360.05073696078921"
+        y="5.5687514539363292" />
+      <vertex
+        id="10"
+        x="336.5013469676469"
+        y="11.144737594324852" />
+      <vertex
+        id="11"
+        x="265.39806343733727"
+        y="10.872499836358429" />
+      <vertex
+        id="12"
+        x="252.86795213729397"
+        y="-7.1209095795270514" />
+      <vertex
+        id="13"
+        x="91.403957879665541"
+        y="28.760397028615444" />
+      <vertex
+        id="14"
+        x="-152.35358873072619"
+        y="40.868687227065948" />
+    </vertices>
+    <triangles>
+      <triangle
+        id="1"
+        v1="14"
+        v2="1"
+        v3="2" />
+      <triangle
+        id="2"
+        v1="14"
+        v2="2"
+        v3="3" />
+      <triangle
+        id="3"
+        v1="3"
+        v2="4"
+        v3="5" />
+      <triangle
+        id="4"
+        v1="3"
+        v2="5"
+        v3="6" />
+      <triangle
+        id="5"
+        v1="3"
+        v2="6"
+        v3="7" />
+      <triangle
+        id="6"
+        v1="3"
+        v2="7"
+        v3="8" />
+      <triangle
+        id="7"
+        v1="3"
+        v2="8"
+        v3="9" />
+      <triangle
+        id="8"
+        v1="3"
+        v2="9"
+        v3="10" />
+      <triangle
+        id="9"
+        v1="3"
+        v2="10"
+        v3="11" />
+      <triangle
+        id="10"
+        v1="11"
+        v2="12"
+        v3="13" />
+      <triangle
+        id="11"
+        v1="3"
+        v2="11"
+        v3="13" />
+      <triangle
+        id="12"
+        v1="3"
+        v2="13"
+        v3="14" />
+    </triangles>
+    <border
+      leftGroundAngle="-45"
+      rightGroundAngle="45"
+      leftCeilingAngle="-135"
+      rightCeilingAngle="135">
+      <groundBorder
+        texture="grotto_floor"
+        horisontalMeterOffset="4"
+        textureMeterWidth="256"
+        textureMeterHeight="25" />
+      <ceilingBorder
+        texture="notDefined"
+        horisontalMeterOffset="2"
+        textureMeterWidth="128"
+        textureMeterHeight="10" />
+      <leftWallBorder
+        texture="notDefined"
+        horisontalMeterOffset="2"
+        textureMeterWidth="128"
+        textureMeterHeight="10" />
+      <rightWallBorder
+        texture="notDefined"
+        horisontalMeterOffset="2"
+        textureMeterWidth="128"
+        textureMeterHeight="10" />
+    </border>
+  </staticPolygon>
+  <staticPolygon
+    name="cityGround"
+    texture="concrete"
+    posX="818.15882703986154"
+    posY="591.6585803190037"
+    angle="0"
+    zLevel="170"
+    collisionEntity="notApplicable"
+    collisionCategory="1"
+    collisionMask="65533"
+    color="838383"
+    textureMeterWidth="35.9717"
+    textureMeterHeight="35.9717"
+    textureOffsetMeterX="13.718"
+    textureOffsetMeterY="1.422">
+    <vertices>
+      <vertex
+        id="1"
+        x="0"
+        y="0" />
+      <vertex
+        id="2"
+        x="30.795420061799177"
+        y="12.949743412314547" />
+      <vertex
+        id="3"
+        x="83.358194544885009"
+        y="12.60640108811333" />
+      <vertex
+        id="4"
+        x="81.184072909699353"
+        y="5.4981177709809117" />
+      <vertex
+        id="5"
+        x="86.451426827777709"
+        y="4.8118191272493505" />
+      <vertex
+        id="6"
+        x="85.01309488433958"
+        y="12.688506819031318" />
+      <vertex
+        id="7"
+        x="90.289823091639846"
+        y="12.825115388346148" />
+      <vertex
+        id="8"
+        x="173.66576793334343"
+        y="12.497168153915936" />
+      <vertex
+        id="9"
+        x="168.79991383561469"
+        y="20.920788259460096" />
+      <vertex
+        id="10"
+        x="223.26195667186858"
+        y="20.84331735926628" />
+      <vertex
+        id="11"
+        x="217.09472040987475"
+        y="12.571100454313637" />
+      <vertex
+        id="12"
+        x="218.4556617020653"
+        y="11.272730018361926" />
+      <vertex
+        id="13"
+        x="235.46704096983876"
+        y="11.100051511684569" />
+      <vertex
+        id="14"
+        x="228.74947876893066"
+        y="16.754575404592515" />
+      <vertex
+        id="15"
+        x="254.22133334005002"
+        y="16.754971522759206" />
+      <vertex
+        id="16"
+        x="283.0000144431026"
+        y="16.031699539850024" />
+      <vertex
+        id="17"
+        x="276.57071432357611"
+        y="10.77829560737689" />
+      <vertex
+        id="18"
+        x="290.18711906704129"
+        y="10.557162459573647" />
+      <vertex
+        id="19"
+        x="328.05770547297107"
+        y="16.441964717184419" />
+      <vertex
+        id="20"
+        x="323.65103493046036"
+        y="76.1862858861241" />
+      <vertex
+        id="21"
+        x="299.53615216326853"
+        y="141.77496798650509" />
+      <vertex
+        id="22"
+        x="9.3467045162581144"
+        y="136.41731697717432" />
+      <vertex
+        id="23"
+        x="-9.40019181536627"
+        y="82.251678384454863" />
+      <vertex
+        id="24"
+        x="-17.037847665351364"
+        y="56.40115089219762" />
+      <vertex
+        id="25"
+        x="-12.925263746128621"
+        y="37.013255273004688" />
+      <vertex
+        id="26"
+        x="-9.40019181536627"
+        y="21.7379435730345" />
+    </vertices>
+    <triangles>
+      <triangle
+        id="1"
+        v1="1"
+        v2="26"
+        v3="25" />
+      <triangle
+        id="2"
+        v1="1"
+        v2="25"
+        v3="24" />
+      <triangle
+        id="3"
+        v1="1"
+        v2="24"
+        v3="23" />
+      <triangle
+        id="4"
+        v1="1"
+        v2="23"
+        v3="22" />
+      <triangle
+        id="5"
+        v1="1"
+        v2="22"
+        v3="21" />
+      <triangle
+        id="6"
+        v1="21"
+        v2="20"
+        v3="19" />
+      <triangle
+        id="7"
+        v1="21"
+        v2="19"
+        v3="18" />
+      <triangle
+        id="8"
+        v1="18"
+        v2="17"
+        v3="16" />
+      <triangle
+        id="9"
+        v1="21"
+        v2="18"
+        v3="16" />
+      <triangle
+        id="10"
+        v1="21"
+        v2="16"
+        v3="15" />
+      <triangle
+        id="11"
+        v1="21"
+        v2="15"
+        v3="14" />
+      <triangle
+        id="12"
+        v1="14"
+        v2="13"
+        v3="12" />
+      <triangle
+        id="13"
+        v1="21"
+        v2="14"
+        v3="12" />
+      <triangle
+        id="14"
+        v1="12"
+        v2="11"
+        v3="10" />
+      <triangle
+        id="15"
+        v1="21"
+        v2="12"
+        v3="10" />
+      <triangle
+        id="16"
+        v1="21"
+        v2="10"
+        v3="9" />
+      <triangle
+        id="17"
+        v1="9"
+        v2="8"
+        v3="7" />
+      <triangle
+        id="18"
+        v1="21"
+        v2="9"
+        v3="7" />
+      <triangle
+        id="19"
+        v1="21"
+        v2="7"
+        v3="6" />
+      <triangle
+        id="20"
+        v1="6"
+        v2="5"
+        v3="4" />
+      <triangle
+        id="21"
+        v1="6"
+        v2="4"
+        v3="3" />
+      <triangle
+        id="22"
+        v1="21"
+        v2="6"
+        v3="3" />
+      <triangle
+        id="23"
+        v1="21"
+        v2="3"
+        v3="2" />
+      <triangle
+        id="24"
+        v1="21"
+        v2="2"
+        v3="1" />
+    </triangles>
+    <border
+      leftGroundAngle="0"
+      rightGroundAngle="0"
+      leftCeilingAngle="0"
+      rightCeilingAngle="0">
+      <groundBorder
+        texture="notDefined"
+        horisontalMeterOffset="0"
+        textureMeterWidth="0"
+        textureMeterHeight="0" />
+      <ceilingBorder
+        texture="notDefined"
+        horisontalMeterOffset="0"
+        textureMeterWidth="0"
+        textureMeterHeight="0" />
+      <leftWallBorder
+        texture="notDefined"
+        horisontalMeterOffset="0"
+        textureMeterWidth="0"
+        textureMeterHeight="0" />
+      <rightWallBorder
+        texture="notDefined"
+        horisontalMeterOffset="0"
+        textureMeterWidth="0"
+        textureMeterHeight="0" />
+    </border>
+    <fade
+      amount="0.5"
+      angle="180"
+      start="0.6"
+      end="1"
+      color="979797" />
+  </staticPolygon>
+  <staticPolygon
+    name="noName"
+    texture="white_gravel"
+    posX="1144.8417807340406"
+    posY="552.32833346982125"
+    angle="0"
+    zLevel="170"
+    collisionEntity="notApplicable"
+    collisionCategory="1"
+    collisionMask="65533"
+    color="484848"
+    textureMeterWidth="47.8784"
+    textureMeterHeight="47.8784"
+    textureOffsetMeterX="30.079"
+    textureOffsetMeterY="18.047">
+    <vertices>
+      <vertex
+        id="1"
+        x="49.178659075435007"
+        y="16.609424682111239" />
+      <vertex
+        id="2"
+        x="43.586502536857324"
+        y="17.888290398388335" />
+      <vertex
+        id="3"
+        x="23.66566814018779"
+        y="31.403305578506206" />
+      <vertex
+        id="4"
+        x="-5.8612098237761074"
+        y="45.392345386557849" />
+      <vertex
+        id="5"
+        x="-34.02899336538394"
+        y="45.76159362360022" />
+      <vertex
+        id="6"
+        x="-37.540049723627362"
+        y="50.325107433420271" />
+      <vertex
+        id="7"
+        x="-31.103967483119959"
+        y="57.422369886569868" />
+      <vertex
+        id="8"
+        x="2.3165641150162628"
+        y="62.257660591063541" />
+      <vertex
+        id="9"
+        x="22.095269247061424"
+        y="50.620448495417804" />
+      <vertex
+        id="10"
+        x="53.041531447413945"
+        y="19.417933568734043" />
+    </vertices>
+    <triangles>
+      <triangle
+        id="1"
+        v1="10"
+        v2="1"
+        v3="2" />
+      <triangle
+        id="2"
+        v1="10"
+        v2="2"
+        v3="3" />
+      <triangle
+        id="3"
+        v1="10"
+        v2="3"
+        v3="4" />
+      <triangle
+        id="4"
+        v1="4"
+        v2="5"
+        v3="6" />
+      <triangle
+        id="5"
+        v1="4"
+        v2="6"
+        v3="7" />
+      <triangle
+        id="6"
+        v1="10"
+        v2="4"
+        v3="7" />
+      <triangle
+        id="7"
+        v1="10"
+        v2="7"
+        v3="8" />
+      <triangle
+        id="8"
+        v1="8"
+        v2="9"
+        v3="10" />
+    </triangles>
+    <border
+      leftGroundAngle="0"
+      rightGroundAngle="0"
+      leftCeilingAngle="0"
+      rightCeilingAngle="0">
+      <groundBorder
+        texture="notDefined"
+        horisontalMeterOffset="0"
+        textureMeterWidth="0"
+        textureMeterHeight="0" />
+      <ceilingBorder
+        texture="notDefined"
+        horisontalMeterOffset="0"
+        textureMeterWidth="0"
+        textureMeterHeight="0" />
+      <leftWallBorder
+        texture="notDefined"
+        horisontalMeterOffset="0"
+        textureMeterWidth="0"
+        textureMeterHeight="0" />
+      <rightWallBorder
+        texture="notDefined"
+        horisontalMeterOffset="0"
+        textureMeterWidth="0"
+        textureMeterHeight="0" />
+    </border>
+    <fade
+      amount="1"
+      angle="270"
+      start="0"
+      end="1"
+      color="434141" />
+  </staticPolygon>
+  <staticPolygon
+    name="noName_4"
+    texture="white_gravel"
+    posX="815.29063216359691"
+    posY="543.37646525275272"
+    angle="0"
+    zLevel="170"
+    collisionEntity="notApplicable"
+    collisionCategory="1"
+    collisionMask="65533"
+    color="484848"
+    textureMeterWidth="47.8784"
+    textureMeterHeight="47.8784"
+    textureOffsetMeterX="30.079"
+    textureOffsetMeterY="18.047">
+    <vertices>
+      <vertex
+        id="1"
+        x="14.860483442064833"
+        y="66.851915063471552" />
+      <vertex
+        id="2"
+        x="15.643536684182664"
+        y="53.794916630843773" />
+      <vertex
+        id="3"
+        x="12.850759193691602"
+        y="50.989361150901004" />
+      <vertex
+        id="4"
+        x="-3.3065069230287918"
+        y="47.436107707155884" />
+      <vertex
+        id="5"
+        x="-27.812549640232646"
+        y="45.84675038695832" />
+      <vertex
+        id="6"
+        x="-33.026741265640794"
+        y="49.558696563196463" />
+      <vertex
+        id="7"
+        x="-34.169610964016556"
+        y="55.293450802613734" />
+      <vertex
+        id="8"
+        x="-13.522593869616003"
+        y="106.02823695719826" />
+      <vertex
+        id="9"
+        x="-10.604927882502125"
+        y="104.95046351797373" />
+      <vertex
+        id="10"
+        x="10.803776821727524"
+        y="79.964392316441717" />
+    </vertices>
+    <triangles>
+      <triangle
+        id="1"
+        v1="10"
+        v2="1"
+        v3="2" />
+      <triangle
+        id="2"
+        v1="10"
+        v2="2"
+        v3="3" />
+      <triangle
+        id="3"
+        v1="10"
+        v2="3"
+        v3="4" />
+      <triangle
+        id="4"
+        v1="10"
+        v2="4"
+        v3="5" />
+      <triangle
+        id="5"
+        v1="10"
+        v2="5"
+        v3="6" />
+      <triangle
+        id="6"
+        v1="10"
+        v2="6"
+        v3="7" />
+      <triangle
+        id="7"
+        v1="10"
+        v2="7"
+        v3="8" />
+      <triangle
+        id="8"
+        v1="8"
+        v2="9"
+        v3="10" />
+    </triangles>
+    <border
+      leftGroundAngle="0"
+      rightGroundAngle="0"
+      leftCeilingAngle="0"
+      rightCeilingAngle="0">
+      <groundBorder
+        texture="notDefined"
+        horisontalMeterOffset="0"
+        textureMeterWidth="0"
+        textureMeterHeight="0" />
+      <ceilingBorder
+        texture="notDefined"
+        horisontalMeterOffset="0"
+        textureMeterWidth="0"
+        textureMeterHeight="0" />
+      <leftWallBorder
+        texture="notDefined"
+        horisontalMeterOffset="0"
+        textureMeterWidth="0"
+        textureMeterHeight="0" />
+      <rightWallBorder
+        texture="notDefined"
+        horisontalMeterOffset="0"
+        textureMeterWidth="0"
+        textureMeterHeight="0" />
+    </border>
+    <fade
+      amount="1"
+      angle="90"
+      start="0"
+      end="1"
+      color="484848" />
   </staticPolygon>
   <behaviour
     type="scene">
@@ -1587,8 +3405,8 @@
     posY="664.17168473061861" />
   <childObject
     name="siloLandingPad"
-    posX="2579.6971263740616"
-    posY="526.93565230227637">
+    posX="2735.5126196613242"
+    posY="528.97512210970126">
     <compoundObject
       needsGroupIndex="false">
       <staticBox
@@ -1609,8 +3427,8 @@
   </childObject>
   <childObject
     name="oreLanding"
-    posX="1074.4646667981613"
-    posY="496.39217191373905">
+    posX="902.82099298781941"
+    posY="577.81907575925175">
     <compoundObject
       needsGroupIndex="false">
       <staticBox
@@ -1624,6 +3442,116 @@
         collisionCategory="1"
         collisionMask="65533"
         width="28"
+        height="5" />
+      <behaviour
+        type="landingPad" />
+    </compoundObject>
+  </childObject>
+  <childObject
+    name="landingPad2"
+    posX="2459.0199811375455"
+    posY="536.48636734769093">
+    <compoundObject
+      needsGroupIndex="false">
+      <staticBox
+        name="siloHome"
+        texture="transparent"
+        posX="0"
+        posY="0"
+        angle="0"
+        zLevel="192"
+        collisionEntity="landingPad"
+        collisionCategory="1"
+        collisionMask="65533"
+        width="50"
+        height="25" />
+      <behaviour
+        type="landingPad" />
+    </compoundObject>
+  </childObject>
+  <childObject
+    name="landingPad3"
+    posX="2112.1987166059548"
+    posY="529.2130475800875">
+    <compoundObject
+      needsGroupIndex="false">
+      <staticBox
+        name="siloHome"
+        texture="transparent"
+        posX="0"
+        posY="0"
+        angle="0"
+        zLevel="192"
+        collisionEntity="landingPad"
+        collisionCategory="1"
+        collisionMask="65533"
+        width="50"
+        height="25" />
+      <behaviour
+        type="landingPad" />
+    </compoundObject>
+  </childObject>
+  <childObject
+    name="workshopPad"
+    posX="1074.4015448852297"
+    posY="605.54549597760854">
+    <compoundObject
+      needsGroupIndex="false">
+      <staticBox
+        name="siloHome"
+        texture="transparent"
+        posX="0"
+        posY="0"
+        angle="0"
+        zLevel="192"
+        collisionEntity="landingPad"
+        collisionCategory="1"
+        collisionMask="65533"
+        width="42"
+        height="25" />
+      <behaviour
+        type="landingPad" />
+    </compoundObject>
+  </childObject>
+  <childObject
+    name="fuelStation"
+    posX="955.36560232972977"
+    posY="592.57957932691033">
+    <compoundObject
+      needsGroupIndex="false">
+      <staticBox
+        name="siloHome"
+        texture="transparent"
+        posX="0"
+        posY="0"
+        angle="0"
+        zLevel="192"
+        collisionEntity="landingPad"
+        collisionCategory="1"
+        collisionMask="65533"
+        width="30"
+        height="5" />
+      <behaviour
+        type="landingPad" />
+    </compoundObject>
+  </childObject>
+  <childObject
+    name="townHouse"
+    posX="1010.9511966722841"
+    posY="587.66704964695487">
+    <compoundObject
+      needsGroupIndex="false">
+      <staticBox
+        name="siloHome"
+        texture="transparent"
+        posX="0"
+        posY="0"
+        angle="0"
+        zLevel="192"
+        collisionEntity="landingPad"
+        collisionCategory="1"
+        collisionMask="65533"
+        width="30"
         height="5" />
       <behaviour
         type="landingPad" />

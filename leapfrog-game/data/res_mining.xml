@@ -65,4 +65,28 @@
 	<atlas clamp2edge="false">
 		<image file="ash_slope.png" ppu="10" trim="false" extend="false"/>
 	</atlas>
+	<set path = "images/mining" />
+	<atlas>
+		<image file="workshop.png" ppu="20" trim="false" extend="false"/>
+	</atlas>
+	<set path = "images/mining" />
+	<atlas>
+		<image file="pad_house.png" ppu="20" trim="false" extend="false"/>
+	</atlas>
+	<set path = "images/mining" />
+	<atlas>
+		<image file="fuel_station.png" ppu="20" trim="false" extend="false"/>
+	</atlas>
+	<set path = "images/mining" />
+	<atlas>
+		<image file="fuel_station_neon.png" ppu="20" cols="2" rows="6" trim="false" extend="false"/>
+	</atlas>
+   <set path = "images/mining" />
+	<atlas>
+		<image file="draget.png" trim="false" extend="false"/>
+	</atlas>
+	<set path = "images/mining" />
+	<atlas>
+		<image file="gen_landing_pad_blink.png" ppu="20" rows="2" trim="false" extend="false"/>
+	</atlas>
 </resources>
