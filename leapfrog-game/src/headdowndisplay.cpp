@@ -714,8 +714,12 @@ HddInstruments::HddInstruments(const RectF& mapRect, float barThickness, float g
    m_fuelLevel(0),
    m_damageLevel(0)
 {
-   setPosition(0.0f, 0.0f);
+   // Same layout as at (0, 0), but anchored on the map's bottom edge, so
+   // that HeadDownDisplay::squeeze scales the instruments towards it
    setSize(g_Layout.getViewPortBounds());
+   float bottomAnchor = mapRect.getBottom() / getHeight();
+   setAnchor(0.0f, bottomAnchor);
+   setPosition(0.0f, mapRect.getBottom());
    setTouchEnabled(false, false);
 
    int fontSize = (int)(g_Layout.getDefaultFontSize() * 0.8f);
@@ -857,7 +861,8 @@ void HddInstruments::doUpdate(const UpdateState& us)
 HeadDownDisplay::HeadDownDisplay() :
    m_itemIdRepository(0),
    m_actorExists(false),
-   m_hudMode(HudModeType::hudModeInit)
+   m_hudMode(HudModeType::hudModeInit),
+   m_squeezed(false)
 {
 }
 
@@ -959,6 +964,8 @@ void HeadDownDisplay::initialiseHdd(
    setSize(m_sceneWidth, m_sceneHeight);
    setAnchor(0.5f, 1.0f);
    setPosition(m_mapPos);
+   removeTweensByName("squeeze");
+   m_squeezed = false;
    setScale(m_mapScale);
    setTouchEnabled(false);
    attachTo(g_MainActor);
@@ -1112,6 +1119,29 @@ void HeadDownDisplay::doUpdate(const oxygine::UpdateState& us)
 {
 }
 
+void HeadDownDisplay::squeeze(bool squeezed, timeMS duration, timeMS delay)
+{
+   m_squeezed = squeezed;
+
+   // The display is anchored at the middle of its bottom edge, so scaling
+   // it to nothing vertically flattens it into the bottom. Its scale is
+   // uniform in every mode (map scale, or 1), so x tells the full y.
+   float target = squeezed ? 0.0f : getScaleX();
+
+   removeTweensByName("squeeze");
+   spTween tween = addTween(Actor::TweenScaleY(target), duration, 1, false, delay,
+      squeezed ? Tween::EASE::ease_inQuad : Tween::EASE::ease_outQuad);
+   tween->setName("squeeze");
+
+   if (m_instruments)
+   {
+      m_instruments->removeTweensByName("squeeze");
+      spTween itween = m_instruments->addTween(Actor::TweenScaleY(squeezed ? 0.0f : 1.0f), duration, 1, false, delay,
+         squeezed ? Tween::EASE::ease_inQuad : Tween::EASE::ease_outQuad);
+      itween->setName("squeeze");
+   }
+}
+
 void HeadDownDisplay::goToOrbit(void)
 {
 
@@ -1233,6 +1263,10 @@ void HeadDownDisplay::mapTransitionComplete(oxygine::Event* event)
    setHorizontalMode(Box9Sprite::TILING_FULL);
    setSize(m_sceneWidth, m_sceneHeight);
    setScale(m_mapScale);
+   if (m_squeezed)
+   {
+      setScaleY(0.0f);
+   }
 
    for (auto it = m_mapActors.begin(); it != m_mapActors.end(); ++it)
    {

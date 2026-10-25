@@ -96,6 +96,7 @@ private:
    float getMaxScrollOffset(void);
    void pruneOldBubbles(void);
    void expand(void);
+   void expandAfterSqueeze(oxygine::Event* event);
    void collapse(bool animate);
    void collapseTweenDone(oxygine::Event* event);
    void createTapLabel(void);

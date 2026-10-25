@@ -279,6 +279,8 @@ private:
    void menuStartTransitionComplete(oxygine::Event* event);
    void mapTransitionComplete(oxygine::Event* event);
 
+   bool m_squeezed;
+
 public:
    float m_mapScale;
    float m_mapSizeX;
@@ -295,6 +297,12 @@ public:
    oxygine::Vector2 m_mapPos;
 
    HeadDownDisplay();
+
+   // Squeeze the display (map or orbit overlay, and the instruments around
+   // the map) flat into its bottom edge, or grow it back, e.g. to make room
+   // for the expanded message display. delay in ms before it starts.
+   void squeeze(bool squeezed, oxygine::timeMS duration, oxygine::timeMS delay = 0);
+   static const oxygine::timeMS c_squeezeMs = 200;
 
    void initialiseHdd(
       const oxygine::Vector2& topLeft, 

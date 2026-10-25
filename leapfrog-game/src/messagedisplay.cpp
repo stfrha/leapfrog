@@ -6,6 +6,7 @@
 #include "layout.h"
 #include "graphicresources.h"
 #include "mainactor.h"
+#include "headdowndisplay.h"
 
 #include <map>
 
@@ -376,9 +377,7 @@ void MessageDisplay::pruneOldBubbles(void)
 
 void MessageDisplay::expand(void)
 {
-   const float zoom = c_expandedZoom;
    Vector2 viewport = g_Layout.getViewPortBounds();
-   float margin = g_Layout.getButtonWidth() * 0.2f;
 
    m_expanded = true;
    g_MainActor->setMessagePause(true);
@@ -394,6 +393,23 @@ void MessageDisplay::expand(void)
    m_dimmer->addTouchDownListener(CLOSURE(this, &MessageDisplay::dimmerTouchHandler));
    m_dimmer->attachTo(getParent());
    m_dimmer->addTween(Actor::TweenAlpha(140), 250);
+
+   // First the head-down display shrinks into the bottom of the screen,
+   // then this display grows (expandAfterSqueeze)
+   removeTweens();
+   if (g_HeadDownDisplay)
+   {
+      g_HeadDownDisplay->squeeze(true, HeadDownDisplay::c_squeezeMs);
+   }
+   spTween wait = addTween(TweenDummy(), HeadDownDisplay::c_squeezeMs);
+   wait->setDoneCallback(CLOSURE(this, &MessageDisplay::expandAfterSqueeze));
+}
+
+void MessageDisplay::expandAfterSqueeze(oxygine::Event* event)
+{
+   const float zoom = c_expandedZoom;
+   Vector2 viewport = g_Layout.getViewPortBounds();
+   float margin = g_Layout.getButtonWidth() * 0.2f;
 
    // Wider than normal and all the height there is, so more text fits,
    // slightly scaled up and centred. The bubbles are redrawn for the new
@@ -445,6 +461,12 @@ void MessageDisplay::collapse(bool animate)
    {
       setScale(1.0f);
       setFullHeight(m_fullHeight);
+   }
+
+   // The head-down display grows back once this display has shrunk
+   if (g_HeadDownDisplay)
+   {
+      g_HeadDownDisplay->squeeze(false, HeadDownDisplay::c_squeezeMs, animate ? 200 : 0);
    }
 
    if (g_MainActor)
