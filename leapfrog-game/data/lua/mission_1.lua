@@ -2,89 +2,41 @@
 
 local mission1 = {}
 
--- Home scene, first mission: the taskgiver's call and Edith cutting in.
--- Edith speaks up when the leapfrog has landed on the Orb's pad
--- (oreLanding), so the dialog isn't read while flying.
-local homeEdithDialogDone = false
-
--- The launch site's square on the map shows up once the mission has been
--- received, i.e. when Edith has had her say. The timer is started with
--- her dialog and lasts about as long as it takes to show (frames).
-local homeEdithDialogTicks = 660
-local homeLaunchSiteTimer = -1
+-- Mission 1, home scene. currentState:
+--   1 = Bruno has offered the job (asked when a new game starts; asked
+--       again on landing at the silo or the Orb until accepted)
+--   2 = accepted: fly to the Orb, one landing pad at a time; Bruno has
+--       put free fuel in landingPad2 and landingPad3
+--   3 = at the Orb: Edith has cut in, the launch site is on the map
+-- (The landing_scene and deep_space_scene parts below are the old test
+-- mission, states 1 to 6.)
 
 -- With the job comes fuel to reach the launch site: when the leapfrog
 -- lands on the Orb, the taskgiver fills the tank up to what the game
 -- started with (leapfrog property 7 = fuel), read when the new game starts.
 local homeStartFuel = 30
 
--- Leg repair at home (the silo's pad). Leapfrog property 10 is the lowest
--- leg joint health, 0..1 (0 = a joint is limp); writing it raises every
--- joint to at least that value.
--- A full repair costs credits (property 8). Without enough credits the
--- silo patches the joints for free, so the legs hold but stay weak.
-local questionRepairLegs = 1   -- c_askQuestion id
-local legRepairCost = 0
-local legFieldFixHealth = 0.3
-local acceptBrunoMission1 = 2  -- c_askQuestion id
+-- The launch site's square on the map shows up once Edith has had her say.
+-- The timer is started with her dialog and lasts about as long as it
+-- takes to show (frames).
+local homeEdithDialogTicks = 660
+local homeLaunchSiteTimer = -1
 
-local function legRepairCostFor(legHealth)
-   -- 20 credits for a strain, up to 60 for a limp leg
-   return math.ceil(20 + 40 * (1 - legHealth))
-end
+-- Bruno's offer (c_askQuestion id; the world uses 100 and up)
+local acceptBrunoMission1 = 2
+local offerPending = false     -- asked and not yet answered
+local offerAtOrb = false       -- asked while standing on the Orb's pad
 
-local function offerLegRepair()
-   local legs = c_getObjectProperty("leapfrog1", 10)
-   if legs >= 1 then
-      return
-   end
-
-   legRepairCost = legRepairCostFor(legs)
-   -- Properties are floats; whole credits read better
-   local credits = math.floor(c_getObjectProperty("leapfrog1", 8))
-
-   if credits >= legRepairCost then
-      c_addDialogMessage("Leg actuators damaged. Full repair for " .. legRepairCost .. " credits?", "Silo", true, 30, 0)
-      c_askQuestion(questionRepairLegs)
-   elseif legs < legFieldFixHealth then
-      c_addDialogMessage("Leg actuators damaged. A full repair is " .. legRepairCost .. " credits, you have " .. credits .. ".", "Silo", true, 30, 0)
-      c_addDialogMessage("I've patched the joints so they hold. Take it easy on the landings.", "Silo", true, 90, 0)
-      c_setObjectProperty("leapfrog1", 10, legFieldFixHealth)
-      c_hudLog("Legs patched")
-   end
-   -- Otherwise (can't pay, and the legs are already at least patched) the
-   -- silo has nothing to offer: say nothing
-end
-
-local function answerLegRepair(yes)
-   if not yes then
-      c_addDialogMessage("No repair.", "Leapfrog", false, 30, 0)
-      return
-   end
-
-   -- Read again: credits may have changed while the question was open
-   local credits = c_getObjectProperty("leapfrog1", 8)
-   if credits >= legRepairCost then
-      c_setObjectProperty("leapfrog1", 8, credits - legRepairCost)
-      c_setObjectProperty("leapfrog1", 10, 1)
-      c_addDialogMessage("Yes, fix them.", "Leapfrog", false, 30, 0)
-      c_hudLog("Legs repaired: " .. legRepairCost .. " credits")
-   else
-      c_addDialogMessage("Not enough credits any more.", "Silo", true, 30, 0)
-   end
-end
-
-local function answerMission1(yes)
-   if not yes then
-      c_addDialogMessage("I'm going to think about it.", "Leapfrog", false, 20, 0)
-      c_addDialogMessage("Suite yourself. Land back here if you change your mind.", "Bruno", true, 120, 0)
-      return
-   end
-
-   c_addDialogMessage("I take it. See you at the orb.", "Leapfrog", false, 20, 0)
-   c_addDialogMessage("Just follow the markers on your map. They will take you there, one step at the time.", "Bruno", true, 120, 0)
-end
-
+-- The way to the Orb: the landing pads Bruno put fuel in, then the Orb.
+-- The next one flashes on the map. Object and map actor (body) names
+-- from home_scene.xml.
+local route = {
+   { pad = "landingPad2", body = "siloHome" },
+   { pad = "landingPad3", body = "siloHome" },
+   { pad = "oreLanding",  body = "noName" },
+}
+local routeStep = 1            -- index in route of the next stop
+local routePadFuel = 15        -- free fuel in each of Bruno's pads
 
 -- c_addDialogMessage(message, sender, leftSide, preDelay, postDelay)
 -- Others on the left, the pilot on the right. Delays are in frames.
@@ -99,7 +51,8 @@ local function playBrunoCall()
    c_addDialogMessage("Ok, I'm gonna make it easy for you. I will put in some credits into a couple of landing pads along the way. They will give you enough fuel to get here.", "Bruno", true, 300, 0)
    c_addDialogMessage("Do you want the job?", "Bruno", true, 190, 0)
    c_askQuestion(acceptBrunoMission1)
-   
+   offerPending = true
+
 end
 
 local function playEdithCutsIn()
@@ -111,17 +64,121 @@ local function playEdithCutsIn()
    c_addDialogMessage("Not enough fuel. You'll be stranded.", "Edith", true, 90, 0)
 end
 
--- Event handlers of the home scene, also set again after a trigger is
--- removed (c_clearAllTriggersAndEvents removes them all)
+-- Shows the route on the map: the next stop flashes, the others are hollow
+local function showRoute()
+   for i, stop in ipairs(route) do
+      local state = 0                         -- hollow
+      if currentState == 2 and i == routeStep then
+         state = 2                            -- flashing slowly
+      end
+      c_setObjectMapState(stop.pad, stop.body, state)
+   end
+end
+
+-- Bruno's credits in the pads: free fuel (property 4 = fuel service,
+-- 2 = free; 3 = fuel supply)
+local function fillRoutePads()
+   for i, stop in ipairs(route) do
+      if stop.pad ~= "oreLanding" then
+         c_setObjectProperty(stop.pad, 3, routePadFuel)
+         c_setObjectProperty(stop.pad, 4, 2)
+      end
+   end
+end
+
+local function listenToRoute()
+   for i, stop in ipairs(route) do
+      listen(stop.pad, "LpLL")
+   end
+end
+
+-- Landed on the Orb's pad with the job: the taskgiver adds some fuel and
+-- Edith cuts in
+local function arriveAtOrb()
+   currentState = 3
+   showRoute()
+
+   -- Fill up, but never take fuel away
+   if c_getObjectProperty("leapfrog1", 7) < homeStartFuel then
+      c_setObjectProperty("leapfrog1", 7, homeStartFuel)
+      c_hudLog("Fuel from the taskgiver")
+   end
+
+   playEdithCutsIn()
+   homeLaunchSiteTimer = c_startSceneTimer(homeEdithDialogTicks)
+end
+
+local function askAgain(atOrb)
+   if offerPending then
+      return
+   end
+
+   offerAtOrb = atOrb
+   if atOrb then
+      c_addDialogMessage("You came anyway. So, do you want the job?", "Bruno", true, 30, 0)
+   else
+      c_addDialogMessage("Changed your mind? Do you want the job?", "Bruno", true, 30, 0)
+   end
+   c_askQuestion(acceptBrunoMission1)
+   offerPending = true
+end
+
+local function answerMission1(yes)
+   offerPending = false
+
+   if not yes then
+      c_addDialogMessage("I'm going to think about it.", "Leapfrog", false, 20, 0)
+      c_addDialogMessage("Suite yourself. Land back here if you change your mind.", "Bruno", true, 120, 0)
+      return
+   end
+
+   currentState = 2
+   routeStep = 1
+
+   if offerAtOrb then
+      -- Already here
+      c_addDialogMessage("I take it.", "Leapfrog", false, 20, 0)
+      arriveAtOrb()
+      return
+   end
+
+   c_addDialogMessage("I take it. See you at the orb.", "Leapfrog", false, 20, 0)
+   c_addDialogMessage("Just follow the markers on your map. They will take you there, one step at the time.", "Bruno", true, 120, 0)
+
+   fillRoutePads()
+   listenToRoute()
+   showRoute()
+end
+
+-- Landed on a pad of the route
+local function routeLanding(pad)
+   if currentState ~= 2 then
+      return
+   end
+
+   if pad == "oreLanding" then
+      arriveAtOrb()
+      return
+   end
+
+   -- Move on from this pad (pads may be taken out of order)
+   for i, stop in ipairs(route) do
+      if stop.pad == pad and i >= routeStep then
+         routeStep = i + 1
+         showRoute()
+      end
+   end
+end
+
+-- Event handlers of the home scene
 local function registerHomeHandlers()
    -- The launch site takes the leapfrog to deep space
-   c_registerEventHandler("launchSite1", "LsLL", 0, 0)
+   listen("launchSite1", "LsLL")
 
-   -- Landed on the Orb's pad: Edith cuts in (once)
-   c_registerEventHandler("oreLanding", "LpLL", 0, 0)
-
-   -- Landed at home: the silo offers to repair the legs
-   c_registerEventHandler("siloLandingPad", "LpLL", 0, 0)
+   -- Bruno asks again when landing at home or at the Orb (state 1); the
+   -- route's pads and the Orb (state 2)
+   listen("siloLandingPad", "LpLL")
+   listenToRoute()
 end
 
 
@@ -134,59 +191,33 @@ end
 -- It does all setup for that scene in this mission state
 mission1.setupMissionStateScene = function()
 
-   -- Clear triggers and event handler
-   c_clearAllTriggersAndEvents()
-
-   -- Who's who, for the colour of the message bubble frames. Senders not
-   -- set here stay phosphor green. A message can also be given its own
-   -- affiliation as a sixth argument to c_addDialogMessage.
-   -- Set every scene setup, so it follows the mission state after a load
-   -- (in Act 3: c_setSenderAffiliation("<pirate>", "friendly")).
-   c_setSenderAffiliation("Edith", "leapfrog")
-   c_setSenderAffiliation("Silo", "leapfrog")
-   c_setSenderAffiliation("DEBUG", "leapfrog")
-   c_setSenderAffiliation("Leapfrog", "leapfrog")
-   c_setSenderAffiliation("Bruno", "neutral")
-
-   -- Edith is on the Leapfrog's side, but her messages get a colour of
-   -- their own so they don't look like the pilot's white ones
-   c_setSenderColor("Edith", "ff80d5")
+   -- Triggers and handlers were cleared by lua_setupMissionStateScene;
+   -- message senders are set by the world script
 
    if currentScene == "home_scene.xml" then
 
       registerHomeHandlers()
 
-      -- Launch site on the map only after the mission has been received
-      c_setObjectMapShown("launchSite1", "mainTank", homeEdithDialogDone)
+      -- Launch site on the map only once Edith has had her say
+      c_setObjectMapShown("launchSite1", "mainTank", currentState >= 3)
 
-      -- The silo's pad is home: white on the map (landing pads are
-      -- neutral by default). "noName" is the pad's box in home_scene.xml.
-      c_setObjectMapAffiliation("siloLandingPad", "siloHome", "leapfrog")
+      if currentState == 2 then
+         -- Reloaded on the way to the Orb: Bruno's fuel is in the pads again
+         fillRoutePads()
+      end
+      showRoute()
 
-      if lfDefined == false then
-         if useInitialLfPos == true then
-            -- New game: start at home, hovering just above the silo's
-            -- landing pad (the pad's top is at y = 588; in landing mode the
-            -- leapfrog's origin is about 14 above its feet)
-            c_addPositionedChildObject("leapfrog_landing.xml", "leapfrog1", 2736, 503)
-            
-            -- Reconfigure leapfrog to landing mode
-            c_setObjectProperty("leapfrog1", 0, 2)
-            lfDefined = true
-
-            homeStartFuel = c_getObjectProperty("leapfrog1", 7)
-
-            playBrunoCall()
-
-            homeEdithDialogDone = false
-         end
+      if newGameStarting then
+         -- The world script has put the leapfrog above the silo
+         homeStartFuel = c_getObjectProperty("leapfrog1", 7)
+         playBrunoCall()
       end
 
    elseif currentScene == "landing_scene.xml" then
 
       -- Regardless of state, we always want to listen to leapfrog has landed 
       -- on the launch site
-      c_registerEventHandler("launchSite1", "LsLL", 0, 0)
+      listen("launchSite1", "LsLL")
 
       if currentState == 1 then
 
@@ -207,10 +238,10 @@ mission1.setupMissionStateScene = function()
          state1Timer = c_startSceneTimer(240)
 
          -- Register event for landing on landingPad1
-         c_registerEventHandler("landing_pad1", "LpLL", 0, 0)
+         listen("landing_pad1", "LpLL")
 
          -- Detect if bomb exploded prematurely
-         c_registerEventHandler("bomb1", "ExEX", 0, 0)
+         listen("bomb1", "ExEX")
 
          -- Set bomb to be very in-sensitivity
          c_setObjectProperty("bomb1", 0, 250000)
@@ -233,21 +264,21 @@ mission1.setupMissionStateScene = function()
          end
            
          -- Register event for leaving (Take-off) landingPad1
-         c_registerEventHandler("landing_pad1", "LpTO", 0, 0)
+         listen("landing_pad1", "LpTO")
          
          -- Detect if bomb exploded prematurely
-         c_registerEventHandler("bomb1", "ExEX", 0, 0)
+         listen("bomb1", "ExEX")
 
          -- Set state of next mission objective
          c_setObjectMapState("landing_pad1", "landingPad1", 0)
          c_setObjectMapState("coDestroyable", "springDestroyable", 1)
 
       elseif currentState == 3 then
-         c_registerEventHandler("coDestroyable", "BrBR", 0, 0)
-         c_registerEventHandler("bomb1", "ExEX", 0, 0)
+         listen("coDestroyable", "BrBR")
+         listen("bomb1", "ExEX")
 
       elseif currentState == 4 then
-         c_registerEventHandler("bomb1", "ExEX", 0, 0)
+         listen("bomb1", "ExEX")
       end
 
    elseif currentScene == "deep_space_scene.xml" then
@@ -276,7 +307,7 @@ mission1.setupMissionStateScene = function()
 
          c_addDialogMessage("Welcome to space. Find the coin treasure.", "DEBUG", true, 0, 0)
 
-         c_registerEventHandler("treasure", "PuPU", 0, 0)
+         listen("treasure", "PuPU")
 
       end
    end
@@ -286,41 +317,27 @@ mission1.missionStateSceneEventHandler = function(eventId, actorName, parameter1
 
    if currentScene == "home_scene.xml" then
 
-      if actorName == "siloLandingPad" and eventId == "LpLL" then
-         offerLegRepair()
-      end
-
       -- Answers to c_askQuestion come as QsYs / QsNo (QsWd: took off
       -- instead), with the question id as parameter
-      if parameter1 == questionRepairLegs then
-         if eventId == "QsYs" then
-            answerLegRepair(true)
-         elseif eventId == "QsNo" then
-            answerLegRepair(false)
-         end
-      end
-
       if parameter1 == acceptBrunoMission1 then
          if eventId == "QsYs" then
             answerMission1(true)
          elseif eventId == "QsNo" then
             answerMission1(false)
+         elseif eventId == "QsWd" then
+            offerPending = false
          end
-      end 
+      end
 
-      if actorName == "oreLanding" and eventId == "LpLL" then
-         -- Every landing there sends the event, so play only the first time
-         if homeEdithDialogDone == false then
-            homeEdithDialogDone = true
-
-            -- The taskgiver adds some fuel; fill up, but never take fuel away
-            if c_getObjectProperty("leapfrog1", 7) < homeStartFuel then
-               c_setObjectProperty("leapfrog1", 7, homeStartFuel)
-               c_hudLog("Fuel from the taskgiver")
+      if eventId == "LpLL" then
+         if currentState == 1 then
+            if actorName == "siloLandingPad" then
+               askAgain(false)
+            elseif actorName == "oreLanding" then
+               askAgain(true)
             end
-
-            playEdithCutsIn()
-            homeLaunchSiteTimer = c_startSceneTimer(homeEdithDialogTicks)
+         else
+            routeLanding(actorName)
          end
       end
 

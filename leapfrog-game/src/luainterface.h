@@ -45,6 +45,7 @@ private:
 public:
    LuaInterface();
    void initLuaInterface(void);
+   void preloadModule(const char* fileName, const char* name);
    //void setSceneActor(SceneActor* sceneActor);
    SceneActor* getSceneActor(void);
    void registerHandlerHandle(oxygine::Actor* actor, int eventId);

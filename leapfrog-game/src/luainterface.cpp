@@ -619,6 +619,28 @@ LuaInterface::LuaInterface() :
 {
 }
 
+// Loads a Lua file as package.preload[name], so the scripts can require(name)
+void LuaInterface::preloadModule(const char* fileName, const char* name)
+{
+   ox::file::buffer buffer;
+   ox::file::read(fileName, buffer);
+
+   lua_getglobal(m_L, "package");
+   lua_getfield(m_L, -1, "preload");
+
+   int result = luaL_loadbuffer(m_L, reinterpret_cast<char*>(&buffer[0]), buffer.size(), name);
+
+   if (result)
+   {
+      logs::messageln("Lua: loading %s failed (%d): %s", fileName, result, lua_tostring(m_L, -1));
+      lua_pop(m_L, 3);
+      return;
+   }
+
+   lua_setfield(m_L, -2, name);
+   lua_pop(m_L, 2);
+}
+
 void LuaInterface::initLuaInterface(void)
 {
    // initialize Lua 
@@ -626,26 +648,17 @@ void LuaInterface::initLuaInterface(void)
    luaL_openlibs(m_L);
 //   lua_register(m_L, "average", average);
 
-   ox::file::read("lua/mission_1.lua", m_sceneNavigatorScriptBuffer);
-   lua_getglobal(m_L, "package");
-   lua_getfield(m_L, -1, "preload");
-   int result = luaL_loadbuffer(m_L, reinterpret_cast<char*>(&m_sceneNavigatorScriptBuffer[0]), m_sceneNavigatorScriptBuffer.size(), "mission1");
-   // result = luaL_loadstring(m_L, reinterpret_cast<char*>(&m_sceneNavigatorScriptBuffer[0]));
-   //result = luaL_loadstring(m_L, "return{test = function() print('Test') end}");
-   if (result && lua_gettop(m_L))
-   {
-      logs::messageln("stack = %d", lua_gettop(m_L));
-      logs::messageln("error = %d", result);
-      logs::messageln("message = %s", lua_tostring(m_L, -1));
-   }
-   lua_setfield(m_L, -2, "mission1");
+   // Modules for require(): the world script (always there, also in free
+   // play) and the missions
+   preloadModule("lua/world.lua", "world");
+   preloadModule("lua/mission_1.lua", "mission1");
 
    //result = lua_pcall(m_L, 0, 0, 0);
 
 
 
    ox::file::read("scene_navigator.lua", m_sceneNavigatorScriptBuffer);
-   result = luaL_loadbuffer(m_L, reinterpret_cast<char*>(&m_sceneNavigatorScriptBuffer[0]), m_sceneNavigatorScriptBuffer.size(), "scene_navigator");
+   int result = luaL_loadbuffer(m_L, reinterpret_cast<char*>(&m_sceneNavigatorScriptBuffer[0]), m_sceneNavigatorScriptBuffer.size(), "scene_navigator");
    if (result && lua_gettop(m_L))
    {
       logs::messageln("stack = %d", lua_gettop(m_L));

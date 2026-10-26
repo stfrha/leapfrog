@@ -28,21 +28,25 @@ useInitialLfPos = false
 
 lfDefined = false
 
--- This function starts a new or saved game. If used for a new
--- game, the currentMission needs only be set to zero for this 
--- function to initialize the first mission and selects its scene.
--- If used for a saved game, the currentMission must be set to >0.
--- The other variables: currentSceneType, currentState and currentScene
--- must be set using the lua_forceCurrentScene before this is called.
+-- This function starts a new or saved game. A new game is recognised by
+-- its scene ("New Game" before anything is loaded, "not_defined" after
+-- GameStatus::gameStatusNewGameInit); it starts mission 1 at home.
+-- currentMission == 0 means no mission (free play), so it no longer means
+-- a new game. For a saved game the variables currentSceneType,
+-- currentState, currentScene and currentMission must be set using
+-- lua_forceCurrentScene before this is called.
 function lua_startInitialScene()
 
    lfDefined = false
 
-   if currentMission == 0 or currentMission == 1 then
+   local newGame = (currentScene == "New Game") or (currentScene == "not_defined")
+
+   if newGame or currentMission == 1 then
       currentScene = "home_scene.xml"
       currentSceneType = 0
       currentMission = 1
       currentState = 1
+      newGameStarting = true
 
       -- Start in the deep_space scene for test purposes. 
       -- currentScene = "deep_space_scene.xml"
