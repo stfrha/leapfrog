@@ -50,9 +50,9 @@ local function offerLegRepair()
       c_addDialogMessage("I've patched the joints so they hold. Take it easy on the landings.", "Silo", true, 90, 0)
       c_setObjectProperty("leapfrog1", 10, legFieldFixHealth)
       c_hudLog("Legs patched")
-   else
-      c_addDialogMessage("Leg actuators strained. A full repair is " .. legRepairCost .. " credits, you have " .. credits .. ".", "Silo", true, 30, 0)
    end
+   -- Otherwise (can't pay, and the legs are already at least patched) the
+   -- silo has nothing to offer: say nothing
 end
 
 local function answerLegRepair(yes)
