@@ -2,14 +2,32 @@
 
 local mission1 = {}
 
--- Mission 1, home scene. currentState:
---   1 = Bruno has offered the job (asked when a new game starts; asked
---       again on landing at the silo or the Orb until accepted)
---   2 = accepted: fly to the Orb, one landing pad at a time; Bruno has
---       put free fuel in landingPad2 and landingPad3
---   3 = at the Orb: Edith has cut in, the launch site is on the map
--- (The landing_scene and deep_space_scene parts below are the old test
--- mission, states 1 to 6.)
+-- Mission 1's states, by name. currentState holds one of these numbers;
+-- the number is what is saved, so give each state a number of its own and
+-- don't renumber a state that saved games may hold. Always refer to a
+-- state by its name: currentState == State.accepted.
+local State = {
+   -- Home scene
+   offered          = 10,  -- Bruno has offered the job (asked when a new game
+                           -- starts; again on landing at the silo or the Orb
+                           -- until accepted)
+   accepted         = 11,  -- fly to the Orb, one landing pad at a time;
+                           -- Bruno has put free fuel in landingPad2 and 3
+   atOrb            = 12,  -- Edith has cut in, the launch site is on the map
+
+   -- The old test mission (landing_scene, deep_space_scene). The main
+   -- menu's test entries start it with state 1.
+   testLandOnPad    = 1,   -- land on landing_pad1
+   testTakeOff      = 2,   -- take off from it, to the grotto
+   testFreeSpring   = 3,   -- break the spring free
+   testDestroyBomb  = 4,   -- now destroy the bomb
+   testFindTreasure = 5,   -- in deep space: find the coin treasure
+   testEnded        = 6,   -- failed (bomb too early) or completed
+}
+mission1.State = State
+
+-- A new game starts here
+mission1.firstState = State.offered
 
 -- With the job comes fuel to reach the launch site: when the leapfrog
 -- lands on the Orb, the taskgiver fills the tank up to what the game
@@ -22,8 +40,10 @@ local homeStartFuel = 30
 local homeEdithDialogTicks = 660
 local homeLaunchSiteTimer = -1
 
--- Bruno's offer (c_askQuestion id; the world uses 100 and up)
-local acceptBrunoMission1 = 2
+-- Question ids (c_askQuestion): missions use 1 to 99
+local Question = {
+   acceptJob = 1,      -- Bruno's offer
+}
 local offerPending = false     -- asked and not yet answered
 local offerAtOrb = false       -- asked while standing on the Orb's pad
 
@@ -50,7 +70,7 @@ local function playBrunoCall()
    c_addDialogMessage("I don't have enough fuel to get there.", "Leapfrog", false, 200, 0)
    c_addDialogMessage("Ok, I'm gonna make it easy for you. I will put in some credits into a couple of landing pads along the way. They will give you enough fuel to get here.", "Bruno", true, 300, 0)
    c_addDialogMessage("Do you want the job?", "Bruno", true, 190, 0)
-   c_askQuestion(acceptBrunoMission1)
+   c_askQuestion(Question.acceptJob)
    offerPending = true
 
 end
@@ -68,7 +88,7 @@ end
 local function showRoute()
    for i, stop in ipairs(route) do
       local state = 0                         -- hollow
-      if currentState == 2 and i == routeStep then
+      if currentState == State.accepted and i == routeStep then
          state = 2                            -- flashing slowly
       end
       c_setObjectMapState(stop.pad, stop.body, state)
@@ -95,7 +115,7 @@ end
 -- Landed on the Orb's pad with the job: the taskgiver adds some fuel and
 -- Edith cuts in
 local function arriveAtOrb()
-   currentState = 3
+   currentState = State.atOrb
    showRoute()
 
    -- Fill up, but never take fuel away
@@ -119,7 +139,7 @@ local function askAgain(atOrb)
    else
       c_addDialogMessage("Changed your mind? Do you want the job?", "Bruno", true, 30, 0)
    end
-   c_askQuestion(acceptBrunoMission1)
+   c_askQuestion(Question.acceptJob)
    offerPending = true
 end
 
@@ -132,7 +152,7 @@ local function answerMission1(yes)
       return
    end
 
-   currentState = 2
+   currentState = State.accepted
    routeStep = 1
 
    if offerAtOrb then
@@ -152,7 +172,7 @@ end
 
 -- Landed on a pad of the route
 local function routeLanding(pad)
-   if currentState ~= 2 then
+   if currentState ~= State.accepted then
       return
    end
 
@@ -192,23 +212,32 @@ end
 mission1.setupMissionStateScene = function()
 
    -- Triggers and handlers were cleared by lua_setupMissionStateScene;
-   -- message senders are set by the world script
+   -- message senders are set by lua/common.lua
 
    if currentScene == "home_scene.xml" then
+
+      -- Saved before the states got their names (home used 1, 2, 3)
+      if currentState == 1 then
+         currentState = State.offered
+      elseif currentState == 2 then
+         currentState = State.accepted
+      elseif currentState < State.offered then
+         currentState = State.atOrb
+      end
 
       registerHomeHandlers()
 
       -- Launch site on the map only once Edith has had her say
-      c_setObjectMapShown("launchSite1", "mainTank", currentState >= 3)
+      c_setObjectMapShown("launchSite1", "mainTank", currentState == State.atOrb)
 
-      if currentState == 2 then
+      if currentState == State.accepted then
          -- Reloaded on the way to the Orb: Bruno's fuel is in the pads again
          fillRoutePads()
       end
       showRoute()
 
       if newGameStarting then
-         -- The world script has put the leapfrog above the silo
+         -- The mining world script has put the leapfrog above the silo
          homeStartFuel = c_getObjectProperty("leapfrog1", 7)
          playBrunoCall()
       end
@@ -219,7 +248,7 @@ mission1.setupMissionStateScene = function()
       -- on the launch site
       listen("launchSite1", "LsLL")
 
-      if currentState == 1 then
+      if currentState == State.testLandOnPad then
 
          if lfDefined == false then 
             if useInitialLfPos == true then
@@ -254,7 +283,7 @@ mission1.setupMissionStateScene = function()
          -- Play dialog
          c_addDialogMessage("Hello. Try to land on the landing pad, right below you.", "DEBUG", true, 0, 0)
 
-      elseif currentState == 2 then
+      elseif currentState == State.testTakeOff then
 
          if lfDefined == false then 
             if useInitialLfPos == false then
@@ -273,17 +302,17 @@ mission1.setupMissionStateScene = function()
          c_setObjectMapState("landing_pad1", "landingPad1", 0)
          c_setObjectMapState("coDestroyable", "springDestroyable", 1)
 
-      elseif currentState == 3 then
+      elseif currentState == State.testFreeSpring then
          listen("coDestroyable", "BrBR")
          listen("bomb1", "ExEX")
 
-      elseif currentState == 4 then
+      elseif currentState == State.testDestroyBomb then
          listen("bomb1", "ExEX")
       end
 
    elseif currentScene == "deep_space_scene.xml" then
 
-      if currentState == 5 then
+      if currentState == State.testFindTreasure then
       
          if lfDefined == false then 
             if useInitialLfPos == true then
@@ -319,7 +348,7 @@ mission1.missionStateSceneEventHandler = function(eventId, actorName, parameter1
 
       -- Answers to c_askQuestion come as QsYs / QsNo (QsWd: took off
       -- instead), with the question id as parameter
-      if parameter1 == acceptBrunoMission1 then
+      if parameter1 == Question.acceptJob then
          if eventId == "QsYs" then
             answerMission1(true)
          elseif eventId == "QsNo" then
@@ -330,7 +359,7 @@ mission1.missionStateSceneEventHandler = function(eventId, actorName, parameter1
       end
 
       if eventId == "LpLL" then
-         if currentState == 1 then
+         if currentState == State.offered then
             if actorName == "siloLandingPad" then
                askAgain(false)
             elseif actorName == "oreLanding" then
@@ -359,7 +388,7 @@ mission1.missionStateSceneEventHandler = function(eventId, actorName, parameter1
          c_setObjectProperty("launchSite1", 1, 0)
       end
 
-      if currentState == 1 then
+      if currentState == State.testLandOnPad then
          if eventId == "ScTO" and parameter1 == state1Timer then
 
             -- Play dialog
@@ -373,7 +402,7 @@ mission1.missionStateSceneEventHandler = function(eventId, actorName, parameter1
             -- Play dialog
             c_addDialogMessage("Yippie: Welcome to the landing pad. Let me fill you up. A new obstacle has arrived in the grotto. Check it out.", "DEBUG", true, 0, 0)
 
-            currentState = 2
+            currentState = State.testTakeOff
             
             lua_setupMissionStateScene()
          end
@@ -383,17 +412,17 @@ mission1.missionStateSceneEventHandler = function(eventId, actorName, parameter1
             -- Play dialog
             c_addDialogMessage("You exploded the bomb too early. Mission FAIL!!!", "DEBUG", true, 0, 0)
 
-            currentState = 6
+            currentState = State.testEnded
             
             lua_setupMissionStateScene()
          end
-      elseif currentState == 2 then
+      elseif currentState == State.testTakeOff then
          if actorName == "landing_pad1" and eventId == "LpTO" then
                
             -- Play dialog
             c_addDialogMessage("That's right. Get yourself over there.", "DEBUG", true, 0, 0)
 
-            currentState = 3
+            currentState = State.testFreeSpring
 
             lua_setupMissionStateScene()
          end
@@ -403,12 +432,12 @@ mission1.missionStateSceneEventHandler = function(eventId, actorName, parameter1
             -- Play dialog
             c_addDialogMessage("You exploded the bomb too early. Mission FAIL!!!", "DEBUG", true, 0, 0)
 
-            currentState = 6
+            currentState = State.testEnded
             
             lua_setupMissionStateScene()
          end
 
-      elseif currentState == 3 then
+      elseif currentState == State.testFreeSpring then
          if actorName == "coDestroyable" and eventId == "BrBR" then
             -- Play dialog
             c_addDialogMessage("Good job, the spring is free. Now destroy the bomb.", "DEBUG", true, 0, 0)
@@ -416,7 +445,7 @@ mission1.missionStateSceneEventHandler = function(eventId, actorName, parameter1
             -- Set bomb to more sensitivity
             c_setObjectProperty("bomb1", 0, 2500)
             
-            currentState = 4
+            currentState = State.testDestroyBomb
             
             lua_setupMissionStateScene()
          end
@@ -426,18 +455,18 @@ mission1.missionStateSceneEventHandler = function(eventId, actorName, parameter1
             -- Play dialog
             c_addDialogMessage("You exploded the bomb too early. Mission FAIL!!!", "DEBUG", true, 0, 0)
 
-            currentState = 5
+            currentState = State.testEnded
             
             lua_setupMissionStateScene()
          end
-      elseif currentState == 4 then
+      elseif currentState == State.testDestroyBomb then
          if actorName == "bomb1" then
             if eventId == "ExEX" then
                
                -- Play dialog
                c_addDialogMessage("Good work, you have earned a handsome reward. Ues it to get into space.", "DEBUG", true, 0, 0)
 
-               currentState = 5
+               currentState = State.testFindTreasure
                
                credits = c_getObjectProperty("leapfrog1", 8)
                c_setObjectProperty("leapfrog1", 8, credits + 200)
@@ -449,14 +478,14 @@ mission1.missionStateSceneEventHandler = function(eventId, actorName, parameter1
          end
       end
    elseif currentScene == "deep_space_scene.xml" then
-      if currentState == 5 then
+      if currentState == State.testFindTreasure then
          if actorName == "treasure" then
             if eventId == "PuPU" then
                
                -- Play dialog
                c_addDialogMessage("Mission Complete, you are now a rich space pirate.", "DEBUG", true, 0, 0)
 
-               currentState = 6
+               currentState = State.testEnded
 
                lua_setupMissionStateScene()
             end 

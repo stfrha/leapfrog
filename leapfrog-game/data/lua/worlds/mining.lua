@@ -1,39 +1,9 @@
--- The world: everything that is there whatever mission is running, also
--- when none is (currentMission == 0, free play). mission_script.lua calls
--- world.setupScene and world.eventHandler for every scene, before the
--- mission's own functions.
---
--- Rules for this file and the mission scripts:
--- - Only mission_script.lua calls c_clearAllTriggersAndEvents (before the
---   world and the mission set up), so neither wipes the other's handlers.
--- - Register events with listen(actorName, eventId), not
---   c_registerEventHandler: when the world and a mission both listen to
---   the same event (e.g. the silo's LpLL), it is registered once, and each
---   handler is called once.
--- - Question ids (c_askQuestion): the world uses 100 and up, missions
---   1 to 99.
+-- The mining world (the home planet): its scenes' pads, services and
+-- repeatable jobs, whatever mission is running, also in free play.
+-- mission_script.lua calls this for the scenes it maps to "mining", after
+-- lua/common.lua and before the mission. See common.lua for the rules.
 
-local world = {}
-
-
--- ------------------------------------------------------------------------
--- Message senders: who's who, for the colour of the message bubble frames.
--- Senders not set here stay phosphor green. A message can also be given
--- its own affiliation as a sixth argument to c_addDialogMessage. Set at
--- every scene setup, so it follows the story after a load (in Act 3: a
--- mission sets c_setSenderAffiliation("<pirate>", "friendly")).
-
-local function setSenders()
-   c_setSenderAffiliation("Edith", "leapfrog")
-   c_setSenderAffiliation("Silo", "leapfrog")
-   c_setSenderAffiliation("DEBUG", "leapfrog")
-   c_setSenderAffiliation("Leapfrog", "leapfrog")
-   c_setSenderAffiliation("Bruno", "neutral")
-
-   -- Edith is on the Leapfrog's side, but her messages get a colour of
-   -- their own so they don't look like the pilot's white ones
-   c_setSenderColor("Edith", "ff80d5")
-end
+local mining = {}
 
 
 -- ------------------------------------------------------------------------
@@ -43,7 +13,10 @@ end
 -- Without enough credits the silo patches limp joints for free, so the
 -- legs hold but stay weak.
 
-local questionRepairLegs = 100   -- c_askQuestion id
+-- Question ids (c_askQuestion): the mining world uses 100 to 199
+local Question = {
+   repairLegs = 100,
+}
 local legRepairCost = 0
 local legFieldFixHealth = 0.3
 
@@ -64,7 +37,7 @@ local function offerLegRepair()
 
    if credits >= legRepairCost then
       c_addDialogMessage("Leg actuators damaged. Full repair for " .. legRepairCost .. " credits?", "Silo", true, 30, 0)
-      c_askQuestion(questionRepairLegs)
+      c_askQuestion(Question.repairLegs)
    elseif legs < legFieldFixHealth then
       c_addDialogMessage("Leg actuators damaged. A full repair is " .. legRepairCost .. " credits, you have " .. credits .. ".", "Silo", true, 30, 0)
       c_addDialogMessage("I've patched the joints so they hold. Take it easy on the landings.", "Silo", true, 90, 0)
@@ -95,11 +68,9 @@ end
 
 
 -- ------------------------------------------------------------------------
--- Scene setup, every scene, before the mission's
+-- Scene setup, before the mission's
 
-world.setupScene = function()
-
-   setSenders()
+mining.setupScene = function()
 
    if currentScene == "home_scene.xml" then
 
@@ -126,9 +97,9 @@ end
 
 
 -- ------------------------------------------------------------------------
--- Events, every scene, before the mission's handler
+-- Events, before the mission's handler
 
-world.eventHandler = function(eventId, actorName, parameter1)
+mining.eventHandler = function(eventId, actorName, parameter1)
 
    if currentScene == "home_scene.xml" then
       if actorName == "siloLandingPad" and eventId == "LpLL" then
@@ -138,7 +109,7 @@ world.eventHandler = function(eventId, actorName, parameter1)
 
    -- Answers to c_askQuestion come as QsYs / QsNo (QsWd: took off
    -- instead), with the question id as parameter
-   if parameter1 == questionRepairLegs then
+   if parameter1 == Question.repairLegs then
       if eventId == "QsYs" then
          answerLegRepair(true)
       elseif eventId == "QsNo" then
@@ -147,4 +118,4 @@ world.eventHandler = function(eventId, actorName, parameter1)
    end
 end
 
-return world
+return mining

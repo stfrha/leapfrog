@@ -45,7 +45,7 @@ function lua_startInitialScene()
       currentScene = "home_scene.xml"
       currentSceneType = 0
       currentMission = 1
-      currentState = 1
+      currentState = lua_missionFirstState(currentMission)
       newGameStarting = true
 
       -- Start in the deep_space scene for test purposes. 

@@ -648,9 +648,10 @@ void LuaInterface::initLuaInterface(void)
    luaL_openlibs(m_L);
 //   lua_register(m_L, "average", average);
 
-   // Modules for require(): the world script (always there, also in free
-   // play) and the missions
-   preloadModule("lua/world.lua", "world");
+   // Modules for require(): common (every scene), the worlds (their
+   // scenes, also in free play) and the missions. See lua/common.lua.
+   preloadModule("lua/common.lua", "common");
+   preloadModule("lua/worlds/mining.lua", "mining");
    preloadModule("lua/mission_1.lua", "mission1");
 
    //result = lua_pcall(m_L, 0, 0, 0);

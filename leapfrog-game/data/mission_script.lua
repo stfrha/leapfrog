@@ -2,15 +2,45 @@
 -- decodes this into a specific LUA-script for that mission. It then executes the functions 
 -- of that file. 
 --
--- currentMission == 0 means no mission is running (free play). The world
--- script (lua/world.lua) runs in every case, before the mission's.
+-- currentMission == 0 means no mission is running (free play). Common
+-- (lua/common.lua) and the scene's world (lua/worlds/<world>.lua) run in
+-- every case, in that order, before the mission's script.
 
-local world = require('world')
+local common = require('common')
 local mission1 = require('mission1')
+
+-- The worlds' scripts, and which world each scene belongs to (a world's
+-- space and orbit scenes included). A scene not listed has no world script.
+local worlds = {
+   mining = require('mining'),
+}
+
+local sceneWorld = {
+   ["home_scene.xml"]       = "mining",
+   ["landing_scene.xml"]    = "mining",
+   ["deep_space_scene.xml"] = "mining",
+   ["orbit_scene.xml"]      = "mining",
+}
+
+local function currentWorld()
+   local name = sceneWorld[currentScene]
+   if name ~= nil then
+      return worlds[name]
+   end
+   return nil
+end
+
+-- The state a mission starts in (each mission declares its states by name)
+function lua_missionFirstState(mission)
+   if mission == 1 then
+      return mission1.firstState
+   end
+   return 0
+end
 
 
 -- Global variables
-currentState = 1
+currentState = 0
 
 -- Set by lua_startInitialScene when a new game starts, so the mission can
 -- play its opening; cleared once the first scene has been set up
@@ -51,7 +81,12 @@ function lua_setupMissionStateScene()
    c_clearAllTriggersAndEvents()
    registeredEvents = {}
 
-   world.setupScene()
+   common.setupScene()
+
+   local world = currentWorld()
+   if world ~= nil then
+      world.setupScene()
+   end
 
    if currentMission == 1 then
       mission1.setupMissionStateScene()
@@ -61,7 +96,12 @@ function lua_setupMissionStateScene()
 end
 
 function lua_missionStateSceneEventHandler(eventId, actorName, parameter1)
-   world.eventHandler(eventId, actorName, parameter1)
+   common.eventHandler(eventId, actorName, parameter1)
+
+   local world = currentWorld()
+   if world ~= nil then
+      world.eventHandler(eventId, actorName, parameter1)
+   end
 
    if currentMission == 1 then
       mission1.missionStateSceneEventHandler(eventId, actorName, parameter1)
