@@ -16,6 +16,11 @@ private:
    oxygine::Sprite* m_manPanEnableSprite;
    oxygine::Sprite* m_manPanSprite;
    oxygine::Sprite* m_reloadSprite;
+   oxygine::Sprite* m_turnLeftSprite;
+   oxygine::Sprite* m_turnRightSprite;
+   oxygine::Sprite* m_yesSprite;
+   oxygine::Sprite* m_noSprite;
+   bool m_questionShown;
 
    oxygine::RectF m_turnRightButtonRect;
    oxygine::RectF m_turnLeftButtonRect;

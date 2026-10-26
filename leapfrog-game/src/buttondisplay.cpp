@@ -16,7 +16,12 @@ ButtonDisplay::ButtonDisplay() :
    m_zoomInTouchIndex(0),
    m_zoomOutTouchIndex(0),
    m_panTouchIndex(0),
-   m_reloadTouchIndex(0)
+   m_reloadTouchIndex(0),
+   m_turnLeftSprite(NULL),
+   m_turnRightSprite(NULL),
+   m_yesSprite(NULL),
+   m_noSprite(NULL),
+   m_questionShown(false)
 {
 }
 
@@ -39,7 +44,13 @@ void ButtonDisplay::sceneDownHandler(Event* event)
 
    Point p = Point((int)v.x, (int)v.y);
 
-   if (m_turnLeftButtonRect.pointIn(p))
+   // While a question is shown, the turn buttons answer it
+   if (m_sceneActor->isQuestionShown() &&
+      (m_turnLeftButtonRect.pointIn(p) || m_turnRightButtonRect.pointIn(p)))
+   {
+      m_sceneActor->answerQuestion(m_turnLeftButtonRect.pointIn(p));
+   }
+   else if (m_turnLeftButtonRect.pointIn(p))
    {
       m_sceneActor->m_turnLeftPressed = true;
       m_turnLeftTouchIndex = te->index;
@@ -240,6 +251,30 @@ void ButtonDisplay::createButtonOverlay(void)
    turnRightButton->setTouchEnabled(false);
    turnRightButton->attachTo(this);
 
+   m_turnLeftSprite = turnLeftButton.get();
+   m_turnRightSprite = turnRightButton.get();
+
+   // Yes and No take the turn buttons' places while a question is shown
+   spSprite yesButton = new Sprite();
+   yesButton->setResAnim(g_GraphRes.getResources(GraphicResources::ResourceTypeEnum::hud).getResAnim("yes_button"));
+   yesButton->setSize(g_Layout.getButtonWidth(), g_Layout.getButtonWidth());
+   yesButton->setPosition(m_turnLeftButtonRect.getLeftTop());
+   yesButton->setAnchor(0.0f, 0.0f);
+   yesButton->setTouchEnabled(false);
+   yesButton->setVisible(false);
+   yesButton->attachTo(this);
+   m_yesSprite = yesButton.get();
+
+   spSprite noButton = new Sprite();
+   noButton->setResAnim(g_GraphRes.getResources(GraphicResources::ResourceTypeEnum::hud).getResAnim("no_button"));
+   noButton->setSize(g_Layout.getButtonWidth(), g_Layout.getButtonWidth());
+   noButton->setPosition(m_turnRightButtonRect.getLeftTop());
+   noButton->setAnchor(0.0f, 0.0f);
+   noButton->setTouchEnabled(false);
+   noButton->setVisible(false);
+   noButton->attachTo(this);
+   m_noSprite = noButton.get();
+
    spSprite fireButton = new Sprite();
    fireButton->setResAnim(g_GraphRes.getResources(GraphicResources::ResourceTypeEnum::hud).getResAnim("fire_button"));
    fireButton->setSize(g_Layout.getButtonWidth(), g_Layout.getButtonWidth());
@@ -317,4 +352,14 @@ void ButtonDisplay::createButtonOverlay(void)
 
 void ButtonDisplay::doUpdate(const UpdateState& us)
 {
+   bool shown = (m_sceneActor != NULL) && m_sceneActor->isQuestionShown();
+
+   if ((shown != m_questionShown) && (m_yesSprite != NULL))
+   {
+      m_questionShown = shown;
+      m_turnLeftSprite->setVisible(!shown);
+      m_turnRightSprite->setVisible(!shown);
+      m_yesSprite->setVisible(shown);
+      m_noSprite->setVisible(shown);
+   }
 }

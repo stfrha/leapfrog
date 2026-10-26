@@ -119,6 +119,9 @@ public:
 
    void cleanAndClearMessageDisplay(void);
 
+   // True while messages wait to be shown (or for their post-delay)
+   bool hasQueuedMessages(void) const { return !m_messageQueue.empty(); }
+
    // The bubble frame gets the colour of the sender's affiliation, as set
    // with setSenderAffiliation (none if the sender has not been set).
    void initMessage(

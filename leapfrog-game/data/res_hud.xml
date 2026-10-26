@@ -12,6 +12,8 @@
 		<image file="turn_left_button.png"/>		
 		<image file="turn_right_button.png"/>		
 		<image file="pause_button.png"/>		
+		<image file="yes_button.png"/>		
+		<image file="no_button.png"/>		
 
 		<image file="lf_position.png"/>	
 

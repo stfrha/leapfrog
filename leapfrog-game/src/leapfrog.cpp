@@ -1713,9 +1713,18 @@ void LeapFrog::setLegHealthPropHandler(oxygine::Event *ev)
 {
    float value = m_properties[LeapfroPropertiesEnum::legHealth].getProperty();
 
+   // Repair: raise every joint to at least the value (a sound joint is
+   // never made worse, so 0.3 patches limp joints without hurting the rest)
+   for (int i = 0; i < c_numLegJoints; i++)
+   {
+      if (getLegHealth(i) < value)
+      {
+         setLegHealth(i, value);
+      }
+   }
+
    // Make sure the property is written back even if nothing changes
    m_reportedLegHealth = -1.0f;
-   setAllLegHealth(value);
    reportLegHealth();
 }
 

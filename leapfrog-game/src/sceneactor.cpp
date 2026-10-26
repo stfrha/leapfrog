@@ -12,6 +12,7 @@
 #include "messagedisplay.h"
 #include "gamestatus.h"
 #include "objectresources.h"
+#include "luainterface.h"
 
 using namespace oxygine;
 using namespace std;
@@ -171,6 +172,10 @@ SceneActor::SceneActor(
    m_panObject(NULL),
    m_manualPan(NULL),
    m_timerIdCounter(0),
+   m_questionId(-1),
+   m_questionAnswer(-2),
+   m_answeredQuestionId(-1),
+   m_questionKeysArmed(false),
    m_armPauseChange(true),
    m_leapfrog(NULL)
 {
@@ -488,6 +493,80 @@ void SceneActor::addObjectToSpawnList(
    m_spawnInstructions.push_back(spi);
 }
 
+void SceneActor::askQuestion(int questionId)
+{
+   m_questionId = questionId;
+   m_questionKeysArmed = false;
+
+   // Turn presses from before the question must not steer when it ends
+   m_turnLeftPressed = false;
+   m_turnRightPressed = false;
+}
+
+void SceneActor::cancelQuestion(void)
+{
+   m_questionId = -1;
+}
+
+bool SceneActor::isQuestionShown(void)
+{
+   if (m_questionId < 0)
+   {
+      return false;
+   }
+
+   // Wait until the dialog has shown the question
+   return !(g_MessageDisplay && g_MessageDisplay->hasQueuedMessages());
+}
+
+void SceneActor::answerQuestion(bool yes)
+{
+   if (!isQuestionShown())
+   {
+      return;
+   }
+
+   // Sent to Lua from doUpdate, outside the touch handler
+   m_answeredQuestionId = m_questionId;
+   m_questionAnswer = yes ? 1 : 0;
+   m_questionId = -1;
+}
+
+void SceneActor::updateQuestion(const Uint8* keys)
+{
+   if ((m_questionId >= 0) && !g_MainActor->isInPause())
+   {
+      if (!m_externalControl && (keys[SDL_SCANCODE_W] || m_boosterPressed))
+      {
+         // Firing the main booster (taking off) withdraws the question
+         m_answeredQuestionId = m_questionId;
+         m_questionAnswer = -1;
+         m_questionId = -1;
+      }
+      else if (!keys[SDL_SCANCODE_Y] && !keys[SDL_SCANCODE_N])
+      {
+         m_questionKeysArmed = true;
+      }
+      else if (m_questionKeysArmed && isQuestionShown())
+      {
+         answerQuestion(keys[SDL_SCANCODE_Y] != 0);
+      }
+   }
+
+   if (m_questionAnswer != -2)
+   {
+      int answer = m_questionAnswer;
+      int id = m_answeredQuestionId;
+      m_questionAnswer = -2;
+
+      const char* eventId = (answer == 1) ? "QsYs" : (answer == 0) ? "QsNo" : "QsWd";
+      logs::messageln("Question %d: %s", id, eventId);
+
+      // Lua may ask the next question from its handler
+      g_LuaInterface.missionStateSceneEventHandler(eventId, getName(), id);
+   }
+}
+
 int SceneActor::createSceneTimer(int numOfTicks)
 {
    int myId = m_timerIdCounter;
@@ -551,6 +630,8 @@ void SceneActor::doUpdate(const UpdateState& us)
    // Spawn all actors registred for birth
    sweepSpawnList();
 
+   updateQuestion(data);
+
    if (m_leapfrog != NULL)
    {
       if (!m_externalControl)
@@ -564,7 +645,12 @@ void SceneActor::doUpdate(const UpdateState& us)
             m_leapfrog->fireMainBooster(false);
          }
 
-         if (data[SDL_SCANCODE_A] || m_turnLeftPressed)
+         if (isQuestionShown())
+         {
+            // The turn buttons are Yes and No just now
+            m_leapfrog->fireSteeringBooster(0);
+         }
+         else if (data[SDL_SCANCODE_A] || m_turnLeftPressed)
          {
             m_leapfrog->fireSteeringBooster(-1);
          }

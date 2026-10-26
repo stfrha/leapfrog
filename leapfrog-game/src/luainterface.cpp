@@ -547,6 +547,37 @@ static int c_startSceneTimer(lua_State *L)
    return 1;
 }
 
+// c_askQuestion(questionId)
+// Asks the player a yes/no question (put the question itself in the dialog
+// first, with c_addDialogMessage). When the dialog has shown its queued
+// messages, the two turn buttons become Yes and No (keys Y and N). The
+// answer comes to missionStateSceneEventHandler as event "QsYs" or "QsNo";
+// "QsWd" if the player fires the main booster instead. The event's
+// parameter is questionId (>= 0). A new question replaces an unanswered one.
+static int c_askQuestion(lua_State *L)
+{
+   int questionId = lua_tointeger(L, 1);
+
+   if (questionId < 0)
+   {
+      logs::warning("c_askQuestion: the question id must be 0 or more");
+      return 0;
+   }
+
+   g_LuaInterface.getSceneActor()->askQuestion(questionId);
+
+   return 0;
+}
+
+// c_cancelQuestion()
+// Takes back an unanswered question without an answer event.
+static int c_cancelQuestion(lua_State *L)
+{
+   g_LuaInterface.getSceneActor()->cancelQuestion();
+
+   return 0;
+}
+
 static int c_exitSceneSaveGameStatus(lua_State *L)
 {
    std::string sceneName = lua_tostring(L, 1);
@@ -665,6 +696,8 @@ void LuaInterface::initLuaInterface(void)
    lua_register(m_L, "c_startSceneTimer", c_startSceneTimer);
    lua_register(m_L, "c_exitSceneSaveGameStatus", c_exitSceneSaveGameStatus);
    lua_register(m_L, "c_saveGameStatus", c_saveGameStatus);
+   lua_register(m_L, "c_askQuestion", c_askQuestion);
+   lua_register(m_L, "c_cancelQuestion", c_cancelQuestion);
 
 }
 

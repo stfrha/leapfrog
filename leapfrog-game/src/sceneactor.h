@@ -107,6 +107,13 @@ protected:
    bool m_externalControl;
    SceneTypeEnum m_sceneType;
 
+   // Yes/No question asked by the mission script (c_askQuestion)
+   int m_questionId;          // -1: no question pending
+   int m_questionAnswer;      // answer waiting to be sent to Lua (-2: none)
+   int m_answeredQuestionId;
+   bool m_questionKeysArmed;  // Y and N have been up since the question
+   void updateQuestion(const Uint8* keys);
+
 public:
    const Vector2& getWantedVpPos() const; 
    void setWantedVpPos(const Vector2& pos);
@@ -187,6 +194,16 @@ public:
       spSpawnObjectList spawnSource);
    
    int createSceneTimer(int numOfTicks);
+
+   // Yes/No questions. The turn buttons show Yes and No once the dialog has
+   // shown all its queued messages (the question is normally the last one).
+   // The answer reaches Lua as event "QsYs", "QsNo" or, when the question is
+   // withdrawn because the player fires the main booster, "QsWd"; the
+   // event's parameter is the question id.
+   void askQuestion(int questionId);
+   void cancelQuestion(void);
+   void answerQuestion(bool yes);
+   bool isQuestionShown(void);
 
    virtual void startLeapfrogInScene(std::string name);
    virtual void startLaunchSiteInScene(std::string name);

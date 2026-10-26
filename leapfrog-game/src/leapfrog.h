@@ -130,8 +130,8 @@ public:
    8     =  Credits
    9     =  Damage
    10    =  Leg health: lowest health of the six leg joints, 0..1 (0 =
-            a joint is limp). Writing sets all six joints to the value,
-            e.g. 1 to repair the legs.
+            a joint is limp). Writing raises every joint to at least the
+            value (repair: 1; a field fix: e.g. 0.3).
    */
 
    enum LeapfroPropertiesEnum

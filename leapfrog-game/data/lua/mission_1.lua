@@ -18,6 +18,60 @@ local homeLaunchSiteTimer = -1
 -- started with (leapfrog property 7 = fuel), read when the new game starts.
 local homeStartFuel = 30
 
+-- Leg repair at home (the silo's pad). Leapfrog property 10 is the lowest
+-- leg joint health, 0..1 (0 = a joint is limp); writing it raises every
+-- joint to at least that value.
+-- A full repair costs credits (property 8). Without enough credits the
+-- silo patches the joints for free, so the legs hold but stay weak.
+local questionRepairLegs = 1   -- c_askQuestion id
+local legRepairCost = 0
+local legFieldFixHealth = 0.3
+
+local function legRepairCostFor(legHealth)
+   -- 20 credits for a strain, up to 60 for a limp leg
+   return math.ceil(20 + 40 * (1 - legHealth))
+end
+
+local function offerLegRepair()
+   local legs = c_getObjectProperty("leapfrog1", 10)
+   if legs >= 1 then
+      return
+   end
+
+   legRepairCost = legRepairCostFor(legs)
+   local credits = c_getObjectProperty("leapfrog1", 8)
+
+   if credits >= legRepairCost then
+      c_addDialogMessage("Leg actuators damaged. Full repair for " .. legRepairCost .. " credits?", "Silo", true, 30, 0)
+      c_askQuestion(questionRepairLegs)
+   elseif legs < legFieldFixHealth then
+      c_addDialogMessage("Leg actuators damaged. A full repair is " .. legRepairCost .. " credits, you have " .. credits .. ".", "Silo", true, 30, 0)
+      c_addDialogMessage("I've patched the joints so they hold. Take it easy on the landings.", "Silo", true, 90, 0)
+      c_setObjectProperty("leapfrog1", 10, legFieldFixHealth)
+      c_hudLog("Legs patched")
+   else
+      c_addDialogMessage("Leg actuators strained. A full repair is " .. legRepairCost .. " credits, you have " .. credits .. ".", "Silo", true, 30, 0)
+   end
+end
+
+local function answerLegRepair(yes)
+   if not yes then
+      c_addDialogMessage("No repair.", "Leapfrog", false, 30, 0)
+      return
+   end
+
+   -- Read again: credits may have changed while the question was open
+   local credits = c_getObjectProperty("leapfrog1", 8)
+   if credits >= legRepairCost then
+      c_setObjectProperty("leapfrog1", 8, credits - legRepairCost)
+      c_setObjectProperty("leapfrog1", 10, 1)
+      c_addDialogMessage("Yes, fix them.", "Leapfrog", false, 30, 0)
+      c_hudLog("Legs repaired: " .. legRepairCost .. " credits")
+   else
+      c_addDialogMessage("Not enough credits any more.", "Silo", true, 30, 0)
+   end
+end
+
 -- c_addDialogMessage(message, sender, leftSide, preDelay, postDelay)
 -- Others on the left, the pilot on the right. Delays are in frames.
 local function playBrunoCall()
@@ -51,6 +105,9 @@ local function registerHomeHandlers()
 
    -- Landed on the Orb's pad: Edith cuts in (once)
    c_registerEventHandler("oreLanding", "LpLL", 0, 0)
+
+   -- Landed at home: the silo offers to repair the legs
+   c_registerEventHandler("siloLandingPad", "LpLL", 0, 0)
 end
 
 
@@ -214,6 +271,20 @@ end
 mission1.missionStateSceneEventHandler = function(eventId, actorName, parameter1)
 
    if currentScene == "home_scene.xml" then
+
+      if actorName == "siloLandingPad" and eventId == "LpLL" then
+         offerLegRepair()
+      end
+
+      -- Answers to c_askQuestion come as QsYs / QsNo (QsWd: took off
+      -- instead), with the question id as parameter
+      if parameter1 == questionRepairLegs then
+         if eventId == "QsYs" then
+            answerLegRepair(true)
+         elseif eventId == "QsNo" then
+            answerLegRepair(false)
+         end
+      end
 
       if actorName == "oreLanding" and eventId == "LpLL" then
          -- Every landing there sends the event, so play only the first time
