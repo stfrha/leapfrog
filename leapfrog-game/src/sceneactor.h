@@ -206,6 +206,11 @@ public:
    void answerQuestion(bool yes);
    bool isQuestionShown(void);
 
+   // Cheats: key C or a double tap on the HUD's credits (+100), a double
+   // tap on the fuel bar (full tank)
+   void cheatCredits(void);
+   void cheatFuel(void);
+
    virtual void startLeapfrogInScene(std::string name);
    virtual void startLaunchSiteInScene(std::string name);
 

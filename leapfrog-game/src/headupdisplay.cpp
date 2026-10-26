@@ -11,8 +11,64 @@ using namespace oxygine;
 // Instanciate global instance of the HUD
 spHeadUpDisplay g_headUpDisplay;
 
-HeadUpDisplay::HeadUpDisplay()
+HeadUpDisplay::HeadUpDisplay() :
+   m_sceneActor(NULL),
+   m_buttonDisplay(NULL),
+   m_statusBarActor(NULL),
+   m_lastCheatTap(0),
+   m_lastCheatTapTime(0)
 {
+}
+
+bool HeadUpDisplay::checkCheatTap(const Vector2& pos)
+{
+   // A double tap (two taps within 0.4 s) on the fuel bar fills the tank,
+   // on the credits gives 100 credits. Only when the status bars show.
+   if ((m_statusBarActor == NULL) || !m_statusBarActor->getVisible() || (m_sceneActor == NULL))
+   {
+      return false;
+   }
+
+   int tap = 0;
+
+   if (m_fuelCheatRect.pointIn(pos))
+   {
+      tap = 1;
+   }
+   else if (m_creditCheatRect.pointIn(pos))
+   {
+      tap = 2;
+   }
+
+   if (tap == 0)
+   {
+      m_lastCheatTap = 0;
+      return false;
+   }
+
+   timeMS now = getTimeMS();
+
+   if ((tap == m_lastCheatTap) && (now - m_lastCheatTapTime <= 400))
+   {
+      if (tap == 1)
+      {
+         m_sceneActor->cheatFuel();
+      }
+      else
+      {
+         m_sceneActor->cheatCredits();
+      }
+
+      // A third tap starts a new double tap
+      m_lastCheatTap = 0;
+   }
+   else
+   {
+      m_lastCheatTap = tap;
+      m_lastCheatTapTime = now;
+   }
+
+   return true;
 }
 
 void HeadUpDisplay::initialiseHeadUpDisplay(
@@ -107,6 +163,19 @@ void HeadUpDisplay::registerLeapfrog(LeapFrog* leapfrog, bool hideShield)
       "Ammo:",
       ObjectResourcesTypeEnum::shots);
 
+   // Where the fuel bar and the credits are, for the cheat taps
+   m_fuelCheatRect = RectF(
+      g_Layout.getXFromRight(1),
+      g_Layout.getYFromTop(1) + g_Layout.getButtonWidth() / 2.0f + 2.0f,
+      g_Layout.getButtonWidth() * 2.0f,
+      g_Layout.getButtonWidth() / 2.0f);
+
+   m_creditCheatRect = RectF(
+      g_Layout.getXFromRight(1),
+      g_Layout.getYFromTop(1) + g_Layout.getButtonWidth() / 2.0f * 4.0f + 2.0f,
+      g_Layout.getButtonWidth() * 2.0f,
+      g_Layout.getButtonWidth() / 2.0f);
+
    spStatusBar fuelBar = new StatusBar(
       leapfrog,
       m_sceneActor,
@@ -170,6 +239,13 @@ void HeadUpDisplay::doUpdate(const UpdateState& us)
 
 void HeadUpDisplay::sceneDownHandler(Event* event)
 {
+   TouchEvent* te = (TouchEvent*)event;
+
+   if (checkCheatTap(te->localPosition))
+   {
+      return;
+   }
+
    m_buttonDisplay->sceneDownHandler(event);
 }
 

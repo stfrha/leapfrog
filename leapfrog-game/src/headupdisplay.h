@@ -18,6 +18,13 @@ private:
    ButtonDisplay* m_buttonDisplay;
    oxygine::Actor* m_statusBarActor;
 
+   // Cheats on phones: double tap the fuel bar or the credits
+   oxygine::RectF m_fuelCheatRect;
+   oxygine::RectF m_creditCheatRect;
+   int m_lastCheatTap;                 // 0 none, 1 fuel, 2 credits
+   oxygine::timeMS m_lastCheatTapTime;
+   bool checkCheatTap(const oxygine::Vector2& pos);
+
 public:
 
    HeadUpDisplay();

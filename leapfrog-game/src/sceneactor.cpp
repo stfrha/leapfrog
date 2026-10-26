@@ -568,6 +568,31 @@ void SceneActor::updateQuestion(const Uint8* keys)
    }
 }
 
+void SceneActor::cheatCredits(void)
+{
+   if ((m_leapfrog != NULL) && (m_leapfrog->m_resources != NULL))
+   {
+      m_leapfrog->m_resources->deltaCredits(100);
+      if (g_HeadDownDisplay)
+      {
+         g_HeadDownDisplay->logMessage("Cheat: +100 credits");
+      }
+   }
+}
+
+void SceneActor::cheatFuel(void)
+{
+   if ((m_leapfrog != NULL) && (m_leapfrog->m_resources != NULL))
+   {
+      // The tank holds 100
+      m_leapfrog->m_resources->deltaFuel(100.0f);
+      if (g_HeadDownDisplay)
+      {
+         g_HeadDownDisplay->logMessage("Cheat: full tank");
+      }
+   }
+}
+
 int SceneActor::createSceneTimer(int numOfTicks)
 {
    int myId = m_timerIdCounter;
@@ -694,13 +719,9 @@ void SceneActor::doUpdate(const UpdateState& us)
       // Cheat: C gives 100 credits, once per press
       if (data[SDL_SCANCODE_C])
       {
-         if (m_creditCheatArmed && (m_leapfrog->m_resources != NULL))
+         if (m_creditCheatArmed)
          {
-            m_leapfrog->m_resources->deltaCredits(100);
-            if (g_HeadDownDisplay)
-            {
-               g_HeadDownDisplay->logMessage("Cheat: +100 credits");
-            }
+            cheatCredits();
          }
          m_creditCheatArmed = false;
       }
