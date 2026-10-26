@@ -176,6 +176,7 @@ SceneActor::SceneActor(
    m_questionAnswer(-2),
    m_answeredQuestionId(-1),
    m_questionKeysArmed(false),
+   m_creditCheatArmed(true),
    m_armPauseChange(true),
    m_leapfrog(NULL)
 {
@@ -688,6 +689,24 @@ void SceneActor::doUpdate(const UpdateState& us)
       else if (data[SDL_SCANCODE_3])
       {
          m_leapfrog->goToMode(LFM_REENTRY);
+      }
+
+      // Cheat: C gives 100 credits, once per press
+      if (data[SDL_SCANCODE_C])
+      {
+         if (m_creditCheatArmed && (m_leapfrog->m_resources != NULL))
+         {
+            m_leapfrog->m_resources->deltaCredits(100);
+            if (g_HeadDownDisplay)
+            {
+               g_HeadDownDisplay->logMessage("Cheat: +100 credits");
+            }
+         }
+         m_creditCheatArmed = false;
+      }
+      else
+      {
+         m_creditCheatArmed = true;
       }
 
       // Debug: 8 makes the left hip limp, 9 repairs all leg joints

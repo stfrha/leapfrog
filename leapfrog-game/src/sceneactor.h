@@ -112,6 +112,7 @@ protected:
    int m_questionAnswer;      // answer waiting to be sent to Lua (-2: none)
    int m_answeredQuestionId;
    bool m_questionKeysArmed;  // Y and N have been up since the question
+   bool m_creditCheatArmed;   // C has been up since the last cheat
    void updateQuestion(const Uint8* keys);
 
 public:
