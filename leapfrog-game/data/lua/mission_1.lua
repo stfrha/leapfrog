@@ -22,11 +22,16 @@ local homeStartFuel = 30
 -- Others on the left, the pilot on the right. Delays are in frames.
 local function playBrunoCall()
    c_addDialogMessage("Hey! I hear you are in bad shape. Low fuel, low ammo, low everything.", "Bruno", true, 60, 0)
-   c_addDialogMessage("Your so-called ship is falling apart, eh?", "Bruno", true, 90, 0)
-   c_addDialogMessage("No. I'm in good shape. Where did you hear that?", "Leapfrog", false, 90, 0)
-   c_addDialogMessage("Grapevine. If you are so strong, I can give this little job to someone else.", "Bruno", true, 120, 0)
+   c_addDialogMessage("Your so-called ship is falling apart, eh? You probably need a paying job, right? Like, really bad.", "Bruno", true, 120, 0)
+   c_addDialogMessage("No. I'm in good shape. Where did you hear that?", "Leapfrog", false, 290, 0)
+   c_addDialogMessage("Grapevine. If you are so strong, I can give this little job to someone else.", "Bruno", true, 220, 0)
    c_addDialogMessage("Hold up, let's talk about it.", "Leapfrog", false, 60, 0)
-   c_addDialogMessage("Get over to the Orb. I repaired the penthouse suite.", "Bruno", true, 90, 0)
+   c_addDialogMessage("Get into town, over to the Orb.", "Bruno", true, 90, 0)
+   c_addDialogMessage("I don't have enough fuel to get there.", "Leapfrog", false, 200, 0)
+   c_addDialogMessage("Ok, I'm gonna make it easy for you. I put in some credits into a couple of landing pads along the way. They will give you enough fuel to get here.", "Bruno", true, 90, 0)
+   c_addDialogMessage("Just follow your markers on your map.", "Bruno", true, 190, 0)
+   c_addDialogMessage("I see you there.", "Leapfrog", false, 200, 0)
+   
 end
 
 local function playEdithCutsIn()
