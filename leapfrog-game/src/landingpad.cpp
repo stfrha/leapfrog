@@ -42,6 +42,7 @@ LandingPad::LandingPad(
    m_fuelSupply(100.0f),
    m_creditsOwed(0.0f),
    m_fuelMessageShown(false),
+   m_landedSent(false),
    m_stableTicks(0),
    m_latestLeapfrog(NULL),
    m_world(world),
@@ -284,6 +285,7 @@ void LandingPad::doUpdate(const UpdateState &us)
             m_state = LandingPadState::stableAir;
             m_properties[state].setProperty((float)m_state);
             m_properties[lfLanded].setProperty(0.0f);
+            m_landedSent = false;
             if (m_active)
             {
                LandingPadLeapfrogTakeOffEvent event;
@@ -303,11 +305,20 @@ void LandingPad::doUpdate(const UpdateState &us)
             m_properties[state].setProperty((float)m_state);
             m_properties[lfLanded].setProperty(1.0f);
             m_announceLanded = false;
-            m_fuelMessageShown = false;
-            if (m_active)
+
+            // A foot that lifts for a moment (a bounce, a sagging leg)
+            // makes the pad unstable and then landed again, but it is
+            // still the same landing: LpLL only once until a take-off
+            if (!m_landedSent)
             {
-               LandingPadLeapfrogLandedEvent event;
-               dispatchEvent(&event);
+               m_fuelMessageShown = false;
+
+               if (m_active)
+               {
+                  m_landedSent = true;
+                  LandingPadLeapfrogLandedEvent event;
+                  dispatchEvent(&event);
+               }
             }
          }
       }
@@ -342,6 +353,7 @@ void LandingPad::doUpdate(const UpdateState &us)
          // had just landed. Done here, not in setPropertyImpl, so the event
          // doesn't reach Lua from inside its own c_setObjectProperty call.
          m_announceLanded = false;
+         m_landedSent = true;
          LandingPadLeapfrogLandedEvent event;
          dispatchEvent(&event);
       }

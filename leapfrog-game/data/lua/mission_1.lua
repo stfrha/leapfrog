@@ -39,7 +39,8 @@ local function offerLegRepair()
    end
 
    legRepairCost = legRepairCostFor(legs)
-   local credits = c_getObjectProperty("leapfrog1", 8)
+   -- Properties are floats; whole credits read better
+   local credits = math.floor(c_getObjectProperty("leapfrog1", 8))
 
    if credits >= legRepairCost then
       c_addDialogMessage("Leg actuators damaged. Full repair for " .. legRepairCost .. " credits?", "Silo", true, 30, 0)

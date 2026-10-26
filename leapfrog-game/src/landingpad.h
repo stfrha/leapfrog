@@ -82,6 +82,7 @@ private:
    float m_fuelSupply;        // fuel left (free), -1 = no limit
    float m_creditsOwed;       // part of a credit not yet charged (sell)
    bool m_fuelMessageShown;   // "empty" / "no credits" logged once per landing
+   bool m_landedSent;         // LpLL sent for this landing (cleared on take-off)
 
    void refuel(float dt);     // dt in seconds
 
