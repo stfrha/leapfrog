@@ -18,6 +18,13 @@ public:
    LeapfrogExtSetEnvEvent(void) :Event(EVENT) {}
 };
 
+class LeapfrogExtSetLegHealthEvent : public oxygine::Event
+{
+public:
+   enum { EVENT = eventID('L', 'x', 's', 'L') };
+   LeapfrogExtSetLegHealthEvent(void) :Event(EVENT) {}
+};
+
 // Events that is fired for special conditions
 
 class LeapfrogModeReachedEvent : public oxygine::Event

@@ -9,6 +9,12 @@ GameStatus g_GameStatus;
 
 const string GameStatus::c_gameStatusFileName = "leapfrog_game_progress.xml";
 
+const char* const GameStatus::c_legHealthAttributes[GameStatus::c_numLegJoints] =
+{
+   "leftHipHealth", "leftKneeHealth", "leftFootHealth",
+   "rightHipHealth", "rightKneeHealth", "rightFootHealth"
+};
+
 GameStatus::GameStatus() :
    m_leapfrogResources(),
    m_currentSceneFile(""),
@@ -34,6 +40,44 @@ GameStatus::GameStatus() :
    m_rightKneeJointLevel(0),
    m_rightFootJointLevel(0)
 {
+   for (int i = 0; i < c_numLegJoints; i++)
+   {
+      m_legHealth[i] = 1.0f;
+   }
+}
+
+float GameStatus::getLegHealth(int index)
+{
+   if ((index < 0) || (index >= c_numLegJoints))
+   {
+      return 1.0f;
+   }
+
+   return m_legHealth[index];
+}
+
+void GameStatus::setLegHealth(int index, float health)
+{
+   if ((index >= 0) && (index < c_numLegJoints))
+   {
+      m_legHealth[index] = health;
+   }
+}
+
+void GameStatus::writeLegHealth(xml_node& root)
+{
+   // Saves from before leg health lack these attributes; add them
+   for (int i = 0; i < c_numLegJoints; i++)
+   {
+      xml_attribute attr = root.attribute(c_legHealthAttributes[i]);
+
+      if (!attr)
+      {
+         attr = root.append_attribute(c_legHealthAttributes[i]);
+      }
+
+      attr.set_value(m_legHealth[i]);
+   }
 }
 
 
@@ -95,6 +139,13 @@ void GameStatus::gameStatusNewGameInit(void)
    root.attribute("rightKneeJointLevel").set_value(m_rightKneeJointLevel);
    root.attribute("rightFootJointLevel").set_value(m_rightFootJointLevel);
 
+   for (int i = 0; i < c_numLegJoints; i++)
+   {
+      m_legHealth[i] = 1.0f;
+   }
+
+   writeLegHealth(root);
+
    // m_gameStatusDocument.save_file(c_gameStatusFileName.c_str());
    
    oxygine_xml_writer my_writer;
@@ -136,6 +187,11 @@ void GameStatus::initializeGameStatusXmlDocument(void)
    root.append_attribute("rightHipJointLevel");
    root.append_attribute("rightKneeJointLevel");
    root.append_attribute("rightFootJointLevel");
+
+   for (int i = 0; i < c_numLegJoints; i++)
+   {
+      root.append_attribute(c_legHealthAttributes[i]);
+   }
 }
 
 void GameStatus::setSceneMissionState(
@@ -189,6 +245,7 @@ void GameStatus::saveGameStatus(void)
    root.attribute("rightHipJointLevel").set_value(m_rightHipJointLevel);
    root.attribute("rightKneeJointLevel").set_value(m_rightKneeJointLevel);
    root.attribute("rightFootJointLevel").set_value(m_rightFootJointLevel);
+   writeLegHealth(root);
 
    // m_gameStatusDocument.save_file(c_gameStatusFileName.c_str());
 
@@ -233,6 +290,11 @@ void GameStatus::readGameStatus(void)
    m_rightHipJointLevel = root.attribute("rightHipJointLevel").as_int(1);
    m_rightKneeJointLevel = root.attribute("rightKneeJointLevel").as_int(1);
    m_rightFootJointLevel = root.attribute("rightFootJointLevel").as_int(1);
+
+   for (int i = 0; i < c_numLegJoints; i++)
+   {
+      m_legHealth[i] = root.attribute(c_legHealthAttributes[i]).as_float(1.0f);
+   }
 }
 
 void GameStatus::restoreLeapfrogResources(void)

@@ -54,6 +54,14 @@ private:
    int m_rightKneeJointLevel;
    int m_rightFootJointLevel;
 
+   // Leg joint health, 1 = sound, 0 = limp. Index: 0 left hip, 1 left knee,
+   // 2 left foot, 3 right hip, 4 right knee, 5 right foot
+   static const int c_numLegJoints = 6;
+   static const char* const c_legHealthAttributes[c_numLegJoints];
+   float m_legHealth[c_numLegJoints];
+
+   void writeLegHealth(pugi::xml_node& root);
+
 public:
    GameStatus();
 
@@ -70,6 +78,9 @@ public:
    void restoreGameStatus(void);
    void restoreLeapfrogResources(void);
    ObjectResources* getResources(void);
+
+   float getLegHealth(int index);
+   void setLegHealth(int index, float health);
 
    std::string getCurrentScene(void);
    int getCurrentSceneType(void);

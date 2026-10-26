@@ -59,14 +59,45 @@ class JointUserData
 private:
    bool m_modeReached;
 public:
+   // Leg joint health (landing configuration only takes damage). 1 = sound,
+   // 0 = limp: the joint loses its motor and swings freely within wide
+   // limits, with a little friction, like a dead limb.
+   int   m_legIndex;          // index in GameStatus leg health (-1 = not a leg joint)
+   const char* m_legName;     // for log messages
+   float m_health;
+   bool  m_limp;
+   float m_strain;            // recent overload impulse (decays)
+   float m_strainCounted;     // part of m_strain already charged as damage
+   float m_strainPeak;        // for the tuning log
+   float m_bendCounted;       // over-bend [rad] already charged as damage
+   float m_bendPeak;          // for the tuning log
+   float m_limpLower;         // limits while limp [rad]
+   float m_limpUpper;
+
    JointUserData()
    {
-      m_modeReached = false;
+      init(false);
    }
 
    JointUserData(bool modeReached)
    {
+      init(modeReached);
+   }
+
+   void init(bool modeReached)
+   {
       m_modeReached = modeReached;
+      m_legIndex = -1;
+      m_legName = "";
+      m_health = 1.0f;
+      m_limp = false;
+      m_strain = 0.0f;
+      m_strainCounted = 0.0f;
+      m_strainPeak = 0.0f;
+      m_bendCounted = 0.0f;
+      m_bendPeak = 0.0f;
+      m_limpLower = 0.0f;
+      m_limpUpper = 0.0f;
    }
 
    void setModeReached(bool modeReached)
@@ -98,6 +129,9 @@ public:
    7     =  Fuel
    8     =  Credits
    9     =  Damage
+   10    =  Leg health: lowest health of the six leg joints, 0..1 (0 =
+            a joint is limp). Writing sets all six joints to the value,
+            e.g. 1 to repair the legs.
    */
 
    enum LeapfroPropertiesEnum
@@ -111,8 +145,11 @@ public:
       shield      = 6,
       fuel        = 7,
       credits     = 8,
-      damage      = 9
+      damage      = 9,
+      legHealth   = 10
    };
+
+   static const int c_numLegJoints = 6;
 
 private:
    const static ModeAngles c_resetModeAngles;
@@ -124,6 +161,19 @@ private:
    const static float c_normalJointMotorSpeed;
    const static float c_instantJointMotorTorque;
    const static float c_instnatJointMotorSpeed;
+
+   // Leg joint damage (see updateLegStrain)
+   const static float c_legSustainTorque;
+   const static float c_legStrainMemory;
+   const static float c_legYieldImpulse;
+   const static float c_legToughnessImpulse;
+   const static float c_legBendYield;
+   const static float c_legBendToughness;
+   const static float c_legLockHealth;
+   const static float c_legWeakHealth;
+   const static float c_legMinTorqueScale;
+   const static float c_legLimpFriction;
+   const static float c_legLimpMargin;
 
    LeapFrogStateEnum m_state;
    LeapFrogModeEnum  m_mode;
@@ -174,6 +224,7 @@ private:
    b2RevoluteJoint* m_rightFootLegJoint;
    b2RevoluteJoint* m_leftFootLegJoint;
    b2RevoluteJoint* m_shieldJoint;
+   float m_reportedLegHealth;
 
    spGun m_gun;
 
@@ -204,6 +255,13 @@ public:
    void hitImpulse(b2Contact* contact, const b2ContactImpulse* impulse);
    void hitByBullet(b2Contact* contact, float bulletEqvDamage);
    void footOnLandingPad(bool resting);
+
+   // Leg joint health, index as in GameStatus: 0 left hip, 1 left knee,
+   // 2 left foot, 3 right hip, 4 right knee, 5 right foot
+   float getLegHealth(int index);
+   void setLegHealth(int index, float health);
+   void setAllLegHealth(float health);
+   float getLowestLegHealth(void);
 
 
    oxygine::Actor* getMainActor(void);
@@ -238,9 +296,20 @@ public:
 
 private:
 	void setJointMotor(b2RevoluteJoint* joint, float goal, float speedMagnitude);
+   int getLegJoints(b2RevoluteJoint* joints[c_numLegJoints], float goals[c_numLegJoints]);
+   b2RevoluteJoint* getLegJoint(int index);
+   static JointUserData* legData(b2RevoluteJoint* joint);
+   void initLegJoints(void);
+   void applyLegStrength(b2RevoluteJoint* joint);
+   void makeLegLimp(b2RevoluteJoint* joint, bool announce);
+   void repairLeg(b2RevoluteJoint* joint);
+   void damageLeg(b2RevoluteJoint* joint, float damage);
+   void updateLegStrain(void);
+   void reportLegHealth(void);
+   void setLegHealthPropHandler(oxygine::Event *ev);
    void setStrongJoints(void);
    void setWeakJoints(void);
-   void lockJoints(void);
+   void lockJoints(bool onPad = false);
    void unlockJoints(void);
    bool modeIsReached(void);
    void resetModeReached(void);

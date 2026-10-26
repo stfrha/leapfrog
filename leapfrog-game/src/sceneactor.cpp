@@ -604,6 +604,16 @@ void SceneActor::doUpdate(const UpdateState& us)
          m_leapfrog->goToMode(LFM_REENTRY);
       }
 
+      // Debug: 8 makes the left hip limp, 9 repairs all leg joints
+      if (data[SDL_SCANCODE_8] && (m_leapfrog->getLegHealth(0) > 0.0f))
+      {
+         m_leapfrog->setLegHealth(0, 0.0f);
+      }
+      else if (data[SDL_SCANCODE_9] && (m_leapfrog->getLowestLegHealth() < 1.0f))
+      {
+         m_leapfrog->setAllLegHealth(1.0f);
+      }
+
 
       if (data[SDL_SCANCODE_KP_9])
       {

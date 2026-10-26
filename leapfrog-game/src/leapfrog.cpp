@@ -77,7 +77,8 @@ LeapFrog::LeapFrog(
    m_state(LFS_NORMAL),
    m_wantedAngle(0.0f),
    m_modeInTransit(false),
-   m_armInitialRegistration(true)
+   m_armInitialRegistration(true),
+   m_reportedLegHealth(-1.0f)
 {
 	initCompoundObjectParts(sceneParent, sceneParent, parentObject, world, pos, root, groupIndex);
 
@@ -167,12 +168,17 @@ LeapFrog::LeapFrog(
 
    addEventListener(LeapfrogExtSetModeEvent::EVENT, CLOSURE(this, &LeapFrog::setModePropHandler));
    addEventListener(LeapfrogExtSetEnvEvent::EVENT, CLOSURE(this, &LeapFrog::setEnvPropHandler));
+   addEventListener(LeapfrogExtSetLegHealthEvent::EVENT, CLOSURE(this, &LeapFrog::setLegHealthPropHandler));
 
 
    // Here we attach Leapfrog object to tree so it gets updates etc.
    attachTo(sceneParent);
 
    setWeakJoints();
+
+   // Leg health comes from the game status (a limp leg stays limp until
+   // repaired, also across scenes)
+   initLegJoints();
 
    // This CompoundObject is also an actor who normally has
    // a userData that points to its parent. However, the parent
@@ -393,10 +399,34 @@ void LeapFrog::doUpdate(const UpdateState &us)
 
       break;
    }
+
+   updateLegStrain();
 };
 
 void LeapFrog::setJointMotor(b2RevoluteJoint* joint, float goal, float speedMagnitude)
 {
+   if (joint == NULL)
+   {
+      return;
+   }
+
+   JointUserData* jd = legData(joint);
+
+   if ((jd != NULL) && jd->m_limp)
+   {
+      // A limp joint has no motor to drive. It counts as having reached
+      // the mode so that mode changes still complete.
+      if (m_modeInTransit)
+      {
+         jd->setModeReached(true);
+         if (modeIsReached())
+         {
+            modeReached();
+         }
+      }
+      return;
+   }
+
 	float angle = joint->GetJointAngle();
 
 	if (angle > goal)
@@ -447,91 +477,71 @@ void LeapFrog::setJointMotor(b2RevoluteJoint* joint, float goal, float speedMagn
    }
 }
 
-void LeapFrog::lockJoints(void)
+void LeapFrog::lockJoints(bool onPad)
 {
-   // Lock all legs and disable motors
-   if (m_rightBigLegJoint)
-   {
-      m_rightBigLegJoint->EnableMotor(false);
-      m_rightBigLegJoint->SetLimits(m_modeAngleGoals.m_rightBigJointAngle, m_modeAngleGoals.m_rightBigJointAngle);
-      m_rightBigLegJoint->EnableLimit(true);
-   }
+   // Lock all legs and disable motors. Limp joints keep swinging. On a
+   // landing pad, weakened joints aren't locked either: their tired motors
+   // hold (or fail to hold) the craft, so it sags on a damaged leg.
+   b2RevoluteJoint* joints[c_numLegJoints];
+   float goals[c_numLegJoints];
+   getLegJoints(joints, goals);
 
-   if (m_leftBigLegJoint)
+   for (int i = 0; i < c_numLegJoints; i++)
    {
-      m_leftBigLegJoint->EnableMotor(false);
-      m_leftBigLegJoint->SetLimits(m_modeAngleGoals.m_leftBigJointAngle, m_modeAngleGoals.m_leftBigJointAngle);
-      m_leftBigLegJoint->EnableLimit(true);
-   }
+      b2RevoluteJoint* joint = joints[i];
 
-   if (m_rightSmallLegJoint)
-   {
-      m_rightSmallLegJoint->EnableMotor(false);
-      m_rightSmallLegJoint->SetLimits(m_modeAngleGoals.m_rightSmallJointAngle, m_modeAngleGoals.m_rightSmallJointAngle);
-      m_rightSmallLegJoint->EnableLimit(true);
-   }
+      if (joint == NULL)
+      {
+         continue;
+      }
 
-   if (m_leftSmallLegJoint)
-   {
-      m_leftSmallLegJoint->EnableMotor(false);
-      m_leftSmallLegJoint->SetLimits(m_modeAngleGoals.m_leftSmallJointAngle, m_modeAngleGoals.m_leftSmallJointAngle);
-      m_leftSmallLegJoint->EnableLimit(true);
-   }
+      JointUserData* jd = legData(joint);
 
-   if (m_rightFootLegJoint)
-   {
-      m_rightFootLegJoint->EnableMotor(false);
-      m_rightFootLegJoint->SetLimits(m_modeAngleGoals.m_rightFootJointAngle, m_modeAngleGoals.m_rightFootJointAngle);
-      m_rightFootLegJoint->EnableLimit(true);
-   }
+      if ((jd != NULL) && jd->m_limp)
+      {
+         continue;
+      }
 
-   if (m_leftFootLegJoint)
-   {
-      m_leftFootLegJoint->EnableMotor(false);
-      m_leftFootLegJoint->SetLimits(m_modeAngleGoals.m_leftFootJointAngle, m_modeAngleGoals.m_leftFootJointAngle);
-      m_leftFootLegJoint->EnableLimit(true);
+      if (onPad && (jd != NULL) && (jd->m_health < c_legLockHealth))
+      {
+         applyLegStrength(joint);
+         joint->EnableLimit(false);
+         joint->EnableMotor(true);
+         continue;
+      }
+
+      joint->EnableMotor(false);
+      joint->SetLimits(goals[i], goals[i]);
+      joint->EnableLimit(true);
    }
 }
 
 void LeapFrog::unlockJoints(void)
 {
-   // Unlock all legs and enable motors
-   if (m_rightBigLegJoint)
-   {
-      m_rightBigLegJoint->EnableMotor(true);
-      m_rightBigLegJoint->EnableLimit(false);
-   }
+   // Unlock all legs and enable motors (limp joints stay limp)
+   b2RevoluteJoint* joints[c_numLegJoints];
+   float goals[c_numLegJoints];
+   getLegJoints(joints, goals);
 
-   if (m_leftBigLegJoint)
+   for (int i = 0; i < c_numLegJoints; i++)
    {
-      m_leftBigLegJoint->EnableMotor(true);
-      m_leftBigLegJoint->EnableLimit(false);
-   }
+      b2RevoluteJoint* joint = joints[i];
 
-   if (m_rightSmallLegJoint)
-   {
-      m_rightSmallLegJoint->EnableMotor(true);
-      m_rightSmallLegJoint->EnableLimit(false);
-   }
+      if (joint == NULL)
+      {
+         continue;
+      }
 
-   if (m_leftSmallLegJoint)
-   {
-      m_leftSmallLegJoint->EnableMotor(true);
-      m_leftSmallLegJoint->EnableLimit(false);
-   }
+      JointUserData* jd = legData(joint);
 
-   if (m_rightFootLegJoint)
-   {
-      m_rightFootLegJoint->EnableMotor(true);
-      m_rightFootLegJoint->EnableLimit(false);
-   }
+      if ((jd != NULL) && jd->m_limp)
+      {
+         continue;
+      }
 
-   if (m_leftFootLegJoint)
-   {
-      m_leftFootLegJoint->EnableMotor(true);
-      m_leftFootLegJoint->EnableLimit(false);
+      joint->EnableMotor(true);
+      joint->EnableLimit(false);
    }
-
 }
 
 void LeapFrog::setStrongJoints(void)
@@ -546,12 +556,11 @@ void LeapFrog::setStrongJoints(void)
 
 void LeapFrog::setWeakJoints(void)
 {
-   m_rightBigLegJoint->SetMaxMotorTorque(c_normalJointMotorTorque);
-   m_leftBigLegJoint->SetMaxMotorTorque(c_normalJointMotorTorque);
-   m_rightSmallLegJoint->SetMaxMotorTorque(c_normalJointMotorTorque);
-   m_leftSmallLegJoint->SetMaxMotorTorque(c_normalJointMotorTorque);
-   m_rightFootLegJoint->SetMaxMotorTorque(c_normalJointMotorTorque);
-   m_leftFootLegJoint->SetMaxMotorTorque(c_normalJointMotorTorque);
+   // Normal motor torque, reduced for damaged leg joints
+   for (int i = 0; i < c_numLegJoints; i++)
+   {
+      applyLegStrength(getLegJoint(i));
+   }
 }
 
 bool LeapFrog::modeIsReached(void)
@@ -1200,6 +1209,39 @@ const float LeapFrog::c_normalJointMotorSpeed = 30.0f * MATH_PI / 180.0f;
 const float LeapFrog::c_instantJointMotorTorque = 2000000.0f;
 const float LeapFrog::c_instnatJointMotorSpeed = 150.0f * MATH_PI / 180.0f;
 
+// Leg joint damage. Tuning values: the log prints each strain event's peak
+// next to these (search for "Leg strain").
+//
+// Overload: the torque a joint takes (limit torque when locked, motor torque
+// when driven) above c_legSustainTorque is summed as an angular impulse over
+// about c_legStrainMemory seconds, so one impact counts the same however
+// Box2D spreads it over steps. The part of an event's peak above
+// c_legYieldImpulse costs health, 1.0 per c_legToughnessImpulse.
+// The craft weighs about 620 x 3 = 1860; standing, each hip carries about
+// 4700. A hard set-down at 4 m/s on locked legs gives each hip roughly 6000.
+const float LeapFrog::c_legSustainTorque = 15000.0f;
+const float LeapFrog::c_legStrainMemory = 0.15f;               // [s]
+const float LeapFrog::c_legYieldImpulse = 7000.0f;
+const float LeapFrog::c_legToughnessImpulse = 7000.0f;
+
+// Over-bending: a motor-held joint forced further than c_legBendYield from
+// where it should be costs health, 1.0 per c_legBendToughness beyond it.
+const float LeapFrog::c_legBendYield = 15.0f * MATH_PI / 180.0f;
+const float LeapFrog::c_legBendToughness = 30.0f * MATH_PI / 180.0f;
+
+// Below c_legLockHealth a joint isn't locked on a landing pad (its motor
+// holds it); below c_legWeakHealth the HUD reports it. Motor torque scales
+// with health, down to c_legMinTorqueScale of normal just before failure.
+const float LeapFrog::c_legLockHealth = 0.5f;
+const float LeapFrog::c_legWeakHealth = 0.6f;
+const float LeapFrog::c_legMinTorqueScale = 0.15f;
+
+// A limp joint: a weak motor at speed 0 acts as friction so the leg swings
+// heavily rather than flapping. Limits: the joint's whole range of travel
+// (all mode poses, and hanging straight down) widened by c_legLimpMargin.
+const float LeapFrog::c_legLimpFriction = 250.0f;
+const float LeapFrog::c_legLimpMargin = 20.0f * MATH_PI / 180.0f;
+
 
 void LeapFrog::dumpPart(std::string name, b2Body* body, b2Body* mainBody)
 {
@@ -1310,7 +1352,7 @@ void LeapFrog::footOnLandingPad(bool resting)
 {
    if (resting)
    {
-      lockJoints();
+      lockJoints(true);
    }
    else
    {
@@ -1341,6 +1383,12 @@ void LeapFrog::initObjectResources(Actor* statusEventOriginator, ObjectResources
    m_properties.push_back(credits);
    m_properties.push_back(damage);
 
+   if (m_properties.size() == LeapfroPropertiesEnum::legHealth)
+   {
+      // Leg health, set externally (e.g. Lua) to repair the legs
+      m_properties.push_back(ObjectProperty(this, new LeapfrogExtSetLegHealthEvent, 10, getLowestLegHealth()));
+   }
+
    m_resources->initObjectResources(
       statusEventOriginator, 
       &m_properties[LeapfroPropertiesEnum::ammo], 
@@ -1352,4 +1400,489 @@ void LeapFrog::initObjectResources(Actor* statusEventOriginator, ObjectResources
    g_GameStatus.restoreLeapfrogResources();
 
    m_resources->registerShieldObject(m_shield.get());
+}
+
+
+// ---------------------------------------------------------------------------
+// Leg joint damage
+//
+// In landing configuration the leg joints, not only the hull, can be hurt.
+// Each of the six leg joints has a health (1 = sound). A joint that is
+// overloaded or bent too far loses health; a weakened joint's motor gets
+// weaker, so it sags; at 0 the joint goes limp: still attached, but its
+// motor is gone and the leg swings like a dead limb. Health is kept in the
+// game status, so a limp leg stays limp until repaired (property 10).
+
+namespace
+{
+   const char* const c_legNames[LeapFrog::c_numLegJoints] =
+   {
+      "Left hip", "Left knee", "Left foot", "Right hip", "Right knee", "Right foot"
+   };
+
+   float ModeAngles::* const c_legGoal[LeapFrog::c_numLegJoints] =
+   {
+      &ModeAngles::m_leftBigJointAngle,
+      &ModeAngles::m_leftSmallJointAngle,
+      &ModeAngles::m_leftFootJointAngle,
+      &ModeAngles::m_rightBigJointAngle,
+      &ModeAngles::m_rightSmallJointAngle,
+      &ModeAngles::m_rightFootJointAngle
+   };
+}
+
+b2RevoluteJoint* LeapFrog::getLegJoint(int index)
+{
+   switch (index)
+   {
+   case 0: return m_leftBigLegJoint;
+   case 1: return m_leftSmallLegJoint;
+   case 2: return m_leftFootLegJoint;
+   case 3: return m_rightBigLegJoint;
+   case 4: return m_rightSmallLegJoint;
+   case 5: return m_rightFootLegJoint;
+   }
+
+   return NULL;
+}
+
+int LeapFrog::getLegJoints(b2RevoluteJoint* joints[c_numLegJoints], float goals[c_numLegJoints])
+{
+   for (int i = 0; i < c_numLegJoints; i++)
+   {
+      joints[i] = getLegJoint(i);
+      goals[i] = m_modeAngleGoals.*c_legGoal[i];
+   }
+
+   return c_numLegJoints;
+}
+
+JointUserData* LeapFrog::legData(b2RevoluteJoint* joint)
+{
+   if (joint == NULL)
+   {
+      return NULL;
+   }
+
+   JointUserData* jd = (JointUserData*)joint->GetUserData();
+
+   if ((jd == NULL) || (jd->m_legIndex < 0))
+   {
+      return NULL;
+   }
+
+   return jd;
+}
+
+void LeapFrog::initLegJoints(void)
+{
+   const ModeAngles* poses[] =
+   {
+      &c_landingModeAngles, &c_deepSpaceModeAngles, &c_orbitModeAngles, &c_reentryModeAngles
+   };
+
+   for (int i = 0; i < c_numLegJoints; i++)
+   {
+      b2RevoluteJoint* joint = getLegJoint(i);
+
+      if (joint == NULL)
+      {
+         continue;
+      }
+
+      JointUserData* jd = (JointUserData*)joint->GetUserData();
+
+      if (jd == NULL)
+      {
+         continue;
+      }
+
+      jd->m_legIndex = i;
+      jd->m_legName = c_legNames[i];
+
+      // Limp range: the joint's whole travel (all poses, and hanging
+      // straight down, which is angle 0) plus a margin
+      float lower = 0.0f;
+      float upper = 0.0f;
+
+      for (const ModeAngles* pose : poses)
+      {
+         float a = pose->*c_legGoal[i];
+         lower = std::min(lower, a);
+         upper = std::max(upper, a);
+      }
+
+      jd->m_limpLower = lower - c_legLimpMargin;
+      jd->m_limpUpper = upper + c_legLimpMargin;
+
+      jd->m_health = std::max(0.0f, std::min(1.0f, g_GameStatus.getLegHealth(i)));
+
+      if (jd->m_health <= 0.0f)
+      {
+         makeLegLimp(joint, false);
+      }
+      else
+      {
+         applyLegStrength(joint);
+      }
+   }
+
+   reportLegHealth();
+}
+
+void LeapFrog::applyLegStrength(b2RevoluteJoint* joint)
+{
+   JointUserData* jd = legData(joint);
+
+   if (joint == NULL)
+   {
+      return;
+   }
+
+   if (jd == NULL)
+   {
+      joint->SetMaxMotorTorque(c_normalJointMotorTorque);
+      return;
+   }
+
+   if (jd->m_limp)
+   {
+      return;
+   }
+
+   float scale = c_legMinTorqueScale + (1.0f - c_legMinTorqueScale) * jd->m_health;
+   joint->SetMaxMotorTorque(c_normalJointMotorTorque * scale);
+}
+
+void LeapFrog::makeLegLimp(b2RevoluteJoint* joint, bool announce)
+{
+   JointUserData* jd = legData(joint);
+
+   if (jd == NULL)
+   {
+      return;
+   }
+
+   bool wasLimp = jd->m_limp;
+
+   jd->m_limp = true;
+   jd->m_health = 0.0f;
+   g_GameStatus.setLegHealth(jd->m_legIndex, 0.0f);
+
+   // Keep the current angle inside the limits so the leg doesn't snap
+   float angle = joint->GetJointAngle();
+   joint->SetLimits(std::min(jd->m_limpLower, angle), std::max(jd->m_limpUpper, angle));
+   joint->EnableLimit(true);
+
+   // A weak motor holding speed 0 is friction: the leg swings heavily
+   joint->SetMotorSpeed(0.0f);
+   joint->SetMaxMotorTorque(c_legLimpFriction);
+   joint->EnableMotor(true);
+
+   if (announce && !wasLimp)
+   {
+      logs::messageln("Leg joint failed: %s", jd->m_legName);
+
+      if (g_HeadDownDisplay)
+      {
+         g_HeadDownDisplay->logMessage(std::string(jd->m_legName) + " actuator failed", true);
+      }
+
+      // Sparks where the joint gave way
+      spBlastEmitter blast = new BlastEmitter(
+         PhysDispConvert::convert(joint->GetAnchorA(), 1.0f),
+         250.0f,                                             // Intensity, particles / sec
+         250,                                                // Emitter Lifetime
+         500,                                                // Particle lifetime
+         40.0f,                                              // Particle distance
+         0.8f);                                              // Particle spawn size
+      blast->attachTo(m_sceneActor);
+   }
+}
+
+void LeapFrog::repairLeg(b2RevoluteJoint* joint)
+{
+   JointUserData* jd = legData(joint);
+
+   if (jd == NULL)
+   {
+      return;
+   }
+
+   jd->m_limp = false;
+   jd->m_strain = 0.0f;
+   jd->m_strainCounted = 0.0f;
+   jd->m_strainPeak = 0.0f;
+   jd->m_bendCounted = 0.0f;
+   jd->m_bendPeak = 0.0f;
+
+   joint->EnableLimit(false);
+   joint->EnableMotor(true);
+   applyLegStrength(joint);
+}
+
+float LeapFrog::getLegHealth(int index)
+{
+   JointUserData* jd = legData(getLegJoint(index));
+
+   if (jd != NULL)
+   {
+      return jd->m_health;
+   }
+
+   return g_GameStatus.getLegHealth(index);
+}
+
+void LeapFrog::setLegHealth(int index, float health)
+{
+   health = std::max(0.0f, std::min(1.0f, health));
+
+   b2RevoluteJoint* joint = getLegJoint(index);
+   JointUserData* jd = legData(joint);
+
+   if (jd == NULL)
+   {
+      g_GameStatus.setLegHealth(index, health);
+      return;
+   }
+
+   bool wasLimp = jd->m_limp;
+
+   if (health <= 0.0f)
+   {
+      makeLegLimp(joint, true);
+   }
+   else
+   {
+      jd->m_health = health;
+      g_GameStatus.setLegHealth(index, health);
+
+      if (wasLimp)
+      {
+         repairLeg(joint);
+
+         // Drive the repaired leg back to the current pose
+         goToMode(m_mode);
+      }
+      else
+      {
+         applyLegStrength(joint);
+      }
+   }
+
+   reportLegHealth();
+}
+
+void LeapFrog::setAllLegHealth(float health)
+{
+   for (int i = 0; i < c_numLegJoints; i++)
+   {
+      setLegHealth(i, health);
+   }
+}
+
+float LeapFrog::getLowestLegHealth(void)
+{
+   float lowest = 1.0f;
+
+   for (int i = 0; i < c_numLegJoints; i++)
+   {
+      lowest = std::min(lowest, getLegHealth(i));
+   }
+
+   return lowest;
+}
+
+void LeapFrog::reportLegHealth(void)
+{
+   if (m_properties.size() <= LeapfroPropertiesEnum::legHealth)
+   {
+      return;
+   }
+
+   float lowest = getLowestLegHealth();
+
+   if (fabs(lowest - m_reportedLegHealth) > 0.001f)
+   {
+      m_reportedLegHealth = lowest;
+      m_properties[LeapfroPropertiesEnum::legHealth].setProperty(lowest);
+   }
+}
+
+void LeapFrog::setLegHealthPropHandler(oxygine::Event *ev)
+{
+   float value = m_properties[LeapfroPropertiesEnum::legHealth].getProperty();
+
+   // Make sure the property is written back even if nothing changes
+   m_reportedLegHealth = -1.0f;
+   setAllLegHealth(value);
+   reportLegHealth();
+}
+
+void LeapFrog::damageLeg(b2RevoluteJoint* joint, float damage)
+{
+   JointUserData* jd = legData(joint);
+
+   if ((jd == NULL) || jd->m_limp || (damage <= 0.0f))
+   {
+      return;
+   }
+
+   float before = jd->m_health;
+   float after = std::max(0.0f, before - damage);
+
+   logs::messageln("Leg damage: %s %.2f -> %.2f", jd->m_legName, before, after);
+
+   if (after <= 0.0f)
+   {
+      makeLegLimp(joint, true);
+      reportLegHealth();
+      return;
+   }
+
+   jd->m_health = after;
+   g_GameStatus.setLegHealth(jd->m_legIndex, after);
+   applyLegStrength(joint);
+
+   if ((before >= c_legWeakHealth) && (after < c_legWeakHealth) && g_HeadDownDisplay)
+   {
+      g_HeadDownDisplay->logMessage(std::string(jd->m_legName) + " strained");
+   }
+
+   // Too weak to be locked: if it is locked on a pad, hand it to its motor
+   if ((before >= c_legLockHealth) && (after < c_legLockHealth) &&
+      joint->IsLimitEnabled() && !joint->IsMotorEnabled())
+   {
+      joint->EnableLimit(false);
+      joint->EnableMotor(true);
+   }
+
+   reportLegHealth();
+}
+
+void LeapFrog::updateLegStrain(void)
+{
+   bool counting = (m_mode == LFM_LANDING) && !m_modeInTransit;
+
+   if (g_MainActor && g_MainActor->isInPause())
+   {
+      // Box2D isn't stepping; its last impulses are stale
+      return;
+   }
+
+   const float dt = Scales::c_updateStep;
+   const float invDt = 1.0f / dt;
+   const float decay = expf(-dt / c_legStrainMemory);
+
+   b2RevoluteJoint* joints[c_numLegJoints];
+   float goals[c_numLegJoints];
+   getLegJoints(joints, goals);
+
+   for (int i = 0; i < c_numLegJoints; i++)
+   {
+      b2RevoluteJoint* joint = joints[i];
+      JointUserData* jd = legData(joint);
+
+      if ((jd == NULL) || jd->m_limp)
+      {
+         continue;
+      }
+
+      if (!counting)
+      {
+         // Folding legs or other modes: no damage, forget recent strain
+         jd->m_strain = 0.0f;
+         jd->m_strainCounted = 0.0f;
+         jd->m_strainPeak = 0.0f;
+         jd->m_bendCounted = 0.0f;
+         jd->m_bendPeak = 0.0f;
+         continue;
+      }
+
+      float damage = 0.0f;
+
+      // 1. Overload: torque through the limit (locked) and the motor
+      float torque = 0.0f;
+
+      if (joint->IsLimitEnabled())
+      {
+         torque += fabs(joint->GetReactionTorque(invDt));
+      }
+
+      if (joint->IsMotorEnabled())
+      {
+         torque += fabs(joint->GetMotorTorque(invDt));
+      }
+
+      float excess = std::max(0.0f, torque - c_legSustainTorque) * dt;
+
+      jd->m_strain = jd->m_strain * decay + excess;
+      jd->m_strainCounted *= decay;
+
+      // Charge each event once, for how far its peak goes above yield
+      float above = jd->m_strain - std::max(c_legYieldImpulse, jd->m_strainCounted);
+
+      if (above > 0.0f)
+      {
+         damage += above / c_legToughnessImpulse;
+         jd->m_strainCounted = jd->m_strain;
+      }
+
+      if (jd->m_strain > jd->m_strainPeak)
+      {
+         jd->m_strainPeak = jd->m_strain;
+      }
+      else if (jd->m_strain < 0.1f * c_legYieldImpulse)
+      {
+         if (jd->m_strainPeak > 0.3f * c_legYieldImpulse)
+         {
+            logs::messageln("Leg strain: %s peak %.0f (yield %.0f, toughness %.0f)",
+               jd->m_legName, jd->m_strainPeak, c_legYieldImpulse, c_legToughnessImpulse);
+         }
+
+         jd->m_strainPeak = 0.0f;
+      }
+
+      // 2. Over-bending: a motor-held joint forced away from its pose
+      if (joint->IsMotorEnabled() && !joint->IsLimitEnabled())
+      {
+         float bend = fabs(joint->GetJointAngle() - goals[i]);
+
+         if (bend > c_legBendYield)
+         {
+            float base = std::max(c_legBendYield, jd->m_bendCounted);
+
+            if (bend > base)
+            {
+               damage += (bend - base) / c_legBendToughness;
+               jd->m_bendCounted = bend;
+            }
+         }
+         else
+         {
+            jd->m_bendCounted = 0.0f;
+         }
+
+         if (bend > jd->m_bendPeak)
+         {
+            jd->m_bendPeak = bend;
+         }
+         else if (bend < 0.5f * c_legBendYield)
+         {
+            if (jd->m_bendPeak > 0.7f * c_legBendYield)
+            {
+               logs::messageln("Leg bend: %s peak %.1f deg (yield %.1f, toughness %.1f)",
+                  jd->m_legName, jd->m_bendPeak * 180.0f / MATH_PI,
+                  c_legBendYield * 180.0f / MATH_PI, c_legBendToughness * 180.0f / MATH_PI);
+            }
+
+            jd->m_bendPeak = 0.0f;
+         }
+      }
+
+      if (damage > 0.0f)
+      {
+         damageLeg(joint, damage);
+      }
+   }
 }
