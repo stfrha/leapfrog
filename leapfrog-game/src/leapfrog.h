@@ -175,6 +175,15 @@ private:
    const static float c_legLimpFriction;
    const static float c_legLimpMargin;
 
+   // Service lift (see updateServiceLift)
+   const static float c_liftHeight;
+   const static float c_liftRiseSpeed;
+   const static float c_liftLowerSpeed;
+   const static float c_liftOmega;
+   const static float c_liftLevelStiffness;
+   const static float c_liftLevelDamping;
+   const static float c_liftTimeout;
+
    LeapFrogStateEnum m_state;
    LeapFrogModeEnum  m_mode;
    EnvironmentEnum m_environment;
@@ -226,6 +235,15 @@ private:
    b2RevoluteJoint* m_shieldJoint;
    float m_reportedLegHealth;
 
+   // Service lift: after a repair on a pad, the craft is lifted a little
+   // (no booster) so the repaired legs can straighten, then set down again
+   int m_feetOnPad;              // foot contacts with landing pads
+   int m_serviceLiftPhase;       // -1 none, 0 rising/waiting, 1 lowering
+   float m_serviceLiftTime;      // [s]
+   float m_serviceLiftStartY;
+   float m_serviceLiftTarget;    // wanted main body y, moves smoothly
+   float m_serviceLiftMass;
+
    spGun m_gun;
 
    spBox2DDraw m_debugDraw;
@@ -262,6 +280,10 @@ public:
    void setLegHealth(int index, float health);
    void setAllLegHealth(float health);
    float getLowestLegHealth(void);
+
+   // True while the craft is being lifted for a leg repair. Landing pads
+   // freeze meanwhile: no hold, no events, no fuel.
+   bool isInServiceLift(void) const { return m_serviceLiftPhase >= 0; }
 
 
    oxygine::Actor* getMainActor(void);
@@ -307,6 +329,10 @@ private:
    void updateLegStrain(void);
    void reportLegHealth(void);
    void setLegHealthPropHandler(oxygine::Event *ev);
+   bool legsAtPose(void);
+   void requestServiceLift(void);
+   void updateServiceLift(void);
+   void endServiceLift(const char* why);
    void setStrongJoints(void);
    void setWeakJoints(void);
    void lockJoints(bool onPad = false);

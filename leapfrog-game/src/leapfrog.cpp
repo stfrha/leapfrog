@@ -78,7 +78,13 @@ LeapFrog::LeapFrog(
    m_wantedAngle(0.0f),
    m_modeInTransit(false),
    m_armInitialRegistration(true),
-   m_reportedLegHealth(-1.0f)
+   m_reportedLegHealth(-1.0f),
+   m_feetOnPad(0),
+   m_serviceLiftPhase(-1),
+   m_serviceLiftTime(0.0f),
+   m_serviceLiftStartY(0.0f),
+   m_serviceLiftTarget(0.0f),
+   m_serviceLiftMass(0.0f)
 {
 	initCompoundObjectParts(sceneParent, sceneParent, parentObject, world, pos, root, groupIndex);
 
@@ -401,6 +407,7 @@ void LeapFrog::doUpdate(const UpdateState &us)
    }
 
    updateLegStrain();
+   updateServiceLift();
 };
 
 void LeapFrog::setJointMotor(b2RevoluteJoint* joint, float goal, float speedMagnitude)
@@ -1242,6 +1249,18 @@ const float LeapFrog::c_legMinTorqueScale = 0.15f;
 const float LeapFrog::c_legLimpFriction = 250.0f;
 const float LeapFrog::c_legLimpMargin = 20.0f * MATH_PI / 180.0f;
 
+// Service lift: rise c_liftHeight at c_liftRiseSpeed, wait for the legs'
+// pose, sink at c_liftLowerSpeed until the legs carry the craft. The main
+// body follows a moving target like a critically damped spring of angular
+// frequency c_liftOmega, and is held level.
+const float LeapFrog::c_liftHeight = 4.0f;
+const float LeapFrog::c_liftRiseSpeed = 2.0f;          // [units/s]
+const float LeapFrog::c_liftLowerSpeed = 1.5f;         // [units/s]
+const float LeapFrog::c_liftOmega = 3.0f;              // [rad/s]
+const float LeapFrog::c_liftLevelStiffness = 60000.0f; // per rad
+const float LeapFrog::c_liftLevelDamping = 30000.0f;   // per rad/s
+const float LeapFrog::c_liftTimeout = 12.0f;           // [s]
+
 
 void LeapFrog::dumpPart(std::string name, b2Body* body, b2Body* mainBody)
 {
@@ -1350,6 +1369,8 @@ void LeapFrog::hitByBullet(b2Contact* contact, float bulletEqvDamage)
 
 void LeapFrog::footOnLandingPad(bool resting)
 {
+   m_feetOnPad = std::max(0, m_feetOnPad + (resting ? 1 : -1));
+
    if (resting)
    {
       lockJoints(true);
@@ -1647,6 +1668,7 @@ void LeapFrog::setLegHealth(int index, float health)
    }
 
    bool wasLimp = jd->m_limp;
+   float healthBefore = jd->m_health;
 
    if (health <= 0.0f)
    {
@@ -1667,6 +1689,13 @@ void LeapFrog::setLegHealth(int index, float health)
       else
       {
          applyLegStrength(joint);
+      }
+
+      // Standing on a pad, a repaired leg may be curled under the craft's
+      // weight; lift the craft so it can straighten
+      if (health > healthBefore + 0.0001f)
+      {
+         requestServiceLift();
       }
    }
 
@@ -1894,4 +1923,165 @@ void LeapFrog::updateLegStrain(void)
          damageLeg(joint, damage);
       }
    }
+}
+
+
+// ---------------------------------------------------------------------------
+// Service lift
+//
+// A leg repaired while the craft stands on a pad may be folded under it, and
+// the motors can't straighten a leg that carries the craft. So after a
+// repair the craft is lifted a few units without the booster (an invisible
+// hand, as a crane would), held until the legs have their pose, then set
+// down gently. Landing pads freeze meanwhile (LandingPad::doUpdate), so the
+// lift sends no take-off or landing events. Firing the booster ends it.
+
+bool LeapFrog::legsAtPose(void)
+{
+   // Every working leg joint within a few degrees of its pose
+   b2RevoluteJoint* joints[c_numLegJoints];
+   float goals[c_numLegJoints];
+   getLegJoints(joints, goals);
+
+   for (int i = 0; i < c_numLegJoints; i++)
+   {
+      JointUserData* jd = legData(joints[i]);
+
+      if ((jd == NULL) || jd->m_limp)
+      {
+         continue;
+      }
+
+      if (fabs(joints[i]->GetJointAngle() - goals[i]) > 3.0f * MATH_PI / 180.0f)
+      {
+         return false;
+      }
+   }
+
+   return true;
+}
+
+void LeapFrog::requestServiceLift(void)
+{
+   if ((m_serviceLiftPhase >= 0) || (m_mode != LFM_LANDING) || (m_feetOnPad <= 0))
+   {
+      return;
+   }
+
+   const char* parts[] =
+   {
+      "lfMainBody", "lfLeftBigLeg", "lfRightBigLeg", "lfLeftSmallLeg", "lfRightSmallLeg",
+      "lfLeftFoot", "lfRightFoot", "lfLeftSteer", "lfRightSteer"
+   };
+
+   m_serviceLiftMass = 0.0f;
+
+   for (const char* part : parts)
+   {
+      b2Body* body = getBody(part);
+      if (body != NULL)
+      {
+         m_serviceLiftMass += body->GetMass();
+      }
+   }
+
+   m_serviceLiftPhase = 0;
+   m_serviceLiftTime = 0.0f;
+   m_serviceLiftStartY = m_mainBody->GetPosition().y;
+   m_serviceLiftTarget = m_serviceLiftStartY;
+
+   logs::messageln("Service lift: start (mass %.0f)", m_serviceLiftMass);
+}
+
+void LeapFrog::endServiceLift(const char* why)
+{
+   if (m_serviceLiftPhase >= 0)
+   {
+      logs::messageln("Service lift: end (%s) after %.1f s", why, m_serviceLiftTime);
+   }
+
+   m_serviceLiftPhase = -1;
+}
+
+void LeapFrog::updateServiceLift(void)
+{
+   if (m_serviceLiftPhase < 0)
+   {
+      return;
+   }
+
+   if (g_MainActor && g_MainActor->isInPause())
+   {
+      return;
+   }
+
+   if (m_boostFireLastUpdate)
+   {
+      endServiceLift("booster");
+      return;
+   }
+
+   if (m_mode != LFM_LANDING)
+   {
+      endServiceLift("mode");
+      return;
+   }
+
+   const float dt = Scales::c_updateStep;
+   m_serviceLiftTime += dt;
+
+   if (m_serviceLiftTime > c_liftTimeout)
+   {
+      endServiceLift("timeout");
+      return;
+   }
+
+   b2Vec2 pos = m_mainBody->GetPosition();
+   b2Vec2 vel = m_mainBody->GetLinearVelocity();
+
+   // The game's y axis points down: up is negative y
+   float goal = m_serviceLiftStartY - c_liftHeight;
+   float targetVel = 0.0f;
+
+   if (m_serviceLiftPhase == 0)
+   {
+      if (m_serviceLiftTarget > goal)
+      {
+         targetVel = -c_liftRiseSpeed;
+         m_serviceLiftTarget = std::max(goal, m_serviceLiftTarget + targetVel * dt);
+      }
+      else if ((fabs(pos.y - goal) < 0.5f) && !m_modeInTransit && legsAtPose())
+      {
+         // Up, and the legs have their pose: set it down
+         m_serviceLiftPhase = 1;
+      }
+   }
+   else
+   {
+      targetVel = c_liftLowerSpeed;
+      m_serviceLiftTarget += targetVel * dt;
+
+      // The target has gone on below the body: the legs carry the craft
+      if (m_serviceLiftTarget - pos.y > 1.0f)
+      {
+         endServiceLift("down");
+         return;
+      }
+   }
+
+   // Critically damped spring towards the moving target, plus gravity
+   float w = c_liftOmega;
+   float g = m_world->GetGravity().y;
+   float ay = w * w * (m_serviceLiftTarget - pos.y) + 2.0f * w * (targetVel - vel.y) - g;
+   float ax = -2.0f * w * vel.x;
+
+   m_mainBody->ApplyForceToCenter(b2Vec2(m_serviceLiftMass * ax, m_serviceLiftMass * ay), true);
+
+   // Hold it level
+   float angle = m_mainBody->GetAngle();
+   while (angle > MATH_PI) angle -= 2.0f * MATH_PI;
+   while (angle < -MATH_PI) angle += 2.0f * MATH_PI;
+
+   m_mainBody->ApplyTorque(
+      -c_liftLevelStiffness * angle - c_liftLevelDamping * m_mainBody->GetAngularVelocity(), true);
 }

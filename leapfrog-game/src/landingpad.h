@@ -108,8 +108,9 @@ private:
 
    static bool isSafeLandingVelocity(const b2Vec2& v);
    bool jointExists(b2Joint* joint);
-   void holdLeapfrog(void);
-   void releaseLeapfrog(void);
+   void holdLeapfrog(bool zoom = true);
+   void releaseLeapfrog(bool zoom = true);
+   bool m_reholdAfterLift;     // let go for a service lift; hold again after
 
 public:
 	LandingPad(

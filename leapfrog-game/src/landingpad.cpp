@@ -51,7 +51,8 @@ LandingPad::LandingPad(
    m_rightTouchTime(0),
    m_leftTouchVelocity(0.0f, 0.0f),
    m_rightTouchVelocity(0.0f, 0.0f),
-   m_armHold(true)
+   m_armHold(true),
+   m_reholdAfterLift(false)
 {
 	initCompoundObjectParts(sceneParent, sceneParent, parentObject, world, pos, root, groupIndex);
 
@@ -158,7 +159,7 @@ bool LandingPad::jointExists(b2Joint* joint)
    return false;
 }
 
-void LandingPad::holdLeapfrog(void)
+void LandingPad::holdLeapfrog(bool zoom)
 {
    if ((m_latestLeapfrog == NULL) || (m_padBody == NULL) || !m_holdJoints.empty())
    {
@@ -191,13 +192,13 @@ void LandingPad::holdLeapfrog(void)
    logs::messageln("Landing pad %s: holding the Leapfrog", getName().c_str());
 
    // Zoom in on the landing site, keeping the buildings around it in view
-   if (m_sceneActor != NULL)
+   if (zoom && (m_sceneActor != NULL))
    {
       m_sceneActor->zoomInToVisibleWidth(c_landedVisibleWidth, c_landedZoomMs);
    }
 }
 
-void LandingPad::releaseLeapfrog(void)
+void LandingPad::releaseLeapfrog(bool zoom)
 {
    for (b2Joint* joint : m_holdJoints)
    {
@@ -211,7 +212,7 @@ void LandingPad::releaseLeapfrog(void)
    logs::messageln("Landing pad %s: released the Leapfrog", getName().c_str());
 
    // Taking off: back out to the scene's default zoom
-   if (m_sceneActor != NULL)
+   if (zoom && (m_sceneActor != NULL))
    {
       m_sceneActor->zoomOutToDefault(c_takeOffZoomMs);
    }
@@ -233,6 +234,29 @@ void LandingPad::leapfrogFootLift(b2Contact* contact, bool leftFoot, LeapFrog* l
 
 void LandingPad::doUpdate(const UpdateState &us)
 {
+   // A service lift (leg repair) raises the craft without the booster:
+   // let go of it and freeze, so the lift sends no take-off or landing
+   // events and gives no fuel. Hold it again when it is set down.
+   if ((m_latestLeapfrog != NULL) && m_latestLeapfrog->isInServiceLift())
+   {
+      if (!m_holdJoints.empty())
+      {
+         releaseLeapfrog(false);
+         m_reholdAfterLift = true;
+      }
+      return;
+   }
+
+   if (m_reholdAfterLift)
+   {
+      m_reholdAfterLift = false;
+
+      if (m_leftFootContact && m_rightFootContact)
+      {
+         holdLeapfrog(false);
+      }
+   }
+
    // Hold the Leapfrog on the pad after a good landing, let go when it boosts
    if (!m_holdJoints.empty())
    {
