@@ -26,6 +26,7 @@ local homeStartFuel = 30
 local questionRepairLegs = 1   -- c_askQuestion id
 local legRepairCost = 0
 local legFieldFixHealth = 0.3
+local acceptBrunoMission1 = 2  -- c_askQuestion id
 
 local function legRepairCostFor(legHealth)
    -- 20 credits for a strain, up to 60 for a limp leg
@@ -73,6 +74,18 @@ local function answerLegRepair(yes)
    end
 end
 
+local function answerMission1(yes)
+   if not yes then
+      c_addDialogMessage("I'm going to think about it.", "Leapfrog", false, 20, 0)
+      c_addDialogMessage("Suite yourself. Land back here if you change your mind.", "Bruno", true, 120, 0)
+      return
+   end
+
+   c_addDialogMessage("I take it. See you at the orb.", "Leapfrog", false, 20, 0)
+   c_addDialogMessage("Just follow the markers on your map. They will take you there, one step at the time.", "Bruno", true, 120, 0)
+end
+
+
 -- c_addDialogMessage(message, sender, leftSide, preDelay, postDelay)
 -- Others on the left, the pilot on the right. Delays are in frames.
 local function playBrunoCall()
@@ -83,9 +96,9 @@ local function playBrunoCall()
    c_addDialogMessage("Hold up, let's talk about it.", "Leapfrog", false, 60, 0)
    c_addDialogMessage("Get into town, over to the Orb.", "Bruno", true, 90, 0)
    c_addDialogMessage("I don't have enough fuel to get there.", "Leapfrog", false, 200, 0)
-   c_addDialogMessage("Ok, I'm gonna make it easy for you. I put in some credits into a couple of landing pads along the way. They will give you enough fuel to get here.", "Bruno", true, 90, 0)
-   c_addDialogMessage("Just follow your markers on your map.", "Bruno", true, 190, 0)
-   c_addDialogMessage("I see you there.", "Leapfrog", false, 200, 0)
+   c_addDialogMessage("Ok, I'm gonna make it easy for you. I will put in some credits into a couple of landing pads along the way. They will give you enough fuel to get here.", "Bruno", true, 300, 0)
+   c_addDialogMessage("Do you want the job?", "Bruno", true, 190, 0)
+   c_askQuestion(acceptBrunoMission1)
    
 end
 
@@ -286,6 +299,14 @@ mission1.missionStateSceneEventHandler = function(eventId, actorName, parameter1
             answerLegRepair(false)
          end
       end
+
+      if parameter1 == acceptBrunoMission1 then
+         if eventId == "QsYs" then
+            answerMission1(true)
+         elseif eventId == "QsNo" then
+            answerMission1(false)
+         end
+      end 
 
       if actorName == "oreLanding" and eventId == "LpLL" then
          -- Every landing there sends the event, so play only the first time
