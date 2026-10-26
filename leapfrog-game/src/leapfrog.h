@@ -184,6 +184,12 @@ private:
    const static float c_liftLevelDamping;
    const static float c_liftTimeout;
 
+   // Terrain sensor (see updateTerrainSensor)
+   const static float c_sensorRange;
+   const static float c_sensorSweepPeriod;
+   const static float c_sensorRayStep;
+   const static float c_sensorPersistence;
+
    LeapFrogStateEnum m_state;
    LeapFrogModeEnum  m_mode;
    EnvironmentEnum m_environment;
@@ -243,6 +249,18 @@ private:
    float m_serviceLiftStartY;
    float m_serviceLiftTarget;    // wanted main body y, moves smoothly
    float m_serviceLiftMass;
+
+   // Terrain sensor: a sweeping range-finder that draws the ground on the
+   // map. Its range etc. are members so an upgrade can change them.
+   bool m_sensorOn;
+   float m_sensorRange;          // [units]
+   float m_sensorSweepPeriod;    // [s] per full turn
+   float m_sensorRayStep;        // [rad] between rays
+   float m_sensorPersistence;    // [s] a trace stays on the map
+   float m_sensorAngle;          // [rad] of the next ray, y down
+   bool m_sensorPrevHit;         // the previous ray hit something
+   b2Vec2 m_sensorPrevPoint;
+   b2Vec2 m_sensorPrevNormal;
 
    spGun m_gun;
 
@@ -333,6 +351,7 @@ private:
    void requestServiceLift(void);
    void updateServiceLift(void);
    void endServiceLift(const char* why);
+   void updateTerrainSensor(void);
    void setStrongJoints(void);
    void setWeakJoints(void);
    void lockJoints(bool onPad = false);

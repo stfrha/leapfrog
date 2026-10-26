@@ -84,7 +84,16 @@ LeapFrog::LeapFrog(
    m_serviceLiftTime(0.0f),
    m_serviceLiftStartY(0.0f),
    m_serviceLiftTarget(0.0f),
-   m_serviceLiftMass(0.0f)
+   m_serviceLiftMass(0.0f),
+   m_sensorOn(true),
+   m_sensorRange(c_sensorRange),
+   m_sensorSweepPeriod(c_sensorSweepPeriod),
+   m_sensorRayStep(c_sensorRayStep),
+   m_sensorPersistence(c_sensorPersistence),
+   m_sensorAngle(0.0f),
+   m_sensorPrevHit(false),
+   m_sensorPrevPoint(0.0f, 0.0f),
+   m_sensorPrevNormal(0.0f, 0.0f)
 {
 	initCompoundObjectParts(sceneParent, sceneParent, parentObject, world, pos, root, groupIndex);
 
@@ -408,6 +417,7 @@ void LeapFrog::doUpdate(const UpdateState &us)
 
    updateLegStrain();
    updateServiceLift();
+   updateTerrainSensor();
 };
 
 void LeapFrog::setJointMotor(b2RevoluteJoint* joint, float goal, float speedMagnitude)
@@ -1261,6 +1271,12 @@ const float LeapFrog::c_liftLevelStiffness = 60000.0f; // per rad
 const float LeapFrog::c_liftLevelDamping = 30000.0f;   // per rad/s
 const float LeapFrog::c_liftTimeout = 12.0f;           // [s]
 
+// Terrain sensor, as it comes (an upgrade can raise these)
+const float LeapFrog::c_sensorRange = 200.0f;            // [units]
+const float LeapFrog::c_sensorSweepPeriod = 1.5f;        // [s] per turn
+const float LeapFrog::c_sensorRayStep = 2.0f * MATH_PI / 180.0f;
+const float LeapFrog::c_sensorPersistence = 2.5f;        // [s]
+
 
 void LeapFrog::dumpPart(std::string name, b2Body* body, b2Body* mainBody)
 {
@@ -2084,4 +2100,144 @@ void LeapFrog::updateServiceLift(void)
 
    m_mainBody->ApplyTorque(
       -c_liftLevelStiffness * angle - c_liftLevelDamping * m_mainBody->GetAngularVelocity(), true);
+}
+
+
+// ---------------------------------------------------------------------------
+// Terrain sensor
+//
+// A range-finder on the Leapfrog sweeps a beam of rays round and round, a
+// few rays per update, and the head-down display draws where they hit as
+// thin phosphor lines that fade out (see TerrainSensorLayer). Only what
+// the Leapfrog could collide with and that doesn't move counts: static
+// bodies whose collision filter meets the Leapfrog's. A ray stops at the
+// first surface, so overlapping polygons, the hidden bottoms of the ground
+// and the insides of hills never show: only surfaces facing open space,
+// i.e. what restricts flight, as far as the sensor can see. On for landing
+// scenes (ground and launch environments).
+
+namespace
+{
+   class TerrainRayCallback : public b2RayCastCallback
+   {
+   public:
+      b2Filter m_leapfrogFilter;
+      bool m_hit;
+      b2Vec2 m_point;
+      b2Vec2 m_normal;
+
+      TerrainRayCallback(const b2Filter& leapfrogFilter) :
+         m_leapfrogFilter(leapfrogFilter),
+         m_hit(false),
+         m_point(0.0f, 0.0f),
+         m_normal(0.0f, 0.0f)
+      {
+      }
+
+      float32 ReportFixture(b2Fixture* fixture, const b2Vec2& point,
+         const b2Vec2& normal, float32 fraction) override
+      {
+         if (fixture->IsSensor() || (fixture->GetBody()->GetType() != b2_staticBody))
+         {
+            return -1.0f;   // ignore, go on
+         }
+
+         const b2Filter& f = fixture->GetFilterData();
+
+         if (((f.categoryBits & m_leapfrogFilter.maskBits) == 0) ||
+            ((f.maskBits & m_leapfrogFilter.categoryBits) == 0))
+         {
+            return -1.0f;   // the Leapfrog would pass through it
+         }
+
+         // Closest so far: clip the ray here
+         m_hit = true;
+         m_point = point;
+         m_normal = normal;
+         return fraction;
+      }
+   };
+}
+
+void LeapFrog::updateTerrainSensor(void)
+{
+   bool active = m_sensorOn &&
+      ((m_environment == ENV_GROUND) || (m_environment == ENV_LAUNCH)) &&
+      (g_HeadDownDisplay != NULL) &&
+      (m_mainBody->GetFixtureList() != NULL);
+
+   if (!active || (g_MainActor && g_MainActor->isInPause()))
+   {
+      m_sensorPrevHit = false;
+      return;
+   }
+
+   const float dt = Scales::c_updateStep;
+   const float twoPi = 2.0f * MATH_PI;
+
+   // Rays this update: the sweep's angular speed times the step time, in
+   // whole rays (the angle carries the remainder)
+   float sweep = twoPi / m_sensorSweepPeriod * dt;
+   int rays = (int)(sweep / m_sensorRayStep + 0.5f);
+   if (rays < 1)
+   {
+      rays = 1;
+   }
+
+   b2Vec2 origin = m_mainBody->GetWorldCenter();
+   TerrainRayCallback callback(m_mainBody->GetFixtureList()->GetFilterData());
+
+   for (int i = 0; i < rays; i++)
+   {
+      float angle = m_sensorAngle;
+      b2Vec2 dir(cosf(angle), sinf(angle));
+      b2Vec2 end = origin + m_sensorRange * dir;
+
+      callback.m_hit = false;
+      m_world->RayCast(&callback, origin, end);
+
+      if (callback.m_hit)
+      {
+         b2Vec2 p = callback.m_point;
+         b2Vec2 n = callback.m_normal;
+
+         // Join to the previous ray's hit if they are on the same surface:
+         // close compared with the gap between neighbouring rays there
+         // (corners), or facing the same way and not too far apart (a
+         // surface the beam meets at a shallow angle, where neighbouring
+         // hits spread out). Hits on different surfaces at different depths
+         // stay apart, so edges of the view don't get bridged.
+         float distance = (p - origin).Length();
+         float gap = (p - m_sensorPrevPoint).Length();
+         float closeLimit = std::max(3.0f, 3.0f * distance * m_sensorRayStep);
+         bool sameSurface = m_sensorPrevHit &&
+            (b2Dot(n, m_sensorPrevNormal) > 0.95f) &&
+            (gap < 0.15f * m_sensorRange);
+
+         if (m_sensorPrevHit && ((gap < closeLimit) || sameSurface))
+         {
+            g_HeadDownDisplay->sensorTrace(m_sensorPrevPoint, p);
+         }
+         else
+         {
+            g_HeadDownDisplay->sensorTrace(p, p);
+         }
+
+         m_sensorPrevHit = true;
+         m_sensorPrevPoint = p;
+         m_sensorPrevNormal = n;
+      }
+      else
+      {
+         m_sensorPrevHit = false;
+      }
+
+      m_sensorAngle += m_sensorRayStep;
+      if (m_sensorAngle >= twoPi)
+      {
+         m_sensorAngle -= twoPi;
+      }
+   }
+
+   g_HeadDownDisplay->sensorBeam(origin, m_sensorAngle, m_sensorRange, m_sensorPersistence);
 }

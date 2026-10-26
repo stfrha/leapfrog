@@ -858,6 +858,144 @@ void HddInstruments::doUpdate(const UpdateState& us)
 // HeadDownDisplay
 // ---------------------------------------------------------------------------
 
+// ---------------------------------------------------------------------------
+// Terrain sensor traces
+// ---------------------------------------------------------------------------
+
+namespace
+{
+   // Phosphor green, a little brighter than the HUD frames
+   const Color c_sensorColor(130, 255, 70, 255);
+   const unsigned char c_sensorBeamAlpha = 50;
+   const float c_sensorBeamTimeout = 0.25f;     // [s] without a beam: sensor off
+}
+
+TerrainSensorLayer::TerrainSensorLayer() :
+   m_beamAge(1.0f),
+   m_lineWidth(1.0f),
+   m_persistence(2.0f)
+{
+   setTouchEnabled(false);
+   setTouchChildrenEnabled(false);
+
+   m_beam = new ColorRectSprite();
+   m_beam->setColor(c_sensorColor);
+   m_beam->setAlpha(c_sensorBeamAlpha);
+   m_beam->setAnchor(0.0f, 0.5f);
+   m_beam->setVisible(false);
+   m_beam->attachTo(this);
+}
+
+void TerrainSensorLayer::setLineWidth(float width)
+{
+   m_lineWidth = width;
+}
+
+void TerrainSensorLayer::setPersistence(float seconds)
+{
+   m_persistence = (seconds > 0.1f) ? seconds : 0.1f;
+}
+
+void TerrainSensorLayer::placeLine(ColorRectSprite* sprite, const Vector2& a, const Vector2& b)
+{
+   Vector2 d = b - a;
+   float length = d.length();
+
+   sprite->setPosition(a);
+   sprite->setRotation(length > 0.0f ? atan2f(d.y, d.x) : 0.0f);
+
+   // A dot is a short line, as long as the line is wide
+   sprite->setSize(length > m_lineWidth ? length : m_lineWidth, m_lineWidth);
+}
+
+void TerrainSensorLayer::addTrace(const Vector2& a, const Vector2& b)
+{
+   spColorRectSprite sprite;
+
+   if (!m_pool.empty())
+   {
+      sprite = m_pool.back();
+      m_pool.pop_back();
+   }
+   else
+   {
+      sprite = new ColorRectSprite();
+      sprite->setColor(c_sensorColor);
+      sprite->setAnchor(0.0f, 0.5f);
+      sprite->setTouchEnabled(false);
+   }
+
+   placeLine(sprite.get(), a, b);
+   sprite->setAlpha(255);
+   sprite->attachTo(this);
+
+   Trace trace;
+   trace.m_sprite = sprite;
+   trace.m_age = 0.0f;
+   m_traces.push_back(trace);
+
+   // The beam stays on top
+   m_beam->detach();
+   m_beam->attachTo(this);
+}
+
+void TerrainSensorLayer::setBeam(const Vector2& origin, float angle, float length)
+{
+   Vector2 end(origin.x + cosf(angle) * length, origin.y + sinf(angle) * length);
+   placeLine(m_beam.get(), origin, end);
+   m_beam->setVisible(true);
+   m_beamAge = 0.0f;
+}
+
+void TerrainSensorLayer::clearTraces(void)
+{
+   for (auto& trace : m_traces)
+   {
+      trace.m_sprite->detach();
+      m_pool.push_back(trace.m_sprite);
+   }
+
+   m_traces.clear();
+   m_beam->setVisible(false);
+}
+
+void TerrainSensorLayer::doUpdate(const UpdateState& us)
+{
+   float dt = us.dt / 1000.0f;
+
+   // Fade like phosphor: bright at first, then a long tail. Oldest first.
+   size_t expired = 0;
+
+   for (auto& trace : m_traces)
+   {
+      trace.m_age += dt;
+      float left = 1.0f - trace.m_age / m_persistence;
+
+      if (left <= 0.0f)
+      {
+         expired++;
+         trace.m_sprite->detach();
+         m_pool.push_back(trace.m_sprite);
+         continue;
+      }
+
+      trace.m_sprite->setAlpha((unsigned char)(255.0f * left * left));
+   }
+
+   if (expired > 0)
+   {
+      // Traces are added in time order, so the expired ones come first
+      m_traces.erase(m_traces.begin(), m_traces.begin() + expired);
+   }
+
+   m_beamAge += dt;
+   if (m_beamAge > c_sensorBeamTimeout)
+   {
+      m_beam->setVisible(false);
+   }
+}
+
+
 HeadDownDisplay::HeadDownDisplay() :
    m_itemIdRepository(0),
    m_actorExists(false),
@@ -891,6 +1029,11 @@ void HeadDownDisplay::clearMap(void)
 
    // vector is of type spActor so clearing it will delete all items
    m_mapActors.clear();
+
+   if (m_terrainSensor)
+   {
+      m_terrainSensor->clearTraces();
+   }
 
    // m_actorExists = false;
 
@@ -982,6 +1125,10 @@ void HeadDownDisplay::initialiseHdd(
    m_instruments->attachTo(g_MainActor);
 
    m_actorExists = true;
+
+   // The terrain sensor's traces, under the map items
+   attachTerrainSensor();
+   m_terrainSensor->clearTraces();
 
    // Some map items has already been added as the xml-file was read
    // but they are not yet attached to the map (since it was just
@@ -1207,6 +1354,43 @@ void HeadDownDisplay::setLeapfrogTelemetry(const LeapfrogTelemetry& telemetry)
    }
 }
 
+void HeadDownDisplay::attachTerrainSensor(void)
+{
+   if (!m_terrainSensor)
+   {
+      m_terrainSensor = new TerrainSensorLayer();
+   }
+
+   // About 1.5 px wide on screen (on an 80 px button layout)
+   m_terrainSensor->setLineWidth(1.5f * g_Layout.getButtonWidth() / 80.0f / m_mapScale);
+
+   // Under the map items
+   m_terrainSensor->detach();
+   m_terrainSensor->attachTo(this);
+}
+
+void HeadDownDisplay::sensorTrace(const b2Vec2& a, const b2Vec2& b)
+{
+   if (m_terrainSensor)
+   {
+      m_terrainSensor->addTrace(
+         PhysDispConvert::convert(a, Scales::c_physToStageScale),
+         PhysDispConvert::convert(b, Scales::c_physToStageScale));
+   }
+}
+
+void HeadDownDisplay::sensorBeam(const b2Vec2& origin, float angle, float range, float persistence)
+{
+   if (m_terrainSensor)
+   {
+      m_terrainSensor->setPersistence(persistence);
+      m_terrainSensor->setBeam(
+         PhysDispConvert::convert(origin, Scales::c_physToStageScale),
+         angle,
+         range * Scales::c_physToStageScale);
+   }
+}
+
 void HeadDownDisplay::logMessage(const std::string& text, bool critical)
 {
    if (m_instruments)
@@ -1267,6 +1451,9 @@ void HeadDownDisplay::mapTransitionComplete(oxygine::Event* event)
    {
       setScaleY(0.0f);
    }
+
+   // The terrain sensor's traces, under the map items
+   attachTerrainSensor();
 
    for (auto it = m_mapActors.begin(); it != m_mapActors.end(); ++it)
    {

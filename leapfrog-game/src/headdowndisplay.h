@@ -252,6 +252,50 @@ protected:
 };
 
 
+DECLARE_SMART(TerrainSensorLayer, spTerrainSensorLayer);
+
+// The terrain sensor's picture on the map: thin phosphor lines where the
+// Leapfrog's range-finder (a sweeping beam of rays, see LeapFrog::
+// updateTerrainSensor) has hit the ground. Lines fade out over the
+// persistence time, like the afterglow of a radar screen, and the beam is
+// drawn as a faint line. Lives on the map, in scene coordinates.
+class TerrainSensorLayer : public oxygine::Actor
+{
+private:
+   struct Trace
+   {
+      oxygine::spColorRectSprite m_sprite;
+      float m_age;            // [s]
+   };
+
+   std::vector<Trace> m_traces;
+   std::vector<oxygine::spColorRectSprite> m_pool;
+   oxygine::spColorRectSprite m_beam;
+   float m_beamAge;           // [s] since the beam was last set
+   float m_lineWidth;         // [scene units]
+   float m_persistence;       // [s]
+
+   void placeLine(oxygine::ColorRectSprite* sprite, const oxygine::Vector2& a, const oxygine::Vector2& b);
+
+public:
+   TerrainSensorLayer();
+
+   void setLineWidth(float width);
+   void setPersistence(float seconds);
+
+   // A trace from a to b (a dot if they are the same), scene coordinates
+   void addTrace(const oxygine::Vector2& a, const oxygine::Vector2& b);
+
+   // The beam, from origin at angle [rad] (y down), length in scene units
+   void setBeam(const oxygine::Vector2& origin, float angle, float length);
+
+   void clearTraces(void);
+
+protected:
+   void doUpdate(const oxygine::UpdateState& us) override;
+};
+
+
 DECLARE_SMART(HeadDownDisplay, spHeadDownDisplay);
 
 class HeadDownDisplay : public oxygine::Box9Sprite
@@ -274,6 +318,8 @@ private:
    int m_itemIdRepository;
 
    spHddInstruments m_instruments;
+   spTerrainSensorLayer m_terrainSensor;
+   void attachTerrainSensor(void);
 
    void orbitStartTransitionComplete(oxygine::Event* event);
    void menuStartTransitionComplete(oxygine::Event* event);
@@ -341,6 +387,12 @@ public:
 
    // Called by the Leapfrog every update
    void setLeapfrogTelemetry(const LeapfrogTelemetry& telemetry);
+
+   // The terrain sensor (LeapFrog::updateTerrainSensor) reports what its
+   // beam hits, in physics coordinates. persistence: how long a trace
+   // stays [s]. Traces are cleared with the map (a new scene).
+   void sensorTrace(const b2Vec2& a, const b2Vec2& b);
+   void sensorBeam(const b2Vec2& origin, float angle, float range, float persistence);
 
    // Event log, see HudLog. Safe to call at any time (ignored before
    // the first scene has set up the HDD).
