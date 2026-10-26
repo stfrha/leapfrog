@@ -303,6 +303,10 @@ public:
    // freeze meanwhile: no hold, no events, no fuel.
    bool isInServiceLift(void) const { return m_serviceLiftPhase >= 0; }
 
+   // The terrain sensor (on by default in landing scenes). Off, its beam
+   // goes away and the traces fade out.
+   void setTerrainSensorOn(bool on) { m_sensorOn = on; }
+
 
    oxygine::Actor* getMainActor(void);
    b2Vec2 getCraftVelocity(void);

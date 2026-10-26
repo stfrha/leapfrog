@@ -115,6 +115,12 @@ void LaunchSite::doUpdate(const UpdateState &us)
          m_announceLanded = false;
          if (m_active && m_leftFootContact && m_rightFootContact)
          {
+            // Launching: the terrain sensor's job is done here
+            if (m_leapFrog != NULL)
+            {
+               m_leapFrog->setTerrainSensorOn(false);
+            }
+
             LaunchSiteLeapfrogLandedEvent event(this);
             dispatchEvent(&event);
          }
@@ -360,6 +366,9 @@ void LaunchSite::leapfrogFootTouch(b2Contact* contact, bool leftFoot, LeapFrog* 
       // An inactive launch site can be landed on, but nothing happens
       if (m_leftFootContact && m_rightFootContact && m_active)
       {
+         // Launching: the terrain sensor's job is done here
+         m_leapFrog->setTerrainSensorOn(false);
+
          // Start timer and at the end of that, if both feet still
          // are in contact, send event for Leapfrog has landed.
          LaunchSiteLeapfrogLandedEvent event(this);
