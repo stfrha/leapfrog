@@ -274,7 +274,10 @@ private:
    float m_beamAge;           // [s] since the beam was last set
    float m_lineWidth;         // [scene units]
    float m_persistence;       // [s]
+   oxygine::Vector2 m_bounds; // the scene's size: nothing is drawn outside
 
+   // Clips a to b to the scene; false if nothing of it is inside
+   bool clip(oxygine::Vector2& a, oxygine::Vector2& b) const;
    void placeLine(oxygine::ColorRectSprite* sprite, const oxygine::Vector2& a, const oxygine::Vector2& b);
 
 public:
@@ -282,6 +285,7 @@ public:
 
    void setLineWidth(float width);
    void setPersistence(float seconds);
+   void setBounds(const oxygine::Vector2& sceneSize);
 
    // A trace from a to b (a dot if they are the same), scene coordinates
    void addTrace(const oxygine::Vector2& a, const oxygine::Vector2& b);

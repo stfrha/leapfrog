@@ -873,7 +873,8 @@ namespace
 TerrainSensorLayer::TerrainSensorLayer() :
    m_beamAge(1.0f),
    m_lineWidth(1.0f),
-   m_persistence(2.0f)
+   m_persistence(2.0f),
+   m_bounds(1.0e9f, 1.0e9f)
 {
    setTouchEnabled(false);
    setTouchChildrenEnabled(false);
@@ -896,6 +897,52 @@ void TerrainSensorLayer::setPersistence(float seconds)
    m_persistence = (seconds > 0.1f) ? seconds : 0.1f;
 }
 
+void TerrainSensorLayer::setBounds(const Vector2& sceneSize)
+{
+   m_bounds = sceneSize;
+}
+
+bool TerrainSensorLayer::clip(Vector2& a, Vector2& b) const
+{
+   // Liang-Barsky against [0, width] x [0, height], like the map items,
+   // which stay inside the map frame
+   Vector2 d = b - a;
+   float t0 = 0.0f;
+   float t1 = 1.0f;
+   const float p[4] = { -d.x, d.x, -d.y, d.y };
+   const float q[4] = { a.x, m_bounds.x - a.x, a.y, m_bounds.y - a.y };
+
+   for (int i = 0; i < 4; i++)
+   {
+      if (p[i] == 0.0f)
+      {
+         if (q[i] < 0.0f)
+         {
+            return false;      // parallel to this edge and outside it
+         }
+      }
+      else
+      {
+         float t = q[i] / p[i];
+         if (p[i] < 0.0f)
+         {
+            if (t > t1) return false;
+            if (t > t0) t0 = t;
+         }
+         else
+         {
+            if (t < t0) return false;
+            if (t < t1) t1 = t;
+         }
+      }
+   }
+
+   Vector2 start = a;
+   a = start + d * t0;
+   b = start + d * t1;
+   return true;
+}
+
 void TerrainSensorLayer::placeLine(ColorRectSprite* sprite, const Vector2& a, const Vector2& b)
 {
    Vector2 d = b - a;
@@ -908,8 +955,16 @@ void TerrainSensorLayer::placeLine(ColorRectSprite* sprite, const Vector2& a, co
    sprite->setSize(length > m_lineWidth ? length : m_lineWidth, m_lineWidth);
 }
 
-void TerrainSensorLayer::addTrace(const Vector2& a, const Vector2& b)
+void TerrainSensorLayer::addTrace(const Vector2& from, const Vector2& to)
 {
+   Vector2 a = from;
+   Vector2 b = to;
+
+   if (!clip(a, b))
+   {
+      return;
+   }
+
    spColorRectSprite sprite;
 
    if (!m_pool.empty())
@@ -941,8 +996,17 @@ void TerrainSensorLayer::addTrace(const Vector2& a, const Vector2& b)
 
 void TerrainSensorLayer::setBeam(const Vector2& origin, float angle, float length)
 {
+   Vector2 start = origin;
    Vector2 end(origin.x + cosf(angle) * length, origin.y + sinf(angle) * length);
-   placeLine(m_beam.get(), origin, end);
+
+   // Off the map (e.g. high above the scene on the launch rocket): no beam
+   if (!clip(start, end))
+   {
+      m_beam->setVisible(false);
+      return;
+   }
+
+   placeLine(m_beam.get(), start, end);
    m_beam->setVisible(true);
    m_beamAge = 0.0f;
 }
@@ -1360,6 +1424,8 @@ void HeadDownDisplay::attachTerrainSensor(void)
    {
       m_terrainSensor = new TerrainSensorLayer();
    }
+
+   m_terrainSensor->setBounds(Vector2(m_sceneWidth, m_sceneHeight));
 
    // About 1.5 px wide on screen (on an 80 px button layout)
    m_terrainSensor->setLineWidth(1.5f * g_Layout.getButtonWidth() / 80.0f / m_mapScale);
