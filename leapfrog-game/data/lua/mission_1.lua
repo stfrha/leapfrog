@@ -44,6 +44,7 @@ local homeLaunchSiteTimer = -1
 local Question = {
    acceptJob = 1,      -- Bruno's offer
 }
+mission1.Question = Question
 local offerPending = false     -- asked and not yet answered
 local offerAtOrb = false       -- asked while standing on the Orb's pad
 

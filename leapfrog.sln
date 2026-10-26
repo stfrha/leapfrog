@@ -45,6 +45,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SDL2main", "..\SDL\VisualC\
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SDL2", "..\SDL\VisualC\SDL\SDL.vcxproj", "{81CE8DAF-EBB2-4761-8E45-B71ABCCA8C68}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "mission_tester", "leapfrog-game\mission_tester\mission_tester.vcxproj", "{1F0219D7-8F6D-4C7D-BCB4-1F95DE918ACC}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug Library|Any CPU = Debug Library|Any CPU
@@ -475,6 +477,26 @@ Global
 		{81CE8DAF-EBB2-4761-8E45-B71ABCCA8C68}.Release|Win32.Build.0 = Release|Win32
 		{81CE8DAF-EBB2-4761-8E45-B71ABCCA8C68}.Release|x64.ActiveCfg = Release|x64
 		{81CE8DAF-EBB2-4761-8E45-B71ABCCA8C68}.Release|x64.Build.0 = Release|x64
+		{1F0219D7-8F6D-4C7D-BCB4-1F95DE918ACC}.Debug Library|Any CPU.ActiveCfg = Debug|Win32
+		{1F0219D7-8F6D-4C7D-BCB4-1F95DE918ACC}.Debug Library|ARM64.ActiveCfg = Debug|Win32
+		{1F0219D7-8F6D-4C7D-BCB4-1F95DE918ACC}.Debug Library|Win32.ActiveCfg = Debug|Win32
+		{1F0219D7-8F6D-4C7D-BCB4-1F95DE918ACC}.Debug Library|Win32.Build.0 = Debug|Win32
+		{1F0219D7-8F6D-4C7D-BCB4-1F95DE918ACC}.Debug Library|x64.ActiveCfg = Debug|Win32
+		{1F0219D7-8F6D-4C7D-BCB4-1F95DE918ACC}.Debug|Any CPU.ActiveCfg = Debug|Win32
+		{1F0219D7-8F6D-4C7D-BCB4-1F95DE918ACC}.Debug|ARM64.ActiveCfg = Debug|Win32
+		{1F0219D7-8F6D-4C7D-BCB4-1F95DE918ACC}.Debug|Win32.ActiveCfg = Debug|Win32
+		{1F0219D7-8F6D-4C7D-BCB4-1F95DE918ACC}.Debug|Win32.Build.0 = Debug|Win32
+		{1F0219D7-8F6D-4C7D-BCB4-1F95DE918ACC}.Debug|x64.ActiveCfg = Debug|Win32
+		{1F0219D7-8F6D-4C7D-BCB4-1F95DE918ACC}.Release Library|Any CPU.ActiveCfg = Release|Win32
+		{1F0219D7-8F6D-4C7D-BCB4-1F95DE918ACC}.Release Library|ARM64.ActiveCfg = Release|Win32
+		{1F0219D7-8F6D-4C7D-BCB4-1F95DE918ACC}.Release Library|Win32.ActiveCfg = Release|Win32
+		{1F0219D7-8F6D-4C7D-BCB4-1F95DE918ACC}.Release Library|Win32.Build.0 = Release|Win32
+		{1F0219D7-8F6D-4C7D-BCB4-1F95DE918ACC}.Release Library|x64.ActiveCfg = Release|Win32
+		{1F0219D7-8F6D-4C7D-BCB4-1F95DE918ACC}.Release|Any CPU.ActiveCfg = Release|Win32
+		{1F0219D7-8F6D-4C7D-BCB4-1F95DE918ACC}.Release|ARM64.ActiveCfg = Release|Win32
+		{1F0219D7-8F6D-4C7D-BCB4-1F95DE918ACC}.Release|Win32.ActiveCfg = Release|Win32
+		{1F0219D7-8F6D-4C7D-BCB4-1F95DE918ACC}.Release|Win32.Build.0 = Release|Win32
+		{1F0219D7-8F6D-4C7D-BCB4-1F95DE918ACC}.Release|x64.ActiveCfg = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

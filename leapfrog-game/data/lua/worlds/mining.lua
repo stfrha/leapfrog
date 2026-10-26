@@ -17,6 +17,7 @@ local mining = {}
 local Question = {
    repairLegs = 100,
 }
+mining.Question = Question
 local legRepairCost = 0
 local legFieldFixHealth = 0.3
 
