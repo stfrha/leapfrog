@@ -1139,6 +1139,23 @@ void TerrainSensorLayer::clearTraces(void)
 
    m_memory.clear();
    m_covered.clear();
+
+   // A scene change detaches every actor under the HUD, recursively
+   // (MainActor's clean-up), so this layer's own children too: put them
+   // back. The remembered ground under the live traces, the beam on top.
+   // (Without this the remembered lines went into a layer no longer on
+   // screen in every scene after the first.)
+   if (m_memoryLayer->getParent() != this)
+   {
+      m_memoryLayer->detach();
+      prependChild(m_memoryLayer);
+   }
+
+   if (m_beam->getParent() != this)
+   {
+      m_beam->detach();
+      m_beam->attachTo(this);
+   }
 }
 
 void TerrainSensorLayer::doUpdate(const UpdateState& us)
