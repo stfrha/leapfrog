@@ -677,6 +677,7 @@ void LuaInterface::initLuaInterface(void)
    preloadModule("lua/worlds/mining.lua", "mining");
    preloadModule("lua/swarm.lua", "swarm");
    preloadModule("lua/mission_1.lua", "mission1");
+   preloadModule("lua/test_starts.lua", "test_starts");
 
    //result = lua_pcall(m_L, 0, 0, 0);
 
@@ -852,6 +853,80 @@ int LuaInterface::lua_findLeapfrogEntryPosition(SceneActor::SceneTypeEnum exitSc
       logs::messageln("message = %s", lua_tostring(m_L, -1));
    }
    return 0;
+}
+
+// Logs a failed lua_pcall and pops the message
+static void logLuaError(lua_State* L, const char* function)
+{
+   logs::messageln("Lua error in %s: %s", function, lua_tostring(L, -1));
+   lua_pop(L, 1);
+}
+
+int LuaInterface::lua_testStartCount(void)
+{
+   lua_getglobal(m_L, "lua_testStartCount");
+   if (lua_pcall(m_L, 0, 1, 0) != 0)
+   {
+      logLuaError(m_L, "lua_testStartCount");
+      return 0;
+   }
+
+   int count = (int)lua_tointeger(m_L, -1);
+   lua_pop(m_L, 1);
+   return count;
+}
+
+std::string LuaInterface::lua_testStartLabel(int index)
+{
+   lua_getglobal(m_L, "lua_testStartLabel");
+   lua_pushinteger(m_L, index);
+   if (lua_pcall(m_L, 1, 1, 0) != 0)
+   {
+      logLuaError(m_L, "lua_testStartLabel");
+      return "";
+   }
+
+   const char* label = lua_tostring(m_L, -1);
+   std::string result = label ? label : "";
+   lua_pop(m_L, 1);
+   return result;
+}
+
+bool LuaInterface::lua_prepareTestStart(int index, TestStart& start, std::string& message)
+{
+   lua_getglobal(m_L, "lua_prepareTestStart");
+   lua_pushinteger(m_L, index);
+   if (lua_pcall(m_L, 1, 8, 0) != 0)
+   {
+      message = lua_tostring(m_L, -1) ? lua_tostring(m_L, -1) : "Lua error";
+      logLuaError(m_L, "lua_prepareTestStart");
+      return false;
+   }
+
+   // Results: ok, scene, sceneType, mission, state, exitScene, exitType,
+   // exitParameter (-8 .. -1); or false, message
+   bool ok = lua_toboolean(m_L, -8) != 0;
+
+   if (!ok)
+   {
+      const char* m = lua_tostring(m_L, -7);
+      message = m ? m : "test start refused";
+   }
+   else
+   {
+      const char* scene = lua_tostring(m_L, -7);
+      const char* exitScene = lua_tostring(m_L, -3);
+      start.m_scene = scene ? scene : "";
+      start.m_sceneType = (int)lua_tointeger(m_L, -6);
+      start.m_mission = (int)lua_tointeger(m_L, -5);
+      start.m_state = (int)lua_tointeger(m_L, -4);
+      start.m_exitScene = exitScene ? exitScene : "";
+      start.m_exitType = (int)lua_tointeger(m_L, -2);
+      start.m_exitParameter = (int)lua_tointeger(m_L, -1);
+   }
+
+   lua_pop(m_L, 8);
+   return ok;
 }
 
 void LuaInterface::lua_forceCurrentScene(void)

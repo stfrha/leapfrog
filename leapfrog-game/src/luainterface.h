@@ -33,6 +33,18 @@ public:
    {   }
 };
 
+// What MainActor needs to start a test start (see lua_prepareTestStart)
+struct TestStart
+{
+   std::string m_scene;
+   int m_sceneType = 0;
+   int m_mission = 0;
+   int m_state = 0;
+   std::string m_exitScene;
+   int m_exitType = -1;
+   int m_exitParameter = 0;
+};
+
 class LuaInterface
 {
 private:
@@ -59,6 +71,12 @@ public:
    void lua_forceCurrentScene(void);
    int lua_sceneExitHandler(SceneActor::SceneTypeEnum exitSceneType, int exitHow);
    int lua_findLeapfrogEntryPosition(SceneActor::SceneTypeEnum exitSceneType, int exitHow);
+
+   // Test starts (lua/test_starts.lua; the main menu's test row), 1..count
+   int lua_testStartCount(void);
+   std::string lua_testStartLabel(int index);
+   // Sets the scripts up for the start; false (and a message) if it can't
+   bool lua_prepareTestStart(int index, TestStart& start, std::string& message);
 
    void setupMissionStateScene(SceneActor* sceneActor);
    void setupInitialMissionStateScene(SceneActor* sceneActor);

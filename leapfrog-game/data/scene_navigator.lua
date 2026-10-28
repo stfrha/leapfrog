@@ -178,3 +178,55 @@ function lua_forceCurrentScene(newCurrentScene, newMission, newState, newSceneTy
    currentState = newState;
    currentSceneType = newSceneType
 end
+
+-- ------------------------------------------------------------------------
+-- Test starts (lua/test_starts.lua): the main menu's test row
+
+local testStarts = require('test_starts')
+
+function lua_testStartCount()
+   return #testStarts.list
+end
+
+function lua_testStartLabel(i)
+   local e = testStarts.list[i]
+   if e == nil then
+      return ""
+   end
+   return e.label
+end
+
+-- Sets the scripts up for test start i, as a real scene change into its
+-- scene would: the scene, mission and state, and the Leapfrog's entry
+-- (lua_findLeapfrogEntryPosition for the arrival, or the scene's initial
+-- position without one). Returns true and the scene, scene type, mission,
+-- state, exit scene, exit type and exit parameter for MainActor (which
+-- arms the scene), or false and a message.
+function lua_prepareTestStart(i)
+   local e = testStarts.list[i]
+   if e == nil then
+      return false, "no test start " .. tostring(i)
+   end
+
+   lua_forceCurrentScene(e.scene, e.mission, e.state, e.sceneType)
+   newGameStarting = false
+   lfDefined = false
+
+   if e.from == nil then
+      useInitialLfPos = true
+      return true, e.scene, e.sceneType, e.mission, e.state, "", -1, 0
+   end
+
+   -- The entry for this arrival sets nextLfFile; nothing set = the
+   -- navigator doesn't know this arrival
+   nextLfFile = nil
+   lua_findLeapfrogEntryPosition(e.from.type, e.from.param)
+
+   if nextLfFile == nil then
+      nextLfFile = "leapfrog_landing.xml"
+      return false, "test start '" .. e.label .. "': no entry position for " ..
+         e.scene .. " from " .. e.from.scene
+   end
+
+   return true, e.scene, e.sceneType, e.mission, e.state, e.from.scene, e.from.type, e.from.param
+end

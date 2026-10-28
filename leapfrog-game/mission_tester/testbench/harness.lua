@@ -210,9 +210,25 @@ function T:setupScene()
    end)
 end
 
--- The main menu's "test landing" entry (the old test mission)
+-- The main menu's test row: test start i (lua/test_starts.lua). Fails the
+-- test if the scripts refuse it.
+function T:menuTestStart(i)
+   step(self, function()
+      local ok, message = self.engine:menuTestStart(i)
+      if not ok then
+         self:fail("test start " .. tostring(i) .. " refused: " .. tostring(message), 3)
+      end
+   end)
+end
+
+-- The old test mission in landing_scene.xml, from orbit: the first test start
 function T:menuTestLanding()
-   step(self, function() self.engine:menuTestLanding() end)
+   self:menuTestStart(1)
+end
+
+-- The test starts' labels, in menu order
+function T:testStarts()
+   return self.engine:testStarts()
 end
 
 -- Change a property from the game's side (e.g. damage the legs)

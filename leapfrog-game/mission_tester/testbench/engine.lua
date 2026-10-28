@@ -442,6 +442,21 @@ function Engine:callLua(name, ...)
    end
 end
 
+-- As callLua, returning the function's results in a table (nil on error)
+function Engine:callLuaResults(name, ...)
+   local fn = self.env[name]
+   if type(fn) ~= "function" then
+      self:problem("the scripts have no function " .. name)
+      return nil
+   end
+   local r = table.pack(pcall(fn, ...))
+   if not r[1] then
+      self:problem("Lua error in " .. name .. ": " .. tostring(r[2]))
+      return nil
+   end
+   return { table.unpack(r, 2, r.n) }
+end
+
 -- ------------------------------------------------------------------------
 -- Scenes
 
@@ -495,10 +510,12 @@ function Engine:startScene(file, sceneType)
 
    self:callLua("lua_setupMissionStateScene")
 
-   -- The initial scene of a mission is saved once it is set up
-   if self.status.exitType == -1 then
+   -- The initial scene of a mission is saved once it is set up (not a
+   -- test start's)
+   if self.status.exitType == -1 and not self.startingTest then
       self:saveGameStatus()
    end
+   self.startingTest = false
 end
 
 -- MainActor's boot: restore the save, then continue where it was
@@ -532,20 +549,39 @@ function Engine:menuNewGame()
    self:runPending()
 end
 
--- The menu's "test landing": the old test mission in landing_scene.xml,
--- entered as if from orbit (MainActor, PostMenuActionType::testLanding)
-function Engine:menuTestLanding()
+-- The menu's test row (MainActor, PostMenuActionType::testStart): the
+-- scripts prepare test start i (lua/test_starts.lua), the game status
+-- follows, the scene is armed, and its start doesn't save the game.
+-- Returns false and the message if the scripts refuse it.
+function Engine:menuTestStart(i)
    if not self.env then
       -- The menu is there once the game has started
       self:newLua()
    end
+   local r = self:callLuaResults("lua_prepareTestStart", i)
+   if not r or not r[1] then
+      local message = r and r[2] or "lua_prepareTestStart failed"
+      self:note("TEST", "refused: " .. tostring(message))
+      return false, message
+   end
    local s = self.status
-   s.scene, s.mission, s.state, s.sceneType = "landing_scene.xml", 1, 1, 0
-   s.exitScene, s.exitType, s.exitParam = "orbit_scene.xml", 2, 0
-   self:forceCurrentScene()
-   self:callLua("lua_findLeapfrogEntryPosition", s.exitType, s.exitParam)
+   s.scene, s.sceneType, s.mission, s.state = r[2], r[3], r[4], r[5]
+   s.exitScene, s.exitType, s.exitParam = r[6], r[7], r[8]
+   self.startingTest = true
    self:armScene(s.scene, s.sceneType)
    self:runPending()
+   return true
+end
+
+-- The test starts the menu offers: count and labels
+function Engine:testStarts()
+   local count = self:callLuaResults("lua_testStartCount")
+   local list = {}
+   for i = 1, (count and count[1] or 0) do
+      local label = self:callLuaResults("lua_testStartLabel", i)
+      list[i] = label and label[1] or ""
+   end
+   return list
 end
 
 function Engine:forceCurrentScene()

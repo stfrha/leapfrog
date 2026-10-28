@@ -48,6 +48,8 @@ MainActor::MainActor() :
    m_sceneObject(NULL),
    m_isInPause(false),
    m_isInMessagePause(false),
+   m_testStartIndex(1),
+   m_startingTest(false),
    m_fpsEst(NULL)
 {
 }
@@ -278,10 +280,13 @@ void MainActor::startScene(void)
 
    // Now all is initiated. If this is the initial mission scene we need to 
    // save the game state to say that the first mission has begun. 
-   if (g_GameStatus.getExitSceneType() == -1)
+   // (Not for a test start: it leaves the saved game as it was)
+   if ((g_GameStatus.getExitSceneType() == -1) && !m_startingTest)
    {
       g_GameStatus.saveGameStatus();
    }
+
+   m_startingTest = false;
 
    //m_debugDraw = new Box2DDraw;
    //m_debugDraw->SetFlags(b2Draw::e_shapeBit | b2Draw::e_jointBit | b2Draw::e_pairBit | b2Draw::e_centerOfMassBit);
@@ -573,21 +578,13 @@ void MainActor::buttonClicked(int i)
       m_postMenuAction = PostMenuActionType::startNew;
       g_HeadDownDisplay->goToMap();
    }
-   else if (i == 4)
-   {
-      m_postMenuAction = PostMenuActionType::testLanding;
-      g_HeadDownDisplay->goToMap();
-   }
-   else if (i == 5)
-   {
-      m_postMenuAction = PostMenuActionType::testSpace;
-      g_HeadDownDisplay->goToMap();
-   }
-   else if (i == 6)
-   {
-      m_postMenuAction = PostMenuActionType::testOrbit;
-      g_HeadDownDisplay->goToMap();
-   }
+}
+
+void MainActor::testStartClicked(int index)
+{
+   m_testStartIndex = index;
+   m_postMenuAction = PostMenuActionType::testStart;
+   g_HeadDownDisplay->goToMap();
 }
 
 
@@ -635,26 +632,31 @@ void MainActor::restartedFromMenu(void)
          armScene(g_GameStatus.getCurrentScene(), g_GameStatus.getCurrentSceneType());
       }
    }
-   else if (m_postMenuAction == PostMenuActionType::testLanding)
+   else if (m_postMenuAction == PostMenuActionType::testStart)
    {
-      g_GameStatus.setSceneMissionState("landing_scene.xml", 1, 1, 0, "orbit_scene.xml", 2, 0);
-      g_LuaInterface.lua_forceCurrentScene();
-      g_LuaInterface.lua_findLeapfrogEntryPosition(static_cast<SceneActor::SceneTypeEnum>(g_GameStatus.getExitSceneType()), g_GameStatus.getExitParameter());
-      armScene(g_GameStatus.getCurrentScene(), g_GameStatus.getCurrentSceneType());
-   }
-   else if (m_postMenuAction == PostMenuActionType::testSpace)
-   {
-      g_GameStatus.setSceneMissionState("deep_space_scene.xml", 1, 1, 1, "landing_scene.xml", 0, 1);
-      g_LuaInterface.lua_forceCurrentScene();
-      g_LuaInterface.lua_findLeapfrogEntryPosition(static_cast<SceneActor::SceneTypeEnum>(g_GameStatus.getExitSceneType()), g_GameStatus.getExitParameter());
-      armScene(g_GameStatus.getCurrentScene(), g_GameStatus.getCurrentSceneType());
-   }
-   else if (m_postMenuAction == PostMenuActionType::testOrbit)
-   {
-      g_GameStatus.setSceneMissionState("orbit_scene.xml", 1, 1, 2, "deep_space_scene.xml", 1, 3);
-      g_LuaInterface.lua_forceCurrentScene();
-      g_LuaInterface.lua_findLeapfrogEntryPosition(static_cast<SceneActor::SceneTypeEnum>(g_GameStatus.getExitSceneType()), g_GameStatus.getExitParameter());
-      armScene(g_GameStatus.getCurrentScene(), g_GameStatus.getCurrentSceneType());
+      // As the game gets there: the scripts set up the scene, mission,
+      // state and the Leapfrog's entry (lua_prepareTestStart), the game
+      // status follows, and the scene is armed
+      TestStart start;
+      std::string message;
+
+      if (g_LuaInterface.lua_prepareTestStart(m_testStartIndex, start, message))
+      {
+         g_GameStatus.setSceneMissionState(
+            start.m_scene, start.m_mission, start.m_state, start.m_sceneType,
+            start.m_exitScene, start.m_exitType, start.m_exitParameter);
+         m_startingTest = true;
+         armScene(start.m_scene, start.m_sceneType);
+      }
+      else
+      {
+         logs::messageln("Test start refused: %s", message.c_str());
+
+         if (g_HeadDownDisplay)
+         {
+            g_HeadDownDisplay->logMessage(message, true);
+         }
+      }
    }
 }
 

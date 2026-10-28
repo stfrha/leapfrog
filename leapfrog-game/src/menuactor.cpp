@@ -6,6 +6,7 @@
 #include "headdowndisplay.h"
 #include "mainactor.h"
 #include "graphicresources.h"
+#include "luainterface.h"
 
 #if defined(__APPLE__)
 #include <TargetConditionals.h>
@@ -30,7 +31,8 @@ MenuButton::MenuButton(
    setPosition(pos);
    attachTo(menuParent);
 
-   spTextField msgTextField = new TextField();
+   m_text = new TextField();
+   spTextField msgTextField = m_text;
 
    TextStyle style;
    style.multiline = false;
@@ -50,6 +52,11 @@ MenuButton::MenuButton(
    const Rect& rect = msgTextField->getTextRect();
 
    msgTextField->attachTo(this);
+}
+
+void MenuButton::setCaption(const std::string& caption)
+{
+   m_text->setText(caption);
 }
 
 void MenuButton::doUpdate(const oxygine::UpdateState& us)
@@ -92,26 +99,41 @@ MenuActor::MenuActor()
       "Start new game");
    b3->addEventListener(TouchEvent::CLICK, CLOSURE(this, &MenuActor::b3Clicked));
 
-   spMenuButton b4 = new MenuButton(
-      this,
-      Vector2(g_Layout.getYFromTop(1), sepHeight * 4 + buttonHeight * 3),
-      Vector2(trioButtonWidth, buttonHeight),
-      "Landing");
-   b4->addEventListener(TouchEvent::CLICK, CLOSURE(this, &MenuActor::b4Clicked));
+   // The test row: < label >. The arrows step through the test starts,
+   // the label starts the one shown (lua/test_starts.lua)
+   float testRowY = sepHeight * 4 + buttonHeight * 3;
+   float arrowWidth = buttonHeight * 1.2f;
+   float testLabelWidth = buttonWidth - 2.0f * arrowWidth - 2.0f * sepTrioWidth;
+   float testRowX = g_Layout.getYFromTop(1);
 
-   spMenuButton b5 = new MenuButton(
+   spMenuButton prev = new MenuButton(
       this,
-      Vector2(g_Layout.getYFromTop(1) + trioButtonWidth * 1 + sepTrioWidth * 1, sepHeight * 4 + buttonHeight * 3),
-      Vector2(trioButtonWidth, buttonHeight),
-      "Space");
-   b5->addEventListener(TouchEvent::CLICK, CLOSURE(this, &MenuActor::b5Clicked));
+      Vector2(testRowX, testRowY),
+      Vector2(arrowWidth, buttonHeight),
+      "<");
+   prev->addEventListener(TouchEvent::CLICK, CLOSURE(this, &MenuActor::testPrevClicked));
 
-   spMenuButton b6 = new MenuButton(
+   m_testLabel = new MenuButton(
       this,
-      Vector2(g_Layout.getYFromTop(1) + trioButtonWidth * 2 + sepTrioWidth * 2, sepHeight * 4 + buttonHeight * 3),
-      Vector2(trioButtonWidth, buttonHeight),
-      "Orbit");
-   b6->addEventListener(TouchEvent::CLICK, CLOSURE(this, &MenuActor::b6Clicked));
+      Vector2(testRowX + arrowWidth + sepTrioWidth, testRowY),
+      Vector2(testLabelWidth, buttonHeight),
+      "");
+   m_testLabel->addEventListener(TouchEvent::CLICK, CLOSURE(this, &MenuActor::testStartClicked));
+
+   spMenuButton next = new MenuButton(
+      this,
+      Vector2(testRowX + arrowWidth + sepTrioWidth + testLabelWidth + sepTrioWidth, testRowY),
+      Vector2(arrowWidth, buttonHeight),
+      ">");
+   next->addEventListener(TouchEvent::CLICK, CLOSURE(this, &MenuActor::testNextClicked));
+
+   m_testCount = g_LuaInterface.lua_testStartCount();
+   m_testIndex = g_MainActor->getTestStartIndex();
+   if ((m_testIndex < 1) || (m_testIndex > m_testCount))
+   {
+      m_testIndex = 1;
+   }
+   showTestStart();
 
 #if !(defined(__APPLE__) && TARGET_OS_IPHONE)
    // create/show the Exit menu item
@@ -146,19 +168,46 @@ void MenuActor::b3Clicked(oxygine::Event* event)
    g_MainActor->buttonClicked(3);
 }
 
-void MenuActor::b4Clicked(oxygine::Event* event)
+void MenuActor::showTestStart(void)
 {
-   g_MainActor->buttonClicked(4);
+   if (m_testCount <= 0)
+   {
+      m_testLabel->setCaption("No test starts");
+      return;
+   }
+
+   char caption[160];
+   snprintf(caption, sizeof(caption), "%d/%d  %s", m_testIndex, m_testCount,
+      g_LuaInterface.lua_testStartLabel(m_testIndex).c_str());
+   m_testLabel->setCaption(caption);
 }
 
-void MenuActor::b5Clicked(oxygine::Event* event)
+void MenuActor::testPrevClicked(oxygine::Event* event)
 {
-   g_MainActor->buttonClicked(5);
+   if (m_testCount > 0)
+   {
+      m_testIndex = (m_testIndex <= 1) ? m_testCount : m_testIndex - 1;
+      g_MainActor->setTestStartIndex(m_testIndex);
+      showTestStart();
+   }
 }
 
-void MenuActor::b6Clicked(oxygine::Event* event)
+void MenuActor::testNextClicked(oxygine::Event* event)
 {
-   g_MainActor->buttonClicked(6);
+   if (m_testCount > 0)
+   {
+      m_testIndex = (m_testIndex >= m_testCount) ? 1 : m_testIndex + 1;
+      g_MainActor->setTestStartIndex(m_testIndex);
+      showTestStart();
+   }
+}
+
+void MenuActor::testStartClicked(oxygine::Event* event)
+{
+   if (m_testCount > 0)
+   {
+      g_MainActor->testStartClicked(m_testIndex);
+   }
 }
 
 void MenuActor::b7Clicked(oxygine::Event* event)

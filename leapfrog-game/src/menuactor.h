@@ -12,6 +12,9 @@ DECLARE_SMART(MenuButton, spMenuButton);
 
 class MenuButton : public oxygine::Box9Sprite
 {
+private:
+   oxygine::spTextField m_text;
+
 public:
    MenuButton(
       MenuActor* menuParent,
@@ -20,6 +23,8 @@ public:
       std::string caption /*  ,
       event eventToFireAtButtonCLick*/
       );
+
+   void setCaption(const std::string& caption);
 
 protected:
    void doUpdate(const oxygine::UpdateState& us) override;
@@ -37,10 +42,17 @@ private:
    void b1Clicked(oxygine::Event* event);
    void b2Clicked(oxygine::Event* event);
    void b3Clicked(oxygine::Event* event);
-   void b4Clicked(oxygine::Event* event);
-   void b5Clicked(oxygine::Event* event);
-   void b6Clicked(oxygine::Event* event);
    void b7Clicked(oxygine::Event* event);
+
+   // The test row: < label > (lua/test_starts.lua)
+   int m_testCount;
+   int m_testIndex;              // 1..m_testCount
+   spMenuButton m_testLabel;
+
+   void showTestStart(void);
+   void testPrevClicked(oxygine::Event* event);
+   void testNextClicked(oxygine::Event* event);
+   void testStartClicked(oxygine::Event* event);
 
 public:
    MenuActor();

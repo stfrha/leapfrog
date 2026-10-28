@@ -86,7 +86,8 @@ doesn't yet: reported as KNOWN with the reason while it fails, and as FIXED
 | `t:newGame()` | fresh install: no save file, the game starts |
 | `t:restartGame()` | quit and start again: new Lua state, the save file stays |
 | `t:menuNewGame()`, `t:menuContinue()` | the main menu's entries (same Lua state) |
-| `t:menuTestLanding()` | the menu's test landing (old test mission) |
+| `t:menuTestStart(i)`, `t:testStarts()` | the menu's test row: start test start i of `lua/test_starts.lua` (fails if refused); the labels in menu order |
+| `t:menuTestLanding()` | test start 1: the old test mission in the landing scene, from orbit |
 | `t:land(name)` | touch down on a landing pad (LpLL, fuel) or launch site (LsLL) |
 | `t:takeOff()` | the booster fires (withdraws an open question), LpTO |
 | `t:boost()` | the booster fires without taking off |

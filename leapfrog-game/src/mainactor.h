@@ -36,12 +36,15 @@ private:
       continueCurrent,
       continueLatest,
       startNew,
-      testLanding,
-      testSpace,
-      testOrbit
+      testStart         // the menu's test row: lua/test_starts.lua
    };
 
    PostMenuActionType m_postMenuAction;
+
+   // Test starts: the one chosen in the menu (1..count, kept for the
+   // session), and whether the scene being started is one (no initial save)
+   int m_testStartIndex;
+   bool m_startingTest;
 
 	//it is our resources
 	//in real project you would have more than one Resources declarations.
@@ -124,6 +127,11 @@ public:
    bool canPauseForMessages(void);
    void setMessagePause(bool pause);
    void buttonClicked(int button);
+
+   // The menu's test row
+   void testStartClicked(int index);
+   int getTestStartIndex(void) { return m_testStartIndex; }
+   void setTestStartIndex(int index) { m_testStartIndex = index; }
    void restartedFromMenu(void);
    void menuStartTransitionComplete(void);
    void cleanUpAndQuit(void);

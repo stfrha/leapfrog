@@ -6,4 +6,5 @@ return {
    "test_mission.lua",
    "saving.lua",
    "swarm.lua",
+   "test_starts.lua",
 }
