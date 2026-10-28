@@ -5,6 +5,7 @@
 
 local mining = {}
 
+local swarm = require('swarm')
 
 -- ------------------------------------------------------------------------
 -- Leg repair at home (the silo's pad). Leapfrog property 10 is the lowest
@@ -94,6 +95,13 @@ mining.setupScene = function()
       -- Landed at home: the silo offers to repair the legs
       listen("siloLandingPad", "LpLL")
    end
+
+   if currentScene == "deep_space_scene.xml" then
+      swarm.start("swarm", "stripper_swarm.xml", function(name)
+         c_hudLog("The strippers have taken everything", true)
+      end)
+   end
+
 end
 
 
