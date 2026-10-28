@@ -48,7 +48,8 @@ public:
       magneticMine,
       steerableObject,
       pickup,
-      stripper
+      stripper,
+      swarm
    };
 
 

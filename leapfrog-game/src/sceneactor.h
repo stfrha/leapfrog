@@ -166,6 +166,9 @@ public:
 
    b2World* getWorld(void);
 
+   // The soft boundaries of the scene (read only)
+   const std::vector<spSoftBoundary>& getBoundaries(void) { return m_boundaries; }
+
    void addParallaxBackground(ParallaxBackground* background);
    void addParallaxBackgroundSprite(oxygine::spSprite sp, float parallaxAmount);
 

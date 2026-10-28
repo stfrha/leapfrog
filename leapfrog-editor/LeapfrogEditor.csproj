@@ -58,6 +58,7 @@
     <Compile Include="Models\Behaviours\PickupObjectProperties.cs" />
     <Compile Include="Models\Behaviours\MagneticMineProperties.cs" />
     <Compile Include="Models\Behaviours\StripperProperties.cs" />
+    <Compile Include="Models\Behaviours\SwarmProperties.cs" />
     <Compile Include="Models\Behaviours\ExplosiveObjectProperties.cs" />
     <Compile Include="Models\CompoundShapesObject.cs" />
     <Compile Include="Models\Interfaces\ISpawnObjectParentInterface.cs" />
@@ -98,6 +99,7 @@
     <Compile Include="ViewModels\Behvaiours\PickupObjectPropertiesViewModel.cs" />
     <Compile Include="ViewModels\Behvaiours\MagneticMinePropertiesViewModel.cs" />
     <Compile Include="ViewModels\Behvaiours\StripperPropertiesViewModel.cs" />
+    <Compile Include="ViewModels\Behvaiours\SwarmPropertiesViewModel.cs" />
     <Compile Include="ViewModels\Behvaiours\ExplosiveObjectPropertiesViewModel.cs" />
     <Compile Include="ViewModels\Behvaiours\CoBehaviourViewModel.cs" />
     <Compile Include="ViewModels\Behvaiours\StateBehaviourCollectionViewModel.cs" />
@@ -139,6 +141,9 @@
     </Compile>
     <Compile Include="Views\Controls\Editable Properties Controls\Behaviour Properties Control\StripperBehaviourPropEditor.xaml.cs">
       <DependentUpon>StripperBehaviourPropEditor.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Controls\Editable Properties Controls\Behaviour Properties Control\SwarmBehaviourPropEditor.xaml.cs">
+      <DependentUpon>SwarmBehaviourPropEditor.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\Controls\Editable Properties Controls\Behaviour Properties Control\ExplosiveBehaviourPropEditor.xaml.cs">
       <DependentUpon>ExplosiveBehaviourPropEditor.xaml</DependentUpon>
@@ -416,6 +421,10 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="Views\Controls\Editable Properties Controls\Behaviour Properties Control\StripperBehaviourPropEditor.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\Controls\Editable Properties Controls\Behaviour Properties Control\SwarmBehaviourPropEditor.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>

@@ -182,6 +182,7 @@ function Engine:objectFromNode(name, node)
       if c.tag == "behaviour" then
          obj.behaviour = c.attr.type
          obj.behaviourAttr = c.attr
+         obj.behaviourNode = c
       elseif c.tag == "childObject" then
          local child = self:objectFromChildNode(c)
          if child then
@@ -229,6 +230,21 @@ function Engine:initBehaviour(obj)
    elseif obj.behaviour == "launchSite" then
       -- 0 state, 1 launch trigger, 2 active
       obj.props = { [0] = 0, [1] = 0, [2] = (a.active == "false") and 0 or 1 }
+   elseif obj.behaviour == "swarm" then
+      -- Swarm: 0 active, 1 rate, 2 maxAlive, 3 alive (read only),
+      -- 4 spawned (read only), 5 recall (write 1; reads 0)
+      local sp = {}
+      for _, c in ipairs(obj.behaviourNode and obj.behaviourNode.children or {}) do
+         if c.tag == "swarmProperties" then sp = c.attr end
+      end
+      local ramp = tonumber(sp.rampTime or "0") > 0
+      local rate = tonumber(sp.rate or "0.5")
+      local maxAlive = tonumber(sp.maxAlive or "5")
+      obj.props = { [0] = (sp.active == "false") and 0 or 1,
+         [1] = ramp and tonumber(sp.startRate or rate) or rate,
+         [2] = ramp and tonumber(sp.startMaxAlive or maxAlive) or maxAlive,
+         [3] = 0, [4] = 0, [5] = 0 }
+      obj.recalls = 0
    end
 end
 
@@ -306,6 +322,11 @@ function Engine:setProperty(obj, id, value)
       -- any value) starts the launch sequence
       if obj.behaviour == "launchSite" and id == 1 then
          obj.launchTriggered = true
+      end
+      -- A swarm's property 5 is recall: the live strippers leave; it reads 0
+      if obj.behaviour == "swarm" and id == 5 and value ~= 0 then
+         obj.recalls = obj.recalls + 1
+         obj.props[5] = 0
       end
    end
 

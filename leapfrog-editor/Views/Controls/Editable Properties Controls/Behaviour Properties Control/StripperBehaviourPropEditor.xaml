@@ -33,6 +33,7 @@
       <local:DoubleEditorControl Headline="Leave Speed" MyValue="{Binding LeaveSpeed, Mode=TwoWay}" />
       <local:DoubleEditorControl Headline="Spark Interval (s)" MyValue="{Binding SparkInterval, Mode=TwoWay}" />
       <local:BoolEditorControl Headline="Hovers (cancels gravity)" MyValue="{Binding AntiGravity, Mode=TwoWay}" />
+      <local:BoolEditorControl Headline="Pushed by Soft Boundaries" MyValue="{Binding Bounded, Mode=TwoWay}" />
       <local:StringEditorControl Headline="Shape Shown When Latched" MyValue="{Binding LatchedShape, Mode=TwoWay}" />
       <local:StringEditorControl Headline="Shape Shown When Flying" MyValue="{Binding FlyingShape, Mode=TwoWay}" />
       <local:StringEditorControl Headline="Loot Drop File ({loot} = kind)" MyValue="{Binding DropFile, Mode=TwoWay}" />

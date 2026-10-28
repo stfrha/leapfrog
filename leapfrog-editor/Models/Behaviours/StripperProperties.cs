@@ -39,6 +39,7 @@ namespace LeapfrogEditor
       private double _leaveSpeed = 60;
       private double _sparkInterval = 0.3;
       private bool _antiGravity = true;
+      private bool _bounded = false;
       private string _latchedShape = "";
       private string _flyingShape = "";
       private string _dropFile = "";
@@ -220,6 +221,18 @@ namespace LeapfrogEditor
       {
          get { return _antiGravity; }
          set { _antiGravity = value; }
+      }
+
+      [XmlAttribute("bounded")]
+      public bool Bounded
+      {
+         get { return _bounded; }
+         set { _bounded = value; }
+      }
+
+      public bool ShouldSerializeBounded()
+      {
+         return Bounded;
       }
 
       [XmlAttribute("latchedShape")]

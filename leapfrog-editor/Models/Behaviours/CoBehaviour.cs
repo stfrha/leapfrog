@@ -20,6 +20,7 @@ namespace LeapfrogEditor
       private MagneticMineProperties _magneticMineProps = new MagneticMineProperties();
       private PickupObjectProperties _pickupProps = new PickupObjectProperties();
       private StripperProperties _stripperProps = new StripperProperties();
+      private SwarmProperties _swarmProps = new SwarmProperties();
       private SceneProperties _sceneProperties = new SceneProperties();
       private bool _active = true;
       private string _fuel = "none";
@@ -190,6 +191,18 @@ namespace LeapfrogEditor
       public bool ShouldSerializeStripperProps()
       {
          return (Type == "stripper");
+      }
+
+      [XmlElement("swarmProperties")]
+      public SwarmProperties SwarmProps
+      {
+         get { return _swarmProps; }
+         set { _swarmProps = value; }
+      }
+
+      public bool ShouldSerializeSwarmProps()
+      {
+         return (Type == "swarm");
       }
 
 

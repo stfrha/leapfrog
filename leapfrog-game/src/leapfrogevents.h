@@ -36,8 +36,8 @@ public:
 };
 
 // A Stripper took something from the Leapfrog. m_loot is the Leapfrog
-// property id of what it took (5 ammo, 6 shield, 7 fuel, 8 credits); Lua
-// gets it as the event parameter.
+// property id of what it took (5 ammo, 6 shield, 7 fuel, 8 credits), 0 if
+// it found nothing to take; Lua gets it as the event parameter.
 class LeapfrogStrippedEvent : public oxygine::Event
 {
 public:

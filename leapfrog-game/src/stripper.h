@@ -39,10 +39,13 @@ What it does:
    "steal" that the Leapfrog has some of, picked at random (the amount for
    each resource is an attribute). The HUD logs it and the Leapfrog sends
    the event "LfSt" to Lua with the resource's Leapfrog property id as
-   parameter (5 ammo, 6 shield, 7 fuel, 8 credits).
+   parameter (5 ammo, 6 shield, 7 fuel, 8 credits). With nothing left to
+   take it sends LfSt with parameter 0 (lua/swarm.lua uses that).
 4. leave: flies away from the Leapfrog and fades out over leaveTime, then
-   it is gone. With an objectFactory that has maxAlive, its place is then
-   taken by a new one.
+   it is gone. With a swarm (or an objectFactory with maxAlive), its place
+   is then taken by a new one.
+It is not pushed by the soft boundaries (bounded="true" to make it), so a
+swarm can spawn it in the boundary haze; it flies in by itself.
 If it is shot down (bullets, blasts) while carrying loot, it drops the
 compound object in dropFile (a pickupObject), set to give back exactly
 what it took (pickupType and amount are overwritten), so the player can
@@ -101,6 +104,7 @@ private:
    float m_lootAmount;
    float m_health;
    bool m_shotDown;              // health gone, removed in the next update
+   bool m_leaveRequested;        // leaveNow called
    int m_mapItemId;
 
    // From XML
@@ -124,6 +128,7 @@ private:
    float m_leaveSpeed;           // units/s
    float m_sparkInterval;        // s, 0 = no sparks
    bool m_antiGravity;           // hovers (cancels the world's gravity)
+   bool m_bounded;               // pushed by the soft boundaries (default no)
    std::vector<int> m_stealList; // LootEnum
    float m_ammoAmount;
    float m_shieldAmount;
@@ -155,6 +160,7 @@ private:
    void showStateShapes(void);
    void vanish(void);
    void dropLoot(void);
+   void startLeaving(LeapFrog* lf, b2Body* lfBody);
 
 public:
    Stripper(
@@ -168,6 +174,10 @@ public:
    void hitByBullet(b2Contact* contact, float bulletEqvDamage);
 
    static const char* lootName(int loot);
+
+   // Gives up and leaves now (fades out), at the next update. Safe to call
+   // from anywhere, also during the physics step.
+   void leaveNow(void);
 
    // For the contact listeners' PreSolve: strippers pass through each
    // other (one pushing into another must not shake it off the hull)

@@ -17,6 +17,7 @@
 #include "explosiveobject.h"
 #include "magneticmine.h"
 #include "stripper.h"
+#include "swarm.h"
 #include "steerableobject.h"
 #include "pickupobject.h"
 #include "landingpad.h"
@@ -405,6 +406,20 @@ CompoundObject* CompoundObject::initCompoundObject(
       st->m_behaviourType = BehaviourEnum::stripper;
 
       return static_cast<CompoundObject*>(st);
+   }
+   else if (behavStr == "swarm")
+   {
+      Swarm* sw = new Swarm(
+         sceneParent,
+         parentObject,
+         world,
+         pos,
+         root,
+         groupIndex);
+
+      sw->m_behaviourType = BehaviourEnum::swarm;
+
+      return static_cast<CompoundObject*>(sw);
    }
    else if (behavStr == "pickupObject")
    {

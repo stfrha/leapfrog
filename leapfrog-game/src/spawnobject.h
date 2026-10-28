@@ -65,7 +65,8 @@ public:
    SpawnTally();
 
    void add(CompoundObject* object);
-   int countAlive(void);
+   int countAlive(void);                         // incl. queued ones
+   std::vector<CompoundObject*> aliveObjects(void);  // spawned, alive
 };
 
 

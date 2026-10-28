@@ -126,6 +126,7 @@
 		9C0A5E4A2C1619DC0046AE49 /* freespacecontactlistener.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9C0A5DFA2C1619DC0046AE49 /* freespacecontactlistener.cpp */; };
 		9C0A5E4B2C1619DC0046AE49 /* magneticmine.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9C0A5DFF2C1619DC0046AE49 /* magneticmine.cpp */; };
 		BA88D1F057D39485C777D701 /* stripper.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A62BD1345A183B880EB7B709 /* stripper.cpp */; };
+		2C7C896788DE1C9DCA298BF6 /* swarm.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B1906297696E9A7A6ED7827C /* swarm.cpp */; };
 		9C0A5E4C2C1619DC0046AE49 /* system.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9C0A5E002C1619DC0046AE49 /* system.cpp */; };
 		9C0A5E4D2C1619DC0046AE49 /* landingpad.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9C0A5E022C1619DC0046AE49 /* landingpad.cpp */; };
 		9C0A5E4E2C1619DC0046AE49 /* compoundobject.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9C0A5E032C1619DC0046AE49 /* compoundobject.cpp */; };
@@ -547,6 +548,7 @@
 		9C0A5DE72C1619DC0046AE49 /* explosiveobjectevents.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = explosiveobjectevents.h; sourceTree = "<group>"; };
 		9C0A5DE82C1619DC0046AE49 /* magneticmine.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = magneticmine.h; sourceTree = "<group>"; };
 		224EF536908EC91DC0C85023 /* stripper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = stripper.h; sourceTree = "<group>"; };
+		E8B75E002DCFEB14568C523F /* swarm.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = swarm.h; sourceTree = "<group>"; };
 		9C0A5DE92C1619DC0046AE49 /* polygonvertices.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = polygonvertices.h; sourceTree = "<group>"; };
 		9C0A5DEA2C1619DC0046AE49 /* landingactorevents.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = landingactorevents.h; sourceTree = "<group>"; };
 		9C0A5DEB2C1619DC0046AE49 /* buttondisplay.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = buttondisplay.h; sourceTree = "<group>"; };
@@ -571,6 +573,7 @@
 		9C0A5DFE2C1619DC0046AE49 /* deepspacesceneevents.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = deepspacesceneevents.h; sourceTree = "<group>"; };
 		9C0A5DFF2C1619DC0046AE49 /* magneticmine.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = magneticmine.cpp; sourceTree = "<group>"; };
 		A62BD1345A183B880EB7B709 /* stripper.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = stripper.cpp; sourceTree = "<group>"; };
+		B1906297696E9A7A6ED7827C /* swarm.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = swarm.cpp; sourceTree = "<group>"; };
 		9C0A5E002C1619DC0046AE49 /* system.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = system.cpp; sourceTree = "<group>"; };
 		9C0A5E012C1619DC0046AE49 /* leapfrogevents.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = leapfrogevents.h; sourceTree = "<group>"; };
 		9C0A5E022C1619DC0046AE49 /* landingpad.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = landingpad.cpp; sourceTree = "<group>"; };
@@ -1110,6 +1113,7 @@
 				9C0A5DE72C1619DC0046AE49 /* explosiveobjectevents.h */,
 				9C0A5DE82C1619DC0046AE49 /* magneticmine.h */,
 				224EF536908EC91DC0C85023 /* stripper.h */,
+				E8B75E002DCFEB14568C523F /* swarm.h */,
 				9C0A5DE92C1619DC0046AE49 /* polygonvertices.h */,
 				9C0A5DEA2C1619DC0046AE49 /* landingactorevents.h */,
 				9C0A5DEB2C1619DC0046AE49 /* buttondisplay.h */,
@@ -1134,6 +1138,7 @@
 				9C0A5DFE2C1619DC0046AE49 /* deepspacesceneevents.h */,
 				9C0A5DFF2C1619DC0046AE49 /* magneticmine.cpp */,
 				A62BD1345A183B880EB7B709 /* stripper.cpp */,
+				B1906297696E9A7A6ED7827C /* swarm.cpp */,
 				9C0A5E002C1619DC0046AE49 /* system.cpp */,
 				9C0A5E012C1619DC0046AE49 /* leapfrogevents.h */,
 				9C0A5E022C1619DC0046AE49 /* landingpad.cpp */,
@@ -1467,6 +1472,7 @@
 				9C0A5DA82C1619C20046AE49 /* b2Collision.cpp in Sources */,
 				9C0A5E4B2C1619DC0046AE49 /* magneticmine.cpp in Sources */,
 				BA88D1F057D39485C777D701 /* stripper.cpp in Sources */,
+				2C7C896788DE1C9DCA298BF6 /* swarm.cpp in Sources */,
 				9C0A5D872C1619C20046AE49 /* b2WorldCallbacks.cpp in Sources */,
 				9C0A5D0F2C1619800046AE49 /* lbaselib.c in Sources */,
 				9C0A5CDF2C1619800046AE49 /* lzio.c in Sources */,

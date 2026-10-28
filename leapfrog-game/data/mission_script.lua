@@ -7,6 +7,7 @@
 -- every case, in that order, before the mission's script.
 
 local common = require('common')
+local swarm = require('swarm')
 local mission1 = require('mission1')
 
 -- The worlds' scripts, and which world each scene belongs to (a world's
@@ -82,6 +83,7 @@ function lua_setupMissionStateScene()
    registeredEvents = {}
 
    common.setupScene()
+   swarm.setupScene()
 
    local world = currentWorld()
    if world ~= nil then
@@ -97,6 +99,7 @@ end
 
 function lua_missionStateSceneEventHandler(eventId, actorName, parameter1)
    common.eventHandler(eventId, actorName, parameter1)
+   swarm.eventHandler(eventId, actorName, parameter1)
 
    local world = currentWorld()
    if world ~= nil then

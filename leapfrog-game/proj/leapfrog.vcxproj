@@ -223,6 +223,7 @@
     <ClCompile Include="..\src\luainterface.cpp" />
     <ClCompile Include="..\src\magneticmine.cpp" />
     <ClCompile Include="..\src\stripper.cpp" />
+    <ClCompile Include="..\src\swarm.cpp" />
     <ClCompile Include="..\src\menuactor.cpp" />
     <ClCompile Include="..\src\messagedisplay.cpp" />
     <ClCompile Include="..\src\objectresources.cpp" />
@@ -336,6 +337,7 @@
     <ClInclude Include="..\src\luainterface.h" />
     <ClInclude Include="..\src\magneticmine.h" />
     <ClInclude Include="..\src\stripper.h" />
+    <ClInclude Include="..\src\swarm.h" />
     <ClInclude Include="..\src\menuactor.h" />
     <ClInclude Include="..\src\messagedisplay.h" />
     <ClInclude Include="..\src\objectpropertyevents.h" />

@@ -111,3 +111,17 @@ int SpawnTally::countAlive(void)
 
    return (int)m_objects.size() + m_pending;
 }
+
+std::vector<CompoundObject*> SpawnTally::aliveObjects(void)
+{
+   countAlive();
+
+   std::vector<CompoundObject*> list;
+
+   for (auto it = m_objects.begin(); it != m_objects.end(); ++it)
+   {
+      list.push_back(it->m_object);
+   }
+
+   return list;
+}

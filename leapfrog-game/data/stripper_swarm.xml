@@ -1,33 +1,34 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <!--
-  A swarm of Strippers for a space scene: at most five alive, one more
-  every 1.5 s while fewer, spawned in a strip 220 units above the
-  Leapfrog (the factory follows it). Add it from Lua with
-  c_addMissionStateSceneObjects("stripper_swarm.xml"), or copy the
-  system into a scene. Expects the Leapfrog to be called leapfrog1.
+  A swarm of strippers coming from all sides (behaviour "swarm", see
+  src/swarm.h). Each one appears at a random spot on a random side, in the
+  soft boundary haze 30 outside the scene edge, at least 200 from the
+  Leapfrog, and flies in by itself.
+
+  It starts gently (one every 5 s, at most 2 alive) and over 3 minutes
+  grows to two a second, up to 25 alive: easy to fight off at first,
+  impossible in the end.
+
+  Lua: lua/swarm.lua starts it and stops it when the Leapfrog has been
+  stripped:
+     swarm.start("swarm", "stripper_swarm.xml", function(name) ... end)
+  or by hand: c_addPositionedChildObject("stripper_swarm.xml", "swarm", 0, 0)
+  and the properties 0 active, 1 rate, 2 maxAlive, 3 alive, 4 spawned,
+  5 recall.
 -->
 <compoundObject>
-  <system
-    name="stripperSwarm"
-    type="objectFactory">
-    <objectFactoryProperties
-      body="leapfrog1.lfMainBody"
-      posX="-200"
-      posY="-220"
-      width="400"
-      height="20"
-      spawnInitial="3"
-      intensity="0.67"
-      lifeTime="0"
-      maxAlive="5">
-      <spawnObject
-        probabilityFactor="1">
-        <childObject
-          name="stripper"
-          file="stripper.xml"
-          posX="0"
-          posY="0" />
-      </spawnObject>
-    </objectFactoryProperties>
-  </system>
+  <behaviour
+    type="swarm">
+    <swarmProperties
+      spawn="stripper.xml"
+      active="true"
+      startRate="0.2"
+      rate="2"
+      startMaxAlive="2"
+      maxAlive="25"
+      rampTime="180"
+      initialSpawn="1"
+      spawnInset="30"
+      minDistance="200" />
+  </behaviour>
 </compoundObject>

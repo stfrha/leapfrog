@@ -661,6 +661,7 @@ void LuaInterface::initLuaInterface(void)
    // scenes, also in free play) and the missions. See lua/common.lua.
    preloadModule("lua/common.lua", "common");
    preloadModule("lua/worlds/mining.lua", "mining");
+   preloadModule("lua/swarm.lua", "swarm");
    preloadModule("lua/mission_1.lua", "mission1");
 
    //result = lua_pcall(m_L, 0, 0, 0);

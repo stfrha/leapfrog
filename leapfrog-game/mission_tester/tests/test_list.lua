@@ -5,4 +5,5 @@ return {
    "mining_repair.lua",
    "test_mission.lua",
    "saving.lua",
+   "swarm.lua",
 }

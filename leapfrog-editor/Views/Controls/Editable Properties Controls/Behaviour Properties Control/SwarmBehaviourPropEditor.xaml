@@ -1,0 +1,23 @@
+﻿<UserControl x:Class="LeapfrogEditor.SwarmBehaviourPropEditor"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:LeapfrogEditor"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800">
+   <StackPanel Margin="2">
+      <local:HeadlineControl Headline="Swarm Behaviour Properties" />
+      <local:StringEditorControl Headline="Spawn Files (space separated)" MyValue="{Binding Spawn, Mode=TwoWay}" />
+      <local:BoolEditorControl Headline="Active at Start" MyValue="{Binding Active, Mode=TwoWay}" />
+      <local:DoubleEditorControl Headline="Start Rate (spawns/s)" MyValue="{Binding StartRate, Mode=TwoWay}" />
+      <local:DoubleEditorControl Headline="Rate (spawns/s)" MyValue="{Binding Rate, Mode=TwoWay}" />
+      <local:DoubleEditorControl Headline="Start Max Alive" MyValue="{Binding StartMaxAlive, Mode=TwoWay}" />
+      <local:DoubleEditorControl Headline="Max Alive" MyValue="{Binding MaxAlive, Mode=TwoWay}" />
+      <local:DoubleEditorControl Headline="Ramp Time (s, 0 = none)" MyValue="{Binding RampTime, Mode=TwoWay}" />
+      <local:IntEditorControl Headline="Initial Spawn" MyValue="{Binding InitialSpawn, Mode=TwoWay}" />
+      <local:StringEditorControl Headline="Sides (up down left right; empty = boundaries)" MyValue="{Binding Sides, Mode=TwoWay}" />
+      <local:DoubleEditorControl Headline="Spawn Outside Edge" MyValue="{Binding SpawnInset, Mode=TwoWay}" />
+      <local:DoubleEditorControl Headline="Min Distance to Leapfrog" MyValue="{Binding MinDistance, Mode=TwoWay}" />
+   </StackPanel>
+</UserControl>

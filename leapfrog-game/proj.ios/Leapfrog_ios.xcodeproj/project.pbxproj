@@ -58,6 +58,7 @@
 		9CEEC8F32C2A1348002BAE4F /* freespacecontactlistener.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9CEEC8A12C2A1348002BAE4F /* freespacecontactlistener.cpp */; };
 		9CEEC8F42C2A1348002BAE4F /* magneticmine.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9CEEC8A62C2A1348002BAE4F /* magneticmine.cpp */; };
 		8E95AA44178D051D0F45F864 /* stripper.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ED8340C4A962B4CFD99FD872 /* stripper.cpp */; };
+		C05CC0876766DD16448D37A7 /* swarm.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 39113DD14162B9248FA54A7A /* swarm.cpp */; };
 		9CEEC8F52C2A1348002BAE4F /* system.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9CEEC8A72C2A1348002BAE4F /* system.cpp */; };
 		9CEEC8F62C2A1348002BAE4F /* landingpad.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9CEEC8A92C2A1348002BAE4F /* landingpad.cpp */; };
 		9CEEC8F72C2A1348002BAE4F /* compoundobject.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9CEEC8AA2C2A1348002BAE4F /* compoundobject.cpp */; };
@@ -402,6 +403,7 @@
 		9CEEC88E2C2A1348002BAE4F /* explosiveobjectevents.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = explosiveobjectevents.h; sourceTree = "<group>"; };
 		9CEEC88F2C2A1348002BAE4F /* magneticmine.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = magneticmine.h; sourceTree = "<group>"; };
 		7F60226BAF5B6050385F3D6C /* stripper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = stripper.h; sourceTree = "<group>"; };
+		6450472507360B6F98294C22 /* swarm.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = swarm.h; sourceTree = "<group>"; };
 		9CEEC8902C2A1348002BAE4F /* polygonvertices.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = polygonvertices.h; sourceTree = "<group>"; };
 		9CEEC8912C2A1348002BAE4F /* landingactorevents.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = landingactorevents.h; sourceTree = "<group>"; };
 		9CEEC8922C2A1348002BAE4F /* buttondisplay.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = buttondisplay.h; sourceTree = "<group>"; };
@@ -426,6 +428,7 @@
 		9CEEC8A52C2A1348002BAE4F /* deepspacesceneevents.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = deepspacesceneevents.h; sourceTree = "<group>"; };
 		9CEEC8A62C2A1348002BAE4F /* magneticmine.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = magneticmine.cpp; sourceTree = "<group>"; };
 		ED8340C4A962B4CFD99FD872 /* stripper.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = stripper.cpp; sourceTree = "<group>"; };
+		39113DD14162B9248FA54A7A /* swarm.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = swarm.cpp; sourceTree = "<group>"; };
 		9CEEC8A72C2A1348002BAE4F /* system.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = system.cpp; sourceTree = "<group>"; };
 		9CEEC8A82C2A1348002BAE4F /* leapfrogevents.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = leapfrogevents.h; sourceTree = "<group>"; };
 		9CEEC8A92C2A1348002BAE4F /* landingpad.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = landingpad.cpp; sourceTree = "<group>"; };
@@ -921,8 +924,10 @@
 				9CEEC8CE2C2A1348002BAE4F /* luainterface.h */,
 				9CEEC8A62C2A1348002BAE4F /* magneticmine.cpp */,
 				ED8340C4A962B4CFD99FD872 /* stripper.cpp */,
+				39113DD14162B9248FA54A7A /* swarm.cpp */,
 				9CEEC88F2C2A1348002BAE4F /* magneticmine.h */,
 				7F60226BAF5B6050385F3D6C /* stripper.h */,
+				6450472507360B6F98294C22 /* swarm.h */,
 				9CEEC8C92C2A1348002BAE4F /* main.cpp */,
 				9CEEC85B2C2A1348002BAE4F /* mainactor.cpp */,
 				9CEEC8552C2A1348002BAE4F /* mainactor.h */,
@@ -1512,6 +1517,7 @@
 				9CEECA572C2A13D5002BAE4F /* b2Math.cpp in Sources */,
 				9CEEC8F42C2A1348002BAE4F /* magneticmine.cpp in Sources */,
 				8E95AA44178D051D0F45F864 /* stripper.cpp in Sources */,
+				C05CC0876766DD16448D37A7 /* swarm.cpp in Sources */,
 				9CEEC8F82C2A1348002BAE4F /* flamesmokeparticle.cpp in Sources */,
 				9CEEC99A2C2A1367002BAE4F /* lmem.c in Sources */,
 				9CEEC9012C2A1348002BAE4F /* fpsestimator.cpp in Sources */,

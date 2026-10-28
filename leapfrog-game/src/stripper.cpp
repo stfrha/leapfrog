@@ -39,6 +39,7 @@ Stripper::Stripper(
    m_lootAmount(0.0f),
    m_health(1.0f),
    m_shotDown(false),
+   m_leaveRequested(false),
    m_mapItemId(-1),
    m_maxSpeed(60.0f),
    m_acceleration(90.0f),
@@ -60,6 +61,7 @@ Stripper::Stripper(
    m_leaveSpeed(60.0f),
    m_sparkInterval(0.3f),
    m_antiGravity(true),
+   m_bounded(false),
    m_ammoAmount(20.0f),
    m_shieldAmount(25.0f),
    m_fuelAmount(15.0f),
@@ -93,8 +95,13 @@ Stripper::Stripper(
       m_ownFilters[m_numOwnFilters++] = f->GetFilterData();
    }
 
-   // Soft scene boundaries push it back in, as for other enemies
-   m_sceneActor->addBoundingBody(m_body);
+   // Not pushed by the soft boundaries unless asked for: it steers itself
+   // into the playfield (a swarm spawns it in the boundary haze, where the
+   // push, made for the Leapfrog's weight, would fling it in)
+   if (m_bounded)
+   {
+      m_sceneActor->addBoundingBody(m_body);
+   }
 
    if (g_HeadDownDisplay)
    {
@@ -139,6 +146,7 @@ void Stripper::readStripperNode(const xml_node& node)
    m_leaveSpeed = node.attribute("leaveSpeed").as_float(m_leaveSpeed);
    m_sparkInterval = node.attribute("sparkInterval").as_float(m_sparkInterval);
    m_antiGravity = node.attribute("antiGravity").as_bool(true);
+   m_bounded = node.attribute("bounded").as_bool(false);
    m_health = node.attribute("hitPoints").as_float(1.0f);
    m_ammoAmount = node.attribute("ammoAmount").as_float(m_ammoAmount);
    m_shieldAmount = node.attribute("shieldAmount").as_float(m_shieldAmount);
@@ -501,6 +509,12 @@ int Stripper::takeLoot(LeapFrog* lf)
 
    if (candidates.empty())
    {
+      // Nothing left to take: still tell Lua (parameter 0), so a mission
+      // learns that the Leapfrog is empty also when the last thing to go
+      // was the shield, drained by rams
+      LeapfrogStrippedEvent ev(lootNone, 0.0f);
+      lf->dispatchEvent(&ev);
+
       return lootNone;
    }
 
@@ -725,6 +739,32 @@ void Stripper::dropLoot(void)
    m_loot = lootNone;
 }
 
+void Stripper::leaveNow(void)
+{
+   m_leaveRequested = true;
+}
+
+// Lets go (if it holds on), pushes off and flies away, fading out
+void Stripper::startLeaving(LeapFrog* lf, b2Body* lfBody)
+{
+   letGo();
+
+   b2Vec2 pos = m_body->GetPosition();
+   b2Vec2 away = (lfBody != NULL) ? (pos - lfBody->GetPosition()) : m_body->GetLinearVelocity();
+   if (away.LengthSquared() < 0.0001f) away = b2Vec2(0.0f, -1.0f);
+   away.Normalize();
+
+   b2Vec2 base = (lfBody != NULL) ? lfBody->GetLinearVelocity() : b2Vec2(0.0f, 0.0f);
+   m_body->SetLinearVelocity(base + 0.5f * m_leaveSpeed * away);
+
+   setState(leave);
+
+   for (auto it = m_shapes.begin(); it != m_shapes.end(); ++it)
+   {
+      (*it)->addTween(Actor::TweenAlpha(0), (timeMS)(m_leaveTime * 1000.0f));
+   }
+}
+
 void Stripper::doUpdate(const oxygine::UpdateState& us)
 {
    if ((m_body == NULL) || (m_state == gone) || g_MainActor->isInPause())
@@ -760,6 +800,16 @@ void Stripper::doUpdate(const oxygine::UpdateState& us)
       // The part it held on to is gone
       letGo();
       setState(stunned);
+   }
+
+   if (m_leaveRequested)
+   {
+      m_leaveRequested = false;
+
+      if (m_state != leave)
+      {
+         startLeaving(lf, lfBody);
+      }
    }
 
    switch (m_state)
@@ -887,20 +937,7 @@ void Stripper::doUpdate(const oxygine::UpdateState& us)
       {
          m_loot = takeLoot(lf);
 
-         letGo();
-
-         // Push off from the hull
-         b2Vec2 away = pos - lfBody->GetPosition();
-         away.Normalize();
-         m_body->SetLinearVelocity(lfBody->GetLinearVelocity() + 0.5f * m_leaveSpeed * away);
-
-         setState(leave);
-
-         // Fade out while it leaves
-         for (auto it = m_shapes.begin(); it != m_shapes.end(); ++it)
-         {
-            (*it)->addTween(Actor::TweenAlpha(0), (timeMS)(m_leaveTime * 1000.0f));
-         }
+         startLeaving(lf, lfBody);
       }
       break;
    }

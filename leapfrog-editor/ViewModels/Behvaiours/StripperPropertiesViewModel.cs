@@ -277,6 +277,16 @@ namespace LeapfrogEditor
          }
       }
 
+      public bool Bounded
+      {
+         get { return LocalModelObject.Bounded; }
+         set
+         {
+            LocalModelObject.Bounded = value;
+            OnPropertyChanged("Bounded");
+         }
+      }
+
       public string LatchedShape
       {
          get { return LocalModelObject.LatchedShape; }
