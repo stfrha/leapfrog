@@ -157,6 +157,19 @@ int MapItem::getId(void)
 
 void MapItem::setState(MapItem::MapItemStateEnum state)
 {
+   // Kept, so addToMapActor shows it when the map comes up. (It wasn't:
+   // a state set during scene setup, while the map was still opening, was
+   // replaced by the item's first state when the map attached it, e.g.
+   // the first route pad didn't flash when a scene started in state
+   // "accepted".)
+   m_state = state;
+
+   // Before the map exists the state is shown in addToMapActor
+   if (m_parentMap == NULL)
+   {
+      return;
+   }
+
    switch (state)
    {
    case hollow:
