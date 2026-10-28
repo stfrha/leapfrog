@@ -868,16 +868,28 @@ namespace
    const Color c_sensorColor(130, 255, 70, 255);
    const unsigned char c_sensorBeamAlpha = 50;
    const float c_sensorBeamTimeout = 0.25f;     // [s] without a beam: sensor off
+
+   // Remembered ground: grid cell size (scene units) and the most lines
+   // kept (a large scene's ground is a few thousand)
+   const float c_memoryCell = 3.0f;
+   const size_t c_memoryMaxLines = 8000;
 }
 
 TerrainSensorLayer::TerrainSensorLayer() :
    m_beamAge(1.0f),
    m_lineWidth(1.0f),
    m_persistence(2.0f),
-   m_bounds(1.0e9f, 1.0e9f)
+   m_bounds(1.0e9f, 1.0e9f),
+   m_remember(false),
+   m_memoryAlpha(70)
 {
    setTouchEnabled(false);
    setTouchChildrenEnabled(false);
+
+   m_memoryLayer = new Actor();
+   m_memoryLayer->setTouchEnabled(false);
+   m_memoryLayer->setTouchChildrenEnabled(false);
+   m_memoryLayer->attachTo(this);
 
    m_beam = new ColorRectSprite();
    m_beam->setColor(c_sensorColor);
@@ -900,6 +912,98 @@ void TerrainSensorLayer::setPersistence(float seconds)
 void TerrainSensorLayer::setBounds(const Vector2& sceneSize)
 {
    m_bounds = sceneSize;
+}
+
+void TerrainSensorLayer::setMemory(bool on, unsigned char alpha)
+{
+   m_remember = on;
+
+   if (alpha != m_memoryAlpha)
+   {
+      m_memoryAlpha = alpha;
+
+      for (auto& sprite : m_memory)
+      {
+         sprite->setAlpha(m_memoryAlpha);
+      }
+   }
+}
+
+long long TerrainSensorLayer::cellKey(const Vector2& p) const
+{
+   long long ix = (long long)floorf(p.x / c_memoryCell);
+   long long iy = (long long)floorf(p.y / c_memoryCell);
+   return (ix << 32) ^ (iy & 0xffffffffLL);
+}
+
+// Adds the parts of a to b that aren't remembered yet. The trace is
+// sampled every half cell; runs of samples in uncovered cells become
+// remembered lines (reaching half a step into their neighbours, so they
+// join up with what is there), and all its cells are then covered.
+void TerrainSensorLayer::remember(const Vector2& a, const Vector2& b)
+{
+   if (m_memory.size() >= c_memoryMaxLines)
+   {
+      return;
+   }
+
+   Vector2 d = b - a;
+   float length = d.length();
+   int n = (int)ceilf(length / (0.5f * c_memoryCell));
+   if (n < 1) n = 1;
+   if (length <= 0.0f) n = 0;      // a dot: one sample
+
+   std::vector<bool> fresh(n + 1);
+   bool any = false;
+
+   for (int i = 0; i <= n; i++)
+   {
+      Vector2 p = (n > 0) ? (a + d * ((float)i / (float)n)) : a;
+      fresh[i] = (m_covered.find(cellKey(p)) == m_covered.end());
+      any = any || fresh[i];
+   }
+
+   if (!any)
+   {
+      return;
+   }
+
+   float halfStep = (n > 0) ? (0.5f / (float)n) : 0.0f;
+   int i = 0;
+
+   while (i <= n)
+   {
+      if (!fresh[i])
+      {
+         i++;
+         continue;
+      }
+
+      int first = i;
+      while ((i + 1 <= n) && fresh[i + 1]) i++;
+      int last = i;
+      i++;
+
+      float t0 = (n > 0) ? ((float)first / (float)n - halfStep) : 0.0f;
+      float t1 = (n > 0) ? ((float)last / (float)n + halfStep) : 0.0f;
+      if (t0 < 0.0f) t0 = 0.0f;
+      if (t1 > 1.0f) t1 = 1.0f;
+
+      spColorRectSprite sprite = new ColorRectSprite();
+      sprite->setColor(c_sensorColor);
+      sprite->setAnchor(0.0f, 0.5f);
+      sprite->setTouchEnabled(false);
+      placeLine(sprite.get(), a + d * t0, a + d * t1);
+      sprite->setAlpha(m_memoryAlpha);
+      sprite->attachTo(m_memoryLayer);
+      m_memory.push_back(sprite);
+   }
+
+   for (int k = 0; k <= n; k++)
+   {
+      Vector2 p = (n > 0) ? (a + d * ((float)k / (float)n)) : a;
+      m_covered.insert(cellKey(p));
+   }
 }
 
 bool TerrainSensorLayer::clip(Vector2& a, Vector2& b) const
@@ -965,6 +1069,11 @@ void TerrainSensorLayer::addTrace(const Vector2& from, const Vector2& to)
       return;
    }
 
+   if (m_remember)
+   {
+      remember(a, b);
+   }
+
    spColorRectSprite sprite;
 
    if (!m_pool.empty())
@@ -1021,6 +1130,15 @@ void TerrainSensorLayer::clearTraces(void)
 
    m_traces.clear();
    m_beam->setVisible(false);
+
+   // A new scene: forget its ground
+   for (auto& sprite : m_memory)
+   {
+      sprite->detach();
+   }
+
+   m_memory.clear();
+   m_covered.clear();
 }
 
 void TerrainSensorLayer::doUpdate(const UpdateState& us)
@@ -1445,11 +1563,12 @@ void HeadDownDisplay::sensorTrace(const b2Vec2& a, const b2Vec2& b)
    }
 }
 
-void HeadDownDisplay::sensorBeam(const b2Vec2& origin, float angle, float range, float persistence)
+void HeadDownDisplay::sensorBeam(const b2Vec2& origin, float angle, float range, float persistence, bool memory)
 {
    if (m_terrainSensor)
    {
       m_terrainSensor->setPersistence(persistence);
+      m_terrainSensor->setMemory(memory, 70);
       m_terrainSensor->setBeam(
          PhysDispConvert::convert(origin, Scales::c_physToStageScale),
          angle,

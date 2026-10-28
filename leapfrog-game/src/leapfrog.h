@@ -189,6 +189,7 @@ private:
    const static float c_sensorSweepPeriod;
    const static float c_sensorRayStep;
    const static float c_sensorPersistence;
+   const static bool c_sensorMemory;
 
    LeapFrogStateEnum m_state;
    LeapFrogModeEnum  m_mode;
@@ -257,6 +258,7 @@ private:
    float m_sensorSweepPeriod;    // [s] per full turn
    float m_sensorRayStep;        // [rad] between rays
    float m_sensorPersistence;    // [s] a trace stays on the map
+   bool m_sensorMemory;          // scanned ground stays on the map (dim)
    float m_sensorAngle;          // [rad] of the next ray, y down
    bool m_sensorPrevHit;         // the previous ray hit something
    b2Vec2 m_sensorPrevPoint;

@@ -90,6 +90,7 @@ LeapFrog::LeapFrog(
    m_sensorSweepPeriod(c_sensorSweepPeriod),
    m_sensorRayStep(c_sensorRayStep),
    m_sensorPersistence(c_sensorPersistence),
+   m_sensorMemory(c_sensorMemory),
    m_sensorAngle(0.0f),
    m_sensorPrevHit(false),
    m_sensorPrevPoint(0.0f, 0.0f),
@@ -1276,6 +1277,7 @@ const float LeapFrog::c_sensorRange = 200.0f;            // [units]
 const float LeapFrog::c_sensorSweepPeriod = 1.5f;        // [s] per turn
 const float LeapFrog::c_sensorRayStep = 2.0f * MATH_PI / 180.0f;
 const float LeapFrog::c_sensorPersistence = 2.5f;        // [s]
+const bool LeapFrog::c_sensorMemory = true;              // ground stays on the map once scanned
 
 
 void LeapFrog::dumpPart(std::string name, b2Body* body, b2Body* mainBody)
@@ -2239,5 +2241,5 @@ void LeapFrog::updateTerrainSensor(void)
       }
    }
 
-   g_HeadDownDisplay->sensorBeam(origin, m_sensorAngle, m_sensorRange, m_sensorPersistence);
+   g_HeadDownDisplay->sensorBeam(origin, m_sensorAngle, m_sensorRange, m_sensorPersistence, m_sensorMemory);
 }

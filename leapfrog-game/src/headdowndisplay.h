@@ -9,6 +9,7 @@
 
 #include <string>
 #include <vector>
+#include <unordered_set>
 
 class HeadDownDisplay;
 
@@ -259,6 +260,11 @@ DECLARE_SMART(TerrainSensorLayer, spTerrainSensorLayer);
 // updateTerrainSensor) has hit the ground. Lines fade out over the
 // persistence time, like the afterglow of a radar screen, and the beam is
 // drawn as a faint line. Lives on the map, in scene coordinates.
+//
+// With memory on, the ground stays on the map once scanned: a dim line
+// under the live traces, for the rest of the scene. Only ground the memory
+// doesn't cover yet is added (covered = a grid of c_memoryCell cells), so
+// sweeping the same ground again and again adds nothing.
 class TerrainSensorLayer : public oxygine::Actor
 {
 private:
@@ -270,6 +276,13 @@ private:
 
    std::vector<Trace> m_traces;
    std::vector<oxygine::spColorRectSprite> m_pool;
+
+   // Remembered ground
+   oxygine::spActor m_memoryLayer;            // under the live traces
+   std::vector<oxygine::spColorRectSprite> m_memory;
+   std::unordered_set<long long> m_covered;   // grid cells with remembered ground
+   bool m_remember;
+   unsigned char m_memoryAlpha;
    oxygine::spColorRectSprite m_beam;
    float m_beamAge;           // [s] since the beam was last set
    float m_lineWidth;         // [scene units]
@@ -279,6 +292,8 @@ private:
    // Clips a to b to the scene; false if nothing of it is inside
    bool clip(oxygine::Vector2& a, oxygine::Vector2& b) const;
    void placeLine(oxygine::ColorRectSprite* sprite, const oxygine::Vector2& a, const oxygine::Vector2& b);
+   long long cellKey(const oxygine::Vector2& p) const;
+   void remember(const oxygine::Vector2& a, const oxygine::Vector2& b);
 
 public:
    TerrainSensorLayer();
@@ -286,6 +301,10 @@ public:
    void setLineWidth(float width);
    void setPersistence(float seconds);
    void setBounds(const oxygine::Vector2& sceneSize);
+
+   // Ground stays on the map once scanned (dim, alpha 0..255)
+   void setMemory(bool on, unsigned char alpha);
+   size_t memorySize(void) const { return m_memory.size(); }
 
    // A trace from a to b (a dot if they are the same), scene coordinates
    void addTrace(const oxygine::Vector2& a, const oxygine::Vector2& b);
@@ -396,7 +415,7 @@ public:
    // beam hits, in physics coordinates. persistence: how long a trace
    // stays [s]. Traces are cleared with the map (a new scene).
    void sensorTrace(const b2Vec2& a, const b2Vec2& b);
-   void sensorBeam(const b2Vec2& origin, float angle, float range, float persistence);
+   void sensorBeam(const b2Vec2& origin, float angle, float range, float persistence, bool memory = false);
 
    // Event log, see HudLog. Safe to call at any time (ignored before
    // the first scene has set up the HDD).
