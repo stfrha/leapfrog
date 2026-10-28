@@ -123,6 +123,16 @@ void MessageDisplay::clearMessageDisplay(void)
    m_noPreviousMessages = true;
    m_messageQueue.clear();
 
+   // No animation of the old bubbles may finish later: their done
+   // callbacks (atTransitFinished, atNewBubbleFinished) take the first
+   // message of the queue, which is gone now
+   if (m_newBubble)
+   {
+      m_newBubble->removeTweens();
+      m_newBubble->detach();
+      m_newBubble = NULL;
+   }
+
    // Clear the scroll actor from bubble actors
    setScrollOffset(0.0f);
    spActor actor = m_scrollActor->getFirstChild();
@@ -132,10 +142,15 @@ void MessageDisplay::clearMessageDisplay(void)
       spActor next = actor->getNextSibling();
       if (actor.get() != NULL)
       {
+         actor->removeTweens();
          actor->detach();
       }
       actor = next;
    }
+
+   // Nothing is in progress any more (a redraw puts back what it keeps)
+   m_state = idle;
+   m_ticks = 0.0f;
 }
 
 
@@ -558,6 +573,12 @@ void MessageDisplay::doUpdate(const oxygine::UpdateState& us)
    // in frames, which ran twice as fast on a 120 Hz screen)
    float ticks = us.dtf * 60.0f;
 
+   // Waiting on a message that is no longer queued (cleared meanwhile)
+   if ((m_state == preWait || m_state == postWait) && m_messageQueue.empty())
+   {
+      m_state = idle;
+   }
+
    switch (m_state)
    {
    case idle:
@@ -799,6 +820,13 @@ void MessageDisplay::startMessageAnimation(void)
 
 void MessageDisplay::atTransitFinished(oxygine::Event* event)
 {
+   // The display was cleared meanwhile (e.g. at a scene change)
+   if ((m_state != inTransit) || m_messageQueue.empty() || !m_newBubble)
+   {
+      m_state = idle;
+      return;
+   }
+
    m_state = newBubbleAnimation;
 
    startMessageAnimation();
@@ -806,6 +834,15 @@ void MessageDisplay::atTransitFinished(oxygine::Event* event)
 
 void MessageDisplay::atNewBubbleFinished(oxygine::Event* event)
 {
+   // The display was cleared meanwhile (e.g. at a scene change): there is
+   // no message to move on from. (It used to take the first message of the
+   // empty queue: garbage text, then a crash.)
+   if ((m_state != newBubbleAnimation) || m_messageQueue.empty())
+   {
+      m_state = idle;
+      return;
+   }
+
    if (m_messageQueue[0].m_postWait > 0)
    {
       // On display now, so a redraw must include it; the queue entry
@@ -840,10 +877,19 @@ void MessageDisplay::redrawMessages(void)
       m_state = idle;
    }
 
-   // clearMessageDisplay also empties the queue, which a resize must not do
+   // clearMessageDisplay also empties the queue and resets the state,
+   // which a resize must not do: a wait before or after a message goes on
    std::vector<MessageItem> queue = m_messageQueue;
+   MsgDispStateEnum state = m_state;
+   float ticks = m_ticks;
    clearMessageDisplay();
    m_messageQueue = queue;
+
+   if (((state == preWait) || (state == postWait)) && !m_messageQueue.empty())
+   {
+      m_state = state;
+      m_ticks = ticks;
+   }
 
    for (auto it = m_displayedMessages.begin(); it != m_displayedMessages.end(); ++it)
    {
