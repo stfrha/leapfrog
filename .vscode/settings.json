@@ -1,0 +1,19 @@
+{
+  "Lua.runtime.version": "Lua 5.4",
+  "Lua.runtime.path": [
+    "?.lua",
+    "data/lua/?.lua",
+    "data/lua/worlds/?.lua"
+  ],
+  "Lua.diagnostics.globals": [
+    "average",
+    "c_startScene", "c_registerPropertyTrigger", "c_registerEventHandler",
+    "c_clearAllTriggersAndEvents", "c_addMissionStateSceneObjects",
+    "c_addPositionedChildObject", "c_addDialogMessage",
+    "c_setSenderAffiliation", "c_setSenderColor", "c_hudLog",
+    "c_setPanningObject", "c_setObjectProperty", "c_getObjectProperty",
+    "c_setObjectMapState", "c_setObjectMapAffiliation", "c_setObjectMapShown",
+    "c_startSceneTimer", "c_exitSceneSaveGameStatus", "c_saveGameStatus",
+    "c_askQuestion", "c_cancelQuestion"
+  ]
+}
