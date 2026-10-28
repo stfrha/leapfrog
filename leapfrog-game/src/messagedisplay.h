@@ -123,6 +123,10 @@ public:
 
    void cleanAndClearMessageDisplay(void);
 
+   // A new scene: messages not yet shown are dropped (the old scene's
+   // dialog), those shown stay, as a history to scroll back through
+   void newScene(void);
+
    // True while messages wait to be shown (or for their post-delay)
    bool hasQueuedMessages(void) const { return !m_messageQueue.empty(); }
 

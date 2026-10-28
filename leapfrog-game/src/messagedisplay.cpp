@@ -166,6 +166,21 @@ void MessageDisplay::cleanAndClearMessageDisplay(void)
 }
 
 
+void MessageDisplay::newScene(void)
+{
+   if (m_expanded)
+   {
+      collapse(false);
+   }
+
+   m_messageQueue.clear();
+
+   // Redrawn without the queue; stops any animation and leaves the
+   // display idle (clearMessageDisplay)
+   redrawMessages();
+}
+
+
 void MessageDisplay::initialiseMessageDisplay(
    Actor* parentActor,
    float highTop,

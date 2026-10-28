@@ -156,7 +156,8 @@ void MainActor::armScene(std::string sceneName, int sceneType)
 
 void MainActor::startScene(void)
 {
-   g_MessageDisplay->cleanAndClearMessageDisplay();
+   // Messages shown so far stay; those not yet shown are dropped
+   g_MessageDisplay->newScene();
 
    // Remove listners which includes scene transit events
    removeAllEventListeners();
@@ -643,6 +644,9 @@ void MainActor::restartedFromMenu(void)
    }
    else if (m_postMenuAction == PostMenuActionType::startNew)
    {
+      // Another game: the old one's messages go
+      g_MessageDisplay->cleanAndClearMessageDisplay();
+
       // Initialise new game data and load first scene according to lua
       g_GameStatus.initializeGameStatusXmlDocument();
       g_GameStatus.gameStatusNewGameInit();
@@ -651,6 +655,9 @@ void MainActor::restartedFromMenu(void)
    }
    else if (m_postMenuAction == PostMenuActionType::continueLatest)
    {
+      // The saved game, not the one played since: its messages go
+      g_MessageDisplay->cleanAndClearMessageDisplay();
+
       // restore previous state and continue from there
       g_GameStatus.restoreGameStatus();
 
