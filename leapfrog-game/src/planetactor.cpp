@@ -2,6 +2,7 @@
 #include "sceneactor.h"
 #include "layout.h"
 #include "graphicresources.h"
+#include "headdowndisplay.h"
 
 using namespace oxygine;
 using namespace pugi;
@@ -72,32 +73,49 @@ PlanetActor::PlanetActor(
    
    setAnchor(0.5f, 0.5f);
 
-   //float height = getStage()->getSize().y;
-   //float width = getStage()->getSize().x;
+   // The planet, the trajectory and the markers are drawn in the head-down
+   // display, which takes the left of the screen in orbit
+   // (HeadDownDisplay::orbitRect). Fit the part of the picture that
+   // matters into it, left of the burn bar, and clip the planet to it.
+   // (It used to be placed from the screen size, tuned for 960 x 640: the
+   // trajectory ran out past the display's right edge, and the planet's
+   // disc was drawn outside it.)
+   float bw = g_Layout.getButtonWidth();
+   RectF hdd = HeadDownDisplay::orbitRect();
 
-   // Originally the position was read from XML and trimmed to 
-   // -30,50 for a screen resolution of 960,640.
-   // To maintain the position relative to the bottom of 
-   // the screen the 20 value is recalculated.
-   float yp = 20.0f / 640.0f * g_Layout.getViewPortBounds().y;
-   setPosition(-30.0f, yp);
-   
-   //setPosition(objectNode.attribute("posX").as_float(), objectNode.attribute("posY").as_float());
+   // Inside the display's frame
+   float frame = bw * 0.08f;
+   spClipRectActor clip = new ClipRectActor();
+   clip->setPosition(hdd.getX() + frame, hdd.getY() + frame);
+   clip->setSize(hdd.getWidth() - 2.0f * frame, hdd.getHeight() - 2.0f * frame);
+   clip->attachTo(m_parentObject);
 
-   // The scale set in xml-file (0.3) was empirically found
-   // for the size of the screen at the time. 
-   // For another screen size this does not apply.
-   // The screen size at the time was 640. So lets
-   // set scale with this relationship
-   // This means that we no longer want to control this from the XML. 
-   // Lets remove it from there and hardcode scale here
-   float vScale = 0.3f / 640.0f * g_Layout.getViewPortBounds().y;
-   float hScale = 0.3f / 960.0f * g_Layout.getViewPortBounds().x;
+   // Room for the picture: the display less a margin, and less the burn
+   // bar's column at its right (the bar is at XFromRight(5) + bw / 2)
+   float margin = bw * 0.15f;
+   float roomLeft = hdd.getX() + margin;
+   float roomRight = g_Layout.getXFromRight(5);
+   float roomTop = hdd.getY() + margin;
+   float roomBottom = hdd.getBottom() - margin;
 
+   // What must be seen, in the planet's units: the Leapfrog's start (100,
+   // 150), the trajectory (m_orbitStartPos + up to (1498, 1252)), the site
+   // markers on the surface where it ends, and a strip of the planet below
+   float viewLeft = 50.0f;
+   float viewTop = 100.0f;
+   float viewWidth = 2050.0f;
+   float viewHeight = 1650.0f;
 
-   setScale(fmin(vScale, hScale));
+   float scale = fmin((roomRight - roomLeft) / viewWidth, (roomBottom - roomTop) / viewHeight);
 
-   attachTo(m_parentObject);
+   // Centred in the room; positions are in the clip's coordinates
+   float x = roomLeft + ((roomRight - roomLeft) - viewWidth * scale) / 2.0f - viewLeft * scale;
+   float y = roomTop + ((roomBottom - roomTop) - viewHeight * scale) / 2.0f - viewTop * scale;
+
+   setPosition(x - clip->getX(), y - clip->getY());
+   setScale(scale);
+
+   attachTo(clip);
 
    m_positionIndicator = new Sprite();
    m_positionIndicator->setResAnim(g_GraphRes.getResources(GraphicResources::ResourceTypeEnum::hud).getResAnim("lf_position"));

@@ -373,6 +373,11 @@ public:
    void squeeze(bool squeezed, oxygine::timeMS duration, oxygine::timeMS delay = 0);
    static const oxygine::timeMS c_squeezeMs = 200;
 
+   // Where the display is in orbit (screen coordinates): from the left
+   // safe edge to five buttons from the right, the whole height. The
+   // orbit scene lays its planet out inside it.
+   static oxygine::RectF orbitRect(void);
+
    void initialiseHdd(
       const oxygine::Vector2& topLeft, 
       const oxygine::Vector2& bottomRight);

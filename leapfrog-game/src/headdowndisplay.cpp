@@ -1303,13 +1303,11 @@ void HeadDownDisplay::initialiseHdd(
    m_menuSizeX = g_Layout.getViewPortBounds().x - 4.0f * g_Layout.getButtonWidth()  - 0.2f * g_Layout.getButtonWidth();
    m_menuSizeY = g_Layout.getViewPortBounds().y - 2.0f * (g_Layout.getViewPortBounds().y - mapBottom);
 
-   // m_orbitSizeX = g_Layout.getViewPortBounds().x;
    // From the left safe edge (clear of a camera notch) to the buttons on the right
-   m_orbitSizeX = g_Layout.getXFromRight(4) - g_Layout.getXFromLeft(0);
-   m_orbitPosX = g_Layout.getXFromLeft(0) + m_orbitSizeX / 2.0f;
-   
-
-   m_orbitSizeY = m_menuSizeY;
+   RectF orbit = orbitRect();
+   m_orbitSizeX = orbit.getWidth();
+   m_orbitPosX = orbit.getX() + m_orbitSizeX / 2.0f;
+   m_orbitSizeY = orbit.getHeight();
 
    float thickness = 8.0f;
    
@@ -1564,6 +1562,13 @@ void HeadDownDisplay::setLeapfrogTelemetry(const LeapfrogTelemetry& telemetry)
    {
       m_instruments->setTelemetry(telemetry);
    }
+}
+
+RectF HeadDownDisplay::orbitRect(void)
+{
+   float left = g_Layout.getXFromLeft(0);
+   float right = g_Layout.getXFromRight(4);
+   return RectF(left, 0.0f, right - left, g_Layout.getViewPortBounds().y);
 }
 
 void HeadDownDisplay::attachTerrainSensor(void)

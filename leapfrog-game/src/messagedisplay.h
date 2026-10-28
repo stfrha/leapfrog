@@ -117,6 +117,10 @@ public:
 
    void setFullHeight(bool fullHeight);
 
+   // Moves the display to another column (e.g. out of the orbit overlay's
+   // way); the messages are redrawn for its width
+   void setColumn(float left, float right, float highTop, float normalTop, float highBottom, float normalBottom);
+
    void cleanAndClearMessageDisplay(void);
 
    // True while messages wait to be shown (or for their post-delay)

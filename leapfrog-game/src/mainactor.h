@@ -83,6 +83,10 @@ private:
 
    void recursiveRemoveChildren(oxygine::spActor& parent);
 
+   // The message display's column: on the left normally; in orbit on the
+   // right, under the space window, out of the orbit overlay's way
+   void placeMessageDisplay(bool orbit);
+
 public:
    bool m_reloadPressed;
    float m_fps;      // measured at start-up, only logged (scenes update at Scales::c_updateStep)

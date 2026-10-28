@@ -213,6 +213,22 @@ void MessageDisplay::initialiseMessageDisplay(
    setFullHeight(m_fullHeight);
 }
 
+void MessageDisplay::setColumn(float left, float right, float highTop, float normalTop, float highBottom, float normalBottom)
+{
+   m_left = left;
+   m_right = right;
+   m_highTop = highTop;
+   m_normalTop = normalTop;
+   m_highBottom = highBottom;
+   m_normalBottom = normalBottom;
+
+   // While enlarged it stays where it is; collapsing goes to the new column
+   if (!m_expanded)
+   {
+      setFullHeight(m_fullHeight);
+   }
+}
+
 void MessageDisplay::setFullHeight(bool fullHeight)
 {
    m_fullHeight = fullHeight;
