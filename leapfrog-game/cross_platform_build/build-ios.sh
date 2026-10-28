@@ -9,7 +9,13 @@ INSTALL="${3:-noinstall}"
 DEVICE="${4:-}"
 SCHEME="${5:-Leapfrog_ios_debug}"
 
-REPO="$HOME/Documents/GitHub3/leapfrog"
+# Where the repo is on the Mac (moved out of the iCloud-synced Documents
+# folder); set LEAPFROG_REPO to override
+REPO="${LEAPFROG_REPO:-$HOME/Development/git/leapfrog}"
+if [ ! -d "$REPO/.git" ]; then
+  echo "No leapfrog repo at $REPO (set LEAPFROG_REPO to where it is)"
+  exit 1
+fi
 PROJ="$REPO/leapfrog-game/proj.ios/Leapfrog_ios.xcodeproj"
 DD="$HOME/leapfrog-build"
 LOG="$DD/last-build.log"
