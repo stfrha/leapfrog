@@ -463,6 +463,20 @@ static int c_getObjectProperty(lua_State *L)
    return 1;
 }
 
+// c_objectExists(name): true if the scene has an object by that name
+// (e.g. to add a swarm only once, whatever number of setups the scene gets)
+static int c_objectExists(lua_State *L)
+{
+   const char* objectName = lua_tostring(L, 1);
+
+   bool exists = (objectName != NULL) &&
+      (g_LuaInterface.getSceneActor()->getObject(objectName) != NULL);
+
+   lua_pushboolean(L, exists);
+
+   return 1;
+}
+
 static int c_setObjectMapState(lua_State *L)
 {
    std::string objectName = lua_tostring(L, 1);
@@ -714,6 +728,7 @@ void LuaInterface::initLuaInterface(void)
    lua_register(m_L, "c_setPanningObject", c_setPanningObject);
    lua_register(m_L, "c_setObjectProperty", c_setObjectProperty);
    lua_register(m_L, "c_getObjectProperty", c_getObjectProperty);
+   lua_register(m_L, "c_objectExists", c_objectExists);
    lua_register(m_L, "c_setObjectMapState", c_setObjectMapState);
    lua_register(m_L, "c_setObjectMapAffiliation", c_setObjectMapAffiliation);
    lua_register(m_L, "c_setObjectMapShown", c_setObjectMapShown);

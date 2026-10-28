@@ -831,6 +831,10 @@ function Engine:installApi(env)
       return e:getProperty(obj, id) + 0.0
    end
 
+   api.c_objectExists = function(name)
+      return e:getObject(name) ~= nil
+   end
+
    local function mapItem(fn, name, actor)
       local obj = e:getObject(name)
       if not obj then

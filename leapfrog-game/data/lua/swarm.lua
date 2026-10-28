@@ -16,9 +16,15 @@
 -- and its live strippers are recalled. (Upgrades: when they exist, add a
 -- check for them in swarm.isStripped.)
 --
--- mission_script.lua calls swarm.setupScene() at every scene setup (the
--- swarm objects are gone with the old scene) and swarm.eventHandler for
--- every event, before the mission's own handler.
+-- Call swarm.start from the scene setup (a world's or a mission's
+-- setupScene), for every setup in which the swarm shall be there: setup
+-- runs again on state changes, without a new scene, and swarm.start then
+-- keeps the swarm that is already there (adds it only once per scene) and
+-- goes on watching it. A swarm that has been stopped stays stopped.
+--
+-- mission_script.lua calls swarm.setupScene() at every setup (watching
+-- starts over; swarm.start renews it) and swarm.eventHandler for every
+-- event, before the world's and the mission's own handlers.
 
 local swarm = {}
 
@@ -54,11 +60,21 @@ end
 
 -- swarm.start(name, file [, onStripped [, resources]])
 -- Adds the swarm in file (e.g. "stripper_swarm.xml") to the scene as
--- name. When the Leapfrog's resources in the list (default: all four) are
--- empty, it is stopped, its strippers are recalled, and onStripped(name)
--- is called (once).
+-- name, unless the scene has it already. When the Leapfrog's resources in
+-- the list (default: all four) are empty, it is stopped, its strippers are
+-- recalled, and onStripped(name) is called (once). Nothing happens for a
+-- swarm that is in the scene but stopped.
+-- (Not c_addMissionStateSceneObjects: that adds a file's shapes, systems
+-- and child objects to the scene, but not a behaviour at its root.)
 function swarm.start(name, file, onStripped, resources)
-   c_addPositionedChildObject(file, name, 0, 0)
+   if c_objectExists(name) then
+      if c_getObjectProperty(name, Prop.active) == 0 then
+         return
+      end
+   else
+      c_addPositionedChildObject(file, name, 0, 0)
+   end
+
    running[name] = { onStripped = onStripped, resources = resources }
    listen(leapfrog, "LfSt")
 end
