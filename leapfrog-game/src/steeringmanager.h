@@ -52,6 +52,8 @@ private:
    b2Vec2 doWanderHunt(const oxygine::UpdateState& us, b2Body* target, float maxVelocity);
 	
 public:
+   static constexpr float c_maxPursuitLead = 4.0f;   // s
+
    float m_wanderAngle;
    bool m_fireTrigger;
 
@@ -70,6 +72,19 @@ public:
 	b2Vec2 pursuit(b2Body* target, float maxVelocity);
    b2Vec2 wanderHunt(const oxygine::UpdateState& us, b2Body* target, float maxVelocity);
    b2Vec2 avoidCollision(float maxVelocity);
+
+   // Where to fly to meet a moving target, flying at speed: the point
+   // the target reaches at the earliest time t at which it can be met
+   // (|targetPos + t * targetVel - hostPos| = speed * t), but no more
+   // than maxLead s ahead. Head-on this is in front of the host, between
+   // it and the target; a target that can't be caught (faster, moving
+   // away) is led by maxLead.
+   static b2Vec2 interceptPoint(
+      const b2Vec2& hostPos,
+      float speed,
+      const b2Vec2& targetPos,
+      const b2Vec2& targetVel,
+      float maxLead);
 
    WanderHunterState peekWanderHunterState(void);
    WanderHunterState getWanderHunterState(void);

@@ -26,11 +26,11 @@
   <behaviour
     type="stripper">
     <stripperProperties
-      maxSpeed="45"
+      maxSpeed="60"
       acceleration="90"
       degPerSecTurnRate="360"
       noseAngle="180"
-      lead="1"
+      lead="3"
       brakeDistance="50"
       ramSpeed="25"
       shieldDrain="4"
@@ -43,7 +43,8 @@
       fuelAmount="15"
       creditsAmount="25"
       stealTime="2.5"
-      gripForce="4000"
+      gripForce="5000"
+      gripTime="0.6"
       stunTime="1"
       leaveTime="2"
       fadeInTime="0.5"

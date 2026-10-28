@@ -13,6 +13,7 @@
 #include "actoruserdata.h"
 #include "headdowndisplay.h"
 #include "mainactor.h"
+#include "steeringmanager.h"
 
 using namespace std;
 using namespace oxygine;
@@ -39,11 +40,11 @@ Stripper::Stripper(
    m_health(1.0f),
    m_shotDown(false),
    m_mapItemId(-1),
-   m_maxSpeed(45.0f),
+   m_maxSpeed(60.0f),
    m_acceleration(90.0f),
    m_turnRate(6.0f),
    m_noseAngle(0.0f),
-   m_lead(1.0f),
+   m_lead(3.0f),
    m_brakeDistance(50.0f),
    m_latchSpeed(8.0f),
    m_latchDistance(1.5f),
@@ -51,6 +52,8 @@ Stripper::Stripper(
    m_shieldDrain(4.0f),
    m_stealTime(2.5f),
    m_gripForce(0.0f),
+   m_gripTime(0.6f),
+   m_strainTime(0.0f),
    m_stunTime(1.0f),
    m_leaveTime(2.0f),
    m_fadeInTime(0.5f),
@@ -129,6 +132,7 @@ void Stripper::readStripperNode(const xml_node& node)
    m_shieldDrain = node.attribute("shieldDrain").as_float(m_shieldDrain);
    m_stealTime = node.attribute("stealTime").as_float(m_stealTime);
    m_gripForce = node.attribute("gripForce").as_float(m_gripForce);
+   m_gripTime = node.attribute("gripTime").as_float(m_gripTime);
    m_stunTime = node.attribute("stunTime").as_float(m_stunTime);
    m_leaveTime = node.attribute("leaveTime").as_float(m_leaveTime);
    m_fadeInTime = node.attribute("fadeInTime").as_float(m_fadeInTime);
@@ -156,6 +160,15 @@ void Stripper::readStripperNode(const xml_node& node)
       else if (w == "fuel") m_stealList.push_back(lootFuel);
       else if (w == "credits") m_stealList.push_back(lootCredits);
       else logs::messageln("Stripper: unknown steal item '%s'", w.c_str());
+   }
+}
+
+void Stripper::preSolve(b2Contact* contact)
+{
+   if ((BodyUserData::getCollisionType(contact->GetFixtureA()->GetUserData()) == CollisionEntity::stripper) &&
+      (BodyUserData::getCollisionType(contact->GetFixtureB()->GetUserData()) == CollisionEntity::stripper))
+   {
+      contact->SetEnabled(false);
    }
 }
 
@@ -441,6 +454,7 @@ void Stripper::latchOn(LeapFrog* lf, b2Body* partBody, const b2Vec2& point)
    }
 
    m_sparkTime = 0.0f;
+   m_strainTime = 0.0f;
    setState(latched);
    spark(point);
 }
@@ -784,30 +798,42 @@ void Stripper::doUpdate(const oxygine::UpdateState& us)
          break;
       }
 
-      // Fly straight at it, aiming where it will be (up to m_lead s ahead)
-      b2Vec2 toTarget = lfBody->GetPosition() - pos;
-      float t = min(m_lead, toTarget.Length() / max(m_maxSpeed, 1.0f));
-      b2Vec2 aim = lfBody->GetPosition() + t * lfBody->GetLinearVelocity() - pos;
-
-      // Slow down near the Leapfrog: full speed beyond brakeDistance
-      // from its centre, down to (at half that) ramSpeed while the shield
-      // is up, latchSpeed when it can grab the hull.
+      b2Vec2 lfPos = lfBody->GetPosition();
+      b2Vec2 lfVel = lfBody->GetLinearVelocity();
+      b2Vec2 toTarget = lfPos - pos;
       float dist = toTarget.Length();
+
+      // Far: full speed towards the point where it can meet the
+      // Leapfrog (up to m_lead s ahead). Head-on, that point is in front
+      // of it, so it flies straight into the Leapfrog's path.
+      b2Vec2 meet = SteeringManager::interceptPoint(pos, m_maxSpeed, lfPos, lfVel, m_lead);
+      b2Vec2 chase = meet - pos;
+      chase.Normalize();
+      chase *= m_maxSpeed;
+
+      // Close: move sideways with the Leapfrog and close in on it at
+      // ramSpeed (shield up) or latchSpeed (shield down). If the Leapfrog
+      // is already coming at it faster than that, it holds its ground
+      // (does not back off) and grabs it as it arrives.
+      b2Vec2 dir = toTarget;
+      dir.Normalize();
+      float lfAlong = b2Dot(lfVel, dir);
+      b2Vec2 lfSide = lfVel - lfAlong * dir;
+      float closing = shield ? m_ramSpeed : m_latchSpeed;
+      b2Vec2 close = lfSide + max(0.0f, lfAlong + closing) * dir;
+
+      // Full chase beyond brakeDistance from the Leapfrog's centre, all
+      // close-in at half that
       float half = 0.5f * m_brakeDistance;
       float f = (half > 0.0f) ? (dist - half) / half : 1.0f;
       f = max(0.0f, min(1.0f, f));
-      float closing = shield ? m_ramSpeed : m_latchSpeed;
-      float speed = closing + (m_maxSpeed - closing) * f;
 
-      b2Vec2 desired = aim;
-      desired.Normalize();
-      desired *= speed;
-
-      // Add the target's own velocity, so it closes in on a moving target
-      desired += lfBody->GetLinearVelocity();
+      b2Vec2 desired = f * chase + (1.0f - f) * close;
 
       steerTowards(desired, dt);
-      faceDirection(aim, dt);
+
+      // Arms forward: along the chase far out, at the Leapfrog close in
+      faceDirection((f > 0.5f) ? chase : toTarget, dt);
       break;
    }
 
@@ -816,10 +842,20 @@ void Stripper::doUpdate(const oxygine::UpdateState& us)
       b2Body* part = m_weld->GetBodyA();
       b2Vec2 grip = part->GetWorldPoint(m_gripLocal);
 
-      // Shaken off by hard manoeuvres. (Not in the first 0.25 s: the weld
-      // takes a short hard tug when it stops the stripper's own speed.)
+      // Shaken off by hard manoeuvres: the weld has carried more than
+      // gripForce for gripTime s in a row. (Not in the first 0.25 s: the
+      // weld takes a short hard tug when it stops the stripper's own speed.)
       if ((m_gripForce > 0.0f) && (m_stateTime > 0.25f) &&
          (m_weld->GetReactionForce(1.0f / Scales::c_updateStep).Length() > m_gripForce))
+      {
+         m_strainTime += dt;
+      }
+      else
+      {
+         m_strainTime = 0.0f;
+      }
+
+      if ((m_gripForce > 0.0f) && (m_strainTime >= m_gripTime))
       {
          letGo();
          spark(grip);

@@ -14,6 +14,7 @@
 
 void FreeSpaceContactListener::PreSolve(b2Contact* contact, const b2Manifold* oldManifold)
 {
+   Stripper::preSolve(contact);
 }
 
 void FreeSpaceContactListener::PostSolve(b2Contact* contact, const b2ContactImpulse* impulse)

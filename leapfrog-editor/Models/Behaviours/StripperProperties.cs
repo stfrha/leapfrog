@@ -14,11 +14,11 @@ namespace LeapfrogEditor
    {
       #region Declarations
 
-      private double _maxSpeed = 45;
+      private double _maxSpeed = 60;
       private double _acceleration = 90;
       private double _degPerSecTurnRate = 360;
       private double _noseAngle = 0;
-      private double _lead = 1;
+      private double _lead = 3;
       private double _brakeDistance = 50;
       private double _latchSpeed = 8;
       private double _ramSpeed = 25;
@@ -32,6 +32,7 @@ namespace LeapfrogEditor
       private double _creditsAmount = 25;
       private double _stealTime = 2.5;
       private double _gripForce = 0;
+      private double _gripTime = 0.6;
       private double _stunTime = 1;
       private double _leaveTime = 2;
       private double _fadeInTime = 0.5;
@@ -170,6 +171,13 @@ namespace LeapfrogEditor
       {
          get { return _gripForce; }
          set { _gripForce = value; }
+      }
+
+      [XmlAttribute("gripTime")]
+      public double GripTime
+      {
+         get { return _gripTime; }
+         set { _gripTime = value; }
       }
 
       [XmlAttribute("stunTime")]

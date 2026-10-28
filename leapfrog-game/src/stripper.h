@@ -18,7 +18,11 @@ A Stripper is a small enemy that strips the Leapfrog of what it carries.
 Many of them together overwhelm it.
 
 What it does:
-1. approach: flies straight at the Leapfrog (aiming a little ahead of it).
+1. approach: flies at full speed to where it can meet the Leapfrog (the
+   intercept point, at most lead s ahead; head-on that is straight into
+   its path). Within brakeDistance it moves sideways with the Leapfrog and
+   closes in on it; if the Leapfrog is coming at it faster than that, it
+   holds its ground and grabs it as it arrives.
    While the Leapfrog's shield is up it rams the shield at ramSpeed and
    bounces back (stunned) to come again: each ram drains shieldDrain from
    the shield (plus what the knock itself drains).
@@ -28,8 +32,8 @@ What it does:
    leg if it grabbed a leg, which then carries it). It works for
    stealTime seconds (sparks fly at the grip point every sparkInterval).
    It loses its grip, and is stunned for stunTime, if:
-   - the weld has to carry more than gripForce (hard manoeuvres shake it
-     off; 0 = never), or
+   - the weld has to carry more than gripForce for gripTime s in a row
+     (hard manoeuvres shake it off; gripForce 0 = never), or
    - the Leapfrog's shield comes back up.
 3. When the time is up it takes ONE thing: one of the resources listed in
    "steal" that the Leapfrog has some of, picked at random (the amount for
@@ -104,7 +108,7 @@ private:
    float m_acceleration;         // units/s2
    float m_turnRate;             // rad/s
    float m_noseAngle;            // rad, body +x to the nose (arms)
-   float m_lead;                 // s, max look-ahead when aiming at the Leapfrog
+   float m_lead;                 // s, max look-ahead to the meeting point
    float m_brakeDistance;        // units from the Leapfrog's centre where it starts to brake
    float m_latchSpeed;           // units/s, closing speed when it reaches the hull
    float m_latchDistance;        // units, gap to the hull at which it grabs it
@@ -112,6 +116,8 @@ private:
    float m_shieldDrain;          // shield taken by each ram (the knock drains a little more)
    float m_stealTime;            // s latched before it takes something
    float m_gripForce;            // N, 0 = never shaken off
+   float m_gripTime;             // s above gripForce in a row before it lets go
+   float m_strainTime;           // s above gripForce so far
    float m_stunTime;             // s
    float m_leaveTime;            // s
    float m_fadeInTime;           // s, when it appears
@@ -162,6 +168,10 @@ public:
    void hitByBullet(b2Contact* contact, float bulletEqvDamage);
 
    static const char* lootName(int loot);
+
+   // For the contact listeners' PreSolve: strippers pass through each
+   // other (one pushing into another must not shake it off the hull)
+   static void preSolve(b2Contact* contact);
 
 protected:
    void doUpdate(const oxygine::UpdateState& us) override;

@@ -18,6 +18,11 @@ void LanderContactListener::InitContactListner(SceneActor* sceneActor)
    m_sceneActor = sceneActor;
 }
 
+void LanderContactListener::PreSolve(b2Contact* contact, const b2Manifold* oldManifold)
+{
+   Stripper::preSolve(contact);
+}
+
 void LanderContactListener::PostSolve(b2Contact* contact, const b2ContactImpulse* impulse)
 {
    CollisionEntity::CollisionEntityTypeEnum eA = BodyUserData::getCollisionType(contact->GetFixtureA()->GetUserData());

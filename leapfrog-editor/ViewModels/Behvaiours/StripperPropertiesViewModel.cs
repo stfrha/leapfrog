@@ -207,6 +207,16 @@ namespace LeapfrogEditor
          }
       }
 
+      public double GripTime
+      {
+         get { return LocalModelObject.GripTime; }
+         set
+         {
+            LocalModelObject.GripTime = value;
+            OnPropertyChanged("GripTime");
+         }
+      }
+
       public double StunTime
       {
          get { return LocalModelObject.StunTime; }

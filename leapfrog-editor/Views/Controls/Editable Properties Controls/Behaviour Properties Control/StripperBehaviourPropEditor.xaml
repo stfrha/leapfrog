@@ -12,7 +12,7 @@
       <local:DoubleEditorControl Headline="Acceleration" MyValue="{Binding Acceleration, Mode=TwoWay}" />
       <local:DoubleEditorControl Headline="Turn Rate (deg/s)" MyValue="{Binding DegPerSecTurnRate, Mode=TwoWay}" />
       <local:DoubleEditorControl Headline="Nose Angle (deg)" MyValue="{Binding NoseAngle, Mode=TwoWay}" />
-      <local:DoubleEditorControl Headline="Aim Ahead (s)" MyValue="{Binding Lead, Mode=TwoWay}" />
+      <local:DoubleEditorControl Headline="Max Lead to Meeting Point (s)" MyValue="{Binding Lead, Mode=TwoWay}" />
       <local:DoubleEditorControl Headline="Brake Distance" MyValue="{Binding BrakeDistance, Mode=TwoWay}" />
       <local:DoubleEditorControl Headline="Latch Speed" MyValue="{Binding LatchSpeed, Mode=TwoWay}" />
       <local:DoubleEditorControl Headline="Ram Speed (shield up)" MyValue="{Binding RamSpeed, Mode=TwoWay}" />
@@ -26,6 +26,7 @@
       <local:DoubleEditorControl Headline="Credits Taken" MyValue="{Binding CreditsAmount, Mode=TwoWay}" />
       <local:DoubleEditorControl Headline="Steal Time (s)" MyValue="{Binding StealTime, Mode=TwoWay}" />
       <local:DoubleEditorControl Headline="Grip Force (0 = never let go)" MyValue="{Binding GripForce, Mode=TwoWay}" />
+      <local:DoubleEditorControl Headline="Grip Time (s over Grip Force)" MyValue="{Binding GripTime, Mode=TwoWay}" />
       <local:DoubleEditorControl Headline="Stun Time (s)" MyValue="{Binding StunTime, Mode=TwoWay}" />
       <local:DoubleEditorControl Headline="Leave/Fade Time (s)" MyValue="{Binding LeaveTime, Mode=TwoWay}" />
       <local:DoubleEditorControl Headline="Fade In Time (s)" MyValue="{Binding FadeInTime, Mode=TwoWay}" />

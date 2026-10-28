@@ -1,3 +1,6 @@
+#include <algorithm>
+#include <cmath>
+
 #include "steeringmanager.h"
 #include "sceneactor.h"
 #include "bodyuserdata.h"
@@ -222,18 +225,73 @@ b2Vec2 SteeringManager::doEvade(b2Body* target, float maxVelocity)
    return doFlee(futurePosition, maxVelocity);
 }
 
+b2Vec2 SteeringManager::interceptPoint(
+   const b2Vec2& hostPos,
+   float speed,
+   const b2Vec2& targetPos,
+   const b2Vec2& targetVel,
+   float maxLead)
+{
+   // |r + v t| = s t  ->  (v.v - s2) t2 + 2 (r.v) t + r.r = 0
+   b2Vec2 r = targetPos - hostPos;
+   float a = b2Dot(targetVel, targetVel) - speed * speed;
+   float b = 2.0f * b2Dot(r, targetVel);
+   float c = b2Dot(r, r);
+   float t = -1.0f;
+
+   if (fabsf(a) < 0.0001f)
+   {
+      // Same speed: one root
+      if (b < 0.0f)
+      {
+         t = -c / b;
+      }
+   }
+   else
+   {
+      float disc = b * b - 4.0f * a * c;
+
+      if (disc >= 0.0f)
+      {
+         float sq = sqrtf(disc);
+         float t1 = (-b - sq) / (2.0f * a);
+         float t2 = (-b + sq) / (2.0f * a);
+
+         if (t1 > t2) std::swap(t1, t2);
+         t = (t1 > 0.0f) ? t1 : t2;
+      }
+   }
+
+   if ((t < 0.0f) || (t > maxLead))
+   {
+      // Can't be caught, or not soon: lead it by maxLead
+      t = maxLead;
+   }
+
+   b2Vec2 p = targetPos + t * targetVel;
+
+   // Never aim at a point behind us (seen from the target): then fly
+   // straight at the target instead
+   if (b2Dot(p - hostPos, r) < 0.0f)
+   {
+      p = targetPos;
+   }
+
+   return p;
+}
+
 b2Vec2 SteeringManager::doPursuit(b2Body* target, float maxVelocity)
 {
-   b2Vec2 distance;
-   
-   distance = target->GetPosition() - m_hostBody->GetPosition();
-
-   float updatesNeeded = distance.Length() / maxVelocity;
-
-   b2Vec2 tv = target->GetLinearVelocity();
-   tv *= updatesNeeded;
-
-   b2Vec2 targetFuturePosition = target->GetPosition() + tv;
+   // Lead the target to where it can be met. (The time to meet used to be
+   // distance / own speed, which ignored that the target closes in too:
+   // a target coming head-on was led to a point behind the pursuer,
+   // which turned around to reach it.)
+   b2Vec2 targetFuturePosition = interceptPoint(
+      m_hostBody->GetPosition(),
+      maxVelocity,
+      target->GetPosition(),
+      target->GetLinearVelocity(),
+      c_maxPursuitLead);
 
    return doSeek(targetFuturePosition, maxVelocity, true, 0.0f, 2.0f);
 }
