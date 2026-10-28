@@ -328,6 +328,9 @@
     <ClCompile Include="..\src\magneticmine.cpp">
       <Filter>Source Files\actors</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\stripper.cpp">
+      <Filter>Source Files\actors</Filter>
+    </ClCompile>
     <ClCompile Include="..\src\objectfactory.cpp">
       <Filter>Source Files\actors</Filter>
     </ClCompile>
@@ -688,6 +691,9 @@
       <Filter>Source Files\actors</Filter>
     </ClInclude>
     <ClInclude Include="..\src\magneticmine.h">
+      <Filter>Source Files\actors</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\stripper.h">
       <Filter>Source Files\actors</Filter>
     </ClInclude>
     <ClInclude Include="..\src\objectfactory.h">

@@ -8,6 +8,7 @@
 #include "breakableobject.h"
 #include "explosiveobject.h"
 #include "pickupobject.h"
+#include "stripper.h"
 #include "gamestatus.h"
 
 
@@ -30,6 +31,7 @@ void FreeSpaceContactListener::PostSolve(b2Contact* contact, const b2ContactImpu
    bool flameParticle = false;
    ExplosiveObject* blastSource = NULL;
    PickupObject* pickup = NULL;
+   Stripper* stripper = NULL;
 
    if (eA == CollisionEntity::shield)
    {
@@ -135,6 +137,29 @@ void FreeSpaceContactListener::PostSolve(b2Contact* contact, const b2ContactImpu
    if (eB == CollisionEntity::steerableObject)
    {
       steerableObject = BodyUserData::getParentObjectOfType<SteerableObject*>(contact->GetFixtureB()->GetBody()->GetUserData());
+   }
+
+   if (eA == CollisionEntity::stripper)
+   {
+      stripper = BodyUserData::getParentObjectOfType<Stripper*>(contact->GetFixtureA()->GetBody()->GetUserData());
+   }
+
+   if (eB == CollisionEntity::stripper)
+   {
+      stripper = BodyUserData::getParentObjectOfType<Stripper*>(contact->GetFixtureB()->GetBody()->GetUserData());
+   }
+
+   // Strippers only take damage from bullets and blasts (they ram things)
+   if (stripper)
+   {
+      if (bullet)
+      {
+         stripper->hitByBullet(contact, 1.0f);
+      }
+      else if (blastSource != NULL)
+      {
+         stripper->hitByBullet(contact, blastSource->getDamageBulletEqv());
+      }
    }
 
    if (bullet)

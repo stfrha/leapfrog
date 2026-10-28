@@ -52,6 +52,7 @@ public:
    void shieldHitImpulse(b2Contact* contact, const b2ContactImpulse* impulse);
    void shieldHitByBullet(b2Contact* contact, float bulletEqvDamage);
    void restartShield(void);
+   void stopShield(void);
 
 protected:
 	void doUpdate(const oxygine::UpdateState& us) override;

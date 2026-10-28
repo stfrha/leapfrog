@@ -320,6 +320,23 @@ namespace LeapfrogEditor
          }
       }
 
+      public int MaxAlive
+      {
+         get
+         {
+            if (LocalModelObject == null) return 0;
+
+            return LocalModelObject.MaxAlive;
+         }
+         set
+         {
+            if (LocalModelObject == null) return;
+
+            LocalModelObject.MaxAlive = value;
+            OnPropertyChanged("MaxAlive");
+         }
+      }
+
       // We also expose some properties of the 
 
       #endregion

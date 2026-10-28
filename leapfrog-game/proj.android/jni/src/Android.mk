@@ -115,6 +115,7 @@ LOCAL_SRC_FILES += ../../../src/layout.cpp
 LOCAL_SRC_FILES += ../../../src/leapfrog.cpp
 LOCAL_SRC_FILES += ../../../src/luainterface.cpp
 LOCAL_SRC_FILES += ../../../src/magneticmine.cpp
+LOCAL_SRC_FILES += ../../../src/stripper.cpp
 LOCAL_SRC_FILES += ../../../src/mainactor.cpp
 LOCAL_SRC_FILES += ../../../src/marker.cpp
 LOCAL_SRC_FILES += ../../../src/messagedisplay.cpp

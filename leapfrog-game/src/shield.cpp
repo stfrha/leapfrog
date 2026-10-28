@@ -191,6 +191,16 @@ void Shield::restartShield(void)
 }
 
 
+// Shield gone (e.g. drained or stolen without a hit): stop colliding
+void Shield::stopShield(void)
+{
+   b2Fixture* bf = m_body->GetFixtureList();
+   b2Filter filt = bf->GetFilterData();
+   filt.categoryBits = 0;
+   filt.maskBits = 65533;
+   bf->SetFilterData(filt);
+}
+
 void Shield::doUpdate(const oxygine::UpdateState& us)
 {
 }

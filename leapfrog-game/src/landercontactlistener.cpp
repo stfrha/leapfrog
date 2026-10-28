@@ -10,6 +10,7 @@
 #include "explosiveobject.h"
 #include "blastemitter.h"
 #include "pickupobject.h"
+#include "stripper.h"
 #include "gamestatus.h"
 
 void LanderContactListener::InitContactListner(SceneActor* sceneActor)
@@ -33,6 +34,7 @@ void LanderContactListener::PostSolve(b2Contact* contact, const b2ContactImpulse
    bool flameParticle = false;
    ExplosiveObject* blastSource = NULL;
    PickupObject* pickup = NULL;
+   Stripper* stripper = NULL;
 
    if (eA == CollisionEntity::leapfrog)
    {
@@ -113,6 +115,29 @@ void LanderContactListener::PostSolve(b2Contact* contact, const b2ContactImpulse
    if (eB == CollisionEntity::blastParticle)
    {
       blastSource = BodyUserData::getParentObjectOfType<ExplosiveObject*>(contact->GetFixtureB()->GetBody()->GetUserData());
+   }
+
+   if (eA == CollisionEntity::stripper)
+   {
+      stripper = BodyUserData::getParentObjectOfType<Stripper*>(contact->GetFixtureA()->GetBody()->GetUserData());
+   }
+
+   if (eB == CollisionEntity::stripper)
+   {
+      stripper = BodyUserData::getParentObjectOfType<Stripper*>(contact->GetFixtureB()->GetBody()->GetUserData());
+   }
+
+   // Strippers only take damage from bullets and blasts (they ram things)
+   if (stripper)
+   {
+      if (bullet)
+      {
+         stripper->hitByBullet(contact, 1.0f);
+      }
+      else if (blastSource != NULL)
+      {
+         stripper->hitByBullet(contact, blastSource->getDamageBulletEqv());
+      }
    }
 
    if (bullet)

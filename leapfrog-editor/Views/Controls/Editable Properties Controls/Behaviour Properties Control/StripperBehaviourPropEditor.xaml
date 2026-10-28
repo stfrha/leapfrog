@@ -1,0 +1,39 @@
+﻿<UserControl x:Class="LeapfrogEditor.StripperBehaviourPropEditor"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:LeapfrogEditor"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800">
+   <StackPanel Margin="2">
+      <local:HeadlineControl Headline="Stripper Behaviour Properties" />
+      <local:DoubleEditorControl Headline="Max Speed" MyValue="{Binding MaxSpeed, Mode=TwoWay}" />
+      <local:DoubleEditorControl Headline="Acceleration" MyValue="{Binding Acceleration, Mode=TwoWay}" />
+      <local:DoubleEditorControl Headline="Turn Rate (deg/s)" MyValue="{Binding DegPerSecTurnRate, Mode=TwoWay}" />
+      <local:DoubleEditorControl Headline="Nose Angle (deg)" MyValue="{Binding NoseAngle, Mode=TwoWay}" />
+      <local:DoubleEditorControl Headline="Aim Ahead (s)" MyValue="{Binding Lead, Mode=TwoWay}" />
+      <local:DoubleEditorControl Headline="Brake Distance" MyValue="{Binding BrakeDistance, Mode=TwoWay}" />
+      <local:DoubleEditorControl Headline="Latch Speed" MyValue="{Binding LatchSpeed, Mode=TwoWay}" />
+      <local:DoubleEditorControl Headline="Ram Speed (shield up)" MyValue="{Binding RamSpeed, Mode=TwoWay}" />
+      <local:DoubleEditorControl Headline="Shield Drain per Ram" MyValue="{Binding ShieldDrain, Mode=TwoWay}" />
+      <local:DoubleEditorControl Headline="Latch Distance" MyValue="{Binding LatchDistance, Mode=TwoWay}" />
+      <local:DoubleEditorControl Headline="Hit Points (bullets)" MyValue="{Binding HitPoints, Mode=TwoWay}" />
+      <local:StringEditorControl Headline="Steal (ammo shield fuel credits)" MyValue="{Binding Steal, Mode=TwoWay}" />
+      <local:DoubleEditorControl Headline="Ammo Taken" MyValue="{Binding AmmoAmount, Mode=TwoWay}" />
+      <local:DoubleEditorControl Headline="Shield Taken" MyValue="{Binding ShieldAmount, Mode=TwoWay}" />
+      <local:DoubleEditorControl Headline="Fuel Taken" MyValue="{Binding FuelAmount, Mode=TwoWay}" />
+      <local:DoubleEditorControl Headline="Credits Taken" MyValue="{Binding CreditsAmount, Mode=TwoWay}" />
+      <local:DoubleEditorControl Headline="Steal Time (s)" MyValue="{Binding StealTime, Mode=TwoWay}" />
+      <local:DoubleEditorControl Headline="Grip Force (0 = never let go)" MyValue="{Binding GripForce, Mode=TwoWay}" />
+      <local:DoubleEditorControl Headline="Stun Time (s)" MyValue="{Binding StunTime, Mode=TwoWay}" />
+      <local:DoubleEditorControl Headline="Leave/Fade Time (s)" MyValue="{Binding LeaveTime, Mode=TwoWay}" />
+      <local:DoubleEditorControl Headline="Fade In Time (s)" MyValue="{Binding FadeInTime, Mode=TwoWay}" />
+      <local:DoubleEditorControl Headline="Leave Speed" MyValue="{Binding LeaveSpeed, Mode=TwoWay}" />
+      <local:DoubleEditorControl Headline="Spark Interval (s)" MyValue="{Binding SparkInterval, Mode=TwoWay}" />
+      <local:BoolEditorControl Headline="Hovers (cancels gravity)" MyValue="{Binding AntiGravity, Mode=TwoWay}" />
+      <local:StringEditorControl Headline="Shape Shown When Latched" MyValue="{Binding LatchedShape, Mode=TwoWay}" />
+      <local:StringEditorControl Headline="Shape Shown When Flying" MyValue="{Binding FlyingShape, Mode=TwoWay}" />
+      <local:StringEditorControl Headline="Loot Drop File ({loot} = kind)" MyValue="{Binding DropFile, Mode=TwoWay}" />
+   </StackPanel>
+</UserControl>

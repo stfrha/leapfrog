@@ -27,6 +27,12 @@ private:
 
    int m_initialSpawn;
 
+   // At most this many of its objects alive at a time (0 = no limit).
+   // A new one is spawned at the normal interval only while below it,
+   // so a swarm stays at this size: one that dies or leaves is replaced.
+   int m_maxAlive;
+   spSpawnTally m_tally;
+
    // Working member variable
    pugi::xml_document* m_coNodeHolder;
    pugi::xml_node m_coNode;

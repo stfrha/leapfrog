@@ -21,6 +21,7 @@ namespace LeapfrogEditor
       private int _spawnInitial;
       private double _intensity;
       private int _lifeTime;
+      private int _maxAlive = 0;
       private ObservableCollection<SpawnObject> _spawnObjects = new ObservableCollection<SpawnObject>();
 
       #endregion
@@ -97,6 +98,20 @@ namespace LeapfrogEditor
       {
          get { return _lifeTime; }
          set { _lifeTime = value; }
+      }
+
+      // At most this many spawned objects alive at a time; a new one is
+      // spawned (at the intensity) only while below it. 0 = no limit.
+      [XmlAttribute("maxAlive")]
+      public int MaxAlive
+      {
+         get { return _maxAlive; }
+         set { _maxAlive = value; }
+      }
+
+      public bool ShouldSerializeMaxAlive()
+      {
+         return MaxAlive > 0;
       }
 
       [XmlElement("spawnObject")]

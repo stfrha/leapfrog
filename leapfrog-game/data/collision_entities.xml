@@ -20,4 +20,5 @@
 	<collisionEntity id="17" name="blastParticle" />
 	<collisionEntity id="18" name="explosiveObject" />
 	<collisionEntity id="19" name="pickup" />
+	<collisionEntity id="20" name="stripper" />
 </collisionEntities>     

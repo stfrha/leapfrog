@@ -1,0 +1,55 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Stripper: small enemy that latches onto the Leapfrog and steals one
+  resource (see src/stripper.h). The look here is a placeholder (the
+  hammer ship, small and tinted); the behaviour does not depend on it.
+  The body must be called mainBody. Its weight is added to the
+  Leapfrog while it is latched, so density matters.
+-->
+<compoundObject
+  needsGroupIndex="true">
+  <dynamicBox
+    name="mainBody"
+    texture="hammer"
+    color="ff9040"
+    posX="0"
+    posY="0"
+    angle="0"
+    zLevel="165"
+    collisionEntity="stripper"
+    collisionCategory="1"
+    collisionMask="65533"
+    width="8"
+    height="4.2"
+    density="1.5"
+    friction="1" />
+  <behaviour
+    type="stripper">
+    <stripperProperties
+      maxSpeed="45"
+      acceleration="90"
+      degPerSecTurnRate="360"
+      noseAngle="180"
+      lead="1"
+      brakeDistance="50"
+      ramSpeed="25"
+      shieldDrain="4"
+      latchSpeed="8"
+      latchDistance="1.5"
+      hitPoints="1"
+      steal="fuel ammo credits"
+      ammoAmount="20"
+      shieldAmount="25"
+      fuelAmount="15"
+      creditsAmount="25"
+      stealTime="2.5"
+      gripForce="4000"
+      stunTime="1"
+      leaveTime="2"
+      fadeInTime="0.5"
+      leaveSpeed="60"
+      sparkInterval="0.3"
+      antiGravity="true"
+      dropFile="stripper_drop_{loot}.xml" />
+  </behaviour>
+</compoundObject>

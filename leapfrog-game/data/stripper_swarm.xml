@@ -1,0 +1,33 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!--
+  A swarm of Strippers for a space scene: at most five alive, one more
+  every 1.5 s while fewer, spawned in a strip 220 units above the
+  Leapfrog (the factory follows it). Add it from Lua with
+  c_addMissionStateSceneObjects("stripper_swarm.xml"), or copy the
+  system into a scene. Expects the Leapfrog to be called leapfrog1.
+-->
+<compoundObject>
+  <system
+    name="stripperSwarm"
+    type="objectFactory">
+    <objectFactoryProperties
+      body="leapfrog1.lfMainBody"
+      posX="-200"
+      posY="-220"
+      width="400"
+      height="20"
+      spawnInitial="3"
+      intensity="0.67"
+      lifeTime="0"
+      maxAlive="5">
+      <spawnObject
+        probabilityFactor="1">
+        <childObject
+          name="stripper"
+          file="stripper.xml"
+          posX="0"
+          posY="0" />
+      </spawnObject>
+    </objectFactoryProperties>
+  </system>
+</compoundObject>

@@ -1,5 +1,6 @@
 
 #include "spawnobject.h"
+#include "compoundobject.h"
 
 SpawnObject::SpawnObject(int probabilityFactor, const pugi::xml_node& node) :
    m_probabilityFactor(probabilityFactor)
@@ -54,10 +55,59 @@ SpawnInstruction::SpawnInstruction(
    int numOfSpawns,
    oxygine::Vector2 leftTop,
    oxygine::Vector2 widthHeight,
-   spSpawnObjectList spawnSource) :
+   spSpawnObjectList spawnSource,
+   spSpawnTally tally) :
    m_numOfSpawns(numOfSpawns),
    m_leftTop(leftTop),
    m_widthHeight(widthHeight),
-   m_spawnSource(spawnSource)
+   m_spawnSource(spawnSource),
+   m_tally(tally)
 {
+   if (m_tally)
+   {
+      m_tally->m_pending += numOfSpawns;
+   }
+}
+
+
+SpawnTally::SpawnTally() :
+   m_pending(0)
+{
+}
+
+void SpawnTally::add(CompoundObject* object)
+{
+   if (object == NULL)
+   {
+      return;
+   }
+
+   Entry e;
+   e.m_actor = object;
+   e.m_object = object;
+   e.m_attached = (object->getParent() != NULL);
+   m_objects.push_back(e);
+}
+
+// An object is gone when it is dead or has been taken off the scene
+// (death list). Objects without a behaviour are never attached to the
+// scene and never die, so they count as alive for good.
+int SpawnTally::countAlive(void)
+{
+   for (auto it = m_objects.begin(); it != m_objects.end(); )
+   {
+      bool alive = !it->m_object->m_isDead &&
+         (!it->m_attached || (it->m_object->getParent() != NULL));
+
+      if (alive)
+      {
+         ++it;
+      }
+      else
+      {
+         it = m_objects.erase(it);
+      }
+   }
+
+   return (int)m_objects.size() + m_pending;
 }

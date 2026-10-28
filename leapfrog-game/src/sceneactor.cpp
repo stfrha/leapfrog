@@ -488,9 +488,10 @@ void SceneActor::addObjectToSpawnList(
    int numOfSpawns,
    oxygine::Vector2 topLeft,
    oxygine::Vector2 widthHeight,
-   spSpawnObjectList spawnSource)
+   spSpawnObjectList spawnSource,
+   spSpawnTally tally)
 {
-   spSpawnInstruction spi = new SpawnInstruction(numOfSpawns, topLeft, widthHeight, spawnSource);
+   spSpawnInstruction spi = new SpawnInstruction(numOfSpawns, topLeft, widthHeight, spawnSource, tally);
    m_spawnInstructions.push_back(spi);
 }
 
@@ -1034,13 +1035,22 @@ void SceneActor::sweepSpawnList(void)
 {
    for (auto it = m_spawnInstructions.begin(); it != m_spawnInstructions.end(); ++it)
    {
+      spSpawnTally tally = (*it)->m_tally;
+
+      if (tally)
+      {
+         tally->m_pending -= (*it)->m_numOfSpawns;
+      }
+
       for (int i = 0; i < (*it)->m_numOfSpawns; i++)
       {
          pugi::xml_node* spawnNode = (*it)->m_spawnSource->getSpawnObjectNode();
 
          if (spawnNode == NULL)
          {
-            return;
+            // Nothing to spawn. (This used to return, which left the
+            // instruction list uncleared, to be retried every update.)
+            break;
          }
 
          // TODO: randomise a position within topLeft and widthHeight
@@ -1048,12 +1058,17 @@ void SceneActor::sweepSpawnList(void)
          float posY = static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (*it)->m_widthHeight.y)) + (*it)->m_leftTop.y;
 
 
-         defineChildObject(
+         CompoundObject* co = defineChildObject(
             this,
             this,
             m_world,
             Vector2(posX, posY),
             *spawnNode);
+
+         if (tally)
+         {
+            tally->add(co);
+         }
 
       }
    }

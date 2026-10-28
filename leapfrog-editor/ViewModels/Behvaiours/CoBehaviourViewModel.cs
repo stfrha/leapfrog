@@ -22,6 +22,7 @@ namespace LeapfrogEditor
       private ExplosiveObjectPropertiesViewModel _explosiveObjProperties;
       private MagneticMinePropertiesViewModel _magneticMineProperties;
       private PickupObjectPropertiesViewModel _pickupProperties;
+      private StripperPropertiesViewModel _stripperProperties;
       private ScenePropertiesViewModel _sceneProperties;
 
 
@@ -44,6 +45,7 @@ namespace LeapfrogEditor
          _explosiveObjProperties = new ExplosiveObjectPropertiesViewModel(treeParent, parentVm, mainVm, ModelObject.ExplosiveObjProps);
          _magneticMineProperties = new MagneticMinePropertiesViewModel(treeParent, parentVm, mainVm, ModelObject.MagneticMineProps);
          _pickupProperties = new PickupObjectPropertiesViewModel(treeParent, parentVm, mainVm, ModelObject.PickupObjProps);
+         _stripperProperties = new StripperPropertiesViewModel(treeParent, parentVm, mainVm, ModelObject.StripperProps);
       }
 
       #endregion
@@ -201,6 +203,10 @@ namespace LeapfrogEditor
             else if (Type == "pickupObject")
             {
                return _pickupProperties;
+            }
+            else if (Type == "stripper")
+            {
+               return _stripperProperties;
             }
 
             return null;

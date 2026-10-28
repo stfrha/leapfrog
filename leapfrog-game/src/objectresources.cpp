@@ -40,7 +40,8 @@ ObjectResources::ObjectResources() :
    m_shield(NULL),
    m_fuel(NULL),
    m_credits(NULL),
-   m_damage(NULL)
+   m_damage(NULL),
+   m_shieldObj(NULL)
 {
 }
 
@@ -124,7 +125,7 @@ void ObjectResources::deltaShield(float deltaShield)
 {
    float shield = m_shield->getProperty();
 
-   if ((shield == 0) && (deltaShield > 0))
+   if ((shield == 0) && (deltaShield > 0) && m_shieldObj)
    {
       m_shieldObj->restartShield();
    }
@@ -151,6 +152,13 @@ void ObjectResources::deltaShield(float deltaShield)
    if (shield < 0.0f)
    {
       shield = 0.0f;
+   }
+
+   // Run out without a hit on the bubble (drained or stolen): the
+   // bubble must stop colliding, as it does when a hit empties it
+   if ((shield <= 0.0f) && (m_shield->getProperty() > 0.0f) && m_shieldObj)
+   {
+      m_shieldObj->stopShield();
    }
 
    m_shield->setProperty(shield);

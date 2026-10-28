@@ -192,7 +192,8 @@ public:
       int numOfSpawns,
       oxygine::Vector2 leftTop,
       oxygine::Vector2 widthHeight,
-      spSpawnObjectList spawnSource);
+      spSpawnObjectList spawnSource,
+      spSpawnTally tally = NULL);
    
    int createSceneTimer(int numOfTicks);
 

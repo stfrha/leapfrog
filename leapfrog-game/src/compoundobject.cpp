@@ -16,6 +16,7 @@
 #include "breakableobject.h"
 #include "explosiveobject.h"
 #include "magneticmine.h"
+#include "stripper.h"
 #include "steerableobject.h"
 #include "pickupobject.h"
 #include "landingpad.h"
@@ -390,6 +391,20 @@ CompoundObject* CompoundObject::initCompoundObject(
       so->initObjectResources(NULL);
 
       return static_cast<CompoundObject*>(so);
+   }
+   else if (behavStr == "stripper")
+   {
+      Stripper* st = new Stripper(
+         sceneParent,
+         parentObject,
+         world,
+         pos,
+         root,
+         groupIndex);
+
+      st->m_behaviourType = BehaviourEnum::stripper;
+
+      return static_cast<CompoundObject*>(st);
    }
    else if (behavStr == "pickupObject")
    {

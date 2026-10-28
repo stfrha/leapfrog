@@ -1,3 +1,5 @@
+#include <algorithm>
+
 #include "compoundobject.h"
 #include "freespaceactor.h"
 #include "objectfactory.h"
@@ -16,6 +18,8 @@ ObjectFactory::ObjectFactory(
    System(sceneParent, world, parentObject),
    m_timeSinceLast(0.0f),
    m_initialSpawn(0),
+   m_maxAlive(0),
+   m_tally(NULL),
    m_attachedBody(NULL)
 {
    readObjectFactoryNode(objectNode);
@@ -45,6 +49,12 @@ void ObjectFactory::readObjectFactoryNode(const xml_node& objectNode)
    m_initialSpawn = objectNode.attribute("spawnInitial").as_int();
    m_interval = 1.0f / objectNode.attribute("intensity").as_float() * 1000.0f;
    m_fieldLifetime = objectNode.attribute("lifeTime").as_int();
+   m_maxAlive = objectNode.attribute("maxAlive").as_int(0);
+
+   if (m_maxAlive > 0)
+   {
+      m_tally = new SpawnTally();
+   }
 
    string body = objectNode.attribute("body").as_string("notApplicable");
    
@@ -80,6 +90,16 @@ void ObjectFactory::doUpdate(const oxygine::UpdateState& us)
 
 void ObjectFactory::spawnObjects(int num)
 {
+   if (m_tally)
+   {
+      num = std::min(num, m_maxAlive - m_tally->countAlive());
+   }
+
+   if (num <= 0)
+   {
+      return;
+   }
+
    // Find spawn position
    // If this ObjectFactory is attached to body,
    // the position is the body position + the pos specifier
@@ -103,6 +123,7 @@ void ObjectFactory::spawnObjects(int num)
       num,
       pos,
       m_widthHeight,
-      m_spawnObjects);
+      m_spawnObjects,
+      m_tally);
 
 }

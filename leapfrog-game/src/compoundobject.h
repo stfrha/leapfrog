@@ -47,7 +47,8 @@ public:
       explosiveObject,
       magneticMine,
       steerableObject,
-      pickup
+      pickup,
+      stripper
    };
 
 

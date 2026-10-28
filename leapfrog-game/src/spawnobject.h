@@ -41,6 +41,35 @@ public:
 
 
 
+class CompoundObject;
+
+// Keeps count of the objects an ObjectFactory has spawned that are still
+// alive, so it can keep a swarm at a fixed size (maxAlive).
+DECLARE_SMART(SpawnTally, spSpawnTally);
+
+class SpawnTally : public oxygine::ref_counter
+{
+private:
+   struct Entry
+   {
+      oxygine::spActor m_actor;  // keeps the pointer below valid
+      CompoundObject* m_object;
+      bool m_attached;           // was attached to the scene when spawned
+   };
+
+   std::vector<Entry> m_objects;
+
+public:
+   int m_pending;                // queued, not yet spawned
+
+   SpawnTally();
+
+   void add(CompoundObject* object);
+   int countAlive(void);
+};
+
+
+
 DECLARE_SMART(SpawnInstruction, spSpawnInstruction);
 
 class SpawnInstruction : public oxygine::ref_counter
@@ -50,12 +79,14 @@ public:
    oxygine::Vector2 m_leftTop;
    oxygine::Vector2 m_widthHeight;
    spSpawnObjectList m_spawnSource;
+   spSpawnTally m_tally;         // may be NULL
 
    SpawnInstruction(
       int numOfSpawns, 
       oxygine::Vector2 leftTop, 
       oxygine::Vector2 widthHeight, 
-      spSpawnObjectList spawnSource);
+      spSpawnObjectList spawnSource,
+      spSpawnTally tally = NULL);
 
 
 };

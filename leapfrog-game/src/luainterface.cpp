@@ -5,6 +5,7 @@
 #include "headdowndisplay.h"
 #include "objectproperty.h"
 #include "sceneactorevents.h"
+#include "leapfrogevents.h"
 
 using namespace oxygine;
 
@@ -152,6 +153,14 @@ void luaEventListner(oxygine::Event *ev)
       g_LuaInterface.missionStateSceneEventHandler(
          eventType, actorName, toEv->m_timerId);
       
+   }
+   else if (ev->type == LeapfrogStrippedEvent::EVENT)
+   {
+      // A Stripper took something: the parameter says what (property id)
+      LeapfrogStrippedEvent* stEv = static_cast<LeapfrogStrippedEvent*>(ev);
+
+      g_LuaInterface.missionStateSceneEventHandler(
+         eventType, actorName, stEv->m_loot);
    }
    else
    {
