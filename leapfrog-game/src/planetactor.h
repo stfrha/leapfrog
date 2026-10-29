@@ -105,6 +105,18 @@ private:
    const float c_landingPointAngle;
    const float c_startAngleOffset;
    const float c_safeLandingMaxRadDeviation;
+   static const float c_orbitSpinPerMs;
+   static const float c_spinUpMs;
+   static const float c_arrivalStartX;
+
+   float m_spinElapsedMs;     // since the scene started (the spin-up)
+
+   // The predicted ("solution") markers' angles on the planet, set when
+   // the orbit is established. A marker is at the solution (a burn now
+   // lands on its site) when the planet's turn brings it to
+   // c_landingPointAngle.
+   std::vector<float> m_predictedSiteAngles;
+   static const float c_missedAngle;
 
    std::set<LandingSite> m_landingSites;
 
@@ -140,6 +152,12 @@ public:
    void stopBurn(void);
    float getBurnAmount(void);
    float getReentryLeapfrogAngle(float time);
+
+   // True when every site's predicted marker has passed its solution by
+   // c_missedAngle without a burn (a burn now would come down far off
+   // every site): the orbit goes round again (OrbitScene). False with no
+   // sites, or before the orbit is established.
+   bool allSolutionsPassed(void);
    LandingResult getLandingResult();
 
 protected:

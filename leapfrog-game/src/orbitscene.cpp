@@ -96,7 +96,22 @@ void OrbitScene::doUpdate(const oxygine::UpdateState &us)
    case enteringOrbit:
       break;
    case waitForUserBreak:
-      
+
+      // No burn while the sites came by: round again (the scripts restart
+      // the orbit, see scene_navigator.lua)
+      if (m_planet->allSolutionsPassed())
+      {
+         ReentryResult result;
+         result.m_outcome = ReentryResult::missed;
+         g_LuaInterface.setLastReentry(result);
+         logs::messageln("Re-entry: no burn, every site passed");
+
+         m_state = exited;
+         ExitOrbitSceneEvent event(-4);
+         dispatchEvent(&event);
+         break;
+      }
+
       if (data[SDL_SCANCODE_W] || m_space->m_boosterPressed)
       {
          m_planet->startBurn();
@@ -211,7 +226,8 @@ void OrbitScene::doUpdate(const oxygine::UpdateState &us)
       // The outcome, for the scripts (c_lastReentry), and the exit: the
       // closest site's index when down on the surface, on its marker or
       // off it; -2 burned up (too much braking); -3 bounced back to space
-      // (too little). The same burn limits as the reentry state above.
+      // (too little); -4 (in waitForUserBreak) no burn while the sites
+      // came by. The same burn limits as the reentry state above.
       ReentryResult result;
       result.m_burn = m_planet->getBurnAmount();
       int exitParameter = 0;

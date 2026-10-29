@@ -659,8 +659,9 @@ static int c_leapfrogStandsOn(lua_State *L)
 // How the last re-entry ended, read in lua_sceneExitHandler when the orbit
 // scene exits. Returns outcome, siteIndex, siteName, siteScene, distance,
 // burn:
-//   outcome    "onSite", "offSite", "bounced", "burnedUp" ("none" before
-//              any re-entry has ended)
+//   outcome    "onSite", "offSite", "bounced", "burnedUp", "missed" (no
+//              burn while the sites came by; the orbit is restarted)
+//              ("none" before any re-entry has ended)
 //   siteIndex  the closest landing site, 0.. in angle order (onSite and
 //              offSite; -1 otherwise); also the orbit scene's exit
 //              parameter then
@@ -680,6 +681,7 @@ static int c_lastReentry(lua_State *L)
    case ReentryResult::offSite:  outcome = "offSite"; break;
    case ReentryResult::bounced:  outcome = "bounced"; break;
    case ReentryResult::burnedUp: outcome = "burnedUp"; break;
+   case ReentryResult::missed:   outcome = "missed"; break;
    default: break;
    }
 

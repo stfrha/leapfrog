@@ -7,6 +7,20 @@
 using namespace oxygine;
 using namespace pugi;
 
+// The planet turns once in 90 s in orbit
+const float PlanetActor::c_orbitSpinPerMs = 2.0f * MATH_PI / 90000.0f;
+
+// Arriving in orbit: the planet's spin-up and the Leapfrog marker's braking
+// take as long (the marker's tween used to take 6 s too)
+const float PlanetActor::c_spinUpMs = 6000.0f;
+
+// A site's solution counts as missed when its predicted marker is this far
+// past it (about 180 planet units, nearly two marker widths)
+const float PlanetActor::c_missedAngle = 3.0f / 180.0f * MATH_PI;
+
+// Where the marker comes in from: right of the picture (it shows 50..2100)
+const float PlanetActor::c_arrivalStartX = 2250.0f;
+
 PlanetActor::PlanetActor(
    CompoundObject* parentObject,
    const xml_node& objectNode) :
@@ -22,7 +36,8 @@ PlanetActor::PlanetActor(
    c_startAngleOffset(-100.0f / 180.0f * MATH_PI),
    c_landingPointAngle(-1.142f),
    c_angleZeroRotation(0.952f + 100.0f / 180.0f * MATH_PI),
-   c_safeLandingMaxRadDeviation(100.0f / 3500.0f / 2.0f)
+   c_safeLandingMaxRadDeviation(100.0f / 3500.0f / 2.0f),
+   m_spinElapsedMs(0.0f)
 {
    //// I should probably load resources that are uniuqe here
    //setPanorateMode(topLeft);
@@ -166,12 +181,22 @@ PlanetActor::PlanetActor(
    m_positionIndicator->setResAnim(g_GraphRes.getResources(GraphicResources::ResourceTypeEnum::hud).getResAnim("lf_position"));
    m_positionIndicator->setSize(40.0f, 40.0f);
    m_positionIndicator->setAnchor(0.5f, 0.5f);
-   m_positionIndicator->setPosition(Vector2(100.0f, 150.0f));
+   // Arriving: the Leapfrog brakes into orbit. It comes in from the right,
+   // beyond the picture (past the space view), and slows to the
+   // trajectory's start while the planet, still at first, spins up to its
+   // orbit speed under it (see doUpdate): in the orbit the Leapfrog stays
+   // put and the ground moves on (the planet turns clockwise, so the
+   // Leapfrog travels leftwards over it, as the stars in the space view
+   // show), and arriving it is the Leapfrog that moves and the planet
+   // that starts still. Its speed over the ground goes down smoothly from
+   // the arrival to the orbit speed.
+   m_positionIndicator->setPosition(Vector2(c_arrivalStartX, 150.0f));
    m_positionIndicator->attachTo(this);
 
-   m_positionIndicator->addTween(Actor::TweenPosition(c_trajectoryPositions[0] + m_orbitStartPos), 6000, 1, false, 0, Tween::ease_outQuad);
+   m_positionIndicator->addTween(Actor::TweenPosition(c_trajectoryPositions[0] + m_orbitStartPos), c_spinUpMs, 1, false, 0, Tween::ease_outQuad);
 
-   spTween rotTween = m_planet->addTween(Actor::TweenRotation(2.0f * MATH_PI), 90000, -1);
+   // The planet's rotation is advanced in doUpdate (it used to be a tween
+   // turning at the orbit speed from the start)
 
    m_spaceSceneBackground = objectNode.attribute("spaceSceneBackground").as_string();
    m_spaceSceneFile = objectNode.attribute("spaceSceneFile").as_string();
@@ -181,6 +206,16 @@ PlanetActor::PlanetActor(
 
 void PlanetActor::doUpdate(const UpdateState& us)
 {
+   // The planet's spin: from still to the orbit speed over c_spinUpMs, as
+   // the Leapfrog brakes into orbit (its marker's ease-out tween takes as
+   // long), then steady. The orbit speed is what the predicted sites and
+   // the re-entry timing were made for (a turn in 90 s), and orbit is
+   // established (OrbitSpaceScene) well after the spin-up.
+   float dtMs = us.dtf * 1000.0f;
+   m_spinElapsedMs += dtMs;
+   float spinUp = fmin(1.0f, m_spinElapsedMs / c_spinUpMs);
+   m_planet->setRotation(m_planet->getRotation() + c_orbitSpinPerMs * spinUp * dtMs);
+
    //if (m_stateChange)
    //{
    //   logs::message("State changed in %d, ", us.time);
@@ -219,6 +254,8 @@ void PlanetActor::doUpdate(const UpdateState& us)
 void PlanetActor::orbitEstablished(void)
 {
    m_planetAngleAtOrbitEstablished = m_planet->getRotation();
+   m_state = PAS_ORBIT_ESTABLISHED;
+   m_stateChange = true;
 
    // Generate predicted landing sites
 
@@ -231,6 +268,7 @@ void PlanetActor::orbitEstablished(void)
 
 
       float alpha = c_startAngleOffset - m_planetAngleAtOrbitEstablished - it->m_angle;
+      m_predictedSiteAngles.push_back(alpha);
       predSite->setPosition(Vector2(3500.0f * cos(alpha), 3500.0f * sin(alpha)));
       predSite->setRotation(alpha + MATH_PI / 2.0f);
       predSite->attachTo(m_planet);
@@ -424,6 +462,26 @@ void PlanetActor::surfaceReached(void)
    m_stateChange = true;
 
    m_frogTweenQueue->remove();
+}
+
+bool PlanetActor::allSolutionsPassed(void)
+{
+   if ((m_state != PAS_ORBIT_ESTABLISHED) || m_predictedSiteAngles.empty())
+   {
+      return false;
+   }
+
+   float turned = m_planet->getRotation();
+
+   for (float alpha : m_predictedSiteAngles)
+   {
+      if (alpha + turned <= c_landingPointAngle + c_missedAngle)
+      {
+         return false;
+      }
+   }
+
+   return true;
 }
 
 LandingResult PlanetActor::getLandingResult()

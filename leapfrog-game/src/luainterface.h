@@ -55,7 +55,8 @@ struct ReentryResult
       onSite,     // down on the site's marker
       offSite,    // down, but off the closest site
       bounced,    // too little braking: skipped off the atmosphere
-      burnedUp    // too much braking: broke up
+      burnedUp,   // too much braking: broke up
+      missed      // no burn while the sites came by: round again
    };
 
    Outcome m_outcome = none;
