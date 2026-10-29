@@ -68,6 +68,7 @@ Test files are in `tests/` and listed in `tests/test_list.lua`. A test:
 test("mission 1: accepting puts fuel in the pads", function(t)
    t:newGame()
    local m = t:mission(1)               -- the mission module: m.State, m.Question
+   t:land("siloLandingPad")             -- Bruno's question, asked in flight, opens
    t:answer(m.Question.acceptJob, true)
    t:expectState(m.State.accepted)
    t:expectProperty("landingPad2", 4, 2)
@@ -89,11 +90,13 @@ doesn't yet: reported as KNOWN with the reason while it fails, and as FIXED
 | `t:menuTestStart(i)`, `t:testStarts()` | the menu's test row: start test start i of `lua/test_starts.lua` (fails if refused); the labels in menu order |
 | `t:menuTestLanding()` | test start 1: the old test mission in the landing scene, from orbit |
 | `t:land(name)` | touch down on a landing pad (LpLL, fuel) or launch site (LsLL) |
-| `t:takeOff()` | the booster fires (withdraws an open question), LpTO |
-| `t:boost()` | the booster fires without taking off |
+| `t:takeOff()` | the booster fires, LpTO (an error while a question is open: the booster button is its Yes) |
+| `t:boost()` | the booster fires without taking off (same rule) |
 | `t:answer(id, yes)` | answers the open question (must be that id) |
+| `t:askQuestion(id)` | a script asks a question (for tests of the question rules) |
 | `t:wait(seconds)` | scene timers run (60 updates a second) |
 | `t:launch(site)` | land on the site; the script must trigger it; to deep space |
+| `t:completeLaunch(site)` | the launch of the site the Leapfrog stands on goes (triggered, not aborted, no question pending) |
 | `t:exitScene(type, param)` | a scene exit (landing 0, deep space 1, orbit 2) |
 | `t:event(object, id [, param])` | a game event, e.g. `"BrBR"`, `"ExEX"`, `"PuPU"` |
 | `t:setProperty(object, id, v)` | change a property from the game's side |
@@ -101,11 +104,17 @@ doesn't yet: reported as KNOWN with the reason while it fails, and as FIXED
 | `t:setGlobal(name, v)`, `t:setupScene()` | e.g. free play: `currentMission = 0`, set up again |
 | `t:allowProblem(text)` | don't fail on an engine problem containing text |
 
+Questions work as in the game: `c_askQuestion` queues them in the order
+asked, and the first opens when the Leapfrog stands on a landing pad or
+launch site (`t:land`); taking off before answering is not possible, and a
+launch site's launch waits while one is pending (property 3 aborts it).
+
 **Checks**
 
 `expectScene`, `expectMission`, `expectState`, `expectDialog(text [, sender])`
 (searches new dialog, then moves past the match), `expectNoDialog([text])`,
-`clearDialog`, `expectHud`, `expectQuestion(id)`, `expectNoQuestion`,
+`clearDialog`, `expectHud`, `expectQuestion(id)` (open), `expectNoQuestion` (none open),
+`expectQuestionQueued(id)`, `expectNoQuestionPending` (none open or queued),
 `expectProperty(object, id, value [, tolerance])`,
 `expectMap(object, actor, "hollow"|"filled"|"flashingSlow"|"flashingFast")`,
 `expectMapShown(object, actor, bool)`, `expectListening(object, event [, count])`,

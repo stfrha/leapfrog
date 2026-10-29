@@ -394,6 +394,13 @@ void LandingPad::doUpdate(const UpdateState &us)
 
       break;
    }
+
+   // Questions (SceneActor::askQuestion) open while the Leapfrog stands
+   // here, active or not
+   if (m_sceneActor != NULL)
+   {
+      m_sceneActor->setLeapfrogStandsOn(this, m_state == LandingPadState::stableLand);
+   }
 }
 
 void LandingPad::setPropertyImpl(int propId, float value)

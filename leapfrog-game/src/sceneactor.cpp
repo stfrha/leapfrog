@@ -173,6 +173,7 @@ SceneActor::SceneActor(
    m_manualPan(NULL),
    m_timerIdCounter(0),
    m_questionId(-1),
+   m_questionShown(false),
    m_questionAnswer(-2),
    m_answeredQuestionId(-1),
    m_questionKeysArmed(false),
@@ -497,28 +498,68 @@ void SceneActor::addObjectToSpawnList(
 
 void SceneActor::askQuestion(int questionId)
 {
-   m_questionId = questionId;
-   m_questionKeysArmed = false;
+   if (questionId == m_questionId)
+   {
+      return;
+   }
 
-   // Turn presses from before the question must not steer when it ends
-   m_turnLeftPressed = false;
-   m_turnRightPressed = false;
+   for (int id : m_questionQueue)
+   {
+      if (id == questionId)
+      {
+         return;
+      }
+   }
+
+   m_questionQueue.push_back(questionId);
 }
 
-void SceneActor::cancelQuestion(void)
+void SceneActor::cancelQuestion(int questionId)
 {
-   m_questionId = -1;
+   if ((questionId < 0) || (questionId == m_questionId))
+   {
+      m_questionId = -1;
+      m_questionShown = false;
+   }
+
+   for (auto it = m_questionQueue.begin(); it != m_questionQueue.end(); )
+   {
+      if ((questionId < 0) || (*it == questionId))
+      {
+         it = m_questionQueue.erase(it);
+      }
+      else
+      {
+         ++it;
+      }
+   }
 }
 
 bool SceneActor::isQuestionShown(void)
 {
-   if (m_questionId < 0)
-   {
-      return false;
-   }
+   return m_questionShown;
+}
 
-   // Wait until the dialog has shown the question
-   return !(g_MessageDisplay && g_MessageDisplay->hasQueuedMessages());
+bool SceneActor::hasPendingQuestion(void)
+{
+   return (m_questionId >= 0) || !m_questionQueue.empty();
+}
+
+void SceneActor::setLeapfrogStandsOn(const void* place, bool stands)
+{
+   if (stands)
+   {
+      m_leapfrogStandsOn.insert(place);
+   }
+   else
+   {
+      m_leapfrogStandsOn.erase(place);
+   }
+}
+
+bool SceneActor::doesLeapfrogStand(void)
+{
+   return !m_leapfrogStandsOn.empty();
 }
 
 void SceneActor::answerQuestion(bool yes)
@@ -532,24 +573,54 @@ void SceneActor::answerQuestion(bool yes)
    m_answeredQuestionId = m_questionId;
    m_questionAnswer = yes ? 1 : 0;
    m_questionId = -1;
+   m_questionShown = false;
 }
 
 void SceneActor::updateQuestion(const Uint8* keys)
 {
-   if ((m_questionId >= 0) && !g_MainActor->isInPause())
+   bool stands = doesLeapfrogStand() && !m_externalControl;
+   bool flightButtonsDown = keys[SDL_SCANCODE_W] || keys[SDL_SCANCODE_RETURN] ||
+      m_boosterPressed || m_firePressed;
+
+   // Pushed off the pad (or taken by a launch sequence) before it was
+   // answered: back to the front of the queue
+   if ((m_questionId >= 0) && !stands)
    {
-      if (!m_externalControl && (keys[SDL_SCANCODE_W] || m_boosterPressed))
-      {
-         // Firing the main booster (taking off) withdraws the question
-         m_answeredQuestionId = m_questionId;
-         m_questionAnswer = -1;
-         m_questionId = -1;
-      }
-      else if (!keys[SDL_SCANCODE_Y] && !keys[SDL_SCANCODE_N])
+      m_questionQueue.push_front(m_questionId);
+      m_questionId = -1;
+      m_questionShown = false;
+   }
+
+   // Open the next one while the Leapfrog stands
+   if ((m_questionId < 0) && stands && !m_questionQueue.empty())
+   {
+      m_questionId = m_questionQueue.front();
+      m_questionQueue.pop_front();
+      m_questionShown = false;
+      logs::messageln("Question %d open", m_questionId);
+   }
+
+   // Shown when the dialog has caught up and nobody holds the booster or
+   // the fire button (no Yes or No by a press from before)
+   if ((m_questionId >= 0) && !m_questionShown &&
+      !(g_MessageDisplay && g_MessageDisplay->hasQueuedMessages()) &&
+      !flightButtonsDown)
+   {
+      m_questionShown = true;
+      m_questionKeysArmed = false;
+
+      // Turn presses from before must not steer when it ends
+      m_turnLeftPressed = false;
+      m_turnRightPressed = false;
+   }
+
+   if (m_questionShown && !g_MainActor->isInPause())
+   {
+      if (!keys[SDL_SCANCODE_Y] && !keys[SDL_SCANCODE_N])
       {
          m_questionKeysArmed = true;
       }
-      else if (m_questionKeysArmed && isQuestionShown())
+      else if (m_questionKeysArmed)
       {
          answerQuestion(keys[SDL_SCANCODE_Y] != 0);
       }
@@ -561,7 +632,7 @@ void SceneActor::updateQuestion(const Uint8* keys)
       int id = m_answeredQuestionId;
       m_questionAnswer = -2;
 
-      const char* eventId = (answer == 1) ? "QsYs" : (answer == 0) ? "QsNo" : "QsWd";
+      const char* eventId = (answer == 1) ? "QsYs" : "QsNo";
       logs::messageln("Question %d: %s", id, eventId);
 
       // Lua may ask the next question from its handler
@@ -663,7 +734,11 @@ void SceneActor::doUpdate(const UpdateState& us)
    {
       if (!m_externalControl)
       {
-         if (data[SDL_SCANCODE_W] || m_boosterPressed)
+         // While a question is shown the Leapfrog is parked: the booster
+         // and fire buttons are Yes and No, and nothing steers
+         bool parked = isQuestionShown();
+
+         if (!parked && (data[SDL_SCANCODE_W] || m_boosterPressed))
          {
             m_leapfrog->fireMainBooster(true);
          }
@@ -672,9 +747,8 @@ void SceneActor::doUpdate(const UpdateState& us)
             m_leapfrog->fireMainBooster(false);
          }
 
-         if (isQuestionShown())
+         if (parked)
          {
-            // The turn buttons are Yes and No just now
             m_leapfrog->fireSteeringBooster(0);
          }
          else if (data[SDL_SCANCODE_A] || m_turnLeftPressed)
@@ -691,7 +765,7 @@ void SceneActor::doUpdate(const UpdateState& us)
          }
       }
 
-      if (data[SDL_SCANCODE_RETURN] || m_firePressed)
+      if (!isQuestionShown() && (data[SDL_SCANCODE_RETURN] || m_firePressed))
       {
          m_leapfrog->fireGun(true);
       }

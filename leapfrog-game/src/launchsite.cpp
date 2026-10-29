@@ -30,7 +30,8 @@ LaunchSite::LaunchSite(
    m_enginesIgnited(false),
    m_armInitialRegistration(true),
    m_active(true),
-   m_announceLanded(false)
+   m_announceLanded(false),
+   m_launchOnHold(false)
 {
 	initCompoundObjectParts(sceneParent, sceneParent, parentObject, world, pos, root, groupIndex);
 
@@ -71,6 +72,7 @@ LaunchSite::LaunchSite(
    // Active unless the behaviour says otherwise; Lua can change it (property 2)
    m_active = root.child("behaviour").attribute("active").as_bool(true);
    m_properties.push_back(ObjectProperty(this, NULL, active, m_active ? 1.0f : 0.0f));
+   m_properties.push_back(ObjectProperty(this, NULL, abortLaunch, 0.0f));
 
    addEventListener(LaunchSiteExtTriggerLaunchEvent::EVENT, CLOSURE(this, &LaunchSite::setLaunchTriggerProperty));
 
@@ -127,6 +129,32 @@ void LaunchSite::doUpdate(const UpdateState &us)
       }
       break;
    case leapfrogLanded:
+      if (!m_leftFootContact && !m_rightFootContact)
+      {
+         // Left before the grabber took it: no launch
+         logs::messageln("Launch site %s: the Leapfrog left, launch cancelled", getName().c_str());
+         m_launchOnHold = false;
+         m_state = idle;
+         m_properties[state].setProperty((float)m_state);
+         break;
+      }
+
+      if (m_sceneActor->hasPendingQuestion())
+      {
+         // A question first: it may abort the launch (property 3)
+         if (!m_launchOnHold)
+         {
+            m_launchOnHold = true;
+            if (g_HeadDownDisplay)
+            {
+               g_HeadDownDisplay->logMessage("Launch on hold");
+            }
+         }
+         break;
+      }
+
+      m_launchOnHold = false;
+
       m_grabberJoint->EnableMotor(true);
       m_grabberJoint->SetMaxMotorForce(100000.0);
       m_grabberJoint->SetMotorSpeed(6.0);
@@ -340,20 +368,25 @@ void LaunchSite::doUpdate(const UpdateState &us)
 
       break;
    }
+
+   // Questions (SceneActor::askQuestion) open while the Leapfrog stands
+   // here: idle, or a launch waiting for clearance
+   if (m_sceneActor != NULL)
+   {
+      m_sceneActor->setLeapfrogStandsOn(this,
+         ((m_state == idle) || (m_state == leapfrogLanded)) &&
+         m_leftFootContact && m_rightFootContact);
+   }
 }
 
 void LaunchSite::leapfrogFootTouch(b2Contact* contact, bool leftFoot, LeapFrog* leapfrog)
 {
    m_leapFrog = leapfrog;
 
-   // We only allow landing before the launch has started
-   if (m_state != idle)
-   {
-      return;
-   }
-
    if (m_leapFrog != NULL)
    {
+      // Kept in every state: a launch on hold needs to know whether the
+      // Leapfrog still stands here
       if (leftFoot)
       {
          m_leftFootContact = true;
@@ -361,6 +394,12 @@ void LaunchSite::leapfrogFootTouch(b2Contact* contact, bool leftFoot, LeapFrog* 
       else
       {
          m_rightFootContact = true;
+      }
+
+      // We only allow landing before the launch has started
+      if (m_state != idle)
+      {
+         return;
       }
 
       // An inactive launch site can be landed on, but nothing happens
@@ -479,6 +518,28 @@ void LaunchSite::updateHoldAngle(timeMS now)
 
 void LaunchSite::setPropertyImpl(int propId, float value)
 {
+   if (propId == abortLaunch)
+   {
+      m_properties[abortLaunch].setPropertyNoEvent(0.0f);
+
+      if (m_state == leapfrogLanded)
+      {
+         m_launchOnHold = false;
+         m_state = idle;
+         m_properties[state].setProperty((float)m_state);
+         logs::messageln("Launch site %s: launch aborted", getName().c_str());
+         if (g_HeadDownDisplay)
+         {
+            g_HeadDownDisplay->logMessage("Launch aborted");
+         }
+      }
+      else if (m_state != idle)
+      {
+         logs::warning("Launch site %s: too late to abort the launch (state %d)", getName().c_str(), (int)m_state);
+      }
+      return;
+   }
+
    if (propId == active)
    {
       bool wasActive = m_active;

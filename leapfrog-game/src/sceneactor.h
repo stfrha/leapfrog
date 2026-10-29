@@ -11,6 +11,9 @@
 #include "softboundary.h"
 #include "parallaxbackground.h"
 
+#include <deque>
+#include <set>
+
 class ManualPan
 {
 public:
@@ -107,11 +110,15 @@ protected:
    bool m_externalControl;
    SceneTypeEnum m_sceneType;
 
-   // Yes/No question asked by the mission script (c_askQuestion)
-   int m_questionId;          // -1: no question pending
+   // Yes/No questions asked by the scripts (c_askQuestion), see
+   // askQuestion below
+   std::deque<int> m_questionQueue;  // asked, not yet open
+   int m_questionId;          // the open question, -1: none
+   bool m_questionShown;      // the open question has its Yes/No buttons
    int m_questionAnswer;      // answer waiting to be sent to Lua (-2: none)
    int m_answeredQuestionId;
-   bool m_questionKeysArmed;  // Y and N have been up since the question
+   bool m_questionKeysArmed;  // Y and N have been up since it was shown
+   std::set<const void*> m_leapfrogStandsOn;  // pads and launch sites
    bool m_creditCheatArmed;   // C has been up since the last cheat
    void updateQuestion(const Uint8* keys);
 
@@ -200,15 +207,31 @@ public:
    
    int createSceneTimer(int numOfTicks);
 
-   // Yes/No questions. The turn buttons show Yes and No once the dialog has
-   // shown all its queued messages (the question is normally the last one).
-   // The answer reaches Lua as event "QsYs", "QsNo" or, when the question is
-   // withdrawn because the player fires the main booster, "QsWd"; the
-   // event's parameter is the question id.
+   // Yes/No questions. Flight controls are never taken over in flight, so
+   // a question is only answered with the Leapfrog standing on a landing
+   // pad or a launch site (active or not). Questions wait in a queue in
+   // the order asked (a question already queued or open isn't added
+   // again) and open one at a time while the Leapfrog stands; the dialog
+   // can say so meanwhile ("touch down and let's talk"). An open question
+   // is shown once the dialog has shown its queued messages (the question
+   // is normally the last one) and the booster and fire buttons are up;
+   // then the booster button is Yes and the fire button No (keys Y and N),
+   // and the Leapfrog's controls do nothing until it is answered. Pushed
+   // off the pad before that, the question goes back to the front of the
+   // queue. The answer reaches Lua as event "QsYs" or "QsNo" with the
+   // question id as parameter. Questions belong to the scene: those not
+   // answered are dropped when it ends.
    void askQuestion(int questionId);
-   void cancelQuestion(void);
+   void cancelQuestion(int questionId);   // -1: all, open and queued
    void answerQuestion(bool yes);
    bool isQuestionShown(void);
+   bool hasPendingQuestion(void);         // open or queued
+
+   // Landing pads and launch sites report whether the Leapfrog stands on
+   // them (a pad: both feet down and still; a launch site: until its launch
+   // sequence takes the Leapfrog)
+   void setLeapfrogStandsOn(const void* place, bool stands);
+   bool doesLeapfrogStand(void);
 
    // Cheats: key C or a double tap on the HUD's credits (+100), a double
    // tap on the fuel bar (full tank)

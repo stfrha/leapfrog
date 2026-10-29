@@ -156,12 +156,14 @@ function T:takeOff()
    step(self, function() self.engine:takeOff() end)
 end
 
--- Fire the main booster without taking off (withdraws an open question)
+-- Fire the main booster without taking off (fails while a question is
+-- shown: then the booster button is its Yes)
 function T:boost()
    step(self, function() self.engine:boost() end)
 end
 
--- Answer the open question
+-- Answer the open question (it opens when the Leapfrog stands on a
+-- landing pad or launch site)
 function T:answer(id, yes)
    step(self, function() self.engine:answer(id, yes) end)
 end
@@ -181,9 +183,22 @@ end
 -- (property 1) by the script, then the scene exits to deep space
 function T:launch(site)
    step(self, function() self.engine:land(site) end)
+   self:completeLaunch(site, 3)
+end
+
+-- The launch sequence of a site the Leapfrog stands on runs to the end
+-- (the scene exits to deep space). It must be triggered and not aborted,
+-- and no question may be pending: a launch waits for every question.
+function T:completeLaunch(site, level)
+   level = level or 2
    local obj = self.engine:getObject(site)
    if not obj or not obj.launchTriggered then
-      self:fail("launch: the script did not trigger " .. site .. " (property 1)", 2)
+      self:fail("launch: " .. site .. " has no launch triggered (property 1)"
+         .. ((obj and obj.launchAborts) and ", it was aborted" or ""), level)
+   end
+   if self.engine:hasPendingQuestion() then
+      self:fail(string.format("launch: on hold, question %s is pending",
+         tostring(self.engine.question or self.engine.questionQueue[1])), level)
    end
    step(self, function() self.engine:exitScene(0, 1) end)
 end
@@ -200,6 +215,15 @@ end
 -- Sets a global of the scripts (e.g. currentMission = 0 for free play)
 function T:setGlobal(name, value)
    self.engine.env[name] = value
+end
+
+-- A script asks a question (c_askQuestion), as a mission would from one of
+-- its handlers; for tests of the question rules themselves
+function T:askQuestion(id)
+   step(self, function()
+      self.engine.env.c_askQuestion(id)
+      self.engine:updateQuestions()
+   end)
 end
 
 -- Sets the scene up again, as the scripts do after a state change
@@ -407,6 +431,27 @@ end
 function T:expectNoQuestion()
    if self.engine.question ~= nil then
       self:fail("expected no open question, open: " .. tostring(self.engine.question), 2)
+   end
+   pass(self)
+end
+
+-- Asked and waiting in the queue (in flight, or behind another question)
+function T:expectQuestionQueued(id)
+   for _, q in ipairs(self.engine.questionQueue) do
+      if q == id then
+         pass(self)
+         return
+      end
+   end
+   self:fail(string.format("expected question %s in the queue, queued: {%s}, open: %s", tostring(id),
+      table.concat(self.engine.questionQueue, ", "), tostring(self.engine.question)), 2)
+end
+
+-- Neither open nor queued
+function T:expectNoQuestionPending()
+   if self.engine:hasPendingQuestion() then
+      self:fail(string.format("expected no question pending, open: %s, queued: {%s}",
+         tostring(self.engine.question), table.concat(self.engine.questionQueue, ", ")), 2)
    end
    pass(self)
 end

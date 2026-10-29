@@ -98,6 +98,9 @@
     <None Include="tests\mining_repair.lua" />
     <None Include="tests\test_mission.lua" />
     <None Include="tests\saving.lua" />
+    <None Include="tests\swarm.lua" />
+    <None Include="tests\test_starts.lua" />
+    <None Include="tests\questions.lua" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
 </Project>

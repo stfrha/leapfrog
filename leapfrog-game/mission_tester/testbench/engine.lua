@@ -9,7 +9,8 @@
 --   - GameStatus: what is in memory and what is in the save file;
 --   - SceneActor: event listeners (c_registerEventHandler adds one per call,
 --     so a double registration delivers an event twice, as in the game),
---     scene timers, the Yes/No question;
+--     scene timers, the Yes/No questions (a queue; one opens while the
+--     Leapfrog stands on a landing pad or launch site);
 --   - CompoundObject: the scene's objects, read from the scene XML files, so
 --     a misspelt object or map actor name is caught;
 --   - the Leapfrog, landing pads and launch sites, as far as their
@@ -38,6 +39,7 @@ function Engine.new(dataDir, srcDir)
    self.log = {}              -- everything that happened, for failure reports
    self.xmlCache = {}
    self.listeners = {}
+   self.questionQueue = {}
    self.timers = {}
    self.timerCounter = 0
    self.map = {}
@@ -228,8 +230,8 @@ function Engine:initBehaviour(obj)
       obj.fuelRate = tonumber(a.fuelRate or "12")
       obj.fuelPrice = tonumber(a.fuelPrice or "5")
    elseif obj.behaviour == "launchSite" then
-      -- 0 state, 1 launch trigger, 2 active
-      obj.props = { [0] = 0, [1] = 0, [2] = (a.active == "false") and 0 or 1 }
+      -- 0 state, 1 launch trigger, 2 active, 3 abort launch (write; reads 0)
+      obj.props = { [0] = 0, [1] = 0, [2] = (a.active == "false") and 0 or 1, [3] = 0 }
    elseif obj.behaviour == "swarm" then
       -- Swarm: 0 active, 1 rate, 2 maxAlive, 3 alive (read only),
       -- 4 spawned (read only), 5 recall (write 1; reads 0)
@@ -322,6 +324,16 @@ function Engine:setProperty(obj, id, value)
       -- any value) starts the launch sequence
       if obj.behaviour == "launchSite" and id == 1 then
          obj.launchTriggered = true
+      end
+      -- Property 3 takes back a triggered launch that still waits for
+      -- clearance (in the tester: any triggered launch not yet gone)
+      if obj.behaviour == "launchSite" and id == 3 then
+         obj.props[3] = 0
+         if obj.launchTriggered then
+            obj.launchTriggered = false
+            obj.launchAborts = (obj.launchAborts or 0) + 1
+            self:note("LAUNCH", obj.name .. ": launch aborted")
+         end
       end
       -- A swarm's property 5 is recall: the live strippers leave; it reads 0
       if obj.behaviour == "swarm" and id == 5 and value ~= 0 then
@@ -479,13 +491,47 @@ function Engine:runPending()
       self.pendingScene = nil
       self:startScene(p.file, p.sceneType)
    end
+   self:updateQuestions()
+end
+
+-- SceneActor::updateQuestion: questions open one at a time, in the order
+-- asked, while the Leapfrog stands on a landing pad or a launch site (not
+-- yet launched). Leaving before an answer puts the open one back in front.
+-- (The game also waits for the dialog to catch up and the booster and fire
+-- buttons to be up before showing it; the tester shows it at once.)
+function Engine:leapfrogStands()
+   local obj = self.landedOn
+   return obj ~= nil and (obj.behaviour == "landingPad" or obj.behaviour == "launchSite")
+end
+
+function Engine:updateQuestions()
+   local queue = self.questionQueue or {}
+   self.questionQueue = queue
+   local stands = self:leapfrogStands()
+
+   if self.question and not stands then
+      table.insert(queue, 1, self.question)
+      self:note("QUESTION", string.format("%d back in the queue (not standing)", self.question))
+      self.question = nil
+   end
+
+   if not self.question and stands and #queue > 0 then
+      self.question = table.remove(queue, 1)
+      self:note("QUESTION", string.format("%d open (on %s)", self.question, self.landedOn.name))
+   end
+end
+
+function Engine:hasPendingQuestion()
+   return self.question ~= nil or #(self.questionQueue or {}) > 0
 end
 
 function Engine:startScene(file, sceneType)
    -- clearAllTriggersAndEvents, then the old scene goes
    self.listeners = {}
    self.scene = nil
-   self.question = nil
+   self.question = nil        -- the open question (id), nil: none
+   self.questionQueue = {}    -- asked, waiting for the Leapfrog to stand
+   self.landedOn = nil
    self.timers = {}
    self.timerCounter = 0
    self.map = {}
@@ -714,9 +760,11 @@ function Engine:land(name)
    else
       error("land: '" .. name .. "' is neither a landing pad nor a launch site", 2)
    end
+   self:updateQuestions()
 end
 
--- Taking off: the booster withdraws an open question, then the pad says so
+-- Taking off: the booster fires, then the pad says so. With a question
+-- shown the booster button is its Yes, so a test must answer it first.
 function Engine:takeOff()
    self:boost()
    local obj = self.landedOn
@@ -727,22 +775,28 @@ function Engine:takeOff()
          self:deliver(obj.name, "LpTO", 0)
       end
    end
+   if obj and obj.behaviour == "launchSite" and obj.launchTriggered then
+      -- Left before the grabber took it: the launch is cancelled
+      obj.launchTriggered = false
+      self:note("LAUNCH", obj.name .. ": left, launch cancelled")
+   end
+   self:updateQuestions()
 end
 
 function Engine:boost()
    if self.question then
-      local id = self.question
-      self.question = nil
-      self:deliverFromScene("QsWd", id)
+      error(string.format("the booster button is Yes while question %d is shown: answer it first", self.question), 4)
    end
 end
 
 function Engine:answer(id, yes)
    if self.question ~= id then
-      error(string.format("answer: question %s is not open (open: %s)", tostring(id), tostring(self.question)), 3)
+      error(string.format("answer: question %s is not open (open: %s, queued: %s)", tostring(id),
+         tostring(self.question), table.concat(self.questionQueue or {}, ", ")), 3)
    end
    self.question = nil
    self:deliverFromScene(yes and "QsYs" or "QsNo", id)
+   self:updateQuestions()
 end
 
 -- ------------------------------------------------------------------------
@@ -932,15 +986,35 @@ function Engine:installApi(env)
          e:problem("c_askQuestion: the question id must be 0 or more")
          return
       end
-      if e.question then
-         e:note("QUESTION", string.format("%d replaces open question %d", id, e.question))
+      -- Already open or queued: nothing happens
+      if e.question == id then
+         e:note("QUESTION", string.format("%d asked again (already open)", id))
+         return
       end
-      e.question = id
-      e:note("QUESTION", "asked " .. id)
+      for _, q in ipairs(e.questionQueue) do
+         if q == id then
+            e:note("QUESTION", string.format("%d asked again (already queued)", id))
+            return
+         end
+      end
+      table.insert(e.questionQueue, id)
+      e:note("QUESTION", "asked " .. id .. " (queued)")
    end
 
-   api.c_cancelQuestion = function()
-      e.question = nil
+   api.c_cancelQuestion = function(id)
+      if id == nil or id < 0 then
+         e.question = nil
+         e.questionQueue = {}
+         return
+      end
+      if e.question == id then
+         e.question = nil
+      end
+      for i = #e.questionQueue, 1, -1 do
+         if e.questionQueue[i] == id then
+            table.remove(e.questionQueue, i)
+         end
+      end
    end
 
    self.dialog = self.dialog or {}

@@ -20,6 +20,8 @@ ButtonDisplay::ButtonDisplay() :
    m_turnLeftSprite(NULL),
    m_turnRightSprite(NULL),
    m_yesSprite(NULL),
+   m_boosterSprite(NULL),
+   m_fireSprite(NULL),
    m_noSprite(NULL),
    m_questionShown(false),
    m_panAvailable(true)
@@ -45,11 +47,13 @@ void ButtonDisplay::sceneDownHandler(Event* event)
 
    Point p = Point((int)v.x, (int)v.y);
 
-   // While a question is shown, the turn buttons answer it
+   // While a question is shown, the booster button is Yes and the fire
+   // button No (only shown on a pad; in flight they are never anything
+   // but booster and fire)
    if (m_sceneActor->isQuestionShown() &&
-      (m_turnLeftButtonRect.pointIn(p) || m_turnRightButtonRect.pointIn(p)))
+      (m_boosterButtonRect.pointIn(p) || m_fireButtonRect.pointIn(p)))
    {
-      m_sceneActor->answerQuestion(m_turnLeftButtonRect.pointIn(p));
+      m_sceneActor->answerQuestion(m_boosterButtonRect.pointIn(p));
    }
    else if (m_turnLeftButtonRect.pointIn(p))
    {
@@ -270,11 +274,12 @@ void ButtonDisplay::createButtonOverlay(void)
    m_turnLeftSprite = turnLeftButton.get();
    m_turnRightSprite = turnRightButton.get();
 
-   // Yes and No take the turn buttons' places while a question is shown
+   // Yes and No take the booster's and the fire button's places while a
+   // question is shown (those two are hidden then)
    spSprite yesButton = new Sprite();
    yesButton->setResAnim(g_GraphRes.getResources(GraphicResources::ResourceTypeEnum::hud).getResAnim("yes_button"));
    yesButton->setSize(g_Layout.getButtonWidth(), g_Layout.getButtonWidth());
-   yesButton->setPosition(m_turnLeftButtonRect.getLeftTop());
+   yesButton->setPosition(m_boosterButtonRect.getLeftTop());
    yesButton->setAnchor(0.0f, 0.0f);
    yesButton->setTouchEnabled(false);
    yesButton->setVisible(false);
@@ -284,7 +289,7 @@ void ButtonDisplay::createButtonOverlay(void)
    spSprite noButton = new Sprite();
    noButton->setResAnim(g_GraphRes.getResources(GraphicResources::ResourceTypeEnum::hud).getResAnim("no_button"));
    noButton->setSize(g_Layout.getButtonWidth(), g_Layout.getButtonWidth());
-   noButton->setPosition(m_turnRightButtonRect.getLeftTop());
+   noButton->setPosition(m_fireButtonRect.getLeftTop());
    noButton->setAnchor(0.0f, 0.0f);
    noButton->setTouchEnabled(false);
    noButton->setVisible(false);
@@ -298,6 +303,7 @@ void ButtonDisplay::createButtonOverlay(void)
    fireButton->setAnchor(0.0f, 0.0f);
    fireButton->setTouchEnabled(false);
    fireButton->attachTo(this);
+   m_fireSprite = fireButton.get();
 
    spSprite thursterButton = new Sprite();
    thursterButton->setResAnim(g_GraphRes.getResources(GraphicResources::ResourceTypeEnum::hud).getResAnim("booster_button"));
@@ -306,6 +312,7 @@ void ButtonDisplay::createButtonOverlay(void)
    thursterButton->setAnchor(0.0f, 0.0f);
    thursterButton->setTouchEnabled(false);
    thursterButton->attachTo(this);
+   m_boosterSprite = thursterButton.get();
 
    spSprite pauseButton = new Sprite();
    pauseButton->setResAnim(g_GraphRes.getResources(GraphicResources::ResourceTypeEnum::hud).getResAnim("pause_button"));
@@ -373,9 +380,13 @@ void ButtonDisplay::doUpdate(const UpdateState& us)
    if ((shown != m_questionShown) && (m_yesSprite != NULL))
    {
       m_questionShown = shown;
-      m_turnLeftSprite->setVisible(!shown);
-      m_turnRightSprite->setVisible(!shown);
+      m_boosterSprite->setVisible(!shown);
+      m_fireSprite->setVisible(!shown);
       m_yesSprite->setVisible(shown);
       m_noSprite->setVisible(shown);
+
+      // The Leapfrog is parked meanwhile: the turn buttons do nothing
+      m_turnLeftSprite->setAlpha(shown ? 96 : 255);
+      m_turnRightSprite->setAlpha(shown ? 96 : 255);
    }
 }

@@ -3,7 +3,9 @@
 local function setup(t, legs, credits)
    t:newGame()
    -- Out of Bruno's opening, so his offer doesn't get in the way
+   t:land("siloLandingPad")
    t:answer(t:mission(1).Question.acceptJob, true)
+   t:takeOff()
    t:damageLegs(legs)
    t:setProperty("leapfrog1", 8, credits)
    t:clearDialog()
@@ -71,23 +73,22 @@ test("repair: works in free play (no mission)", function(t)
    t:expectQuestion(t:module("mining").Question.repairLegs)
 end)
 
-known("repair: the repair offer doesn't lose Bruno's open job offer",
-   "c_askQuestion replaces an open question without telling its script, so "
-   .. "mission 1 still thinks its offer is open and never asks again "
-   .. "(fix: a question queue, or a withdraw event for the replaced question)",
-   function(t)
-      t:newGame()
-      local Q1 = t:mission(1).Question
-      local QM = t:module("mining").Question
-      -- A crash during Bruno's call, then landing at the silo with
-      -- credits for the repair: its question replaces Bruno's
-      t:damageLegs(0)
-      t:setProperty("leapfrog1", 8, 70)
-      t:land("siloLandingPad")
-      t:expectQuestion(QM.repairLegs)
-      t:answer(QM.repairLegs, true)
-      t:takeOff()
-      t:clearDialog()
-      t:land("siloLandingPad")
-      t:expectQuestion(Q1.acceptJob)
-   end)
+test("repair: asked while Bruno's offer is open, it comes after it", function(t)
+   t:newGame()
+   local Q1 = t:mission(1).Question
+   local QM = t:module("mining").Question
+   -- A crash during Bruno's call, then landing at the silo with credits
+   -- for the repair: his question was asked first, so it opens first
+   t:damageLegs(0)
+   t:setProperty("leapfrog1", 8, 70)
+   t:land("siloLandingPad")
+   t:expectQuestion(Q1.acceptJob)
+   t:expectQuestionQueued(QM.repairLegs)
+
+   t:answer(Q1.acceptJob, true)
+   t:expectState(t:mission(1).State.accepted)
+   t:expectQuestion(QM.repairLegs)
+   t:answer(QM.repairLegs, true)
+   t:expectProperty("leapfrog1", 10, 1)
+   t:expectNoQuestionPending()
+end)

@@ -45,8 +45,8 @@ local Question = {
    acceptJob = 1,      -- Bruno's offer
 }
 mission1.Question = Question
-local offerPending = false     -- asked and not yet answered
-local offerAtOrb = false       -- asked while standing on the Orb's pad
+local offerPending = false     -- asked and not yet answered (in this scene:
+                               -- unanswered questions end with it)
 
 -- The way to the Orb: the landing pads Bruno put fuel in, then the Orb.
 -- The next one flashes on the map. Object and map actor (body) names
@@ -70,7 +70,9 @@ local function playBrunoCall()
    c_addDialogMessage("Get into town, over to the Orb.", "Bruno", true, 90, 0)
    c_addDialogMessage("I don't have enough fuel to get there.", "Leapfrog", false, 200, 0)
    c_addDialogMessage("Ok, I'm gonna make it easy for you. I will put in some credits into a couple of landing pads along the way. They will give you enough fuel to get here.", "Bruno", true, 300, 0)
-   c_addDialogMessage("Do you want the job?", "Bruno", true, 190, 0)
+   -- Asked in flight: the question opens when the leapfrog touches down
+   -- on a pad (c_askQuestion)
+   c_addDialogMessage("Do you want the job? Touch down on the closest pad and let's discuss it.", "Bruno", true, 190, 0)
    c_askQuestion(Question.acceptJob)
    offerPending = true
 
@@ -134,7 +136,6 @@ local function askAgain(atOrb)
       return
    end
 
-   offerAtOrb = atOrb
    if atOrb then
       c_addDialogMessage("You came anyway. So, do you want the job?", "Bruno", true, 30, 0)
    else
@@ -156,7 +157,9 @@ local function answerMission1(yes)
    currentState = State.accepted
    routeStep = 1
 
-   if offerAtOrb then
+   -- Answered on the Orb's pad (the question opens on whatever pad the
+   -- leapfrog lands on first; landing pad property 1 = leapfrog landed)
+   if c_getObjectProperty("oreLanding", 1) == 1 then
       -- Already here
       c_addDialogMessage("I take it.", "Leapfrog", false, 20, 0)
       arriveAtOrb()
@@ -227,6 +230,10 @@ mission1.setupMissionStateScene = function()
       end
 
       registerHomeHandlers()
+
+      -- A question doesn't outlive its scene: whatever was open is gone,
+      -- Bruno asks again on the next landing at the silo or the Orb
+      offerPending = false
 
       -- Launch site on the map only once Edith has had her say
       c_setObjectMapShown("launchSite1", "mainTank", currentState == State.atOrb)
@@ -347,15 +354,13 @@ mission1.missionStateSceneEventHandler = function(eventId, actorName, parameter1
 
    if currentScene == "home_scene.xml" then
 
-      -- Answers to c_askQuestion come as QsYs / QsNo (QsWd: took off
-      -- instead), with the question id as parameter
+      -- Answers to c_askQuestion come as QsYs / QsNo, with the question
+      -- id as parameter
       if parameter1 == Question.acceptJob then
          if eventId == "QsYs" then
             answerMission1(true)
          elseif eventId == "QsNo" then
             answerMission1(false)
-         elseif eventId == "QsWd" then
-            offerPending = false
          end
       end
 

@@ -20,6 +20,8 @@ private:
    oxygine::Sprite* m_turnRightSprite;
    oxygine::Sprite* m_yesSprite;
    oxygine::Sprite* m_noSprite;
+   oxygine::Sprite* m_boosterSprite;
+   oxygine::Sprite* m_fireSprite;
    bool m_questionShown;
 
    // False in scenes without the camera pan button (orbit)

@@ -3,6 +3,7 @@
 
 local function setup(t)
    t:newGame()
+   t:land("siloLandingPad")
    t:answer(t:mission(1).Question.acceptJob, true)
    t:clearDialog()
    local calls = {}
@@ -64,6 +65,7 @@ end)
 
 test("swarm: with a resource list, only those count", function(t)
    t:newGame()
+   t:land("siloLandingPad")
    t:answer(t:mission(1).Question.acceptJob, true)
    local swarm = t:module("swarm")
    local stripped = false

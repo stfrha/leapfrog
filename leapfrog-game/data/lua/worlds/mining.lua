@@ -116,8 +116,9 @@ mining.eventHandler = function(eventId, actorName, parameter1)
       end
    end
 
-   -- Answers to c_askQuestion come as QsYs / QsNo (QsWd: took off
-   -- instead), with the question id as parameter
+   -- Answers to c_askQuestion come as QsYs / QsNo, with the question id
+   -- as parameter (asked on the silo's pad, so it opens at once, or after
+   -- a question asked before it)
    if parameter1 == Question.repairLegs then
       if eventId == "QsYs" then
          answerLegRepair(true)

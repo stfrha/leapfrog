@@ -572,11 +572,18 @@ static int c_startSceneTimer(lua_State *L)
 
 // c_askQuestion(questionId)
 // Asks the player a yes/no question (put the question itself in the dialog
-// first, with c_addDialogMessage). When the dialog has shown its queued
-// messages, the two turn buttons become Yes and No (keys Y and N). The
-// answer comes to missionStateSceneEventHandler as event "QsYs" or "QsNo";
-// "QsWd" if the player fires the main booster instead. The event's
-// parameter is questionId (>= 0). A new question replaces an unanswered one.
+// first, with c_addDialogMessage). Questions are only answered with the
+// Leapfrog standing on a landing pad or a launch site: one asked in flight
+// waits in a queue until it lands (the dialog can tell the player to touch
+// down). Queued questions open one at a time, in the order asked; asking
+// one that is already queued or open does nothing. An open question shows
+// once the dialog has shown its queued messages: the booster button
+// becomes Yes and the fire button No (keys Y and N), and the Leapfrog is
+// parked until it is answered. A launch site with a launch triggered waits
+// while a question is pending (see LaunchSite, property 3 aborts). The
+// answer comes to missionStateSceneEventHandler as event "QsYs" or "QsNo",
+// with questionId (>= 0) as parameter. Questions not answered when the
+// scene ends are dropped.
 static int c_askQuestion(lua_State *L)
 {
    int questionId = lua_tointeger(L, 1);
@@ -592,11 +599,19 @@ static int c_askQuestion(lua_State *L)
    return 0;
 }
 
-// c_cancelQuestion()
-// Takes back an unanswered question without an answer event.
+// c_cancelQuestion([questionId])
+// Takes back an unanswered question, open or queued, without an answer
+// event. Without an id: every question of the scene.
 static int c_cancelQuestion(lua_State *L)
 {
-   g_LuaInterface.getSceneActor()->cancelQuestion();
+   int questionId = -1;
+
+   if (lua_gettop(L) >= 1)
+   {
+      questionId = (int)lua_tointeger(L, 1);
+   }
+
+   g_LuaInterface.getSceneActor()->cancelQuestion(questionId);
 
    return 0;
 }

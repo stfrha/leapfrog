@@ -43,6 +43,18 @@ Properties (for Lua: c_getObjectProperty / c_setObjectProperty):
   inactive launch site, but it sends no landed event (LsLL), so nothing
   starts. Set from the behaviour's active attribute (default true).
   Activating it while the Leapfrog stands on it sends the event at once.
+- 3 abort launch: setting it (to any value) takes back a triggered launch
+  while the site still waits for clearance (state leapfrogLanded), back
+  to idle. Later the sequence has the Leapfrog in its grabber and runs to
+  the end; the setting is then ignored (logged). Reads 0.
+
+Questions (SceneActor::askQuestion): the Leapfrog counts as standing on
+the site while it is idle with both feet on it, and while a triggered
+launch waits in leapfrogLanded. A triggered launch waits there for as long
+as a question is pending (open or queued), so a question can decide
+whether to go on or abort (property 3). Leaving the site before the
+grabber moves cancels the launch (back to idle; the next landing sends
+LsLL again).
 */
 
 
@@ -55,7 +67,8 @@ public:
 	{
 		state = 0,
 		lfLanded = 1,     // property 1 is the launch trigger
-		active = 2
+		active = 2,
+		abortLaunch = 3
 	};
 
    enum LaunchStateEnum
@@ -90,6 +103,7 @@ private:
    bool m_armInitialRegistration;
    bool m_active;
    bool m_announceLanded;     // activated while landed: send the landed event in doUpdate
+   bool m_launchOnHold;       // waiting in leapfrogLanded for a question
 
    b2RevoluteJoint* m_leftFootRestJoint;
    b2RevoluteJoint* m_rightFootRestJoint;
