@@ -334,6 +334,10 @@ private:
    };
 
    bool m_actorExists;
+   bool m_inOrbit;      // goToOrbit until goToMap: no map, so map items
+                        // added meanwhile (e.g. the orbit scene's Leapfrog)
+                        // wait unattached instead of showing in the
+                        // orbit display's corner
    HudModeType m_hudMode;
    std::vector<spMapItem> m_mapActors;
 

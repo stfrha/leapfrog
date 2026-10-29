@@ -1211,6 +1211,7 @@ void TerrainSensorLayer::doUpdate(const UpdateState& us)
 HeadDownDisplay::HeadDownDisplay() :
    m_itemIdRepository(0),
    m_actorExists(false),
+   m_inOrbit(false),
    m_hudMode(HudModeType::hudModeInit),
    m_squeezed(false)
 {
@@ -1335,6 +1336,7 @@ void HeadDownDisplay::initialiseHdd(
    m_instruments->attachTo(g_MainActor);
 
    m_actorExists = true;
+   m_inOrbit = false;
 
    // The terrain sensor's traces, under the map items
    attachTerrainSensor();
@@ -1362,7 +1364,7 @@ int HeadDownDisplay::addMeToMap(
    // We need to know if the map actor exists 
    // or not. 
    spMapItem mi;
-   if (m_actorExists)
+   if (m_actorExists && !m_inOrbit)
    {
        mi = new MapItem(
          this,
@@ -1501,6 +1503,7 @@ void HeadDownDisplay::squeeze(bool squeezed, timeMS duration, timeMS delay)
 
 void HeadDownDisplay::goToOrbit(void)
 {
+   m_inOrbit = true;
 
    if ((m_hudMode == HudModeType::hudModeMap) || (m_hudMode == HudModeType::hudModeInit))
    {
@@ -1693,6 +1696,7 @@ void HeadDownDisplay::logAmount(const std::string& key, const std::string& forma
 
 void HeadDownDisplay::goToMap(void)
 {
+   m_inOrbit = false;
    if (m_hudMode != HudModeType::hudModeMap)
    {
       clearDisplay();
