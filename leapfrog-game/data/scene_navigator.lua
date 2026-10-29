@@ -88,8 +88,8 @@ end
 -- -1 = Down, but the planet has no landing sites
 -- -2 = Burned up during re-entry (too much braking): back to the latest save
 -- -3 = Bounced back to deep space (too little braking)
--- -4 = No burn while the sites came by: the orbit starts over (as entered
---      from deep space; nothing saved)
+-- (No burn while the sites come by is no exit: the orbit scene shows the
+-- next revolution.)
 
 -- Exiting hyperspace scene is TBD
 
@@ -213,13 +213,6 @@ function lua_sceneExitHandler(exitSceneType, exitParameter)
          if exitParameter == -2 then
             -- Burned up: dead, back to the latest save
             c_loadLatestSave()
-            return
-         elseif exitParameter == -4 then
-            -- No site taken: round again, the orbit as entered from deep
-            -- space (lower right corner). Not saved: the save is that
-            -- arrival already.
-            lua_findLeapfrogEntryPosition(1, 3)
-            c_startScene(currentScene, currentSceneType)
             return
          elseif exitParameter == -3 then
             -- Bounced: deep space again, re-entry to try once more

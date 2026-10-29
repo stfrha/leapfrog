@@ -155,19 +155,3 @@ test("re-entry: burned up: back to the latest save (the orbit, as entered)", fun
    t:expectHud("Burned up on re-entry")
    t:expect(t:property("leapfrog1", 8) ~= 99, "the save's credits, not those since")
 end)
-
-test("re-entry: no site taken: the orbit starts over, nothing saved or charged", function(t)
-   toOrbit(t)
-   local credits = t:property("leapfrog1", 8)
-   t:reentry("missed")
-   t:expectScene("orbit_scene.xml")
-   t:expectHud("No landing site taken. Orbiting again.")
-   t:expectProperty("leapfrog1", 8, credits)
-   t:expectSaved("exitType", 1)                -- still the arrival from deep space
-   local lf = t.engine:leapfrog()
-   t:expectEqual(lf and lf.file, "leapfrog_deep_space.xml", "arriving as from deep space")
-
-   -- And then a landing as usual
-   t:reentry("onSite", 1)
-   t:expectScene("landing_scene.xml")
-end)

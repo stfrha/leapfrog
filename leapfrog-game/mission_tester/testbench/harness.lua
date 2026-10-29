@@ -205,8 +205,7 @@ end
 
 -- A re-entry ends (in the orbit scene): outcome "onSite" or "offSite"
 -- (siteIndex: the closest site, 0.. in angle order; distance off in planet
--- units, a marker is 100 wide), "bounced", "burnedUp" or "missed" (no burn
--- while the sites came by). The scripts get
+-- units, a marker is 100 wide), "bounced" or "burnedUp". The scripts get
 -- it from c_lastReentry, then the orbit scene exits as the game does.
 function T:reentry(outcome, siteIndex, distance)
    step(self, function() self.engine:endReentry(outcome, siteIndex, distance) end)

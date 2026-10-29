@@ -115,8 +115,10 @@ void OrbitSpaceScene::doUpdate(const oxygine::UpdateState &us)
 
 void OrbitSpaceScene::atOrbitEstablished(Event* event)
 {
-   m_leapfrog->setHoldAngle(-MATH_PI/2.0f);
-   m_leapfrog->fireSteeringBooster(-1);
+   // Stays nose right, as it braked into orbit: the re-entry burn brakes
+   // the same way (the Leapfrog travels leftwards in orbit; it used to
+   // turn round here, so the re-entry burn pushed it on instead)
+   m_leapfrog->setHoldAngle(MATH_PI / 2.0f);
    m_state = turnBooster;
 }
 

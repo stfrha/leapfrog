@@ -116,6 +116,8 @@ private:
    // lands on its site) when the planet's turn brings it to
    // c_landingPointAngle.
    std::vector<float> m_predictedSiteAngles;
+   std::vector<oxygine::spActor> m_siteMarkers;
+   void placeSiteMarkers(bool fadeIn);
    static const float c_missedAngle;
 
    std::set<LandingSite> m_landingSites;
@@ -155,9 +157,13 @@ public:
 
    // True when every site's predicted marker has passed its solution by
    // c_missedAngle without a burn (a burn now would come down far off
-   // every site): the orbit goes round again (OrbitScene). False with no
-   // sites, or before the orbit is established.
+   // every site): the markers come round again (OrbitScene,
+   // restartRevolution). False with no sites, or before the orbit is
+   // established.
    bool allSolutionsPassed(void);
+
+   // The next revolution: the site markers come again (a missed orbit)
+   void restartRevolution(void);
    LandingResult getLandingResult();
 
 protected:

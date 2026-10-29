@@ -257,49 +257,7 @@ void PlanetActor::orbitEstablished(void)
    m_state = PAS_ORBIT_ESTABLISHED;
    m_stateChange = true;
 
-   // Generate predicted landing sites
-
-   for (auto it = m_landingSites.begin(); it != m_landingSites.end(); ++it)
-   {
-      spSprite predSite = new Sprite();
-      predSite->setResAnim(g_GraphRes.getResources(GraphicResources::ResourceTypeEnum::hud).getResAnim("predicted_site"));
-      predSite->setSize(100.0f, 30.0f);
-      predSite->setAnchor(0.5f, 0.5f);
-
-
-      float alpha = c_startAngleOffset - m_planetAngleAtOrbitEstablished - it->m_angle;
-      m_predictedSiteAngles.push_back(alpha);
-      predSite->setPosition(Vector2(3500.0f * cos(alpha), 3500.0f * sin(alpha)));
-      predSite->setRotation(alpha + MATH_PI / 2.0f);
-      predSite->attachTo(m_planet);
-
-      // The site's name under the marker (towards the ground; it turns
-      // with the planet). The planet picture is scaled down to fit the
-      // display, so the font is scaled up to read like the HUD's text.
-      float pictureScale = getScale().x > 0.0f ? getScale().x : 1.0f;
-      spTextField label = new TextField();
-      TextStyle style = TextStyle(g_GraphRes.getResources(GraphicResources::ResourceTypeEnum::hud).getResFont("lf_font"))
-         .withColor(Color::White).alignMiddleH().alignTop();
-      style.fontSize = (int)(g_Layout.getDefaultFontSize() / pictureScale);
-      label->setStyle(style);
-      label->setColor(g_Layout.getPhosphorColor());
-      label->setAnchor(0.0f, 0.0f);
-      label->setSize(100.0f, 30.0f);
-      label->setPosition(0.0f, 30.0f + 6.0f);
-      label->setTouchEnabled(false);
-      label->setText(it->m_label);
-      label->attachTo(predSite);
-
-      spSprite crs = new Sprite();
-      crs->setResAnim(g_GraphRes.getResAnim(it->m_texture));
-      crs->setSize(100.0f, 30.0f);
-      crs->setAnchor(0.5f, 0.5f);
-
-      alpha = c_startAngleOffset - m_planetAngleAtOrbitEstablished - it->m_angle - c_predictedAngleOffset;
-      crs->setPosition(Vector2(3500.0f * cos(alpha), 3500.0f * sin(alpha)));
-      crs->setRotation(alpha + MATH_PI / 2.0f);
-      crs->attachTo(m_planet);
-   }
+   placeSiteMarkers(false);
 
    // generate the trajectory, without angles set to zero, to begin with
    spSprite trajectory[44];
@@ -379,6 +337,87 @@ void PlanetActor::orbitEstablished(void)
    level->attachTo(m_parentObject);
 }
 
+
+// The sites' markers, placed for an orbit established at
+// m_planetAngleAtOrbitEstablished: the predicted ("solution") marker with
+// the site's name, and the site itself further back. fadeIn for a new
+// revolution (restartRevolution).
+void PlanetActor::placeSiteMarkers(bool fadeIn)
+{
+   m_predictedSiteAngles.clear();
+
+   for (auto it = m_landingSites.begin(); it != m_landingSites.end(); ++it)
+   {
+      spSprite predSite = new Sprite();
+      predSite->setResAnim(g_GraphRes.getResources(GraphicResources::ResourceTypeEnum::hud).getResAnim("predicted_site"));
+      predSite->setSize(100.0f, 30.0f);
+      predSite->setAnchor(0.5f, 0.5f);
+
+
+      float alpha = c_startAngleOffset - m_planetAngleAtOrbitEstablished - it->m_angle;
+      m_predictedSiteAngles.push_back(alpha);
+      predSite->setPosition(Vector2(3500.0f * cos(alpha), 3500.0f * sin(alpha)));
+      predSite->setRotation(alpha + MATH_PI / 2.0f);
+      predSite->attachTo(m_planet);
+      m_siteMarkers.push_back(predSite);
+
+      // The site's name under the marker (towards the ground; it turns
+      // with the planet). The planet picture is scaled down to fit the
+      // display, so the font is scaled up to read like the HUD's text.
+      float pictureScale = getScale().x > 0.0f ? getScale().x : 1.0f;
+      spTextField label = new TextField();
+      TextStyle style = TextStyle(g_GraphRes.getResources(GraphicResources::ResourceTypeEnum::hud).getResFont("lf_font"))
+         .withColor(Color::White).alignMiddleH().alignTop();
+      style.fontSize = (int)(g_Layout.getDefaultFontSize() / pictureScale);
+      label->setStyle(style);
+      label->setColor(g_Layout.getPhosphorColor());
+      label->setAnchor(0.0f, 0.0f);
+      label->setSize(100.0f, 30.0f);
+      label->setPosition(0.0f, 30.0f + 6.0f);
+      label->setTouchEnabled(false);
+      label->setText(it->m_label);
+      label->attachTo(predSite);
+
+      spSprite crs = new Sprite();
+      crs->setResAnim(g_GraphRes.getResAnim(it->m_texture));
+      crs->setSize(100.0f, 30.0f);
+      crs->setAnchor(0.5f, 0.5f);
+
+      alpha = c_startAngleOffset - m_planetAngleAtOrbitEstablished - it->m_angle - c_predictedAngleOffset;
+      crs->setPosition(Vector2(3500.0f * cos(alpha), 3500.0f * sin(alpha)));
+      crs->setRotation(alpha + MATH_PI / 2.0f);
+      crs->attachTo(m_planet);
+      m_siteMarkers.push_back(crs);
+   }
+
+
+   if (fadeIn)
+   {
+      for (spActor& marker : m_siteMarkers)
+      {
+         marker->setAlpha(0);
+         marker->addTween(Actor::TweenAlpha(255), 600);
+      }
+   }
+}
+
+// No burn while the sites came by: another revolution. The planet goes on
+// turning; the markers fade out and come again as when the orbit was
+// established (OrbitScene, Fredrik: no new arrival, just the next turn
+// around the planet).
+void PlanetActor::restartRevolution(void)
+{
+   for (spActor& marker : m_siteMarkers)
+   {
+      marker->removeTweens();
+      spTween fade = marker->addTween(Actor::TweenAlpha(0), 400);
+      fade->detachWhenDone();
+   }
+   m_siteMarkers.clear();
+
+   m_planetAngleAtOrbitEstablished = m_planet->getRotation();
+   placeSiteMarkers(true);
+}
 
 void PlanetActor::startReentry(float relativeBurnDeviation, float deviationDistance)
 // The relativeBurnDeviation is the relative error from the 

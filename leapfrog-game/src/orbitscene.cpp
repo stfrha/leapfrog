@@ -15,6 +15,24 @@ using namespace oxygine;
 using namespace pugi;
 using namespace std;
 
+namespace
+{
+   // The last angle of the re-entry path (PlanetActor's trajectory table):
+   // down to the surface
+   const float c_finalPathAngle = 1.905959376f;
+
+   // The Leapfrog's attitude in the space view during re-entry. In orbit
+   // the planet turns clockwise under it, so the Leapfrog travels
+   // leftwards: it brakes nose right (thrust to the right, the flame to
+   // the left, ahead of it), and it meets the air booster first (the
+   // re-entry flames are at the booster and the legs). As the path bends
+   // down it turns, nose up, to upright for the landing.
+   float reentryAttitude(float pathAngle)
+   {
+      return MATH_PI / 2.0f * (1.0f - pathAngle / c_finalPathAngle);
+   }
+}
+
 OrbitScene::OrbitScene(
    CompoundObject* parentObject,
    b2World* world,
@@ -97,19 +115,17 @@ void OrbitScene::doUpdate(const oxygine::UpdateState &us)
       break;
    case waitForUserBreak:
 
-      // No burn while the sites came by: round again (the scripts restart
-      // the orbit, see scene_navigator.lua)
+      // No burn while the sites came by: the next revolution, the site
+      // markers come again (still in orbit: no new arrival)
       if (m_planet->allSolutionsPassed())
       {
-         ReentryResult result;
-         result.m_outcome = ReentryResult::missed;
-         g_LuaInterface.setLastReentry(result);
-         logs::messageln("Re-entry: no burn, every site passed");
+         logs::messageln("Re-entry: no burn, every site passed; next revolution");
+         m_planet->restartRevolution();
 
-         m_state = exited;
-         ExitOrbitSceneEvent event(-4);
-         dispatchEvent(&event);
-         break;
+         if (g_HeadDownDisplay)
+         {
+            g_HeadDownDisplay->logMessage("No landing site taken. Next revolution.");
+         }
       }
 
       if (data[SDL_SCANCODE_W] || m_space->m_boosterPressed)
@@ -156,7 +172,7 @@ void OrbitScene::doUpdate(const oxygine::UpdateState &us)
             // Too much break burn, falls too fast, burns on reentry
             if (time < 5000)
             {
-               m_space->m_leapfrog->setHoldAngle(m_planet->getReentryLeapfrogAngle((float)time) - MATH_PI / 2.0f);
+               m_space->m_leapfrog->setHoldAngle(reentryAttitude(m_planet->getReentryLeapfrogAngle((float)time)));
 
                if (time > 3333)
                {
@@ -183,7 +199,7 @@ void OrbitScene::doUpdate(const oxygine::UpdateState &us)
             // Too little break burn, going too fast, bounce off of atmosphere
             if (time < 5000)
             {
-               m_space->m_leapfrog->setHoldAngle(m_planet->getReentryLeapfrogAngle((float)time) - MATH_PI / 2.0f);
+               m_space->m_leapfrog->setHoldAngle(reentryAttitude(m_planet->getReentryLeapfrogAngle((float)time)));
 
                if (time > 3333)
                {
@@ -203,7 +219,7 @@ void OrbitScene::doUpdate(const oxygine::UpdateState &us)
          }
          else
          {
-            m_space->m_leapfrog->setHoldAngle(m_planet->getReentryLeapfrogAngle((float)time) - MATH_PI / 2.0f);
+            m_space->m_leapfrog->setHoldAngle(reentryAttitude(m_planet->getReentryLeapfrogAngle((float)time)));
 
             if (time > 9000)
             {
@@ -226,8 +242,7 @@ void OrbitScene::doUpdate(const oxygine::UpdateState &us)
       // The outcome, for the scripts (c_lastReentry), and the exit: the
       // closest site's index when down on the surface, on its marker or
       // off it; -2 burned up (too much braking); -3 bounced back to space
-      // (too little); -4 (in waitForUserBreak) no burn while the sites
-      // came by. The same burn limits as the reentry state above.
+      // (too little). The same burn limits as the reentry state above.
       ReentryResult result;
       result.m_burn = m_planet->getBurnAmount();
       int exitParameter = 0;

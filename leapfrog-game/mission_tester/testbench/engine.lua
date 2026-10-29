@@ -526,14 +526,12 @@ end
 -- the exit (closest site index; -2 burned up; -3 bounced)
 function Engine:endReentry(outcome, siteIndex, distance)
    local r = { outcome = outcome, siteIndex = -1, siteName = "", siteScene = "", distance = 0,
-      burn = ({ onSite = 0.7, offSite = 0.65, bounced = 0.5, burnedUp = 0.9, missed = 0 })[outcome] or 0.7 }
+      burn = ({ onSite = 0.7, offSite = 0.65, bounced = 0.5, burnedUp = 0.9 })[outcome] or 0.7 }
    local parameter
    if outcome == "burnedUp" then
       parameter = -2
    elseif outcome == "bounced" then
       parameter = -3
-   elseif outcome == "missed" then
-      parameter = -4
    else
       local sites = self:landingSites()
       local site = sites[(siteIndex or 0) + 1]

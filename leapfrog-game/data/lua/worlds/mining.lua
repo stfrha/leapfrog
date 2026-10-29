@@ -104,9 +104,6 @@ mining.reentryOutcome = function(r)
       arrivalHud[#arrivalHud + 1] = "Bounced off the atmosphere"
       bouncedBack = true
 
-   elseif r.outcome == "missed" then
-      arrivalHud[#arrivalHud + 1] = "No landing site taken. Orbiting again."
-
    elseif r.outcome == "burnedUp" then
       arrivalHud[#arrivalHud + 1] = "Burned up on re-entry. Back to the latest save."
    end
