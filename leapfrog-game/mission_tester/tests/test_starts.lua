@@ -66,8 +66,9 @@ end)
 test("test starts: an arrival the navigator doesn't know is refused", function(t)
    t:newGame()
    local ts = t:module("test_starts")
-   table.insert(ts.list, { label = "Home, from orbit", scene = "home_scene.xml", sceneType = 0,
-      mission = 1, state = t:mission(1).State.accepted, from = ts.From.orbit })
+   -- (home from orbit is known since the gold mine site leads there)
+   table.insert(ts.list, { label = "Deep space, from a landing site", scene = "deep_space_scene.xml",
+      sceneType = 1, mission = 1, state = t:mission(1).State.accepted, from = ts.From.orbit })
    local ok, message = t.engine:menuTestStart(#ts.list)
    table.remove(ts.list)
    t:expect(not ok, "the start was refused")

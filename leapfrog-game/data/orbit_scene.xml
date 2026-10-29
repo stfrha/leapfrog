@@ -13,7 +13,7 @@
                name="goldMine"
                angle="0.0"
                texture="alpha_mine1"
-               scene="landing_scene.xml" />
+               scene="home_scene.xml" />
             <landingSite
                name="alphaCity"
                angle="5.7"

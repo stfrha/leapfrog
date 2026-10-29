@@ -18,14 +18,59 @@ local function toOrbit(t)
    t:clearDialog()
 end
 
-test("re-entry: on a site: its landing scene, nothing to pay", function(t)
+-- Where the Leapfrog came in
+local function arrival(t)
+   local lf = t.engine:leapfrog()
+   return lf and lf.file, lf and lf.x, lf and lf.y
+end
+
+test("re-entry: on a site: its landing scene, coming in from above, nothing to pay", function(t)
    toOrbit(t)
    t:setProperty("leapfrog1", 8, 30)
-   t:reentry("onSite", 0)
+   t:reentry("onSite", 1)                 -- Alpha City: landing_scene for now
    t:expectScene("landing_scene.xml")
    t:expectSaved("scene", "landing_scene.xml")
    t:expectProperty("leapfrog1", 8, 30)
    t:expectNoDialog("Recovery")
+   local file, x, y = arrival(t)
+   t:expectEqual(file, "leapfrog_reentry.xml", "Leapfrog file")
+   t:expectEqual(y, 50, "from above")
+end)
+
+test("re-entry: the gold mine site is home for now, the silo's pad", function(t)
+   toOrbit(t)
+   t:reentry("onSite", 0)
+   t:expectScene("home_scene.xml")
+   local file, x, y = arrival(t)
+   t:expectEqual(file, "leapfrog_reentry.xml", "Leapfrog file")
+   t:expectEqual(x, 2736, "above the silo")
+end)
+
+test("re-entry: recovered: standing on the site's pad, also after a continue", function(t)
+   toOrbit(t)
+   t:reentry("offSite", 1, 100)
+   t:expectScene("landing_scene.xml")
+   local file, x, y = arrival(t)
+   t:expectEqual(file, "leapfrog_landing.xml", "Leapfrog file")
+   t:expectEqual(x, 415, "on landing_pad1")
+   t:expectEqual(y, 657, "on landing_pad1")
+   t:expectSaved("exitParam", 101)
+
+   t:restartGame()
+   t:expectScene("landing_scene.xml")
+   file, x, y = arrival(t)
+   t:expectEqual(file, "leapfrog_landing.xml", "Leapfrog file after a continue")
+   t:expectEqual(x, 415, "still on the pad")
+end)
+
+test("re-entry: recovered at home: on the silo's pad", function(t)
+   toOrbit(t)
+   t:reentry("offSite", 0, 50)
+   t:expectScene("home_scene.xml")
+   local file, x, y = arrival(t)
+   t:expectEqual(file, "leapfrog_landing.xml", "Leapfrog file")
+   t:expectEqual(x, 2736, "on the silo's pad")
+   t:expectEqual(y, 500, "on the silo's pad")
 end)
 
 test("re-entry: off the site: the recovery crew's fee, by the distance", function(t)
@@ -34,7 +79,7 @@ test("re-entry: off the site: the recovery crew's fee, by the distance", functio
    t:setProperty("leapfrog1", 8, fee + 10)
    t:reentry("offSite", 1, 100)
    t:expectScene("landing_scene.xml")
-   t:expectDialog("flew you over to the site. That's " .. fee .. " credits.", "Recovery")
+   t:expectDialog("set you down on the pad. That's " .. fee .. " credits.", "Recovery")
    t:expectHud("Recovery: " .. fee .. " credits")
    t:expectProperty("leapfrog1", 8, 10)
    t:expectSaved("credits", 10)                       -- the fee is in the save

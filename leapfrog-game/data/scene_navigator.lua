@@ -82,12 +82,31 @@ end
 -- For exiting orbit scene
 -- Parameter int is "index of landing sites": the closest site when down on
 -- the surface, on its marker or off it (c_lastReentry says which, and how
--- far off). Otherwise:
+-- far off). lua_sceneExitHandler saves an off-site landing as
+-- recoveredOffset + the index, so a continue puts the Leapfrog back on the
+-- pad the recovery crew set it down on. Otherwise:
 -- -1 = Down, but the planet has no landing sites
 -- -2 = Burned up during re-entry (too much braking): back to the latest save
 -- -3 = Bounced back to deep space (too little braking)
 
 -- Exiting hyperspace scene is TBD
+
+-- Arriving from orbit, per landing scene (the scene a site leads to, see
+-- <landingSite scene="..."> in orbit_scene.xml): from above, in re-entry
+-- configuration, after a good re-entry (you land on the pad yourself), or
+-- standing on the pad the recovery crew set the Leapfrog down on after an
+-- off-site landing (the pad's top less the ~14 from the Leapfrog's origin
+-- to its feet in landing mode).
+-- (Stand-ins for now: the gold mine site is home_scene with the silo's
+-- pad, Alpha City is landing_scene with landing_pad1.)
+local orbitArrivals = {
+   ["home_scene.xml"]    = { from = { x = 2736, y = 50 }, pad = "siloLandingPad", onPad = { x = 2736, y = 500 } },
+   ["landing_scene.xml"] = { from = { x = 520,  y = 50 }, pad = "landing_pad1",   onPad = { x = 415,  y = 657 } },
+}
+
+-- Added to the site index for an off-site landing (picked up and set down
+-- on the site's pad by the recovery crew)
+recoveredOffset = 100
 
 function lua_findLeapfrogEntryPosition(exitSceneType, exitParameter)
 
@@ -127,12 +146,20 @@ function lua_findLeapfrogEntryPosition(exitSceneType, exitParameter)
       end
 
    elseif exitSceneType == 2 and exitParameter >= 0 then
-      -- We are leaving orbit scene after a succesfull landing
-      -- The exitParameter defines what city (and thus scene) to load
-      if currentScene == "landing_scene.xml" then
-         nextLfFile = "leapfrog_reentry.xml"
-         nextLfPosX = 520
-         nextLfPosY = 50
+      -- We are leaving orbit scene after a landing: currentScene is the
+      -- site's landing scene; on the site (index) from above, recovered
+      -- (recoveredOffset + index) standing on its pad
+      local arrival = orbitArrivals[currentScene]
+      if arrival ~= nil then
+         if exitParameter >= recoveredOffset then
+            nextLfFile = "leapfrog_landing.xml"
+            nextLfPosX = arrival.onPad.x
+            nextLfPosY = arrival.onPad.y
+         else
+            nextLfFile = "leapfrog_reentry.xml"
+            nextLfPosX = arrival.from.x
+            nextLfPosY = arrival.from.y
+         end
          nextLfMode = 2
          useInitialLfPos = false
          lfDefined = false
@@ -197,6 +224,11 @@ function lua_sceneExitHandler(exitSceneType, exitParameter)
                currentScene = "landing_scene.xml"
             end
             currentSceneType = 0
+
+            -- Off the site: the recovery crew set it down on the pad
+            if outcome == "offSite" and exitParameter >= 0 then
+               exitParameter = recoveredOffset + exitParameter
+            end
          end
 
          lua_findLeapfrogEntryPosition(exitSceneType, exitParameter)

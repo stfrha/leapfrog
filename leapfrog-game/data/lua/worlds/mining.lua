@@ -72,8 +72,8 @@ end
 
 -- ------------------------------------------------------------------------
 -- Re-entry outcomes (lua_reentryOutcome, when the orbit scene exits).
--- Down off the site: a recovery crew picks the Leapfrog up and flies it
--- over to the site, for a fee by the distance (a site's marker is 100
+-- Down off the site: a recovery crew picks the Leapfrog up and sets it
+-- down on the site's pad (scene_navigator.lua), for a fee by the distance (a site's marker is 100
 -- planet units wide); what the credits don't cover, Bruno lends.
 -- Bounced off the atmosphere: back in deep space, where the strippers
 -- hold off for a while. Burned up: the game goes back to the latest save.
@@ -96,7 +96,7 @@ mining.reentryOutcome = function(r)
    if r.outcome == "offSite" then
       local fee = recoveryFee(r.distance)
       arrivalLines[#arrivalLines + 1] = { "Recovery",
-         "We picked you up out in the scrub and flew you over to the site. That's " .. fee .. " credits." }
+         "We picked you up out in the scrub and set you down on the pad. That's " .. fee .. " credits." }
       arrivalHud[#arrivalHud + 1] = "Recovery: " .. fee .. " credits"
       debt.charge(fee, "the recovery crew", true)
 
