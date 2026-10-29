@@ -114,12 +114,14 @@ protected:
    // askQuestion below
    struct QueuedQuestion
    {
-      int id;
+      int id = -1;
       std::string flightText;   // said if still in flight when the dialog
       std::string sender;       // has caught up ("" = nothing)
-      bool flightTextGiven;
+      bool flightTextGiven = true;
    };
    std::deque<QueuedQuestion> m_questionQueue;  // asked, not yet open
+   QueuedQuestion m_openQuestion;  // the open one's record, back to the
+                                   // queue as it is if it isn't answered
    int m_questionId;          // the open question, -1: none
    bool m_questionShown;      // the open question has its Yes/No buttons
    int m_questionAnswer;      // answer waiting to be sent to Lua (-2: none)

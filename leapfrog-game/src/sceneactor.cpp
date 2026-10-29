@@ -601,11 +601,8 @@ void SceneActor::updateQuestion(const Uint8* keys)
    // answered: back to the front of the queue
    if ((m_questionId >= 0) && !stands)
    {
-      // (its in-flight line, if any, has been said)
-      QueuedQuestion q;
-      q.id = m_questionId;
-      q.flightTextGiven = true;
-      m_questionQueue.push_front(q);
+      // (with its in-flight line still to say, if it hasn't been)
+      m_questionQueue.push_front(m_openQuestion);
       m_questionId = -1;
       m_questionShown = false;
    }
@@ -613,7 +610,8 @@ void SceneActor::updateQuestion(const Uint8* keys)
    // Open the next one while the Leapfrog stands
    if ((m_questionId < 0) && stands && !m_questionQueue.empty())
    {
-      m_questionId = m_questionQueue.front().id;
+      m_openQuestion = m_questionQueue.front();
+      m_questionId = m_openQuestion.id;
       m_questionQueue.pop_front();
       m_questionShown = false;
       logs::messageln("Question %d open", m_questionId);

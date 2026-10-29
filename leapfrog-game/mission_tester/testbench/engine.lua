@@ -510,8 +510,8 @@ function Engine:updateQuestions()
    local stands = self:leapfrogStands()
 
    if self.question and not stands then
+      -- (its in-flight line kept: still said if it hasn't been)
       table.insert(queue, 1, self.question)
-      self.questionFlight[self.question] = nil
       self:note("QUESTION", string.format("%d back in the queue (not standing)", self.question))
       self.question = nil
    end
