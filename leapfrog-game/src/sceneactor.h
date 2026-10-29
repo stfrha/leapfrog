@@ -112,7 +112,14 @@ protected:
 
    // Yes/No questions asked by the scripts (c_askQuestion), see
    // askQuestion below
-   std::deque<int> m_questionQueue;  // asked, not yet open
+   struct QueuedQuestion
+   {
+      int id;
+      std::string flightText;   // said if still in flight when the dialog
+      std::string sender;       // has caught up ("" = nothing)
+      bool flightTextGiven;
+   };
+   std::deque<QueuedQuestion> m_questionQueue;  // asked, not yet open
    int m_questionId;          // the open question, -1: none
    bool m_questionShown;      // the open question has its Yes/No buttons
    int m_questionAnswer;      // answer waiting to be sent to Lua (-2: none)
@@ -221,7 +228,11 @@ public:
    // queue. The answer reaches Lua as event "QsYs" or "QsNo" with the
    // question id as parameter. Questions belong to the scene: those not
    // answered are dropped when it ends.
-   void askQuestion(int questionId);
+   // flightText (optional, by sender): added to the dialog when the dialog
+   // has shown everything before it and the Leapfrog still isn't standing
+   // anywhere, e.g. "Touch down and let's talk". Decided then, not when the
+   // question is asked, since a long dialog can outlast the landing.
+   void askQuestion(int questionId, const std::string& flightText = "", const std::string& sender = "");
    void cancelQuestion(int questionId);   // -1: all, open and queued
    void answerQuestion(bool yes);
    bool isQuestionShown(void);

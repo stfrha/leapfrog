@@ -73,3 +73,19 @@ test("questions: c_leapfrogStandsOn names the pad or launch site, nil in flight"
    t:land("launchSite1")
    t:expectEqual(where(), "launchSite1", "on the launch site")
 end)
+
+test("questions: the in-flight line is said only if still in flight when the dialog catches up", function(t)
+   atOrb(t)
+   t:clearDialog()
+   -- Asked in flight: the line comes
+   t:askQuestion(Q_TEST, "Land and we'll talk.", "Bruno")
+   t:expectDialog("Land and we'll talk.", "Bruno")
+   t:land("landingPad2")
+   t:answer(Q_TEST, true)
+
+   -- Asked on a pad: no line
+   t:clearDialog()
+   t:askQuestion(Q_TEST + 1, "Land and we'll talk.", "Bruno")
+   t:expectNoDialog("Land and we'll talk.")
+   t:expectQuestion(Q_TEST + 1)
+end)

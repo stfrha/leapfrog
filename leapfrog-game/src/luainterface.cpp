@@ -570,12 +570,15 @@ static int c_startSceneTimer(lua_State *L)
    return 1;
 }
 
-// c_askQuestion(questionId)
+// c_askQuestion(questionId [, flightText, sender])
 // Asks the player a yes/no question (put the question itself in the dialog
 // first, with c_addDialogMessage). Questions are only answered with the
 // Leapfrog standing on a landing pad or a launch site: one asked in flight
-// waits in a queue until it lands (the dialog can tell the player to touch
-// down). Queued questions open one at a time, in the order asked; asking
+// waits in a queue until it lands. flightText (from sender, on the left)
+// is added to the dialog if the Leapfrog is still in flight when the
+// dialog has shown everything before the question, e.g. "Touch down on the
+// closest pad and let's discuss it." (decided then, not when asking: a long
+// dialog can outlast the landing). Queued questions open one at a time, in the order asked; asking
 // one that is already queued or open does nothing. An open question shows
 // once the dialog has shown its queued messages: the booster button
 // becomes Yes and the fire button No (keys Y and N), and the Leapfrog is
@@ -594,7 +597,20 @@ static int c_askQuestion(lua_State *L)
       return 0;
    }
 
-   g_LuaInterface.getSceneActor()->askQuestion(questionId);
+   std::string flightText;
+   std::string sender;
+
+   if ((lua_gettop(L) >= 2) && lua_isstring(L, 2))
+   {
+      flightText = lua_tostring(L, 2);
+   }
+
+   if ((lua_gettop(L) >= 3) && lua_isstring(L, 3))
+   {
+      sender = lua_tostring(L, 3);
+   }
+
+   g_LuaInterface.getSceneActor()->askQuestion(questionId, flightText, sender);
 
    return 0;
 }

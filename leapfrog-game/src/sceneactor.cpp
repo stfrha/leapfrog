@@ -496,22 +496,27 @@ void SceneActor::addObjectToSpawnList(
    m_spawnInstructions.push_back(spi);
 }
 
-void SceneActor::askQuestion(int questionId)
+void SceneActor::askQuestion(int questionId, const std::string& flightText, const std::string& sender)
 {
    if (questionId == m_questionId)
    {
       return;
    }
 
-   for (int id : m_questionQueue)
+   for (const QueuedQuestion& q : m_questionQueue)
    {
-      if (id == questionId)
+      if (q.id == questionId)
       {
          return;
       }
    }
 
-   m_questionQueue.push_back(questionId);
+   QueuedQuestion q;
+   q.id = questionId;
+   q.flightText = flightText;
+   q.sender = sender;
+   q.flightTextGiven = flightText.empty();
+   m_questionQueue.push_back(q);
 }
 
 void SceneActor::cancelQuestion(int questionId)
@@ -524,7 +529,7 @@ void SceneActor::cancelQuestion(int questionId)
 
    for (auto it = m_questionQueue.begin(); it != m_questionQueue.end(); )
    {
-      if ((questionId < 0) || (*it == questionId))
+      if ((questionId < 0) || (it->id == questionId))
       {
          it = m_questionQueue.erase(it);
       }
@@ -596,7 +601,11 @@ void SceneActor::updateQuestion(const Uint8* keys)
    // answered: back to the front of the queue
    if ((m_questionId >= 0) && !stands)
    {
-      m_questionQueue.push_front(m_questionId);
+      // (its in-flight line, if any, has been said)
+      QueuedQuestion q;
+      q.id = m_questionId;
+      q.flightTextGiven = true;
+      m_questionQueue.push_front(q);
       m_questionId = -1;
       m_questionShown = false;
    }
@@ -604,17 +613,35 @@ void SceneActor::updateQuestion(const Uint8* keys)
    // Open the next one while the Leapfrog stands
    if ((m_questionId < 0) && stands && !m_questionQueue.empty())
    {
-      m_questionId = m_questionQueue.front();
+      m_questionId = m_questionQueue.front().id;
       m_questionQueue.pop_front();
       m_questionShown = false;
       logs::messageln("Question %d open", m_questionId);
    }
 
+   // In flight when the dialog has caught up with the next question: its
+   // in-flight line ("touch down and let's talk"), once
+   bool dialogIdle = !(g_MessageDisplay && g_MessageDisplay->hasQueuedMessages());
+
+   if ((m_questionId < 0) && !stands && !m_questionQueue.empty() && dialogIdle &&
+      !m_questionQueue.front().flightTextGiven && g_MessageDisplay)
+   {
+      QueuedQuestion& q = m_questionQueue.front();
+      q.flightTextGiven = true;
+      g_MessageDisplay->initMessage(
+         true,
+         q.flightText.c_str(),
+         q.sender.c_str(),
+         MessageDisplay::getSenderAffiliation(q.sender),
+         30,
+         0,
+         true);
+   }
+
    // Shown when the dialog has caught up and nobody holds the booster or
    // the fire button (no Yes or No by a press from before)
    if ((m_questionId >= 0) && !m_questionShown &&
-      !(g_MessageDisplay && g_MessageDisplay->hasQueuedMessages()) &&
-      !flightButtonsDown)
+      dialogIdle && !flightButtonsDown)
    {
       m_questionShown = true;
       m_questionKeysArmed = false;

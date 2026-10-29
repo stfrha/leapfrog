@@ -511,8 +511,21 @@ function Engine:updateQuestions()
 
    if self.question and not stands then
       table.insert(queue, 1, self.question)
+      self.questionFlight[self.question] = nil
       self:note("QUESTION", string.format("%d back in the queue (not standing)", self.question))
       self.question = nil
+   end
+
+   -- In flight with the next question waiting: its in-flight line, once
+   -- (in the game when the dialog has caught up; the tester's dialog is
+   -- always caught up)
+   if not self.question and not stands and #queue > 0 then
+      local f = (self.questionFlight or {})[queue[1]]
+      if f and not f.given then
+         f.given = true
+         self.dialog[#self.dialog + 1] = { sender = f.sender, text = f.text, left = true }
+         self:note("DIALOG", f.sender .. ": " .. f.text .. " (question " .. queue[1] .. ", in flight)")
+      end
    end
 
    if not self.question and stands and #queue > 0 then
@@ -531,6 +544,7 @@ function Engine:startScene(file, sceneType)
    self.scene = nil
    self.question = nil        -- the open question (id), nil: none
    self.questionQueue = {}    -- asked, waiting for the Leapfrog to stand
+   self.questionFlight = {}   -- id -> in-flight line { text, sender, given }
    self.landedOn = nil
    self.timers = {}
    self.timerCounter = 0
@@ -981,7 +995,7 @@ function Engine:installApi(env)
       s.exitScene, s.exitType, s.exitParam = "", -1, -1
    end
 
-   api.c_askQuestion = function(id)
+   api.c_askQuestion = function(id, flightText, sender)
       if type(id) ~= "number" or id < 0 then
          e:problem("c_askQuestion: the question id must be 0 or more")
          return
@@ -998,6 +1012,11 @@ function Engine:installApi(env)
          end
       end
       table.insert(e.questionQueue, id)
+      if type(flightText) == "string" and flightText ~= "" then
+         e.questionFlight[id] = { text = flightText, sender = sender or "", given = false }
+      else
+         e.questionFlight[id] = nil
+      end
       e:note("QUESTION", "asked " .. id .. " (queued)")
    end
 
