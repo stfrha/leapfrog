@@ -45,6 +45,27 @@ struct TestStart
    int m_exitParameter = 0;
 };
 
+// How the last re-entry (orbit scene) ended, for c_lastReentry. Set by
+// OrbitScene just before it exits; kept until the next re-entry ends.
+struct ReentryResult
+{
+   enum Outcome
+   {
+      none,       // no re-entry has ended yet (since the game started)
+      onSite,     // down on the site's marker
+      offSite,    // down, but off the closest site
+      bounced,    // too little braking: skipped off the atmosphere
+      burnedUp    // too much braking: broke up
+   };
+
+   Outcome m_outcome = none;
+   int m_siteIndex = -1;      // the closest site (onSite/offSite), else -1
+   std::string m_siteName;
+   std::string m_siteScene;   // the site's landing scene ("" = not given)
+   float m_distance = 0.0f;   // off the site, planet units (marker 100 wide)
+   float m_burn = 0.0f;       // the braking burn, 0..1 (0.6..0.8 lands)
+};
+
 class LuaInterface
 {
 private:
@@ -53,6 +74,7 @@ private:
    SceneActor* m_sceneActor;
    std::vector<EventHandlerHandle> m_eventHandlerHandles;
    std::vector<TriggerHandle> m_triggerHandles;
+   ReentryResult m_lastReentry;
 
 public:
    LuaInterface();
@@ -63,6 +85,9 @@ public:
    void registerHandlerHandle(oxygine::Actor* actor, int eventId);
    void registerTriggerHandle(CompoundObject* object, int propertyId, int eventId);
    void clearAllTriggersAndEvents(void);
+
+   void setLastReentry(const ReentryResult& result);
+   const ReentryResult& getLastReentry(void) const;
 
    void lua_printPaths(void);
    bool isModulePreloaded(lua_State* L, std::string const& name);

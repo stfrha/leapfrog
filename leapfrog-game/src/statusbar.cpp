@@ -223,6 +223,12 @@ void StatusLiteral::setLiteral(int value)
    char text[32];
    sprintf(text, "%d", value);
    m_tf->setText(text);
+
+   // Credits below zero are a debt (to Bruno): shown in red
+   if (m_statusType == ObjectResourcesTypeEnum::credits)
+   {
+      m_tf->setColor((value < 0) ? oxygine::Color(0xff3030ff) : g_Layout.getPhosphorColor());
+   }
 }
 
 void StatusLiteral::doUpdate(const oxygine::UpdateState& us)

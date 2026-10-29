@@ -491,7 +491,60 @@ function Engine:runPending()
       self.pendingScene = nil
       self:startScene(p.file, p.sceneType)
    end
+   -- c_loadLatestSave: after the script returns, as the menu's continue
+   if self.pendingLoad then
+      self.pendingLoad = false
+      self:note("LOAD", "latest save")
+      self.dialog = {}
+      self:continueGame()
+      return
+   end
    self:updateQuestions()
+end
+
+-- The orbit scene's landing sites, in angle order (as PlanetActor keeps
+-- them): { name, angle, scene }
+function Engine:landingSites(file)
+   local root = self:readXml(file or "orbit_scene.xml")
+   local sites = {}
+   local function walk(node)
+      for _, c in ipairs(node.children or {}) do
+         if c.tag == "landingSite" then
+            sites[#sites + 1] = { name = c.attr.name or "", angle = tonumber(c.attr.angle or "0"),
+               scene = c.attr.scene or "" }
+         else
+            walk(c)
+         end
+      end
+   end
+   if root then walk(root) end
+   table.sort(sites, function(a, b) return a.angle < b.angle end)
+   return sites
+end
+
+-- OrbitScene at the end of a re-entry: the outcome for c_lastReentry, then
+-- the exit (closest site index; -2 burned up; -3 bounced)
+function Engine:endReentry(outcome, siteIndex, distance)
+   local r = { outcome = outcome, siteIndex = -1, siteName = "", siteScene = "", distance = 0,
+      burn = ({ onSite = 0.7, offSite = 0.65, bounced = 0.5, burnedUp = 0.9 })[outcome] or 0.7 }
+   local parameter
+   if outcome == "burnedUp" then
+      parameter = -2
+   elseif outcome == "bounced" then
+      parameter = -3
+   else
+      local sites = self:landingSites()
+      local site = sites[(siteIndex or 0) + 1]
+      if not site then
+         error("endReentry: the orbit scene has no landing site " .. tostring(siteIndex), 3)
+      end
+      r.siteIndex, r.siteName, r.siteScene = siteIndex or 0, site.name, site.scene
+      r.distance = (outcome == "offSite") and (distance or 100) or 0
+      parameter = r.siteIndex
+   end
+   self.lastReentry = r
+   self:note("REENTRY", string.format("%s, site %d (%s), %.0f off", outcome, r.siteIndex, r.siteName, r.distance))
+   self:exitScene(2, parameter)
 end
 
 -- SceneActor::updateQuestion: questions open one at a time, in the order
@@ -751,7 +804,8 @@ function Engine:refuel(pad)
       self:note("FUEL", string.format("%.1f free from %s", amount, pad.name))
    elseif pad.props[4] == 1 then
       local price = pad.fuelPrice or 5
-      local amount = math.min(space, math.floor(self.resources.credits / price))
+      -- Nothing with no credits, or a debt (negative credits)
+      local amount = math.max(0, math.min(space, math.floor(self.resources.credits / price)))
       self.resources.fuel = self.resources.fuel + amount
       self.resources.credits = self.resources.credits - amount * price
       self:note("FUEL", string.format("%d bought at %s for %d credits", amount, pad.name, amount * price))
@@ -1018,6 +1072,16 @@ function Engine:installApi(env)
          e.questionFlight[id] = nil
       end
       e:note("QUESTION", "asked " .. id .. " (queued)")
+   end
+
+   api.c_lastReentry = function()
+      local r = e.lastReentry or { outcome = "none", siteIndex = -1, siteName = "", siteScene = "",
+         distance = 0, burn = 0 }
+      return r.outcome, r.siteIndex, r.siteName, r.siteScene, r.distance, r.burn
+   end
+
+   api.c_loadLatestSave = function()
+      e.pendingLoad = true
    end
 
    api.c_leapfrogStandsOn = function()

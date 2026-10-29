@@ -80,11 +80,12 @@ end
 -- 4 = lower left
 
 -- For exiting orbit scene
--- Parameter int is "index of landing sites"
--- But for errors in landing, the following negative parameters exists
--- -1 = Stranded, landed but missed all sites
--- -2 = Burned up during re-entry
--- -3 = Bounced back to deep space
+-- Parameter int is "index of landing sites": the closest site when down on
+-- the surface, on its marker or off it (c_lastReentry says which, and how
+-- far off). Otherwise:
+-- -1 = Down, but the planet has no landing sites
+-- -2 = Burned up during re-entry (too much braking): back to the latest save
+-- -3 = Bounced back to deep space (too little braking)
 
 -- Exiting hyperspace scene is TBD
 
@@ -107,6 +108,19 @@ function lua_findLeapfrogEntryPosition(exitSceneType, exitParameter)
          nextLfFile = "leapfrog_deep_space.xml"
          nextLfPosX = -8
          nextLfPosY = 18
+         nextLfMode = 1
+         useInitialLfPos = false
+         lfDefined = false
+      end
+
+   elseif exitSceneType == 2 and exitParameter == -3 then
+      -- Bounced off the atmosphere: back in deep space near where the
+      -- orbit was entered (the lower right corner), but out of its transit
+      -- field (the insert burn pushes the Leapfrog on for a second)
+      if currentScene == "deep_space_scene.xml" then
+         nextLfFile = "leapfrog_deep_space.xml"
+         nextLfPosX = 1050
+         nextLfPosY = 640
          nextLfMode = 1
          useInitialLfPos = false
          lfDefined = false
@@ -160,9 +174,31 @@ function lua_sceneExitHandler(exitSceneType, exitParameter)
       -- We are leaving orbit scene
       -- Determine next scene
       if currentScene == "orbit_scene.xml" then
-         currentScene = "landing_scene.xml"
-         currentSceneType = 0  
-         
+         local outcome, siteIndex, siteName, siteScene, distance, burn = c_lastReentry()
+
+         -- The scripts price it first (a recovery fee, ...), so the save
+         -- below has it
+         lua_reentryOutcome({ outcome = outcome, siteIndex = siteIndex, siteName = siteName,
+            siteScene = siteScene, distance = distance, burn = burn })
+
+         if exitParameter == -2 then
+            -- Burned up: dead, back to the latest save
+            c_loadLatestSave()
+            return
+         elseif exitParameter == -3 then
+            -- Bounced: deep space again, re-entry to try once more
+            currentScene = "deep_space_scene.xml"
+            currentSceneType = 1
+         else
+            -- Down, on or off a site: that site's landing scene
+            if siteScene ~= nil and siteScene ~= "" then
+               currentScene = siteScene
+            else
+               currentScene = "landing_scene.xml"
+            end
+            currentSceneType = 0
+         end
+
          lua_findLeapfrogEntryPosition(exitSceneType, exitParameter)
          c_exitSceneSaveGameStatus(currentScene, currentMission, currentState, currentSceneType, oldScene, exitSceneType, exitParameter)
       end

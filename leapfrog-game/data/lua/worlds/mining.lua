@@ -6,6 +6,7 @@
 local mining = {}
 
 local swarm = require('swarm')
+local debt = require('debt')
 
 -- ------------------------------------------------------------------------
 -- Leg repair at home (the silo's pad). Leapfrog property 10 is the lowest
@@ -70,9 +71,70 @@ end
 
 
 -- ------------------------------------------------------------------------
+-- Re-entry outcomes (lua_reentryOutcome, when the orbit scene exits).
+-- Down off the site: a recovery crew picks the Leapfrog up and flies it
+-- over to the site, for a fee by the distance (a site's marker is 100
+-- planet units wide); what the credits don't cover, Bruno lends.
+-- Bounced off the atmosphere: back in deep space, where the strippers
+-- hold off for a while. Burned up: the game goes back to the latest save.
+-- What is said comes at the next scene's setup.
+
+local recoveryBaseFee = 20
+local recoveryFeePerUnit = 0.4      -- 40 credits per marker width off
+local bounceGraceTicks = 600        -- 10 s before the swarm starts
+
+local arrivalLines = {}             -- { sender, text } for the next setup
+local arrivalHud = {}               -- HUD log lines for the next setup
+local bouncedBack = false           -- arriving in deep space by a bounce
+
+local function recoveryFee(distance)
+   return math.ceil(recoveryBaseFee + recoveryFeePerUnit * distance)
+end
+mining.recoveryFee = recoveryFee
+
+mining.reentryOutcome = function(r)
+   if r.outcome == "offSite" then
+      local fee = recoveryFee(r.distance)
+      arrivalLines[#arrivalLines + 1] = { "Recovery",
+         "We picked you up out in the scrub and flew you over to the site. That's " .. fee .. " credits." }
+      arrivalHud[#arrivalHud + 1] = "Recovery: " .. fee .. " credits"
+      debt.charge(fee, "the recovery crew", true)
+
+   elseif r.outcome == "bounced" then
+      arrivalHud[#arrivalHud + 1] = "Bounced off the atmosphere"
+      bouncedBack = true
+
+   elseif r.outcome == "burnedUp" then
+      arrivalHud[#arrivalHud + 1] = "Burned up on re-entry. Back to the latest save."
+   end
+end
+
+local function sayArrival()
+   for _, line in ipairs(arrivalLines) do
+      c_addDialogMessage(line[2], line[1], true, 30, 0)
+   end
+   for _, text in ipairs(arrivalHud) do
+      c_hudLog(text, true)
+   end
+   arrivalLines = {}
+   arrivalHud = {}
+end
+
+local swarmTimer = -1
+
+local function startSwarm()
+   swarm.start("swarm", "stripper_swarm.xml", function(name)
+      c_hudLog("The strippers have taken everything", true)
+   end)
+end
+
+
+-- ------------------------------------------------------------------------
 -- Scene setup, before the mission's
 
 mining.setupScene = function()
+
+   sayArrival()
 
    if currentScene == "home_scene.xml" then
 
@@ -97,9 +159,16 @@ mining.setupScene = function()
    end
 
    if currentScene == "deep_space_scene.xml" then
-      swarm.start("swarm", "stripper_swarm.xml", function(name)
-         c_hudLog("The strippers have taken everything", true)
-      end)
+      if bouncedBack or swarmTimer >= 0 then
+         -- Back from a bounce: a breather before the swarm comes (again
+         -- at a setup before it has started)
+         bouncedBack = false
+         swarmTimer = c_startSceneTimer(bounceGraceTicks)
+      else
+         startSwarm()
+      end
+   else
+      swarmTimer = -1
    end
 
 end
@@ -109,6 +178,11 @@ end
 -- Events, before the mission's handler
 
 mining.eventHandler = function(eventId, actorName, parameter1)
+
+   if eventId == "ScTO" and swarmTimer >= 0 and parameter1 == swarmTimer then
+      swarmTimer = -1
+      startSwarm()
+   end
 
    if currentScene == "home_scene.xml" then
       if actorName == "siloLandingPad" and eventId == "LpLL" then

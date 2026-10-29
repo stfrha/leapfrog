@@ -655,6 +655,57 @@ static int c_leapfrogStandsOn(lua_State *L)
    return 1;
 }
 
+// c_lastReentry()
+// How the last re-entry ended, read in lua_sceneExitHandler when the orbit
+// scene exits. Returns outcome, siteIndex, siteName, siteScene, distance,
+// burn:
+//   outcome    "onSite", "offSite", "bounced", "burnedUp" ("none" before
+//              any re-entry has ended)
+//   siteIndex  the closest landing site, 0.. in angle order (onSite and
+//              offSite; -1 otherwise); also the orbit scene's exit
+//              parameter then
+//   siteName, siteScene  that site's name and landing scene (scene
+//              attribute of <landingSite> in the orbit scene; "" if none)
+//   distance   how far off the site, along the surface, in planet units (a
+//              site's marker is 100 wide; 0 on the site)
+//   burn       the braking burn, 0..1 (0.6 to 0.8 comes down)
+static int c_lastReentry(lua_State *L)
+{
+   const ReentryResult& r = g_LuaInterface.getLastReentry();
+
+   const char* outcome = "none";
+   switch (r.m_outcome)
+   {
+   case ReentryResult::onSite:   outcome = "onSite"; break;
+   case ReentryResult::offSite:  outcome = "offSite"; break;
+   case ReentryResult::bounced:  outcome = "bounced"; break;
+   case ReentryResult::burnedUp: outcome = "burnedUp"; break;
+   default: break;
+   }
+
+   lua_pushstring(L, outcome);
+   lua_pushinteger(L, r.m_siteIndex);
+   lua_pushstring(L, r.m_siteName.c_str());
+   lua_pushstring(L, r.m_siteScene.c_str());
+   lua_pushnumber(L, r.m_distance);
+   lua_pushnumber(L, r.m_burn);
+   return 6;
+}
+
+// c_loadLatestSave()
+// Back to the latest saved game, as the menu's "continue" does: after a
+// death (e.g. burning up on re-entry). The saved scene starts on the next
+// update; nothing played since the save is kept.
+static int c_loadLatestSave(lua_State *L)
+{
+   if (g_MainActor != NULL)
+   {
+      g_MainActor->loadLatestSave();
+   }
+
+   return 0;
+}
+
 static int c_exitSceneSaveGameStatus(lua_State *L)
 {
    std::string sceneName = lua_tostring(L, 1);
@@ -696,6 +747,16 @@ LuaInterface::LuaInterface() :
 {
 }
 
+void LuaInterface::setLastReentry(const ReentryResult& result)
+{
+   m_lastReentry = result;
+}
+
+const ReentryResult& LuaInterface::getLastReentry(void) const
+{
+   return m_lastReentry;
+}
+
 // Loads a Lua file as package.preload[name], so the scripts can require(name)
 void LuaInterface::preloadModule(const char* fileName, const char* name)
 {
@@ -730,6 +791,7 @@ void LuaInterface::initLuaInterface(void)
    preloadModule("lua/common.lua", "common");
    preloadModule("lua/worlds/mining.lua", "mining");
    preloadModule("lua/swarm.lua", "swarm");
+   preloadModule("lua/debt.lua", "debt");
    preloadModule("lua/mission_1.lua", "mission1");
    preloadModule("lua/test_starts.lua", "test_starts");
 
@@ -793,6 +855,8 @@ void LuaInterface::initLuaInterface(void)
    lua_register(m_L, "c_askQuestion", c_askQuestion);
    lua_register(m_L, "c_cancelQuestion", c_cancelQuestion);
    lua_register(m_L, "c_leapfrogStandsOn", c_leapfrogStandsOn);
+   lua_register(m_L, "c_lastReentry", c_lastReentry);
+   lua_register(m_L, "c_loadLatestSave", c_loadLatestSave);
 
 }
 

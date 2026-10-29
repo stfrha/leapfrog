@@ -377,16 +377,20 @@ void PlanetActor::surfaceReached(void)
    logs::messageln("Landing angle: %f", landingAngle);
    
    float minAngleToLandingSite = 2.0f * MATH_PI;
+   int index = 0;
 
    // Check the closest landing site
-   for (auto it = m_landingSites.begin(); it != m_landingSites.end(); ++it)
+   for (auto it = m_landingSites.begin(); it != m_landingSites.end(); ++it, ++index)
    {
       float absDiff = fabs(it->m_angle - landingAngle);
       if (absDiff < minAngleToLandingSite)
       {
          minAngleToLandingSite = absDiff;
          m_results.m_angleFromClosestSite = it->m_angle - landingAngle;
+         m_results.m_distanceFromClosestSite = absDiff * 3500.0f;
          m_results.m_closestSite = it->m_name;
+         m_results.m_closestSiteIndex = index;
+         m_results.m_closestSiteScene = it->m_scene;
 
          if (absDiff < c_safeLandingMaxRadDeviation)
          {

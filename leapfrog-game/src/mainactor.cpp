@@ -613,6 +613,32 @@ void MainActor::testStartClicked(int index)
 }
 
 
+// The latest saved game, not the one played since: the menu's "continue",
+// and c_loadLatestSave after a death. The scene starts on the next update.
+void MainActor::loadLatestSave(void)
+{
+   // Its messages go
+   g_MessageDisplay->cleanAndClearMessageDisplay();
+
+   // restore previous state and continue from there
+   g_GameStatus.restoreGameStatus();
+
+   if (g_GameStatus.getExitSceneType() == -1)
+   {
+      // Exit scene data is NOT available, run initial position for leapfrog
+      g_LuaInterface.lua_startInitialScene();
+   }
+   else
+   {
+      // Exit scene data is available, use that
+      g_LuaInterface.lua_forceCurrentScene();
+      g_LuaInterface.lua_findLeapfrogEntryPosition(static_cast<SceneActor::SceneTypeEnum>(g_GameStatus.getExitSceneType()),
+         g_GameStatus.getExitParameter());
+
+      armScene(g_GameStatus.getCurrentScene(), g_GameStatus.getCurrentSceneType());
+   }
+}
+
 void MainActor::restartedFromMenu(void)
 {
    m_menuArm = true;
@@ -642,26 +668,7 @@ void MainActor::restartedFromMenu(void)
    }
    else if (m_postMenuAction == PostMenuActionType::continueLatest)
    {
-      // The saved game, not the one played since: its messages go
-      g_MessageDisplay->cleanAndClearMessageDisplay();
-
-      // restore previous state and continue from there
-      g_GameStatus.restoreGameStatus();
-
-      if (g_GameStatus.getExitSceneType() == -1)
-      {
-         // Exit scene data is NOT available, run initial position for leapfrog
-         g_LuaInterface.lua_startInitialScene();
-      }
-      else
-      {
-         // Exit scene data is available, use that
-         g_LuaInterface.lua_forceCurrentScene();
-         g_LuaInterface.lua_findLeapfrogEntryPosition(static_cast<SceneActor::SceneTypeEnum>(g_GameStatus.getExitSceneType()),
-            g_GameStatus.getExitParameter());
-
-         armScene(g_GameStatus.getCurrentScene(), g_GameStatus.getCurrentSceneType());
-      }
+      loadLatestSave();
    }
    else if (m_postMenuAction == PostMenuActionType::testStart)
    {

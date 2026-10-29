@@ -6,12 +6,16 @@
 #include "Box2D/Box2D.h"
 #include "compoundobject.h"
 
+// A landing site on the planet (orbit_scene.xml, <landingSite>): name,
+// angle in degrees, the marker's texture and the landing scene it leads
+// to (scene, e.g. "landing_scene.xml"; "" = the scripts decide).
 class LandingSite
 {
 public:
    std::string m_name;
    float m_angle;
    std::string m_texture;
+   std::string m_scene;
 
 public:
    LandingSite() :
@@ -31,6 +35,7 @@ public:
       m_name = objectNode.attribute("name").as_string();
       m_angle = objectNode.attribute("angle").as_float() * MATH_PI / 180.0f;
       m_texture = objectNode.attribute("texture").as_string();
+      m_scene = objectNode.attribute("scene").as_string();
    }
 
    bool operator< (const LandingSite & obj) const
@@ -43,11 +48,17 @@ class LandingResult
 {
 public:
    std::string m_closestSite;
+   int m_closestSiteIndex;          // in angle order (as the sites are kept)
+   std::string m_closestSiteScene;
    float m_angleFromClosestSite;
-   bool m_landingSuccessfull;
+   float m_distanceFromClosestSite; // along the surface, planet units (a
+                                    // site's marker is 100 wide)
+   bool m_landingSuccessfull;       // on the site's marker
    LandingResult() :
       m_closestSite(""),
+      m_closestSiteIndex(-1),
       m_angleFromClosestSite(0.0f),
+      m_distanceFromClosestSite(0.0f),
       m_landingSuccessfull(false)
    { }
 };

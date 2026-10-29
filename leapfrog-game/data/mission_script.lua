@@ -8,6 +8,7 @@
 
 local common = require('common')
 local swarm = require('swarm')
+local debt = require('debt')
 local mission1 = require('mission1')
 
 -- The worlds' scripts, and which world each scene belongs to (a world's
@@ -94,10 +95,14 @@ function lua_setupMissionStateScene()
       mission1.setupMissionStateScene()
    end
 
+   -- Last: the Leapfrog exists by now (debt watches its credits)
+   debt.setupScene()
+
    newGameStarting = false
 end
 
 function lua_missionStateSceneEventHandler(eventId, actorName, parameter1)
+   debt.eventHandler(eventId, actorName, parameter1)
    common.eventHandler(eventId, actorName, parameter1)
    swarm.eventHandler(eventId, actorName, parameter1)
 
@@ -112,10 +117,21 @@ function lua_missionStateSceneEventHandler(eventId, actorName, parameter1)
 end
 
 
+-- How a re-entry ended (scene_navigator.lua calls this when the orbit
+-- scene exits, before the next scene is chosen and the game is saved, so
+-- what it charges is in the save). r is { outcome, siteIndex, siteName,
+-- siteScene, distance, burn } as c_lastReentry returns them; outcome is
+-- "onSite", "offSite", "bounced" or "burnedUp". The orbit scene's world,
+-- then the mission, may handle it with a reentryOutcome function. What
+-- they say goes on screen in the next scene (lines added now are dropped
+-- with this one).
+function lua_reentryOutcome(r)
+   local world = currentWorld()
+   if world ~= nil and world.reentryOutcome ~= nil then
+      world.reentryOutcome(r)
+   end
 
-
-
-
-
-
-
+   if currentMission == 1 and mission1.reentryOutcome ~= nil then
+      mission1.reentryOutcome(r)
+   end
+end

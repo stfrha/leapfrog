@@ -9,6 +9,7 @@
 #include "orbitscene.h"
 #include "layout.h"
 #include "headdowndisplay.h"
+#include "luainterface.h"
 
 using namespace oxygine;
 using namespace pugi;
@@ -206,12 +207,49 @@ void OrbitScene::doUpdate(const oxygine::UpdateState &us)
 
       break;
    case touchDown:
-      
-      // Sending landing complete event with the result
+   {
+      // The outcome, for the scripts (c_lastReentry), and the exit: the
+      // closest site's index when down on the surface, on its marker or
+      // off it; -2 burned up (too much braking); -3 bounced back to space
+      // (too little). The same burn limits as the reentry state above.
+      ReentryResult result;
+      result.m_burn = m_planet->getBurnAmount();
+      int exitParameter = 0;
 
-      // TODO: Decode landing results in m_planet->getLandingResult()
-      ExitOrbitSceneEvent event(1);
+      if (result.m_burn > 0.8f)
+      {
+         result.m_outcome = ReentryResult::burnedUp;
+         exitParameter = -2;
+      }
+      else if (result.m_burn < 0.6f)
+      {
+         result.m_outcome = ReentryResult::bounced;
+         exitParameter = -3;
+      }
+      else
+      {
+         LandingResult landing = m_planet->getLandingResult();
+         result.m_outcome = landing.m_landingSuccessfull ? ReentryResult::onSite : ReentryResult::offSite;
+         result.m_siteIndex = landing.m_closestSiteIndex;
+         result.m_siteName = landing.m_closestSite;
+         result.m_siteScene = landing.m_closestSiteScene;
+         result.m_distance = landing.m_landingSuccessfull ? 0.0f : landing.m_distanceFromClosestSite;
+         exitParameter = landing.m_closestSiteIndex;
+      }
+
+      logs::messageln("Re-entry: outcome %d, site %d (%s), %.0f off, burn %.2f",
+         (int)result.m_outcome, result.m_siteIndex, result.m_siteName.c_str(), result.m_distance, result.m_burn);
+
+      g_LuaInterface.setLastReentry(result);
+
+      // Once: the scene keeps updating until the next one starts
+      m_state = exited;
+
+      ExitOrbitSceneEvent event(exitParameter);
       dispatchEvent(&event);
+      break;
+   }
+   case exited:
       break;
    }
 }

@@ -37,6 +37,7 @@ local function setSenders()
    c_setSenderAffiliation("DEBUG", "leapfrog")
    c_setSenderAffiliation("Leapfrog", "leapfrog")
    c_setSenderAffiliation("Bruno", "neutral")
+   c_setSenderAffiliation("Recovery", "neutral")
 
    -- Edith is on the Leapfrog's side, but her messages get a colour of
    -- their own so they don't look like the pilot's white ones

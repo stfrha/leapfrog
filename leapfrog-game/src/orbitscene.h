@@ -21,7 +21,8 @@ public:
       waitForUserBreak,    // Monitor booster key to enter break
       breaking,            // User is breaking
       reentry,             // Break is complete and reentry is executing
-      touchDown            // Reentry is complete
+      touchDown,           // Reentry is complete
+      exited               // The exit event has been sent (once)
    };
 
    OrbitSpaceScene * m_space;

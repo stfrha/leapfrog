@@ -98,6 +98,7 @@ doesn't yet: reported as KNOWN with the reason while it fails, and as FIXED
 | `t:launch(site)` | land on the site; the script must trigger it; to deep space |
 | `t:completeLaunch(site)` | the launch of the site the Leapfrog stands on goes (triggered, not aborted, no question pending) |
 | `t:exitScene(type, param)` | a scene exit (landing 0, deep space 1, orbit 2) |
+| `t:reentry(outcome [, site, distance])` | the orbit scene ends: `"onSite"`/`"offSite"` (closest site index, distance off in planet units; a marker is 100 wide), `"bounced"`, `"burnedUp"`; `c_lastReentry` returns it, then the scene exits |
 | `t:event(object, id [, param])` | a game event, e.g. `"BrBR"`, `"ExEX"`, `"PuPU"` |
 | `t:setProperty(object, id, v)` | change a property from the game's side |
 | `t:damageLegs(h)` | one leg joint at health h (property 10 reads the lowest) |

@@ -8,4 +8,5 @@ return {
    "swarm.lua",
    "test_starts.lua",
    "questions.lua",
+   "reentry.lua",
 }

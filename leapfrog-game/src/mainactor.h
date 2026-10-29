@@ -136,6 +136,8 @@ public:
    void testStartClicked(int index);
    int getTestStartIndex(void) { return m_testStartIndex; }
    void setTestStartIndex(int index) { m_testStartIndex = index; }
+   // The latest saved game (menu "continue", c_loadLatestSave)
+   void loadLatestSave(void);
    void restartedFromMenu(void);
    void menuStartTransitionComplete(void);
    void cleanUpAndQuit(void);
