@@ -578,11 +578,12 @@ static int c_startSceneTimer(lua_State *L)
 // is added to the dialog if the Leapfrog is still in flight when the
 // dialog has shown everything before the question, e.g. "Touch down on the
 // closest pad and let's discuss it." (decided then, not when asking: a long
-// dialog can outlast the landing). Queued questions open one at a time, in the order asked; asking
-// one that is already queued or open does nothing. An open question shows
+// dialog can outlast the landing). Queued questions open one at a time,
+// in the order asked; asking one that is already queued or open does
+// nothing. An open question shows
 // once the dialog has shown its queued messages: the booster button
-// becomes Yes and the fire button No (keys Y and N), and the Leapfrog is
-// parked until it is answered. A launch site with a launch triggered waits
+// becomes Yes and the fire button No (keys Y or W, N or Return), and the
+// Leapfrog is parked until it is answered and its controls let go. A launch site with a launch triggered waits
 // while a question is pending (see LaunchSite, property 3 aborts). The
 // answer comes to missionStateSceneEventHandler as event "QsYs" or "QsNo",
 // with questionId (>= 0) as parameter. Questions not answered when the

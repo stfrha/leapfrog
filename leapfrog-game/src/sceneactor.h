@@ -126,7 +126,9 @@ protected:
    bool m_questionShown;      // the open question has its Yes/No buttons
    int m_questionAnswer;      // answer waiting to be sent to Lua (-2: none)
    int m_answeredQuestionId;
-   bool m_questionKeysArmed;  // Y and N have been up since it was shown
+   bool m_questionKeysArmed;  // the answer keys have been up since it was shown
+   bool m_flightControlsHeld; // just answered: booster, fire and steering
+                              // wait until every flight button and key is up
    std::set<CompoundObject*> m_leapfrogStandsOn;  // pads and launch sites
    bool m_creditCheatArmed;   // C has been up since the last cheat
    void updateQuestion(const Uint8* keys);
@@ -224,8 +226,9 @@ public:
    // can say so meanwhile ("touch down and let's talk"). An open question
    // is shown once the dialog has shown its queued messages (the question
    // is normally the last one) and the booster and fire buttons are up;
-   // then the booster button is Yes and the fire button No (keys Y and N),
-   // and the Leapfrog's controls do nothing until it is answered. Pushed
+   // then the booster button is Yes and the fire button No (keys Y or W,
+   // N or Return), and the Leapfrog's controls do nothing until it is
+   // answered, and after that until they have all been let go. Pushed
    // off the pad before that, the question goes back to the front of the
    // queue. The answer reaches Lua as event "QsYs" or "QsNo" with the
    // question id as parameter. Questions belong to the scene: those not

@@ -177,6 +177,7 @@ SceneActor::SceneActor(
    m_questionAnswer(-2),
    m_answeredQuestionId(-1),
    m_questionKeysArmed(false),
+   m_flightControlsHeld(false),
    m_creditCheatArmed(true),
    m_armPauseChange(true),
    m_leapfrog(NULL)
@@ -589,10 +590,24 @@ void SceneActor::answerQuestion(bool yes)
    m_questionAnswer = yes ? 1 : 0;
    m_questionId = -1;
    m_questionShown = false;
+
+   // The finger (or key) that answered must not fly the Leapfrog: no burn
+   // or shot until the flight controls have all been let go
+   m_flightControlsHeld = true;
 }
 
 void SceneActor::updateQuestion(const Uint8* keys)
 {
+   if (m_flightControlsHeld &&
+      !keys[SDL_SCANCODE_W] && !keys[SDL_SCANCODE_RETURN] &&
+      !keys[SDL_SCANCODE_A] && !keys[SDL_SCANCODE_D] &&
+      !keys[SDL_SCANCODE_Y] && !keys[SDL_SCANCODE_N] &&
+      !m_boosterPressed && !m_firePressed &&
+      !m_turnLeftPressed && !m_turnRightPressed)
+   {
+      m_flightControlsHeld = false;
+   }
+
    bool stands = doesLeapfrogStand() && !m_externalControl;
    bool flightButtonsDown = keys[SDL_SCANCODE_W] || keys[SDL_SCANCODE_RETURN] ||
       m_boosterPressed || m_firePressed;
@@ -649,15 +664,20 @@ void SceneActor::updateQuestion(const Uint8* keys)
       m_turnRightPressed = false;
    }
 
+   // Keys: Y or the booster key W for Yes, N or the fire key Return for
+   // No (as the buttons), pressed after the question was shown
    if (m_questionShown && !g_MainActor->isInPause())
    {
-      if (!keys[SDL_SCANCODE_Y] && !keys[SDL_SCANCODE_N])
+      bool yesKey = keys[SDL_SCANCODE_Y] || keys[SDL_SCANCODE_W];
+      bool noKey = keys[SDL_SCANCODE_N] || keys[SDL_SCANCODE_RETURN];
+
+      if (!yesKey && !noKey)
       {
          m_questionKeysArmed = true;
       }
       else if (m_questionKeysArmed)
       {
-         answerQuestion(keys[SDL_SCANCODE_Y] != 0);
+         answerQuestion(yesKey);
       }
    }
 
@@ -771,7 +791,7 @@ void SceneActor::doUpdate(const UpdateState& us)
       {
          // While a question is shown the Leapfrog is parked: the booster
          // and fire buttons are Yes and No, and nothing steers
-         bool parked = isQuestionShown();
+         bool parked = isQuestionShown() || m_flightControlsHeld;
 
          if (!parked && (data[SDL_SCANCODE_W] || m_boosterPressed))
          {
@@ -800,7 +820,7 @@ void SceneActor::doUpdate(const UpdateState& us)
          }
       }
 
-      if (!isQuestionShown() && (data[SDL_SCANCODE_RETURN] || m_firePressed))
+      if (!isQuestionShown() && !m_flightControlsHeld && (data[SDL_SCANCODE_RETURN] || m_firePressed))
       {
          m_leapfrog->fireGun(true);
       }
