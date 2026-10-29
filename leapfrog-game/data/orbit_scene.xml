@@ -11,11 +11,13 @@
          <landingSites>
             <landingSite
                name="goldMine"
+               label="Gold Mine"
                angle="0.0"
                texture="alpha_mine1"
                scene="home_scene.xml" />
             <landingSite
                name="alphaCity"
+               label="Alpha City"
                angle="5.7"
                texture="alpha_city1"
                scene="landing_scene.xml" />

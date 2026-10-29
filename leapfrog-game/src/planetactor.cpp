@@ -235,6 +235,23 @@ void PlanetActor::orbitEstablished(void)
       predSite->setRotation(alpha + MATH_PI / 2.0f);
       predSite->attachTo(m_planet);
 
+      // The site's name under the marker (towards the ground; it turns
+      // with the planet). The planet picture is scaled down to fit the
+      // display, so the font is scaled up to read like the HUD's text.
+      float pictureScale = getScale().x > 0.0f ? getScale().x : 1.0f;
+      spTextField label = new TextField();
+      TextStyle style = TextStyle(g_GraphRes.getResources(GraphicResources::ResourceTypeEnum::hud).getResFont("lf_font"))
+         .withColor(Color::White).alignMiddleH().alignTop();
+      style.fontSize = (int)(g_Layout.getDefaultFontSize() / pictureScale);
+      label->setStyle(style);
+      label->setColor(g_Layout.getPhosphorColor());
+      label->setAnchor(0.0f, 0.0f);
+      label->setSize(100.0f, 30.0f);
+      label->setPosition(0.0f, 30.0f + 6.0f);
+      label->setTouchEnabled(false);
+      label->setText(it->m_label);
+      label->attachTo(predSite);
+
       spSprite crs = new Sprite();
       crs->setResAnim(g_GraphRes.getResAnim(it->m_texture));
       crs->setSize(100.0f, 30.0f);

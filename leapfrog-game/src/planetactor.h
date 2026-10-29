@@ -7,8 +7,9 @@
 #include "compoundobject.h"
 
 // A landing site on the planet (orbit_scene.xml, <landingSite>): name,
-// angle in degrees, the marker's texture and the landing scene it leads
-// to (scene, e.g. "landing_scene.xml"; "" = the scripts decide).
+// angle in degrees, the marker's texture, the landing scene it leads to
+// (scene, e.g. "landing_scene.xml"; "" = the scripts decide) and the label
+// shown under its marker in orbit (label; the name if not given).
 class LandingSite
 {
 public:
@@ -16,6 +17,7 @@ public:
    float m_angle;
    std::string m_texture;
    std::string m_scene;
+   std::string m_label;
 
 public:
    LandingSite() :
@@ -36,6 +38,7 @@ public:
       m_angle = objectNode.attribute("angle").as_float() * MATH_PI / 180.0f;
       m_texture = objectNode.attribute("texture").as_string();
       m_scene = objectNode.attribute("scene").as_string();
+      m_label = objectNode.attribute("label").as_string(m_name.c_str());
    }
 
    bool operator< (const LandingSite & obj) const
