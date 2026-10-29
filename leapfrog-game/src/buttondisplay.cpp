@@ -21,7 +21,8 @@ ButtonDisplay::ButtonDisplay() :
    m_turnRightSprite(NULL),
    m_yesSprite(NULL),
    m_noSprite(NULL),
-   m_questionShown(false)
+   m_questionShown(false),
+   m_panAvailable(true)
 {
 }
 
@@ -75,7 +76,7 @@ void ButtonDisplay::sceneDownHandler(Event* event)
       m_sceneActor->m_pausePressed = true;
       m_pauseTouchIndex = te->index;
    }
-   else if (m_zoomInButtonRect.pointIn(p))
+   else if (m_panAvailable && m_zoomInButtonRect.pointIn(p))
    {
       if (m_manualPan.m_manPanEnable)
       {
@@ -83,7 +84,7 @@ void ButtonDisplay::sceneDownHandler(Event* event)
          m_zoomInTouchIndex = te->index;
       }
    }
-   else if (m_zoomOutButtonRect.pointIn(p))
+   else if (m_panAvailable && m_zoomOutButtonRect.pointIn(p))
    {
       if (m_manualPan.m_manPanEnable)
       {
@@ -91,12 +92,12 @@ void ButtonDisplay::sceneDownHandler(Event* event)
          m_zoomOutTouchIndex = te->index;
       }
    }
-   else if (m_manPanEnableButtonRect.pointIn(p))
+   else if (m_panAvailable && m_manPanEnableButtonRect.pointIn(p))
    {
       m_sceneActor->m_manPanEnablePressed = true;
       m_manPanEnableTouchIndex = te->index;
    }
-   else if (m_panButtonRect.pointIn(p))
+   else if (m_panAvailable && m_panButtonRect.pointIn(p))
    {
       if (m_manualPan.m_manPanEnable)
       {
@@ -105,7 +106,7 @@ void ButtonDisplay::sceneDownHandler(Event* event)
          m_panStartPos = v;
       }
    }
-   else if (m_reloadButtonRect.pointIn(p))
+   else if (m_panAvailable && m_reloadButtonRect.pointIn(p))
    {
       if (m_manualPan.m_manPanEnable)
       {
@@ -199,9 +200,24 @@ void ButtonDisplay::sceneMoveHandler(Event* event)
 
 }
 
+void ButtonDisplay::setPanButtonAvailable(bool available)
+{
+   m_panAvailable = available;
+
+   if (!available)
+   {
+      // Leave manual pan; the scene's camera follows the Leapfrog again
+      m_manualPan.m_manPanEnable = false;
+   }
+
+   setManualPanButtonState();
+}
+
 void ButtonDisplay::setManualPanButtonState(void)
 {
-   if (m_manualPan.m_manPanEnable)
+   m_manPanEnableSprite->setVisible(m_panAvailable);
+
+   if (m_manualPan.m_manPanEnable && m_panAvailable)
    {
       m_manPanEnableSprite->setAlpha(255);
       m_manPanSprite->setVisible(true);

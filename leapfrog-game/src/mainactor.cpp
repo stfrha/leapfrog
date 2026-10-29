@@ -269,13 +269,17 @@ void MainActor::startScene(void)
    {
       g_HeadDownDisplay->goToOrbit();
       g_headUpDisplay->showStatusBars(false);
-      placeMessageDisplay(true);
+
+      // The camera pan button is for debugging landing and deep space
+      // scenes; the orbit display needs its place
+      g_headUpDisplay->showPanButton(false);
    }
    else
    {
       g_HeadDownDisplay->goToMap();
-      placeMessageDisplay(false);
    }
+
+   placeMessageDisplay();
 
    g_LuaInterface.setupMissionStateScene(m_sceneObject);
 
@@ -528,39 +532,22 @@ void MainActor::doUpdate(const UpdateState& us)
 
 
 
-void MainActor::placeMessageDisplay(bool orbit)
+void MainActor::placeMessageDisplay(void)
 {
+   // On the left, above the turn buttons, in every scene (orbit too: its
+   // display is between this column and the booster/fire buttons, see
+   // HeadDownDisplay::orbitRect). As set up at start
+   // (initialiseMessageDisplay in initMainActor).
    float bw = g_Layout.getButtonWidth();
    float height = g_Layout.getViewPortBounds().y;
 
-   if (!orbit)
-   {
-      // As set up at start (initialiseMessageDisplay in the constructor)
-      g_MessageDisplay->setColumn(
-         g_Layout.getXFromLeft(0),
-         g_Layout.getXFromLeft(2),
-         0.0f,
-         bw * 0.1f,
-         height,
-         g_Layout.getYFromBottom(1) - bw / 2.0f);
-      return;
-   }
-
-   // Right of the orbit overlay, from under the space window (OrbitScene:
-   // 1.5 to 3 buttons from the top) down to the booster button (second
-   // row from the bottom). At least 1.5 buttons tall.
-   float margin = bw * 0.2f;
-   float left = g_Layout.getXFromRight(4) + margin;
-   float right = g_Layout.getXFromRight(-1) - margin;
-   float top = g_Layout.getYFromTop(3) + margin;
-   float bottom = g_Layout.getYFromBottom(1) - margin;
-
-   if (bottom - top < bw * 1.5f)
-   {
-      top = bottom - bw * 1.5f;
-   }
-
-   g_MessageDisplay->setColumn(left, right, top, top, bottom, bottom);
+   g_MessageDisplay->setColumn(
+      g_Layout.getXFromLeft(0),
+      g_Layout.getXFromLeft(2),
+      0.0f,
+      bw * 0.1f,
+      height,
+      g_Layout.getYFromBottom(1) - bw / 2.0f);
 }
 
 void MainActor::recursiveRemoveChildren(spActor& parent)

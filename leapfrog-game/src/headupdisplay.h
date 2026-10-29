@@ -36,6 +36,10 @@ public:
 
    void showStatusBars(bool show);
    void showButtons(bool show);
+
+   // Shows or hides the camera pan button (the compass, a debug aid) and
+   // its zoom/pan/reload buttons; hidden ones don't react to touches
+   void showPanButton(bool show);
    void cleanAndRemove(void);
 
    void registerLeapfrog(LeapFrog* leapfrog, bool hideShield);

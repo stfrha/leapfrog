@@ -1303,7 +1303,7 @@ void HeadDownDisplay::initialiseHdd(
    m_menuSizeX = g_Layout.getViewPortBounds().x - 4.0f * g_Layout.getButtonWidth()  - 0.2f * g_Layout.getButtonWidth();
    m_menuSizeY = g_Layout.getViewPortBounds().y - 2.0f * (g_Layout.getViewPortBounds().y - mapBottom);
 
-   // From the left safe edge (clear of a camera notch) to the buttons on the right
+   // Between the message display's column and the fire button (orbitRect)
    RectF orbit = orbitRect();
    m_orbitSizeX = orbit.getWidth();
    m_orbitPosX = orbit.getX() + m_orbitSizeX / 2.0f;
@@ -1564,11 +1564,75 @@ void HeadDownDisplay::setLeapfrogTelemetry(const LeapfrogTelemetry& telemetry)
    }
 }
 
+namespace
+{
+   // Inside the orbit display's frame, in button widths
+   const float c_orbitMargin = 0.15f;
+}
+
 RectF HeadDownDisplay::orbitRect(void)
 {
-   float left = g_Layout.getXFromLeft(0);
-   float right = g_Layout.getXFromRight(4);
+   // Same left and right edges as the map in other scenes: right of the
+   // message display's column (two buttons from the left), left of the
+   // fire button (two buttons from the right)
+   float bw = g_Layout.getButtonWidth();
+   float left = g_Layout.getXFromLeft(2) + bw / 4.0f;
+   float right = g_Layout.getXFromRight(1) - bw / 4.0f;
    return RectF(left, 0.0f, right - left, g_Layout.getViewPortBounds().y);
+}
+
+RectF HeadDownDisplay::orbitSpaceViewRect(void)
+{
+   float bw = g_Layout.getButtonWidth();
+   RectF orbit = orbitRect();
+   float margin = bw * c_orbitMargin;
+
+   // Three by one and a half buttons, as before, but never more than
+   // about half the display's width
+   float w = fmin(bw * 3.0f, orbit.getWidth() * 0.45f);
+   float h = w / 2.0f;
+
+   return RectF(orbit.getRight() - margin - w, orbit.getY() + margin, w, h);
+}
+
+RectF HeadDownDisplay::orbitBurnBarRect(void)
+{
+   float bw = g_Layout.getButtonWidth();
+   RectF orbit = orbitRect();
+   RectF view = orbitSpaceViewRect();
+   float margin = bw * c_orbitMargin;
+
+   // The bar is two buttons tall; its caret (PlanetActor) is the widest
+   // part, 0.3 of the bar's height
+   float barHeight = 2.0f * bw;
+   float columnWidth = barHeight * 0.3f;
+
+   // At the display's right edge, under the space view, and no higher
+   // than the middle of the screen
+   float centerX = orbit.getRight() - margin - columnWidth / 2.0f;
+   float centerY = fmax(
+      view.getBottom() + 2.0f * margin + barHeight / 2.0f,
+      orbit.getY() + orbit.getHeight() / 2.0f);
+
+   // Keep it inside the display on very short screens
+   centerY = fmin(centerY, orbit.getBottom() - margin - barHeight / 2.0f);
+
+   return RectF(centerX - columnWidth / 2.0f, centerY - barHeight / 2.0f, columnWidth, barHeight);
+}
+
+RectF HeadDownDisplay::orbitPictureRect(void)
+{
+   float bw = g_Layout.getButtonWidth();
+   RectF orbit = orbitRect();
+   RectF bar = orbitBurnBarRect();
+   float margin = bw * c_orbitMargin;
+
+   float left = orbit.getX() + margin;
+   float right = bar.getX() - margin;
+   float top = orbit.getY() + margin;
+   float bottom = orbit.getBottom() - margin;
+
+   return RectF(left, top, right - left, bottom - top);
 }
 
 void HeadDownDisplay::attachTerrainSensor(void)

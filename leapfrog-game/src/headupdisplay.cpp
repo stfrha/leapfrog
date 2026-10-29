@@ -128,6 +128,11 @@ void HeadUpDisplay::showButtons(bool show)
    m_buttonDisplay->setVisible(show);
 }
 
+void HeadUpDisplay::showPanButton(bool show)
+{
+   m_buttonDisplay->setPanButtonAvailable(show);
+}
+
 void HeadUpDisplay::registerLeapfrog(LeapFrog* leapfrog, bool hideShield)
 {
    if (leapfrog == NULL)

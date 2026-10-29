@@ -22,6 +22,9 @@ private:
    oxygine::Sprite* m_noSprite;
    bool m_questionShown;
 
+   // False in scenes without the camera pan button (orbit)
+   bool m_panAvailable;
+
    oxygine::RectF m_turnRightButtonRect;
    oxygine::RectF m_turnLeftButtonRect;
    oxygine::RectF m_boosterButtonRect;
@@ -63,6 +66,10 @@ public:
       SceneActor* sceneActor,
       const oxygine::Vector2& topLeft, 
       const oxygine::Vector2& bottomRight);
+
+   // The camera pan button (and the zoom, pan and reload buttons it
+   // enables) shown and usable, or hidden and ignored
+   void setPanButtonAvailable(bool available);
 
    void sceneDownHandler(oxygine::Event* event);
    void sceneUpHandler(oxygine::Event* event);

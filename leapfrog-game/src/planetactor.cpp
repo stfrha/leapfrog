@@ -74,12 +74,12 @@ PlanetActor::PlanetActor(
    setAnchor(0.5f, 0.5f);
 
    // The planet, the trajectory and the markers are drawn in the head-down
-   // display, which takes the left of the screen in orbit
-   // (HeadDownDisplay::orbitRect). Fit the part of the picture that
-   // matters into it, left of the burn bar, and clip the planet to it.
-   // (It used to be placed from the screen size, tuned for 960 x 640: the
-   // trajectory ran out past the display's right edge, and the planet's
-   // disc was drawn outside it.)
+   // display, which in orbit sits between the message display and the
+   // booster/fire buttons (HeadDownDisplay::orbitRect). Fit the part of
+   // the picture that matters into its room (orbitPictureRect: left of
+   // the burn bar), and clip the planet to the display. The space view
+   // (OrbitScene) is an inset in the display's top right corner, over
+   // the sky above the trajectory.
    float bw = g_Layout.getButtonWidth();
    RectF hdd = HeadDownDisplay::orbitRect();
 
@@ -90,13 +90,11 @@ PlanetActor::PlanetActor(
    clip->setSize(hdd.getWidth() - 2.0f * frame, hdd.getHeight() - 2.0f * frame);
    clip->attachTo(m_parentObject);
 
-   // Room for the picture: the display less a margin, and less the burn
-   // bar's column at its right (the bar is at XFromRight(5) + bw / 2)
-   float margin = bw * 0.15f;
-   float roomLeft = hdd.getX() + margin;
-   float roomRight = g_Layout.getXFromRight(5);
-   float roomTop = hdd.getY() + margin;
-   float roomBottom = hdd.getBottom() - margin;
+   RectF room = HeadDownDisplay::orbitPictureRect();
+   float roomLeft = room.getX();
+   float roomRight = room.getRight();
+   float roomTop = room.getY();
+   float roomBottom = room.getBottom();
 
    // What must be seen, in the planet's units: the Leapfrog's start (100,
    // 150), the trajectory (m_orbitStartPos + up to (1498, 1252)), the site
@@ -106,11 +104,58 @@ PlanetActor::PlanetActor(
    float viewWidth = 2050.0f;
    float viewHeight = 1650.0f;
 
-   float scale = fmin((roomRight - roomLeft) / viewWidth, (roomBottom - roomTop) / viewHeight);
+   float roomWidth = roomRight - roomLeft;
+   float roomHeight = roomBottom - roomTop;
+   float scale = fmin(roomWidth / viewWidth, roomHeight / viewHeight);
 
-   // Centred in the room; positions are in the clip's coordinates
-   float x = roomLeft + ((roomRight - roomLeft) - viewWidth * scale) / 2.0f - viewLeft * scale;
-   float y = roomTop + ((roomBottom - roomTop) - viewHeight * scale) / 2.0f - viewTop * scale;
+   // The space view covers the room's top right corner. Where the
+   // trajectory would run under it (a narrow display, as with large
+   // buttons on a 16:9 screen), the picture goes to the room's bottom
+   // left instead of its centre, and if that isn't enough it shrinks
+   // until the trajectory passes clear of the view.
+   RectF spaceView = HeadDownDisplay::orbitSpaceViewRect();
+   float clearance = bw * 0.15f;
+   RectF keepOut(
+      spaceView.getX() - clearance,
+      spaceView.getY() - clearance,
+      spaceView.getWidth() + 2.0f * clearance,
+      spaceView.getHeight() + 2.0f * clearance);
+
+   auto trajectoryUnderView = [&](float s, float px, float py)
+   {
+      // Trajectory sprites are 50 x 8 units from their position
+      for (int i = 0; i < 44; i++)
+      {
+         Vector2 p = c_trajectoryPositions[i] + m_orbitStartPos;
+         RectF dot(px + p.x * s, py + (p.y - 4.0f) * s, 50.0f * s, 8.0f * s);
+         if (keepOut.isIntersecting(dot))
+         {
+            return true;
+         }
+      }
+      return false;
+   };
+
+   // Centred in the room; positions are in the screen's coordinates
+   float x = roomLeft + (roomWidth - viewWidth * scale) / 2.0f - viewLeft * scale;
+   float y = roomTop + (roomHeight - viewHeight * scale) / 2.0f - viewTop * scale;
+
+   if (trajectoryUnderView(scale, x, y))
+   {
+      for (int step = 0; step < 40; step++)
+      {
+         // Bottom left of the room
+         x = roomLeft - viewLeft * scale;
+         y = roomBottom - (viewHeight + viewTop) * scale;
+
+         if (!trajectoryUnderView(scale, x, y))
+         {
+            break;
+         }
+
+         scale *= 0.98f;
+      }
+   }
 
    setPosition(x - clip->getX(), y - clip->getY());
    setScale(scale);
@@ -217,11 +262,12 @@ void PlanetActor::orbitEstablished(void)
 
    m_positionIndicator->setPosition(c_trajectoryPositions[0] + m_orbitStartPos);
 
-   float barHeight = 2.0f * g_Layout.getButtonWidth();
-   float barVertCenter = g_Layout.getYFromBottom(3) + barHeight / 2.0f;
+   // At the orbit display's right edge, under the space view
+   RectF barRect = HeadDownDisplay::orbitBurnBarRect();
+   float barHeight = barRect.getHeight();
+   float barVertCenter = barRect.getY() + barHeight / 2.0f;
    float barWidth = barHeight * 0.2f;
-   // float barHorCenter = g_Layout.getXFromLeft(2) + g_Layout.getButtonWidth() / 2 + barWidth / 2.0f;
-   float barHorCenter = g_Layout.getXFromRight(5) + g_Layout.getButtonWidth() / 2;
+   float barHorCenter = barRect.getX() + barRect.getWidth() / 2.0f;
    float barCaretWidth = barHeight * 0.3f;
    float barCaretHeight = barHeight * 0.068f;
    float barCaretVertCenter = barVertCenter - barHeight * 0.2f; // ALso center of safe zone

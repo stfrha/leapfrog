@@ -8,6 +8,7 @@
 #include "orbitwindow.h"
 #include "orbitscene.h"
 #include "layout.h"
+#include "headdowndisplay.h"
 
 using namespace oxygine;
 using namespace pugi;
@@ -36,10 +37,14 @@ OrbitScene::OrbitScene(
    // Frame thickness   1.0f,
    // Scale   0.4f,
 
-   float x = g_Layout.getXFromRight(2) - g_Layout.getButtonWidth() / 2.0f;
-   float y = g_Layout.getYFromTop(1) + g_Layout.getButtonWidth() / 2.0f;
-   float w = g_Layout.getButtonWidth() * 3.0f;
-   float h = g_Layout.getButtonWidth() * 1.5f;
+   // An inset in the top right corner of the orbit display, over the
+   // sky above the trajectory (it used to be right of the display, in
+   // the column the message display shared with it)
+   RectF view = HeadDownDisplay::orbitSpaceViewRect();
+   float x = view.getX();
+   float y = view.getY();
+   float w = view.getWidth();
+   float h = view.getHeight();
    float s = 0.4f * w / 300.0f;
    float ft = 1.0f / 300.0f * w;
 

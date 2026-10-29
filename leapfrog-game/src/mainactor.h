@@ -83,9 +83,9 @@ private:
 
    void recursiveRemoveChildren(oxygine::spActor& parent);
 
-   // The message display's column: on the left normally; in orbit on the
-   // right, under the space window, out of the orbit overlay's way
-   void placeMessageDisplay(bool orbit);
+   // The message display's column: on the left, above the turn buttons,
+   // in every scene
+   void placeMessageDisplay(void);
 
 public:
    bool m_reloadPressed;

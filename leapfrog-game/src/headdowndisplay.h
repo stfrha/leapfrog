@@ -373,10 +373,20 @@ public:
    void squeeze(bool squeezed, oxygine::timeMS duration, oxygine::timeMS delay = 0);
    static const oxygine::timeMS c_squeezeMs = 200;
 
-   // Where the display is in orbit (screen coordinates): from the left
-   // safe edge to five buttons from the right, the whole height. The
-   // orbit scene lays its planet out inside it.
+   // Where the display is in orbit (screen coordinates): between the
+   // message display's column on the left and the booster/fire column
+   // on the right, the whole height (where the map is in other scenes,
+   // only taller). The orbit scene lays its parts out inside it:
+   //   orbitSpaceViewRect  the close-up of the Leapfrog, an inset in the
+   //                       display's top right corner (empty sky)
+   //   orbitBurnBarRect    the burn bar and its caret, at the display's
+   //                       right edge under the inset
+   //   orbitPictureRect    room for the planet, trajectory and sites:
+   //                       the display less a margin and the bar's column
    static oxygine::RectF orbitRect(void);
+   static oxygine::RectF orbitSpaceViewRect(void);
+   static oxygine::RectF orbitBurnBarRect(void);
+   static oxygine::RectF orbitPictureRect(void);
 
    void initialiseHdd(
       const oxygine::Vector2& topLeft, 
