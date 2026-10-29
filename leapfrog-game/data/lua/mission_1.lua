@@ -70,9 +70,13 @@ local function playBrunoCall()
    c_addDialogMessage("Get into town, over to the Orb.", "Bruno", true, 90, 0)
    c_addDialogMessage("I don't have enough fuel to get there.", "Leapfrog", false, 200, 0)
    c_addDialogMessage("Ok, I'm gonna make it easy for you. I will put in some credits into a couple of landing pads along the way. They will give you enough fuel to get here.", "Bruno", true, 300, 0)
-   -- Asked in flight: the question opens when the leapfrog touches down
-   -- on a pad (c_askQuestion)
-   c_addDialogMessage("Do you want the job? Touch down on the closest pad and let's discuss it.", "Bruno", true, 190, 0)
+   -- A question opens when the leapfrog stands on a pad (c_askQuestion);
+   -- a new game starts in flight, so Bruno asks it to land
+   if c_leapfrogStandsOn() then
+      c_addDialogMessage("Do you want the job?", "Bruno", true, 190, 0)
+   else
+      c_addDialogMessage("Do you want the job? Touch down on the closest pad and let's discuss it.", "Bruno", true, 190, 0)
+   end
    c_askQuestion(Question.acceptJob)
    offerPending = true
 

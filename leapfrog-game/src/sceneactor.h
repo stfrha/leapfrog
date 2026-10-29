@@ -118,7 +118,7 @@ protected:
    int m_questionAnswer;      // answer waiting to be sent to Lua (-2: none)
    int m_answeredQuestionId;
    bool m_questionKeysArmed;  // Y and N have been up since it was shown
-   std::set<const void*> m_leapfrogStandsOn;  // pads and launch sites
+   std::set<CompoundObject*> m_leapfrogStandsOn;  // pads and launch sites
    bool m_creditCheatArmed;   // C has been up since the last cheat
    void updateQuestion(const Uint8* keys);
 
@@ -230,8 +230,13 @@ public:
    // Landing pads and launch sites report whether the Leapfrog stands on
    // them (a pad: both feet down and still; a launch site: until its launch
    // sequence takes the Leapfrog)
-   void setLeapfrogStandsOn(const void* place, bool stands);
+   void setLeapfrogStandsOn(CompoundObject* place, bool stands);
    bool doesLeapfrogStand(void);
+
+   // The name of the pad or launch site the Leapfrog stands on, "" in
+   // flight (c_leapfrogStandsOn). Set before the landed event (LpLL, LsLL)
+   // is sent, so handlers of it see where the Leapfrog is.
+   std::string leapfrogStandsOn(void);
 
    // Cheats: key C or a double tap on the HUD's credits (+100), a double
    // tap on the fuel bar (full tank)

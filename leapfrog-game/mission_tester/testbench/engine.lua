@@ -1001,6 +1001,13 @@ function Engine:installApi(env)
       e:note("QUESTION", "asked " .. id .. " (queued)")
    end
 
+   api.c_leapfrogStandsOn = function()
+      if e:leapfrogStands() then
+         return e.landedOn.name
+      end
+      return nil
+   end
+
    api.c_cancelQuestion = function(id)
       if id == nil or id < 0 then
          e.question = nil

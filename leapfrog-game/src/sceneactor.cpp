@@ -545,7 +545,7 @@ bool SceneActor::hasPendingQuestion(void)
    return (m_questionId >= 0) || !m_questionQueue.empty();
 }
 
-void SceneActor::setLeapfrogStandsOn(const void* place, bool stands)
+void SceneActor::setLeapfrogStandsOn(CompoundObject* place, bool stands)
 {
    if (stands)
    {
@@ -560,6 +560,16 @@ void SceneActor::setLeapfrogStandsOn(const void* place, bool stands)
 bool SceneActor::doesLeapfrogStand(void)
 {
    return !m_leapfrogStandsOn.empty();
+}
+
+std::string SceneActor::leapfrogStandsOn(void)
+{
+   if (m_leapfrogStandsOn.empty())
+   {
+      return "";
+   }
+
+   return (*m_leapfrogStandsOn.begin())->getName();
 }
 
 void SceneActor::answerQuestion(bool yes)

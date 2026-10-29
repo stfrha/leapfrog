@@ -123,6 +123,9 @@ void LaunchSite::doUpdate(const UpdateState &us)
                m_leapFrog->setTerrainSensorOn(false);
             }
 
+            // Before LsLL, so its handlers find the Leapfrog standing here
+            m_sceneActor->setLeapfrogStandsOn(this, true);
+
             LaunchSiteLeapfrogLandedEvent event(this);
             dispatchEvent(&event);
          }
@@ -410,6 +413,12 @@ void LaunchSite::leapfrogFootTouch(b2Contact* contact, bool leftFoot, LeapFrog* 
 
          // Start timer and at the end of that, if both feet still
          // are in contact, send event for Leapfrog has landed.
+         // Before LsLL, so its handlers find the Leapfrog standing here
+         if (m_sceneActor != NULL)
+         {
+            m_sceneActor->setLeapfrogStandsOn(this, true);
+         }
+
          LaunchSiteLeapfrogLandedEvent event(this);
          dispatchEvent(&event);
       }

@@ -327,6 +327,12 @@ void LandingPad::doUpdate(const UpdateState &us)
          {
             m_state = LandingPadState::stableLand;
             m_properties[state].setProperty((float)m_state);
+
+            // Before LpLL, so its handlers find the Leapfrog standing here
+            if (m_sceneActor != NULL)
+            {
+               m_sceneActor->setLeapfrogStandsOn(this, true);
+            }
             m_properties[lfLanded].setProperty(1.0f);
             m_announceLanded = false;
 

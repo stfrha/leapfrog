@@ -616,6 +616,28 @@ static int c_cancelQuestion(lua_State *L)
    return 0;
 }
 
+// c_leapfrogStandsOn()
+// The name of the landing pad or launch site the Leapfrog stands on (both
+// feet down; on a launch site until its launch sequence takes the
+// Leapfrog), or nil in flight. Where it stands is where questions open
+// (c_askQuestion): a script can word a question by it ("touch down and
+// let's talk" in flight). Already set when LpLL / LsLL arrive.
+static int c_leapfrogStandsOn(lua_State *L)
+{
+   std::string place = g_LuaInterface.getSceneActor()->leapfrogStandsOn();
+
+   if (place.empty())
+   {
+      lua_pushnil(L);
+   }
+   else
+   {
+      lua_pushstring(L, place.c_str());
+   }
+
+   return 1;
+}
+
 static int c_exitSceneSaveGameStatus(lua_State *L)
 {
    std::string sceneName = lua_tostring(L, 1);
@@ -753,6 +775,7 @@ void LuaInterface::initLuaInterface(void)
    lua_register(m_L, "c_saveGameStatus", c_saveGameStatus);
    lua_register(m_L, "c_askQuestion", c_askQuestion);
    lua_register(m_L, "c_cancelQuestion", c_cancelQuestion);
+   lua_register(m_L, "c_leapfrogStandsOn", c_leapfrogStandsOn);
 
 }
 
