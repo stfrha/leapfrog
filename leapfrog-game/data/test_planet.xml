@@ -1,0 +1,129 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<compoundObject
+  needsGroupIndex="false">
+  <spriteBox
+    name="noName"
+    texture="alpha_city1"
+    posX="1807.4284198017604"
+    posY="-90.843985892525552"
+    angle="0"
+    zLevel="0"
+    collisionEntity="notApplicable"
+    collisionCategory="1"
+    collisionMask="65534"
+    width="400"
+    height="200"
+    parallaxAmount="0" />
+  <spriteBox
+    name="noName_2"
+    texture="alpha_city1"
+    posX="4230.4261769139039"
+    posY="-92.831155332535218"
+    angle="0"
+    zLevel="0"
+    collisionEntity="notApplicable"
+    collisionCategory="1"
+    collisionMask="65534"
+    width="400"
+    height="200"
+    parallaxAmount="0" />
+  <spritePolygon
+    name="noName"
+    texture="grotto_light"
+    posX="1150.0375609728362"
+    posY="165.31789938984502"
+    angle="0"
+    zLevel="0"
+    collisionEntity="notApplicable"
+    collisionCategory="1"
+    collisionMask="65534"
+    textureMeterWidth="627.6857"
+    textureMeterHeight="627.6857"
+    textureOffsetMeterX="38.763"
+    textureOffsetMeterY="381.597"
+    parallaxAmount="0">
+    <vertices>
+      <vertex
+        id="1"
+        x="963.63342119516892"
+        y="-152.51751990139337" />
+      <vertex
+        id="2"
+        x="1334.4894764957644"
+        y="-875.46165641726384" />
+      <vertex
+        id="3"
+        x="1720.3754401211863"
+        y="-365.08812000250646" />
+      <vertex
+        id="4"
+        x="2296.4147014680366"
+        y="-470.8188108897848" />
+      <vertex
+        id="5"
+        x="2646.2554043205546"
+        y="-166.20093921093667" />
+    </vertices>
+    <triangles>
+      <triangle
+        id="1"
+        v1="1"
+        v2="5"
+        v3="4" />
+      <triangle
+        id="2"
+        v1="1"
+        v2="4"
+        v3="3" />
+      <triangle
+        id="3"
+        v1="3"
+        v2="2"
+        v3="1" />
+    </triangles>
+    <border
+      leftGroundAngle="0"
+      rightGroundAngle="0"
+      leftCeilingAngle="0"
+      rightCeilingAngle="0">
+      <groundBorder
+        texture="notDefined"
+        horisontalMeterOffset="0"
+        textureMeterWidth="0"
+        textureMeterHeight="0" />
+      <ceilingBorder
+        texture="notDefined"
+        horisontalMeterOffset="0"
+        textureMeterWidth="0"
+        textureMeterHeight="0" />
+      <leftWallBorder
+        texture="notDefined"
+        horisontalMeterOffset="0"
+        textureMeterWidth="0"
+        textureMeterHeight="0" />
+      <rightWallBorder
+        texture="notDefined"
+        horisontalMeterOffset="0"
+        textureMeterWidth="0"
+        textureMeterHeight="0" />
+    </border>
+  </spritePolygon>
+  <behaviour
+    type="planetSurface">
+    <planetSurfaceProperties
+      texture="crater_rock"
+      textureMeterWidth="2000"
+      textureMeterHeight="2000">
+      <landingSite
+        name="site1"
+        angle="69.13"
+        texture=""
+        scene="" />
+      <landingSite
+        name="site2"
+        angle="24.24"
+        texture=""
+        scene="" />
+    </planetSurfaceProperties>
+  </behaviour>
+</compoundObject>

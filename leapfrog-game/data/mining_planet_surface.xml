@@ -1,19 +1,587 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <compoundObject
   needsGroupIndex="false">
+  <spriteBox
+    name="noName"
+    texture="default"
+    posX="677.85265713526314"
+    posY="517.86180665832171"
+    angle="0"
+    zLevel="0"
+    collisionEntity="notApplicable"
+    collisionCategory="1"
+    collisionMask="65534"
+    width="200"
+    height="200"
+    parallaxAmount="0" />
+  <spriteBox
+    name="noName_7"
+    texture="default"
+    posX="1583.027018475319"
+    posY="336.82693439030982"
+    angle="0"
+    zLevel="0"
+    collisionEntity="notApplicable"
+    collisionCategory="1"
+    collisionMask="65534"
+    width="200"
+    height="200"
+    parallaxAmount="0" />
+  <spritePolygon
+    name="noName"
+    texture="grotto"
+    posX="-466.47909298602622"
+    posY="21.556816922242888"
+    angle="0"
+    zLevel="4"
+    collisionEntity="notApplicable"
+    collisionCategory="1"
+    collisionMask="65534"
+    textureMeterWidth="200"
+    textureMeterHeight="200"
+    textureOffsetMeterX="5.17"
+    textureOffsetMeterY="194.83"
+    parallaxAmount="0">
+    <vertices>
+      <vertex
+        id="1"
+        x="64.0997176810256"
+        y="2.0677328284200485" />
+      <vertex
+        id="2"
+        x="168.52022551624509"
+        y="2.0677328284200485" />
+      <vertex
+        id="3"
+        x="615.405338906615"
+        y="607.53472005011463" />
+      <vertex
+        id="4"
+        x="204.85461318113812"
+        y="317.95236738381482" />
+      <vertex
+        id="5"
+        x="89.844191914176236"
+        y="517.126717883395" />
+      <vertex
+        id="6"
+        x="-596.56250195098414"
+        y="519.56832334797809" />
+    </vertices>
+    <triangles>
+      <triangle
+        id="1"
+        v1="1"
+        v2="6"
+        v3="5" />
+      <triangle
+        id="2"
+        v1="1"
+        v2="5"
+        v3="4" />
+      <triangle
+        id="3"
+        v1="1"
+        v2="4"
+        v3="3" />
+      <triangle
+        id="4"
+        v1="3"
+        v2="2"
+        v3="1" />
+    </triangles>
+    <border
+      leftGroundAngle="0"
+      rightGroundAngle="0"
+      leftCeilingAngle="0"
+      rightCeilingAngle="0">
+      <groundBorder
+        texture="notDefined"
+        horisontalMeterOffset="0"
+        textureMeterWidth="0"
+        textureMeterHeight="0" />
+      <ceilingBorder
+        texture="notDefined"
+        horisontalMeterOffset="0"
+        textureMeterWidth="0"
+        textureMeterHeight="0" />
+      <leftWallBorder
+        texture="notDefined"
+        horisontalMeterOffset="0"
+        textureMeterWidth="0"
+        textureMeterHeight="0" />
+      <rightWallBorder
+        texture="notDefined"
+        horisontalMeterOffset="0"
+        textureMeterWidth="0"
+        textureMeterHeight="0" />
+    </border>
+  </spritePolygon>
+  <spritePolygon
+    name="noName_2"
+    texture="grotto"
+    posX="2296.5468008061762"
+    posY="175.66665687213481"
+    angle="0"
+    zLevel="4"
+    collisionEntity="notApplicable"
+    collisionCategory="1"
+    collisionMask="65534"
+    textureMeterWidth="200"
+    textureMeterHeight="200"
+    textureOffsetMeterX="5.17"
+    textureOffsetMeterY="194.83"
+    parallaxAmount="0">
+    <vertices>
+      <vertex
+        id="1"
+        x="64.0997176810256"
+        y="2.0677328284200485" />
+      <vertex
+        id="2"
+        x="168.52022551624509"
+        y="2.0677328284200485" />
+      <vertex
+        id="3"
+        x="615.405338906615"
+        y="607.53472005011463" />
+      <vertex
+        id="4"
+        x="204.85461318113812"
+        y="317.95236738381482" />
+      <vertex
+        id="5"
+        x="89.844191914176236"
+        y="517.126717883395" />
+      <vertex
+        id="6"
+        x="-596.56250195098414"
+        y="519.56832334797809" />
+    </vertices>
+    <triangles>
+      <triangle
+        id="1"
+        v1="1"
+        v2="6"
+        v3="5" />
+      <triangle
+        id="2"
+        v1="1"
+        v2="5"
+        v3="4" />
+      <triangle
+        id="3"
+        v1="1"
+        v2="4"
+        v3="3" />
+      <triangle
+        id="4"
+        v1="3"
+        v2="2"
+        v3="1" />
+    </triangles>
+    <border
+      leftGroundAngle="0"
+      rightGroundAngle="0"
+      leftCeilingAngle="0"
+      rightCeilingAngle="0">
+      <groundBorder
+        texture="notDefined"
+        horisontalMeterOffset="0"
+        textureMeterWidth="0"
+        textureMeterHeight="0" />
+      <ceilingBorder
+        texture="notDefined"
+        horisontalMeterOffset="0"
+        textureMeterWidth="0"
+        textureMeterHeight="0" />
+      <leftWallBorder
+        texture="notDefined"
+        horisontalMeterOffset="0"
+        textureMeterWidth="0"
+        textureMeterHeight="0" />
+      <rightWallBorder
+        texture="notDefined"
+        horisontalMeterOffset="0"
+        textureMeterWidth="0"
+        textureMeterHeight="0" />
+    </border>
+  </spritePolygon>
+  <spritePolygon
+    name="noName_3"
+    texture="grotto"
+    posX="3184.1332344734169"
+    posY="73.012658367615586"
+    angle="0"
+    zLevel="4"
+    collisionEntity="notApplicable"
+    collisionCategory="1"
+    collisionMask="65534"
+    textureMeterWidth="200"
+    textureMeterHeight="200"
+    textureOffsetMeterX="5.17"
+    textureOffsetMeterY="194.83"
+    parallaxAmount="0">
+    <vertices>
+      <vertex
+        id="1"
+        x="64.0997176810256"
+        y="2.0677328284200485" />
+      <vertex
+        id="2"
+        x="168.52022551624509"
+        y="2.0677328284200485" />
+      <vertex
+        id="3"
+        x="615.405338906615"
+        y="607.53472005011463" />
+      <vertex
+        id="4"
+        x="204.85461318113812"
+        y="317.95236738381482" />
+      <vertex
+        id="5"
+        x="89.844191914176236"
+        y="517.126717883395" />
+      <vertex
+        id="6"
+        x="-596.56250195098414"
+        y="519.56832334797809" />
+    </vertices>
+    <triangles>
+      <triangle
+        id="1"
+        v1="1"
+        v2="6"
+        v3="5" />
+      <triangle
+        id="2"
+        v1="1"
+        v2="5"
+        v3="4" />
+      <triangle
+        id="3"
+        v1="1"
+        v2="4"
+        v3="3" />
+      <triangle
+        id="4"
+        v1="3"
+        v2="2"
+        v3="1" />
+    </triangles>
+    <border
+      leftGroundAngle="0"
+      rightGroundAngle="0"
+      leftCeilingAngle="0"
+      rightCeilingAngle="0">
+      <groundBorder
+        texture="notDefined"
+        horisontalMeterOffset="0"
+        textureMeterWidth="0"
+        textureMeterHeight="0" />
+      <ceilingBorder
+        texture="notDefined"
+        horisontalMeterOffset="0"
+        textureMeterWidth="0"
+        textureMeterHeight="0" />
+      <leftWallBorder
+        texture="notDefined"
+        horisontalMeterOffset="0"
+        textureMeterWidth="0"
+        textureMeterHeight="0" />
+      <rightWallBorder
+        texture="notDefined"
+        horisontalMeterOffset="0"
+        textureMeterWidth="0"
+        textureMeterHeight="0" />
+    </border>
+  </spritePolygon>
+  <spritePolygon
+    name="noName_4"
+    texture="grotto"
+    posX="1056.2740216120974"
+    posY="432.28243871765653"
+    angle="0"
+    zLevel="4"
+    collisionEntity="notApplicable"
+    collisionCategory="1"
+    collisionMask="65534"
+    textureMeterWidth="200"
+    textureMeterHeight="200"
+    textureOffsetMeterX="5.17"
+    textureOffsetMeterY="194.83"
+    parallaxAmount="0">
+    <vertices>
+      <vertex
+        id="1"
+        x="64.0997176810256"
+        y="2.0677328284200485" />
+      <vertex
+        id="2"
+        x="168.52022551624509"
+        y="2.0677328284200485" />
+      <vertex
+        id="3"
+        x="615.405338906615"
+        y="607.53472005011463" />
+      <vertex
+        id="4"
+        x="204.85461318113812"
+        y="317.95236738381482" />
+      <vertex
+        id="5"
+        x="89.844191914176236"
+        y="517.126717883395" />
+      <vertex
+        id="6"
+        x="-596.56250195098414"
+        y="519.56832334797809" />
+    </vertices>
+    <triangles>
+      <triangle
+        id="1"
+        v1="1"
+        v2="6"
+        v3="5" />
+      <triangle
+        id="2"
+        v1="1"
+        v2="5"
+        v3="4" />
+      <triangle
+        id="3"
+        v1="1"
+        v2="4"
+        v3="3" />
+      <triangle
+        id="4"
+        v1="3"
+        v2="2"
+        v3="1" />
+    </triangles>
+    <border
+      leftGroundAngle="0"
+      rightGroundAngle="0"
+      leftCeilingAngle="0"
+      rightCeilingAngle="0">
+      <groundBorder
+        texture="notDefined"
+        horisontalMeterOffset="0"
+        textureMeterWidth="0"
+        textureMeterHeight="0" />
+      <ceilingBorder
+        texture="notDefined"
+        horisontalMeterOffset="0"
+        textureMeterWidth="0"
+        textureMeterHeight="0" />
+      <leftWallBorder
+        texture="notDefined"
+        horisontalMeterOffset="0"
+        textureMeterWidth="0"
+        textureMeterHeight="0" />
+      <rightWallBorder
+        texture="notDefined"
+        horisontalMeterOffset="0"
+        textureMeterWidth="0"
+        textureMeterHeight="0" />
+    </border>
+  </spritePolygon>
+  <spritePolygon
+    name="noName_5"
+    texture="grotto"
+    posX="3370.0663715853261"
+    posY="458.37803521215665"
+    angle="0"
+    zLevel="4"
+    collisionEntity="notApplicable"
+    collisionCategory="1"
+    collisionMask="65534"
+    textureMeterWidth="200"
+    textureMeterHeight="200"
+    textureOffsetMeterX="5.17"
+    textureOffsetMeterY="194.83"
+    parallaxAmount="0">
+    <vertices>
+      <vertex
+        id="1"
+        x="64.0997176810256"
+        y="2.0677328284200485" />
+      <vertex
+        id="2"
+        x="168.52022551624509"
+        y="2.0677328284200485" />
+      <vertex
+        id="3"
+        x="615.405338906615"
+        y="607.53472005011463" />
+      <vertex
+        id="4"
+        x="204.85461318113812"
+        y="317.95236738381482" />
+      <vertex
+        id="5"
+        x="89.844191914176236"
+        y="517.126717883395" />
+      <vertex
+        id="6"
+        x="-596.56250195098414"
+        y="519.56832334797809" />
+    </vertices>
+    <triangles>
+      <triangle
+        id="1"
+        v1="1"
+        v2="6"
+        v3="5" />
+      <triangle
+        id="2"
+        v1="1"
+        v2="5"
+        v3="4" />
+      <triangle
+        id="3"
+        v1="1"
+        v2="4"
+        v3="3" />
+      <triangle
+        id="4"
+        v1="3"
+        v2="2"
+        v3="1" />
+    </triangles>
+    <border
+      leftGroundAngle="0"
+      rightGroundAngle="0"
+      leftCeilingAngle="0"
+      rightCeilingAngle="0">
+      <groundBorder
+        texture="notDefined"
+        horisontalMeterOffset="0"
+        textureMeterWidth="0"
+        textureMeterHeight="0" />
+      <ceilingBorder
+        texture="notDefined"
+        horisontalMeterOffset="0"
+        textureMeterWidth="0"
+        textureMeterHeight="0" />
+      <leftWallBorder
+        texture="notDefined"
+        horisontalMeterOffset="0"
+        textureMeterWidth="0"
+        textureMeterHeight="0" />
+      <rightWallBorder
+        texture="notDefined"
+        horisontalMeterOffset="0"
+        textureMeterWidth="0"
+        textureMeterHeight="0" />
+    </border>
+  </spritePolygon>
+  <spritePolygon
+    name="noName_6"
+    texture="grotto"
+    posX="2083.7132844290154"
+    posY="636.65296206148741"
+    angle="0"
+    zLevel="4"
+    collisionEntity="notApplicable"
+    collisionCategory="1"
+    collisionMask="65534"
+    textureMeterWidth="200"
+    textureMeterHeight="200"
+    textureOffsetMeterX="5.17"
+    textureOffsetMeterY="194.83"
+    parallaxAmount="0">
+    <vertices>
+      <vertex
+        id="1"
+        x="64.0997176810256"
+        y="2.0677328284200485" />
+      <vertex
+        id="2"
+        x="168.52022551624509"
+        y="2.0677328284200485" />
+      <vertex
+        id="3"
+        x="615.405338906615"
+        y="607.53472005011463" />
+      <vertex
+        id="4"
+        x="204.85461318113812"
+        y="317.95236738381482" />
+      <vertex
+        id="5"
+        x="89.844191914176236"
+        y="517.126717883395" />
+      <vertex
+        id="6"
+        x="-596.56250195098414"
+        y="519.56832334797809" />
+    </vertices>
+    <triangles>
+      <triangle
+        id="1"
+        v1="1"
+        v2="6"
+        v3="5" />
+      <triangle
+        id="2"
+        v1="1"
+        v2="5"
+        v3="4" />
+      <triangle
+        id="3"
+        v1="1"
+        v2="4"
+        v3="3" />
+      <triangle
+        id="4"
+        v1="3"
+        v2="2"
+        v3="1" />
+    </triangles>
+    <border
+      leftGroundAngle="0"
+      rightGroundAngle="0"
+      leftCeilingAngle="0"
+      rightCeilingAngle="0">
+      <groundBorder
+        texture="notDefined"
+        horisontalMeterOffset="0"
+        textureMeterWidth="0"
+        textureMeterHeight="0" />
+      <ceilingBorder
+        texture="notDefined"
+        horisontalMeterOffset="0"
+        textureMeterWidth="0"
+        textureMeterHeight="0" />
+      <leftWallBorder
+        texture="notDefined"
+        horisontalMeterOffset="0"
+        textureMeterWidth="0"
+        textureMeterHeight="0" />
+      <rightWallBorder
+        texture="notDefined"
+        horisontalMeterOffset="0"
+        textureMeterWidth="0"
+        textureMeterHeight="0" />
+    </border>
+  </spritePolygon>
   <behaviour
     type="planetSurface">
     <planetSurfaceProperties
-      texture="planet_rock">
+      texture="concrete"
+      textureMeterWidth="2000"
+      textureMeterHeight="2300">
       <landingSite
         name="goldMine"
-        label="Gold Mine"
-        angle="0"
+        label="Claude Mine"
+        angle="0.05"
         texture="alpha_mine1"
         scene="home_scene.xml" />
       <landingSite
         name="alphaCity"
-        label="Alpha City"
+        label="Village"
         angle="-5.7"
         texture="alpha_city1"
         scene="landing_scene.xml" />

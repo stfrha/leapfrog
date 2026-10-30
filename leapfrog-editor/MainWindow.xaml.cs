@@ -227,7 +227,7 @@ namespace LeapfrogEditor
 
          if (myMainViewModel.PlanetView)
          {
-            planetRuler.MouseX = myMainViewModel.LastMousePoint.X;
+            planetRuler.MouseX = myMainViewModel.LastMousePoint.Value.X;
          }
 
          if (mouseHandlingMode == MouseHandlingMode.Panning)
