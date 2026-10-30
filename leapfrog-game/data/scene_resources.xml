@@ -5,4 +5,5 @@
 <sceneResources>
 	<scene file="landing_scene.xml" resources="res_mining.xml"/>
 	<scene file="home_scene.xml" resources="res_mining.xml"/>
+	<scene file="orbit_scene.xml" resources="res_mining.xml"/>
 </sceneResources>
