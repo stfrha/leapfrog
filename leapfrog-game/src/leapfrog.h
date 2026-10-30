@@ -172,7 +172,9 @@ private:
    const static float c_legLockHealth;
    const static float c_legWeakHealth;
    const static float c_legMinTorqueScale;
-   const static float c_legLimpFriction;
+   const static float c_legBackupTorque;
+   const static float c_legBackupSpeed;
+   const static float c_legBackupGain;
    const static float c_legLimpMargin;
 
    // Service lift (see updateServiceLift)

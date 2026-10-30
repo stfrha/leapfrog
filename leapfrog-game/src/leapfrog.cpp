@@ -432,8 +432,15 @@ void LeapFrog::setJointMotor(b2RevoluteJoint* joint, float goal, float speedMagn
 
    if ((jd != NULL) && jd->m_limp)
    {
-      // A limp joint has no motor to drive. It counts as having reached
-      // the mode so that mode changes still complete.
+      // A failed joint's backup drive: slow and weak, it brings the leg
+      // back to the pose and holds it against its own weight, and the
+      // craft's on a soft landing, but gives under anything more (and
+      // pushes back slowly). It counts as having reached the mode at
+      // once, so mode changes don't wait for it.
+      float error = goal - joint->GetJointAngle();
+      float speed = std::max(-c_legBackupSpeed, std::min(c_legBackupSpeed, error * c_legBackupGain));
+      joint->SetMotorSpeed(speed);
+
       if (m_modeInTransit)
       {
          jd->setModeReached(true);
@@ -497,7 +504,8 @@ void LeapFrog::setJointMotor(b2RevoluteJoint* joint, float goal, float speedMagn
 
 void LeapFrog::lockJoints(bool onPad)
 {
-   // Lock all legs and disable motors. Limp joints keep swinging. On a
+   // Lock all legs and disable motors. Failed joints keep their backup
+   // drive (setJointMotor). On a
    // landing pad, weakened joints aren't locked either: their tired motors
    // hold (or fail to hold) the craft, so it sags on a damaged leg.
    b2RevoluteJoint* joints[c_numLegJoints];
@@ -1249,15 +1257,22 @@ const float LeapFrog::c_legBendToughness = 30.0f * MATH_PI / 180.0f;
 
 // Below c_legLockHealth a joint isn't locked on a landing pad (its motor
 // holds it); below c_legWeakHealth the HUD reports it. Motor torque scales
-// with health, down to c_legMinTorqueScale of normal just before failure.
+// with health, down to c_legMinTorqueScale of normal just before failure
+// (a little more than the backup drive of a failed joint).
 const float LeapFrog::c_legLockHealth = 0.5f;
 const float LeapFrog::c_legWeakHealth = 0.6f;
-const float LeapFrog::c_legMinTorqueScale = 0.15f;
+const float LeapFrog::c_legMinTorqueScale = 0.3f;
 
-// A limp joint: a weak motor at speed 0 acts as friction so the leg swings
-// heavily rather than flapping. Limits: the joint's whole range of travel
-// (all mode poses, and hanging straight down) widened by c_legLimpMargin.
-const float LeapFrog::c_legLimpFriction = 250.0f;
+// A failed joint ("limp" in the code): its actuator is gone, a backup drive
+// is left. c_legBackupTorque is a little more than a hip carries with the
+// craft standing still (about 4700), so a soft set-down holds and a firmer
+// one bends the leg, which is then pushed back at up to c_legBackupSpeed
+// (proportional, c_legBackupGain per second). Limits: the joint's whole
+// range of travel (all mode poses, and hanging straight down) widened by
+// c_legLimpMargin.
+const float LeapFrog::c_legBackupTorque = 5500.0f;
+const float LeapFrog::c_legBackupSpeed = 10.0f * MATH_PI / 180.0f;   // [rad/s]
+const float LeapFrog::c_legBackupGain = 2.0f;                       // [1/s]
 const float LeapFrog::c_legLimpMargin = 20.0f * MATH_PI / 180.0f;
 
 // Service lift: rise c_liftHeight at c_liftRiseSpeed, wait for the legs'
@@ -1448,8 +1463,9 @@ void LeapFrog::initObjectResources(Actor* statusEventOriginator, ObjectResources
 // In landing configuration the leg joints, not only the hull, can be hurt.
 // Each of the six leg joints has a health (1 = sound). A joint that is
 // overloaded or bent too far loses health; a weakened joint's motor gets
-// weaker, so it sags; at 0 the joint goes limp: still attached, but its
-// motor is gone and the leg swings like a dead limb. Health is kept in the
+// weaker, so it sags; at 0 the joint fails ("limp"): its actuator is gone
+// and a slow, weak backup drive is left, which keeps the leg in its pose
+// and carries the craft only on a soft landing. Health is kept in the
 // game status, so a limp leg stays limp until repaired (property 10).
 
 namespace
@@ -1613,9 +1629,9 @@ void LeapFrog::makeLegLimp(b2RevoluteJoint* joint, bool announce)
    joint->SetLimits(std::min(jd->m_limpLower, angle), std::max(jd->m_limpUpper, angle));
    joint->EnableLimit(true);
 
-   // A weak motor holding speed 0 is friction: the leg swings heavily
+   // The backup drive (setJointMotor drives it to the pose)
    joint->SetMotorSpeed(0.0f);
-   joint->SetMaxMotorTorque(c_legLimpFriction);
+   joint->SetMaxMotorTorque(c_legBackupTorque);
    joint->EnableMotor(true);
 
    if (announce && !wasLimp)
@@ -1624,7 +1640,7 @@ void LeapFrog::makeLegLimp(b2RevoluteJoint* joint, bool announce)
 
       if (g_HeadDownDisplay)
       {
-         g_HeadDownDisplay->logMessage(std::string(jd->m_legName) + " actuator failed", true);
+         g_HeadDownDisplay->logMessage(std::string(jd->m_legName) + " actuator failed. Backup drive only.", true);
       }
 
       // Sparks where the joint gave way
