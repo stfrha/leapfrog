@@ -77,3 +77,35 @@ protected:
 };
 
 
+
+
+// A small picture of the Leapfrog's legs under the status bars: the body,
+// the two legs and the six leg joints (hips, knees, feet). Each joint is a
+// ring that fills with red as it loses health, all red when it has failed.
+// Health is read from the game status, which the Leapfrog keeps current.
+
+DECLARE_SMART(LegStatus, spLegStatus);
+
+class LegStatus : public oxygine::Actor
+{
+public:
+   static const int c_numJoints = 6;
+   static const int c_ringSegments = 24;
+
+private:
+   std::vector<oxygine::spColorRectSprite> m_rings[c_numJoints];
+   float m_shownHealth[c_numJoints];
+
+   void addSegment(const oxygine::Vector2& a, const oxygine::Vector2& b, float thickness, const oxygine::Color& color);
+   void addDisk(const oxygine::Vector2& centre, float radius, const oxygine::Color& color);
+   void addRing(int joint, const oxygine::Vector2& centre, float radius, float thickness);
+   void showHealth(int joint, float health);
+
+public:
+   // In a box at pos (top left) of size; the picture keeps its proportions
+   // and is centred in the box
+   LegStatus(oxygine::Actor* attachToMe, const oxygine::Vector2& pos, const oxygine::Vector2& size);
+
+protected:
+   void doUpdate(const oxygine::UpdateState& us) override;
+};

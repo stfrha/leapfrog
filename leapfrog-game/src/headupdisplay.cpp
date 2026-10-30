@@ -155,39 +155,35 @@ void HeadUpDisplay::registerLeapfrog(LeapFrog* leapfrog, bool hideShield)
       initCredits = (float)g_GameStatus.getResources()->getCredits();
    }
 
+   // The status rows, one under the other from the second button row:
+   // half a button's width high each (a headline and its bar side by
+   // side), then a small picture of the leg joints
+   float bw = g_Layout.getButtonWidth();
+   float rowHeight = bw / 4.0f;
+   float x = g_Layout.getXFromRight(1);
+   Vector2 rowSize(bw * 2.0f, rowHeight);
+   auto rowPos = [&](int row) { return Vector2(x, g_Layout.getYFromTop(1) + (float)row * rowHeight); };
+
    spStatusBar shotsBar = new StatusBar(
       leapfrog,
       m_sceneActor,
       m_statusBarActor,
       5,
-      Vector2(g_Layout.getXFromRight(1), g_Layout.getYFromTop(1)),
-      Vector2(g_Layout.getButtonWidth() * 2.0f, g_Layout.getButtonWidth() / 2.0f),
+      rowPos(0),
+      rowSize,
       (int)g_Layout.getDefaultFontSize(),
       100.0f,
       initShots,
       "Ammo:",
       ObjectResourcesTypeEnum::shots);
 
-   // Where the fuel bar and the credits are, for the cheat taps
-   m_fuelCheatRect = RectF(
-      g_Layout.getXFromRight(1),
-      g_Layout.getYFromTop(1) + g_Layout.getButtonWidth() / 2.0f + 2.0f,
-      g_Layout.getButtonWidth() * 2.0f,
-      g_Layout.getButtonWidth() / 2.0f);
-
-   m_creditCheatRect = RectF(
-      g_Layout.getXFromRight(1),
-      g_Layout.getYFromTop(1) + g_Layout.getButtonWidth() / 2.0f * 4.0f + 2.0f,
-      g_Layout.getButtonWidth() * 2.0f,
-      g_Layout.getButtonWidth() / 2.0f);
-
    spStatusBar fuelBar = new StatusBar(
       leapfrog,
       m_sceneActor,
       m_statusBarActor,
       7,
-      Vector2(g_Layout.getXFromRight(1), g_Layout.getYFromTop(1) + g_Layout.getButtonWidth() / 2.0f + 2.0f),
-      Vector2(g_Layout.getButtonWidth() * 2.0f, g_Layout.getButtonWidth() / 2.0f),
+      rowPos(1),
+      rowSize,
       (int)g_Layout.getDefaultFontSize(),
       100.0f,
       initFuel,
@@ -199,8 +195,8 @@ void HeadUpDisplay::registerLeapfrog(LeapFrog* leapfrog, bool hideShield)
       m_sceneActor,
       m_statusBarActor,
       6,
-      Vector2(g_Layout.getXFromRight(1), g_Layout.getYFromTop(1) + g_Layout.getButtonWidth() / 2.0f * 2.0f + 2.0f),
-      Vector2(g_Layout.getButtonWidth() * 2.0f, g_Layout.getButtonWidth() / 2.0f),
+      rowPos(2),
+      rowSize,
       (int)g_Layout.getDefaultFontSize(),
       100.0f,
       initShield,
@@ -212,8 +208,8 @@ void HeadUpDisplay::registerLeapfrog(LeapFrog* leapfrog, bool hideShield)
       m_sceneActor,
       m_statusBarActor,
       9,
-      Vector2(g_Layout.getXFromRight(1), g_Layout.getYFromTop(1) + g_Layout.getButtonWidth() / 2.0f * 3.0f + 2.0f),
-      Vector2(g_Layout.getButtonWidth() * 2.0f, g_Layout.getButtonWidth() / 2.0f),
+      rowPos(3),
+      rowSize,
       (int)g_Layout.getDefaultFontSize(),
       100.0f,
       initDamage,
@@ -225,12 +221,22 @@ void HeadUpDisplay::registerLeapfrog(LeapFrog* leapfrog, bool hideShield)
       m_sceneActor,
       m_statusBarActor,
       8,
-      Vector2(g_Layout.getXFromRight(1), g_Layout.getYFromTop(1) + g_Layout.getButtonWidth() / 2.0f * 4.0f + 2.0f),
-      Vector2(g_Layout.getButtonWidth() * 2.0f, g_Layout.getButtonWidth() / 2.0f),
+      rowPos(4),
+      rowSize,
       (int)g_Layout.getDefaultFontSize(),
       (int)initCredits,
       "Credits:",
       ObjectResourcesTypeEnum::credits);
+
+   // Where the fuel bar and the credits are, for the cheat taps
+   m_fuelCheatRect = RectF(rowPos(1), rowSize);
+   m_creditCheatRect = RectF(rowPos(4), rowSize);
+
+   // The leg joints, a button's width high, under the rows
+   spLegStatus legStatus = new LegStatus(
+      m_statusBarActor,
+      rowPos(5) + Vector2(0.0f, rowHeight / 2.0f),
+      Vector2(bw * 2.0f, bw));
 
    if (hideShield)
    {
