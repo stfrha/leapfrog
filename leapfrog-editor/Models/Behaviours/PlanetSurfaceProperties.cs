@@ -18,6 +18,8 @@ namespace LeapfrogEditor
       public const double Radius = 3500.0;
 
       private string _texture = "";
+      private double _textureMeterWidth = 0.0;
+      private double _textureMeterHeight = 0.0;
       private ObservableCollection<LandingSite> _landingSites = new ObservableCollection<LandingSite>();
 
       // The planet's ground texture ("" = the orbit scene's)
@@ -31,6 +33,34 @@ namespace LeapfrogEditor
       public bool ShouldSerializeTexture()
       {
          return !string.IsNullOrEmpty(Texture);
+      }
+
+      // The size of one tile of the ground texture, in the surface's units
+      // (as textured polygons' textureMeterWidth/Height). 0 = the texture's
+      // own size in pixels (one pixel a unit); a height of 0 with a width
+      // keeps the texture's proportions.
+      [XmlAttribute("textureMeterWidth")]
+      public double TextureMeterWidth
+      {
+         get { return _textureMeterWidth; }
+         set { _textureMeterWidth = value; }
+      }
+
+      public bool ShouldSerializeTextureMeterWidth()
+      {
+         return TextureMeterWidth > 0.0;
+      }
+
+      [XmlAttribute("textureMeterHeight")]
+      public double TextureMeterHeight
+      {
+         get { return _textureMeterHeight; }
+         set { _textureMeterHeight = value; }
+      }
+
+      public bool ShouldSerializeTextureMeterHeight()
+      {
+         return TextureMeterHeight > 0.0;
       }
 
       [XmlElement("landingSite")]

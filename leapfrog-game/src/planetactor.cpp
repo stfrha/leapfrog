@@ -64,7 +64,9 @@ PlanetActor::PlanetActor(
    // The sites and the surface's art; the planet's texture, unless the
    // surface file gives its own
    std::string texture = objectNode.attribute("texture").as_string();
-   loadSurface(objectNode, texture);
+   float tileWidth = 0.0f;
+   float tileHeight = 0.0f;
+   loadSurface(objectNode, texture, tileWidth, tileHeight);
 
    // Where the orbit will be established: the planet spins up over
    // c_spinUpMs and the orbit is established about 12 s after the start
@@ -74,7 +76,27 @@ PlanetActor::PlanetActor(
 
    spBox9Sprite planetSprite = new Box9Sprite();
    planetSprite->setResAnim(g_GraphRes.getResAnim(texture.c_str()));
-   planetSprite->setSize(7000.0f, 7000.0f);
+   // The texture's tiles: the surface file's size (textureMeterWidth and
+   // Height, in planet units), or the texture's own size in pixels. The
+   // tiling is done at the texture's size, so the sprite is scaled to make
+   // the tiles that big, and sized to still cover the disc.
+   float tileScaleX = 1.0f;
+   float tileScaleY = 1.0f;
+   ResAnim* groundAnim = g_GraphRes.getResAnim(texture.c_str());
+   if ((groundAnim != NULL) && (groundAnim->getWidth() > 0.0f) && (groundAnim->getHeight() > 0.0f))
+   {
+      if (tileWidth > 0.0f)
+      {
+         tileScaleX = tileWidth / groundAnim->getWidth();
+         tileScaleY = tileScaleX;
+      }
+      if (tileHeight > 0.0f)
+      {
+         tileScaleY = tileHeight / groundAnim->getHeight();
+      }
+   }
+   planetSprite->setSize(7000.0f / tileScaleX, 7000.0f / tileScaleY);
+   planetSprite->setScale(tileScaleX, tileScaleY);
    planetSprite->setAnchor(0.5f, 0.5f);
    planetSprite->setGuides(0, 0, 0, 0);
    planetSprite->setHorizontalMode(Box9Sprite::TILING_FULL);
@@ -362,7 +384,7 @@ float PlanetActor::surfaceRotationFor(float planetRotation)
 // The landing sites, and the art of the planet's surface. The orbit
 // scene's properties name the surface file (surfaceFile); without one, the
 // sites are in the properties (<landingSites>), and there is no art.
-void PlanetActor::loadSurface(const pugi::xml_node& orbitProperties, std::string& texture)
+void PlanetActor::loadSurface(const pugi::xml_node& orbitProperties, std::string& texture, float& tileWidth, float& tileHeight)
 {
    pugi::xml_document doc;
    pugi::xml_node sitesNode = orbitProperties.child("landingSites");
@@ -390,6 +412,9 @@ void PlanetActor::loadSurface(const pugi::xml_node& orbitProperties, std::string
          {
             texture = surfaceTexture;
          }
+
+         tileWidth = props.attribute("textureMeterWidth").as_float(0.0f);
+         tileHeight = props.attribute("textureMeterHeight").as_float(0.0f);
       }
       else
       {

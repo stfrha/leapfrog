@@ -12,6 +12,10 @@
          Text="The planet's surface, unrolled: x along the ground (61.1 per degree), y the height (0 = the ground, negative above it). The ruler shows degrees; drag a site's flag on it to move the site (Shift: snap to the ruler's ticks)." />
       <local:TexturePickerEditorControl Headline="Ground Texture" NoneValue="none" MyValue="{Binding Texture, Mode=TwoWay}"
          ToolTip="The planet's texture; none = the orbit scene's" />
+      <local:DoubleEditorControl Headline="Tile Width" MyValue="{Binding TextureMeterWidth, Mode=TwoWay}"
+         ToolTip="The width of one tile of the ground texture, in surface units (61.1 per degree); 0 = the texture's width in pixels" />
+      <local:DoubleEditorControl Headline="Tile Height" MyValue="{Binding TextureMeterHeight, Mode=TwoWay}"
+         ToolTip="The height of one tile; 0 = in proportion to the width" />
       <local:HeadlineControl Headline="Landing Sites (game order)" />
       <ItemsControl ItemsSource="{Binding Sites}">
          <ItemsControl.ItemTemplate>

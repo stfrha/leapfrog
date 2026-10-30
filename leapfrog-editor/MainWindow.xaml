@@ -36,6 +36,7 @@
       <local:BindingProxy x:Key="DataContextProxy" Data="{Binding}" />
       <local:BoolToVisibilityValueConverter x:Key="BoolToVisibilityValueConverter" />
       <local:ScreenPixelsValueConverter x:Key="ScreenPixelsValueConverter" />
+      <local:TexturePathValueConverter x:Key="TexturePathValueConverter" />
    </Window.Resources>
    <Grid>
       <Grid.RowDefinitions>
@@ -493,6 +494,26 @@
                            Width="{Binding PlanetGroundRect.Width}"
                            Height="{Binding PlanetGroundRect.Height}"
                            Fill="#30806040" />
+                        <!-- The planet's ground texture, tiled at the game's size
+                             (on the planet the tiles run straight across the
+                             disc, not along the curved ground) -->
+                        <Rectangle
+                           Visibility="{Binding PlanetView, Converter={StaticResource BoolToVisibilityValueConverter}}"
+                           IsHitTestVisible="False"
+                           Opacity="0.6"
+                           Canvas.Left="{Binding PlanetGroundRect.Left}"
+                           Canvas.Top="{Binding PlanetGroundRect.Top}"
+                           Width="{Binding PlanetGroundRect.Width}"
+                           Height="{Binding PlanetGroundRect.Height}">
+                           <Rectangle.Fill>
+                              <ImageBrush
+                                 ViewportUnits="Absolute"
+                                 TileMode="Tile"
+                                 Stretch="Fill"
+                                 Viewport="{Binding PlanetSurface.GroundTile}"
+                                 ImageSource="{Binding PlanetSurface.Texture, Converter={StaticResource TexturePathValueConverter}}" />
+                           </Rectangle.Fill>
+                        </Rectangle>
                         <ContentControl 
                            DataContext="{Binding EditedCpVm}"
                            Content="{Binding}">

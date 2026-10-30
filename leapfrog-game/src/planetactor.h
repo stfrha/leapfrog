@@ -126,7 +126,7 @@ private:
    oxygine::spActor m_surface;
    std::vector<oxygine::spActor> m_solutionMarkers;
    bool m_revolutionPending;  // fading out for the next revolution
-   void loadSurface(const pugi::xml_node& orbitProperties, std::string& texture);
+   void loadSurface(const pugi::xml_node& orbitProperties, std::string& texture, float& tileWidth, float& tileHeight);
    void placeSurfaceSprite(pugi::xml_node& node);
    void placeSolutionMarkers(bool fadeIn);
    float surfaceRotationFor(float planetRotation);

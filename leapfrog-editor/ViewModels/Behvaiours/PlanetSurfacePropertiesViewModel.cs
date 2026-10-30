@@ -42,6 +42,52 @@ namespace LeapfrogEditor
          {
             LocalModelObject.Texture = (value == "none") ? "" : value;
             OnPropertyChanged("Texture");
+            OnPropertyChanged("GroundTile");
+         }
+      }
+
+      public double TextureMeterWidth
+      {
+         get { return LocalModelObject.TextureMeterWidth; }
+         set
+         {
+            LocalModelObject.TextureMeterWidth = Math.Max(0.0, value);
+            OnPropertyChanged("TextureMeterWidth");
+            OnPropertyChanged("GroundTile");
+         }
+      }
+
+      public double TextureMeterHeight
+      {
+         get { return LocalModelObject.TextureMeterHeight; }
+         set
+         {
+            LocalModelObject.TextureMeterHeight = Math.Max(0.0, value);
+            OnPropertyChanged("TextureMeterHeight");
+            OnPropertyChanged("GroundTile");
+         }
+      }
+
+      // One tile of the ground texture on the canvas (ImageBrush viewport),
+      // as the game sizes it (PlanetActor): the given size, or the
+      // texture's pixels; a height of 0 keeps the proportions
+      public System.Windows.Rect GroundTile
+      {
+         get
+         {
+            double pw = 512.0;
+            double ph = 512.0;
+            System.Windows.Media.Imaging.BitmapSource image =
+               TextureImages.Get(Texture) as System.Windows.Media.Imaging.BitmapSource;
+            if ((image != null) && (image.PixelWidth > 0) && (image.PixelHeight > 0))
+            {
+               pw = image.PixelWidth;
+               ph = image.PixelHeight;
+            }
+
+            double w = (TextureMeterWidth > 0.0) ? TextureMeterWidth : pw;
+            double h = (TextureMeterHeight > 0.0) ? TextureMeterHeight : w * ph / pw;
+            return new System.Windows.Rect(0.0, 0.0, w, h);
          }
       }
 
