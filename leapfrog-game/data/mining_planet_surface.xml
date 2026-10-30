@@ -1,0 +1,22 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<compoundObject
+  needsGroupIndex="false">
+  <behaviour
+    type="planetSurface">
+    <planetSurfaceProperties
+      texture="planet_rock">
+      <landingSite
+        name="goldMine"
+        label="Gold Mine"
+        angle="0"
+        texture="alpha_mine1"
+        scene="home_scene.xml" />
+      <landingSite
+        name="alphaCity"
+        label="Alpha City"
+        angle="-5.7"
+        texture="alpha_city1"
+        scene="landing_scene.xml" />
+    </planetSurfaceProperties>
+  </behaviour>
+</compoundObject>

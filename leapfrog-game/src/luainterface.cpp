@@ -661,7 +661,7 @@ static int c_leapfrogStandsOn(lua_State *L)
 // burn:
 //   outcome    "onSite", "offSite", "bounced", "burnedUp" ("none" before
 //              any re-entry has ended)
-//   siteIndex  the closest landing site, 0.. in angle order (onSite and
+//   siteIndex  the closest landing site, 0.. in file order (onSite and
 //              offSite; -1 otherwise); also the orbit scene's exit
 //              parameter then
 //   siteName, siteScene  that site's name and landing scene (scene

@@ -177,6 +177,7 @@
 		8496153659118A721B2BD16D /* stripper_drop_shield.xml in Resources */ = {isa = PBXBuildFile; fileRef = 94B455E71AE229ED9FA0A104 /* stripper_drop_shield.xml */; };
 		D4F7E2F27171C57C98312456 /* stripper_drop_ammo.xml in Resources */ = {isa = PBXBuildFile; fileRef = D99AC0EFC487E50A1D52E1E4 /* stripper_drop_ammo.xml */; };
 		69A3D6E1D2D4CA57183148B0 /* stripper_swarm.xml in Resources */ = {isa = PBXBuildFile; fileRef = 4B17C40AA7DFE30FE4222645 /* stripper_swarm.xml */; };
+		FD5D4E4FEC2F64DB759722D2 /* mining_planet_surface.xml in Resources */ = {isa = PBXBuildFile; fileRef = F51991A48F642F9CAF095A4E /* mining_planet_surface.xml */; };
 		380D74EEC30DA1990252FF9C /* stripper.xml in Resources */ = {isa = PBXBuildFile; fileRef = F84BE18772F1BB2846E983AB /* stripper.xml */; };
 		49AA61FFBAEB51724A239CAF /* home_scene.xml in Resources */ = {isa = PBXBuildFile; fileRef = 8F61B72460CA1209C0AC96C9 /* home_scene.xml */; };
 		D686979AEA566DF615273DAE /* images/mining in Resources */ = {isa = PBXBuildFile; fileRef = A6711D6F0B66C05089D9267B /* images/mining */; };
@@ -644,6 +645,7 @@
 		94B455E71AE229ED9FA0A104 /* stripper_drop_shield.xml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; name = stripper_drop_shield.xml; path = ../data/stripper_drop_shield.xml; sourceTree = "<group>"; };
 		D99AC0EFC487E50A1D52E1E4 /* stripper_drop_ammo.xml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; name = stripper_drop_ammo.xml; path = ../data/stripper_drop_ammo.xml; sourceTree = "<group>"; };
 		4B17C40AA7DFE30FE4222645 /* stripper_swarm.xml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; name = stripper_swarm.xml; path = ../data/stripper_swarm.xml; sourceTree = "<group>"; };
+		F51991A48F642F9CAF095A4E /* mining_planet_surface.xml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; name = mining_planet_surface.xml; path = ../data/mining_planet_surface.xml; sourceTree = "<group>"; };
 		F84BE18772F1BB2846E983AB /* stripper.xml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; name = stripper.xml; path = ../data/stripper.xml; sourceTree = "<group>"; };
 		8F61B72460CA1209C0AC96C9 /* home_scene.xml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; name = home_scene.xml; path = ../data/home_scene.xml; sourceTree = "<group>"; };
 		A6711D6F0B66C05089D9267B /* images/mining */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; name = images/mining; path = ../data/images/mining; sourceTree = "<group>"; };
@@ -789,6 +791,7 @@
 				94B455E71AE229ED9FA0A104 /* stripper_drop_shield.xml */,
 				D99AC0EFC487E50A1D52E1E4 /* stripper_drop_ammo.xml */,
 				4B17C40AA7DFE30FE4222645 /* stripper_swarm.xml */,
+				F51991A48F642F9CAF095A4E /* mining_planet_surface.xml */,
 				F84BE18772F1BB2846E983AB /* stripper.xml */,
 				8F61B72460CA1209C0AC96C9 /* home_scene.xml */,
 				A6711D6F0B66C05089D9267B /* images/mining */,
@@ -1399,6 +1402,7 @@
 				8496153659118A721B2BD16D /* stripper_drop_shield.xml in Resources */,
 				D4F7E2F27171C57C98312456 /* stripper_drop_ammo.xml in Resources */,
 				69A3D6E1D2D4CA57183148B0 /* stripper_swarm.xml in Resources */,
+				FD5D4E4FEC2F64DB759722D2 /* mining_planet_surface.xml in Resources */,
 				380D74EEC30DA1990252FF9C /* stripper.xml in Resources */,
 				49AA61FFBAEB51724A239CAF /* home_scene.xml in Resources */,
 				D686979AEA566DF615273DAE /* images/mining in Resources */,

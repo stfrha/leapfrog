@@ -100,7 +100,8 @@ end
 -- off-site landing (the pad's top less the ~14 from the Leapfrog's origin
 -- to its feet in landing mode).
 -- (Stand-ins for now: the gold mine site is home_scene with the silo's
--- pad, Alpha City is landing_scene with landing_pad1.)
+-- pad, Alpha City is landing_scene with landing_pad1. The sites are in
+-- the planet's surface file, mining_planet_surface.xml.)
 local orbitArrivals = {
    ["home_scene.xml"]    = { from = { x = 2736, y = 50 }, pad = "siloLandingPad", onPad = { x = 2736, y = 500 } },
    ["landing_scene.xml"] = { from = { x = 520,  y = 50 }, pad = "landing_pad1",   onPad = { x = 415,  y = 657 } },

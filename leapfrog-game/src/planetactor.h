@@ -6,10 +6,15 @@
 #include "Box2D/Box2D.h"
 #include "compoundobject.h"
 
-// A landing site on the planet (orbit_scene.xml, <landingSite>): name,
-// angle in degrees, the marker's texture, the landing scene it leads to
-// (scene, e.g. "landing_scene.xml"; "" = the scripts decide) and the label
-// shown under its marker in orbit (label; the name if not given).
+// A landing site on the planet (<landingSite> in the planet's surface file,
+// or in the orbit scene's properties without one): name, angle in degrees
+// along the surface (growing to the right, clockwise, as on the editor's
+// ruler: the surface file's x / its radius), the marker's texture ("" = no
+// marker, e.g. when the surface's art shows the site), the landing scene
+// it leads to (scene, e.g. "landing_scene.xml"; "" = the scripts decide)
+// and the label under its solution marker in orbit (label; the name if
+// not given). Sites are numbered in file order (the orbit scene's exit
+// parameter).
 class LandingSite
 {
 public:
@@ -41,17 +46,13 @@ public:
       m_label = objectNode.attribute("label").as_string(m_name.c_str());
    }
 
-   bool operator< (const LandingSite & obj) const
-   {
-      return (this->m_angle < obj.m_angle);
-   }
 };
 
 class LandingResult
 {
 public:
    std::string m_closestSite;
-   int m_closestSiteIndex;          // in angle order (as the sites are kept)
+   int m_closestSiteIndex;          // in file order
    std::string m_closestSiteScene;
    float m_angleFromClosestSite;
    float m_distanceFromClosestSite; // along the surface, planet units (a
@@ -111,16 +112,28 @@ private:
 
    float m_spinElapsedMs;     // since the scene started (the spin-up)
 
-   // The predicted ("solution") markers' angles on the planet, set when
-   // the orbit is established. A marker is at the solution (a burn now
-   // lands on its site) when the planet's turn brings it to
-   // c_landingPointAngle.
-   std::vector<float> m_predictedSiteAngles;
-   std::vector<oxygine::spActor> m_siteMarkers;
-   void placeSiteMarkers(bool fadeIn);
+   // The planet's surface: a layer turning with the planet that holds the
+   // surface's art (spriteBox elements of the surface file, placed from
+   // the unrolled strip: x along the surface, y the height, negative
+   // above the ground), the sites' markers, and from the orbit's
+   // establishment the sites' solution markers (predicted marker and
+   // label, c_predictedAngleOffset ahead of each site: a burn when it is
+   // at c_landingPointAngle lands on the site). In the layer, angle a
+   // along the surface is at local angle a; the layer's rotation puts
+   // the sites where the re-entry timing expects them when the orbit is
+   // established (c_startAngleOffset), and puts them back there for each
+   // new revolution (restartRevolution).
+   oxygine::spActor m_surface;
+   std::vector<oxygine::spActor> m_solutionMarkers;
+   bool m_revolutionPending;  // fading out for the next revolution
+   void loadSurface(const pugi::xml_node& orbitProperties, std::string& texture);
+   void placeSurfaceSprite(pugi::xml_node& node);
+   void placeSolutionMarkers(bool fadeIn);
+   float surfaceRotationFor(float planetRotation);
    static const float c_missedAngle;
+   static const float c_surfaceRadius;
 
-   std::set<LandingSite> m_landingSites;
+   std::vector<LandingSite> m_landingSites;
 
    PlanetActorStateEnum m_state;
    bool m_stateChange;

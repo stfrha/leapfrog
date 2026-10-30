@@ -18,6 +18,9 @@ const float PlanetActor::c_spinUpMs = 6000.0f;
 // past it (about 180 planet units, nearly two marker widths)
 const float PlanetActor::c_missedAngle = 3.0f / 180.0f * MATH_PI;
 
+// The planet's radius in its picture's units (the disc is 7000 wide)
+const float PlanetActor::c_surfaceRadius = 3500.0f;
+
 // Where the marker comes in from: right of the picture (it shows 50..2100)
 const float PlanetActor::c_arrivalStartX = 2250.0f;
 
@@ -37,7 +40,8 @@ PlanetActor::PlanetActor(
    c_landingPointAngle(-1.142f),
    c_angleZeroRotation(0.952f + 100.0f / 180.0f * MATH_PI),
    c_safeLandingMaxRadDeviation(100.0f / 3500.0f / 2.0f),
-   m_spinElapsedMs(0.0f)
+   m_spinElapsedMs(0.0f),
+   m_revolutionPending(false)
 {
    //// I should probably load resources that are uniuqe here
    //setPanorateMode(topLeft);
@@ -52,9 +56,24 @@ PlanetActor::PlanetActor(
    maskedSprite->setAnchor(0.5f, 0.5f);
    maskedSprite->setPosition(0.0f, 0.0f);
 
+   // The surface layer, over the planet's disc (see m_surface)
+   m_surface = new Actor();
+   m_surface->setPriority(1);
+   m_surface->attachTo(m_planet);
+
+   // The sites and the surface's art; the planet's texture, unless the
+   // surface file gives its own
+   std::string texture = objectNode.attribute("texture").as_string();
+   loadSurface(objectNode, texture);
+
+   // Where the orbit will be established: the planet spins up over
+   // c_spinUpMs and the orbit is established about 12 s after the start
+   // (OrbitSpaceScene), so it has turned about as far as 9 s at full
+   // speed. orbitEstablished corrects it (by about a frame's turn).
+   m_surface->setRotation(surfaceRotationFor(c_orbitSpinPerMs * 9000.0f));
+
    spBox9Sprite planetSprite = new Box9Sprite();
-//   planetSprite->setResAnim(gameResources.getResAnim("planet_rock"));
-   planetSprite->setResAnim(g_GraphRes.getResAnim(objectNode.attribute("texture").as_string()));
+   planetSprite->setResAnim(g_GraphRes.getResAnim(texture.c_str()));
    planetSprite->setSize(7000.0f, 7000.0f);
    planetSprite->setAnchor(0.5f, 0.5f);
    planetSprite->setGuides(0, 0, 0, 0);
@@ -78,14 +97,6 @@ PlanetActor::PlanetActor(
 
    maskedSprite->setMask(mask, true);
 
-   for (auto it = objectNode.child("landingSites").children("landingSite").begin();
-      it != objectNode.child("landingSites").children("landingSite").end();
-      ++it)
-   {
-      LandingSite ls(*it);
-      m_landingSites.insert(ls);
-   }
-   
    setAnchor(0.5f, 0.5f);
 
    // The planet, the trajectory and the markers are drawn in the head-down
@@ -257,7 +268,9 @@ void PlanetActor::orbitEstablished(void)
    m_state = PAS_ORBIT_ESTABLISHED;
    m_stateChange = true;
 
-   placeSiteMarkers(false);
+   // The sites exactly where the re-entry timing expects them now
+   m_surface->setRotation(surfaceRotationFor(m_planetAngleAtOrbitEstablished));
+   placeSolutionMarkers(false);
 
    // generate the trajectory, without angles set to zero, to begin with
    spSprite trajectory[44];
@@ -338,13 +351,106 @@ void PlanetActor::orbitEstablished(void)
 }
 
 
-// The sites' markers, placed for an orbit established at
-// m_planetAngleAtOrbitEstablished: the predicted ("solution") marker with
-// the site's name, and the site itself further back. fadeIn for a new
-// revolution (restartRevolution).
-void PlanetActor::placeSiteMarkers(bool fadeIn)
+// The surface layer's rotation that puts each site where the re-entry
+// timing expects it (its solution marker at c_startAngleOffset, the site
+// c_predictedAngleOffset behind) with the planet turned planetRotation
+float PlanetActor::surfaceRotationFor(float planetRotation)
 {
-   m_predictedSiteAngles.clear();
+   return c_startAngleOffset - c_predictedAngleOffset - planetRotation;
+}
+
+// The landing sites, and the art of the planet's surface. The orbit
+// scene's properties name the surface file (surfaceFile); without one, the
+// sites are in the properties (<landingSites>), and there is no art.
+void PlanetActor::loadSurface(const pugi::xml_node& orbitProperties, std::string& texture)
+{
+   pugi::xml_document doc;
+   pugi::xml_node sitesNode = orbitProperties.child("landingSites");
+   pugi::xml_node root;
+
+   std::string surfaceFile = orbitProperties.attribute("surfaceFile").as_string();
+
+   if (!surfaceFile.empty())
+   {
+      ox::file::buffer bf;
+
+      if (ox::file::exists(surfaceFile.c_str()))
+      {
+         ox::file::read(surfaceFile.c_str(), bf);
+      }
+
+      if ((bf.size() > 0) && doc.load_buffer(&bf.data[0], bf.size()))
+      {
+         root = doc.child("compoundObject");
+         pugi::xml_node props = root.child("behaviour").child("planetSurfaceProperties");
+         sitesNode = props;
+
+         std::string surfaceTexture = props.attribute("texture").as_string();
+         if (!surfaceTexture.empty())
+         {
+            texture = surfaceTexture;
+         }
+      }
+      else
+      {
+         logs::warning("Planet: can't read the surface file %s", surfaceFile.c_str());
+      }
+   }
+
+   for (pugi::xml_node node = sitesNode.child("landingSite"); node; node = node.next_sibling("landingSite"))
+   {
+      LandingSite ls(node);
+      m_landingSites.push_back(ls);
+
+      if (!ls.m_texture.empty())
+      {
+         spSprite marker = new Sprite();
+         marker->setResAnim(g_GraphRes.getResAnim(ls.m_texture));
+         marker->setSize(100.0f, 30.0f);
+         marker->setAnchor(0.5f, 0.5f);
+         marker->setPosition(Vector2(c_surfaceRadius * cos(ls.m_angle), c_surfaceRadius * sin(ls.m_angle)));
+         marker->setRotation(ls.m_angle + MATH_PI / 2.0f);
+         marker->attachTo(m_surface);
+      }
+   }
+
+   if (root)
+   {
+      for (pugi::xml_node node = root.child("spriteBox"); node; node = node.next_sibling("spriteBox"))
+      {
+         placeSurfaceSprite(node);
+      }
+   }
+}
+
+// A spriteBox of the unrolled surface on the planet: its centre (posX,
+// posY) at the angle posX / radius, height -posY over the ground, turned
+// so its top faces away from the planet (plus its own angle, degrees).
+// Sprites are not bent: under a 600 wide one the surface sags only ~13.
+void PlanetActor::placeSurfaceSprite(pugi::xml_node& node)
+{
+   spSprite sprite = new Sprite();
+   doCommonShapeDefinitions(sprite.get(), node);
+   sprite->setSize(node.attribute("width").as_float(), node.attribute("height").as_float());
+   sprite->setAnchor(0.5f, 0.5f);
+
+   float a = node.attribute("posX").as_float() / c_surfaceRadius;
+   float r = c_surfaceRadius - node.attribute("posY").as_float();
+   sprite->setPosition(Vector2(r * cos(a), r * sin(a)));
+   sprite->setRotation(a + MATH_PI / 2.0f + node.attribute("angle").as_float() * MATH_PI / 180.0f);
+   sprite->attachTo(m_surface);
+}
+
+// The sites' solution markers (the predicted marker, with the site's name
+// under it), c_predictedAngleOffset ahead of each site on the surface
+// layer. fadeIn for a new revolution (restartRevolution).
+void PlanetActor::placeSolutionMarkers(bool fadeIn)
+{
+   for (spActor& marker : m_solutionMarkers)
+   {
+      marker->detach();
+   }
+   m_solutionMarkers.clear();
 
    for (auto it = m_landingSites.begin(); it != m_landingSites.end(); ++it)
    {
@@ -352,14 +458,13 @@ void PlanetActor::placeSiteMarkers(bool fadeIn)
       predSite->setResAnim(g_GraphRes.getResources(GraphicResources::ResourceTypeEnum::hud).getResAnim("predicted_site"));
       predSite->setSize(100.0f, 30.0f);
       predSite->setAnchor(0.5f, 0.5f);
+      predSite->setPriority(250);
 
-
-      float alpha = c_startAngleOffset - m_planetAngleAtOrbitEstablished - it->m_angle;
-      m_predictedSiteAngles.push_back(alpha);
-      predSite->setPosition(Vector2(3500.0f * cos(alpha), 3500.0f * sin(alpha)));
+      float alpha = it->m_angle + c_predictedAngleOffset;
+      predSite->setPosition(Vector2(c_surfaceRadius * cos(alpha), c_surfaceRadius * sin(alpha)));
       predSite->setRotation(alpha + MATH_PI / 2.0f);
-      predSite->attachTo(m_planet);
-      m_siteMarkers.push_back(predSite);
+      predSite->attachTo(m_surface);
+      m_solutionMarkers.push_back(predSite);
 
       // The site's name under the marker (towards the ground; it turns
       // with the planet). The planet picture is scaled down to fit the
@@ -378,45 +483,40 @@ void PlanetActor::placeSiteMarkers(bool fadeIn)
       label->setText(it->m_label);
       label->attachTo(predSite);
 
-      spSprite crs = new Sprite();
-      crs->setResAnim(g_GraphRes.getResAnim(it->m_texture));
-      crs->setSize(100.0f, 30.0f);
-      crs->setAnchor(0.5f, 0.5f);
-
-      alpha = c_startAngleOffset - m_planetAngleAtOrbitEstablished - it->m_angle - c_predictedAngleOffset;
-      crs->setPosition(Vector2(3500.0f * cos(alpha), 3500.0f * sin(alpha)));
-      crs->setRotation(alpha + MATH_PI / 2.0f);
-      crs->attachTo(m_planet);
-      m_siteMarkers.push_back(crs);
-   }
-
-
-   if (fadeIn)
-   {
-      for (spActor& marker : m_siteMarkers)
+      if (fadeIn)
       {
-         marker->setAlpha(0);
-         marker->addTween(Actor::TweenAlpha(255), 600);
+         predSite->setAlpha(0);
+         predSite->addTween(Actor::TweenAlpha(255), 600);
       }
    }
 }
 
 // No burn while the sites came by: another revolution. The planet goes on
-// turning; the markers fade out and come again as when the orbit was
-// established (OrbitScene, Fredrik: no new arrival, just the next turn
-// around the planet).
+// turning; the surface (its art, the sites and their solution markers)
+// fades out and comes again where it was when the orbit was established
+// (Fredrik: no new arrival, just the next turn around the planet).
 void PlanetActor::restartRevolution(void)
 {
-   for (spActor& marker : m_siteMarkers)
+   if (m_revolutionPending)
    {
-      marker->removeTweens();
-      spTween fade = marker->addTween(Actor::TweenAlpha(0), 400);
-      fade->detachWhenDone();
+      return;
    }
-   m_siteMarkers.clear();
 
-   m_planetAngleAtOrbitEstablished = m_planet->getRotation();
-   placeSiteMarkers(true);
+   m_revolutionPending = true;
+   m_surface->removeTweens();
+   spTween fade = m_surface->addTween(Actor::TweenAlpha(0), 400);
+   fade->setDoneCallback([this](Event*)
+   {
+      // Not if a burn has started meanwhile: then the sites stay put
+      if (m_state == PAS_ORBIT_ESTABLISHED)
+      {
+         m_surface->setRotation(surfaceRotationFor(m_planet->getRotation()));
+         placeSolutionMarkers(false);
+      }
+
+      m_revolutionPending = false;
+      m_surface->addTween(Actor::TweenAlpha(255), 600);
+   });
 }
 
 void PlanetActor::startReentry(float relativeBurnDeviation, float deviationDistance)
@@ -462,11 +562,9 @@ void PlanetActor::surfaceReached(void)
 {
    m_planetAngleAtSurface = m_planet->getRotation();
 
-   float landingAngle = 
-      m_planetAngleAtSurface - 
-      c_predictedAngleOffset - 
-      (c_landingPointAngle - c_startAngleOffset) - 
-      m_planetAngleAtOrbitEstablished;
+   // Where on the surface the Leapfrog came down: the end of its path
+   // (c_landingPointAngle on the screen) in the surface layer's angles
+   float landingAngle = c_landingPointAngle - m_planetAngleAtSurface - m_surface->getRotation();
 
    logs::messageln("Landing angle: %f", landingAngle);
    
@@ -476,11 +574,13 @@ void PlanetActor::surfaceReached(void)
    // Check the closest landing site
    for (auto it = m_landingSites.begin(); it != m_landingSites.end(); ++it, ++index)
    {
-      float absDiff = fabs(it->m_angle - landingAngle);
+      // The other way round the planet if that is shorter
+      float diff = remainderf(it->m_angle - landingAngle, 2.0f * MATH_PI);
+      float absDiff = fabs(diff);
       if (absDiff < minAngleToLandingSite)
       {
          minAngleToLandingSite = absDiff;
-         m_results.m_angleFromClosestSite = it->m_angle - landingAngle;
+         m_results.m_angleFromClosestSite = diff;
          m_results.m_distanceFromClosestSite = absDiff * 3500.0f;
          m_results.m_closestSite = it->m_name;
          m_results.m_closestSiteIndex = index;
@@ -505,16 +605,16 @@ void PlanetActor::surfaceReached(void)
 
 bool PlanetActor::allSolutionsPassed(void)
 {
-   if ((m_state != PAS_ORBIT_ESTABLISHED) || m_predictedSiteAngles.empty())
+   if ((m_state != PAS_ORBIT_ESTABLISHED) || m_landingSites.empty() || m_revolutionPending)
    {
       return false;
    }
 
-   float turned = m_planet->getRotation();
+   float turned = m_planet->getRotation() + m_surface->getRotation();
 
-   for (float alpha : m_predictedSiteAngles)
+   for (const LandingSite& site : m_landingSites)
    {
-      if (alpha + turned <= c_landingPointAngle + c_missedAngle)
+      if (site.m_angle + c_predictedAngleOffset + turned <= c_landingPointAngle + c_missedAngle)
       {
          return false;
       }

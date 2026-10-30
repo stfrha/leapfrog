@@ -502,23 +502,36 @@ function Engine:runPending()
    self:updateQuestions()
 end
 
--- The orbit scene's landing sites, in angle order (as PlanetActor keeps
--- them): { name, angle, scene }
+-- The orbit scene's landing sites, in file order (as PlanetActor numbers
+-- them): { name, angle, scene }. They are in the planet's surface file
+-- (the orbit scene's surfaceFile), or in the orbit scene without one.
 function Engine:landingSites(file)
    local root = self:readXml(file or "orbit_scene.xml")
    local sites = {}
+   local surfaceFile
    local function walk(node)
       for _, c in ipairs(node.children or {}) do
          if c.tag == "landingSite" then
             sites[#sites + 1] = { name = c.attr.name or "", angle = tonumber(c.attr.angle or "0"),
                scene = c.attr.scene or "" }
          else
+            if c.tag == "properties" and c.attr.surfaceFile then
+               surfaceFile = c.attr.surfaceFile
+            end
             walk(c)
          end
       end
    end
    if root then walk(root) end
-   table.sort(sites, function(a, b) return a.angle < b.angle end)
+   if surfaceFile then
+      local surface = self:readXml(surfaceFile)
+      if not surface then
+         self:problem("the orbit scene's surface file " .. surfaceFile .. " can't be read")
+      else
+         sites = {}
+         walk(surface)
+      end
+   end
    return sites
 end
 
