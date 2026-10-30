@@ -22,6 +22,8 @@ namespace LeapfrogEditor
       private StripperProperties _stripperProps = new StripperProperties();
       private SwarmProperties _swarmProps = new SwarmProperties();
       private SceneProperties _sceneProperties = new SceneProperties();
+      private PlanetSurfaceProperties _planetSurfaceProps = new PlanetSurfaceProperties();
+      private OrbitSceneProperties _orbitSceneProps = new OrbitSceneProperties();
       private bool _active = true;
       private string _fuel = "none";
       private double _fuelRate = 12.0;
@@ -216,6 +218,32 @@ namespace LeapfrogEditor
       public bool ShouldSerializeSceneProperties()
       {
          return (Type == "scene");
+      }
+
+      // A planet's surface, edited unrolled (see PlanetSurfaceProperties)
+      [XmlElement("planetSurfaceProperties")]
+      public PlanetSurfaceProperties PlanetSurfaceProps
+      {
+         get { return _planetSurfaceProps; }
+         set { _planetSurfaceProps = value; }
+      }
+
+      public bool ShouldSerializePlanetSurfaceProps()
+      {
+         return (Type == "planetSurface");
+      }
+
+      // An orbit (re-entry) scene's planet (see OrbitSceneProperties)
+      [XmlElement("properties")]
+      public OrbitSceneProperties OrbitSceneProps
+      {
+         get { return _orbitSceneProps; }
+         set { _orbitSceneProps = value; }
+      }
+
+      public bool ShouldSerializeOrbitSceneProps()
+      {
+         return (Type == "orbitScene");
       }
 
       #endregion

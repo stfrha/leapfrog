@@ -56,6 +56,9 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="Models\Behaviours\PickupObjectProperties.cs" />
+    <Compile Include="Models\Behaviours\LandingSite.cs" />
+    <Compile Include="Models\Behaviours\PlanetSurfaceProperties.cs" />
+    <Compile Include="Models\Behaviours\OrbitSceneProperties.cs" />
     <Compile Include="Models\Behaviours\MagneticMineProperties.cs" />
     <Compile Include="Models\Behaviours\StripperProperties.cs" />
     <Compile Include="Models\Behaviours\SwarmProperties.cs" />
@@ -100,6 +103,9 @@
     <Compile Include="ViewModels\Behvaiours\MagneticMinePropertiesViewModel.cs" />
     <Compile Include="ViewModels\Behvaiours\StripperPropertiesViewModel.cs" />
     <Compile Include="ViewModels\Behvaiours\SwarmPropertiesViewModel.cs" />
+    <Compile Include="ViewModels\Behvaiours\LandingSiteViewModel.cs" />
+    <Compile Include="ViewModels\Behvaiours\PlanetSurfacePropertiesViewModel.cs" />
+    <Compile Include="ViewModels\Behvaiours\OrbitScenePropertiesViewModel.cs" />
     <Compile Include="ViewModels\Behvaiours\ExplosiveObjectPropertiesViewModel.cs" />
     <Compile Include="ViewModels\Behvaiours\CoBehaviourViewModel.cs" />
     <Compile Include="ViewModels\Behvaiours\StateBehaviourCollectionViewModel.cs" />
@@ -144,6 +150,12 @@
     </Compile>
     <Compile Include="Views\Controls\Editable Properties Controls\Behaviour Properties Control\SwarmBehaviourPropEditor.xaml.cs">
       <DependentUpon>SwarmBehaviourPropEditor.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Controls\Editable Properties Controls\Behaviour Properties Control\PlanetSurfacePropEditor.xaml.cs">
+      <DependentUpon>PlanetSurfacePropEditor.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Controls\Editable Properties Controls\Behaviour Properties Control\OrbitScenePropEditor.xaml.cs">
+      <DependentUpon>OrbitScenePropEditor.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\Controls\Editable Properties Controls\Behaviour Properties Control\ExplosiveBehaviourPropEditor.xaml.cs">
       <DependentUpon>ExplosiveBehaviourPropEditor.xaml</DependentUpon>
@@ -298,6 +310,7 @@
     <Compile Include="Views\Controls\Editable Shapes Controls\RotatableBoxControl.xaml.cs">
       <DependentUpon>RotatableBoxControl.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Utilities\PlanetRuler.cs" />
     <Compile Include="Utilities\CenteredCanvas.cs" />
     <Compile Include="ValueConverters\BitValueConverter.cs" />
     <Compile Include="ViewModels\Joints\RopeViewModel.cs" />
@@ -425,6 +438,14 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="Views\Controls\Editable Properties Controls\Behaviour Properties Control\SwarmBehaviourPropEditor.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\Controls\Editable Properties Controls\Behaviour Properties Control\PlanetSurfacePropEditor.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\Controls\Editable Properties Controls\Behaviour Properties Control\OrbitScenePropEditor.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>

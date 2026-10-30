@@ -248,7 +248,9 @@ namespace LeapfrogEditor
                "magneticMine",
                "pickupObject",
                "stripper",
-               "swarm"
+               "swarm",
+               "orbitScene",
+               "planetSurface"
             };
          }
       }
@@ -274,6 +276,12 @@ namespace LeapfrogEditor
             Behaviour.Type = Behaviours[SelectedBehaviourIndex];
 
             SetBehaviourPropertyInTreeView();
+
+            // A planet's surface is edited unrolled, with a ruler
+            if (MainVm != null)
+            {
+               MainVm.PlanetChanged();
+            }
 
             // TODO: Except for updating the Type property 
             // which will expose a new BehaviourProperty,

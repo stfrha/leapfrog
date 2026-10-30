@@ -25,6 +25,8 @@ namespace LeapfrogEditor
       private StripperPropertiesViewModel _stripperProperties;
       private SwarmPropertiesViewModel _swarmProperties;
       private ScenePropertiesViewModel _sceneProperties;
+      private PlanetSurfacePropertiesViewModel _planetSurfaceProperties;
+      private OrbitScenePropertiesViewModel _orbitSceneProperties;
 
 
       #endregion
@@ -48,6 +50,8 @@ namespace LeapfrogEditor
          _pickupProperties = new PickupObjectPropertiesViewModel(treeParent, parentVm, mainVm, ModelObject.PickupObjProps);
          _stripperProperties = new StripperPropertiesViewModel(treeParent, parentVm, mainVm, ModelObject.StripperProps);
          _swarmProperties = new SwarmPropertiesViewModel(treeParent, parentVm, mainVm, ModelObject.SwarmProps);
+         _planetSurfaceProperties = new PlanetSurfacePropertiesViewModel(treeParent, parentVm, mainVm, ModelObject.PlanetSurfaceProps);
+         _orbitSceneProperties = new OrbitScenePropertiesViewModel(treeParent, parentVm, mainVm, ModelObject.OrbitSceneProps);
       }
 
       #endregion
@@ -213,6 +217,14 @@ namespace LeapfrogEditor
             else if (Type == "swarm")
             {
                return _swarmProperties;
+            }
+            else if (Type == "planetSurface")
+            {
+               return _planetSurfaceProperties;
+            }
+            else if (Type == "orbitScene")
+            {
+               return _orbitSceneProperties;
             }
 
             return null;

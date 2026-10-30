@@ -304,6 +304,7 @@ namespace LeapfrogEditor
 
             _editedCpVm = value;
             OnPropertyChanged("EditedCpVm");
+            PlanetChanged();
             UpdateEditArea();
             StartUndoHistory();
          }
@@ -1445,6 +1446,64 @@ namespace LeapfrogEditor
             return new MicroMvvm.RelayCommand<Object>(parameter => AddChildObjectFileExecute(parameter), parameter => CanAddChildObjectFileExecute(parameter));
          }
       }
+
+      #region Planet view
+
+      // A planet's surface (behaviour "planetSurface") is edited unrolled:
+      // x along the ground, y the height (0 = the ground). The canvas shows
+      // the ground and the landing sites, and a ruler in degrees runs along
+      // its top (PlanetRuler).
+
+      public PlanetSurfacePropertiesViewModel PlanetSurface
+      {
+         get
+         {
+            if ((EditedCpVm == null) || (EditedCpVm.Behaviour == null))
+            {
+               return null;
+            }
+            return EditedCpVm.Behaviour.BehaviourProperties as PlanetSurfacePropertiesViewModel;
+         }
+      }
+
+      public bool PlanetView
+      {
+         get { return PlanetSurface != null; }
+      }
+
+      // Half the planet's circumference: the surface goes from -this to this
+      public double PlanetHalfRound
+      {
+         get { return Math.PI * PlanetSurfaceProperties.Radius; }
+      }
+
+      // The ground under the surface, drawn behind it
+      public Rect PlanetGroundRect
+      {
+         get { return new Rect(-PlanetHalfRound, 0.0, 2.0 * PlanetHalfRound, 3000.0); }
+      }
+
+      private PlanetSurfacePropertiesViewModel _shownPlanetSurface = null;
+
+      // An object's behaviour changed (CompoundObjectViewModel), or another
+      // object is edited: shows or hides the planet view when the edited
+      // object's surface is another (not for every object built while a
+      // scene loads)
+      public void PlanetChanged()
+      {
+         PlanetSurfacePropertiesViewModel ps = PlanetSurface;
+         if (ps == _shownPlanetSurface)
+         {
+            return;
+         }
+
+         _shownPlanetSurface = ps;
+         OnPropertyChanged("PlanetSurface");
+         OnPropertyChanged("PlanetView");
+         UpdateEditArea();
+      }
+
+      #endregion
 
       #region Parallax view
 

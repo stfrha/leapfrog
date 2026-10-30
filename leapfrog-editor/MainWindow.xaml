@@ -426,6 +426,14 @@
          </Grid>
          <GridSplitter Grid.Column="1" HorizontalAlignment="Stretch" />
          <DockPanel Grid.Column="2">
+            <!-- A planet's surface: degrees along the top of the canvas -->
+            <local:PlanetRuler
+               x:Name="planetRuler"
+               DockPanel.Dock="Top"
+               Height="34"
+               Sites="{Binding PlanetSurface.Sites}"
+               Visibility="{Binding PlanetView, Converter={StaticResource BoolToVisibilityValueConverter}}"
+               ToolTip="Degrees along the planet's surface. Drag a site's flag to move it (Shift: snap to the small ticks)." />
             <ScrollViewer
    			   x:Name="scroller"
                CanContentScroll="True"
@@ -476,6 +484,15 @@
                            Y1="-2000"
                            X2="0"
                            Y2="2000" />
+                        <!-- A planet's surface: the ground, behind what is on it -->
+                        <Rectangle
+                           Visibility="{Binding PlanetView, Converter={StaticResource BoolToVisibilityValueConverter}}"
+                           IsHitTestVisible="False"
+                           Canvas.Left="{Binding PlanetGroundRect.Left}"
+                           Canvas.Top="{Binding PlanetGroundRect.Top}"
+                           Width="{Binding PlanetGroundRect.Width}"
+                           Height="{Binding PlanetGroundRect.Height}"
+                           Fill="#30806040" />
                         <ContentControl 
                            DataContext="{Binding EditedCpVm}"
                            Content="{Binding}">
@@ -518,6 +535,55 @@
                                  <TranslateTransform X="-11" Y="-7" />
                               </Ellipse.RenderTransform>
                            </Ellipse>
+                        </Canvas>
+                        <!-- A planet's surface: the ground line, where it wraps
+                             round (+-180 degrees) and the landing sites (the
+                             game's 100 x 30 marker, a line up from it) -->
+                        <Canvas
+                           Visibility="{Binding PlanetView, Converter={StaticResource BoolToVisibilityValueConverter}}"
+                           IsHitTestVisible="False">
+                           <Line
+                              X1="{Binding PlanetGroundRect.Left}" Y1="0"
+                              X2="{Binding PlanetGroundRect.Right}" Y2="0"
+                              Stroke="#FF3B6D11"
+                              StrokeThickness="{Binding HairLine, Source={x:Static local:EditorZoom.Instance}}" />
+                           <Line
+                              X1="{Binding PlanetGroundRect.Left}" Y1="-20000"
+                              X2="{Binding PlanetGroundRect.Left}" Y2="3000"
+                              Stroke="Gray" StrokeDashArray="8 6"
+                              StrokeThickness="{Binding HairLine, Source={x:Static local:EditorZoom.Instance}}" />
+                           <Line
+                              X1="{Binding PlanetGroundRect.Right}" Y1="-20000"
+                              X2="{Binding PlanetGroundRect.Right}" Y2="3000"
+                              Stroke="Gray" StrokeDashArray="8 6"
+                              StrokeThickness="{Binding HairLine, Source={x:Static local:EditorZoom.Instance}}" />
+                           <ItemsControl ItemsSource="{Binding PlanetSurface.Sites}">
+                              <ItemsControl.ItemsPanel>
+                                 <ItemsPanelTemplate>
+                                    <Canvas />
+                                 </ItemsPanelTemplate>
+                              </ItemsControl.ItemsPanel>
+                              <ItemsControl.ItemTemplate>
+                                 <DataTemplate>
+                                    <Canvas>
+                                       <Line
+                                          X1="{Binding X}" Y1="-20000"
+                                          X2="{Binding X}" Y2="0"
+                                          Stroke="#FFD85A30" StrokeDashArray="4 4"
+                                          StrokeThickness="{Binding HairLine, Source={x:Static local:EditorZoom.Instance}}" />
+                                       <Rectangle
+                                          Canvas.Left="{Binding MarkerLeft}" Canvas.Top="-15"
+                                          Width="100" Height="30"
+                                          Fill="#30D85A30" Stroke="#FFD85A30"
+                                          StrokeThickness="{Binding HairLine, Source={x:Static local:EditorZoom.Instance}}" />
+                                       <TextBlock
+                                          Canvas.Left="{Binding MarkerLeft}" Canvas.Top="18"
+                                          FontSize="14" Foreground="#FF993C1D"
+                                          Text="{Binding DisplayLabel}" />
+                                    </Canvas>
+                                 </DataTemplate>
+                              </ItemsControl.ItemTemplate>
+                           </ItemsControl>
                         </Canvas>
                         <!-- Rubber band for selecting what lies inside it -->
                         <Rectangle

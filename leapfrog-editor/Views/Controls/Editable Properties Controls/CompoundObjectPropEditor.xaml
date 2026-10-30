@@ -74,6 +74,12 @@
                   <DataTemplate DataType="{x:Type local:SwarmPropertiesViewModel}">
                      <local:SwarmBehaviourPropEditor />
                   </DataTemplate>
+                  <DataTemplate DataType="{x:Type local:PlanetSurfacePropertiesViewModel}">
+                     <local:PlanetSurfacePropEditor />
+                  </DataTemplate>
+                  <DataTemplate DataType="{x:Type local:OrbitScenePropertiesViewModel}">
+                     <local:OrbitScenePropEditor />
+                  </DataTemplate>
                   <DataTemplate x:Key="He1" >
                      <Label Content="Undef Properties" />
                   </DataTemplate>

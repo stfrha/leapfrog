@@ -91,6 +91,20 @@ namespace LeapfrogEditor
          }
          EditorZoom.Instance.Scale = zoomAndPanControl.ContentScale;
 
+         // The planet editor's ruler follows the view
+         planetRuler.Target = content;
+         foreach (string property in new string[] { "ContentScale", "ContentOffsetX", "ContentOffsetY" })
+         {
+            System.ComponentModel.DependencyPropertyDescriptor viewDescriptor =
+               System.ComponentModel.DependencyPropertyDescriptor.FromName(property, typeof(ZoomAndPanControl), typeof(ZoomAndPanControl));
+            if (viewDescriptor != null)
+            {
+               viewDescriptor.AddValueChanged(zoomAndPanControl, (s, e) => { planetRuler.InvalidateVisual(); });
+            }
+         }
+         zoomAndPanControl.SizeChanged += (s, e) => { planetRuler.InvalidateVisual(); };
+         zoomAndPanControl.MouseLeave += (s, e) => { planetRuler.MouseX = double.NaN; };
+
          // Undo: after each mouse button release, key release or wheel turn
          // (once things have settled) the edited object is compared with its
          // last saved state, and any change becomes one undo step.
@@ -210,6 +224,11 @@ namespace LeapfrogEditor
          Point contentPoint = e.GetPosition(content);
          Point origin = ContentOrigin;
          myMainViewModel.LastMousePoint = new Point(contentPoint.X - origin.X, contentPoint.Y - origin.Y);
+
+         if (myMainViewModel.PlanetView)
+         {
+            planetRuler.MouseX = myMainViewModel.LastMousePoint.X;
+         }
 
          if (mouseHandlingMode == MouseHandlingMode.Panning)
          {
@@ -885,6 +904,16 @@ namespace LeapfrogEditor
                // Boundaries are drawn 150 wide, centred on the scene's edges
                r.Union(new Rect(-75.0, -75.0, sp.Width + 150.0, sp.Height + 150.0));
             }
+
+            // A planet's surface: its landing sites and some ground
+            PlanetSurfacePropertiesViewModel ps = (cp.Behaviour != null) ? cp.Behaviour.BehaviourProperties as PlanetSurfacePropertiesViewModel : null;
+            if (ps != null)
+            {
+               foreach (LandingSiteViewModel site in ps.Sites)
+               {
+                  r.Union(new Rect(site.X - 100.0, -600.0, 200.0, 900.0));
+               }
+            }
          }
 
          r.Inflate(EditAreaMargin, EditAreaMargin);
@@ -919,6 +948,21 @@ namespace LeapfrogEditor
             zoomAndPanControl.ContentOffsetX += newOrigin.X - oldOrigin.X;
             zoomAndPanControl.ContentOffsetY += newOrigin.Y - oldOrigin.Y;
          }
+
+         planetRuler.InvalidateVisual();
+      }
+
+      // The angle (degrees along a planet's surface) in the middle of the
+      // view, for a new landing site
+      public double PlanetViewCentreAngle()
+      {
+         Point origin = ContentOrigin;
+         double x = zoomAndPanControl.ContentOffsetX + zoomAndPanControl.ContentViewportWidth / 2.0 - origin.X;
+         if (double.IsNaN(x) || double.IsInfinity(x))
+         {
+            return 0.0;
+         }
+         return Math.Max(-180.0, Math.Min(180.0, PlanetSurfaceProperties.XToAngle(x)));
       }
 
       private static bool IsFinite(Rect r)
