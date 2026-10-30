@@ -81,13 +81,17 @@ test("repair: asked while Bruno's offer is open, it comes after it", function(t)
    -- for the repair: his question was asked first, so it opens first
    t:damageLegs(0)
    t:setProperty("leapfrog1", 8, 70)
+   t:clearDialog()
    t:land("siloLandingPad")
    t:expectQuestion(Q1.acceptJob)
    t:expectQuestionQueued(QM.repairLegs)
+   -- Bruno's question was said in flight; the silo's waits for its turn
+   t:expectNoDialog("Full repair")
 
    t:answer(Q1.acceptJob, true)
    t:expectState(t:mission(1).State.accepted)
    t:expectQuestion(QM.repairLegs)
+   t:expectDialog("Full repair", "Silo")
    t:answer(QM.repairLegs, true)
    t:expectProperty("leapfrog1", 10, 1)
    t:expectNoQuestionPending()

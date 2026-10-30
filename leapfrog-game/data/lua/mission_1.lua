@@ -71,10 +71,9 @@ local function playBrunoCall()
    c_addDialogMessage("I don't have enough fuel to get there.", "Leapfrog", false, 200, 0)
    c_addDialogMessage("Ok, I'm gonna make it easy for you. I will put in some credits into a couple of landing pads along the way. They will give you enough fuel to get here.", "Bruno", true, 300, 0)
    -- A question opens when the leapfrog stands on a pad (c_askQuestion).
-   -- The call is long: whether it has landed by the end is decided then,
-   -- and only in flight Bruno adds his "touch down" line.
-   c_addDialogMessage("Do you want the job?", "Bruno", true, 190, 0)
-   c_askQuestion(Question.acceptJob, "Touch down on the closest pad and let's discuss it.", "Bruno")
+   -- Its text is said when its turn comes (after any question already
+   -- open is answered); only in flight Bruno adds his "touch down" line.
+   c_askQuestion(Question.acceptJob, "Do you want the job?", "Bruno", "Touch down on the closest pad and let's discuss it.")
    offerPending = true
 
 end
@@ -138,11 +137,10 @@ local function askAgain(atOrb)
    end
 
    if atOrb then
-      c_addDialogMessage("You came anyway. So, do you want the job?", "Bruno", true, 30, 0)
+      c_askQuestion(Question.acceptJob, "You came anyway. So, do you want the job?", "Bruno")
    else
-      c_addDialogMessage("Changed your mind? Do you want the job?", "Bruno", true, 30, 0)
+      c_askQuestion(Question.acceptJob, "Changed your mind? Do you want the job?", "Bruno")
    end
-   c_askQuestion(Question.acceptJob)
    offerPending = true
 end
 

@@ -570,24 +570,25 @@ static int c_startSceneTimer(lua_State *L)
    return 1;
 }
 
-// c_askQuestion(questionId [, flightText, sender])
-// Asks the player a yes/no question (put the question itself in the dialog
-// first, with c_addDialogMessage). Questions are only answered with the
+// c_askQuestion(questionId [, text, sender [, flightText]])
+// Asks the player a yes/no question. text is the question itself, said by
+// sender (on the left) when its turn comes: when no other question is open
+// or before it, and the dialog has shown everything before it (put what
+// leads up to it in the dialog first, with c_addDialogMessage). So a
+// question asked while another is open waits, unsaid, until that one is
+// answered and the replies are shown. Questions are only answered with the
 // Leapfrog standing on a landing pad or a launch site: one asked in flight
-// waits in a queue until it lands. flightText (from sender, on the left)
-// is added to the dialog if the Leapfrog is still in flight when the
-// dialog has shown everything before the question, e.g. "Touch down on the
-// closest pad and let's discuss it." (decided then, not when asking: a long
-// dialog can outlast the landing). Queued questions open one at a time,
-// in the order asked; asking one that is already queued or open does
-// nothing. An open question shows
-// once the dialog has shown its queued messages: the booster button
-// becomes Yes and the fire button No (keys Y or W, N or Return), and the
-// Leapfrog is parked until it is answered and its controls let go. A launch site with a launch triggered waits
-// while a question is pending (see LaunchSite, property 3 aborts). The
-// answer comes to missionStateSceneEventHandler as event "QsYs" or "QsNo",
-// with questionId (>= 0) as parameter. Questions not answered when the
-// scene ends are dropped.
+// waits until it lands. flightText (from sender) is added after the text if
+// the Leapfrog is still in flight then, e.g. "Touch down on the closest pad
+// and let's discuss it." Asking one that is already queued or open does
+// nothing. An open question shows once the dialog has caught up: the
+// booster button becomes Yes and the fire button No (keys Y or W, N or
+// Return), and the Leapfrog is parked until it is answered and its
+// controls let go. A launch site with a launch triggered waits while a
+// question is pending (see LaunchSite, property 3 aborts). The answer comes
+// to missionStateSceneEventHandler as event "QsYs" or "QsNo", with
+// questionId (>= 0) as parameter. Questions not answered when the scene
+// ends are dropped.
 static int c_askQuestion(lua_State *L)
 {
    int questionId = lua_tointeger(L, 1);
@@ -598,12 +599,13 @@ static int c_askQuestion(lua_State *L)
       return 0;
    }
 
-   std::string flightText;
+   std::string text;
    std::string sender;
+   std::string flightText;
 
    if ((lua_gettop(L) >= 2) && lua_isstring(L, 2))
    {
-      flightText = lua_tostring(L, 2);
+      text = lua_tostring(L, 2);
    }
 
    if ((lua_gettop(L) >= 3) && lua_isstring(L, 3))
@@ -611,7 +613,12 @@ static int c_askQuestion(lua_State *L)
       sender = lua_tostring(L, 3);
    }
 
-   g_LuaInterface.getSceneActor()->askQuestion(questionId, flightText, sender);
+   if ((lua_gettop(L) >= 4) && lua_isstring(L, 4))
+   {
+      flightText = lua_tostring(L, 4);
+   }
+
+   g_LuaInterface.getSceneActor()->askQuestion(questionId, text, sender, flightText);
 
    return 0;
 }

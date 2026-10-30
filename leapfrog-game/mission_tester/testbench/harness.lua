@@ -227,9 +227,9 @@ end
 
 -- A script asks a question (c_askQuestion), as a mission would from one of
 -- its handlers; for tests of the question rules themselves
-function T:askQuestion(id, flightText, sender)
+function T:askQuestion(id, text, sender, flightText)
    step(self, function()
-      self.engine.env.c_askQuestion(id, flightText, sender)
+      self.engine.env.c_askQuestion(id, text, sender, flightText)
       self.engine:updateQuestions()
    end)
 end

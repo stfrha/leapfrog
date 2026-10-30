@@ -497,7 +497,8 @@ void SceneActor::addObjectToSpawnList(
    m_spawnInstructions.push_back(spi);
 }
 
-void SceneActor::askQuestion(int questionId, const std::string& flightText, const std::string& sender)
+void SceneActor::askQuestion(int questionId, const std::string& text, const std::string& sender,
+   const std::string& flightText)
 {
    if (questionId == m_questionId)
    {
@@ -514,6 +515,8 @@ void SceneActor::askQuestion(int questionId, const std::string& flightText, cons
 
    QueuedQuestion q;
    q.id = questionId;
+   q.text = text;
+   q.textGiven = text.empty();
    q.flightText = flightText;
    q.sender = sender;
    q.flightTextGiven = flightText.empty();
@@ -608,7 +611,24 @@ void SceneActor::updateQuestion(const Uint8* keys)
       m_flightControlsHeld = false;
    }
 
+   // An answer first (given by a button since the last update, or by a
+   // key in the last one): its replies go into the dialog before anything
+   // of the next question
+   if (m_questionAnswer != -2)
+   {
+      int answer = m_questionAnswer;
+      int id = m_answeredQuestionId;
+      m_questionAnswer = -2;
+
+      const char* eventId = (answer == 1) ? "QsYs" : "QsNo";
+      logs::messageln("Question %d: %s", id, eventId);
+
+      // Lua may ask the next question from its handler
+      g_LuaInterface.missionStateSceneEventHandler(eventId, getName(), id);
+   }
+
    bool stands = doesLeapfrogStand() && !m_externalControl;
+   bool dialogIdle = !(g_MessageDisplay && g_MessageDisplay->hasQueuedMessages());
    bool flightButtonsDown = keys[SDL_SCANCODE_W] || keys[SDL_SCANCODE_RETURN] ||
       m_boosterPressed || m_firePressed;
 
@@ -622,8 +642,30 @@ void SceneActor::updateQuestion(const Uint8* keys)
       m_questionShown = false;
    }
 
-   // Open the next one while the Leapfrog stands
-   if ((m_questionId < 0) && stands && !m_questionQueue.empty())
+   // The next question's turn: nothing open, and the dialog has caught up.
+   // Its text first, in flight or not; it opens after that.
+   if ((m_questionId < 0) && !m_questionQueue.empty() && dialogIdle &&
+      !m_questionQueue.front().textGiven)
+   {
+      // (Without a message display it opens anyway, unsaid)
+      QueuedQuestion& q = m_questionQueue.front();
+      q.textGiven = true;
+      if (g_MessageDisplay)
+      {
+         g_MessageDisplay->initMessage(
+            true,
+            q.text.c_str(),
+            q.sender.c_str(),
+            MessageDisplay::getSenderAffiliation(q.sender),
+            30,
+            0,
+            true);
+         dialogIdle = false;
+      }
+   }
+
+   // Open the next one while the Leapfrog stands (once its text is said)
+   if ((m_questionId < 0) && stands && !m_questionQueue.empty() && m_questionQueue.front().textGiven)
    {
       m_openQuestion = m_questionQueue.front();
       m_questionId = m_openQuestion.id;
@@ -634,9 +676,8 @@ void SceneActor::updateQuestion(const Uint8* keys)
 
    // In flight when the dialog has caught up with the next question: its
    // in-flight line ("touch down and let's talk"), once
-   bool dialogIdle = !(g_MessageDisplay && g_MessageDisplay->hasQueuedMessages());
-
    if ((m_questionId < 0) && !stands && !m_questionQueue.empty() && dialogIdle &&
+      m_questionQueue.front().textGiven &&
       !m_questionQueue.front().flightTextGiven && g_MessageDisplay)
    {
       QueuedQuestion& q = m_questionQueue.front();
@@ -681,18 +722,6 @@ void SceneActor::updateQuestion(const Uint8* keys)
       }
    }
 
-   if (m_questionAnswer != -2)
-   {
-      int answer = m_questionAnswer;
-      int id = m_answeredQuestionId;
-      m_questionAnswer = -2;
-
-      const char* eventId = (answer == 1) ? "QsYs" : "QsNo";
-      logs::messageln("Question %d: %s", id, eventId);
-
-      // Lua may ask the next question from its handler
-      g_LuaInterface.missionStateSceneEventHandler(eventId, getName(), id);
-   }
 }
 
 void SceneActor::cheatCredits(void)

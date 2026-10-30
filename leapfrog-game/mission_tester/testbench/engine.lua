@@ -563,6 +563,9 @@ end
 -- SceneActor::updateQuestion: questions open one at a time, in the order
 -- asked, while the Leapfrog stands on a landing pad or a launch site (not
 -- yet launched). Leaving before an answer puts the open one back in front.
+-- A question's text is said when its turn comes (nothing open), not when
+-- it is asked, so with two asked at once the second's text comes after the
+-- first is answered (and after the reply to it).
 -- (The game also waits for the dialog to catch up and the booster and fire
 -- buttons to be up before showing it; the tester shows it at once.)
 function Engine:leapfrogStands()
@@ -580,6 +583,17 @@ function Engine:updateQuestions()
       table.insert(queue, 1, self.question)
       self:note("QUESTION", string.format("%d back in the queue (not standing)", self.question))
       self.question = nil
+   end
+
+   -- The next question's text, once, when nothing is open (on the pad or
+   -- in flight; in the game when the dialog has caught up)
+   if not self.question and #queue > 0 then
+      local t = (self.questionText or {})[queue[1]]
+      if t and not t.given then
+         t.given = true
+         self.dialog[#self.dialog + 1] = { sender = t.sender, text = t.text, left = true }
+         self:note("DIALOG", t.sender .. ": " .. t.text .. " (question " .. queue[1] .. ")")
+      end
    end
 
    -- In flight with the next question waiting: its in-flight line, once
@@ -610,6 +624,7 @@ function Engine:startScene(file, sceneType)
    self.scene = nil
    self.question = nil        -- the open question (id), nil: none
    self.questionQueue = {}    -- asked, waiting for the Leapfrog to stand
+   self.questionText = {}     -- id -> the question { text, sender, given }
    self.questionFlight = {}   -- id -> in-flight line { text, sender, given }
    self.landedOn = nil
    self.timers = {}
@@ -1062,7 +1077,7 @@ function Engine:installApi(env)
       s.exitScene, s.exitType, s.exitParam = "", -1, -1
    end
 
-   api.c_askQuestion = function(id, flightText, sender)
+   api.c_askQuestion = function(id, text, sender, flightText)
       if type(id) ~= "number" or id < 0 then
          e:problem("c_askQuestion: the question id must be 0 or more")
          return
@@ -1079,6 +1094,11 @@ function Engine:installApi(env)
          end
       end
       table.insert(e.questionQueue, id)
+      if type(text) == "string" and text ~= "" then
+         e.questionText[id] = { text = text, sender = sender or "", given = false }
+      else
+         e.questionText[id] = nil
+      end
       if type(flightText) == "string" and flightText ~= "" then
          e.questionFlight[id] = { text = flightText, sender = sender or "", given = false }
       else

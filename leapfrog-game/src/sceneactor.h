@@ -115,6 +115,8 @@ protected:
    struct QueuedQuestion
    {
       int id = -1;
+      std::string text;         // the question, said when its turn comes
+      bool textGiven = true;
       std::string flightText;   // said if still in flight when the dialog
       std::string sender;       // has caught up ("" = nothing)
       bool flightTextGiven = true;
@@ -233,11 +235,17 @@ public:
    // queue. The answer reaches Lua as event "QsYs" or "QsNo" with the
    // question id as parameter. Questions belong to the scene: those not
    // answered are dropped when it ends.
-   // flightText (optional, by sender): added to the dialog when the dialog
-   // has shown everything before it and the Leapfrog still isn't standing
-   // anywhere, e.g. "Touch down and let's talk". Decided then, not when the
-   // question is asked, since a long dialog can outlast the landing.
-   void askQuestion(int questionId, const std::string& flightText = "", const std::string& sender = "");
+   // text (optional, by sender, on the left): the question itself, added
+   // to the dialog when its turn comes: no other question open, none
+   // before it in the queue, and the dialog has shown everything before
+   // it (e.g. the replies to the previous answer). So a question asked
+   // while another is open is not said until that one has been answered.
+   // flightText (optional, by sender): added after the text if the
+   // Leapfrog still isn't standing anywhere then, e.g. "Touch down and
+   // let's talk". Decided then, not when the question is asked, since a
+   // long dialog can outlast the landing.
+   void askQuestion(int questionId, const std::string& text = "", const std::string& sender = "",
+      const std::string& flightText = "");
    void cancelQuestion(int questionId);   // -1: all, open and queued
    void answerQuestion(bool yes);
    bool isQuestionShown(void);
