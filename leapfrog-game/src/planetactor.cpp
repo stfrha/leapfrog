@@ -3,6 +3,7 @@
 #include "layout.h"
 #include "graphicresources.h"
 #include "headdowndisplay.h"
+#include "polygonvertices.h"
 
 using namespace oxygine;
 using namespace pugi;
@@ -445,6 +446,11 @@ void PlanetActor::loadSurface(const pugi::xml_node& orbitProperties, std::string
       {
          placeSurfaceSprite(node);
       }
+
+      for (pugi::xml_node node = root.child("spritePolygon"); node; node = node.next_sibling("spritePolygon"))
+      {
+         placeSurfacePolygon(node);
+      }
    }
 }
 
@@ -464,6 +470,137 @@ void PlanetActor::placeSurfaceSprite(pugi::xml_node& node)
    sprite->setPosition(Vector2(r * cos(a), r * sin(a)));
    sprite->setRotation(a + MATH_PI / 2.0f + node.attribute("angle").as_float() * MATH_PI / 180.0f);
    sprite->attachTo(m_surface);
+}
+
+// A point of the unrolled surface (x along the ground, y the height,
+// negative above it) on the planet, in the surface layer's coordinates
+Vector2 PlanetActor::bendToSurface(const Vector2& stripPoint)
+{
+   float a = stripPoint.x / c_surfaceRadius;
+   float r = c_surfaceRadius - stripPoint.y;
+   return Vector2(r * cos(a), r * sin(a));
+}
+
+namespace
+{
+   // A triangle of a surface polygon, in the polygon's own (unbent)
+   // coordinates
+   struct SurfaceTriangle
+   {
+      Vector2 p[3];
+   };
+
+   // Splits triangles into four (at their edges' midpoints) until no edge
+   // is longer than maxEdge, so that bent onto the planet they follow the
+   // curve: a 120 long edge sags only half a unit under the arc
+   void tessellate(const SurfaceTriangle& t, float maxEdge, int depth, std::vector<SurfaceTriangle>& out)
+   {
+      float longest = 0.0f;
+      for (int i = 0; i < 3; i++)
+      {
+         longest = fmax(longest, (t.p[(i + 1) % 3] - t.p[i]).length());
+      }
+
+      if ((longest <= maxEdge) || (depth <= 0))
+      {
+         out.push_back(t);
+         return;
+      }
+
+      Vector2 m01 = (t.p[0] + t.p[1]) * 0.5f;
+      Vector2 m12 = (t.p[1] + t.p[2]) * 0.5f;
+      Vector2 m20 = (t.p[2] + t.p[0]) * 0.5f;
+
+      SurfaceTriangle a = { { t.p[0], m01, m20 } };
+      SurfaceTriangle b = { { m01, t.p[1], m12 } };
+      SurfaceTriangle c = { { m20, m12, t.p[2] } };
+      SurfaceTriangle d = { { m01, m12, m20 } };
+      tessellate(a, maxEdge, depth - 1, out);
+      tessellate(b, maxEdge, depth - 1, out);
+      tessellate(c, maxEdge, depth - 1, out);
+      tessellate(d, maxEdge, depth - 1, out);
+   }
+}
+
+// A spritePolygon of the unrolled surface on the planet: its triangles (as
+// the editor triangulated them) split up and bent round the planet, the
+// texture laid out as in a scene (textureMeterWidth/Height and offsets, on
+// the unbent polygon, so it follows the bend). Its own angle is ignored,
+// as for sprite polygons in scenes; fades and borders are not drawn here.
+void PlanetActor::placeSurfacePolygon(pugi::xml_node& node)
+{
+   size_t vertexCount = (size_t)std::distance(node.child("vertices").children("vertex").begin(), node.child("vertices").children("vertex").end());
+   size_t triangleCount = (size_t)std::distance(node.child("triangles").children("triangle").begin(), node.child("triangles").children("triangle").end());
+   if ((vertexCount < 3) || (triangleCount < 1))
+   {
+      return;
+   }
+
+   std::vector<Vector2> vertices(vertexCount);
+   std::vector<VectorT3<int> > triangles(triangleCount);
+   PolygonVertices::readVertices(vertices, node);
+   PolygonVertices::readTriangles(triangles, node);
+
+   std::vector<SurfaceTriangle> pieces;
+   for (const VectorT3<int>& tri : triangles)
+   {
+      int idx[3] = { tri.x - 1, tri.y - 1, tri.z - 1 };
+      bool valid = true;
+      for (int i = 0; i < 3; i++)
+      {
+         valid = valid && (idx[i] >= 0) && ((size_t)idx[i] < vertexCount);
+      }
+      if (!valid)
+      {
+         continue;
+      }
+
+      SurfaceTriangle t = { { vertices[idx[0]], vertices[idx[1]], vertices[idx[2]] } };
+      tessellate(t, 120.0f, 6, pieces);
+   }
+
+   if (pieces.empty())
+   {
+      return;
+   }
+
+   spPolygon polygon = new oxygine::Polygon();
+   doCommonShapeDefinitions(polygon.get(), node);
+
+   Vector2 pos(node.attribute("posX").as_float(), node.attribute("posY").as_float());
+   Vector2 texSize(node.attribute("textureMeterWidth").as_float(), node.attribute("textureMeterHeight").as_float());
+   Vector2 texOffset(node.attribute("textureOffsetMeterX").as_float(), node.attribute("textureOffsetMeterY").as_float());
+   if (texSize.x <= 0.0f) texSize.x = 1.0f;
+   if (texSize.y <= 0.0f) texSize.y = 1.0f;
+
+   // Tint in the vertices (oxygine::Polygon draws with them), premultiplied
+   const unsigned int vertexColor = polygon->getColor().premultiplied().rgba();
+
+   // Four vertices a triangle: oxygine draws strips, the last is repeated
+   // (a degenerate triangle), as PolygonVertices does
+   vertexPCT2* verts = new vertexPCT2[pieces.size() * 4];
+   vertexPCT2* v = verts;
+
+   for (const SurfaceTriangle& t : pieces)
+   {
+      for (int i = 0; i < 4; i++)
+      {
+         const Vector2& local = t.p[(i < 3) ? i : 2];
+         Vector2 bent = bendToSurface(pos + local);
+
+         v->color = vertexColor;
+         v->x = bent.x;
+         v->y = bent.y;
+         v->z = 0;
+         v->u = (local.x - texOffset.x) / texSize.x;
+         v->v = (local.y - texOffset.y) / texSize.y;
+         ++v;
+      }
+   }
+
+   polygon->setVertices(verts, sizeof(vertexPCT2) * pieces.size() * 4, vertexPCT2::FORMAT, true);
+   polygon->setTouchEnabled(false);
+   polygon->attachTo(m_surface);
 }
 
 // The sites' solution markers (the predicted marker, with the site's name
