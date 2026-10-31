@@ -24,7 +24,7 @@ shoulder joint (revolute, base to arm) and a clamp welded to the arm's tip
 - Station keeping: the base is tied to a static anchor at its starting
   place with a motor joint of limited force and torque, so knocks move it
   and it slowly drifts back.
-- Magnet: when the Leapfrog's nose comes within captureRadius of the
+- Magnet: when the Leapfrog's nose comes within captureRadius (6) of the
   clamp, slowly enough (maxCaptureSpeed) and lined up (maxCaptureAngle),
   the magnet draws the nose to the clamp (at most pullSpeed, slowing down
   near it) and the station turns the Leapfrog to the clamp's attitude. Too fast or not lined up: no grab, the

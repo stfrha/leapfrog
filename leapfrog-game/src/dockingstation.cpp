@@ -78,7 +78,7 @@ DockingStation::DockingStation(
    m_nosePoint.Set(props.attribute("noseX").as_float(0.0f), props.attribute("noseY").as_float(-5.25f));
    m_dockAngle = props.attribute("dockAngle").as_float(0.0f) * c_pi / 180.0f;
 
-   m_captureRadius = props.attribute("captureRadius").as_float(16.0f);
+   m_captureRadius = props.attribute("captureRadius").as_float(6.0f);
    m_pullGain = props.attribute("pullGain").as_float(2.0f);
    m_pullSpeed = props.attribute("pullSpeed").as_float(4.0f);
    m_pullForce = props.attribute("pullForce").as_float(2600.0f);
@@ -97,7 +97,7 @@ DockingStation::DockingStation(
    m_armSpeed = props.attribute("armSpeed").as_float(70.0f) * c_pi / 180.0f;
    m_armTorque = props.attribute("armTorque").as_float(2000000.0f);
    m_armReturnDelay = props.attribute("armReturnDelay").as_float(3.0f);
-   m_clearDistance = props.attribute("clearDistance").as_float(m_captureRadius + 12.0f);
+   m_clearDistance = props.attribute("clearDistance").as_float(28.0f);
 
    m_dockedVisibleWidth = props.attribute("visibleWidth").as_float(160.0f);
 
@@ -345,8 +345,13 @@ void DockingStation::applyMagnet(b2Body* lfBody, float dt)
 void DockingStation::dock(LeapFrog* lf, b2Body* lfBody)
 {
    // Seat the nose exactly in the clamp (it is at most weldDistance and
-   // weldAngle off; the legs and the shield follow through their joints)
-   float angle = m_clamp->GetAngle() + m_dockAngle;
+   // weldAngle off; the legs and the shield follow through their joints).
+   // Body angles aren't wrapped: after full turns of steering the
+   // Leapfrog's angle can be e.g. 2 pi more than the clamp's. Keep its
+   // number of turns and only take away the small error, or the leg
+   // joints (angles relative to the main body) would see a full turn and
+   // drive the legs once round.
+   float angle = lfBody->GetAngle() - attitudeError(lfBody);
    b2Vec2 seat = m_clamp->GetWorldPoint(m_clampPoint) - b2Mul(b2Rot(angle), m_nosePoint);
    lfBody->SetTransform(seat, angle);
 
@@ -355,7 +360,7 @@ void DockingStation::dock(LeapFrog* lf, b2Body* lfBody)
    def.bodyB = lfBody;
    def.localAnchorA = m_clampPoint;
    def.localAnchorB = m_nosePoint;
-   def.referenceAngle = m_dockAngle;
+   def.referenceAngle = angle - m_clamp->GetAngle();   // m_dockAngle plus whole turns
    def.collideConnected = false;
    m_dockJoint = (b2WeldJoint*)m_world->CreateJoint(&def);
 

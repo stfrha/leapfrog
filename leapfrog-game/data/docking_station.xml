@@ -22,7 +22,7 @@
       clampY="2.7"
       noseX="0"
       noseY="-5.25"
-      captureRadius="16"
+      captureRadius="6"
       maxCaptureSpeed="5"
       maxCaptureAngle="25"
       armAwayAngle="-70" />
