@@ -155,14 +155,16 @@ void HeadUpDisplay::registerLeapfrog(LeapFrog* leapfrog, bool hideShield)
       initCredits = (float)g_GameStatus.getResources()->getCredits();
    }
 
-   // The status rows, one under the other from the second button row:
-   // half a button's width high each (a headline and its bar side by
-   // side), then a small picture of the leg joints
+   // The status rows, one under the other from the second button row,
+   // with a small gap under the pause button: a quarter of a button's
+   // width high each (a headline and its bar side by side), then a small
+   // picture of the leg joints
    float bw = g_Layout.getButtonWidth();
    float rowHeight = bw / 4.0f;
+   float topGap = bw / 8.0f;
    float x = g_Layout.getXFromRight(1);
    Vector2 rowSize(bw * 2.0f, rowHeight);
-   auto rowPos = [&](int row) { return Vector2(x, g_Layout.getYFromTop(1) + (float)row * rowHeight); };
+   auto rowPos = [&](int row) { return Vector2(x, g_Layout.getYFromTop(1) + topGap + (float)row * rowHeight); };
 
    spStatusBar shotsBar = new StatusBar(
       leapfrog,
@@ -232,11 +234,12 @@ void HeadUpDisplay::registerLeapfrog(LeapFrog* leapfrog, bool hideShield)
    m_fuelCheatRect = RectF(rowPos(1), rowSize);
    m_creditCheatRect = RectF(rowPos(4), rowSize);
 
-   // The leg joints, a button's width high, under the rows
+   // The leg joints, 0.6 of a button's width high (centred across the
+   // rows' width), under the rows
    spLegStatus legStatus = new LegStatus(
       m_statusBarActor,
       rowPos(5) + Vector2(0.0f, rowHeight / 2.0f),
-      Vector2(bw * 2.0f, bw));
+      Vector2(bw * 2.0f, bw * 0.6f));
 
    if (hideShield)
    {
