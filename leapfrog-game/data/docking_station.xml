@@ -19,7 +19,7 @@
       clamp="dockClamp"
       shoulder="shoulderJoint"
       clampX="0"
-      clampY="2.7"
+      clampY="3.9"
       noseX="0"
       noseY="-5.25"
       captureRadius="6"
@@ -54,19 +54,20 @@
     width="27.2"
     height="2.4"
     density="2"
-    friction="1" />
+    friction="1"
+    animatePeriod="1.2" />
   <dynamicBox
     name="dockClamp"
     texture="dock_clamp"
     posX="30"
-    posY="-13.1"
+    posY="-14.3"
     angle="0"
     zLevel="124"
     collisionEntity="dockArm"
     collisionCategory="1"
     collisionMask="65533"
     width="3.2"
-    height="5.4"
+    height="7.8"
     density="2"
     friction="1" />
   <revoluteJoint
@@ -88,5 +89,5 @@
     objectAAnchorX="13.6"
     objectAAnchorY="0"
     objectBAnchorX="0"
-    objectBAnchorY="-3.9" />
+    objectBAnchorY="-2.7" />
 </compoundObject>

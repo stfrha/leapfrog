@@ -108,7 +108,7 @@
 	</atlas>
 	<set path = "images/space" />
 	<atlas>
-		<image file="dock_arm.png" ppu="20" trim="false" extend="false"/>
+		<image file="dock_arm.png" rows="4" ppu="20" trim="false" extend="false"/>
 	</atlas>
 	<set path = "images/space" />
 	<atlas>
