@@ -9,10 +9,6 @@
 using namespace oxygine;
 using namespace std;
 
-// The headline's share of a status row's width (the bar or value gets the
-// rest)
-const float c_statusLabelFraction = 0.45f;
-
 StatusBar::StatusBar(
    oxygine::Actor* eventActor,
    SceneActor* sceneActor,

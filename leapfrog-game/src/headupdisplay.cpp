@@ -234,12 +234,13 @@ void HeadUpDisplay::registerLeapfrog(LeapFrog* leapfrog, bool hideShield)
    m_fuelCheatRect = RectF(rowPos(1), rowSize);
    m_creditCheatRect = RectF(rowPos(4), rowSize);
 
-   // The leg joints, 0.6 of a button's width high (centred across the
-   // rows' width), under the rows
+   // The leg joints, 0.6 of a button's width high, under the rows and
+   // centred under the bars (the part of the rows right of the headlines)
+   float barsLeft = rowSize.x * c_statusLabelFraction;
    spLegStatus legStatus = new LegStatus(
       m_statusBarActor,
-      rowPos(5) + Vector2(0.0f, rowHeight / 2.0f),
-      Vector2(bw * 2.0f, bw * 0.6f));
+      rowPos(5) + Vector2(barsLeft, rowHeight / 2.0f),
+      Vector2(rowSize.x - barsLeft, bw * 0.6f));
 
    if (hideShield)
    {

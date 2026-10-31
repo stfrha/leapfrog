@@ -6,6 +6,10 @@
 
 DECLARE_SMART(StatusBar, spStatusBar);
 
+// The headline's share of a status row's width (the bar or value gets the
+// rest)
+const float c_statusLabelFraction = 0.45f;
+
 class SceneActor;
 
 class StatusBar : public oxygine::Actor
