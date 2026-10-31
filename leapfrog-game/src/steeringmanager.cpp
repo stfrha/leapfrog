@@ -404,7 +404,10 @@ b2Vec2 SteeringManager::doAvoidCollision2(float maxVelocity)
    {
       // So far, only avoid asteroids
       // Get collision entity
-      if (BodyUserData::getCollisionType(body->GetFixtureList()->GetUserData()) == CollisionEntity::breakableObject)
+      // Bodies without fixtures (e.g. a docking station's static anchor)
+      // can't be obstacles
+      if ((body->GetFixtureList() != NULL) &&
+         (BodyUserData::getCollisionType(body->GetFixtureList()->GetUserData()) == CollisionEntity::breakableObject))
       {
          b2Vec2 asteroidPos = body->GetPosition();
 
@@ -502,7 +505,10 @@ b2Body* SteeringManager::findMostThreatening(b2Vec2 pos, b2Vec2 ahead, b2Vec2 ah
    {
       // So far, only avoid asteroids
       // Get collision entity
-      if (BodyUserData::getCollisionType(body->GetFixtureList()->GetUserData()) == CollisionEntity::breakableObject)
+      // Bodies without fixtures (e.g. a docking station's static anchor)
+      // can't be obstacles
+      if ((body->GetFixtureList() != NULL) &&
+         (BodyUserData::getCollisionType(body->GetFixtureList()->GetUserData()) == CollisionEntity::breakableObject))
       {
          b2Vec2 asteroidPos = body->GetPosition();
          //Asteroid* asteroid = (Asteroid*) body->GetUserData();
