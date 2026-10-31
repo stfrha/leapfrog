@@ -252,7 +252,7 @@ static int c_registerEventHandler(lua_State *L)
    }
    else
    {
-      std::string msg = "ERROR: The object " + actorName + " could not be found when registratimg event handler. ";
+      std::string msg = "ERROR: The object " + actorName + " could not be found when registrating event handler. ";
 
       g_MessageDisplay->initMessage(true, msg.c_str(), "ERROR", 0, 0);
    }
