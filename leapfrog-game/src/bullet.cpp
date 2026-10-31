@@ -73,6 +73,14 @@ Bullet::Bullet(
 
 }
 
+void Bullet::vanish(void)
+{
+   if (m_sceneActor)
+   {
+      m_sceneActor->addMeToDeathList(this);
+   }
+}
+
 void Bullet::bulletHit(b2Contact* contact)
 {
    if (m_sceneActor)

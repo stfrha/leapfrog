@@ -46,6 +46,10 @@ public:
 
    void bulletHit(b2Contact* contact);
 
+   // Gone without hitting anything (e.g. stopped by a station's shield);
+   // removed at the end of the update
+   void vanish(void);
+
 
 
 protected:

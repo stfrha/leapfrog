@@ -114,4 +114,8 @@
 	<atlas>
 		<image file="dock_clamp.png" ppu="20" trim="false" extend="false"/>
 	</atlas>
+	<set path = "images/space" />
+	<atlas>
+		<image file="station_shield.png" trim="false" extend="false"/>
+	</atlas>
 </resources>

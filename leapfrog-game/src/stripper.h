@@ -179,6 +179,8 @@ public:
    // from anywhere, also during the physics step.
    void leaveNow(void);
 
+   StripperState getState(void) const { return m_state; }
+
    // For the contact listeners' PreSolve: strippers pass through each
    // other (one pushing into another must not shake it off the hull)
    static void preSolve(b2Contact* contact);

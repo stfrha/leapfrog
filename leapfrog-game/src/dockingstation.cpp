@@ -7,6 +7,13 @@
 #include "actoruserdata.h"
 #include "bodyuserdata.h"
 #include "headdowndisplay.h"
+#include "stripper.h"
+#include "bullet.h"
+#include "graphicresources.h"
+#include "physdispconvert.h"
+
+#include <vector>
+#include <algorithm>
 
 #include <cmath>
 
@@ -58,7 +65,10 @@ DockingStation::DockingStation(
    m_nosePoint(0.0f, -5.25f),
    m_dockAngle(0.0f),
    m_armTarget(0.0f),
-   m_armMoving(false)
+   m_armMoving(false),
+   m_shieldOn(true),
+   m_shieldCentre(13.0f, -1.0f),
+   m_shieldFlash(0.0f)
 {
    initCompoundObjectParts(sceneParent, sceneParent, parentObject, world, pos, root, groupIndex);
 
@@ -100,6 +110,14 @@ DockingStation::DockingStation(
    m_clearDistance = props.attribute("clearDistance").as_float(28.0f);
 
    m_dockedVisibleWidth = props.attribute("visibleWidth").as_float(160.0f);
+
+   m_shieldOn = props.attribute("shield").as_bool(true);
+   m_shieldCentre.Set(props.attribute("shieldX").as_float(13.0f), props.attribute("shieldY").as_float(-1.0f));
+   m_shieldRadius = props.attribute("shieldRadius").as_float(38.0f);
+   m_shieldEdge = props.attribute("shieldEdge").as_float(5.0f);
+   m_shieldAccel = props.attribute("shieldAccel").as_float(400.0f);
+   m_shieldBrake = props.attribute("shieldBrake").as_float(15.0f);
+   m_shieldAlpha = props.attribute("shieldAlpha").as_float(110.0f);
 
    // Station keeping: a motor joint to a static anchor where the station
    // starts, with limited force and torque
@@ -147,6 +165,22 @@ DockingStation::DockingStation(
    // As for a landing pad: the CompoundObject's parent is m_parentObject
    setUserData(NULL);
    attachTo(sceneParent);
+
+   // The station shield's bubble (station_shield: a bright rim, the inside
+   // nearly clear), over the station
+   if (m_shieldOn && (m_base != NULL))
+   {
+      m_shieldSprite = new Sprite();
+      m_shieldSprite->setResAnim(g_GraphRes.getResources(GraphicResources::ResourceTypeEnum::game).getResAnim("station_shield"));
+      m_shieldSprite->setAnchor(0.5f, 0.5f);
+      m_shieldSprite->setSize(2.0f * m_shieldRadius, 2.0f * m_shieldRadius);
+      m_shieldSprite->setColor(Color(120, 200, 255, 255));
+      m_shieldSprite->setAlpha((unsigned char)m_shieldAlpha);
+      m_shieldSprite->setTouchEnabled(false);
+      m_shieldSprite->setPriority(props.attribute("shieldZLevel").as_int(126));
+      m_shieldSprite->setPosition(PhysDispConvert::convert(m_base->GetWorldPoint(m_shieldCentre), 1.0f));
+      m_shieldSprite->attachTo(sceneParent);
+   }
 
    if (m_shapes.size() > 0)
    {
@@ -462,6 +496,165 @@ void DockingStation::refuse(const char* why)
 }
 
 // ---------------------------------------------------------------------------
+// Station shield
+
+namespace
+{
+   // Collects the bodies with a fixture overlapping an area
+   class BodiesInArea : public b2QueryCallback
+   {
+   public:
+      std::vector<b2Body*> m_bodies;
+
+      bool ReportFixture(b2Fixture* fixture) override
+      {
+         b2Body* b = fixture->GetBody();
+         if (std::find(m_bodies.begin(), m_bodies.end(), b) == m_bodies.end())
+         {
+            m_bodies.push_back(b);
+         }
+         return true;
+      }
+   };
+}
+
+// Pushes enemies, asteroids and mines out of the station's bubble, stops
+// bullets other than the Leapfrog's and shakes latched strippers off. The
+// Leapfrog itself (and its shield, legs, pickups, particles) flies through.
+// Forces only, and none back on the station: what is pushed out can't push
+// the station.
+void DockingStation::updateShield(float dt)
+{
+   if (!m_shieldOn || (m_base == NULL))
+   {
+      return;
+   }
+
+   b2Vec2 centre = m_base->GetWorldPoint(m_shieldCentre);
+   b2Vec2 centreVel = m_base->GetLinearVelocityFromWorldPoint(centre);
+
+   // The Leapfrog's own bullets carry its group index
+   int lfGroup = 0;
+   LeapFrog* lf = getLeapfrog();
+   b2Body* lfBody = getLeapfrogBody(lf);
+   if ((lfBody != NULL) && (lfBody->GetFixtureList() != NULL))
+   {
+      lfGroup = lfBody->GetFixtureList()->GetFilterData().groupIndex;
+   }
+
+   BodiesInArea query;
+   b2AABB box;
+   box.lowerBound = centre - b2Vec2(m_shieldRadius, m_shieldRadius);
+   box.upperBound = centre + b2Vec2(m_shieldRadius, m_shieldRadius);
+   m_world->QueryAABB(&query, box);
+
+   bool hit = false;
+
+   for (b2Body* body : query.m_bodies)
+   {
+      if ((body->GetType() != b2_dynamicBody) || (body->GetFixtureList() == NULL))
+      {
+         continue;
+      }
+
+      b2Vec2 offset = body->GetWorldCenter() - centre;
+      float distance = offset.Length();
+      if (distance >= m_shieldRadius)
+      {
+         continue;
+      }
+
+      b2Fixture* fixture = body->GetFixtureList();
+      CollisionEntity::CollisionEntityTypeEnum entity = BodyUserData::getCollisionType(fixture->GetUserData());
+
+      if (entity == CollisionEntity::bullet)
+      {
+         if (fixture->GetFilterData().groupIndex != lfGroup)
+         {
+            Bullet* bullet = (body->GetUserData() != NULL) ?
+               BodyUserData::getParentObjectOfType<Bullet*>(body->GetUserData()) : NULL;
+            if (bullet != NULL)
+            {
+               body->SetLinearVelocity(b2Vec2(0.0f, 0.0f));
+               bullet->vanish();
+               hit = true;
+            }
+         }
+         continue;
+      }
+
+      bool repel =
+         (entity == CollisionEntity::stripper) ||
+         (entity == CollisionEntity::steerableObject) ||
+         (entity == CollisionEntity::breakableObject) ||
+         (entity == CollisionEntity::destroyableObject) ||
+         (entity == CollisionEntity::explosiveObject);
+
+      if (!repel)
+      {
+         continue;
+      }
+
+      if (entity == CollisionEntity::stripper)
+      {
+         Stripper* stripper = (body->GetUserData() != NULL) ?
+            BodyUserData::getParentObjectOfType<Stripper*>(body->GetUserData()) : NULL;
+
+         if (stripper != NULL)
+         {
+            // Riding in on the Leapfrog: shaken off
+            if (stripper->getState() == Stripper::latched)
+            {
+               stripper->leaveNow();
+               hit = true;
+               continue;
+            }
+            // Leaving or gone: let it go its way
+            if (stripper->getState() >= Stripper::leave)
+            {
+               continue;
+            }
+         }
+      }
+
+      b2Vec2 normal = (distance > 0.001f) ? (1.0f / distance) * offset : b2Vec2(0.0f, -1.0f);
+      float depth = m_shieldRadius - distance;
+      float accel = m_shieldAccel * std::min(1.0f, depth / m_shieldEdge);
+
+      // Brake whatever is still moving inwards
+      float inward = -b2Dot(body->GetLinearVelocity() - centreVel, normal);
+      if (inward > 0.0f)
+      {
+         accel += m_shieldBrake * inward;
+      }
+
+      body->ApplyForceToCenter(body->GetMass() * accel * normal, true);
+
+      if (depth > 0.5f)
+      {
+         hit = true;
+      }
+   }
+
+   // The bubble follows the station, and flashes when it works
+   if (hit)
+   {
+      m_shieldFlash = 1.0f;
+   }
+   else
+   {
+      m_shieldFlash = std::max(0.0f, m_shieldFlash - dt / 0.6f);
+   }
+
+   if (m_shieldSprite)
+   {
+      m_shieldSprite->setPosition(PhysDispConvert::convert(centre, 1.0f));
+      float alpha = m_shieldAlpha + (255.0f - m_shieldAlpha) * m_shieldFlash;
+      m_shieldSprite->setAlpha((unsigned char)std::min(255.0f, std::max(0.0f, alpha)));
+   }
+}
+
+// ---------------------------------------------------------------------------
 // Update
 
 void DockingStation::doUpdate(const UpdateState& us)
@@ -475,6 +668,7 @@ void DockingStation::doUpdate(const UpdateState& us)
    m_stateTime += dt;
 
    updateArm();
+   updateShield(dt);
 
    LeapFrog* lf = getLeapfrog();
    b2Body* lfBody = getLeapfrogBody(lf);

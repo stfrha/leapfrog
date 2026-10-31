@@ -36,6 +36,15 @@ shoulder joint (revolute, base to arm) and a clamp welded to the arm's tip
   through it. The arm comes back once the Leapfrog is clear.
 - The arm and clamp never touch the Leapfrog's shield, and don't touch the
   Leapfrog itself while it is being captured, docked or leaving.
+- Station shield, always on: a circle (shieldRadius around shieldX/Y on
+  the station body) covering the station and a docked Leapfrog. The
+  Leapfrog flies through it. Enemies, asteroids and mines inside are
+  pushed out (an acceleration rising over shieldEdge units inside the rim
+  to shieldAccel, plus braking of their inward speed); nothing pushes back
+  on the station, so a crowd can't shove it. A stripper latched on the
+  Leapfrog is shaken off when it comes inside. Bullets other than the
+  Leapfrog's are stopped. The bubble shows faintly and flashes when it
+  works.
 - Docked counts as standing on the station for questions (SceneActor),
   and fuel flows as at a landing pad (fuel, fuelRate, fuelPrice,
   fuelSupply on <behaviour>, see landingpad.h).
@@ -139,6 +148,17 @@ private:
 
    float m_dockedVisibleWidth;   // zoom while docked (0 = no zoom)
 
+   // Station shield
+   bool m_shieldOn;
+   b2Vec2 m_shieldCentre;        // on the station body
+   float m_shieldRadius;
+   float m_shieldEdge;           // depth over which the push rises to full
+   float m_shieldAccel;          // full push [units/s^2]
+   float m_shieldBrake;          // braking of inward speed [1/s]
+   float m_shieldAlpha;          // the bubble's resting alpha (0-255)
+   float m_shieldFlash;          // 0..1, fades after a hit
+   oxygine::spSprite m_shieldSprite;
+
    LeapFrog* getLeapfrog(void);
    b2Body* getLeapfrogBody(LeapFrog* lf);
    bool jointExists(b2Joint* joint);
@@ -150,6 +170,7 @@ private:
    void dock(LeapFrog* lf, b2Body* lfBody);
    void undock(LeapFrog* lf, bool zoom);
    void refuse(const char* why);
+   void updateShield(float dt);
 
 public:
    DockingStation(
