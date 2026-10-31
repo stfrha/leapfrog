@@ -228,6 +228,8 @@ private:
    spSpeedBar m_horizontalBar;
    spSpeedBar m_verticalBar;
    spHudLog m_log;
+   oxygine::RectF m_mapLogRect;     // the log over the map
+   bool m_logInOrbit;               // the log is placed for the orbit display
 
    LeapfrogTelemetry m_telemetry;
    bool m_telemetryFresh;
@@ -391,6 +393,7 @@ public:
    static oxygine::RectF orbitSpaceViewRect(void);
    static oxygine::RectF orbitBurnBarRect(void);
    static oxygine::RectF orbitPictureRect(void);
+   static oxygine::RectF orbitLogRect(void);
 
    void initialiseHdd(
       const oxygine::Vector2& topLeft, 
@@ -426,6 +429,7 @@ public:
 
    // True when the map is shown and no size/position transition is running
    bool isShowingMap(void);
+   bool isShowingOrbit(void);
 
    // Called by the Leapfrog every update
    void setLeapfrogTelemetry(const LeapfrogTelemetry& telemetry);

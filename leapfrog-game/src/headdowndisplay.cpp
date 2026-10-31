@@ -774,6 +774,8 @@ HddInstruments::HddInstruments(const RectF& mapRect, float barThickness, float g
    m_verticalBar->attachTo(this);
 
    // Event log on top of the map
+   m_mapLogRect = mapRect;
+   m_logInOrbit = false;
    m_log = new HudLog(mapRect.size, fontSize);
    m_log->setPosition(mapRect.pos);
    m_log->attachTo(this);
@@ -848,7 +850,21 @@ void HddInstruments::doUpdate(const UpdateState& us)
    bool show = g_HeadDownDisplay && g_HeadDownDisplay->isShowingMap();
    m_horizontalBar->setVisible(show);
    m_verticalBar->setVisible(show);
-   m_log->setVisible(show);
+
+   // The log also shows in the orbit display, in its top left corner
+   // (left of the ship view), so orbit messages such as "Next
+   // revolution" are seen
+   bool inOrbit = g_HeadDownDisplay && g_HeadDownDisplay->isShowingOrbit();
+
+   if (inOrbit != m_logInOrbit)
+   {
+      m_logInOrbit = inOrbit;
+      RectF r = inOrbit ? HeadDownDisplay::orbitLogRect() : m_mapLogRect;
+      m_log->setPosition(r.pos);
+      m_log->setSize(r.size);
+   }
+
+   m_log->setVisible(show || inOrbit);
 
    m_msSinceTelemetry += us.dt;
 
@@ -1559,6 +1575,11 @@ bool HeadDownDisplay::isShowingMap(void)
    return (m_hudMode == HudModeType::hudModeMap) && !getFirstTween();
 }
 
+bool HeadDownDisplay::isShowingOrbit(void)
+{
+   return (m_hudMode == HudModeType::hudModeOrbit) && !getFirstTween();
+}
+
 void HeadDownDisplay::setLeapfrogTelemetry(const LeapfrogTelemetry& telemetry)
 {
    if (m_instruments)
@@ -1636,6 +1657,21 @@ RectF HeadDownDisplay::orbitPictureRect(void)
    float bottom = orbit.getBottom() - margin;
 
    return RectF(left, top, right - left, bottom - top);
+}
+
+RectF HeadDownDisplay::orbitLogRect(void)
+{
+   // The orbit display's top left corner: from its left edge to the ship
+   // view, as high as the ship view
+   float bw = g_Layout.getButtonWidth();
+   RectF orbit = orbitRect();
+   RectF view = orbitSpaceViewRect();
+   float margin = bw * c_orbitMargin;
+
+   float left = orbit.getX() + margin;
+   float right = view.getX() - margin;
+
+   return RectF(left, view.getY(), right - left, view.getHeight());
 }
 
 void HeadDownDisplay::attachTerrainSensor(void)
