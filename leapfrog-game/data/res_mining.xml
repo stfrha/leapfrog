@@ -25,7 +25,7 @@
 		<image file="night_sky.png" trim="false" extend="false"/>
 	</atlas>
 	<set path = "images/mining" />
-	<atlas clamp2edge="false">
+	<atlas>
 		<image file="silo_home.png" trim="false" extend="false"/>
 	</atlas>
    <set path = "images/mining" />
