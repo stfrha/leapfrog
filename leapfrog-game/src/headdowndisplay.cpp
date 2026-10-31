@@ -285,7 +285,7 @@ namespace
    const float c_logFadeOutTime = 1.2f;               // [s] at the end of the lifetime
    const float c_logDriftLinesPerSecond = 0.33f;      // own upward drift
    const float c_logMergeWindow = 2.5f;               // [s] for summing amounts
-   const unsigned char c_logNormalAlpha = 150;
+   const unsigned char c_logNormalAlpha = 180;
    const unsigned char c_logCriticalAlpha = 235;
 
    // Warning thresholds (values are 0..100 like the status bars)
