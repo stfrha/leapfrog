@@ -29,6 +29,7 @@ public:
       explosiveObject,
       pickup,
       stripper,
+      dockArm,
    };
 
    static CollisionEntityTypeEnum convert(const std::string& value)
@@ -53,6 +54,7 @@ public:
       else if (value == "explosiveObject") return CollisionEntity::explosiveObject;
       else if (value == "pickup") return CollisionEntity::pickup;
       else if (value == "stripper") return CollisionEntity::stripper;
+      else if (value == "dockArm") return CollisionEntity::dockArm;
 
       return CollisionEntity::notApplicable;
    }

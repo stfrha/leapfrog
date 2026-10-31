@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Docking station (behaviour dockingStation, see src/dockingstation.h).
+  Station coordinates, y down. The Leapfrog docks nose up under the clamp,
+  its nose at (30, -10.4) and its centre at about (30, -5): 19 units clear
+  of the station body, so the shield bubble (radius 8) never touches it.
+  The arm and the clamp ignore the shield (collision entity dockArm).
+-->
+<compoundObject
+  needsGroupIndex="true">
+  <behaviour
+    type="dockingStation"
+    label="Station"
+    fuel="sell"
+    fuelPrice="4">
+    <dockingStationProperties
+      base="stationBase"
+      arm="dockArm"
+      clamp="dockClamp"
+      shoulder="shoulderJoint"
+      clampX="0"
+      clampY="2.7"
+      noseX="0"
+      noseY="-5.25"
+      captureRadius="16"
+      maxCaptureSpeed="5"
+      maxCaptureAngle="25"
+      armAwayAngle="-70" />
+  </behaviour>
+  <dynamicBox
+    name="stationBase"
+    texture="dock_station_base"
+    posX="0"
+    posY="-1"
+    angle="0"
+    zLevel="120"
+    collisionEntity="notApplicable"
+    collisionCategory="1"
+    collisionMask="65533"
+    width="22"
+    height="32"
+    density="5.6"
+    friction="1" />
+  <dynamicBox
+    name="dockArm"
+    texture="dock_arm"
+    posX="16.4"
+    posY="-17"
+    angle="0"
+    zLevel="122"
+    collisionEntity="dockArm"
+    collisionCategory="1"
+    collisionMask="65533"
+    width="27.2"
+    height="2.4"
+    density="2"
+    friction="1" />
+  <dynamicBox
+    name="dockClamp"
+    texture="dock_clamp"
+    posX="30"
+    posY="-13.1"
+    angle="0"
+    zLevel="124"
+    collisionEntity="dockArm"
+    collisionCategory="1"
+    collisionMask="65533"
+    width="3.2"
+    height="5.4"
+    density="2"
+    friction="1" />
+  <revoluteJoint
+    name="shoulderJoint"
+    objectAName="stationBase"
+    objectBName="dockArm"
+    objectAAnchorX="4"
+    objectAAnchorY="-16"
+    objectBAnchorX="-12.4"
+    objectBAnchorY="0"
+    lockJoint="true"
+    useMotor="false"
+    motorSpeed="0"
+    maxMotorTorque="0" />
+  <weldJoint
+    name="clampWeld"
+    objectAName="dockArm"
+    objectBName="dockClamp"
+    objectAAnchorX="13.6"
+    objectAAnchorY="0"
+    objectBAnchorX="0"
+    objectBAnchorY="-3.9" />
+</compoundObject>

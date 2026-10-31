@@ -331,6 +331,9 @@
     <ClCompile Include="..\src\stripper.cpp">
       <Filter>Source Files\actors</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\dockingstation.cpp">
+      <Filter>Source Files\actors</Filter>
+    </ClCompile>
     <ClCompile Include="..\src\swarm.cpp">
       <Filter>Source Files\actors</Filter>
     </ClCompile>
@@ -697,6 +700,9 @@
       <Filter>Source Files\actors</Filter>
     </ClInclude>
     <ClInclude Include="..\src\stripper.h">
+      <Filter>Source Files\actors</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\dockingstation.h">
       <Filter>Source Files\actors</Filter>
     </ClInclude>
     <ClInclude Include="..\src\swarm.h">

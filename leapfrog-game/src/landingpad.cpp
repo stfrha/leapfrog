@@ -36,12 +36,6 @@ LandingPad::LandingPad(
    m_state(LandingPadState::unstable),
    m_active(true),
    m_announceLanded(false),
-   m_fuelService(fuelNone),
-   m_fuelRate(12.0f),
-   m_fuelPrice(5.0f),
-   m_fuelSupply(100.0f),
-   m_creditsOwed(0.0f),
-   m_fuelMessageShown(false),
    m_landedSent(false),
    m_stableTicks(0),
    m_latestLeapfrog(NULL),
@@ -64,15 +58,10 @@ LandingPad::LandingPad(
    m_properties.push_back(ObjectProperty(this, NULL, active, m_active ? 1.0f : 0.0f));
 
    // Fuel service (see landingpad.h). No fuel unless the scene says so.
-   pugi::xml_node behaviour = root.child("behaviour");
-   string fuel = behaviour.attribute("fuel").as_string("none");
-   m_fuelService = (fuel == "sell") ? fuelSell : ((fuel == "free") ? fuelFree : fuelNone);
-   m_fuelRate = behaviour.attribute("fuelRate").as_float(12.0f);
-   m_fuelPrice = behaviour.attribute("fuelPrice").as_float(5.0f);
-   m_fuelSupply = behaviour.attribute("fuelSupply").as_float(100.0f);
+   m_fuel.read(root.child("behaviour"));
 
-   m_properties.push_back(ObjectProperty(this, NULL, fuelSupply, m_fuelSupply));
-   m_properties.push_back(ObjectProperty(this, NULL, fuelService, (float)m_fuelService));
+   m_properties.push_back(ObjectProperty(this, NULL, fuelSupply, m_fuel.m_supply));
+   m_properties.push_back(ObjectProperty(this, NULL, fuelService, (float)m_fuel.m_service));
 
    // This CompoundObject is also an actor who normally has
    // a userData that points to its parent. However, the parent
@@ -341,7 +330,7 @@ void LandingPad::doUpdate(const UpdateState &us)
             // still the same landing: LpLL only once until a take-off
             if (!m_landedSent)
             {
-               m_fuelMessageShown = false;
+               m_fuel.m_messageShown = false;
 
                if (m_active)
                {
@@ -393,7 +382,10 @@ void LandingPad::doUpdate(const UpdateState &us)
          {
             // Perhaps add fuel to some class of properties that are not allowed to change
             // while in pause, instead of this type of if statements.
-            refuel(us.dtf);
+            if (m_fuel.refuel(m_latestLeapfrog ? m_latestLeapfrog->m_resources : NULL, us.dtf))
+            {
+               m_properties[fuelSupply].setProperty(m_fuel.m_supply);
+            }
          }
       }
 
@@ -430,95 +422,122 @@ void LandingPad::setPropertyImpl(int propId, float value)
    else if (propId == fuelSupply)
    {
       // Lua refilled (or emptied) the pad's supply
-      m_fuelSupply = value;
-      m_fuelMessageShown = false;
+      m_fuel.m_supply = value;
+      m_fuel.m_messageShown = false;
    }
    else if (propId == fuelService)
    {
-      int v = (int)(value + 0.5f);
-      m_fuelService = (v == fuelSell) ? fuelSell : ((v == fuelFree) ? fuelFree : fuelNone);
-      m_fuelMessageShown = false;
+      m_fuel.setService(value);
    }
+}
+
+// ---------------------------------------------------------------------------
+// PadFuel
+
+PadFuel::PadFuel() :
+   m_service(fuelNone),
+   m_rate(12.0f),
+   m_price(5.0f),
+   m_supply(100.0f),
+   m_creditsOwed(0.0f),
+   m_messageShown(false)
+{
+}
+
+void PadFuel::read(const pugi::xml_node& behaviour)
+{
+   string fuel = behaviour.attribute("fuel").as_string("none");
+   m_service = (fuel == "sell") ? fuelSell : ((fuel == "free") ? fuelFree : fuelNone);
+   m_rate = behaviour.attribute("fuelRate").as_float(12.0f);
+   m_price = behaviour.attribute("fuelPrice").as_float(5.0f);
+   m_supply = behaviour.attribute("fuelSupply").as_float(100.0f);
+}
+
+void PadFuel::setService(float value)
+{
+   int v = (int)(value + 0.5f);
+   m_service = (v == fuelSell) ? fuelSell : ((v == fuelFree) ? fuelFree : fuelNone);
+   m_messageShown = false;
 }
 
 // Fuel flows into the Leapfrog while it stands on an active pad that has
 // fuel: bought with credits (sell) or from the pad's supply (free)
-void LandingPad::refuel(float dt)
+bool PadFuel::refuel(ObjectResources* res, float dt)
 {
-   if ((m_fuelService == fuelNone) || (m_latestLeapfrog == NULL) || (m_latestLeapfrog->m_resources == NULL) ||
-      (dt <= 0.0f))
+   if ((m_service == fuelNone) || (res == NULL) || (dt <= 0.0f))
    {
-      return;
+      return false;
    }
 
-   ObjectResources* res = m_latestLeapfrog->m_resources;
    float room = 100.0f - res->getFuel();
    if (room <= 0.0f)
    {
-      return;
+      return false;
    }
 
-   float amount = m_fuelRate * dt;
+   float amount = m_rate * dt;
    if (amount > room)
    {
       amount = room;
    }
 
-   if (m_fuelService == fuelFree)
+   if (m_service == fuelFree)
    {
-      if (m_fuelSupply >= 0.0f)
+      if (m_supply < 0.0f)
       {
-         if (amount > m_fuelSupply)
-         {
-            amount = m_fuelSupply;
-         }
-         if (amount <= 0.0f)
-         {
-            if (!m_fuelMessageShown && g_HeadDownDisplay)
-            {
-               g_HeadDownDisplay->logMessage("Fuel supply empty");
-               m_fuelMessageShown = true;
-            }
-            return;
-         }
-         m_fuelSupply -= amount;
-         if (m_fuelSupply < 0.001f)
-         {
-            m_fuelSupply = 0.0f;
-         }
-         m_properties[fuelSupply].setProperty(m_fuelSupply);
+         res->deltaFuel(amount);
+         return false;
       }
-      res->deltaFuel(amount);
-   }
-   else
-   {
-      // sell: as much as the credits pay for, charging whole credits as
-      // the cost adds up
-      int credits = res->getCredits();
-      if (m_fuelPrice > 0.0f)
+
+      if (amount > m_supply)
       {
-         float affordable = ((float)credits - m_creditsOwed) / m_fuelPrice;
-         if (amount > affordable)
-         {
-            amount = affordable;
-         }
+         amount = m_supply;
       }
       if (amount <= 0.0f)
       {
-         if (!m_fuelMessageShown && g_HeadDownDisplay)
+         if (!m_messageShown && g_HeadDownDisplay)
          {
-            g_HeadDownDisplay->logMessage("Not enough credits for fuel");
-            m_fuelMessageShown = true;
+            g_HeadDownDisplay->logMessage("Fuel supply empty");
+            m_messageShown = true;
          }
-         return;
+         return false;
+      }
+      m_supply -= amount;
+      if (m_supply < 0.001f)
+      {
+         m_supply = 0.0f;
       }
       res->deltaFuel(amount);
-      m_creditsOwed += amount * m_fuelPrice;
-      int charge = (int)m_creditsOwed;
-      if (charge > 0)
+      return true;
+   }
+
+   // sell: as much as the credits pay for, charging whole credits as
+   // the cost adds up
+   int credits = res->getCredits();
+   if (m_price > 0.0f)
+   {
+      float affordable = ((float)credits - m_creditsOwed) / m_price;
+      if (amount > affordable)
       {
-         res->deltaCredits(-charge);
-         m_creditsOwed -= (float)charge;
+         amount = affordable;
       }
    }
+   if (amount <= 0.0f)
+   {
+      if (!m_messageShown && g_HeadDownDisplay)
+      {
+         g_HeadDownDisplay->logMessage("Not enough credits for fuel");
+         m_messageShown = true;
+      }
+      return false;
+   }
+   res->deltaFuel(amount);
+   m_creditsOwed += amount * m_price;
+   int charge = (int)m_creditsOwed;
+   if (charge > 0)
+   {
+      res->deltaCredits(-charge);
+      m_creditsOwed -= (float)charge;
+   }
+   return false;
 }

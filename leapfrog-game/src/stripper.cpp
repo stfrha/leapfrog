@@ -255,13 +255,14 @@ b2Body* Stripper::getLeapfrogBody(LeapFrog* lf)
    return lf->getBody("lfMainBody");
 }
 
-// Is the shield bubble there? (it is switched off on the ground)
+// Is the shield bubble there? (it is switched off on the ground; a
+// docking station holds it up for a docked Leapfrog, empty or not)
 bool Stripper::shieldUp(LeapFrog* lf)
 {
    return lf->m_shield &&
       lf->m_shield->m_body &&
       lf->m_shield->m_body->IsActive() &&
-      (lf->m_resources->getShield() > 0.0f);
+      ((lf->m_resources->getShield() > 0.0f) || lf->m_shield->isHeldUp());
 }
 
 // The weld goes away with either body (Box2D destroys a body's joints),
@@ -838,8 +839,11 @@ void Stripper::doUpdate(const oxygine::UpdateState& us)
       if (shield && touchingShield(lf))
       {
          // Rammed the shield: it drains it (on top of the knock itself),
-         // bounces back, then comes again
-         lf->m_resources->deltaShield(-m_shieldDrain);
+         // bounces back, then comes again. A station's shield doesn't drain.
+         if (!lf->m_shield->isHeldUp())
+         {
+            lf->m_resources->deltaShield(-m_shieldDrain);
+         }
 
          b2Vec2 away = pos - lfBody->GetPosition();
          away.Normalize();

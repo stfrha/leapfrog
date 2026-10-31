@@ -11,6 +11,7 @@
 #include "blastemitter.h"
 #include "pickupobject.h"
 #include "stripper.h"
+#include "dockingstation.h"
 #include "gamestatus.h"
 
 void LanderContactListener::InitContactListner(SceneActor* sceneActor)
@@ -21,6 +22,7 @@ void LanderContactListener::InitContactListner(SceneActor* sceneActor)
 void LanderContactListener::PreSolve(b2Contact* contact, const b2Manifold* oldManifold)
 {
    Stripper::preSolve(contact);
+   DockingStation::preSolve(contact);
 }
 
 void LanderContactListener::PostSolve(b2Contact* contact, const b2ContactImpulse* impulse)

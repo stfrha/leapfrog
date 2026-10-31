@@ -8,6 +8,37 @@
 #include <vector>
 
 class SceneActor;
+class ObjectResources;
+
+// Fuel service of a landing pad or a docking station (attributes on
+// <behaviour>, see LandingPad below). Fuel flows while the Leapfrog stands
+// on the pad (or is docked) and the place is active.
+class PadFuel
+{
+public:
+   enum Service
+   {
+      fuelNone = 0,
+      fuelSell = 1,
+      fuelFree = 2
+   };
+
+   Service m_service;
+   float m_rate;           // fuel per second
+   float m_price;          // credits per unit of fuel (sell)
+   float m_supply;         // fuel left (free), -1 = no limit
+   float m_creditsOwed;    // part of a credit not yet charged (sell)
+   bool m_messageShown;    // "empty" / "no credits" logged once per landing
+
+   PadFuel();
+
+   void read(const pugi::xml_node& behaviour);
+   void setService(float value);
+
+   // Fuel into the Leapfrog for dt seconds. True if the supply changed
+   // (free fuel), so the owner can update its property.
+   bool refuel(ObjectResources* res, float dt);
+};
 
 DECLARE_SMART(LandingPad, spLandingPad);
 
@@ -54,13 +85,6 @@ public:
 		fuelService = 4
 	};
 
-   enum FuelServiceEnum
-   {
-      fuelNone = 0,
-      fuelSell = 1,
-      fuelFree = 2
-   };
-
    enum LandingPadState
    {
       unstable,
@@ -76,15 +100,8 @@ private:
    bool m_active;
    bool m_announceLanded;     // activated while landed: send the landed event in doUpdate
 
-   FuelServiceEnum m_fuelService;
-   float m_fuelRate;          // fuel per second
-   float m_fuelPrice;         // credits per unit of fuel (sell)
-   float m_fuelSupply;        // fuel left (free), -1 = no limit
-   float m_creditsOwed;       // part of a credit not yet charged (sell)
-   bool m_fuelMessageShown;   // "empty" / "no credits" logged once per landing
+   PadFuel m_fuel;
    bool m_landedSent;         // LpLL sent for this landing (cleared on take-off)
-
-   void refuel(float dt);     // dt in seconds
 
    LeapFrog* m_latestLeapfrog;
 

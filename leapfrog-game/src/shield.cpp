@@ -19,7 +19,8 @@ Shield::Shield(
    b2World* world,
    const xml_node& objectNode,
    int groupIndex) :
-   System(sceneActor,  world, parentObject)
+   System(sceneActor,  world, parentObject),
+   m_heldUp(false)
 {
    readShieldNode(objectNode);
 
@@ -139,7 +140,7 @@ void Shield::shieldHit(b2Contact* contact)
 
 void Shield::evaluatShieldDamage(void)
 {
-   if (m_parent->m_resources->getShield() <= 0.0f)
+   if (!m_heldUp && (m_parent->m_resources->getShield() <= 0.0f))
    {
       // Remove shield from collisions
 
@@ -163,7 +164,10 @@ void Shield::shieldHitImpulse(b2Contact* contact, const b2ContactImpulse* impuls
       normalImpulses += impulse->normalImpulses[i];
    }
 
-   m_parent->m_resources->deltaShield(-normalImpulses / 1000.0f);
+   if (!m_heldUp)
+   {
+      m_parent->m_resources->deltaShield(-normalImpulses / 1000.0f);
+   }
 
    evaluatShieldDamage();
 }
@@ -173,7 +177,10 @@ void Shield::shieldHitByBullet(b2Contact* contact, float bulletEqvDamage)
 
    shieldHit(contact);
 
-   m_parent->m_resources->deltaShield(-25.0f);
+   if (!m_heldUp)
+   {
+      m_parent->m_resources->deltaShield(-25.0f);
+   }
 
    evaluatShieldDamage();
 }
@@ -194,11 +201,35 @@ void Shield::restartShield(void)
 // Shield gone (e.g. drained or stolen without a hit): stop colliding
 void Shield::stopShield(void)
 {
+   if (m_heldUp)
+   {
+      return;
+   }
+
    b2Fixture* bf = m_body->GetFixtureList();
    b2Filter filt = bf->GetFilterData();
    filt.categoryBits = 0;
    filt.maskBits = 65533;
    bf->SetFilterData(filt);
+}
+
+void Shield::setHeldUp(bool heldUp)
+{
+   if (heldUp == m_heldUp)
+   {
+      return;
+   }
+
+   m_heldUp = heldUp;
+
+   if (heldUp)
+   {
+      restartShield();
+   }
+   else if (m_parent->m_resources && (m_parent->m_resources->getShield() <= 0.0f))
+   {
+      stopShield();
+   }
 }
 
 void Shield::doUpdate(const oxygine::UpdateState& us)

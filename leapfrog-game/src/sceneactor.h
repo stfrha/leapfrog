@@ -131,7 +131,8 @@ protected:
    bool m_questionKeysArmed;  // the answer keys have been up since it was shown
    bool m_flightControlsHeld; // just answered: booster, fire and steering
                               // wait until every flight button and key is up
-   std::set<CompoundObject*> m_leapfrogStandsOn;  // pads and launch sites
+   std::set<CompoundObject*> m_leapfrogStandsOn;  // pads, launch sites and docking stations
+   std::set<CompoundObject*> m_leapfrogDockedAt;  // docking stations holding the Leapfrog
    bool m_creditCheatArmed;   // C has been up since the last cheat
    void updateQuestion(const Uint8* keys);
 
@@ -261,6 +262,11 @@ public:
    // flight (c_leapfrogStandsOn). Set before the landed event (LpLL, LsLL)
    // is sent, so handlers of it see where the Leapfrog is.
    std::string leapfrogStandsOn(void);
+
+   // Docking stations report whether they hold the Leapfrog. While docked
+   // only the booster works (it undocks); steering and the gun are off.
+   void setLeapfrogDocked(CompoundObject* station, bool docked);
+   bool isLeapfrogDocked(void);
 
    // Cheats: key C or a double tap on the HUD's credits (+100), a double
    // tap on the fuel bar (full tank)

@@ -28,6 +28,10 @@ private:
 
    oxygine::spSprite m_sprite;
 
+   // Held up by a docking station: the bubble stays on whatever the
+   // Leapfrog's shield resource is, and hits only flash it (no drain)
+   bool m_heldUp;
+
    void readShieldNode(const pugi::xml_node& objectNode);
    void shieldHit(b2Contact* contact);
    void evaluatShieldDamage(void);
@@ -53,6 +57,10 @@ public:
    void shieldHitByBullet(b2Contact* contact, float bulletEqvDamage);
    void restartShield(void);
    void stopShield(void);
+
+   // A docking station holds the bubble up for its docked client
+   void setHeldUp(bool heldUp);
+   bool isHeldUp(void) const { return m_heldUp; }
 
 protected:
 	void doUpdate(const oxygine::UpdateState& us) override;

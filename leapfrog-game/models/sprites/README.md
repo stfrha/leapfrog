@@ -150,3 +150,4 @@ Script-specific options are listed with `-- --help`.
 | `ls_tower.py` | `ls_tower` | 9 x 106.7 | rendered at 19 px/unit (too tall for 2048 at 20) |
 | `ls_booster_tank.py` | `ls_booster_tank` | 13.2 x 53 | hex plating twice the ship's hex size (`--tile 7.8`; ship is ~3.9) |
 | `ore_building.py` | `ore_building` | ~50 x 42 (perspective) | mission giver's building with the pub "The Ore"; pad states in `PADS` at the top; game uses `ore_building_blink` (2 frames, Beer neon on/off); `ore_building` is editor-only; registered in `res_mining.xml` |
+| `docking_station.py` | `dock_station_base`, `dock_arm`, `dock_clamp` | 22 x 32, 27.2 x 2.4, 3.2 x 5.4 | space docking station (`data/docking_station.xml`); each part rendered alone, framed to its body box; in `res.xml`, `data/images/space` (placeholders until rendered); `--only base|arm|clamp`, `--suffix _test` |

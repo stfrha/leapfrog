@@ -571,6 +571,23 @@ bool SceneActor::doesLeapfrogStand(void)
    return !m_leapfrogStandsOn.empty();
 }
 
+void SceneActor::setLeapfrogDocked(CompoundObject* station, bool docked)
+{
+   if (docked)
+   {
+      m_leapfrogDockedAt.insert(station);
+   }
+   else
+   {
+      m_leapfrogDockedAt.erase(station);
+   }
+}
+
+bool SceneActor::isLeapfrogDocked(void)
+{
+   return !m_leapfrogDockedAt.empty();
+}
+
 std::string SceneActor::leapfrogStandsOn(void)
 {
    if (m_leapfrogStandsOn.empty())
@@ -831,7 +848,7 @@ void SceneActor::doUpdate(const UpdateState& us)
             m_leapfrog->fireMainBooster(false);
          }
 
-         if (parked)
+         if (parked || isLeapfrogDocked())
          {
             m_leapfrog->fireSteeringBooster(0);
          }
@@ -849,7 +866,8 @@ void SceneActor::doUpdate(const UpdateState& us)
          }
       }
 
-      if (!isQuestionShown() && !m_flightControlsHeld && (data[SDL_SCANCODE_RETURN] || m_firePressed))
+      if (!isQuestionShown() && !m_flightControlsHeld && !isLeapfrogDocked() &&
+         (data[SDL_SCANCODE_RETURN] || m_firePressed))
       {
          m_leapfrog->fireGun(true);
       }

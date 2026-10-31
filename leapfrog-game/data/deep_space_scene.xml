@@ -99,6 +99,11 @@
     </objectFactoryProperties>
   </system>
   <childObject
+    name="dockingStation1"
+    file="docking_station.xml"
+    posX="1050"
+    posY="330" />
+  <childObject
     name="asteroid1"
     file="large_asteroid.xml"
     posX="500"

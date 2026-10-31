@@ -102,4 +102,16 @@
 	<atlas clamp2edge="false">
 		<image file="grotto.png" trim="false" extend="false"/>
 	</atlas>
+	<set path = "images/space" />
+	<atlas>
+		<image file="dock_station_base.png" ppu="20" trim="false" extend="false"/>
+	</atlas>
+	<set path = "images/space" />
+	<atlas>
+		<image file="dock_arm.png" ppu="20" trim="false" extend="false"/>
+	</atlas>
+	<set path = "images/space" />
+	<atlas>
+		<image file="dock_clamp.png" ppu="20" trim="false" extend="false"/>
+	</atlas>
 </resources>

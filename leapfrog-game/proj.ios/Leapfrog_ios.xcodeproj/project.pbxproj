@@ -58,6 +58,7 @@
 		9CEEC8F32C2A1348002BAE4F /* freespacecontactlistener.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9CEEC8A12C2A1348002BAE4F /* freespacecontactlistener.cpp */; };
 		9CEEC8F42C2A1348002BAE4F /* magneticmine.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9CEEC8A62C2A1348002BAE4F /* magneticmine.cpp */; };
 		8E95AA44178D051D0F45F864 /* stripper.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ED8340C4A962B4CFD99FD872 /* stripper.cpp */; };
+		89B63586416727D2A37D2591 /* dockingstation.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4A35D419E856A60C8FBA1BEC /* dockingstation.cpp */; };
 		C05CC0876766DD16448D37A7 /* swarm.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 39113DD14162B9248FA54A7A /* swarm.cpp */; };
 		9CEEC8F52C2A1348002BAE4F /* system.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9CEEC8A72C2A1348002BAE4F /* system.cpp */; };
 		9CEEC8F62C2A1348002BAE4F /* landingpad.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9CEEC8A92C2A1348002BAE4F /* landingpad.cpp */; };
@@ -172,6 +173,7 @@
 		9CEECBC22C2CA882002BAE4F /* leapfrog_deep_space.xml in Resources */ = {isa = PBXBuildFile; fileRef = 9CEECB9F2C2CA881002BAE4F /* leapfrog_deep_space.xml */; };
 		9CEECBC32C2CA882002BAE4F /* scene_navigator.lua in Resources */ = {isa = PBXBuildFile; fileRef = 9CEECBA02C2CA881002BAE4F /* scene_navigator.lua */; };
 		9CEECBC42C2CA882002BAE4F /* res_hud.xml in Resources */ = {isa = PBXBuildFile; fileRef = 9CEECBA12C2CA881002BAE4F /* res_hud.xml */; };
+		6155CAFB5AD5DD325B346C74 /* docking_station.xml in Resources */ = {isa = PBXBuildFile; fileRef = 7347FED73DDE8785FC4E9924 /* docking_station.xml */; };
 		762FBC695C17B9B5821AFFC0 /* stripper_drop_credits.xml in Resources */ = {isa = PBXBuildFile; fileRef = 92C20C51166171E11EB39B2B /* stripper_drop_credits.xml */; };
 		463EC17C03372A72976D9EA4 /* stripper_drop_fuel.xml in Resources */ = {isa = PBXBuildFile; fileRef = 0BAE65C7C69CAEB8E57A17D7 /* stripper_drop_fuel.xml */; };
 		8496153659118A721B2BD16D /* stripper_drop_shield.xml in Resources */ = {isa = PBXBuildFile; fileRef = 94B455E71AE229ED9FA0A104 /* stripper_drop_shield.xml */; };
@@ -404,6 +406,7 @@
 		9CEEC88E2C2A1348002BAE4F /* explosiveobjectevents.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = explosiveobjectevents.h; sourceTree = "<group>"; };
 		9CEEC88F2C2A1348002BAE4F /* magneticmine.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = magneticmine.h; sourceTree = "<group>"; };
 		7F60226BAF5B6050385F3D6C /* stripper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = stripper.h; sourceTree = "<group>"; };
+		9009859A0645A3F704821B18 /* dockingstation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = dockingstation.h; sourceTree = "<group>"; };
 		6450472507360B6F98294C22 /* swarm.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = swarm.h; sourceTree = "<group>"; };
 		9CEEC8902C2A1348002BAE4F /* polygonvertices.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = polygonvertices.h; sourceTree = "<group>"; };
 		9CEEC8912C2A1348002BAE4F /* landingactorevents.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = landingactorevents.h; sourceTree = "<group>"; };
@@ -429,6 +432,7 @@
 		9CEEC8A52C2A1348002BAE4F /* deepspacesceneevents.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = deepspacesceneevents.h; sourceTree = "<group>"; };
 		9CEEC8A62C2A1348002BAE4F /* magneticmine.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = magneticmine.cpp; sourceTree = "<group>"; };
 		ED8340C4A962B4CFD99FD872 /* stripper.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = stripper.cpp; sourceTree = "<group>"; };
+		4A35D419E856A60C8FBA1BEC /* dockingstation.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = dockingstation.cpp; sourceTree = "<group>"; };
 		39113DD14162B9248FA54A7A /* swarm.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = swarm.cpp; sourceTree = "<group>"; };
 		9CEEC8A72C2A1348002BAE4F /* system.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = system.cpp; sourceTree = "<group>"; };
 		9CEEC8A82C2A1348002BAE4F /* leapfrogevents.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = leapfrogevents.h; sourceTree = "<group>"; };
@@ -640,6 +644,7 @@
 		9CEECB9F2C2CA881002BAE4F /* leapfrog_deep_space.xml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; name = leapfrog_deep_space.xml; path = ../data/leapfrog_deep_space.xml; sourceTree = "<group>"; };
 		9CEECBA02C2CA881002BAE4F /* scene_navigator.lua */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = scene_navigator.lua; path = ../data/scene_navigator.lua; sourceTree = "<group>"; };
 		9CEECBA12C2CA881002BAE4F /* res_hud.xml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; name = res_hud.xml; path = ../data/res_hud.xml; sourceTree = "<group>"; };
+		7347FED73DDE8785FC4E9924 /* docking_station.xml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; name = docking_station.xml; path = ../data/docking_station.xml; sourceTree = "<group>"; };
 		92C20C51166171E11EB39B2B /* stripper_drop_credits.xml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; name = stripper_drop_credits.xml; path = ../data/stripper_drop_credits.xml; sourceTree = "<group>"; };
 		0BAE65C7C69CAEB8E57A17D7 /* stripper_drop_fuel.xml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; name = stripper_drop_fuel.xml; path = ../data/stripper_drop_fuel.xml; sourceTree = "<group>"; };
 		94B455E71AE229ED9FA0A104 /* stripper_drop_shield.xml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; name = stripper_drop_shield.xml; path = ../data/stripper_drop_shield.xml; sourceTree = "<group>"; };
@@ -786,6 +791,7 @@
 				9CEECBAB2C2CA881002BAE4F /* orbit_scene.xml */,
 				9CEECBAC2C2CA881002BAE4F /* orbit_space_scene.xml */,
 				9CEECBA12C2CA881002BAE4F /* res_hud.xml */,
+				7347FED73DDE8785FC4E9924 /* docking_station.xml */,
 				92C20C51166171E11EB39B2B /* stripper_drop_credits.xml */,
 				0BAE65C7C69CAEB8E57A17D7 /* stripper_drop_fuel.xml */,
 				94B455E71AE229ED9FA0A104 /* stripper_drop_shield.xml */,
@@ -927,9 +933,11 @@
 				9CEEC8CE2C2A1348002BAE4F /* luainterface.h */,
 				9CEEC8A62C2A1348002BAE4F /* magneticmine.cpp */,
 				ED8340C4A962B4CFD99FD872 /* stripper.cpp */,
+				4A35D419E856A60C8FBA1BEC /* dockingstation.cpp */,
 				39113DD14162B9248FA54A7A /* swarm.cpp */,
 				9CEEC88F2C2A1348002BAE4F /* magneticmine.h */,
 				7F60226BAF5B6050385F3D6C /* stripper.h */,
+				9009859A0645A3F704821B18 /* dockingstation.h */,
 				6450472507360B6F98294C22 /* swarm.h */,
 				9CEEC8C92C2A1348002BAE4F /* main.cpp */,
 				9CEEC85B2C2A1348002BAE4F /* mainactor.cpp */,
@@ -1397,6 +1405,7 @@
 				9CEECBD72C2CA882002BAE4F /* landing_scene_state2.xml in Resources */,
 				9CEECBD32C2CA882002BAE4F /* landing_pad.xml in Resources */,
 				9CEECBC42C2CA882002BAE4F /* res_hud.xml in Resources */,
+				6155CAFB5AD5DD325B346C74 /* docking_station.xml in Resources */,
 				762FBC695C17B9B5821AFFC0 /* stripper_drop_credits.xml in Resources */,
 				463EC17C03372A72976D9EA4 /* stripper_drop_fuel.xml in Resources */,
 				8496153659118A721B2BD16D /* stripper_drop_shield.xml in Resources */,
@@ -1521,6 +1530,7 @@
 				9CEECA572C2A13D5002BAE4F /* b2Math.cpp in Sources */,
 				9CEEC8F42C2A1348002BAE4F /* magneticmine.cpp in Sources */,
 				8E95AA44178D051D0F45F864 /* stripper.cpp in Sources */,
+				89B63586416727D2A37D2591 /* dockingstation.cpp in Sources */,
 				C05CC0876766DD16448D37A7 /* swarm.cpp in Sources */,
 				9CEEC8F82C2A1348002BAE4F /* flamesmokeparticle.cpp in Sources */,
 				9CEEC99A2C2A1367002BAE4F /* lmem.c in Sources */,

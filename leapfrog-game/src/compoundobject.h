@@ -49,7 +49,8 @@ public:
       steerableObject,
       pickup,
       stripper,
-      swarm
+      swarm,
+      dockingStation
    };
 
 

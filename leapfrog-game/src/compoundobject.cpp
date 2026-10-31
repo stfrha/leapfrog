@@ -18,6 +18,7 @@
 #include "magneticmine.h"
 #include "stripper.h"
 #include "swarm.h"
+#include "dockingstation.h"
 #include "steerableobject.h"
 #include "pickupobject.h"
 #include "landingpad.h"
@@ -420,6 +421,20 @@ CompoundObject* CompoundObject::initCompoundObject(
       sw->m_behaviourType = BehaviourEnum::swarm;
 
       return static_cast<CompoundObject*>(sw);
+   }
+   else if (behavStr == "dockingStation")
+   {
+      DockingStation* ds = new DockingStation(
+         sceneParent,
+         parentObject,
+         world,
+         pos,
+         root,
+         groupIndex);
+
+      ds->m_behaviourType = BehaviourEnum::dockingStation;
+
+      return static_cast<CompoundObject*>(ds);
    }
    else if (behavStr == "pickupObject")
    {
