@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Which resource file each scene loads in addition to res.xml.
-     The set is loaded when the scene starts and freed when a scene
-     with another set starts. Scenes not listed use res.xml only. -->
+<!-- Which resource files each scene loads in addition to res.xml
+     (one or more, separated by spaces, searched in that order).
+     They are loaded when the scene starts; files the next scene
+     doesn't list are freed. Scenes not listed use res.xml only. -->
 <sceneResources>
 	<scene file="landing_scene.xml" resources="res_mining.xml"/>
 	<scene file="home_scene.xml" resources="res_mining.xml"/>

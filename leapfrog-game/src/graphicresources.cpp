@@ -1,4 +1,5 @@
 #include "graphicresources.h"
+#include <algorithm>
 
 using namespace oxygine;
 
@@ -88,6 +89,35 @@ const oxygine::Resources& GraphicResources::getResources(ResourceTypeEnum type)
    }
 }
 
+// Splits a resources attribute into file names (space, tab or comma
+// separated). res.xml is always loaded as the game resources, so it's left
+// out.
+static std::vector<std::string> splitResourceList(const std::string& s)
+{
+   std::vector<std::string> files;
+   std::string cur;
+
+   for (size_t i = 0; i <= s.size(); i++)
+   {
+      char c = (i < s.size()) ? s[i] : ' ';
+      if ((c == ' ') || (c == '\t') || (c == ',') || (c == ';') || (c == '\r') || (c == '\n'))
+      {
+         if (!cur.empty() && (cur != "res.xml") &&
+            (std::find(files.begin(), files.end(), cur) == files.end()))
+         {
+            files.push_back(cur);
+         }
+         cur.clear();
+      }
+      else
+      {
+         cur += c;
+      }
+   }
+
+   return files;
+}
+
 void GraphicResources::readSceneResourceMap(void)
 {
    m_sceneResMapRead = true;
@@ -118,7 +148,7 @@ void GraphicResources::readSceneResourceMap(void)
 
    for (pugi::xml_node n = doc.child("sceneResources").child("scene"); n; n = n.next_sibling("scene"))
    {
-      m_sceneResMap[n.attribute("file").as_string()] = n.attribute("resources").as_string();
+      m_sceneResMap[n.attribute("file").as_string()] = splitResourceList(n.attribute("resources").as_string());
    }
 }
 
@@ -129,49 +159,77 @@ void GraphicResources::loadSceneResources(const std::string& sceneFile)
       readSceneResourceMap();
    }
 
-   std::string resFile;
-   std::map<std::string, std::string>::const_iterator it = m_sceneResMap.find(sceneFile);
+   std::vector<std::string> wanted;
+   std::map<std::string, std::vector<std::string> >::const_iterator it = m_sceneResMap.find(sceneFile);
    if (it != m_sceneResMap.end())
    {
-      resFile = it->second;
+      wanted = it->second;
    }
 
-   if (resFile == m_sceneResFile)
+   // Free the files the new scene doesn't use (first, so the memory is
+   // free before new textures load)
+   for (std::map<std::string, Resources*>::iterator r = m_sceneResources.begin(); r != m_sceneResources.end(); )
    {
-      // Same set as the previous scene (e.g. another area of the same world)
-      return;
-   }
-
-   if (!m_sceneResFile.empty())
-   {
-      logs::messageln("GraphicResources: freeing scene resources %s", m_sceneResFile.c_str());
-      m_sceneResource.free();
-      m_sceneResFile = "";
-   }
-
-   if (!resFile.empty())
-   {
-      if (file::exists(resFile))
+      if (std::find(wanted.begin(), wanted.end(), r->first) == wanted.end())
       {
-         logs::messageln("GraphicResources: loading scene resources %s for %s", resFile.c_str(), sceneFile.c_str());
-         m_sceneResource.loadXML(resFile);
-         m_sceneResFile = resFile;
+         logs::messageln("GraphicResources: freeing scene resources %s", r->first.c_str());
+         r->second->free();
+         delete r->second;
+         r = m_sceneResources.erase(r);
       }
       else
       {
-         logs::messageln("GraphicResources: %s (for %s) not found", resFile.c_str(), sceneFile.c_str());
+         ++r;
       }
    }
+
+   // Load the ones not loaded yet
+   m_sceneResFiles.clear();
+   for (size_t i = 0; i < wanted.size(); i++)
+   {
+      const std::string& resFile = wanted[i];
+
+      if (m_sceneResources.find(resFile) == m_sceneResources.end())
+      {
+         if (!file::exists(resFile))
+         {
+            logs::messageln("GraphicResources: %s (for %s) not found", resFile.c_str(), sceneFile.c_str());
+            continue;
+         }
+
+         logs::messageln("GraphicResources: loading scene resources %s for %s", resFile.c_str(), sceneFile.c_str());
+         Resources* res = new Resources();
+         res->loadXML(resFile);
+         m_sceneResources[resFile] = res;
+      }
+
+      m_sceneResFiles.push_back(resFile);
+   }
+}
+
+void GraphicResources::freeSceneResources(void)
+{
+   for (std::map<std::string, Resources*>::iterator r = m_sceneResources.begin(); r != m_sceneResources.end(); ++r)
+   {
+      r->second->free();
+      delete r->second;
+   }
+   m_sceneResources.clear();
+   m_sceneResFiles.clear();
 }
 
 ResAnim* GraphicResources::getResAnim(const std::string& name)
 {
-   if (!m_sceneResFile.empty())
+   for (size_t i = 0; i < m_sceneResFiles.size(); i++)
    {
-      ResAnim* ra = m_sceneResource.getResAnim(name, ep_ignore_error);
-      if (ra)
+      std::map<std::string, Resources*>::const_iterator r = m_sceneResources.find(m_sceneResFiles[i]);
+      if (r != m_sceneResources.end())
       {
-         return ra;
+         ResAnim* ra = r->second->getResAnim(name, ep_ignore_error);
+         if (ra)
+         {
+            return ra;
+         }
       }
    }
 
@@ -183,7 +241,7 @@ void GraphicResources::freeResources(void)
    m_hudResource.free();
    m_gameResource.free();
    m_sceneResource.free();
-   m_sceneResFile = "";
+   freeSceneResources();
    m_leapfrogResource.free();
    m_missionResource.free();
    m_allegianceResource.free();

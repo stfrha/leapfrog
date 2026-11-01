@@ -118,9 +118,10 @@ def ensure_scene_map():
     if not os.path.exists(SCENE_MAP):
         _write(SCENE_MAP,
                '<?xml version="1.0" encoding="utf-8"?>\n'
-               '<!-- Which resource file each scene loads in addition to res.xml.\n'
-               '     The set is loaded when the scene starts and freed when a scene\n'
-               '     with another set starts. Scenes not listed use res.xml only. -->\n'
+               '<!-- Which resource files each scene loads in addition to res.xml\n'
+               '     (one or more, separated by spaces, searched in that order).\n'
+               '     They are loaded when the scene starts; files the next scene\n'
+               '     doesn\'t list are freed. Scenes not listed use res.xml only. -->\n'
                '<sceneResources>\n'
                '</sceneResources>\n')
         print("project_files: created data/scene_resources.xml")
@@ -129,14 +130,16 @@ def ensure_scene_map():
 
 
 def map_scene(scene_file, res_name):
-    """Make scene_file use res_name. Returns True if the map changed."""
+    """Make scene_file load res_name too (added after the files it already
+    lists). Returns True if the map changed."""
     ensure_scene_map()
     text = _read(SCENE_MAP)
     m = re.search(r'<scene\s+file="%s"\s+resources="([^"]*)"\s*/>' % re.escape(scene_file), text)
     if m:
-        if m.group(1) == res_name:
+        files = m.group(1).split()
+        if res_name in files:
             return False
-        text = text[:m.start(1)] + res_name + text[m.end(1):]
+        text = text[:m.start(1)] + " ".join(files + [res_name]) + text[m.end(1):]
     else:
         nl = _nl(text)
         end = text.rfind("</sceneResources>")
@@ -426,7 +429,8 @@ def repeat_textures():
 def scenes_using(res_name):
     if not os.path.exists(SCENE_MAP):
         return []
-    return re.findall(r'<scene\s+file="([^"]*)"\s+resources="%s"' % re.escape(res_name), _read(SCENE_MAP))
+    return [f for f, r in re.findall(r'<scene\s+file="([^"]*)"\s+resources="([^"]*)"', _read(SCENE_MAP))
+            if res_name in r.split()]
 
 
 if __name__ == "__main__":

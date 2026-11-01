@@ -35,7 +35,7 @@ OrbitSpaceScene::OrbitSpaceScene(
 
 
    spSprite background = new Sprite();
-   background->setResAnim(g_GraphRes.getResources(GraphicResources::ResourceTypeEnum::game).getResAnim("starfield"));
+   background->setResAnim(g_GraphRes.getResAnim("starfield"));
    background->setSize(800.0f, 300.0f);
    background->setPosition(-150.0f, 0.0f);
    background->setScale(0.3f);

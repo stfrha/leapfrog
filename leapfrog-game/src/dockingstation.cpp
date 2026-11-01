@@ -171,7 +171,7 @@ DockingStation::DockingStation(
    if (m_shieldOn && (m_base != NULL))
    {
       m_shieldSprite = new Sprite();
-      m_shieldSprite->setResAnim(g_GraphRes.getResources(GraphicResources::ResourceTypeEnum::game).getResAnim("station_shield"));
+      m_shieldSprite->setResAnim(g_GraphRes.getResAnim("station_shield"));
       m_shieldSprite->setAnchor(0.5f, 0.5f);
       m_shieldSprite->setSize(2.0f * m_shieldRadius, 2.0f * m_shieldRadius);
       m_shieldSprite->setColor(Color(120, 200, 255, 255));

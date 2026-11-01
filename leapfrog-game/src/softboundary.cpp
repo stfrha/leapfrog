@@ -57,7 +57,7 @@ SoftBoundary::SoftBoundary(
    setPriority(216);
 
    Sprite* mask = new Sprite();
-   mask->setResAnim(g_GraphRes.getResources(GraphicResources::ResourceTypeEnum::game).getResAnim("deep_space_boundary"));
+   mask->setResAnim(g_GraphRes.getResAnim("deep_space_boundary"));
    mask->setSize(rc.getSize().x, rc.getSize().y - 5);
    mask->attachTo(this);
    mask->setVisible(false);
