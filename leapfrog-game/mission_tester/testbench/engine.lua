@@ -503,7 +503,7 @@ function Engine:runPending()
 end
 
 -- The orbit scene's landing sites, in file order (as PlanetActor numbers
--- them): { name, angle, scene }. They are in the planet's surface file
+-- them): { name, angle, scene, hidden }. They are in the planet's surface file
 -- (the orbit scene's surfaceFile), or in the orbit scene without one.
 function Engine:landingSites(file)
    local root = self:readXml(file or "orbit_scene.xml")
@@ -513,7 +513,7 @@ function Engine:landingSites(file)
       for _, c in ipairs(node.children or {}) do
          if c.tag == "landingSite" then
             sites[#sites + 1] = { name = c.attr.name or "", angle = tonumber(c.attr.angle or "0"),
-               scene = c.attr.scene or "" }
+               scene = c.attr.scene or "", hidden = (c.attr.hidden == "true" or c.attr.hidden == "1") }
          else
             if c.tag == "properties" and c.attr.surfaceFile then
                surfaceFile = c.attr.surfaceFile
@@ -546,10 +546,15 @@ function Engine:endReentry(outcome, siteIndex, distance)
    elseif outcome == "bounced" then
       parameter = -3
    else
-      local sites = self:landingSites()
+      local sites = (self.scene and self.scene.sites) or self:landingSites()
       local site = sites[(siteIndex or 0) + 1]
       if not site then
          error("endReentry: the orbit scene has no landing site " .. tostring(siteIndex), 3)
+      end
+      if site.shown == false then
+         -- PlanetActor measures the landing to the shown sites only
+         error("endReentry: landing site " .. tostring(siteIndex) .. " (" .. site.name ..
+            ") is hidden; re-entry can't come down there", 3)
       end
       r.siteIndex, r.siteName, r.siteScene = siteIndex or 0, site.name, site.scene
       r.distance = (outcome == "offSite") and (distance or 100) or 0
@@ -637,6 +642,19 @@ function Engine:startScene(file, sceneType)
    end
 
    local scene = { file = file, sceneType = sceneType, objects = {} }
+
+   -- The orbit scene's planet: its landing sites, shown unless hidden="true"
+   -- (PlanetActor; Lua changes it with c_setLandingSiteShown)
+   for _, c in ipairs(root.children) do
+      if c.tag == "behaviour" and c.attr.type == "orbitScene" then
+         scene.sites = {}
+         for _, site in ipairs(self:landingSites(file)) do
+            site.shown = not site.hidden
+            scene.sites[#scene.sites + 1] = site
+         end
+      end
+   end
+
    for _, c in ipairs(root.children) do
       if c.tag == "childObject" then
          local obj = self:objectFromChildNode(c)
@@ -1111,6 +1129,26 @@ function Engine:installApi(env)
       local r = e.lastReentry or { outcome = "none", siteIndex = -1, siteName = "", siteScene = "",
          distance = 0, burn = 0 }
       return r.outcome, r.siteIndex, r.siteName, r.siteScene, r.distance, r.burn
+   end
+
+   -- PlanetActor::setSiteShown, for the orbit scene's planet
+   api.c_setLandingSiteShown = function(name, shown)
+      local sites = e.scene and e.scene.sites
+      if not sites then
+         e:problem("c_setLandingSiteShown(" .. tostring(name) .. "): not in the orbit scene")
+         return false
+      end
+      local found = false
+      for _, site in ipairs(sites) do
+         if site.name == name then
+            site.shown = shown and true or false
+            found = true
+         end
+      end
+      if not found then
+         e:problem("c_setLandingSiteShown: the planet has no landing site " .. tostring(name))
+      end
+      return found
    end
 
    api.c_loadLatestSave = function()

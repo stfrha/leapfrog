@@ -102,6 +102,7 @@
     <None Include="tests\test_starts.lua" />
     <None Include="tests\questions.lua" />
     <None Include="tests\reentry.lua" />
+    <None Include="tests\landing_sites.lua" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
 </Project>

@@ -9,4 +9,5 @@ return {
    "test_starts.lua",
    "questions.lua",
    "reentry.lua",
+   "landing_sites.lua",
 }

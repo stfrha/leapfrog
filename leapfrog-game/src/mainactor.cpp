@@ -13,6 +13,7 @@
 #include "gamestatus.h"
 #include "statusbar.h"
 #include "orbitscene.h"
+#include "planetactor.h"
 #include "orbitspacescene.h"
 #include "headdowndisplay.h"
 #include "headupdisplay.h"
@@ -181,6 +182,10 @@ void MainActor::startScene(void)
    }
 
    g_HeadDownDisplay->clearMap();
+
+   // The old orbit scene's planet (if any) is no place for Lua's
+   // c_setLandingSiteShown any more; a new orbit scene sets its own
+   PlanetActor::clearCurrent();
 
    // The old scene's actors are gone; switch to the new scene's own
    // resource set (if it has one) before its objects look up textures.

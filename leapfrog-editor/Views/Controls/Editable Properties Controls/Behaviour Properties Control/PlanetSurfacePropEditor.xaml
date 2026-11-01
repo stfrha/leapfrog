@@ -32,6 +32,8 @@
                         ToolTip="The site's marker on the ground (100 x 30); none when the surface's art shows the site" />
                      <local:StringEditorControl Headline="Landing Scene" MyValue="{Binding Scene, Mode=TwoWay}"
                         ToolTip="The landing scene the site leads to, e.g. landing_scene.xml" />
+                     <local:BoolEditorControl Headline="Hidden" MyValue="{Binding Hidden, Mode=TwoWay}"
+                        ToolTip="Unknown at first: no marker and no solution marker in orbit, and re-entry doesn't count it, until Lua shows it with c_setLandingSiteShown(name, true) in the orbit scene's setup. The surface's art still shows." />
                      <Button Content="Remove Site" FontSize="10" Padding="6,0" Margin="0,2,0,0" HorizontalAlignment="Right"
                         Command="{Binding Remove}" />
                   </StackPanel>

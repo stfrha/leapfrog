@@ -96,6 +96,17 @@ namespace LeapfrogEditor
          }
       }
 
+      // Unknown until Lua shows it (c_setLandingSiteShown)
+      public bool Hidden
+      {
+         get { return _modelObject.Hidden; }
+         set
+         {
+            _modelObject.Hidden = value;
+            OnPropertyChanged("Hidden");
+         }
+      }
+
       public ICommand Remove
       {
          get

@@ -6,6 +6,7 @@
 #include "objectproperty.h"
 #include "sceneactorevents.h"
 #include "leapfrogevents.h"
+#include "planetactor.h"
 
 using namespace oxygine;
 
@@ -662,6 +663,43 @@ static int c_leapfrogStandsOn(lua_State *L)
    return 1;
 }
 
+// c_setLandingSiteShown(name, shown)
+// Shows (true) or hides (false) a landing site of the orbit scene's planet
+// by name (<landingSite name="..."> in the planet's surface file). A site
+// with hidden="true" there starts hidden: no marker, no solution marker,
+// and re-entry doesn't count it. Call it in the orbit scene's setup (the
+// world or mission script, by the mission state); it holds for that visit
+// of the orbit scene only. Returns true if the site was found; false (and
+// a warning in the log) outside the orbit scene or for an unknown name.
+static int c_setLandingSiteShown(lua_State *L)
+{
+   const char* name = lua_tostring(L, 1);
+   bool shown = lua_toboolean(L, 2);
+
+   PlanetActor* planet = PlanetActor::current();
+   bool found = false;
+
+   if (name == NULL)
+   {
+      logs::warning("c_setLandingSiteShown: no site name");
+   }
+   else if (planet == NULL)
+   {
+      logs::warning("c_setLandingSiteShown(%s): not in the orbit scene", name);
+   }
+   else
+   {
+      found = planet->setSiteShown(name, shown);
+      if (!found)
+      {
+         logs::warning("c_setLandingSiteShown: the planet has no landing site %s", name);
+      }
+   }
+
+   lua_pushboolean(L, found);
+   return 1;
+}
+
 // c_lastReentry()
 // How the last re-entry ended, read in lua_sceneExitHandler when the orbit
 // scene exits. Returns outcome, siteIndex, siteName, siteScene, distance,
@@ -863,6 +901,7 @@ void LuaInterface::initLuaInterface(void)
    lua_register(m_L, "c_cancelQuestion", c_cancelQuestion);
    lua_register(m_L, "c_leapfrogStandsOn", c_leapfrogStandsOn);
    lua_register(m_L, "c_lastReentry", c_lastReentry);
+   lua_register(m_L, "c_setLandingSiteShown", c_setLandingSiteShown);
    lua_register(m_L, "c_loadLatestSave", c_loadLatestSave);
 
 }

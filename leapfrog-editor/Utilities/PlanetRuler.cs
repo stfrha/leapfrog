@@ -252,9 +252,10 @@ namespace LeapfrogEditor
                   g.LineTo(new Point(sx, 10), true, false);
                }
                flag.Freeze();
-               dc.DrawGeometry(c_flagBrush, c_flagPen, flag);
+               // A hidden site's flag is hollow
+               dc.DrawGeometry(site.Hidden ? null : c_flagBrush, c_flagPen, flag);
 
-               FormattedText t = Text(site.DisplayLabel + "  " + Degrees(site.Angle, 0.01), 10, c_flagPen.Brush);
+               FormattedText t = Text(site.DisplayLabel + (site.Hidden ? " (hidden)" : "") + "  " + Degrees(site.Angle, 0.01), 10, c_flagPen.Brush);
                dc.DrawText(t, new Point(sx + 12, 1));
             }
          }

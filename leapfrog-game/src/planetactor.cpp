@@ -44,6 +44,10 @@ PlanetActor::PlanetActor(
    m_spinElapsedMs(0.0f),
    m_revolutionPending(false)
 {
+   // Lua's c_setLandingSiteShown finds the planet here (one orbit scene
+   // at a time)
+   s_current = this;
+
    //// I should probably load resources that are uniuqe here
    //setPanorateMode(topLeft);
 
@@ -428,6 +432,7 @@ void PlanetActor::loadSurface(const pugi::xml_node& orbitProperties, std::string
       LandingSite ls(node);
       m_landingSites.push_back(ls);
 
+      spActor siteMarker;
       if (!ls.m_texture.empty())
       {
          spSprite marker = new Sprite();
@@ -436,8 +441,11 @@ void PlanetActor::loadSurface(const pugi::xml_node& orbitProperties, std::string
          marker->setAnchor(0.5f, 0.5f);
          marker->setPosition(Vector2(c_surfaceRadius * cos(ls.m_angle), c_surfaceRadius * sin(ls.m_angle)));
          marker->setRotation(ls.m_angle + MATH_PI / 2.0f);
+         marker->setVisible(ls.m_shown);
          marker->attachTo(m_surface);
+         siteMarker = marker;
       }
+      m_siteMarkers.push_back(siteMarker);
    }
 
    if (root)
@@ -616,6 +624,11 @@ void PlanetActor::placeSolutionMarkers(bool fadeIn)
 
    for (auto it = m_landingSites.begin(); it != m_landingSites.end(); ++it)
    {
+      if (!it->m_shown)
+      {
+         continue;
+      }
+
       spSprite predSite = new Sprite();
       predSite->setResAnim(g_GraphRes.getResources(GraphicResources::ResourceTypeEnum::hud).getResAnim("predicted_site"));
       predSite->setSize(100.0f, 30.0f);
@@ -733,9 +746,15 @@ void PlanetActor::surfaceReached(void)
    float minAngleToLandingSite = 2.0f * MATH_PI;
    int index = 0;
 
-   // Check the closest landing site
+   // Check the closest landing site (of those shown; the index stays the
+   // file order)
    for (auto it = m_landingSites.begin(); it != m_landingSites.end(); ++it, ++index)
    {
+      if (!it->m_shown)
+      {
+         continue;
+      }
+
       // The other way round the planet if that is shorter
       float diff = remainderf(it->m_angle - landingAngle, 2.0f * MATH_PI);
       float absDiff = fabs(diff);
@@ -773,16 +792,74 @@ bool PlanetActor::allSolutionsPassed(void)
    }
 
    float turned = m_planet->getRotation() + m_surface->getRotation();
+   bool anyShown = false;
 
    for (const LandingSite& site : m_landingSites)
    {
+      if (!site.m_shown)
+      {
+         continue;
+      }
+
+      anyShown = true;
       if (site.m_angle + c_predictedAngleOffset + turned <= c_landingPointAngle + c_missedAngle)
       {
          return false;
       }
    }
 
-   return true;
+   // No site shown: as with no sites, nothing to wait for
+   return anyShown;
+}
+
+PlanetActor* PlanetActor::s_current = NULL;
+
+PlanetActor* PlanetActor::current(void)
+{
+   return s_current;
+}
+
+void PlanetActor::clearCurrent(void)
+{
+   s_current = NULL;
+}
+
+PlanetActor::~PlanetActor()
+{
+   if (s_current == this)
+   {
+      s_current = NULL;
+   }
+}
+
+bool PlanetActor::setSiteShown(const std::string& name, bool shown)
+{
+   bool found = false;
+
+   for (size_t i = 0; i < m_landingSites.size(); i++)
+   {
+      if (m_landingSites[i].m_name != name)
+      {
+         continue;
+      }
+
+      found = true;
+      m_landingSites[i].m_shown = shown;
+
+      if ((i < m_siteMarkers.size()) && (m_siteMarkers[i] != NULL))
+      {
+         m_siteMarkers[i]->setVisible(shown);
+      }
+   }
+
+   // Solution markers are on the surface while the orbit is established
+   // (a pending revolution places them again when it has faded out)
+   if (found && (m_state == PAS_ORBIT_ESTABLISHED) && !m_revolutionPending)
+   {
+      placeSolutionMarkers(false);
+   }
+
+   return found;
 }
 
 LandingResult PlanetActor::getLandingResult()

@@ -14,6 +14,8 @@ namespace LeapfrogEditor
    //   texture  the site's marker on the ground ("" = none, e.g. when the
    //            surface's art shows the site)
    //   scene    the landing scene the site leads to
+   //   hidden   an unknown site until Lua shows it (c_setLandingSiteShown):
+   //            no marker, no solution marker, re-entry doesn't count it
    [Serializable]
    public class LandingSite
    {
@@ -22,6 +24,7 @@ namespace LeapfrogEditor
       private double _angle = 0.0;
       private string _texture = "";
       private string _scene = "";
+      private bool _hidden = false;
 
       [XmlAttribute("name")]
       public string Name
@@ -61,6 +64,18 @@ namespace LeapfrogEditor
       {
          get { return _scene; }
          set { _scene = value; }
+      }
+
+      [XmlAttribute("hidden")]
+      public bool Hidden
+      {
+         get { return _hidden; }
+         set { _hidden = value; }
+      }
+
+      public bool ShouldSerializeHidden()
+      {
+         return Hidden;
       }
    }
 }

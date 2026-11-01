@@ -15,6 +15,12 @@
 // and the label under its solution marker in orbit (label; the name if
 // not given). Sites are numbered in file order (the orbit scene's exit
 // parameter).
+//
+// hidden="true": an unknown site. It has no marker and no solution marker,
+// isn't a place to come down at (re-entry measures to the shown sites
+// only) and doesn't hold up the next revolution, until Lua shows it with
+// c_setLandingSiteShown(name, true), usually in the orbit scene's setup
+// by the mission state. The surface's art is not hidden.
 class LandingSite
 {
 public:
@@ -23,18 +29,24 @@ public:
    std::string m_texture;
    std::string m_scene;
    std::string m_label;
+   bool m_hidden;    // hidden="true" in the file
+   bool m_shown;     // now (starts as !m_hidden; Lua can change it)
 
 public:
    LandingSite() :
       m_name("noName"),
       m_angle(0.0f),
-      m_texture("noTexture")
+      m_texture("noTexture"),
+      m_hidden(false),
+      m_shown(true)
    {  }
 
    LandingSite(std::string name, float angle, std::string texture) :
       m_name(name),
       m_angle(angle),
-      m_texture(texture)
+      m_texture(texture),
+      m_hidden(false),
+      m_shown(true)
    {  }
 
    LandingSite(pugi::xml_node& objectNode) 
@@ -44,6 +56,8 @@ public:
       m_texture = objectNode.attribute("texture").as_string();
       m_scene = objectNode.attribute("scene").as_string();
       m_label = objectNode.attribute("label").as_string(m_name.c_str());
+      m_hidden = objectNode.attribute("hidden").as_bool(false);
+      m_shown = !m_hidden;
    }
 
 };
@@ -136,6 +150,10 @@ private:
    static const float c_surfaceRadius;
 
    std::vector<LandingSite> m_landingSites;
+   std::vector<oxygine::spActor> m_siteMarkers;   // per site (NULL: no marker texture)
+
+   // The planet of the orbit scene being shown (for Lua), NULL if none
+   static PlanetActor* s_current;
 
    PlanetActorStateEnum m_state;
    bool m_stateChange;
@@ -162,6 +180,18 @@ public:
    PlanetActor(
       CompoundObject* parentObject,
       const pugi::xml_node& objectNode);
+   ~PlanetActor();
+
+   // The planet of the orbit scene being shown, NULL outside the orbit
+   // scene
+   static PlanetActor* current(void);
+   static void clearCurrent(void);
+
+   // Shows or hides a landing site by name (see LandingSite's hidden).
+   // Takes effect at once: its marker, and its solution marker if the
+   // orbit is established and no burn has started. False if the planet
+   // has no site by that name.
+   bool setSiteShown(const std::string& name, bool shown);
    void orbitEstablished(void);
    void startReentry(float relativeBurnDeviation, float deviationDistance);
    void surfaceReached(void);

@@ -211,6 +211,40 @@ function T:reentry(outcome, siteIndex, distance)
    step(self, function() self.engine:endReentry(outcome, siteIndex, distance) end)
 end
 
+-- Marks a landing site hidden="true" in this test's copy of the planet's
+-- surface file (the real file is not changed); before the orbit scene
+-- starts
+function T:hideLandingSite(name)
+   step(self, function()
+      local e = self.engine
+      local file = "orbit_scene.xml"
+      local root = e:readXml(file)
+      local found = false
+      local function walk(node)
+         for _, c in ipairs(node.children or {}) do
+            if c.tag == "landingSite" and c.attr.name == name then
+               c.attr.hidden = "true"
+               found = true
+            elseif c.tag == "properties" and c.attr.surfaceFile then
+               walk(e:readXml(c.attr.surfaceFile) or {})
+            else
+               walk(c)
+            end
+         end
+      end
+      if root then walk(root) end
+      if not found then
+         error("hideLandingSite: no landing site " .. tostring(name), 0)
+      end
+   end)
+end
+
+-- A script shows or hides a landing site (c_setLandingSiteShown), as a
+-- world or mission script would in the orbit scene's setup
+function T:setLandingSiteShown(name, shown)
+   step(self, function() self.engine.env.c_setLandingSiteShown(name, shown) end)
+end
+
 -- A game event from an object (e.g. "BrBR" a breakable broke, "ExEX" an
 -- explosive exploded, "PuPU" a pickup was picked up), sent to listeners
 function T:event(object, eventId, parameter)
@@ -503,6 +537,26 @@ function T:expectListening(object, eventId, count)
       self:fail(string.format("%s %s: expected %d listener(s), got %d", object, eventId, count or 1, n), 2)
    end
    pass(self)
+end
+
+-- A landing site of the orbit scene's planet is shown (true) or hidden
+function T:expectLandingSiteShown(name, shown)
+   local sites = self.engine.scene and self.engine.scene.sites
+   if not sites then
+      self:fail("expected the orbit scene (landing sites), in " ..
+         (self.engine.scene and self.engine.scene.file or "no scene"), 2)
+   end
+   for _, site in ipairs(sites) do
+      if site.name == name then
+         if site.shown ~= shown then
+            self:fail(string.format("landing site %s: expected %s, it is %s", name,
+               shown and "shown" or "hidden", site.shown and "shown" or "hidden"), 2)
+         end
+         pass(self)
+         return
+      end
+   end
+   self:fail("the orbit scene has no landing site " .. tostring(name), 2)
 end
 
 function T:expectSaved(field, expected)
