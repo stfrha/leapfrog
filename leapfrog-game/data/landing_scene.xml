@@ -205,6 +205,32 @@
         v2="2"
         v3="1" />
     </triangles>
+    <border
+      leftGroundAngle="0"
+      rightGroundAngle="0"
+      leftCeilingAngle="0"
+      rightCeilingAngle="0">
+      <groundBorder
+        texture="notDefined"
+        horisontalMeterOffset="0"
+        textureMeterWidth="0"
+        textureMeterHeight="0" />
+      <ceilingBorder
+        texture="notDefined"
+        horisontalMeterOffset="0"
+        textureMeterWidth="0"
+        textureMeterHeight="0" />
+      <leftWallBorder
+        texture="notDefined"
+        horisontalMeterOffset="0"
+        textureMeterWidth="0"
+        textureMeterHeight="0" />
+      <rightWallBorder
+        texture="notDefined"
+        horisontalMeterOffset="0"
+        textureMeterWidth="0"
+        textureMeterHeight="0" />
+    </border>
   </spritePolygon>
   <spritePolygon
     name="noName"
@@ -296,6 +322,32 @@
         v2="8"
         v3="9" />
     </triangles>
+    <border
+      leftGroundAngle="0"
+      rightGroundAngle="0"
+      leftCeilingAngle="0"
+      rightCeilingAngle="0">
+      <groundBorder
+        texture="notDefined"
+        horisontalMeterOffset="0"
+        textureMeterWidth="0"
+        textureMeterHeight="0" />
+      <ceilingBorder
+        texture="notDefined"
+        horisontalMeterOffset="0"
+        textureMeterWidth="0"
+        textureMeterHeight="0" />
+      <leftWallBorder
+        texture="notDefined"
+        horisontalMeterOffset="0"
+        textureMeterWidth="0"
+        textureMeterHeight="0" />
+      <rightWallBorder
+        texture="notDefined"
+        horisontalMeterOffset="0"
+        textureMeterWidth="0"
+        textureMeterHeight="0" />
+    </border>
   </spritePolygon>
   <staticBox
     name="ropeHolder"
@@ -373,7 +425,7 @@
   </staticPolygon>
   <staticPolygon
     name="grotto2"
-    texture="grotto"
+    texture="grotto_light"
     posX="579.33796680013847"
     posY="438.555208975567"
     angle="0"
@@ -381,6 +433,7 @@
     collisionEntity="notApplicable"
     collisionCategory="1"
     collisionMask="65533"
+    color="737373"
     textureMeterWidth="200"
     textureMeterHeight="200"
     textureOffsetMeterX="0"
@@ -723,7 +776,7 @@
   </staticPolygon>
   <staticPolygon
     name="grotto"
-    texture="grotto"
+    texture="grotto_light"
     posX="167.27293621221497"
     posY="778.16776665047382"
     angle="0"
@@ -731,6 +784,7 @@
     collisionEntity="notApplicable"
     collisionCategory="1"
     collisionMask="65533"
+    color="5c5c5c"
     textureMeterWidth="200"
     textureMeterHeight="200"
     textureOffsetMeterX="0"

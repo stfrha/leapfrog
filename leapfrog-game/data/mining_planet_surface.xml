@@ -17,15 +17,15 @@
   <spriteBox
     name="noName_7"
     texture="default"
-    posX="1583.027018475319"
-    posY="336.82693439030982"
+    posX="4.2116367265139161"
+    posY="6.0827043599729222"
     angle="0"
     zLevel="0"
     collisionEntity="notApplicable"
     collisionCategory="1"
     collisionMask="65534"
-    width="200"
-    height="200"
+    width="100"
+    height="10"
     parallaxAmount="0" />
   <spritePolygon
     name="noName"
@@ -577,13 +577,13 @@
         name="goldMine"
         label="Claude Mine"
         angle="0.05"
-        texture="alpha_mine1"
+        texture=""
         scene="home_scene.xml" />
       <landingSite
         name="alphaCity"
         label="Village"
         angle="-5.7"
-        texture="alpha_city1"
+        texture=""
         scene="landing_scene.xml" />
     </planetSurfaceProperties>
   </behaviour>

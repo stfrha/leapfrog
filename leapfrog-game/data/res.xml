@@ -2,10 +2,6 @@
 <resources>
 	<set path = "images" />
 	<atlas>
-		<image file="checkers.png"/>	
-
-		<image file="button.png"/>		
-      
 		<image file="lf_body.png"/>		
 		<image file="lf_boost.png"/>		
 		<image file="lf_small_leg.png"/>		
@@ -13,15 +9,11 @@
 		<image file="lf_foot.png"/>		
 		<image file="lf_right_steer.png"/>		
 		<image file="lf_left_steer.png"/>		
-
-		<image file="main_body2.png"/>		
 		<image file="small_leg2.png"/>		
 		<image file="big_leg2.png"/>		
 		<image file="foot2.png"/>		
 		<image file="right_steer2.png"/>		
 		<image file="left_steer2.png"/>		
-
-		<image file="ground.png"/>		
 		<image file="flame_particle.png"/>		
 		<image file="white_circle.png"/>	
 		<image file="shield_exciter.png" cols="11" />
@@ -39,18 +31,11 @@
 		<image file="ls_pull_spring.png"/>	
 		<image file="ls_support_booster.png"/>	
 		<image file="ls_tower.png"/>	
-		<image file="ls_foundation.png"/>	
-		<image file="alpha_mine1.png"/>	
-		<image file="alpha_city1.png"/>	
-		<image file="hammer.png"/>	
-		<image file="circle.png"/>	
-		<image file="asteroid_cutout.png"/>	
 		<image file="bomb_crate.png"/>	
 		<image file="ammo_power_up.png"/>	
 		<image file="shield_power_up.png"/>	
 		<image file="fuel_power_up.png"/>	
 		<image file="coin_power_up.png"/>	
-		<image file="box9a.png" />	
 		<image file="explosion_ani.png" rows="8" cols="8" />
 	</atlas>
 	<atlas clamp2edge="false"> 
@@ -66,28 +51,10 @@
 		<image file="ls_right_foot_glider.png" trim="false" extend="false"/>
 	</atlas>	
 	<atlas clamp2edge="false"> 
-		<image file="grotto_border.png" trim="false" extend="false"/>
-	</atlas>	
-	<atlas clamp2edge="false"> 
-		<image file="grotto_ceiling_border.png" trim="false" extend="false"/>
-	</atlas>	
-	<atlas clamp2edge="false"> 
-		<image file="grotto_left_border.png" trim="false" extend="false"/>
-	</atlas>	
-	<atlas clamp2edge="false"> 
-		<image file="grotto_right_border.png" trim="false" extend="false"/>
-	</atlas>	
-	<atlas clamp2edge="false"> 
-		<image file="markers.png" trim="false" extend="false"/>
-	</atlas>	
-	<atlas clamp2edge="false"> 
 		<image file="planet_rock.png" trim="false" extend="false"/>
 	</atlas>	
 	<atlas clamp2edge="false"> 
-		<image file="dark_cave_wall.png" trim="false" extend="false"/>
-	</atlas>	
-	<atlas clamp2edge="false"> 
-		<image file="deep_space_boundary.png" trim="false" extend="false"/>
+		<image file="scene_boundary.png" trim="false" extend="false"/>
 	</atlas>	
 	<atlas clamp2edge="false"> 
 		<image file="starfield.png" trim="false" extend="false"/>
@@ -101,21 +68,5 @@
 	<set path = "images/mining" />
 	<atlas clamp2edge="false">
 		<image file="grotto.png" trim="false" extend="false"/>
-	</atlas>
-	<set path = "images/space" />
-	<atlas>
-		<image file="dock_station_base.png" ppu="20" trim="false" extend="false"/>
-	</atlas>
-	<set path = "images/space" />
-	<atlas>
-		<image file="dock_arm.png" rows="4" ppu="20" trim="false" extend="false"/>
-	</atlas>
-	<set path = "images/space" />
-	<atlas>
-		<image file="dock_clamp.png" ppu="20" trim="false" extend="false"/>
-	</atlas>
-	<set path = "images/space" />
-	<atlas>
-		<image file="station_shield.png" trim="false" extend="false"/>
 	</atlas>
 </resources>

@@ -158,6 +158,7 @@
 		9C0A5FD52C161A630046AE49 /* landing_scene.xml in Resources */ = {isa = PBXBuildFile; fileRef = 9C0A5FB22C161A620046AE49 /* landing_scene.xml */; };
 		9C0A5FD62C161A630046AE49 /* not used xmls in Resources */ = {isa = PBXBuildFile; fileRef = 9C0A5FB32C161A620046AE49 /* not used xmls */; };
 		9C0A5FD72C161A630046AE49 /* res_hud.xml in Resources */ = {isa = PBXBuildFile; fileRef = 9C0A5FB42C161A620046AE49 /* res_hud.xml */; };
+		0D9C3A88E4F1BC98E515C3B9 /* res_space.xml in Resources */ = {isa = PBXBuildFile; fileRef = AB76373C492E8BF361B06D77 /* res_space.xml */; };
 		0CB1B6CAECFA979FC9228693 /* docking_station.xml in Resources */ = {isa = PBXBuildFile; fileRef = 8D2110A725AD399E4D8AE2F9 /* docking_station.xml */; };
 		812920BD8D10F1D76F70BC05 /* stripper_drop_credits.xml in Resources */ = {isa = PBXBuildFile; fileRef = AAFF2647A3D5B7A4248E35B4 /* stripper_drop_credits.xml */; };
 		19AD24D28DEB8F0CC0F0D8AE /* stripper_drop_fuel.xml in Resources */ = {isa = PBXBuildFile; fileRef = 479D9582234EF261DAEBF842 /* stripper_drop_fuel.xml */; };
@@ -630,6 +631,7 @@
 		9C0A5FB22C161A620046AE49 /* landing_scene.xml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; name = landing_scene.xml; path = ../data/landing_scene.xml; sourceTree = "<group>"; };
 		9C0A5FB32C161A620046AE49 /* not used xmls */ = {isa = PBXFileReference; lastKnownFileType = folder; name = "not used xmls"; path = "../data/not used xmls"; sourceTree = "<group>"; };
 		9C0A5FB42C161A620046AE49 /* res_hud.xml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; name = res_hud.xml; path = ../data/res_hud.xml; sourceTree = "<group>"; };
+		AB76373C492E8BF361B06D77 /* res_space.xml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; name = res_space.xml; path = ../data/res_space.xml; sourceTree = "<group>"; };
 		8D2110A725AD399E4D8AE2F9 /* docking_station.xml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; name = docking_station.xml; path = ../data/docking_station.xml; sourceTree = "<group>"; };
 		AAFF2647A3D5B7A4248E35B4 /* stripper_drop_credits.xml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; name = stripper_drop_credits.xml; path = ../data/stripper_drop_credits.xml; sourceTree = "<group>"; };
 		479D9582234EF261DAEBF842 /* stripper_drop_fuel.xml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; name = stripper_drop_fuel.xml; path = ../data/stripper_drop_fuel.xml; sourceTree = "<group>"; };
@@ -773,6 +775,7 @@
 				9C0A5FC42C161A630046AE49 /* orbit_scene.xml */,
 				9C0A5FC82C161A630046AE49 /* orbit_space_scene.xml */,
 				9C0A5FB42C161A620046AE49 /* res_hud.xml */,
+				AB76373C492E8BF361B06D77 /* res_space.xml */,
 				8D2110A725AD399E4D8AE2F9 /* docking_station.xml */,
 				AAFF2647A3D5B7A4248E35B4 /* stripper_drop_credits.xml */,
 				479D9582234EF261DAEBF842 /* stripper_drop_fuel.xml */,
@@ -1362,6 +1365,7 @@
 				9C0A5FE42C161A630046AE49 /* leapfrog_deep_space.xml in Resources */,
 				9C0A5FEC2C161A630046AE49 /* deep_space_scene.xml in Resources */,
 				9C0A5FD72C161A630046AE49 /* res_hud.xml in Resources */,
+				0D9C3A88E4F1BC98E515C3B9 /* res_space.xml in Resources */,
 				0CB1B6CAECFA979FC9228693 /* docking_station.xml in Resources */,
 				812920BD8D10F1D76F70BC05 /* stripper_drop_credits.xml in Resources */,
 				19AD24D28DEB8F0CC0F0D8AE /* stripper_drop_fuel.xml in Resources */,

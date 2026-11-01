@@ -89,4 +89,5 @@
 	<atlas>
 		<image file="gen_landing_pad_blink.png" ppu="20" rows="2" trim="false" extend="false"/>
 	</atlas>
+	<set path = "images/mining" />
 </resources>
