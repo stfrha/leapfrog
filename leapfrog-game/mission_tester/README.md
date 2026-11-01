@@ -101,6 +101,8 @@ doesn't yet: reported as KNOWN with the reason while it fails, and as FIXED
 | `t:reentry(outcome [, site, distance])` | the orbit scene ends: `"onSite"`/`"offSite"` (closest site index, distance off in planet units; a marker is 100 wide), `"bounced"`, `"burnedUp"`; `c_lastReentry` returns it, then the scene exits |
 | `t:hideLandingSite(name)` | marks a landing site `hidden="true"` in this test's copy of the planet's surface file (before the orbit scene starts) |
 | `t:setLandingSiteShown(name, shown)` | a script calls `c_setLandingSiteShown` (orbit scene only; an unknown name is a problem) |
+| `t:declareKeyItem{ id, kind, name, issuer, tier, initial }` | declares a key item in this test's copy of `key_items.xml` |
+| `t:giveItem(id [, quiet])`, `t:revokeItem(...)`, `t:forgetItem(...)` | a script changes a key item (`c_giveItem`, `c_revokeItem`, `c_forgetItem`); an undeclared id is a problem |
 | `t:event(object, id [, param])` | a game event, e.g. `"BrBR"`, `"ExEX"`, `"PuPU"` |
 | `t:setProperty(object, id, v)` | change a property from the game's side |
 | `t:damageLegs(h)` | one leg joint at health h (property 10 reads the lowest) |
@@ -122,6 +124,7 @@ question's text follows the answer to the first (and the reply to it).
 `expectQuestionQueued(id)`, `expectNoQuestionPending` (none open or queued),
 `expectProperty(object, id, value [, tolerance])`,
 `expectLandingSiteShown(name, shown)` (orbit scene),
+`expectItem(id, "unknown"|"held"|"revoked")`, `expectSavedItem(id, state)` (in the save file),
 `expectMap(object, actor, "hollow"|"filled"|"flashingSlow"|"flashingFast")`,
 `expectMapShown(object, actor, bool)`, `expectListening(object, event [, count])`,
 `expectSaved(field, value)` (fields: scene, mission, state, sceneType,

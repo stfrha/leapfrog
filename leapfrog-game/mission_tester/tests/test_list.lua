@@ -10,4 +10,5 @@ return {
    "questions.lua",
    "reentry.lua",
    "landing_sites.lua",
+   "key_items.lua",
 }

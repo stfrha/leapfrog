@@ -8,6 +8,7 @@ using namespace pugi;
 GameStatus g_GameStatus;
 
 const string GameStatus::c_gameStatusFileName = "leapfrog_game_progress.xml";
+const string GameStatus::c_keyItemsFileName = "key_items.xml";
 
 const char* const GameStatus::c_legHealthAttributes[GameStatus::c_numLegJoints] =
 {
@@ -38,7 +39,8 @@ GameStatus::GameStatus() :
    m_leftFootJointLevel(0),
    m_rightHipJointLevel(0),
    m_rightKneeJointLevel(0),
-   m_rightFootJointLevel(0)
+   m_rightFootJointLevel(0),
+   m_keyItemDefsRead(false)
 {
    for (int i = 0; i < c_numLegJoints; i++)
    {
@@ -80,6 +82,181 @@ void GameStatus::writeLegHealth(xml_node& root)
    }
 }
 
+
+// ------------------------------------------------------------------------
+// Key items
+
+void GameStatus::readKeyItemDefinitions(void)
+{
+   if (m_keyItemDefsRead)
+   {
+      return;
+   }
+
+   m_keyItemDefsRead = true;
+   m_keyItemDefs.clear();
+
+   if (!ox::file::exists(c_keyItemsFileName))
+   {
+      logs::messageln("GameStatus: no %s, no key items", c_keyItemsFileName.c_str());
+      return;
+   }
+
+   ox::file::buffer bf;
+   ox::file::read(c_keyItemsFileName.c_str(), bf);
+
+   xml_document doc;
+   if ((bf.size() == 0) || !doc.load_buffer(&bf.data[0], bf.size()))
+   {
+      logs::warning("GameStatus: could not parse %s", c_keyItemsFileName.c_str());
+      return;
+   }
+
+   for (xml_node n = doc.child("keyItems").child("keyItem"); n; n = n.next_sibling("keyItem"))
+   {
+      KeyItem item;
+      item.m_id = n.attribute("id").as_string();
+      item.m_kind = n.attribute("kind").as_string();
+      item.m_name = n.attribute("name").as_string(item.m_id.c_str());
+      item.m_issuer = n.attribute("issuer").as_string();
+      item.m_tier = n.attribute("tier").as_int(0);
+      item.m_initial = n.attribute("initial").as_bool(false);
+
+      if (item.m_id.empty())
+      {
+         logs::warning("GameStatus: a key item in %s has no id", c_keyItemsFileName.c_str());
+         continue;
+      }
+
+      if (getKeyItem(item.m_id) != NULL)
+      {
+         logs::warning("GameStatus: key item %s is declared twice", item.m_id.c_str());
+         continue;
+      }
+
+      m_keyItemDefs.push_back(item);
+   }
+}
+
+const KeyItem* GameStatus::getKeyItem(const std::string& id)
+{
+   readKeyItemDefinitions();
+
+   for (size_t i = 0; i < m_keyItemDefs.size(); i++)
+   {
+      if (m_keyItemDefs[i].m_id == id)
+      {
+         return &m_keyItemDefs[i];
+      }
+   }
+
+   return NULL;
+}
+
+KeyItemState GameStatus::getKeyItemState(const std::string& id)
+{
+   std::map<std::string, KeyItemState>::const_iterator it = m_keyItemStates.find(id);
+   if (it != m_keyItemStates.end())
+   {
+      return it->second;
+   }
+
+   const KeyItem* item = getKeyItem(id);
+   return ((item != NULL) && item->m_initial) ? KIS_HELD : KIS_UNKNOWN;
+}
+
+bool GameStatus::setKeyItemState(const std::string& id, KeyItemState state, KeyItemState* previous)
+{
+   const KeyItem* item = getKeyItem(id);
+   if (item == NULL)
+   {
+      return false;
+   }
+
+   if (previous != NULL)
+   {
+      *previous = getKeyItemState(id);
+   }
+
+   KeyItemState def = item->m_initial ? KIS_HELD : KIS_UNKNOWN;
+   if (state == def)
+   {
+      m_keyItemStates.erase(id);
+   }
+   else
+   {
+      m_keyItemStates[id] = state;
+   }
+
+   return true;
+}
+
+std::vector<std::string> GameStatus::getHeldKeyItems(const std::string& kind)
+{
+   readKeyItemDefinitions();
+
+   std::vector<std::string> held;
+   for (size_t i = 0; i < m_keyItemDefs.size(); i++)
+   {
+      const KeyItem& item = m_keyItemDefs[i];
+      if ((kind.empty() || (item.m_kind == kind)) && (getKeyItemState(item.m_id) == KIS_HELD))
+      {
+         held.push_back(item.m_id);
+      }
+   }
+
+   return held;
+}
+
+const char* GameStatus::keyItemStateName(KeyItemState state)
+{
+   switch (state)
+   {
+   case KIS_HELD:    return "held";
+   case KIS_REVOKED: return "revoked";
+   default:          return "unknown";
+   }
+}
+
+bool GameStatus::keyItemStateFromName(const std::string& name, KeyItemState& state)
+{
+   if (name == "held")    { state = KIS_HELD; return true; }
+   if (name == "revoked") { state = KIS_REVOKED; return true; }
+   if (name == "unknown") { state = KIS_UNKNOWN; return true; }
+   return false;
+}
+
+// <keyItems><item id="..." state="held|revoked|unknown"/>...</keyItems>:
+// only the items whose state differs from their default, so items added
+// to key_items.xml later get their default in old saves
+void GameStatus::writeKeyItems(xml_node& root)
+{
+   root.remove_child("keyItems");
+   xml_node items = root.append_child("keyItems");
+
+   for (std::map<std::string, KeyItemState>::const_iterator it = m_keyItemStates.begin(); it != m_keyItemStates.end(); ++it)
+   {
+      xml_node n = items.append_child("item");
+      n.append_attribute("id").set_value(it->first.c_str());
+      n.append_attribute("state").set_value(keyItemStateName(it->second));
+   }
+}
+
+void GameStatus::readKeyItems(xml_node& root)
+{
+   m_keyItemStates.clear();
+
+   for (xml_node n = root.child("keyItems").child("item"); n; n = n.next_sibling("item"))
+   {
+      std::string id = n.attribute("id").as_string();
+      KeyItemState state;
+      if (!id.empty() && keyItemStateFromName(n.attribute("state").as_string(), state))
+      {
+         // Kept even if key_items.xml no longer declares it
+         m_keyItemStates[id] = state;
+      }
+   }
+}
 
 void GameStatus::gameStatusNewGameInit(void)
 {
@@ -145,6 +322,10 @@ void GameStatus::gameStatusNewGameInit(void)
    }
 
    writeLegHealth(root);
+
+   // Every key item at its default (the initial ones held)
+   m_keyItemStates.clear();
+   writeKeyItems(root);
 
    // m_gameStatusDocument.save_file(c_gameStatusFileName.c_str());
    
@@ -246,6 +427,7 @@ void GameStatus::saveGameStatus(void)
    root.attribute("rightKneeJointLevel").set_value(m_rightKneeJointLevel);
    root.attribute("rightFootJointLevel").set_value(m_rightFootJointLevel);
    writeLegHealth(root);
+   writeKeyItems(root);
 
    // m_gameStatusDocument.save_file(c_gameStatusFileName.c_str());
 
@@ -321,6 +503,11 @@ void GameStatus::restoreGameStatus(void)
       xml_parse_result result = m_gameStatusDocument.load_buffer(&bf.data[0], bf.size());
 
       readGameStatus();
+
+      // Not in readGameStatus: c_saveGameStatus calls that at a mission's
+      // first scene, which must not undo items given since the last save
+      xml_node root = m_gameStatusDocument.child("leapfrogGameStatus");
+      readKeyItems(root);
    }
    else
    {

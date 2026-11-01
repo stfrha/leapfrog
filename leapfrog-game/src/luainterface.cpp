@@ -663,6 +663,163 @@ static int c_leapfrogStandsOn(lua_State *L)
    return 1;
 }
 
+// ------------------------------------------------------------------------
+// Key items (data/key_items.xml; GameStatus keeps their states, saved with
+// the game). An id key_items.xml doesn't declare is an error on the
+// message display; the call then returns false (c_itemState and
+// c_itemInfo: nil).
+
+static const KeyItem* keyItemOrError(lua_State *L, const char* function)
+{
+   const char* id = lua_tostring(L, 1);
+   const KeyItem* item = (id != NULL) ? g_GameStatus.getKeyItem(id) : NULL;
+
+   if (item == NULL)
+   {
+      std::string msg = std::string("ERROR: ") + function + ": no key item " +
+         ((id != NULL) ? id : "(none)") + " in key_items.xml";
+      g_MessageDisplay->initMessage(true, msg.c_str(), "ERROR", 0, 0);
+   }
+
+   return item;
+}
+
+// What the HUD log calls an item's kind
+static std::string keyItemKindName(const KeyItem* item)
+{
+   if (item->m_kind == "pass") return "Pass";
+   if (item->m_kind == "solution") return "Landing solution";
+   if (item->m_kind == "route") return "Hyperspace route";
+   if (item->m_kind == "blueprint") return "Blueprint";
+   return "Item";
+}
+
+// Sets an item's state for c_giveItem / c_revokeItem / c_forgetItem, with
+// a HUD log line when it changes what the player holds (unless quiet, the
+// call's second argument)
+static int setKeyItem(lua_State *L, const char* function, KeyItemState state)
+{
+   const KeyItem* item = keyItemOrError(L, function);
+   if (item == NULL)
+   {
+      lua_pushboolean(L, false);
+      return 1;
+   }
+
+   bool quiet = lua_toboolean(L, 2);
+   KeyItemState previous = KIS_UNKNOWN;
+   g_GameStatus.setKeyItemState(item->m_id, state, &previous);
+
+   if (!quiet && (previous != state))
+   {
+      std::string what;
+      if (state == KIS_HELD)
+      {
+         what = " received: ";
+      }
+      else if (previous == KIS_HELD)
+      {
+         what = (state == KIS_REVOKED) ? " revoked: " : " lost: ";
+      }
+
+      if (!what.empty())
+      {
+         g_HeadDownDisplay->logMessage(keyItemKindName(item) + what + item->m_name, state != KIS_HELD);
+      }
+   }
+
+   lua_pushboolean(L, true);
+   return 1;
+}
+
+// c_hasItem(id) -> true if the player holds the item
+static int c_hasItem(lua_State *L)
+{
+   const KeyItem* item = keyItemOrError(L, "c_hasItem");
+   lua_pushboolean(L, (item != NULL) && (g_GameStatus.getKeyItemState(item->m_id) == KIS_HELD));
+   return 1;
+}
+
+// c_itemState(id) -> "unknown", "held" or "revoked"
+static int c_itemState(lua_State *L)
+{
+   const KeyItem* item = keyItemOrError(L, "c_itemState");
+   if (item == NULL)
+   {
+      lua_pushnil(L);
+      return 1;
+   }
+
+   lua_pushstring(L, GameStatus::keyItemStateName(g_GameStatus.getKeyItemState(item->m_id)));
+   return 1;
+}
+
+// c_itemInfo(id) -> { id, kind, name, issuer, tier, initial, state }
+static int c_itemInfo(lua_State *L)
+{
+   const KeyItem* item = keyItemOrError(L, "c_itemInfo");
+   if (item == NULL)
+   {
+      lua_pushnil(L);
+      return 1;
+   }
+
+   lua_newtable(L);
+   lua_pushstring(L, item->m_id.c_str());
+   lua_setfield(L, -2, "id");
+   lua_pushstring(L, item->m_kind.c_str());
+   lua_setfield(L, -2, "kind");
+   lua_pushstring(L, item->m_name.c_str());
+   lua_setfield(L, -2, "name");
+   lua_pushstring(L, item->m_issuer.c_str());
+   lua_setfield(L, -2, "issuer");
+   lua_pushinteger(L, item->m_tier);
+   lua_setfield(L, -2, "tier");
+   lua_pushboolean(L, item->m_initial);
+   lua_setfield(L, -2, "initial");
+   lua_pushstring(L, GameStatus::keyItemStateName(g_GameStatus.getKeyItemState(item->m_id)));
+   lua_setfield(L, -2, "state");
+   return 1;
+}
+
+// c_giveItem(id [, quiet]): the player now holds it (also a revoked one).
+// HUD: "<Kind> received: <name>".
+static int c_giveItem(lua_State *L)
+{
+   return setKeyItem(L, "c_giveItem", KIS_HELD);
+}
+
+// c_revokeItem(id [, quiet]): taken away by its issuer, and marked so (also
+// one never held, e.g. a blacklisting). HUD: "<Kind> revoked: <name>" if
+// it was held.
+static int c_revokeItem(lua_State *L)
+{
+   return setKeyItem(L, "c_revokeItem", KIS_REVOKED);
+}
+
+// c_forgetItem(id [, quiet]): lost, back to unknown (knowledge: a wiped nav
+// computer, stolen data). HUD: "<Kind> lost: <name>" if it was held.
+static int c_forgetItem(lua_State *L)
+{
+   return setKeyItem(L, "c_forgetItem", KIS_UNKNOWN);
+}
+
+// c_itemsHeld([kind]) -> array of the held items' ids (of that kind, or
+// all), in key_items.xml order
+static int c_itemsHeld(lua_State *L)
+{
+   const char* kind = lua_tostring(L, 1);
+   std::vector<std::string> held = g_GameStatus.getHeldKeyItems((kind != NULL) ? kind : "");
+
+   lua_newtable(L);
+   for (size_t i = 0; i < held.size(); i++)
+   {
+      lua_pushstring(L, held[i].c_str());
+      lua_rawseti(L, -2, (lua_Integer)(i + 1));
+   }
+   return 1;
+}
+
 // c_setLandingSiteShown(name, shown)
 // Shows (true) or hides (false) a landing site of the orbit scene's planet
 // by name (<landingSite name="..."> in the planet's surface file). A site
@@ -902,6 +1059,13 @@ void LuaInterface::initLuaInterface(void)
    lua_register(m_L, "c_leapfrogStandsOn", c_leapfrogStandsOn);
    lua_register(m_L, "c_lastReentry", c_lastReentry);
    lua_register(m_L, "c_setLandingSiteShown", c_setLandingSiteShown);
+   lua_register(m_L, "c_hasItem", c_hasItem);
+   lua_register(m_L, "c_itemState", c_itemState);
+   lua_register(m_L, "c_itemInfo", c_itemInfo);
+   lua_register(m_L, "c_giveItem", c_giveItem);
+   lua_register(m_L, "c_revokeItem", c_revokeItem);
+   lua_register(m_L, "c_forgetItem", c_forgetItem);
+   lua_register(m_L, "c_itemsHeld", c_itemsHeld);
    lua_register(m_L, "c_loadLatestSave", c_loadLatestSave);
 
 }

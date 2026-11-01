@@ -90,11 +90,55 @@ local function legHealthDefaults()
    return { 1, 1, 1, 1, 1, 1 }
 end
 
+-- Key items: GameStatus keeps the states that differ from an item's
+-- default (held if initial, else unknown); data/key_items.xml declares
+-- them (read once): { id, kind, name, issuer, tier, initial } in file order
+function Engine:keyItemDefs()
+   if not self.keyItemList then
+      self.keyItemList = {}
+      self.keyItemById = {}
+      local root = self:readXml("key_items.xml")
+      for _, c in ipairs(root and root.children or {}) do
+         if c.tag == "keyItem" and c.attr.id and c.attr.id ~= "" then
+            local item = { id = c.attr.id, kind = c.attr.kind or "", name = c.attr.name or c.attr.id,
+               issuer = c.attr.issuer or "", tier = tonumber(c.attr.tier or "0") or 0,
+               initial = (c.attr.initial == "true" or c.attr.initial == "1") }
+            if self.keyItemById[item.id] then
+               self:problem("key item " .. item.id .. " is declared twice in key_items.xml")
+            else
+               self.keyItemList[#self.keyItemList + 1] = item
+               self.keyItemById[item.id] = item
+            end
+         end
+      end
+   end
+   return self.keyItemList, self.keyItemById
+end
+
+function Engine:keyItemState(id)
+   local s = self.status.items[id]
+   if s then return s end
+   local _, byId = self:keyItemDefs()
+   return (byId[id] and byId[id].initial) and "held" or "unknown"
+end
+
+function Engine:setKeyItemState(id, state)
+   local _, byId = self:keyItemDefs()
+   local default = (byId[id] and byId[id].initial) and "held" or "unknown"
+   self.status.items[id] = (state ~= default) and state or nil
+end
+
+local function copyTable(t)
+   local c = {}
+   for k, v in pairs(t or {}) do c[k] = v end
+   return c
+end
+
 function Engine:resetGameStatus()
    self.status = {
       scene = "not_defined", mission = 0, state = 0, sceneType = 0,
       exitScene = "not_defined", exitType = -1, exitParam = -1,
-      legs = legHealthDefaults(),
+      legs = legHealthDefaults(), items = {},
    }
    -- ObjectResources: shared with the Leapfrog's properties 5..9
    self.resources = { ammo = 1, shield = 1, fuel = 1, credits = 1, damage = 1 }
@@ -108,6 +152,7 @@ function Engine:newGameInit()
    s.sceneType, s.mission, s.state = 0, 0, 0
    s.exitType, s.exitParam = -1, -1
    s.legs = legHealthDefaults()
+   s.items = {}
    self:saveGameStatus()
 end
 
@@ -117,7 +162,7 @@ function Engine:saveGameStatus()
    self.file = {
       scene = s.scene, mission = s.mission, state = s.state, sceneType = s.sceneType,
       exitScene = s.exitScene, exitType = s.exitType, exitParam = s.exitParam,
-      legs = { table.unpack(s.legs) },
+      legs = { table.unpack(s.legs) }, items = copyTable(s.items),
       ammo = r.ammo, shield = r.shield, fuel = r.fuel, credits = r.credits, damage = r.damage,
    }
    self:note("SAVE", string.format("scene %s, mission %d, state %d, exit %d/%d",
@@ -136,10 +181,12 @@ function Engine:readGameStatus()
    s.legs = { table.unpack(f.legs) }
 end
 
--- GameStatus::restoreGameStatus
+-- GameStatus::restoreGameStatus (key items are read here, not in
+-- readGameStatus: c_saveGameStatus calls that)
 function Engine:restoreGameStatus()
    if self.file then
       self:readGameStatus()
+      self.status.items = copyTable(self.file.items)
    else
       self:newGameInit()
    end
@@ -1093,6 +1140,71 @@ function Engine:installApi(env)
       local s = e.status
       s.scene, s.mission, s.state, s.sceneType = scene, mission, state, sceneType
       s.exitScene, s.exitType, s.exitParam = "", -1, -1
+   end
+
+   -- Key items (luainterface.cpp): an id key_items.xml doesn't declare is a
+   -- problem (the game shows an ERROR message)
+   local kindNames = { pass = "Pass", solution = "Landing solution", route = "Hyperspace route",
+      blueprint = "Blueprint" }
+   local function keyItem(fn, id)
+      local _, byId = e:keyItemDefs()
+      local item = byId[id]
+      if not item then
+         e:problem(fn .. ": no key item " .. tostring(id) .. " in key_items.xml")
+      end
+      return item
+   end
+   local function setKeyItem(fn, id, quiet, state)
+      local item = keyItem(fn, id)
+      if not item then return false end
+      local previous = e:keyItemState(item.id)
+      e:setKeyItemState(item.id, state)
+      e:note("ITEM", item.id .. ": " .. previous .. " -> " .. state)
+      if not quiet and previous ~= state then
+         local what
+         if state == "held" then
+            what = " received: "
+         elseif previous == "held" then
+            what = (state == "revoked") and " revoked: " or " lost: "
+         end
+         if what then
+            e.hud[#e.hud + 1] = { text = (kindNames[item.kind] or "Item") .. what .. item.name,
+               critical = state ~= "held" }
+         end
+      end
+      return true
+   end
+
+   api.c_hasItem = function(id)
+      local item = keyItem("c_hasItem", id)
+      return item ~= nil and e:keyItemState(item.id) == "held"
+   end
+
+   api.c_itemState = function(id)
+      local item = keyItem("c_itemState", id)
+      return item and e:keyItemState(item.id) or nil
+   end
+
+   api.c_itemInfo = function(id)
+      local item = keyItem("c_itemInfo", id)
+      if not item then return nil end
+      return { id = item.id, kind = item.kind, name = item.name, issuer = item.issuer,
+         tier = item.tier, initial = item.initial, state = e:keyItemState(item.id) }
+   end
+
+   api.c_giveItem = function(id, quiet) return setKeyItem("c_giveItem", id, quiet, "held") end
+   api.c_revokeItem = function(id, quiet) return setKeyItem("c_revokeItem", id, quiet, "revoked") end
+   api.c_forgetItem = function(id, quiet) return setKeyItem("c_forgetItem", id, quiet, "unknown") end
+
+   api.c_itemsHeld = function(kind)
+      local list = e:keyItemDefs()
+      local held = {}
+      for _, item in ipairs(list) do
+         if (kind == nil or kind == item.kind) and e:keyItemState(item.id) == "held" then
+            held[#held + 1] = item.id
+         end
+      end
+      return held
    end
 
    api.c_askQuestion = function(id, text, sender, flightText)

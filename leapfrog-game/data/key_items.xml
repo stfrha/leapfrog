@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Key items: things the player holds that unlock progress, never used up.
+     Each is unknown, held or revoked; the saved game keeps the state of
+     those that differ from their default (held if initial="true", else
+     unknown). Lua: c_hasItem, c_itemState, c_itemInfo, c_giveItem,
+     c_revokeItem, c_forgetItem, c_itemsHeld.
+
+     id       for the scripts and data files (unique)
+     kind     pass       a faction's permission for services (fuel, repair,
+                         upgrades, space launch) at its pads and stations;
+                         typically revoked by its issuer
+              solution   a landing site's re-entry solution
+              route      a hyperspace route to another world
+              blueprint  needed for an upgrade
+     name     shown to the player (default: the id)
+     issuer   who issues it (optional; free text for now, e.g. a faction)
+     tier     for passes: higher tiers allow more (optional, default 0)
+     initial  "true": held from the start of a game
+
+     Examples of what may come:
+     <keyItem id="orbPadPass" kind="pass" name="Orb pad pass" issuer="miners" tier="1"/>
+     <keyItem id="routeToNextWorld" kind="route" name="Route to ..."/>
+     <keyItem id="shieldBlueprint" kind="blueprint" name="Shield booster blueprint"/>
+-->
+<keyItems>
+   <!-- The mining planet's landing sites (mining_planet_surface.xml) -->
+   <keyItem id="goldMineSolution" kind="solution" name="Claude Mine solution" initial="true"/>
+   <keyItem id="alphaCitySolution" kind="solution" name="Village solution" initial="true"/>
+</keyItems>

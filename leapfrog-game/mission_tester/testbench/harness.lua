@@ -211,6 +211,36 @@ function T:reentry(outcome, siteIndex, distance)
    step(self, function() self.engine:endReentry(outcome, siteIndex, distance) end)
 end
 
+-- Declares a key item in this test's copy of key_items.xml (the real file
+-- is not changed): { id, kind, name, issuer, tier, initial }
+function T:declareKeyItem(def)
+   step(self, function()
+      local _, byId = self.engine:keyItemDefs()
+      local list = self.engine.keyItemList
+      local item = { id = def.id, kind = def.kind or "pass", name = def.name or def.id,
+         issuer = def.issuer or "", tier = def.tier or 0, initial = def.initial and true or false }
+      if byId[item.id] then
+         error("declareKeyItem: " .. item.id .. " is already declared", 0)
+      end
+      list[#list + 1] = item
+      byId[item.id] = item
+   end)
+end
+
+-- A script gives, revokes or forgets a key item (c_giveItem, c_revokeItem,
+-- c_forgetItem), as a mission would
+function T:giveItem(id, quiet)
+   step(self, function() self.engine.env.c_giveItem(id, quiet) end)
+end
+
+function T:revokeItem(id, quiet)
+   step(self, function() self.engine.env.c_revokeItem(id, quiet) end)
+end
+
+function T:forgetItem(id, quiet)
+   step(self, function() self.engine.env.c_forgetItem(id, quiet) end)
+end
+
 -- Marks a landing site hidden="true" in this test's copy of the planet's
 -- surface file (the real file is not changed); before the orbit scene
 -- starts
@@ -535,6 +565,29 @@ function T:expectListening(object, eventId, count)
    local n = self.engine:listenerCount(object, eventId)
    if n ~= (count or 1) then
       self:fail(string.format("%s %s: expected %d listener(s), got %d", object, eventId, count or 1, n), 2)
+   end
+   pass(self)
+end
+
+-- A key item's state now ("unknown", "held", "revoked")
+function T:expectItem(id, state)
+   local s = self.engine:keyItemState(id)
+   if s ~= state then
+      self:fail(string.format("key item %s: expected %s, it is %s", id, state, s), 2)
+   end
+   pass(self)
+end
+
+-- A key item's state in the save file
+function T:expectSavedItem(id, state)
+   local f = self.engine.file
+   if not f then
+      self:fail("no save file", 2)
+   end
+   local _, byId = self.engine:keyItemDefs()
+   local s = (f.items or {})[id] or ((byId[id] and byId[id].initial) and "held" or "unknown")
+   if s ~= state then
+      self:fail(string.format("saved key item %s: expected %s, it is %s", id, state, s), 2)
    end
    pass(self)
 end
