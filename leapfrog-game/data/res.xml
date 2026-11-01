@@ -51,9 +51,6 @@
 		<image file="ls_right_foot_glider.png" trim="false" extend="false"/>
 	</atlas>	
 	<atlas clamp2edge="false"> 
-		<image file="planet_rock.png" trim="false" extend="false"/>
-	</atlas>	
-	<atlas clamp2edge="false"> 
 		<image file="scene_boundary.png" trim="false" extend="false"/>
 	</atlas>	
 	<atlas clamp2edge="false"> 
