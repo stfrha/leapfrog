@@ -129,6 +129,34 @@ end
 
 
 -- ------------------------------------------------------------------------
+-- The bad mine: a hidden landing site (badMine in
+-- mining_planet_surface.xml, hidden="true"). The docking station in deep
+-- space hands over its re-entry solution (the key item badMineSolution)
+-- the first time the Leapfrog docks; from then on the orbit shows the
+-- site. A demonstration of key items and hidden sites, in every mission
+-- and in free play.
+
+local BadMine = {
+   site = "badMine",
+   solution = "badMineSolution",
+   station = "dockingStation1",
+}
+mining.BadMine = BadMine
+
+local function dockedAtStation()
+   -- Once: not again while held, and not if it was taken away
+   if c_itemState(BadMine.solution) ~= "unknown" then
+      return
+   end
+
+   c_addDialogMessage("Welcome aboard. A prospector left this with us before he went quiet: "
+      .. "a re-entry solution for an old mine nobody works any more.", "Station", true, 30, 0)
+   c_addDialogMessage("Take it. Watch yourself down there.", "Station", true, 90, 0)
+   c_giveItem(BadMine.solution)
+end
+
+
+-- ------------------------------------------------------------------------
 -- Scene setup, before the mission's
 
 mining.setupScene = function()
@@ -157,7 +185,14 @@ mining.setupScene = function()
       listen("siloLandingPad", "LpLL")
    end
 
+   if currentScene == "orbit_scene.xml" then
+      -- Known sites only: the bad mine once its solution is held
+      c_setLandingSiteShown(BadMine.site, c_hasItem(BadMine.solution))
+   end
+
    if currentScene == "deep_space_scene.xml" then
+      listen(BadMine.station, "DsDk")
+
       if bouncedBack or swarmTimer >= 0 then
          -- Back from a bounce: a breather before the swarm comes (again
          -- at a setup before it has started)
@@ -186,6 +221,12 @@ mining.eventHandler = function(eventId, actorName, parameter1)
    if currentScene == "home_scene.xml" then
       if actorName == "siloLandingPad" and eventId == "LpLL" then
          offerLegRepair()
+      end
+   end
+
+   if currentScene == "deep_space_scene.xml" then
+      if actorName == BadMine.station and eventId == "DsDk" then
+         dockedAtStation()
       end
    end
 

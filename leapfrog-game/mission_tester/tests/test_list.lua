@@ -11,4 +11,5 @@ return {
    "reentry.lua",
    "landing_sites.lua",
    "key_items.lua",
+   "bad_mine.lua",
 }
