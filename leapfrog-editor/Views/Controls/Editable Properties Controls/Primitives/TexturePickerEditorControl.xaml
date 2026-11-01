@@ -28,7 +28,18 @@
          FontSize="10" 
          Height="15"
          Text="{Binding DisplayText, ElementName=root}"
-      />
+         ToolTip="{Binding ValueToolTip, ElementName=root}" >
+         <TextBox.Style>
+            <Style TargetType="TextBox">
+               <Style.Triggers>
+                  <!-- The game can't load this texture where the edited file is used -->
+                  <DataTrigger Binding="{Binding ValueUnavailable, ElementName=root}" Value="True">
+                     <Setter Property="Foreground" Value="Red" />
+                  </DataTrigger>
+               </Style.Triggers>
+            </Style>
+         </TextBox.Style>
+      </TextBox>
       <ToggleButton Name="button" Grid.Column="2" Margin="1" Height="13" FontSize="8" Content="..." IsTabStop="False" >
          <!--<ToggleButton.Template>
             <ControlTemplate TargetType="ToggleButton">
@@ -36,28 +47,51 @@
             </ControlTemplate>
          </ToggleButton.Template>-->
       </ToggleButton>
-      <Popup IsOpen="{Binding IsChecked, ElementName=button}" StaysOpen="False">
+      <Popup IsOpen="{Binding IsChecked, ElementName=button}" StaysOpen="False" Opened="Popup_Opened">
          <Border Width="400" Height="316" Background="LightYellow">
             <DockPanel>
-            <!-- Only where a texture can be left out (the polygon borders) -->
-            <Button DockPanel.Dock="Top" Margin="4,4,4,2" HorizontalAlignment="Left" Padding="8,1" FontSize="10"
-               Content="No texture"
-               ToolTip="Use no texture here"
-               Visibility="{Binding NoneVisibility, ElementName=root}"
-               Click="NoTexture_Click" />
+            <!-- Which resource files the edited file has, i.e. which textures it can use -->
+            <TextBlock DockPanel.Dock="Top" Margin="4,4,4,0" FontSize="10" TextWrapping="Wrap"
+               Text="{Binding ContextText, ElementName=root}" />
+            <DockPanel DockPanel.Dock="Top" Margin="4,2,4,2" LastChildFill="False">
+               <!-- Only where a texture can be left out (the polygon borders) -->
+               <Button DockPanel.Dock="Left" Padding="8,1" FontSize="10"
+                  Content="No texture"
+                  ToolTip="Use no texture here"
+                  Visibility="{Binding NoneVisibility, ElementName=root}"
+                  Click="NoTexture_Click" />
+               <CheckBox x:Name="showUnavailable" DockPanel.Dock="Right" VerticalAlignment="Center" FontSize="10"
+                  Content="Show unavailable"
+                  ToolTip="Also list (greyed out) the textures the game can't load here"
+                  Checked="ShowUnavailable_Changed"
+                  Unchecked="ShowUnavailable_Changed" />
+            </DockPanel>
             <ScrollViewer>
                <ListView 
+                  x:Name="list"
                   ScrollViewer.HorizontalScrollBarVisibility="Disabled"
-                  ItemsSource="{Binding DataContext.Textures, RelativeSource={RelativeSource AncestorType={x:Type Window}}}"
                   SelectionMode="Single"
-                  SelectedItem="{Binding MyValue, ElementName=root}" >
+                  SelectionChanged="List_SelectionChanged" >
+                  <ListView.ItemContainerStyle>
+                     <Style TargetType="ListViewItem">
+                        <!-- Textures the game can't load here can't be picked -->
+                        <Setter Property="IsEnabled" Value="{Binding Available}" />
+                        <Setter Property="ToolTip" Value="{Binding ToolTip}" />
+                        <Setter Property="ToolTipService.ShowOnDisabled" Value="True" />
+                        <Style.Triggers>
+                           <Trigger Property="IsEnabled" Value="False">
+                              <Setter Property="Opacity" Value="0.35" />
+                           </Trigger>
+                        </Style.Triggers>
+                     </Style>
+                  </ListView.ItemContainerStyle>
                   <ListView.ItemTemplate>
                      <DataTemplate>
                         <Border>
                            <StackPanel>
                               <Image Width="90" Height="90" Stretch="Uniform" 
-                           Source="{Binding Converter={StaticResource TexturePathValueConverter}}" />
-                              <TextBlock FontSize="8" Text="{Binding}" HorizontalAlignment="Center" />
+                           Source="{Binding Name, Converter={StaticResource TexturePathValueConverter}}" />
+                              <TextBlock FontSize="8" Text="{Binding Name}" HorizontalAlignment="Center" />
                            </StackPanel>
                         </Border>
                      </DataTemplate>

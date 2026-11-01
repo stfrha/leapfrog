@@ -213,6 +213,83 @@ namespace LeapfrogEditor
          }
       }
 
+      // The file the edited object belongs to (an opened file, or the file
+      // of a file-referenced child), and that file's top object; null if
+      // nothing is edited.
+      private string EditedFile(out CompoundObject top)
+      {
+         top = null;
+         for (CompoundObjectViewModel vm = EditedCpVm; vm != null; vm = vm.ParentVm)
+         {
+            FileCOViewModel fvm = vm as FileCOViewModel;
+            if (fvm != null)
+            {
+               top = fvm.ModelObject;
+               return fvm.FileName;
+            }
+
+            ChildCOViewModel cvm = vm as ChildCOViewModel;
+            if ((cvm != null) && (cvm.TreeParent is ChildObjectViewModel) &&
+               (cvm.File ?? "").EndsWith(".xml", StringComparison.OrdinalIgnoreCase) &&
+               (cvm.File != "undef_file.xml"))
+            {
+               top = cvm.ModelObject;
+               return cvm.File;
+            }
+         }
+         return null;
+      }
+
+      // Which resource files the game will have loaded for the edited
+      // object, i.e. which textures it can use (see TextureAvailability).
+      // null if nothing is edited.
+      public TextureContext CurrentTextureContext()
+      {
+         CompoundObject top;
+         string file = EditedFile(out top);
+         if (file == null)
+         {
+            return null;
+         }
+
+         return TextureAvailability.ForFile(System.IO.Path.GetFileName(file), (top != null) ? top.Resources : null);
+      }
+
+      // Warns about textures in a file (and the files it includes) that the
+      // game can't load where the file is used. when: "opened" or "saved".
+      public void ReportTextureProblems(FileCOViewModel fvm, string when)
+      {
+         if (fvm == null)
+         {
+            return;
+         }
+
+         TextureContext ctx = TextureAvailability.ForFile(fvm.FileName, fvm.ModelObject.Resources);
+         List<TextureProblem> problems = TextureAvailability.Check(ctx);
+         if (problems.Count == 0)
+         {
+            return;
+         }
+
+         const int maxLines = 25;
+         StringBuilder sb = new StringBuilder();
+         sb.AppendLine(fvm.FileName + " (" + when + ") can use textures from " + ctx.Description + ".");
+         sb.AppendLine();
+         sb.AppendLine("The game can't load these (it stops with an error when it meets one):");
+         sb.AppendLine();
+         foreach (TextureProblem p in problems.Take(maxLines))
+         {
+            string where = string.Equals(p.File, fvm.FileName, StringComparison.OrdinalIgnoreCase) ? "" : " in " + p.File;
+            sb.AppendLine("   " + p.Texture + where + ": " + p.Why);
+         }
+         if (problems.Count > maxLines)
+         {
+            sb.AppendLine("   ... and " + (problems.Count - maxLines) + " more");
+         }
+
+         MessageBox.Show(sb.ToString(), "Textures not available here", MessageBoxButton.OK, MessageBoxImage.Warning);
+      }
+
       // Updates the texture list and redraws the scene, so new and
       // re-rendered textures show up.
       public void RefreshTexturesNow()
@@ -680,6 +757,8 @@ namespace LeapfrogEditor
 
             UndoRebaseline(fcovm);
 
+            ReportTextureProblems(fcovm, "saved");
+
             // Now, since we potentially have changed the contents of this file,
             // lets look if any object has this object as a child, in which case we 
             // update that child (by reloading it).
@@ -746,6 +825,8 @@ namespace LeapfrogEditor
 
             UndoRebaseline(fvm);
 
+            ReportTextureProblems(fvm, "saved");
+
             // Now, since we potentially have changed the contents of this file,
             // lets look if any object has this object as a child, in which case we 
             // update that child (by reloading it).
@@ -786,6 +867,8 @@ namespace LeapfrogEditor
                fvm.ModelObject.WriteToFile(fvm.FullPathFileName);
 
                UndoRebaseline(fvm);
+
+               ReportTextureProblems(fvm, "saved");
             }
          }
       }
@@ -3961,6 +4044,11 @@ namespace LeapfrogEditor
          Rect bib = EditedCpVm.BoundingBox;
          ((MainWindow)System.Windows.Application.Current.MainWindow).ShowThisRect(bib);
 
+         if (fcovm == null)
+         {
+            // Newly opened
+            ReportTextureProblems(EditedCpVm as FileCOViewModel, "opened");
+         }
       }
 
       #endregion

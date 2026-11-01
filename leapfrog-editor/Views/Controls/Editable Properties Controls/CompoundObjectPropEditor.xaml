@@ -16,6 +16,11 @@
             <local:HeadlineControl Headline="{Binding Headline, ElementName=root}" />
             <local:StringEditorControl Headline="Name" MyValue="{Binding Name, Mode=TwoWay}" />
             <local:BoolEditorControl Headline="Needs Group Index" MyValue="{Binding NeedsGroupIndex, Mode=TwoWay}" />
+            <local:StringEditorControl 
+               Headline="Resources" 
+               MyValue="{Binding Resources, Mode=TwoWay}"
+               Visibility="{Binding IsFileTopObject, Converter={StaticResource BoolToVisibilityValueConverter}}"
+               ToolTip="Resource files the game has loaded wherever Lua adds this object, e.g. res_mining.xml (res.xml is always loaded). Limits the texture picker. Leave empty to work it out from the scenes that include this file. Scenes get theirs from scene_resources.xml, which wins." />
             <local:StringListSelectionEditorControl 
                Headline="Behaviour" 
                Strings="{Binding Behaviours}"

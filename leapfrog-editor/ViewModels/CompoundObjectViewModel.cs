@@ -140,6 +140,25 @@ namespace LeapfrogEditor
          }
       }
 
+      // Resource files the game has loaded where this file's object is
+      // used (see TextureAvailability). Only meaningful on a file's top
+      // object.
+      public string Resources
+      {
+         get { return _modelObject.Resources ?? ""; }
+         set
+         {
+            _modelObject.Resources = value;
+            OnPropertyChanged("Resources");
+         }
+      }
+
+      // The top object of an opened file (where Resources is edited)
+      public bool IsFileTopObject
+      {
+         get { return this is FileCOViewModel; }
+      }
+
       public CoBehaviourViewModel Behaviour
       {
          get { return _behaviour; }

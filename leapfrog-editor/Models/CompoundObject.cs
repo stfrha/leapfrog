@@ -20,6 +20,12 @@ namespace LeapfrogEditor
 
       private bool _needsGroupIndex = false;
 
+      // Resource files (besides res.xml) the game will have loaded when this
+      // object is shown, e.g. "res_mining.xml". Only read on a file's top
+      // object, by the editor (TextureAvailability); the game ignores it.
+      // null = not set (not written to the file).
+      private string _resources = null;
+
       //Behaviour
       private CoBehaviour _behaviour = new CoBehaviour();
 
@@ -57,6 +63,13 @@ namespace LeapfrogEditor
       {
          get { return _needsGroupIndex; }
          set { _needsGroupIndex = value; }
+      }
+
+      [XmlAttribute("resources")]
+      public string Resources
+      {
+         get { return _resources; }
+         set { _resources = string.IsNullOrWhiteSpace(value) ? null : value.Trim(); }
       }
 
       [XmlElement("behaviour")]

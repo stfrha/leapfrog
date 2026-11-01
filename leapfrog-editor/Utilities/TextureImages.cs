@@ -138,6 +138,24 @@ namespace LeapfrogEditor
          get { return _duplicates; }
       }
 
+      // True if the texture's PNG is only in editor_images (never shipped)
+      public static bool IsEditorOnly(string texture)
+      {
+         if (string.IsNullOrEmpty(texture))
+         {
+            return false;
+         }
+
+         if (_index == null)
+         {
+            RebuildIndex();
+         }
+
+         string f;
+         return _index.TryGetValue(texture, out f) &&
+            f.StartsWith(FullEditorImageDirectory, StringComparison.OrdinalIgnoreCase);
+      }
+
       // Path of a texture's PNG, wherever it is. (If it can't be found,
       // the path it would have directly in data\images.)
       public static string FullFileName(string texture)

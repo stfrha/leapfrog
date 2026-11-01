@@ -20,6 +20,9 @@ namespace LeapfrogEditor
    //
    // oxygine ignores attributes it doesn't know, so ppu is only read here.
    // The files are re-read when any of them has changed.
+   //
+   // Also which resource files list each texture (ResourceFilesOf), used by
+   // TextureAvailability to tell which textures a scene can load.
    public static class TextureDensity
    {
       private class Info
@@ -30,6 +33,7 @@ namespace LeapfrogEditor
       }
 
       private static Dictionary<string, Info> _infos = null;
+      private static Dictionary<string, List<string>> _resFiles = null;
       private static string _stamp = null;
 
       public static string FullDataDirectory
@@ -72,6 +76,7 @@ namespace LeapfrogEditor
          }
 
          Dictionary<string, Info> infos = new Dictionary<string, Info>(StringComparer.OrdinalIgnoreCase);
+         Dictionary<string, List<string>> resFiles = new Dictionary<string, List<string>>(StringComparer.OrdinalIgnoreCase);
          foreach (string f in files)
          {
             XDocument doc;
@@ -97,6 +102,19 @@ namespace LeapfrogEditor
                }
 
                string name = Path.GetFileNameWithoutExtension(file);
+
+               List<string> inFiles;
+               if (!resFiles.TryGetValue(name, out inFiles))
+               {
+                  inFiles = new List<string>();
+                  resFiles[name] = inFiles;
+               }
+               string resName = Path.GetFileName(f);
+               if (!inFiles.Contains(resName, StringComparer.OrdinalIgnoreCase))
+               {
+                  inFiles.Add(resName);
+               }
+
                if (infos.ContainsKey(name))
                {
                   continue;
@@ -112,6 +130,7 @@ namespace LeapfrogEditor
          }
 
          _infos = infos;
+         _resFiles = resFiles;
          _stamp = stamp;
       }
 
@@ -151,6 +170,19 @@ namespace LeapfrogEditor
       {
          Info info = Lookup(texture);
          return (info != null) ? info.Ppu : GlobalConstants.TexturePixelsPerUnit;
+      }
+
+      // The resource files (file names, e.g. "res.xml", "res_mining.xml")
+      // that list a texture, in the order above; empty if none does.
+      public static List<string> ResourceFilesOf(string texture)
+      {
+         Refresh();
+         List<string> l;
+         if (!string.IsNullOrEmpty(texture) && _resFiles.TryGetValue(texture, out l))
+         {
+            return l;
+         }
+         return new List<string>();
       }
 
       // Animation frames across and down (1, 1 for a still image)

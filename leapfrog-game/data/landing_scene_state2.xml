@@ -1,6 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <compoundObject
-  needsGroupIndex="false">
+  needsGroupIndex="false"
+  resources="res_mining.xml">
   <dynamicBox
     name="plank"
     texture="crater_rock"

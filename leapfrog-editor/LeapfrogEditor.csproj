@@ -70,6 +70,7 @@
     <Compile Include="Utilities\CoordinateTransformations.cs" />
     <Compile Include="Utilities\GlobalDataDirectory.cs" />
     <Compile Include="Utilities\TextureDensity.cs" />
+    <Compile Include="Utilities\TextureAvailability.cs" />
     <Compile Include="Utilities\TextureTint.cs" />
     <Compile Include="Utilities\EditorClipboard.cs" />
     <Compile Include="Utilities\EditorZoom.cs" />
