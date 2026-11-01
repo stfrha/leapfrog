@@ -32,6 +32,12 @@
 	<atlas>
 		<image file="cloud.png" trim="false" extend="false"/>
 	</atlas>
+   <set path = "images/mining" />
+	<atlas>
+      <image file="night_city.png" trim="false" extend="false"/>
+      <image file="surface_night_city.png" trim="false" extend="false"/>
+      <image file="night_road.png" trim="false" extend="false"/>
+	</atlas>
 	<set path = "images/mining/ambient" />
 	<atlas>
 		<image file="amb_hut.png" rows="3" cols="2" ppu="14" trim="false"/>
@@ -93,5 +99,4 @@
 	<atlas clamp2edge="false">
 		<image file="planet_rock.png" trim="false" extend="false"/>
 	</atlas>
-	<set path = "images/mining" />
 </resources>

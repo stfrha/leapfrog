@@ -3,10 +3,114 @@
   needsGroupIndex="false">
   <spriteBox
     name="noName"
-    texture="default"
-    posX="677.85265713526314"
-    posY="517.86180665832171"
+    texture="night_city"
+    posX="-90.2752772939075"
+    posY="261.83991636383394"
+    angle="34"
+    zLevel="0"
+    collisionEntity="notApplicable"
+    collisionCategory="1"
+    collisionMask="65534"
+    width="150"
+    height="150"
+    parallaxAmount="0" />
+  <spriteBox
+    name="noName_8"
+    texture="surface_night_city"
+    posX="6.5372841365081058"
+    posY="13.209413940101513"
     angle="0"
+    zLevel="0"
+    collisionEntity="notApplicable"
+    collisionCategory="1"
+    collisionMask="65534"
+    width="50"
+    height="25"
+    parallaxAmount="0" />
+  <spriteBox
+    name="noName_9"
+    texture="surface_night_city"
+    posX="-322.22826492981972"
+    posY="62.872136730726652"
+    angle="0"
+    zLevel="0"
+    collisionEntity="notApplicable"
+    collisionCategory="1"
+    collisionMask="65534"
+    width="250"
+    height="125"
+    parallaxAmount="0" />
+  <spriteBox
+    name="noName"
+    texture="night_road"
+    posX="-208.23838412269879"
+    posY="154.48097081992387"
+    angle="36"
+    zLevel="0"
+    collisionEntity="notApplicable"
+    collisionCategory="1"
+    collisionMask="65534"
+    width="200"
+    height="28"
+    parallaxAmount="0" />
+  <spriteBox
+    name="noName_2"
+    texture="night_road"
+    posX="-416.56450955423088"
+    posY="103.85966931319672"
+    angle="-39"
+    zLevel="0"
+    collisionEntity="notApplicable"
+    collisionCategory="1"
+    collisionMask="65534"
+    width="200"
+    height="28"
+    parallaxAmount="0" />
+  <spriteBox
+    name="noName_3"
+    texture="night_road"
+    posX="-382.9792229776524"
+    posY="267.16204100076448"
+    angle="-74"
+    zLevel="0"
+    collisionEntity="notApplicable"
+    collisionCategory="1"
+    collisionMask="65534"
+    width="300"
+    height="37.5"
+    parallaxAmount="0" />
+  <spriteBox
+    name="noName_4"
+    texture="night_city"
+    posX="333.74996431634736"
+    posY="297.22333401664673"
+    angle="109"
+    zLevel="0"
+    collisionEntity="notApplicable"
+    collisionCategory="1"
+    collisionMask="65534"
+    width="35"
+    height="35"
+    parallaxAmount="0" />
+  <spriteBox
+    name="noName_5"
+    texture="night_city"
+    posX="421.91753486680227"
+    posY="291.27101095931175"
+    angle="182"
+    zLevel="0"
+    collisionEntity="notApplicable"
+    collisionCategory="1"
+    collisionMask="65534"
+    width="200"
+    height="200"
+    parallaxAmount="0" />
+  <spriteBox
+    name="noName_6"
+    texture="night_city"
+    posX="974.83490607578688"
+    posY="191.88795271007439"
+    angle="67"
     zLevel="0"
     collisionEntity="notApplicable"
     collisionCategory="1"
@@ -16,563 +120,946 @@
     parallaxAmount="0" />
   <spriteBox
     name="noName_7"
-    texture="default"
-    posX="4.2116367265139161"
-    posY="6.0827043599729222"
+    texture="night_road"
+    posX="82.780247064730929"
+    posY="265.56491460106326"
+    angle="5"
+    zLevel="0"
+    collisionEntity="notApplicable"
+    collisionCategory="1"
+    collisionMask="65534"
+    width="200"
+    height="28"
+    parallaxAmount="0" />
+  <spriteBox
+    name="noName_10"
+    texture="night_road"
+    posX="249.03844900927334"
+    posY="285.29739058620544"
+    angle="186"
+    zLevel="0"
+    collisionEntity="notApplicable"
+    collisionCategory="1"
+    collisionMask="65534"
+    width="200"
+    height="28"
+    parallaxAmount="0" />
+  <spriteBox
+    name="noName_11"
+    texture="night_road"
+    posX="861.59675275445829"
+    posY="82.230332425569486"
+    angle="36"
+    zLevel="0"
+    collisionEntity="notApplicable"
+    collisionCategory="1"
+    collisionMask="65534"
+    width="200"
+    height="28"
+    parallaxAmount="0" />
+  <spriteBox
+    name="noName_12"
+    texture="surface_night_city"
+    posX="777.96314062349188"
+    posY="12.070993930040913"
     angle="0"
     zLevel="0"
     collisionEntity="notApplicable"
     collisionCategory="1"
     collisionMask="65534"
-    width="100"
-    height="10"
+    width="50"
+    height="25"
     parallaxAmount="0" />
-  <spritePolygon
-    name="noName"
-    texture="grotto"
-    posX="-466.47909298602622"
-    posY="21.556816922242888"
-    angle="0"
-    zLevel="4"
+  <spriteBox
+    name="noName_13"
+    texture="night_road"
+    posX="670.53296501246859"
+    posY="246.07177627318515"
+    angle="-6"
+    zLevel="0"
     collisionEntity="notApplicable"
     collisionCategory="1"
     collisionMask="65534"
-    textureMeterWidth="200"
-    textureMeterHeight="200"
-    textureOffsetMeterX="5.17"
-    textureOffsetMeterY="194.83"
-    parallaxAmount="0">
-    <vertices>
-      <vertex
-        id="1"
-        x="64.0997176810256"
-        y="2.0677328284200485" />
-      <vertex
-        id="2"
-        x="168.52022551624509"
-        y="2.0677328284200485" />
-      <vertex
-        id="3"
-        x="615.405338906615"
-        y="607.53472005011463" />
-      <vertex
-        id="4"
-        x="204.85461318113812"
-        y="317.95236738381482" />
-      <vertex
-        id="5"
-        x="89.844191914176236"
-        y="517.126717883395" />
-      <vertex
-        id="6"
-        x="-596.56250195098414"
-        y="519.56832334797809" />
-    </vertices>
-    <triangles>
-      <triangle
-        id="1"
-        v1="1"
-        v2="6"
-        v3="5" />
-      <triangle
-        id="2"
-        v1="1"
-        v2="5"
-        v3="4" />
-      <triangle
-        id="3"
-        v1="1"
-        v2="4"
-        v3="3" />
-      <triangle
-        id="4"
-        v1="3"
-        v2="2"
-        v3="1" />
-    </triangles>
-    <border
-      leftGroundAngle="0"
-      rightGroundAngle="0"
-      leftCeilingAngle="0"
-      rightCeilingAngle="0">
-      <groundBorder
-        texture="notDefined"
-        horisontalMeterOffset="0"
-        textureMeterWidth="0"
-        textureMeterHeight="0" />
-      <ceilingBorder
-        texture="notDefined"
-        horisontalMeterOffset="0"
-        textureMeterWidth="0"
-        textureMeterHeight="0" />
-      <leftWallBorder
-        texture="notDefined"
-        horisontalMeterOffset="0"
-        textureMeterWidth="0"
-        textureMeterHeight="0" />
-      <rightWallBorder
-        texture="notDefined"
-        horisontalMeterOffset="0"
-        textureMeterWidth="0"
-        textureMeterHeight="0" />
-    </border>
-  </spritePolygon>
-  <spritePolygon
-    name="noName_2"
-    texture="grotto"
-    posX="2296.5468008061762"
-    posY="175.66665687213481"
-    angle="0"
-    zLevel="4"
+    width="300"
+    height="37.5"
+    parallaxAmount="0" />
+  <spriteBox
+    name="noName_14"
+    texture="night_road"
+    posX="822.57845552238541"
+    posY="231.96446272071853"
+    angle="171"
+    zLevel="0"
     collisionEntity="notApplicable"
     collisionCategory="1"
     collisionMask="65534"
-    textureMeterWidth="200"
-    textureMeterHeight="200"
-    textureOffsetMeterX="5.17"
-    textureOffsetMeterY="194.83"
-    parallaxAmount="0">
-    <vertices>
-      <vertex
-        id="1"
-        x="64.0997176810256"
-        y="2.0677328284200485" />
-      <vertex
-        id="2"
-        x="168.52022551624509"
-        y="2.0677328284200485" />
-      <vertex
-        id="3"
-        x="615.405338906615"
-        y="607.53472005011463" />
-      <vertex
-        id="4"
-        x="204.85461318113812"
-        y="317.95236738381482" />
-      <vertex
-        id="5"
-        x="89.844191914176236"
-        y="517.126717883395" />
-      <vertex
-        id="6"
-        x="-596.56250195098414"
-        y="519.56832334797809" />
-    </vertices>
-    <triangles>
-      <triangle
-        id="1"
-        v1="1"
-        v2="6"
-        v3="5" />
-      <triangle
-        id="2"
-        v1="1"
-        v2="5"
-        v3="4" />
-      <triangle
-        id="3"
-        v1="1"
-        v2="4"
-        v3="3" />
-      <triangle
-        id="4"
-        v1="3"
-        v2="2"
-        v3="1" />
-    </triangles>
-    <border
-      leftGroundAngle="0"
-      rightGroundAngle="0"
-      leftCeilingAngle="0"
-      rightCeilingAngle="0">
-      <groundBorder
-        texture="notDefined"
-        horisontalMeterOffset="0"
-        textureMeterWidth="0"
-        textureMeterHeight="0" />
-      <ceilingBorder
-        texture="notDefined"
-        horisontalMeterOffset="0"
-        textureMeterWidth="0"
-        textureMeterHeight="0" />
-      <leftWallBorder
-        texture="notDefined"
-        horisontalMeterOffset="0"
-        textureMeterWidth="0"
-        textureMeterHeight="0" />
-      <rightWallBorder
-        texture="notDefined"
-        horisontalMeterOffset="0"
-        textureMeterWidth="0"
-        textureMeterHeight="0" />
-    </border>
-  </spritePolygon>
-  <spritePolygon
-    name="noName_3"
-    texture="grotto"
-    posX="3184.1332344734169"
-    posY="73.012658367615586"
-    angle="0"
-    zLevel="4"
+    width="200"
+    height="28"
+    parallaxAmount="0" />
+  <spriteBox
+    name="noName_15"
+    texture="night_road"
+    posX="613.50423031105674"
+    posY="127.37504606589209"
+    angle="142"
+    zLevel="0"
     collisionEntity="notApplicable"
     collisionCategory="1"
     collisionMask="65534"
-    textureMeterWidth="200"
-    textureMeterHeight="200"
-    textureOffsetMeterX="5.17"
-    textureOffsetMeterY="194.83"
-    parallaxAmount="0">
-    <vertices>
-      <vertex
-        id="1"
-        x="64.0997176810256"
-        y="2.0677328284200485" />
-      <vertex
-        id="2"
-        x="168.52022551624509"
-        y="2.0677328284200485" />
-      <vertex
-        id="3"
-        x="615.405338906615"
-        y="607.53472005011463" />
-      <vertex
-        id="4"
-        x="204.85461318113812"
-        y="317.95236738381482" />
-      <vertex
-        id="5"
-        x="89.844191914176236"
-        y="517.126717883395" />
-      <vertex
-        id="6"
-        x="-596.56250195098414"
-        y="519.56832334797809" />
-    </vertices>
-    <triangles>
-      <triangle
-        id="1"
-        v1="1"
-        v2="6"
-        v3="5" />
-      <triangle
-        id="2"
-        v1="1"
-        v2="5"
-        v3="4" />
-      <triangle
-        id="3"
-        v1="1"
-        v2="4"
-        v3="3" />
-      <triangle
-        id="4"
-        v1="3"
-        v2="2"
-        v3="1" />
-    </triangles>
-    <border
-      leftGroundAngle="0"
-      rightGroundAngle="0"
-      leftCeilingAngle="0"
-      rightCeilingAngle="0">
-      <groundBorder
-        texture="notDefined"
-        horisontalMeterOffset="0"
-        textureMeterWidth="0"
-        textureMeterHeight="0" />
-      <ceilingBorder
-        texture="notDefined"
-        horisontalMeterOffset="0"
-        textureMeterWidth="0"
-        textureMeterHeight="0" />
-      <leftWallBorder
-        texture="notDefined"
-        horisontalMeterOffset="0"
-        textureMeterWidth="0"
-        textureMeterHeight="0" />
-      <rightWallBorder
-        texture="notDefined"
-        horisontalMeterOffset="0"
-        textureMeterWidth="0"
-        textureMeterHeight="0" />
-    </border>
-  </spritePolygon>
-  <spritePolygon
-    name="noName_4"
-    texture="grotto"
-    posX="1056.2740216120974"
-    posY="432.28243871765653"
-    angle="0"
-    zLevel="4"
+    width="300"
+    height="37.5"
+    parallaxAmount="0" />
+  <spriteBox
+    name="noName_16"
+    texture="night_road"
+    posX="331.86276851753814"
+    posY="205.84498359970485"
+    angle="36"
+    zLevel="0"
     collisionEntity="notApplicable"
     collisionCategory="1"
     collisionMask="65534"
-    textureMeterWidth="200"
-    textureMeterHeight="200"
-    textureOffsetMeterX="5.17"
-    textureOffsetMeterY="194.83"
-    parallaxAmount="0">
-    <vertices>
-      <vertex
-        id="1"
-        x="64.0997176810256"
-        y="2.0677328284200485" />
-      <vertex
-        id="2"
-        x="168.52022551624509"
-        y="2.0677328284200485" />
-      <vertex
-        id="3"
-        x="615.405338906615"
-        y="607.53472005011463" />
-      <vertex
-        id="4"
-        x="204.85461318113812"
-        y="317.95236738381482" />
-      <vertex
-        id="5"
-        x="89.844191914176236"
-        y="517.126717883395" />
-      <vertex
-        id="6"
-        x="-596.56250195098414"
-        y="519.56832334797809" />
-    </vertices>
-    <triangles>
-      <triangle
-        id="1"
-        v1="1"
-        v2="6"
-        v3="5" />
-      <triangle
-        id="2"
-        v1="1"
-        v2="5"
-        v3="4" />
-      <triangle
-        id="3"
-        v1="1"
-        v2="4"
-        v3="3" />
-      <triangle
-        id="4"
-        v1="3"
-        v2="2"
-        v3="1" />
-    </triangles>
-    <border
-      leftGroundAngle="0"
-      rightGroundAngle="0"
-      leftCeilingAngle="0"
-      rightCeilingAngle="0">
-      <groundBorder
-        texture="notDefined"
-        horisontalMeterOffset="0"
-        textureMeterWidth="0"
-        textureMeterHeight="0" />
-      <ceilingBorder
-        texture="notDefined"
-        horisontalMeterOffset="0"
-        textureMeterWidth="0"
-        textureMeterHeight="0" />
-      <leftWallBorder
-        texture="notDefined"
-        horisontalMeterOffset="0"
-        textureMeterWidth="0"
-        textureMeterHeight="0" />
-      <rightWallBorder
-        texture="notDefined"
-        horisontalMeterOffset="0"
-        textureMeterWidth="0"
-        textureMeterHeight="0" />
-    </border>
-  </spritePolygon>
-  <spritePolygon
-    name="noName_5"
-    texture="grotto"
-    posX="3370.0663715853261"
-    posY="458.37803521215665"
-    angle="0"
-    zLevel="4"
+    width="200"
+    height="28"
+    parallaxAmount="0" />
+  <spriteBox
+    name="noName_17"
+    texture="night_road"
+    posX="573.291768768135"
+    posY="384.40184836837489"
+    angle="24"
+    zLevel="0"
     collisionEntity="notApplicable"
     collisionCategory="1"
     collisionMask="65534"
-    textureMeterWidth="200"
-    textureMeterHeight="200"
-    textureOffsetMeterX="5.17"
-    textureOffsetMeterY="194.83"
-    parallaxAmount="0">
-    <vertices>
-      <vertex
-        id="1"
-        x="64.0997176810256"
-        y="2.0677328284200485" />
-      <vertex
-        id="2"
-        x="168.52022551624509"
-        y="2.0677328284200485" />
-      <vertex
-        id="3"
-        x="615.405338906615"
-        y="607.53472005011463" />
-      <vertex
-        id="4"
-        x="204.85461318113812"
-        y="317.95236738381482" />
-      <vertex
-        id="5"
-        x="89.844191914176236"
-        y="517.126717883395" />
-      <vertex
-        id="6"
-        x="-596.56250195098414"
-        y="519.56832334797809" />
-    </vertices>
-    <triangles>
-      <triangle
-        id="1"
-        v1="1"
-        v2="6"
-        v3="5" />
-      <triangle
-        id="2"
-        v1="1"
-        v2="5"
-        v3="4" />
-      <triangle
-        id="3"
-        v1="1"
-        v2="4"
-        v3="3" />
-      <triangle
-        id="4"
-        v1="3"
-        v2="2"
-        v3="1" />
-    </triangles>
-    <border
-      leftGroundAngle="0"
-      rightGroundAngle="0"
-      leftCeilingAngle="0"
-      rightCeilingAngle="0">
-      <groundBorder
-        texture="notDefined"
-        horisontalMeterOffset="0"
-        textureMeterWidth="0"
-        textureMeterHeight="0" />
-      <ceilingBorder
-        texture="notDefined"
-        horisontalMeterOffset="0"
-        textureMeterWidth="0"
-        textureMeterHeight="0" />
-      <leftWallBorder
-        texture="notDefined"
-        horisontalMeterOffset="0"
-        textureMeterWidth="0"
-        textureMeterHeight="0" />
-      <rightWallBorder
-        texture="notDefined"
-        horisontalMeterOffset="0"
-        textureMeterWidth="0"
-        textureMeterHeight="0" />
-    </border>
-  </spritePolygon>
-  <spritePolygon
-    name="noName_6"
-    texture="grotto"
-    posX="2083.7132844290154"
-    posY="636.65296206148741"
-    angle="0"
-    zLevel="4"
+    width="200"
+    height="28"
+    parallaxAmount="0" />
+  <spriteBox
+    name="noName_18"
+    texture="night_road"
+    posX="1229.5691762983952"
+    posY="275.69831839032622"
+    angle="24"
+    zLevel="0"
     collisionEntity="notApplicable"
     collisionCategory="1"
     collisionMask="65534"
-    textureMeterWidth="200"
-    textureMeterHeight="200"
-    textureOffsetMeterX="5.17"
-    textureOffsetMeterY="194.83"
-    parallaxAmount="0">
-    <vertices>
-      <vertex
-        id="1"
-        x="64.0997176810256"
-        y="2.0677328284200485" />
-      <vertex
-        id="2"
-        x="168.52022551624509"
-        y="2.0677328284200485" />
-      <vertex
-        id="3"
-        x="615.405338906615"
-        y="607.53472005011463" />
-      <vertex
-        id="4"
-        x="204.85461318113812"
-        y="317.95236738381482" />
-      <vertex
-        id="5"
-        x="89.844191914176236"
-        y="517.126717883395" />
-      <vertex
-        id="6"
-        x="-596.56250195098414"
-        y="519.56832334797809" />
-    </vertices>
-    <triangles>
-      <triangle
-        id="1"
-        v1="1"
-        v2="6"
-        v3="5" />
-      <triangle
-        id="2"
-        v1="1"
-        v2="5"
-        v3="4" />
-      <triangle
-        id="3"
-        v1="1"
-        v2="4"
-        v3="3" />
-      <triangle
-        id="4"
-        v1="3"
-        v2="2"
-        v3="1" />
-    </triangles>
-    <border
-      leftGroundAngle="0"
-      rightGroundAngle="0"
-      leftCeilingAngle="0"
-      rightCeilingAngle="0">
-      <groundBorder
-        texture="notDefined"
-        horisontalMeterOffset="0"
-        textureMeterWidth="0"
-        textureMeterHeight="0" />
-      <ceilingBorder
-        texture="notDefined"
-        horisontalMeterOffset="0"
-        textureMeterWidth="0"
-        textureMeterHeight="0" />
-      <leftWallBorder
-        texture="notDefined"
-        horisontalMeterOffset="0"
-        textureMeterWidth="0"
-        textureMeterHeight="0" />
-      <rightWallBorder
-        texture="notDefined"
-        horisontalMeterOffset="0"
-        textureMeterWidth="0"
-        textureMeterHeight="0" />
-    </border>
-  </spritePolygon>
+    width="400"
+    height="56"
+    parallaxAmount="0" />
+  <spriteBox
+    name="noName_19"
+    texture="night_city"
+    posX="1484.0271041895976"
+    posY="380.56582806670076"
+    angle="204"
+    zLevel="0"
+    collisionEntity="notApplicable"
+    collisionCategory="1"
+    collisionMask="65534"
+    width="200"
+    height="200"
+    parallaxAmount="0" />
+  <spriteBox
+    name="noName_20"
+    texture="night_city"
+    posX="1792.7966561437083"
+    posY="182.12424599099631"
+    angle="34"
+    zLevel="0"
+    collisionEntity="notApplicable"
+    collisionCategory="1"
+    collisionMask="65534"
+    width="75"
+    height="75"
+    parallaxAmount="0" />
+  <spriteBox
+    name="noName_21"
+    texture="night_city"
+    posX="1427.154198691645"
+    posY="148.04315566133664"
+    angle="53"
+    zLevel="0"
+    collisionEntity="notApplicable"
+    collisionCategory="1"
+    collisionMask="65534"
+    width="25"
+    height="22"
+    parallaxAmount="0" />
+  <spriteBox
+    name="noName_22"
+    texture="night_road"
+    posX="1684.9961367130377"
+    posY="168.41608788584927"
+    angle="4"
+    zLevel="0"
+    collisionEntity="notApplicable"
+    collisionCategory="1"
+    collisionMask="65534"
+    width="200"
+    height="28"
+    parallaxAmount="0" />
+  <spriteBox
+    name="noName_23"
+    texture="night_road"
+    posX="1905.8996468787459"
+    posY="231.12418109417922"
+    angle="26"
+    zLevel="0"
+    collisionEntity="notApplicable"
+    collisionCategory="1"
+    collisionMask="65534"
+    width="200"
+    height="28"
+    parallaxAmount="0" />
+  <spriteBox
+    name="noName_24"
+    texture="night_road"
+    posX="1663.6183776647445"
+    posY="262.4782276983442"
+    angle="-37"
+    zLevel="0"
+    collisionEntity="notApplicable"
+    collisionCategory="1"
+    collisionMask="65534"
+    width="200"
+    height="28"
+    parallaxAmount="0" />
+  <spriteBox
+    name="noName_25"
+    texture="night_road"
+    posX="1629.681185175577"
+    posY="474.83063424473357"
+    angle="36"
+    zLevel="0"
+    collisionEntity="notApplicable"
+    collisionCategory="1"
+    collisionMask="65534"
+    width="200"
+    height="28"
+    parallaxAmount="0" />
+  <spriteBox
+    name="noName_26"
+    texture="night_road"
+    posX="1344.6443978649863"
+    posY="479.28433404646239"
+    angle="-35"
+    zLevel="0"
+    collisionEntity="notApplicable"
+    collisionCategory="1"
+    collisionMask="65534"
+    width="200"
+    height="28"
+    parallaxAmount="0" />
+  <spriteBox
+    name="noName_27"
+    texture="night_city"
+    posX="2203.8553386715053"
+    posY="393.07947761046967"
+    angle="217"
+    zLevel="0"
+    collisionEntity="notApplicable"
+    collisionCategory="1"
+    collisionMask="65534"
+    width="200"
+    height="200"
+    parallaxAmount="0" />
+  <spriteBox
+    name="noName_28"
+    texture="night_city"
+    posX="2663.5229235675833"
+    posY="229.3862219040559"
+    angle="102"
+    zLevel="0"
+    collisionEntity="notApplicable"
+    collisionCategory="1"
+    collisionMask="65534"
+    width="200"
+    height="200"
+    parallaxAmount="0" />
+  <spriteBox
+    name="noName_29"
+    texture="night_road"
+    posX="1990.9178687093549"
+    posY="383.38431216340609"
+    angle="2"
+    zLevel="0"
+    collisionEntity="notApplicable"
+    collisionCategory="1"
+    collisionMask="65534"
+    width="300"
+    height="37.5"
+    parallaxAmount="0" />
+  <spriteBox
+    name="noName_30"
+    texture="night_road"
+    posX="2892.5331148073205"
+    posY="329.27413694860184"
+    angle="26"
+    zLevel="0"
+    collisionEntity="notApplicable"
+    collisionCategory="1"
+    collisionMask="65534"
+    width="400"
+    height="56"
+    parallaxAmount="0" />
+  <spriteBox
+    name="noName_31"
+    texture="night_city"
+    posX="3140.5600229528068"
+    posY="472.72776509928258"
+    angle="239"
+    zLevel="0"
+    collisionEntity="notApplicable"
+    collisionCategory="1"
+    collisionMask="65534"
+    width="200"
+    height="200"
+    parallaxAmount="0" />
+  <spriteBox
+    name="noName_32"
+    texture="night_road"
+    posX="2450.3828123149547"
+    posY="295.64380044020163"
+    angle="-24"
+    zLevel="0"
+    collisionEntity="notApplicable"
+    collisionCategory="1"
+    collisionMask="65534"
+    width="300"
+    height="37.5"
+    parallaxAmount="0" />
+  <spriteBox
+    name="noName_33"
+    texture="night_road"
+    posX="2204.5431676413973"
+    posY="624.61205346842871"
+    angle="96"
+    zLevel="0"
+    collisionEntity="notApplicable"
+    collisionCategory="1"
+    collisionMask="65534"
+    width="300"
+    height="37.5"
+    parallaxAmount="0" />
+  <spriteBox
+    name="noName_34"
+    texture="surface_night_city"
+    posX="2141.2657203278682"
+    posY="62.408692378003707"
+    angle="0"
+    zLevel="0"
+    collisionEntity="notApplicable"
+    collisionCategory="1"
+    collisionMask="65534"
+    width="250"
+    height="125"
+    parallaxAmount="0" />
+  <spriteBox
+    name="noName_35"
+    texture="night_road"
+    posX="1864.4619208648842"
+    posY="124.65134866903986"
+    angle="-37"
+    zLevel="0"
+    collisionEntity="notApplicable"
+    collisionCategory="1"
+    collisionMask="65534"
+    width="100"
+    height="14"
+    parallaxAmount="0" />
+  <spriteBox
+    name="noName_36"
+    texture="night_road"
+    posX="1962.7913974349817"
+    posY="68.60191179203116"
+    angle="-23"
+    zLevel="0"
+    collisionEntity="notApplicable"
+    collisionCategory="1"
+    collisionMask="65534"
+    width="100"
+    height="14"
+    parallaxAmount="0" />
+  <spriteBox
+    name="noName_37"
+    texture="night_road"
+    posX="2345.90840998079"
+    posY="97.670263481546044"
+    angle="20"
+    zLevel="0"
+    collisionEntity="notApplicable"
+    collisionCategory="1"
+    collisionMask="65534"
+    width="300"
+    height="37.5"
+    parallaxAmount="0" />
+  <spriteBox
+    name="noName_38"
+    texture="night_city"
+    posX="3627.7295454750915"
+    posY="684.94713909972211"
+    angle="122"
+    zLevel="0"
+    collisionEntity="notApplicable"
+    collisionCategory="1"
+    collisionMask="65534"
+    width="75"
+    height="75"
+    parallaxAmount="0" />
+  <spriteBox
+    name="noName_39"
+    texture="surface_night_city"
+    posX="-1109.7965500837677"
+    posY="13.168806781415469"
+    angle="0"
+    zLevel="0"
+    collisionEntity="notApplicable"
+    collisionCategory="1"
+    collisionMask="65534"
+    width="50"
+    height="25"
+    parallaxAmount="0" />
+  <spriteBox
+    name="noName_40"
+    texture="surface_night_city"
+    posX="-758.88210757531874"
+    posY="12.153532643390236"
+    angle="0"
+    zLevel="0"
+    collisionEntity="notApplicable"
+    collisionCategory="1"
+    collisionMask="65534"
+    width="50"
+    height="25"
+    parallaxAmount="0" />
+  <spriteBox
+    name="noName_41"
+    texture="night_city"
+    posX="3898.405480455453"
+    posY="297.18682689633442"
+    angle="210"
+    zLevel="0"
+    collisionEntity="notApplicable"
+    collisionCategory="1"
+    collisionMask="65534"
+    width="75"
+    height="75"
+    parallaxAmount="0" />
+  <spriteBox
+    name="noName_42"
+    texture="night_road"
+    posX="3351.5978307516748"
+    posY="360.78344243465153"
+    angle="-28"
+    zLevel="0"
+    collisionEntity="notApplicable"
+    collisionCategory="1"
+    collisionMask="65534"
+    width="200"
+    height="25"
+    parallaxAmount="0" />
+  <spriteBox
+    name="noName_43"
+    texture="night_road"
+    posX="3831.7358352676533"
+    posY="676.8660171375966"
+    angle="5"
+    zLevel="0"
+    collisionEntity="notApplicable"
+    collisionCategory="1"
+    collisionMask="65534"
+    width="300"
+    height="37.5"
+    parallaxAmount="0" />
+  <spriteBox
+    name="noName_44"
+    texture="night_road"
+    posX="3926.7559053134478"
+    posY="356.20066840672325"
+    angle="3481"
+    zLevel="0"
+    collisionEntity="notApplicable"
+    collisionCategory="1"
+    collisionMask="65534"
+    width="50"
+    height="5"
+    parallaxAmount="0" />
+  <spriteBox
+    name="noName_45"
+    texture="night_road"
+    posX="3928.1497866881214"
+    posY="246.87969170340193"
+    angle="3532"
+    zLevel="0"
+    collisionEntity="notApplicable"
+    collisionCategory="1"
+    collisionMask="65534"
+    width="50"
+    height="5"
+    parallaxAmount="0" />
+  <spriteBox
+    name="noName_46"
+    texture="night_city"
+    posX="3083.756953001749"
+    posY="297.99106015520738"
+    angle="109"
+    zLevel="0"
+    collisionEntity="notApplicable"
+    collisionCategory="1"
+    collisionMask="65534"
+    width="35"
+    height="35"
+    parallaxAmount="0" />
+  <spriteBox
+    name="noName_47"
+    texture="night_city"
+    posX="3171.9245235522039"
+    posY="292.0387370978724"
+    angle="182"
+    zLevel="0"
+    collisionEntity="notApplicable"
+    collisionCategory="1"
+    collisionMask="65534"
+    width="200"
+    height="200"
+    parallaxAmount="0" />
+  <spriteBox
+    name="noName_48"
+    texture="night_city"
+    posX="3853.2788087655526"
+    posY="582.247651328538"
+    angle="67"
+    zLevel="0"
+    collisionEntity="notApplicable"
+    collisionCategory="1"
+    collisionMask="65534"
+    width="200"
+    height="200"
+    parallaxAmount="0" />
+  <spriteBox
+    name="noName_49"
+    texture="night_road"
+    posX="3740.0406554442234"
+    posY="472.59003104403314"
+    angle="36"
+    zLevel="0"
+    collisionEntity="notApplicable"
+    collisionCategory="1"
+    collisionMask="65534"
+    width="200"
+    height="28"
+    parallaxAmount="0" />
+  <spriteBox
+    name="noName_50"
+    texture="surface_night_city"
+    posX="3656.4070433132574"
+    posY="402.43069254850457"
+    angle="0"
+    zLevel="0"
+    collisionEntity="notApplicable"
+    collisionCategory="1"
+    collisionMask="65534"
+    width="50"
+    height="25"
+    parallaxAmount="0" />
+  <spriteBox
+    name="noName_51"
+    texture="night_road"
+    posX="3548.9768677022339"
+    posY="636.4314748916488"
+    angle="-6"
+    zLevel="0"
+    collisionEntity="notApplicable"
+    collisionCategory="1"
+    collisionMask="65534"
+    width="300"
+    height="37.5"
+    parallaxAmount="0" />
+  <spriteBox
+    name="noName_52"
+    texture="night_road"
+    posX="3701.0223582121507"
+    posY="622.32416133918218"
+    angle="171"
+    zLevel="0"
+    collisionEntity="notApplicable"
+    collisionCategory="1"
+    collisionMask="65534"
+    width="200"
+    height="28"
+    parallaxAmount="0" />
+  <spriteBox
+    name="noName_53"
+    texture="night_road"
+    posX="3491.9481330008221"
+    posY="517.73474468435575"
+    angle="142"
+    zLevel="0"
+    collisionEntity="notApplicable"
+    collisionCategory="1"
+    collisionMask="65534"
+    width="300"
+    height="37.5"
+    parallaxAmount="0" />
+  <spriteBox
+    name="noName_54"
+    texture="night_road"
+    posX="3323.2987574535364"
+    posY="385.16957450693553"
+    angle="24"
+    zLevel="0"
+    collisionEntity="notApplicable"
+    collisionCategory="1"
+    collisionMask="65534"
+    width="200"
+    height="28"
+    parallaxAmount="0" />
+  <spriteBox
+    name="noName_55"
+    texture="night_road"
+    posX="3979.5761649837968"
+    posY="276.46604452888687"
+    angle="24"
+    zLevel="0"
+    collisionEntity="notApplicable"
+    collisionCategory="1"
+    collisionMask="65534"
+    width="400"
+    height="56"
+    parallaxAmount="0" />
+  <spriteBox
+    name="noName_56"
+    texture="night_city"
+    posX="4234.0340928749993"
+    posY="381.33355420526141"
+    angle="204"
+    zLevel="0"
+    collisionEntity="notApplicable"
+    collisionCategory="1"
+    collisionMask="65534"
+    width="200"
+    height="200"
+    parallaxAmount="0" />
+  <spriteBox
+    name="noName_57"
+    texture="night_city"
+    posX="4542.8036448291095"
+    posY="182.89197212955696"
+    angle="34"
+    zLevel="0"
+    collisionEntity="notApplicable"
+    collisionCategory="1"
+    collisionMask="65534"
+    width="75"
+    height="75"
+    parallaxAmount="0" />
+  <spriteBox
+    name="noName_58"
+    texture="night_city"
+    posX="4177.1611873770462"
+    posY="148.81088179989729"
+    angle="53"
+    zLevel="0"
+    collisionEntity="notApplicable"
+    collisionCategory="1"
+    collisionMask="65534"
+    width="25"
+    height="22"
+    parallaxAmount="0" />
+  <spriteBox
+    name="noName_59"
+    texture="night_road"
+    posX="4435.0031253984389"
+    posY="169.18381402440991"
+    angle="4"
+    zLevel="0"
+    collisionEntity="notApplicable"
+    collisionCategory="1"
+    collisionMask="65534"
+    width="200"
+    height="28"
+    parallaxAmount="0" />
+  <spriteBox
+    name="noName_60"
+    texture="night_road"
+    posX="4655.9066355641471"
+    posY="231.89190723273987"
+    angle="26"
+    zLevel="0"
+    collisionEntity="notApplicable"
+    collisionCategory="1"
+    collisionMask="65534"
+    width="200"
+    height="28"
+    parallaxAmount="0" />
+  <spriteBox
+    name="noName_61"
+    texture="night_road"
+    posX="4413.6253663501457"
+    posY="263.24595383690485"
+    angle="-37"
+    zLevel="0"
+    collisionEntity="notApplicable"
+    collisionCategory="1"
+    collisionMask="65534"
+    width="200"
+    height="28"
+    parallaxAmount="0" />
+  <spriteBox
+    name="noName_62"
+    texture="night_road"
+    posX="4379.6881738609782"
+    posY="475.59836038329422"
+    angle="36"
+    zLevel="0"
+    collisionEntity="notApplicable"
+    collisionCategory="1"
+    collisionMask="65534"
+    width="200"
+    height="28"
+    parallaxAmount="0" />
+  <spriteBox
+    name="noName_63"
+    texture="night_road"
+    posX="4094.6513865503885"
+    posY="480.05206018502304"
+    angle="-35"
+    zLevel="0"
+    collisionEntity="notApplicable"
+    collisionCategory="1"
+    collisionMask="65534"
+    width="200"
+    height="28"
+    parallaxAmount="0" />
+  <spriteBox
+    name="noName_64"
+    texture="night_city"
+    posX="4953.8623273569065"
+    posY="393.84720374903031"
+    angle="217"
+    zLevel="0"
+    collisionEntity="notApplicable"
+    collisionCategory="1"
+    collisionMask="65534"
+    width="200"
+    height="200"
+    parallaxAmount="0" />
+  <spriteBox
+    name="noName_65"
+    texture="night_city"
+    posX="5413.529912252985"
+    posY="230.15394804261655"
+    angle="102"
+    zLevel="0"
+    collisionEntity="notApplicable"
+    collisionCategory="1"
+    collisionMask="65534"
+    width="200"
+    height="200"
+    parallaxAmount="0" />
+  <spriteBox
+    name="noName_66"
+    texture="night_road"
+    posX="4740.9248573947561"
+    posY="384.15203830196674"
+    angle="2"
+    zLevel="0"
+    collisionEntity="notApplicable"
+    collisionCategory="1"
+    collisionMask="65534"
+    width="300"
+    height="37.5"
+    parallaxAmount="0" />
+  <spriteBox
+    name="noName_67"
+    texture="night_road"
+    posX="5642.5401034927218"
+    posY="330.04186308716248"
+    angle="26"
+    zLevel="0"
+    collisionEntity="notApplicable"
+    collisionCategory="1"
+    collisionMask="65534"
+    width="400"
+    height="56"
+    parallaxAmount="0" />
+  <spriteBox
+    name="noName_68"
+    texture="night_city"
+    posX="5890.567011638208"
+    posY="473.49549123784323"
+    angle="239"
+    zLevel="0"
+    collisionEntity="notApplicable"
+    collisionCategory="1"
+    collisionMask="65534"
+    width="200"
+    height="200"
+    parallaxAmount="0" />
+  <spriteBox
+    name="noName_69"
+    texture="night_road"
+    posX="5200.3898010003559"
+    posY="296.41152657876228"
+    angle="-24"
+    zLevel="0"
+    collisionEntity="notApplicable"
+    collisionCategory="1"
+    collisionMask="65534"
+    width="300"
+    height="37.5"
+    parallaxAmount="0" />
+  <spriteBox
+    name="noName_70"
+    texture="night_road"
+    posX="4954.550156326799"
+    posY="625.37977960698936"
+    angle="96"
+    zLevel="0"
+    collisionEntity="notApplicable"
+    collisionCategory="1"
+    collisionMask="65534"
+    width="300"
+    height="37.5"
+    parallaxAmount="0" />
+  <spriteBox
+    name="noName_71"
+    texture="surface_night_city"
+    posX="4891.27270901327"
+    posY="63.176418516564354"
+    angle="0"
+    zLevel="0"
+    collisionEntity="notApplicable"
+    collisionCategory="1"
+    collisionMask="65534"
+    width="250"
+    height="125"
+    parallaxAmount="0" />
+  <spriteBox
+    name="noName_72"
+    texture="night_road"
+    posX="4614.4689095502854"
+    posY="125.41907480760051"
+    angle="-37"
+    zLevel="0"
+    collisionEntity="notApplicable"
+    collisionCategory="1"
+    collisionMask="65534"
+    width="100"
+    height="14"
+    parallaxAmount="0" />
+  <spriteBox
+    name="noName_73"
+    texture="night_road"
+    posX="4712.7983861203838"
+    posY="69.369637930591807"
+    angle="-23"
+    zLevel="0"
+    collisionEntity="notApplicable"
+    collisionCategory="1"
+    collisionMask="65534"
+    width="100"
+    height="14"
+    parallaxAmount="0" />
+  <spriteBox
+    name="noName_74"
+    texture="night_road"
+    posX="5095.9153986661913"
+    posY="98.437989620106691"
+    angle="20"
+    zLevel="0"
+    collisionEntity="notApplicable"
+    collisionCategory="1"
+    collisionMask="65534"
+    width="300"
+    height="37.5"
+    parallaxAmount="0" />
+  <spriteBox
+    name="noName_75"
+    texture="night_city"
+    posX="6249.2996201561291"
+    posY="296.12289275837975"
+    angle="122"
+    zLevel="0"
+    collisionEntity="notApplicable"
+    collisionCategory="1"
+    collisionMask="65534"
+    width="75"
+    height="75"
+    parallaxAmount="0" />
+  <spriteBox
+    name="noName_76"
+    texture="night_city"
+    posX="6648.4124691408542"
+    posY="297.95455303489507"
+    angle="210"
+    zLevel="0"
+    collisionEntity="notApplicable"
+    collisionCategory="1"
+    collisionMask="65534"
+    width="75"
+    height="75"
+    parallaxAmount="0" />
+  <spriteBox
+    name="noName_77"
+    texture="night_road"
+    posX="6101.604819437076"
+    posY="361.55116857321218"
+    angle="-28"
+    zLevel="0"
+    collisionEntity="notApplicable"
+    collisionCategory="1"
+    collisionMask="65534"
+    width="200"
+    height="25"
+    parallaxAmount="0" />
+  <spriteBox
+    name="noName_78"
+    texture="night_road"
+    posX="6453.3059099486909"
+    posY="288.04177079625424"
+    angle="5"
+    zLevel="0"
+    collisionEntity="notApplicable"
+    collisionCategory="1"
+    collisionMask="65534"
+    width="300"
+    height="37.5"
+    parallaxAmount="0" />
+  <spriteBox
+    name="noName_79"
+    texture="night_road"
+    posX="6676.76289399885"
+    posY="356.9683945452839"
+    angle="3481"
+    zLevel="0"
+    collisionEntity="notApplicable"
+    collisionCategory="1"
+    collisionMask="65534"
+    width="50"
+    height="5"
+    parallaxAmount="0" />
+  <spriteBox
+    name="noName_80"
+    texture="night_road"
+    posX="6678.1567753735235"
+    posY="247.64741784196258"
+    angle="3532"
+    zLevel="0"
+    collisionEntity="notApplicable"
+    collisionCategory="1"
+    collisionMask="65534"
+    width="50"
+    height="5"
+    parallaxAmount="0" />
   <behaviour
     type="planetSurface">
     <planetSurfaceProperties
-      texture="concrete"
-      textureMeterWidth="2000"
-      textureMeterHeight="2300">
+      texture="planet_rock"
+      textureMeterWidth="400"
+      textureMeterHeight="400">
       <landingSite
         name="goldMine"
         label="Claude Mine"
@@ -582,9 +1069,16 @@
       <landingSite
         name="alphaCity"
         label="Village"
-        angle="-5.7"
+        angle="-5.63"
         texture=""
         scene="landing_scene.xml" />
+      <landingSite
+        name="badMine"
+        label="Bad Mine"
+        angle="-18.22"
+        texture=""
+        scene="landing_scene.xml"
+        hidden="true" />
     </planetSurfaceProperties>
   </behaviour>
 </compoundObject>
