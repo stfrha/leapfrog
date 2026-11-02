@@ -690,8 +690,15 @@ function Engine:startScene(file, sceneType)
    end
 
    local scene = { file = file, sceneType = sceneType, objects = {},
-      factories = {}, watches = {}, transit = {},
+      factories = {}, watches = {}, transit = {}, sprites = {}, animations = {},
       box = placement.sceneBox(root, self.srcDir) }
+
+   -- Shapes directly in the scene, for c_animateSprite
+   for _, c in ipairs(root.children) do
+      if c.tag:match("^sprite") and c.attr.name then
+         scene.sprites[c.attr.name] = true
+      end
+   end
 
    -- Object factories, for c_watchFactory
    for _, c in ipairs(root.children) do
@@ -1108,6 +1115,15 @@ function Engine:installApi(env)
          return
       end
       e.scene.transit[corner] = { open = open and true or false, message = message }
+   end
+
+   api.c_animateSprite = function(shape, period, frame)
+      if not (e.scene and e.scene.sprites[shape]) then
+         e:problem("c_animateSprite: no sprite '" .. tostring(shape) .. "' in " .. (e.scene and e.scene.file or "?"))
+         return false
+      end
+      e.scene.animations[shape] = { period = period, frame = frame or 0 }
+      return true
    end
 
    api.c_setObjectVelocity = function(name, vx, vy)

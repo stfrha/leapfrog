@@ -588,6 +588,20 @@ function T:expectCorner(corner, open)
    pass(self)
 end
 
+-- A sprite's animation, as last set with c_animateSprite: a period, or with
+-- period 0 the frame it was stopped on
+function T:expectSprite(shape, period, frame)
+   local a = self.engine.scene.animations[shape]
+   if a == nil then
+      self:fail("no script has set the animation of " .. shape, 2)
+   end
+   if a.period ~= period or (period == 0 and a.frame ~= (frame or 0)) then
+      self:fail(string.format("%s: expected period %g frame %d, got period %g frame %d",
+         shape, period, frame or 0, a.period, a.frame), 2)
+   end
+   pass(self)
+end
+
 function T:expectListening(object, eventId, count)
    local n = self.engine:listenerCount(object, eventId)
    if n ~= (count or 1) then

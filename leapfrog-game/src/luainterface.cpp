@@ -639,6 +639,30 @@ static int c_setTransitOpen(lua_State *L)
    return 0;
 }
 
+// c_animateSprite(shape, period [, frame])
+// Runs a sprite's frames (rows and cols in its resource entry), one cycle
+// per period seconds, or with period 0 stops them and shows this frame,
+// from 0 (default 0). shape is a shape directly in the scene, or
+// "object.shape". A scene load starts over from animatePeriod in the XML, so
+// call this from the scene setup. Returns false if there's no such sprite.
+static int c_animateSprite(lua_State *L)
+{
+   const char* shape = lua_tostring(L, 1);
+   float period = (float)lua_tonumber(L, 2);
+   int frame = (int)lua_tointeger(L, 3);
+
+   bool found = (shape != NULL) &&
+      g_LuaInterface.getSceneActor()->animateShape(shape, period, frame);
+
+   if (!found)
+   {
+      logs::warning("c_animateSprite: no sprite '%s'", shape ? shape : "(nil)");
+   }
+
+   lua_pushboolean(L, found);
+   return 1;
+}
+
 // c_setObjectVelocity(name, vx, vy)
 // Sets the speed of an object's first body, in units per second, y down
 static int c_setObjectVelocity(lua_State *L)
@@ -1143,6 +1167,7 @@ void LuaInterface::initLuaInterface(void)
    lua_register(m_L, "c_watchFactory", c_watchFactory);
    lua_register(m_L, "c_setTransitOpen", c_setTransitOpen);
    lua_register(m_L, "c_setObjectVelocity", c_setObjectVelocity);
+   lua_register(m_L, "c_animateSprite", c_animateSprite);
    lua_register(m_L, "c_exitSceneSaveGameStatus", c_exitSceneSaveGameStatus);
    lua_register(m_L, "c_saveGameStatus", c_saveGameStatus);
    lua_register(m_L, "c_askQuestion", c_askQuestion);

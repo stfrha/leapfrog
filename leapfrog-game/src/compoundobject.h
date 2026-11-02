@@ -311,6 +311,10 @@ public:
    CompoundObject* getObject(const std::string& name);
    oxygine::spActor getActor(const std::string& name);
    b2Body* getBody(const std::string& name);
+   // Runs a shape's frames, one cycle per period seconds, or with period 0
+   // stops them and shows this frame. False if there's no such sprite.
+   bool animateShape(const std::string& name, float period, int frame);
+
    b2Body* getFirstBody(void);   // the first shape's body, NULL if none
    b2Joint* getJoint(const std::string& name);
    System* getSystem(const std::string& name);

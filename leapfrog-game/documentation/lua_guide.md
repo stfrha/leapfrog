@@ -94,7 +94,7 @@ Every script gets every event. A world or mission handler must therefore check
 
 `data/lua/mission_2.lua` is a complete small mission, and
 `mission_tester/tests/mission2_beacons.lua` plays it. Bruno pays the pilot to
-relight three dead beacons in the home scene, one at a time, and to collect the
+relight two dead beacons in the home scene, one at a time, and to collect the
 money at the Orb. Mission 1 hands over to it at the silo, and you can also start
 it from the main menu's test row: **Beacons, job offered**.
 
@@ -110,9 +110,8 @@ stateDiagram-v2
     [*] --> offered
     offered --> offered: No, asked again at the silo
     offered --> firstBeacon: Yes
-    firstBeacon --> secondBeacon: land on landingPad2
-    secondBeacon --> thirdBeacon: land on landingPad3
-    thirdBeacon --> collect: land on workshopPad
+    firstBeacon --> secondBeacon: land on landingPad2, repair
+    secondBeacon --> collect: land on landingPad3
     collect --> done: land on the Orb
     done --> [*]
 ```
@@ -123,9 +122,8 @@ local State = {
    offered      = 10,  -- Bruno has offered the job
    firstBeacon  = 11,  -- relight the first beacon
    secondBeacon = 12,
-   thirdBeacon  = 13,
-   collect      = 14,  -- all lit, collect the money at the Orb
-   done         = 15,
+   collect      = 13,  -- all lit, collect the money at the Orb
+   done         = 14,
 }
 mission2.State = State
 ```
@@ -183,9 +181,11 @@ local function setupBeacons()
 
       if lit then
          c_setObjectProperty(beacon.pad, Pad.active, 1)
+         c_animateSprite(beacon.lamp, blinkPeriod)
          c_setObjectMapState(beacon.pad, beacon.body, 1)     -- filled
       else
          c_setObjectProperty(beacon.pad, Pad.active, 0)
+         c_animateSprite(beacon.lamp, 0, lampOffFrame)
          c_setObjectMapState(beacon.pad, beacon.body, isNext and 2 or 0)  -- flashing or hollow
       end
 
@@ -201,6 +201,11 @@ An inactive pad sends no `LpLL`, so the mission can't listen for a landing in th
 usual way. It watches the pad's `lfLanded` property instead, which changes
 whether the pad is active or not.
 
+The lamps are sprites in the scene, and `animatePeriod` in the XML makes them blink
+from the start. `c_animateSprite` takes that over: a dark beacon is stopped on its off
+frame, and a lit one blinks. Like everything else here, this must be done in setup,
+because a scene load starts over from the XML.
+
 The mission's setup function starts by leaving every scene but its own:
 
 <!-- verbatim: data/lua/mission_2.lua -->
@@ -211,11 +216,13 @@ mission2.setupMissionStateScene = function()
       return
    end
 
+   repairingPad = nil
+   repairTimer = -1
    setupBeacons()
 
    if currentState == State.offered then
       listen("siloLandingPad", "LpLL")
-      c_addDialogMessage("Three of the old beacons have gone dark. I pay to have them lit.", "Bruno", true, 60, 0)
+      c_addDialogMessage("Two of the old beacons have gone dark. I pay to have them lit.", "Bruno", true, 60, 0)
       c_askQuestion(Question.takeJob, "Will you do it?", "Bruno", "Touch down and let's talk.")
 
    elseif currentState == State.collect then
@@ -263,14 +270,18 @@ mission2.missionStateSceneEventHandler = function(eventId, actorName, parameter1
    end
 
    if eventId == "OpTr" and parameter1 == Pad.lfLanded then
-      relight(actorName)
+      startRepair(actorName)
+   end
+
+   if eventId == "ScTO" and parameter1 == repairTimer then
+      finishRepair()
    end
 
    -- A timeout comes once per timer started since the last clear, so forget
    -- the id as soon as it has been handled
    if eventId == "ScTO" and parameter1 == reminderTimer then
       reminderTimer = -1
-      c_addDialogMessage("All three are lit. Come to the Orb for your money.", "Bruno", true, 0, 0)
+      c_addDialogMessage("Both are lit. Come to the Orb for your money.", "Bruno", true, 0, 0)
    end
 
    if eventId == "LpLL" and actorName == "oreLanding" and currentState == State.collect then
@@ -289,22 +300,30 @@ second, so you can try a state change long before flying it:
 
 <!-- verbatim: mission_tester/tests/mission2_beacons.lua -->
 ```lua
-test("mission 2: the beacons are lit in order, each with a landing", function(t)
+test("mission 2: the beacons are lit in order, each after a repair", function(t)
    local S, Q = start(t)
    acceptJob(t, S, Q)
    t:expectMap("landingPad2", "siloHome", "flashingSlow")
 
+   -- Landed: the repair starts, nothing has changed yet
    t:land("landingPad2")
+   t:expectHud("Repairing beacon")
+   t:expectState(S.firstBeacon)
+   t:expectSprite("landingPad2Lamp", 0, 1)
+   t:expectMap("landingPad3", "siloHome", "hollow")
+
+   t:wait(repairSeconds)
    t:expectState(S.secondBeacon)
    t:expectHud("Beacon lit")
    t:expectProperty("landingPad2", 2, 1)
    t:expectProperty("landingPad2", 4, 2)
+   t:expectSprite("landingPad2Lamp", 1.2)
    t:expectMap("landingPad2", "siloHome", "filled")
    t:expectMap("landingPad3", "siloHome", "flashingSlow")
    t:takeOff()
 
-   t:land("landingPad3")
-   t:expectState(S.thirdBeacon)
+   repair(t, "landingPad3")
+   t:expectState(S.collect)
 end)
 ```
 
@@ -837,6 +856,21 @@ Add it as a child object of a space scene:
 Docking and undocking send `DsDk` and `DsUd` while the station is active. Its fuel
 works as on a landing pad, and is set on the behaviour in `docking_station.xml`.
 
+### Control a light or indicator
+
+Anything animated with `animatePeriod` can be run from Lua, if its shape has a name
+of its own. Set it in the editor, then call this from the setup, since a scene load
+starts over from the XML:
+
+<!-- verbatim: data/lua/mission_2.lua -->
+```lua
+c_animateSprite(beacon.lamp, 0, lampOffFrame)
+```
+
+Period 0 stops it on the given frame. Any other period runs it. Look in the sprite's
+script for which frame is which: in `gen_landing_pad_blink`, frame 0 is on and frame
+1 off.
+
 ### Add a message sender
 
 Add a line to `setSenders` in `data/lua/common.lua`:
@@ -959,6 +993,7 @@ numbers: `t:mission(2).State.collect`.
 | `t:expectProperty(object, id, value)` | A property |
 | `t:expectMap(object, actor, state)`, `t:expectMapShown(object, actor, shown)` | The map |
 | `t:expectCorner(corner, open)` | Whether a corner of a space scene is open |
+| `t:expectSprite(shape, period, frame)` | A sprite's animation, as set from Lua |
 | `t:expectListening(object, event, count)` | Registered listeners |
 | `t:expectItem(id, state)`, `t:expectSaved(field, value)` | Key items and the save |
 | `t:expect(condition, message)`, `t:expectEqual(actual, expected, what)` | Anything else |
@@ -1059,6 +1094,7 @@ is listed here, and that everything listed exists.
 | `c_getObjectProperty(name, propertyId)` | Reads a property; 0 for a missing object |
 | `c_setPanningObject(name)` | Sets the object the camera follows |
 | `c_setObjectVelocity(name, vx, vy)` | Sets an object's speed, in units per second, y down |
+| `c_animateSprite(shape, period, frame)` | Runs a sprite's frames, one cycle per `period` seconds, or with period 0 stops on `frame`, default 0. `shape` is in the scene, or `"object.shape"`. |
 
 ### Events and timers
 

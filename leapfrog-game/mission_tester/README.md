@@ -129,7 +129,7 @@ question's text follows the answer to the first (and the reply to it).
 `expectLandingSiteShown(name, shown)` (orbit scene),
 `expectItem(id, "unknown"|"held"|"revoked")`, `expectSavedItem(id, state)` (in the save file),
 `expectMap(object, actor, "hollow"|"filled"|"flashingSlow"|"flashingFast")`,
-`expectMapShown(object, actor, bool)`, `expectCorner(corner, open)`, `expectListening(object, event [, count])`,
+`expectMapShown(object, actor, bool)`, `expectCorner(corner, open)`, `expectSprite(shape, period [, frame])`, `expectListening(object, event [, count])`,
 `expectSaved(field, value)` (fields: scene, mission, state, sceneType,
 exitScene, exitType, exitParam, fuel, credits, ...), `expectEqual`, `expect`.
 

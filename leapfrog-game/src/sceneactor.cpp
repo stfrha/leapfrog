@@ -797,25 +797,28 @@ void SceneActor::doUpdate(const UpdateState& us)
 {
    const Uint8* data = SDL_GetKeyboardState(0);
 
-   // Handle timers
-   vector<int> removeIds;
+   // Handle timers. Tick them all first and send the events afterwards: a
+   // handler may start a new timer (Lua, by c_startSceneTimer), which can
+   // move the list and would break a loop over it.
+   vector<int> timedOutIds;
 
    for (auto it = m_timers.begin(); it != m_timers.end(); ++it)
    {
       if (it->tickTimer())
       {
-         removeIds.push_back(it->m_id);
-
-         SceneTimeoutEvent ev(it->m_id);
-         m_sceneActor->dispatchEvent(&ev);
-
+         timedOutIds.push_back(it->m_id);
       }
    }
 
-   // Remove all timers that timed out
-   for (auto it = removeIds.begin(); it != removeIds.end(); ++it)
+   for (auto it = timedOutIds.begin(); it != timedOutIds.end(); ++it)
    {
       removeTimer(*it);
+   }
+
+   for (auto it = timedOutIds.begin(); it != timedOutIds.end(); ++it)
+   {
+      SceneTimeoutEvent ev(*it);
+      m_sceneActor->dispatchEvent(&ev);
    }
 
    testForBoundaryRepel();

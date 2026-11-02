@@ -485,7 +485,7 @@
     height="100"
     parallaxAmount="0.8" />
   <spriteBox
-    name="noName"
+    name="landingPad2Lamp"
     texture="gen_landing_pad_blink"
     posX="2459.7184185597134"
     posY="529.86818131000246"
@@ -499,7 +499,7 @@
     height="32"
     parallaxAmount="0" />
   <spriteBox
-    name="noName_5"
+    name="landingPad3Lamp"
     texture="gen_landing_pad_blink"
     posX="2113.2606594172312"
     posY="523.23158229424234"

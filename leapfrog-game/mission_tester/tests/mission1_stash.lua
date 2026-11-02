@@ -157,7 +157,7 @@ test("stash: home with nothing: Edith on the way down, gone at the silo; mission
    t:expectHud("Mission complete")
    t:expectMission(2)
    t:expectState(t:mission(2).State.offered)
-   t:expectDialog("Three of the old beacons", "Bruno")
+   t:expectDialog("Two of the old beacons", "Bruno")
    t:expectQuestion(t:mission(2).Question.takeJob)
 end)
 

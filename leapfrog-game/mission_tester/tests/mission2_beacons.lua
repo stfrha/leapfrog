@@ -23,9 +23,17 @@ local function acceptJob(t, S, Q)
    t:takeOff()
 end
 
+local repairSeconds = 3.1
+
+-- Lands on a beacon and waits for the repair
+local function repair(t, pad)
+   t:land(pad)
+   t:wait(repairSeconds)
+end
+
 local function lightAll(t)
-   for _, pad in ipairs({ "landingPad2", "landingPad3", "workshopPad" }) do
-      t:land(pad)
+   for _, pad in ipairs({ "landingPad2", "landingPad3" }) do
+      repair(t, pad)
       t:takeOff()
    end
 end
@@ -33,12 +41,13 @@ end
 test("mission 2: the job is offered and the beacons are dark", function(t)
    local S, Q = start(t)
    t:expectState(S.offered)
-   t:expectDialog("Three of the old beacons", "Bruno")
+   t:expectDialog("Two of the old beacons", "Bruno")
    t:expectQuestionQueued(Q.takeJob)
    t:expectProperty("landingPad2", 2, 0)
    t:expectProperty("landingPad3", 2, 0)
-   t:expectProperty("workshopPad", 2, 0)
    t:expectMap("landingPad2", "siloHome", "hollow")
+   t:expectSprite("landingPad2Lamp", 0, 1)
+   t:expectSprite("landingPad3Lamp", 0, 1)
 end)
 
 test("mission 2: declining, then landing at the silo asks again", function(t)
@@ -53,22 +62,55 @@ test("mission 2: declining, then landing at the silo asks again", function(t)
    t:expectState(S.firstBeacon)
 end)
 
-test("mission 2: the beacons are lit in order, each with a landing", function(t)
+test("mission 2: the beacons are lit in order, each after a repair", function(t)
    local S, Q = start(t)
    acceptJob(t, S, Q)
    t:expectMap("landingPad2", "siloHome", "flashingSlow")
 
+   -- Landed: the repair starts, nothing has changed yet
    t:land("landingPad2")
+   t:expectHud("Repairing beacon")
+   t:expectState(S.firstBeacon)
+   t:expectSprite("landingPad2Lamp", 0, 1)
+   t:expectMap("landingPad3", "siloHome", "hollow")
+
+   t:wait(repairSeconds)
    t:expectState(S.secondBeacon)
    t:expectHud("Beacon lit")
    t:expectProperty("landingPad2", 2, 1)
    t:expectProperty("landingPad2", 4, 2)
+   t:expectSprite("landingPad2Lamp", 1.2)
    t:expectMap("landingPad2", "siloHome", "filled")
    t:expectMap("landingPad3", "siloHome", "flashingSlow")
    t:takeOff()
 
-   t:land("landingPad3")
-   t:expectState(S.thirdBeacon)
+   repair(t, "landingPad3")
+   t:expectState(S.collect)
+end)
+
+test("mission 2: leaving during the repair: it isn't done, land again", function(t)
+   local S, Q = start(t)
+   acceptJob(t, S, Q)
+   t:land("landingPad2")
+   t:wait(1)
+   t:takeOff()
+   t:wait(3)
+   t:expectState(S.firstBeacon)
+   t:expectDialog("You left before it was done", "Bruno")
+   t:expectSprite("landingPad2Lamp", 0, 1)
+
+   repair(t, "landingPad2")
+   t:expectState(S.secondBeacon)
+end)
+
+test("mission 2: a bounce during the repair doesn't start another", function(t)
+   local S, Q = start(t)
+   acceptJob(t, S, Q)
+   t:land("landingPad2")
+   t:wait(1)
+   t:setProperty("landingPad2", 1, 1)
+   t:wait(repairSeconds - 1)
+   t:expectState(S.secondBeacon)
 end)
 
 test("mission 2: landing on a beacon out of turn does nothing", function(t)
@@ -83,9 +125,10 @@ end)
 test("mission 2: landing again on a lit beacon doesn't count twice", function(t)
    local S, Q = start(t)
    acceptJob(t, S, Q)
-   t:land("landingPad2")
+   repair(t, "landingPad2")
    t:takeOff()
    t:land("landingPad2")
+   t:wait(repairSeconds)
    t:expectState(S.secondBeacon)
 end)
 
@@ -122,7 +165,7 @@ end)
 test("mission 2: progress survives a launch, quitting and continuing", function(t)
    local S, Q = start(t)
    acceptJob(t, S, Q)
-   t:land("landingPad2")
+   repair(t, "landingPad2")
    t:expectState(S.secondBeacon)
    t:takeOff()
 
@@ -141,7 +184,7 @@ end)
 test("mission 2: back at home the scene is rebuilt from the state", function(t)
    local S, Q = start(t)
    acceptJob(t, S, Q)
-   t:land("landingPad2")
+   repair(t, "landingPad2")
    t:takeOff()
    t:launch("launchSite1")
 
@@ -155,6 +198,8 @@ test("mission 2: back at home the scene is rebuilt from the state", function(t)
    t:expectProperty("landingPad3", 2, 0)
    t:expectMap("landingPad2", "siloHome", "filled")
    t:expectMap("landingPad3", "siloHome", "flashingSlow")
+   t:expectSprite("landingPad2Lamp", 1.2)
+   t:expectSprite("landingPad3Lamp", 0, 1)
 end)
 
 test("mission 2: a mission's holds answers for it, whatever its number", function(t)

@@ -625,6 +625,9 @@ bool CompoundObject::initCompoundObjectParts(
 
 namespace
 {
+   // The name of the tween that plays a shape's frames
+   const char* const c_frameTweenName = "frames";
+
    // Plays all frames of a ResAnim (any rows/cols layout) over the tween's
    // duration. Unlike oxygine's TweenAnim it keeps the sprite's size: a new
    // frame would otherwise reset the size to the frame's pixel size, while
@@ -726,8 +729,39 @@ void CompoundObject::doCommonShapeDefinitions(
       sprite->addTween(
          TweenFramesKeepSize(resAnim),
          (timeMS)(animatePeriod * 1000.0f),
-         -1);
+         -1)->setName(c_frameTweenName);
    }
+}
+
+bool CompoundObject::animateShape(const std::string& name, float period, int frame)
+{
+   spActor actor = getActor(name);
+   Sprite* sprite = dynamic_cast<Sprite*>(actor.get());
+   const ResAnim* resAnim = (sprite != NULL) ? sprite->getResAnim() : NULL;
+
+   if (resAnim == NULL)
+   {
+      return false;
+   }
+
+   sprite->removeTweensByName(c_frameTweenName);
+
+   if ((period > 0.0f) && (resAnim->getTotalFrames() > 1))
+   {
+      sprite->addTween(
+         TweenFramesKeepSize(resAnim),
+         (timeMS)(period * 1000.0f),
+         -1)->setName(c_frameTweenName);
+   }
+   else if ((frame >= 0) && (frame < resAnim->getTotalFrames()))
+   {
+      // Keep the size: a frame would reset it to its pixel size
+      Vector2 size = sprite->getSize();
+      sprite->setAnimFrame(resAnim->getFrame(frame));
+      sprite->setSize(size);
+   }
+
+   return true;
 }
 
 void CompoundObject::doCollisionDefinitions(
