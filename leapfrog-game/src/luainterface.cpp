@@ -583,7 +583,8 @@ static int c_startSceneTimer(lua_State *L)
 // c_watchFactory(factoryName, left) -> id
 // Asks a scene's object factory (<system type="objectFactory">) to say when
 // at most left of the objects it has spawned are alive. Pieces and drops of
-// those objects don't count. The event "FcLw" comes once, from the scene,
+// those objects don't count, and a factory with a spawnTotal must have
+// spawned them all first. The event "FcLw" comes once, from the scene,
 // with the returned id as parameter. A watch ends with the scene, and its
 // listener is cleared like a timer's, so call this from the scene setup.
 // Returns -1 if the scene has no such factory.

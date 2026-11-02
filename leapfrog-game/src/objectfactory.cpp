@@ -20,6 +20,8 @@ ObjectFactory::ObjectFactory(
    m_initialSpawn(0),
    m_maxAlive(0),
    m_tally(NULL),
+   m_spawnTotal(0),
+   m_spawnedSoFar(0),
    m_watchLeft(-1),
    m_watchId(0),
    m_attachedBody(NULL)
@@ -52,6 +54,7 @@ void ObjectFactory::readObjectFactoryNode(const xml_node& objectNode)
    m_interval = 1.0f / objectNode.attribute("intensity").as_float() * 1000.0f;
    m_fieldLifetime = objectNode.attribute("lifeTime").as_int();
    m_maxAlive = objectNode.attribute("maxAlive").as_int(0);
+   m_spawnTotal = objectNode.attribute("spawnTotal").as_int(0);
 
    m_tally = new SpawnTally();
 
@@ -85,7 +88,9 @@ void ObjectFactory::doUpdate(const oxygine::UpdateState& us)
          m_timeSinceLast = 0.0f;
       }
 
-      if ((m_watchLeft >= 0) && (m_tally->countAlive() <= m_watchLeft))
+      bool allSpawned = (m_spawnTotal == 0) || (m_spawnedSoFar >= m_spawnTotal);
+
+      if ((m_watchLeft >= 0) && allSpawned && (m_tally->countAlive() <= m_watchLeft))
       {
          m_watchLeft = -1;
 
@@ -108,10 +113,17 @@ void ObjectFactory::spawnObjects(int num)
       num = std::min(num, m_maxAlive - m_tally->countAlive());
    }
 
+   if (m_spawnTotal > 0)
+   {
+      num = std::min(num, m_spawnTotal - m_spawnedSoFar);
+   }
+
    if (num <= 0)
    {
       return;
    }
+
+   m_spawnedSoFar += num;
 
    // Find spawn position
    // If this ObjectFactory is attached to body,

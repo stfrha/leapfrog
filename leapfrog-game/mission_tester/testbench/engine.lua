@@ -23,6 +23,7 @@
 -- test fails on it unless it says it expects it.
 
 local xml = require("testbench.xml")
+local placement = require("testbench.placement")
 
 local Engine = {}
 Engine.__index = Engine
@@ -689,7 +690,8 @@ function Engine:startScene(file, sceneType)
    end
 
    local scene = { file = file, sceneType = sceneType, objects = {},
-      factories = {}, watches = {}, transit = {} }
+      factories = {}, watches = {}, transit = {},
+      box = placement.sceneBox(root, self.srcDir) }
 
    -- Object factories, for c_watchFactory
    for _, c in ipairs(root.children) do
@@ -827,6 +829,29 @@ function Engine:clearField(name, left)
    if watch ~= nil and left <= watch.left then
       self.scene.watches[name] = nil
       self:deliverFromScene("FcLw", watch.id)
+   end
+end
+
+-- An object a script adds must be clear of the boundaries, unless it comes
+-- in from them on purpose (see tests/placement.lua). The Leapfrog only has to
+-- be inside the scene: it can arrive in a corner.
+Engine.placedOutside = { stashAsteroid = true }
+
+function Engine:checkPlacement(name, x, y, isLeapfrog)
+   local box = self.scene and self.scene.box
+   if box == nil or Engine.placedOutside[name] then
+      return
+   end
+   local problem
+   if isLeapfrog then
+      if not placement.insideScene(box, x, y) then
+         problem = string.format("(%g, %g) is outside the %g x %g scene", x, y, box.width, box.height)
+      end
+   else
+      problem = placement.objectProblem(box, x, y)
+   end
+   if problem then
+      self:problem(string.format("%s in %s: %s", name, self.scene.file, problem))
    end
 end
 
@@ -1137,12 +1162,16 @@ function Engine:installApi(env)
       end
       local obj
       if file:match("^leapfrog") then
+         e:checkPlacement(name, x, y, true)
          obj = e:makeLeapfrog(name, file, x, y)
       else
          local root = e:readXml(file)
          if not root then return end
          obj = e:objectFromNode(name, root)
          obj.x, obj.y = x, y
+         if obj.behaviour ~= "swarm" then
+            e:checkPlacement(name, x, y, false)
+         end
       end
       e.scene.objects[name] = obj
       e:note("OBJECTS", string.format("%s from %s at (%s, %s)", name, file, tostring(x), tostring(y)))

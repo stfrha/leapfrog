@@ -144,6 +144,8 @@ Every step fails the test if the engine saw a problem:
 - an object that isn't in the scene (`c_registerEventHandler` shows an ERROR
   in the game; property and map calls are silently ignored there);
 - a map actor (body) the object doesn't have;
+- an object placed in a boundary, or a Leapfrog outside the scene (see
+  `tests/placement.lua`);
 - an unknown affiliation;
 - a `c_*` function the game registers that the tester has no mock for, and
   modules the game preloads: both are read from `src/luainterface.cpp`, so a

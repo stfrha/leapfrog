@@ -659,7 +659,11 @@ speed between `rockSpeedMin` and `rockSpeedMax`, and the pieces they break into 
 too. The defaults are 0 and 8. A breakable with `calm="true"` keeps the small default
 nudge, as the stash case does so that it can be hit.
 
-Rocks are pushed by the soft boundaries, so they come back into the scene.
+Rocks are pushed by the soft boundaries, so they come back into the scene. The push
+starts 75 units inside the scene's edge and grows with the square of the depth, so
+something that starts deep in a boundary is thrown across the scene. Keep factory
+areas and objects 75 from every edge. Changing a scene's size also moves that limit,
+so see [Positions](#positions).
 
 ### Add an object factory
 
@@ -670,11 +674,15 @@ A factory spawns objects from `<spawnObject>` entries in an area of a scene:
 | `spawnInitial` | How many to spawn when the scene starts |
 | `intensity` | New ones per second, 0 for none |
 | `maxAlive` | Most alive at a time, for a steady supply such as `ammoDrops` |
+| `spawnTotal` | Most in all, then it stops, for a field that grows from a few rocks |
 | `posX`, `posY`, `width`, `height` | The area they appear in |
 
 To react when a field is nearly cleared, watch the factory from the setup. Only the
 objects it spawned count, not their pieces or drops, so smaller rocks are still
-flying when the event comes:
+flying when the event comes. A factory that keeps spawning needs a `spawnTotal`: the
+event then waits until all of them have been spawned, while without one a field
+that starts small counts as nearly cleared at once, and `maxAlive` alone refills it
+for ever:
 
 <!-- verbatim: data/lua/mission_1.lua -->
 ```lua
@@ -958,12 +966,34 @@ numbers: `t:mission(2).State.collect`.
 `t:expectDialog` moves past what it finds, so a later check only sees newer lines.
 Use `t:countDialog` before it to count repeats.
 
+### Positions
+
+`tests/placement.lua` checks that nothing starts where the boundaries would throw it:
+
+| What | Rule |
+|---|---|
+| Object factory areas | All four corners clear of the boundaries in a space scene, inside the scene on the ground |
+| Objects in a scene file | The same, for their position |
+| Objects scripts add | The same, while every other test plays |
+| Leapfrog entries (launch, bounce, orbit, pad) | Inside the scene, since it may arrive in a corner |
+| Bounce entries | Outside the lower right transit field |
+| Stash asteroid | In the boundary, but thrown at no more than 50 units/s |
+| Swarm | The scene has room for its `minDistance` |
+
+Every problem is listed in one run. Factories attached to a moving body are skipped,
+because their position depends on the body.
+
+An object that should come in from a boundary needs a line in `placedOutside` in
+`testbench/engine.lua`, and a check of its own like the stash's. The speed it gets
+is about `sqrt(100 * depth^3 / (3 * mass))`.
+
 ### What fails without a check
 
 Every step fails the test if the mock saw one of these:
 
 - A Lua error in a script. The real game only logs it and carries on.
 - An object or map shape that isn't in the scene.
+- An object or Leapfrog that a script places too close to, or outside, the edge.
 - An unknown affiliation.
 - A `c_` function with no mock.
 
@@ -1038,7 +1068,7 @@ is listed here, and that everything listed exists.
 | `c_registerPropertyTrigger(actorName, 0, propertyId, type, lower, upper)` | Sends `OpTr` for values in or out of a range |
 | `c_clearAllTriggersAndEvents()` | Clears listeners and triggers. Only `mission_script.lua` calls it. |
 | `c_startSceneTimer(ticks)` | Starts a timer, and returns its id |
-| `c_watchFactory(name, left)` | Sends `FcLw` once when a factory has at most `left` of its objects alive, and returns an id, or -1 if there's no such factory |
+| `c_watchFactory(name, left)` | Sends `FcLw` once when a factory has at most `left` of its objects alive, after all of its `spawnTotal` if it has one. Returns an id, or -1 if there's no such factory. |
 
 ### Dialog, HUD and questions
 

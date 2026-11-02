@@ -108,6 +108,7 @@
     <None Include="tests\bad_mine.lua" />
     <None Include="tests\mission2_beacons.lua" />
     <None Include="tests\spaces.lua" />
+    <None Include="tests\placement.lua" />
     <None Include="tests\guide.lua" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

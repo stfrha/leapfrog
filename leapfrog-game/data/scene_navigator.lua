@@ -100,9 +100,9 @@ end
 -- atmosphere (near where the orbit was entered, the lower right corner, but
 -- out of its transit field: the insert burn pushes the Leapfrog on for a
 -- second)
-local spaces = {
+spaces = {
    ["deep_space_scene.xml"]  = { launch = { x = 20, y = 730 }, bounce = { x = 1050, y = 640 } },
-   ["debris_belt_scene.xml"] = { launch = { x = 30, y = 310 }, bounce = { x = 600, y = 380 } },
+   ["debris_belt_scene.xml"] = { launch = { x = 30, y = 310 }, bounce = { x = 470, y = 250 } },
 }
 
 -- Arriving from orbit, per landing scene (the scene a site leads to, see
@@ -114,7 +114,7 @@ local spaces = {
 -- (Stand-ins for now: the gold mine site is home_scene with the silo's
 -- pad, Alpha City is landing_scene with landing_pad1. The sites are in
 -- the planet's surface file, mining_planet_surface.xml.)
-local orbitArrivals = {
+orbitArrivals = {
    ["home_scene.xml"]    = { from = { x = 2736, y = 50 }, pad = "siloLandingPad", onPad = { x = 2736, y = 500 } },
    ["landing_scene.xml"] = { from = { x = 520,  y = 50 }, pad = "landing_pad1",   onPad = { x = 415,  y = 657 } },
 }

@@ -14,6 +14,7 @@ return {
    "key_items.lua",
    "mission2_beacons.lua",
    "spaces.lua",
+   "placement.lua",
    "guide.lua",
    "bad_mine.lua",
 }

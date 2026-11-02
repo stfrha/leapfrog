@@ -6,6 +6,11 @@
   exit opens and watches asteroidField, so keep that name. Tune with
   width, height, rockSpeedMin and rockSpeedMax here, spawnInitial on the
   field, and intensity and maxAlive on ammoDrops.
+
+  The boundaries' push starts 75 units inside the scene's edge, so keep the
+  factories' areas 75 from every edge. The mission tester checks this
+  (tests/placement.lua), and the entries in scene_navigator.lua and the stash
+  position in lua/mission_1.lua, which depend on the scene size too.
 -->
 <compoundObject
   needsGroupIndex="false">
@@ -56,11 +61,12 @@
     <objectFactoryProperties
       body="notApplicable"
       posX="240"
-      posY="40"
+      posY="80"
       width="200"
       height="150"
-      spawnInitial="14"
-      intensity="0"
+      spawnInitial="2"
+      intensity="0.5"
+      spawnTotal="14"
       lifeTime="60000">
       <spawnObject
         probabilityFactor="1">
@@ -93,12 +99,12 @@
     type="objectFactory">
     <objectFactoryProperties
       body="notApplicable"
-      posX="60"
-      posY="60"
-      width="680"
-      height="360"
+      posX="80"
+      posY="80"
+      width="440"
+      height="200"
       spawnInitial="1"
-      intensity="0.05"
+      intensity="0.5"
       maxAlive="2"
       lifeTime="60000">
       <spawnObject
@@ -114,7 +120,7 @@
               <pickupObjectProperties
                 pickupType="resourceAmmo"
                 amountType="fix"
-                amount="20" />
+                amount="50" />
             </behaviour>
             <dynamicCircle
               name="ammoDropBody"

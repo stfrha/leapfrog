@@ -26,7 +26,7 @@ local worlds = {
    mining = require('mining'),
 }
 
-local sceneWorld = {
+sceneWorld = {
    ["home_scene.xml"]       = "mining",
    ["landing_scene.xml"]    = "mining",
    ["deep_space_scene.xml"] = "mining",

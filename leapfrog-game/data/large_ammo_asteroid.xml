@@ -15,7 +15,7 @@
                file="medium_ammo_asteroid.xml" />
          </spawnObject>
          <spawnObject
-            probabilityFactor="1">
+            probabilityFactor="4">
            <childObject
              name="ammoPu1"
              posX="0"

@@ -62,7 +62,8 @@ local homeLaunchSiteTimer = -1
 local stash = {
    asteroid = "stashAsteroid",   -- stash_asteroid.xml
    case     = "stashCase",       -- stash_case.xml (what the asteroid spawns)
-   x = 860, y = 240,             -- outside the belt's right edge
+   x = 585, y = 180,             -- in the belt's right boundary: deeper and
+                                 -- it pushes the rock in far too fast
    speedX = -40,                 -- and drifting in
    field = "asteroidField",      -- debris_belt_scene.xml
    fieldLeft = 3,                -- it comes when this few rocks of the field

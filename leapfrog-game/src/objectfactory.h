@@ -45,6 +45,12 @@ private:
    int m_maxAlive;
    spSpawnTally m_tally;
 
+   // At most this many objects in all (0 = no limit), then it stops. A
+   // field that grows from a few rocks has a known size this way, so a
+   // watch counts down from it.
+   int m_spawnTotal;
+   int m_spawnedSoFar;
+
    // watch(): send FactoryLowEvent when this few are left (-1 = no watch)
    int m_watchLeft;
    int m_watchId;
@@ -68,7 +74,8 @@ public:
    ~ObjectFactory();
 
    // Sends one FactoryLowEvent with the id, when at most left objects of
-   // this factory are alive
+   // this factory are alive. With a spawnTotal, not before all of them
+   // have been spawned.
    void watch(int left, int id);
 
 protected:

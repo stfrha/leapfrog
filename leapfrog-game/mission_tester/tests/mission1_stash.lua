@@ -207,3 +207,30 @@ test("stash: a save from the big space before the belt existed is a new hunt", f
    t:setupScene()
    t:expectState(S.hunting)
 end)
+
+test("stash: the field is bigger than what is left when the stash comes", function(t)
+   local harness = require("testbench.harness")
+   local xml = require("testbench.xml")
+   t:newGame()
+   local stash = t:mission(1).Stash
+   local root = xml.readFile(harness.dataDir .. "/" .. stash.space)
+   local props
+   for _, c in ipairs(root.children) do
+      if c.tag == "system" and c.attr.name == stash.field then
+         props = xml.child(c, "objectFactoryProperties")
+      end
+   end
+   t:expect(props ~= nil, stash.field .. " isn't in " .. stash.space)
+
+   local initial = tonumber(props.attr.spawnInitial) or 0
+   local intensity = tonumber(props.attr.intensity) or 0
+   local total = tonumber(props.attr.spawnTotal) or 0
+
+   -- A field that grows must say how big it gets: the watch waits for that
+   if intensity > 0 then
+      t:expect(total > 0, stash.field .. " keeps spawning, so it needs a spawnTotal")
+      t:expect(total > stash.fieldLeft, "spawnTotal must be more than fieldLeft")
+   else
+      t:expect(initial > stash.fieldLeft, "spawnInitial must be more than fieldLeft")
+   end
+end)
