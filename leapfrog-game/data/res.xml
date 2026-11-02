@@ -31,7 +31,7 @@
 		<image file="ls_pull_spring.png"/>	
 		<image file="ls_support_booster.png"/>	
 		<image file="ls_tower.png"/>	
-		<image file="bomb_crate.png"/>	
+		<image file="bomb_crate.png" ppu="20"/>	
 		<image file="ammo_power_up.png"/>	
 		<image file="shield_power_up.png"/>	
 		<image file="fuel_power_up.png"/>	
@@ -69,5 +69,9 @@
 	<set path = "images/space" />
 	<atlas>
 		<image file="stash_case.png" ppu="20" trim="false" extend="false"/>
+	</atlas>
+	<set path = "images/space" />
+	<atlas>
+		<image file="stash_casestash_case.png" ppu="20" trim="false" extend="false"/>
 	</atlas>
 </resources>

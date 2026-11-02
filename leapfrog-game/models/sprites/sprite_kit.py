@@ -263,6 +263,23 @@ def mesh_object(name, bm, material=None, smooth_quads=False):
     return ob
 
 
+def prism(name, points_xz, y_front, depth, material=None):
+    """A flat plate cut to an outline, seen from the front: points_xz is the
+    outline (it may be concave), y_front its front face (towards the camera,
+    at -Y) and depth its thickness, going back towards +Y."""
+    bm = bmesh.new()
+    front = [bm.verts.new((x, y_front, z)) for x, z in points_xz]
+    back = [bm.verts.new((x, y_front + depth, z)) for x, z in points_xz]
+    bm.faces.new(front)
+    bm.faces.new(list(reversed(back)))
+    n = len(front)
+    for i in range(n):
+        j = (i + 1) % n
+        bm.faces.new((front[i], back[i], back[j], front[j]))
+    bmesh.ops.recalc_face_normals(bm, faces=bm.faces)
+    return mesh_object(name, bm, material)
+
+
 def box_object(name, center, size, material=None, rotation=(0.0, 0.0, 0.0), bevel_width=0.0):
     """One box as its own object (handy for parts that are rotated or tilted)."""
     bm = bmesh.new()

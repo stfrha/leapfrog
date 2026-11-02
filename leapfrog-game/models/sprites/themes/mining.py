@@ -179,6 +179,22 @@ def make_material(role, models_dir):
         return _smoke("smoke")
     if role == "neon_dead":
         return _simple("neon_dead", base=(0.10, 0.07, 0.08), rough=0.25, metallic=0.0)
+    if role == "case_olive":
+        return _weathered_paint("case_olive", paint=(0.075, 0.095, 0.035), rust=0.22, streak_scale=0.15)
+    if role == "strap_steel":
+        return _weathered_paint("strap_steel", paint=(0.20, 0.205, 0.22), rust=0.2, streak_scale=0.2)
+    if role == "latch_brass":
+        return _simple("latch_brass", base=(0.55, 0.37, 0.11), rough=0.38, metallic=1.0)
+    if role == "sign_yellow":
+        return _weathered_paint("sign_yellow", paint=(0.72, 0.53, 0.02), rust=0.14, streak_scale=0.25)
+    if role == "sign_black":
+        return _weathered_paint("sign_black", paint=(0.012, 0.012, 0.013), rust=0.08, streak_scale=0.25)
+    if role == "label_paper":
+        return _simple("label_paper", base=(0.50, 0.49, 0.43), rough=0.8, metallic=0.0)
+    if role == "label_red":
+        return _simple("label_red", base=(0.42, 0.03, 0.03), rough=0.6, metallic=0.0)
+    if role == "wood_crate":
+        return _wood_planks("wood_crate", dark=(0.075, 0.042, 0.018), light=(0.34, 0.21, 0.10))
     raise KeyError("mining theme has no material role '%s'" % role)
 
 
@@ -508,6 +524,95 @@ def _smoke(name):
     """Thin grey smoke: a soft, partly transparent surface (Cycles reads the Alpha input)."""
     mat = _simple(name, base=(0.30, 0.30, 0.32), rough=1.0, metallic=0.0)
     _try_input(mat.node_tree.nodes.get("Principled BSDF"), "Alpha", 0.35)
+    return mat
+
+
+def _wood_planks(name, dark, light):
+    """
+    Sawn planks, grain along the object's local X. Each plank gets its own
+    grain and tone from its object's random number, so make every plank an
+    object of its own and turn it to lie where it should.
+    """
+    mat = bpy.data.materials.new(name)
+    mat.use_nodes = True
+    nt = mat.node_tree
+    n = nt.nodes
+    l = nt.links
+    n.clear()
+
+    out = n.new("ShaderNodeOutputMaterial")
+    bsdf = n.new("ShaderNodeBsdfPrincipled")
+    l.new(bsdf.outputs["BSDF"], out.inputs["Surface"])
+
+    coord = n.new("ShaderNodeTexCoord")
+    info = n.new("ShaderNodeObjectInfo")
+
+    # Shift the coordinates by the plank's random number
+    shift = n.new("ShaderNodeMath")
+    shift.operation = 'MULTIPLY'
+    shift.inputs[1].default_value = 97.0
+    l.new(info.outputs["Random"], shift.inputs[0])
+    shift_xyz = n.new("ShaderNodeCombineXYZ")
+    l.new(shift.outputs["Value"], shift_xyz.inputs["X"])
+    l.new(shift.outputs["Value"], shift_xyz.inputs["Y"])
+    l.new(shift.outputs["Value"], shift_xyz.inputs["Z"])
+    shifted = n.new("ShaderNodeVectorMath")
+    shifted.operation = 'ADD'
+    l.new(coord.outputs["Object"], shifted.inputs[0])
+    l.new(shift_xyz.outputs["Vector"], shifted.inputs[1])
+
+    # Growth rings: bands across the plank, drawn out along it
+    rings_map = n.new("ShaderNodeMapping")
+    rings_map.inputs["Scale"].default_value = (0.07, 1.0, 1.0)
+    l.new(shifted.outputs["Vector"], rings_map.inputs["Vector"])
+    rings = n.new("ShaderNodeTexWave")
+    rings.wave_type = 'BANDS'
+    rings.bands_direction = 'Z'
+    rings.inputs["Scale"].default_value = 0.55
+    rings.inputs["Distortion"].default_value = 7.0
+    rings.inputs["Detail"].default_value = 4.0
+    rings.inputs["Detail Scale"].default_value = 1.2
+    l.new(rings_map.outputs["Vector"], rings.inputs["Vector"])
+
+    # Fine fibres
+    fibre_map = n.new("ShaderNodeMapping")
+    fibre_map.inputs["Scale"].default_value = (0.04, 1.0, 1.0)
+    l.new(shifted.outputs["Vector"], fibre_map.inputs["Vector"])
+    fibre = n.new("ShaderNodeTexNoise")
+    fibre.inputs["Scale"].default_value = 14.0
+    fibre.inputs["Detail"].default_value = 6.0
+    l.new(fibre_map.outputs["Vector"], fibre.inputs["Vector"])
+
+    grain = n.new("ShaderNodeMix")
+    grain.data_type = 'FLOAT'
+    _socket(grain.inputs, "Factor_Float").default_value = 0.35
+    l.new(rings.outputs["Fac"], _socket(grain.inputs, "A_Float"))
+    l.new(fibre.outputs["Fac"], _socket(grain.inputs, "B_Float"))
+
+    # A lighter or darker plank
+    tone = n.new("ShaderNodeMath")
+    tone.operation = 'MULTIPLY'
+    tone.inputs[1].default_value = 0.3
+    l.new(info.outputs["Random"], tone.inputs[0])
+    toned = n.new("ShaderNodeMath")
+    toned.operation = 'ADD'
+    l.new(_socket(grain.outputs, "Result_Float"), toned.inputs[0])
+    l.new(tone.outputs["Value"], toned.inputs[1])
+
+    ramp = n.new("ShaderNodeValToRGB")
+    ramp.color_ramp.elements[0].position = 0.25
+    ramp.color_ramp.elements[0].color = (dark[0], dark[1], dark[2], 1.0)
+    ramp.color_ramp.elements[1].position = 0.85
+    ramp.color_ramp.elements[1].color = (light[0], light[1], light[2], 1.0)
+    l.new(toned.outputs["Value"], ramp.inputs["Fac"])
+    l.new(ramp.outputs["Color"], bsdf.inputs["Base Color"])
+
+    bsdf.inputs["Roughness"].default_value = 0.72
+    bump = n.new("ShaderNodeBump")
+    bump.inputs["Strength"].default_value = 0.35
+    l.new(_socket(grain.outputs, "Result_Float"), bump.inputs["Height"])
+    l.new(bump.outputs["Normal"], bsdf.inputs["Normal"])
+
     return mat
 
 
