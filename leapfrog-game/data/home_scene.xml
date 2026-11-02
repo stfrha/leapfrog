@@ -3574,7 +3574,8 @@
         width="30"
         height="5" />
       <behaviour
-        type="landingPad" />
+        type="landingPad" 
+        fuel="sell"/>
     </compoundObject>
   </childObject>
   <childObject
