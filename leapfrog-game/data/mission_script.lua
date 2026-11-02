@@ -10,6 +10,15 @@ local common = require('common')
 local swarm = require('swarm')
 local debt = require('debt')
 local mission1 = require('mission1')
+local mission2 = require('mission2')
+
+-- The missions by number (currentMission). A mission has
+-- setupMissionStateScene, missionStateSceneEventHandler and firstState, and
+-- may have reentryOutcome. See documentation/lua_guide.md.
+local missions = {
+   [1] = mission1,
+   [2] = mission2,
+}
 
 -- The worlds' scripts, and which world each scene belongs to (a world's
 -- space and orbit scenes included). A scene not listed has no world script.
@@ -34,8 +43,8 @@ end
 
 -- The state a mission starts in (each mission declares its states by name)
 function lua_missionFirstState(mission)
-   if mission == 1 then
-      return mission1.firstState
+   if missions[mission] ~= nil then
+      return missions[mission].firstState
    end
    return 0
 end
@@ -102,8 +111,9 @@ function lua_setupMissionStateScene()
       world.setupScene()
    end
 
-   if currentMission == 1 then
-      mission1.setupMissionStateScene()
+   local mission = missions[currentMission]
+   if mission ~= nil then
+      mission.setupMissionStateScene()
    end
 
    -- Last: the Leapfrog exists by now (debt watches its credits)
@@ -122,8 +132,9 @@ function lua_missionStateSceneEventHandler(eventId, actorName, parameter1)
       world.eventHandler(eventId, actorName, parameter1)
    end
 
-   if currentMission == 1 then
-      mission1.missionStateSceneEventHandler(eventId, actorName, parameter1)
+   local mission = missions[currentMission]
+   if mission ~= nil then
+      mission.missionStateSceneEventHandler(eventId, actorName, parameter1)
    end
 end
 
@@ -142,7 +153,8 @@ function lua_reentryOutcome(r)
       world.reentryOutcome(r)
    end
 
-   if currentMission == 1 and mission1.reentryOutcome ~= nil then
-      mission1.reentryOutcome(r)
+   local mission = missions[currentMission]
+   if mission ~= nil and mission.reentryOutcome ~= nil then
+      mission.reentryOutcome(r)
    end
 end

@@ -943,6 +943,9 @@ function Engine:land(name)
    self.landedOn = obj
    if obj.behaviour == "landingPad" then
       obj.props[0], obj.props[1] = 1, 1
+      -- As in the game: the pad's lfLanded property changes, active or not,
+      -- before the landed event (a script can watch an inactive pad)
+      self:checkTriggers(obj, 1)
       if obj.props[2] ~= 0 then
          self:deliver(name, "LpLL", 0)
       end
@@ -965,6 +968,7 @@ function Engine:takeOff()
    self.landedOn = nil
    if obj and obj.behaviour == "landingPad" then
       obj.props[0], obj.props[1] = 2, 0
+      self:checkTriggers(obj, 1)
       if obj.props[2] ~= 0 then
          self:deliver(obj.name, "LpTO", 0)
       end

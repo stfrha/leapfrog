@@ -12,5 +12,6 @@ return {
    "reentry.lua",
    "landing_sites.lua",
    "key_items.lua",
-   "bad_mine.lua",
+   "mission2_beacons.lua",
+   "guide.lua",
 }

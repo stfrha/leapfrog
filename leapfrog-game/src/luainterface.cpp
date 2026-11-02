@@ -995,6 +995,7 @@ void LuaInterface::initLuaInterface(void)
    preloadModule("lua/swarm.lua", "swarm");
    preloadModule("lua/debt.lua", "debt");
    preloadModule("lua/mission_1.lua", "mission1");
+   preloadModule("lua/mission_2.lua", "mission2");
    preloadModule("lua/test_starts.lua", "test_starts");
 
    //result = lua_pcall(m_L, 0, 0, 0);

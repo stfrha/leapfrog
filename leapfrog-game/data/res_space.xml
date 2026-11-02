@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+<resources>
+	<set path = "images/space" />
+	<atlas>
+		<image file="hammer.png" trim="false" extend="false"/>
+		<image file="dock_station_base.png" ppu="20" trim="false" extend="false"/>
+		<image file="dock_arm.png" rows="4" ppu="20" trim="false" extend="false"/>
+		<image file="dock_clamp.png" ppu="20" trim="false" extend="false"/>
+		<image file="station_shield.png" trim="false" extend="false"/>
+		<image file="asteroid_cutout.png"/>	
+	</atlas>
+</resources>
