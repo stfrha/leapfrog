@@ -78,3 +78,72 @@ test("guide: the c_ functions it names exist", function(t)
          "lua_guide.md names " .. name .. ", which luainterface.cpp doesn't register")
    end
 end)
+
+-- The text of the guide's section 7
+local function reference(text)
+   local start = text:find("\n## 7%. Reference")
+   return start and text:sub(start) or ""
+end
+
+test("guide: the reference lists every registered c_ function", function(t)
+   local text = reference(readFile(guidePath()))
+   local source = readFile(harness.srcDir .. "/luainterface.cpp")
+   t:expect(text ~= "", "the guide has no section 7")
+
+   for line in source:gmatch("[^\n]+") do
+      local name = line:match('^%s*lua_register%(m_L, "(c_[%w_]+)"')
+      if name ~= nil then
+         t:expect(text:find("`" .. name .. "(", 1, true) ~= nil,
+            name .. " isn't in section 7 of lua_guide.md")
+      end
+   end
+end)
+
+-- The event codes declared in the game's headers, without commented-out
+-- ones. The headers are the ones proj/leapfrog.vcxproj lists: Lua can't
+-- list a folder on every platform.
+local function sourceEvents()
+   local codes = {}
+   local project = readFile(harness.dataDir .. "/../proj/leapfrog.vcxproj") or ""
+   for file in project:gmatch('ClInclude Include="%.%.\\src\\([^"]+%.h)"') do
+      local text = readFile(harness.srcDir .. "/" .. file) or ""
+      for line in text:gmatch("[^\n]+") do
+         if not line:match("^%s*//") then
+            local a, b, c, d = line:match("EVENT = eventID%('(.)', '(.)', '(.)', '(.)'%)")
+            if a ~= nil then
+               codes[a .. b .. c .. d] = true
+            end
+         end
+      end
+   end
+   return codes
+end
+
+test("guide: the reference and the source agree on the events", function(t)
+   local text = reference(readFile(guidePath()))
+   local codes = sourceEvents()
+   t:expect(next(codes) ~= nil, "no events found in the source")
+
+   for code in pairs(codes) do
+      t:expect(text:find("`" .. code .. "`", 1, true) ~= nil,
+         "event " .. code .. " isn't in section 7 of lua_guide.md")
+   end
+
+   local inTables = text:sub(text:find("### Events for scripts", 1, true) or 1,
+      (text:find("### Object properties", 1, true) or #text))
+   for code in inTables:gmatch("`(%a%a%a%a)`") do
+      t:expect(codes[code] or code == "QsYs" or code == "QsNo",
+         "lua_guide.md lists event " .. code .. ", which the source doesn't declare")
+   end
+end)
+
+test("guide: the test steps it names exist", function(t)
+   local text = readFile(guidePath())
+   local harnessText = readFile(package.searchpath("testbench.harness", package.path))
+   t:expect(harnessText ~= nil, "testbench/harness.lua can't be read")
+
+   for name in text:gmatch("[^%w_]t:(%l[%w_]*)%(") do
+      t:expect(harnessText:find("function T:" .. name .. "(", 1, true) ~= nil,
+         "lua_guide.md names t:" .. name .. ", which harness.lua doesn't have")
+   end
+end)

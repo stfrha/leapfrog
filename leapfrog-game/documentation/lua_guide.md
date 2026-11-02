@@ -4,15 +4,19 @@ How the game's story and mission logic is written in Lua: what runs when, how
 to build a mission, how events reach your code, and how the game moves between
 scenes.
 
-**Status:** draft. Sections 1 to 4 are written. Sections 5 to 7 are planned:
-
-- 5, Recipes: checklists for adding a scene, pad, question, key item or world
-- 6, Testing: writing and running mission tester tests
-- 7, Reference: every `c_` function, event and object property
+| Section | What it covers |
+|---|---|
+| [1. How it fits together](#1-how-it-fits-together) | What runs when |
+| [2. Worked example](#2-worked-example-the-dark-beacons) | A complete mission, step by step |
+| [3. Events and triggers](#3-events-and-triggers) | Listening, property triggers, timers, questions |
+| [4. Scene transitions](#4-scene-transitions) | Exits, entry positions, saving, known gaps |
+| [5. Recipes](#5-recipes) | Checklists for adding things to the game |
+| [6. Testing](#6-testing) | Running and writing mission tester tests |
+| [7. Reference](#7-reference) | Every `c_` function, event and object property |
 
 The mission tester (`tests/guide.lua`) checks this file. Code marked as coming
-from a file must still be in that file, and every `c_` function named here must
-exist in `src/luainterface.cpp`.
+from a file must still be in that file, and the functions, events and test steps
+named here must exist.
 
 ## 1. How it fits together
 
@@ -553,3 +557,540 @@ the reason given under [Dialog and the HUD](#dialog-and-the-hud).
 - **Hyperspace isn't implemented.** Scene type 3 has no exit handling.
 - **Quitting early loses progress.** Quitting at home before leaving the scene and
   continuing starts the mission over. The tester lists this as a known issue.
+
+## 5. Recipes
+
+Each recipe lists every file to touch. Use a test start and a mission tester test
+for anything new, as in section 2.
+
+### Add a mission
+
+1. Plan the states, so that `currentState` alone says where the player is.
+2. Create `data/lua/mission_<n>.lua` with `State`, `firstState`,
+   `setupMissionStateScene` and `missionStateSceneEventHandler`. It returns its
+   table. `mission_2.lua` is the smallest complete example.
+3. Add `preloadModule("lua/mission_<n>.lua", "mission<n>")` to `initLuaInterface` in
+   `src/luainterface.cpp`, before `test_starts`, and rebuild.
+4. In `data/mission_script.lua`, add a `require` and a line in the `missions` table.
+5. Add a line to `data/lua/test_starts.lua`.
+6. Add a test file, and list it in `tests/test_list.lua` and `mission_tester.vcxproj`.
+
+A mission may also have two optional functions:
+
+- `reentryOutcome(r)`, see section 4.
+- `holds(what)`, which tells the world to leave something to the mission. Today
+  `what` can only be `"swarm"`. Mission 1 uses it to keep the world's strippers
+  away during the stash hunt:
+
+<!-- verbatim: data/lua/mission_1.lua -->
+```lua
+mission1.holds = function(what)
+   if what == "swarm" then
+      return currentState == State.atOrb or inStash(currentState)
+   end
+   return false
+end
+```
+
+### Change state with or without a new setup
+
+There are two ways to change state, and both are in use:
+
+| Way | Use it when | Example |
+|---|---|---|
+| `currentState = x` and `lua_setupMissionStateScene()` | The new state needs other listeners, triggers or objects | `enterState` in `mission_2.lua` |
+| `currentState = x` alone | Everything needed is already in place, or a timer is running | `stashAsteroidBroken` in `mission_1.lua` |
+
+The first way disconnects running timers, as section 3 explains.
+
+### Add a scene
+
+1. Create the XML in the editor, or from a copy of a scene. Its root has a
+   `scene` behaviour, and it holds no Leapfrog, which the scripts add:
+
+   ```xml
+   <behaviour type="scene">
+     <sceneProperties sceneType="ground" width="3000" height="900"
+       hasUpperBoundary="false" hasLowerBoundary="true"
+       hasLeftBoundary="true" hasRightBoundary="true">
+       <states />
+     </sceneProperties>
+   </behaviour>
+   ```
+
+   `sceneType` is `ground` or `space`.
+
+2. If it uses textures outside `res.xml`, add it to `data/scene_resources.xml`.
+3. Add the XML to both Xcode projects, `proj.ios` and `proj.macosx`. Windows and
+   Android find it in `data` by themselves.
+4. Add it to `sceneWorld` in `mission_script.lua`. A scene that isn't listed has no
+   world script.
+5. Add an exit to it, as described under [Adding a new exit](#adding-a-new-exit).
+6. Add a test start with a `from`.
+
+### Add a landing pad
+
+Add a child object to the scene. The shape's name is the name of its square on
+the map, and `collisionEntity` must be `landingPad`:
+
+```xml
+<childObject name="fuelDepot" posX="1200" posY="580">
+  <compoundObject needsGroupIndex="false">
+    <staticBox name="fuelDepotPad" texture="transparent"
+      posX="0" posY="0" angle="0" zLevel="192"
+      collisionEntity="landingPad" collisionCategory="1" collisionMask="65533"
+      width="28" height="5" />
+    <behaviour type="landingPad" fuel="sell" fuelPrice="5" />
+  </compoundObject>
+</childObject>
+```
+
+| Attribute on `behaviour` | Values | Default |
+|---|---|---|
+| `active` | `true`, `false` | `true` |
+| `fuel` | `none`, `sell`, `free` | `none` |
+| `fuelPrice` | Credits per unit, for `sell` | 5 |
+| `fuelRate` | Units per second | 12 |
+| `fuelSupply` | Units, for `free`; -1 means no limit | 100 |
+
+Fuel set here is there in every mission. To change it for one mission, use
+properties 2 to 4 from that mission's setup.
+
+### Add a landing site on the planet
+
+1. Add a `<landingSite>` to the planet's surface file, here
+   `mining_planet_surface.xml`. `angle` places it, and `hidden="true"` keeps it off
+   the planet until a script shows it:
+
+   ```xml
+   <landingSite name="newMine" label="New Mine" angle="-30" texture=""
+     scene="landing_scene.xml" hidden="true" />
+   ```
+
+2. If `scene` is a new scene, add it to `orbitArrivals` in `scene_navigator.lua`,
+   with the position above the scene, the pad and the position on the pad. Without
+   this the Leapfrog doesn't enter.
+3. For a hidden site, add a `solution` key item, and show the site in the orbit
+   scene's setup:
+
+   <!-- verbatim: data/lua/worlds/mining.lua -->
+   ```lua
+   c_setLandingSiteShown(BadMine.site, c_hasItem(BadMine.solution))
+   ```
+
+`c_setLandingSiteShown` only works in the orbit scene, and only for that visit, so
+it belongs in setup.
+
+### Ask a question
+
+1. Add an id to the script's `Question` table, in the range for that script.
+2. Put the lines leading up to it in the dialog, then call `c_askQuestion`.
+3. In the handler, check both the event and the id.
+4. If the question matters, ask it again on a later landing. An unanswered question
+   ends with the scene.
+
+### Add a key item
+
+1. Add it to `data/key_items.xml`:
+
+   ```xml
+   <keyItem id="stationPass" kind="pass" name="Station pass" issuer="miners" tier="1"/>
+   ```
+
+   `kind` is `pass`, `solution`, `route` or `blueprint`. Add `initial="true"` if the
+   player starts with it.
+
+2. Hand it over with `c_giveItem("stationPass")`. The HUD log says so, and the save
+   keeps it.
+3. Check it with `c_hasItem`. To see whether it was ever given or was taken away,
+   use `c_itemState`, which is how `mining.lua` hands the bad mine solution over
+   only once.
+
+Nothing in the game enforces an item yet. Pads, stations and hyperspace don't check
+passes or routes, so any effect has to come from a script.
+
+### Add an object during a mission
+
+Use `c_addPositionedChildObject` with a guard, since setup can run more than once.
+Objects added this way aren't saved, so add them again for the states that need
+them:
+
+<!-- verbatim: data/lua/mission_1.lua -->
+```lua
+local function addStashAsteroid()
+   if not c_objectExists(stash.asteroid) then
+      c_addPositionedChildObject("stash_asteroid.xml", stash.asteroid, stash.x, stash.y)
+   end
+   listen(stash.asteroid, "BrBR")
+end
+```
+
+A new XML file needs adding to both Xcode projects.
+
+`c_addMissionStateSceneObjects(file)` is the alternative for many objects. It adds
+a file's shapes, systems and child objects at their own positions, but not a
+behaviour at the file's root.
+
+An object that another object spawns appears on the next update. Mission 1 starts a
+short timer when the asteroid breaks, and listens to the case when it runs out.
+
+### Make something that gives a reward
+
+Use a `breakableObject` that spawns `pickupObject`s, as `stash_case.xml` does.
+`numberOfSpawns` sets how many, and each `spawnObject` is chosen with the weight in
+`probabilityFactor`.
+
+| `pickupObjectProperties` | Values |
+|---|---|
+| `pickupType` | `resourceCoin`, `resourceFuel`, `resourceAmmo`, `resourceShield` |
+| `amountType` | `fix`, with `amount`, or `random`, with `amountMin` and `amountMax` |
+
+### Start a swarm of strippers
+
+Call this from setup, for every state in which the swarm should be there. It keeps a
+swarm that's already in the scene. Have the mission's `holds` return true for
+`"swarm"` if the world shouldn't start its own:
+
+```lua
+local swarm = require('swarm')
+
+swarm.start("swarm", "stripper_swarm.xml", function(name)
+   -- The Leapfrog has been stripped, and the swarm has stopped
+end)
+```
+
+To add one, require the module at the top of the script, as above. Rates and limits
+are in `stripper_swarm.xml`, and `swarm.set` changes them during play.
+
+### Add a docking station
+
+Add it as a child object of a space scene:
+
+```xml
+<childObject name="dockingStation1" file="docking_station.xml" posX="1050" posY="330" />
+```
+
+Docking and undocking send `DsDk` and `DsUd` while the station is active. Its fuel
+works as on a landing pad, and is set on the behaviour in `docking_station.xml`.
+
+### Add a message sender
+
+Add a line to `setSenders` in `data/lua/common.lua`:
+
+<!-- verbatim: data/lua/common.lua -->
+```lua
+c_setSenderAffiliation("Raiders", "enemy")
+```
+
+Senders go in `common.lua` because it runs at every setup, so an affiliation follows
+the story after a load. A sender can also have its own colour, with
+`c_setSenderColor`. A sender that isn't set stays phosphor green.
+
+### Add a world
+
+1. Create `data/lua/worlds/<world>.lua` with `setupScene` and `eventHandler`. It may
+   have `reentryOutcome`. It returns its table.
+2. Add a `preloadModule` line for it to `src/luainterface.cpp`, and rebuild.
+3. In `mission_script.lua`, add it to `worlds`, and add its scenes to `sceneWorld`.
+4. Give it the next block of question ids, 200 to 299.
+
+Put what's true whatever mission is running in the world script, and the story in
+the mission script.
+
+### Extend the C++ side
+
+**A new `c_` function:**
+
+1. Write `static int c_<name>(lua_State *L)` in `src/luainterface.cpp`.
+2. Add `lua_register(m_L, "c_<name>", c_<name>);` to `initLuaInterface`.
+3. Add a mock to `mission_tester/testbench/engine.lua`, as `api.c_<name>`. Until then,
+   every test fails with "the tester has no mock".
+4. Add it to section 7. Until then, the guide test fails.
+
+**A new event:**
+
+1. Declare a class with `enum { EVENT = eventID('A', 'b', 'C', 'd') };`, and dispatch
+   it from the object.
+2. To pass a parameter to Lua, add a branch to `luaEventListner`. Other events
+   arrive with parameter 0.
+3. Add it to section 7.
+4. In a test, send it with `t:event(object, "AbCd")`.
+
+**A new property:** add it to the object's `m_properties` in id order. Handle
+writes from Lua in `setPropertyImpl`, and read the value in the mock if tests need
+it. Pass `true` as the last `ObjectProperty` argument to make it read-only for Lua.
+
+## 6. Testing
+
+The mission tester runs the real Lua scripts against a mock of the C++ game. A test
+says what the player does, and the mock sends the events the game would send. It
+tests story logic and bookkeeping, not physics or timing. `mission_tester/README.md`
+has the full list of steps and checks.
+
+### Running it
+
+| Where | How |
+|---|---|
+| Visual Studio | Build the `mission_tester` project, which also runs the tests. A failure fails that project's build. |
+| Windows command prompt | `leapfrog-game\mission_tester\run_tests.bat`, after a build |
+| Mac | `leapfrog-game/mission_tester/build.sh` |
+
+Add arguments after `--` on the Mac: `build.sh -- --filter "mission 2" --verbose`.
+
+| Argument | Effect |
+|---|---|
+| `--filter <text>` | Only tests whose name contains the text |
+| `--verbose` | Prints everything that happened in each test |
+| `<files>` | Runs these test files instead of the list |
+
+The result is one line per test. A failure gives the expected and actual values, the
+line of the check, and the last 12 things that happened.
+
+### Writing a test
+
+A test file calls `test(name, function(t) ... end)`. Each test starts from nothing,
+so start it with `t:newGame()`, `t:menuTestStart(i)` or a small helper of your own:
+
+<!-- verbatim: mission_tester/tests/mission2_beacons.lua -->
+```lua
+local function acceptJob(t, S, Q)
+   t:land("siloLandingPad")
+   t:answer(Q.takeJob, true)
+   t:expectState(S.firstBeacon)
+   t:takeOff()
+end
+```
+
+`t:mission(n)` gives you the mission's module, so you can use names rather than
+numbers: `t:mission(2).State.collect`.
+
+### Common steps
+
+| Step | What it does |
+|---|---|
+| `t:newGame()` | Starts a fresh install |
+| `t:restartGame()`, then `t:menuContinue()` | Quits, starts again, and continues the save |
+| `t:menuTestStart(i)` | Starts a line of `test_starts.lua` |
+| `t:land(name)`, `t:takeOff()` | Lands on a pad or launch site, and takes off |
+| `t:answer(id, yes)` | Answers the open question |
+| `t:wait(seconds)` | Runs the scene timers |
+| `t:launch(site)` | Lands on the site and launches, if a script triggers it |
+| `t:exitScene(type, parameter)` | Exits the scene, as in section 4 |
+| `t:reentry(outcome, site, distance)` | Ends the orbit scene |
+| `t:event(object, id, parameter)` | Sends any game event |
+| `t:breakObject(name)` | Breaks an object, including its single spawn |
+| `t:setProperty(object, id, value)` | Changes a property from the game's side |
+| `t:setGlobal(name, value)`, `t:setupScene()` | Changes a global and sets up again |
+
+### Common checks
+
+| Check | What it tests |
+|---|---|
+| `t:expectScene(file)`, `t:expectMission(n)`, `t:expectState(value)` | Where the game is |
+| `t:expectDialog(text, sender)`, `t:expectNoDialog(text)` | Dialog since the last match |
+| `t:expectHud(text)` | The HUD log |
+| `t:expectQuestion(id)`, `t:expectQuestionQueued(id)`, `t:expectNoQuestionPending()` | Questions |
+| `t:expectProperty(object, id, value)` | A property |
+| `t:expectMap(object, actor, state)`, `t:expectMapShown(object, actor, shown)` | The map |
+| `t:expectListening(object, event, count)` | Registered listeners |
+| `t:expectItem(id, state)`, `t:expectSaved(field, value)` | Key items and the save |
+| `t:expect(condition, message)`, `t:expectEqual(actual, expected, what)` | Anything else |
+
+`t:expectDialog` moves past what it finds, so a later check only sees newer lines.
+Use `t:countDialog` before it to count repeats.
+
+### What fails without a check
+
+Every step fails the test if the mock saw one of these:
+
+- A Lua error in a script. The real game only logs it and carries on.
+- An object or map shape that isn't in the scene.
+- An unknown affiliation.
+- A `c_` function with no mock.
+
+If a test expects one of these, allow it with `t:allowProblem(text)`.
+
+### Known issues
+
+`known(name, reason, function(t) ... end)` is a test of how the game should behave
+but doesn't yet. It reports `KNOWN` while it fails, and fails once the behaviour
+works, so that you turn it into a normal `test`.
+
+### What the tests don't cover
+
+- Physics, flying and hit detection. A test just says the Leapfrog landed.
+- C++ changes. The mock is a separate copy of the behaviour, and it can be wrong. If
+  you change how an event or property works in C++, change `engine.lua` as well.
+- Fuel flow over time. The mock pad gives its fuel all at once on landing.
+- Whether a line of dialog fits on screen or reads well.
+
+## 7. Reference
+
+The tester checks that every registered `c_` function and every event in the source
+is listed here, and that everything listed exists.
+
+### Functions a script provides
+
+| Script | Function | Called |
+|---|---|---|
+| Mission | `setupMissionStateScene()` | At every setup |
+| Mission | `missionStateSceneEventHandler(eventId, actorName, parameter1)` | For every event |
+| Mission | `firstState` (a value) | When the mission starts |
+| Mission, optional | `reentryOutcome(r)` | When the orbit scene exits |
+| Mission, optional | `holds(what)` | When the world asks through `missionHolds` |
+| World | `setupScene()`, `eventHandler(eventId, actorName, parameter1)` | Before the mission's |
+| World, optional | `reentryOutcome(r)` | Before the mission's |
+
+### Lua helpers
+
+| Function | Purpose |
+|---|---|
+| `listen(actorName, eventId)` | Registers for an event, once per clear |
+| `lua_setupMissionStateScene()` | Clears listeners and triggers, and runs all setups |
+| `lua_missionFirstState(mission)` | A mission's first state |
+| `missionHolds(what)` | True if the running mission has taken `what` over |
+| `swarm.start(name, file, onStripped, resources)` | Adds and watches a swarm |
+| `swarm.stop(name, recall)` | Stops spawning, and recalls the strippers if `recall` is true |
+| `swarm.set(name, rate, maxAlive)` | Changes a swarm's rate and limit |
+| `swarm.isRunning(name)`, `swarm.isStripped(resources)` | Checks a swarm or the Leapfrog |
+| `debt.charge(amount, what, later)` | Charges credits, and Bruno lends the rest |
+| `debt.owed()`, `debt.isOwing()` | What is owed, and whether anything is |
+
+### Scene and objects
+
+| Function | Purpose |
+|---|---|
+| `c_addPositionedChildObject(file, name, x, y)` | Adds an object from a file |
+| `c_addMissionStateSceneObjects(file)` | Adds a file's shapes, systems and child objects |
+| `c_objectExists(name)` | True if the scene has the object |
+| `c_setObjectProperty(name, propertyId, value)` | Sets a property; ignored for a missing object or read-only property |
+| `c_getObjectProperty(name, propertyId)` | Reads a property; 0 for a missing object |
+| `c_setPanningObject(name)` | Sets the object the camera follows |
+
+### Events and timers
+
+| Function | Purpose |
+|---|---|
+| `c_registerEventHandler(actorName, eventId, 0, 0)` | Registers for an event. Use `listen` instead. |
+| `c_registerPropertyTrigger(actorName, 0, propertyId, type, lower, upper)` | Sends `OpTr` for values in or out of a range |
+| `c_clearAllTriggersAndEvents()` | Clears listeners and triggers. Only `mission_script.lua` calls it. |
+| `c_startSceneTimer(ticks)` | Starts a timer, and returns its id |
+
+### Dialog, HUD and questions
+
+| Function | Purpose |
+|---|---|
+| `c_addDialogMessage(message, sender, leftSide, preDelay, postDelay, affiliation)` | Queues a line. The affiliation is optional. |
+| `c_setSenderAffiliation(sender, affiliation)` | Sets a sender's colour by affiliation |
+| `c_setSenderColor(sender, "rrggbb")` | Gives a sender its own colour; nil removes it |
+| `c_hudLog(text, critical)` | Writes a line in the HUD log |
+| `c_askQuestion(id, text, sender, flightText)` | Asks a yes/no question |
+| `c_cancelQuestion(id)` | Takes back a question, or all of them with no id, with no answer event |
+| `c_leapfrogStandsOn()` | The pad or launch site the Leapfrog stands on, or nil |
+
+### Map
+
+| Function | Purpose |
+|---|---|
+| `c_setObjectMapState(name, shape, state)` | Sets a square: 0 hollow, 1 filled, 2 flashing slowly, 3 flashing fast |
+| `c_setObjectMapAffiliation(name, shape, affiliation)` | Sets a square's colour |
+| `c_setObjectMapShown(name, shape, shown)` | Shows or hides a square |
+
+Affiliations are `none`, `leapfrog`, `neutral`, `enemy` and `friendly`.
+
+### Key items
+
+| Function | Purpose |
+|---|---|
+| `c_hasItem(id)` | True if the player holds it |
+| `c_itemState(id)` | `"unknown"`, `"held"` or `"revoked"` |
+| `c_itemInfo(id)` | A table with id, kind, name, issuer, tier, initial and state |
+| `c_giveItem(id, quiet)` | The player holds it |
+| `c_revokeItem(id, quiet)` | Taken away by its issuer |
+| `c_forgetItem(id, quiet)` | Lost, back to unknown |
+| `c_itemsHeld(kind)` | The ids held, of one kind or all |
+
+`quiet` is optional, and leaves out the HUD line. An id that isn't in
+`key_items.xml` shows an error on the message display.
+
+### Scenes and saving
+
+| Function | Purpose |
+|---|---|
+| `c_startScene(scene, sceneType)` | Arms a scene to start on the next update |
+| `c_exitSceneSaveGameStatus(scene, mission, state, type, exitScene, exitType, exitParameter)` | Saves at a scene exit |
+| `c_saveGameStatus(scene, mission, state, type)` | Saves the first scene of a game. It has no exit data. |
+| `c_loadLatestSave()` | Goes back to the latest save, as after a death |
+| `c_lastReentry()` | Returns outcome, siteIndex, siteName, siteScene, distance and burn |
+| `c_setLandingSiteShown(name, shown)` | Shows or hides a site, in the orbit scene only |
+
+### Events for scripts
+
+| Event | Sent by | Parameter |
+|---|---|---|
+| `LpLL`, `LpTO` | Landing pad, while active | 0 |
+| `LsLL` | Launch site, while active | 0 |
+| `LsSC` | Launch site, sequence complete | 0 |
+| `DsDk`, `DsUd` | Docking station, while active | 0 |
+| `BrBR` | Breakable object broke | 0 |
+| `BrSW` | Breakable object spawned something | 0 |
+| `ExEX` | Explosive object exploded | 0 |
+| `PuPU` | Pickup taken | 0 |
+| `LfSt` | `leapfrog1`, a stripper took something | Property id, or 0 |
+| `LfMr` | `leapfrog1`, mode reached | 0 |
+| `OpTr` | Any object, a trigger fired | Property id |
+| `OpPC` | Any object, a property changed | 0 |
+| `ScTO` | The scene, a timer ran out | Timer id |
+
+`QsYs` and `QsNo` aren't object events. The scene passes them straight to Lua with
+the question id.
+
+### Internal events
+
+These are used inside the C++ game, and a script has no use for them: the scene exit
+events `LaTD`, `DsTO` and `OSLC`, the property write events `LsxL`, `LxsM`, `LxsE` and
+`LxsL`, and `CoCR`, `CoDE`, `GsRD`, `GsTR`, `OsOE` and `SaPA`.
+
+### Object properties
+
+Read with `c_getObjectProperty`, and write with `c_setObjectProperty` unless marked
+read-only. Values are floats, so use `math.floor` before showing credits.
+
+| Object | Id | Property |
+|---|---|---|
+| Landing pad | 0 | State: 0 unstable, 1 landed, 2 in the air. Read-only. |
+| | 1 | `lfLanded`: 1 while the Leapfrog stands on it. Read-only. |
+| | 2 | `active`: 1 or 0. An inactive pad holds the Leapfrog, but gives no events or fuel. |
+| | 3 | `fuelSupply`: fuel left at a free pad, -1 for no limit |
+| | 4 | `fuelService`: 0 none, 1 sell, 2 free |
+| Launch site | 0 | State. Read-only. |
+| | 1 | Write to trigger the launch |
+| | 2 | `active`: 1 or 0 |
+| | 3 | Write to abort a launch that's still waiting |
+| Docking station | 0 | State: 0 ready, 1 capturing, 2 docked, 3 undocking, 4 refused. Read-only. |
+| | 1 | 1 while docked. Read-only. |
+| | 2, 3, 4 | As for a landing pad |
+| Leapfrog | 0 | Mode: 0 reset, 1 deep space, 2 landing, 3 orbit, 4 re-entry |
+| | 1 | Environment: 0 deep space, 1 ground, 2 orbit, 3 launch |
+| | 2, 3, 4 | State, x and y. Read-only. |
+| | 5, 6, 7, 8, 9 | Ammo, shield, fuel, credits, damage |
+| | 10 | Leg health, 0 to 1. Writing raises every joint to at least the value. |
+| Swarm | 0 | 1 spawning, 0 stopped |
+| | 1, 2 | Spawns per second, and most alive at a time |
+| | 3, 4 | Alive now, and spawned so far. Read-only. |
+| | 5 | Write 1 to recall the live strippers |
+| Breakable object | 0 | Damage |
+| Explosive object | 0 | Impulse needed to explode |
+| Steerable object | 0 | Mode: 0 wander, 1 seek, 2 pursuit, 3 flee, 4 wander-hunt, 5 fixed |
+| | 1, 2, 3, 4 | x, y, seek x, seek y. Read-only. |
+| | 5, 6, 7, 8, 9 | Ammo, shield, fuel, credits, damage |
+| Stripper | 0, 1, 2 | State, x, y. Read-only. |
+
+### Numbers and ranges
+
+| Item | Values |
+|---|---|
+| Scene type | 0 landing, 1 deep space, 2 orbit, 3 hyperspace |
+| Timer ticks | 60 a second |
+| Question ids | Missions 1 to 99, mining 100 to 199, next world 200 to 299, common 1000 and up |
+| Mission number | 0 is free play |

@@ -156,3 +156,13 @@ test("mission 2: back at home the scene is rebuilt from the state", function(t)
    t:expectMap("landingPad2", "siloHome", "filled")
    t:expectMap("landingPad3", "siloHome", "flashingSlow")
 end)
+
+test("mission 2: a mission's holds answers for it, whatever its number", function(t)
+   start(t)
+   t:expect(t.engine:callLuaResults("missionHolds", "swarm")[1] == false, "mission 2 holds nothing")
+   t:mission(2).holds = function(what)
+      return what == "swarm"
+   end
+   t:expect(t.engine:callLuaResults("missionHolds", "swarm")[1] == true, "mission 2 holds the swarm")
+   t:mission(2).holds = nil
+end)

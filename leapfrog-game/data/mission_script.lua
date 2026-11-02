@@ -14,7 +14,7 @@ local mission2 = require('mission2')
 
 -- The missions by number (currentMission). A mission has
 -- setupMissionStateScene, missionStateSceneEventHandler and firstState, and
--- may have reentryOutcome. See documentation/lua_guide.md.
+-- may have reentryOutcome and holds. See documentation/lua_guide.md.
 local missions = {
    [1] = mission1,
    [2] = mission2,
@@ -58,8 +58,9 @@ currentState = 0
 -- alone. what: "swarm" (the world's stripper swarm in deep space). A
 -- mission answers with an optional holds(what) function.
 function missionHolds(what)
-   if currentMission == 1 and mission1.holds ~= nil then
-      return mission1.holds(what)
+   local mission = missions[currentMission]
+   if mission ~= nil and mission.holds ~= nil then
+      return mission.holds(what)
    end
    return false
 end
