@@ -105,6 +105,7 @@
     <None Include="tests\reentry.lua" />
     <None Include="tests\landing_sites.lua" />
     <None Include="tests\key_items.lua" />
+    <None Include="tests\bad_mine.lua" />
     <None Include="tests\mission2_beacons.lua" />
     <None Include="tests\guide.lua" />
   </ItemGroup>
