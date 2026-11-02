@@ -39,6 +39,7 @@ local function setSenders()
    c_setSenderAffiliation("Bruno", "neutral")
    c_setSenderAffiliation("Recovery", "neutral")
    c_setSenderAffiliation("Station", "neutral")
+   c_setSenderAffiliation("Raiders", "enemy")
 
    -- Edith is on the Leapfrog's side, but her messages get a colour of
    -- their own so they don't look like the pilot's white ones

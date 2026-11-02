@@ -2,6 +2,7 @@
 return {
    "scripts.lua",
    "mission1_home.lua",
+   "mission1_stash.lua",
    "mining_repair.lua",
    "test_mission.lua",
    "saving.lua",

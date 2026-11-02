@@ -12,7 +12,7 @@ test("saving: continuing after launching resumes in deep space", function(t)
    t:restartGame()
    t:expectScene("deep_space_scene.xml")
    t:expectMission(1)
-   t:expectState(m.State.atOrb)
+   t:expectState(m.State.hunting)
 end)
 
 test("saving: resources and leg health are saved at a scene exit", function(t)

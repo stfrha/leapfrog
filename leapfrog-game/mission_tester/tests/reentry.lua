@@ -134,6 +134,8 @@ end)
 
 test("re-entry: bounced: deep space again, the strippers after a breather", function(t)
    toOrbit(t)
+   -- After mission 1 (it runs the strippers itself until it is done)
+   t:setGlobal("currentState", t:mission(1).State.done)
    t:reentry("bounced")
    t:expectScene("deep_space_scene.xml")
    t:expectSaved("scene", "deep_space_scene.xml")

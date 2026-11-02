@@ -95,6 +95,7 @@
     <None Include="tests\test_list.lua" />
     <None Include="tests\scripts.lua" />
     <None Include="tests\mission1_home.lua" />
+    <None Include="tests\mission1_stash.lua" />
     <None Include="tests\mining_repair.lua" />
     <None Include="tests\test_mission.lua" />
     <None Include="tests\saving.lua" />

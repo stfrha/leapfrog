@@ -2,6 +2,8 @@
 
 local mission1 = {}
 
+local swarm = require('swarm')
+
 -- Mission 1's states, by name. currentState holds one of these numbers;
 -- the number is what is saved, so give each state a number of its own and
 -- don't renumber a state that saved games may hold. Always refer to a
@@ -14,6 +16,17 @@ local State = {
    accepted         = 11,  -- fly to the Orb, one landing pad at a time;
                            -- Bruno has put free fuel in landingPad2 and 3
    atOrb            = 12,  -- Edith has cut in, the launch site is on the map
+
+   -- Deep space: the stolen stash (launched from the Orb's launch site)
+   hunting          = 13,  -- find Bruno's asteroid: a big one out past the
+                           -- station (stash_asteroid.xml); others' drops
+                           -- are his to keep
+   caseFound        = 14,  -- blasted open: a case inside (stash_case.xml)
+   jackpot          = 15,  -- the case is open, the pickups are out; the
+                           -- raiders are on their way
+   raided           = 16,  -- the raiders' strippers take it all back
+   stripped         = 17,  -- left with fuel to limp home
+   done             = 18,  -- home at the silo, Edith is gone
 
    -- The old test mission (landing_scene, deep_space_scene). The main
    -- menu's test entries start it with state 1.
@@ -39,6 +52,139 @@ local homeStartFuel = 30
 -- takes to show (frames).
 local homeEdithDialogTicks = 660
 local homeLaunchSiteTimer = -1
+
+-- ------------------------------------------------------------------------
+-- The stolen stash (deep space). The stash asteroid looks like any big
+-- asteroid; blasted, it reveals the raiders' case; shot open, the case
+-- spills the jackpot. Then the raiders' strippers come and take it all
+-- back. (Upgrades: when they exist, the case gives a taste of them too.)
+
+local stash = {
+   asteroid = "stashAsteroid",   -- stash_asteroid.xml
+   case     = "stashCase",       -- stash_case.xml (what the asteroid spawns)
+   x = 1250, y = 170,            -- out past the docking station (1050, 330)
+}
+mission1.Stash = stash
+
+local edithGuessTicks = 600      -- Edith's wrong guess, 10 s into the hunt
+local caseCheckTicks = 10        -- the case appears on the update after the
+                                 -- asteroid breaks: listen to it then
+local jackpotTicks = 900         -- 15 s to grab the loot before the raid
+local raidAgainTicks = 180       -- back in deep space with the loot out
+local limpHomeFuel = 15          -- what the raiders leave in the tank
+mission1.limpHomeFuel = limpHomeFuel
+
+local edithGuessTimer = -1
+local caseTimer = -1
+local raidTimer = -1
+
+local function inStash(state)
+   return state == State.hunting or state == State.caseFound or state == State.jackpot
+      or state == State.raided or state == State.stripped
+end
+
+-- mission_script.lua's missionHolds: mission 1 runs the strippers itself
+-- from the launch until it is done (the world's swarm stays away while
+-- the stash is hunted, and after the raid so he can limp home)
+mission1.holds = function(what)
+   if what == "swarm" then
+      return currentState == State.atOrb or inStash(currentState)
+   end
+   return false
+end
+
+local function addStashAsteroid()
+   if not c_objectExists(stash.asteroid) then
+      c_addPositionedChildObject("stash_asteroid.xml", stash.asteroid, stash.x, stash.y)
+   end
+   listen(stash.asteroid, "BrBR")
+end
+
+-- The case, after a reload with the asteroid already broken
+local function addStashCase()
+   if not c_objectExists(stash.case) then
+      c_addPositionedChildObject("stash_case.xml", stash.case, stash.x, stash.y)
+   end
+   listen(stash.case, "BrBR")
+end
+
+local function stashAsteroidBroken()
+   currentState = State.caseFound
+   c_addDialogMessage("There's something inside it! A box!", "Edith", true, 20, 0)
+   c_addDialogMessage("So that's what Bruno is after.", "Leapfrog", false, 90, 0)
+   caseTimer = c_startSceneTimer(caseCheckTicks)
+end
+
+local function stashCaseOpened()
+   currentState = State.jackpot
+   c_addDialogMessage("Whoo! Look at all that!", "Edith", true, 20, 0)
+   c_addDialogMessage("Now we're talking.", "Leapfrog", false, 80, 0)
+   c_hudLog("Stash found")
+   raidTimer = c_startSceneTimer(jackpotTicks)
+end
+
+local function strippedByRaiders()
+   currentState = State.stripped
+   c_setObjectProperty("leapfrog1", 7, limpHomeFuel)
+   c_addDialogMessage("That's everything. We left you some fuel. Crawl home.", "Raiders", true, 60, 0)
+   c_hudLog("The raiders left " .. limpHomeFuel .. " fuel", true)
+end
+
+-- The strippers come (again, after a reload); the raiders speak only the
+-- first time
+local function startRaid(announce)
+   currentState = State.raided
+   if announce then
+      c_addDialogMessage("That's our stash you're grabbing, pilot.", "Raiders", true, 20, 0)
+      c_addDialogMessage("We'll be taking it back. All of it.", "Raiders", true, 120, 0)
+      c_addDialogMessage("Something's coming. From everywhere!", "Edith", true, 120, 0)
+   end
+   swarm.start("swarm", "stripper_swarm.xml", function(name)
+      strippedByRaiders()
+   end)
+end
+
+local function setupStashHunt()
+   -- Saved at the launch before the stash was a thing: the hunt begins
+   if currentState == State.atOrb then
+      currentState = State.hunting
+   end
+
+   if currentState == State.hunting then
+      addStashAsteroid()
+      c_addDialogMessage("Made it up? Good. The rock you want is a big one, out past the station.", "Bruno", true, 60, 0)
+      c_addDialogMessage("Whatever else you shake loose up there is yours to keep.", "Bruno", true, 150, 0)
+      edithGuessTimer = c_startSceneTimer(edithGuessTicks)
+   elseif currentState == State.caseFound then
+      addStashCase()
+   elseif currentState == State.jackpot then
+      -- Left with the loot out: the raiders come as soon as he is back
+      raidTimer = c_startSceneTimer(raidAgainTicks)
+   elseif currentState == State.raided then
+      startRaid(false)
+   end
+end
+
+-- Fled to orbit with the loot: the strippers clinging to the hull finish
+-- the job on the way
+local function strippedInFlight()
+   for _, id in ipairs(swarm.allResources) do
+      c_setObjectProperty("leapfrog1", id, 0)
+   end
+   c_addDialogMessage("Run all you like. Our drones are still on your hull.", "Raiders", true, 30, 0)
+   c_hudLog("The strippers have taken everything", true)
+   strippedByRaiders()
+end
+
+-- Landed at the silo after the raid
+local function homeWithNothing()
+   currentState = State.done
+   c_addDialogMessage("Kid?", "Leapfrog", false, 60, 0)
+   c_addDialogMessage("Gone.", "Leapfrog", false, 120, 0)
+   c_addDialogMessage("Did Bruno know whose stash that was?", "Leapfrog", false, 150, 0)
+   c_hudLog("Mission complete")
+end
+
 
 -- Question ids (c_askQuestion): missions use 1 to 99
 local Question = {
@@ -235,7 +381,7 @@ mission1.setupMissionStateScene = function()
       offerPending = false
 
       -- Launch site on the map only once Edith has had her say
-      c_setObjectMapShown("launchSite1", "mainTank", currentState == State.atOrb)
+      c_setObjectMapShown("launchSite1", "mainTank", currentState >= State.atOrb)
 
       if currentState == State.accepted then
          -- Reloaded on the way to the Orb: Bruno's fuel is in the pads again
@@ -247,6 +393,19 @@ mission1.setupMissionStateScene = function()
          -- The mining world script has put the leapfrog above the silo
          homeStartFuel = c_getObjectProperty("leapfrog1", 7)
          playBrunoCall()
+      end
+
+   elseif currentScene == "deep_space_scene.xml" and (currentState == State.atOrb or inStash(currentState)) then
+
+      setupStashHunt()
+
+   elseif currentScene == "orbit_scene.xml" then
+
+      if currentState == State.raided then
+         strippedInFlight()
+      end
+      if currentState == State.stripped then
+         c_addDialogMessage("That went badly, huh?", "Edith", true, 120, 0)
       end
 
    elseif currentScene == "landing_scene.xml" then
@@ -363,6 +522,10 @@ mission1.missionStateSceneEventHandler = function(eventId, actorName, parameter1
          end
       end
 
+      if eventId == "LpLL" and actorName == "siloLandingPad" and currentState == State.stripped then
+         homeWithNothing()
+      end
+
       if eventId == "LpLL" then
          if currentState == State.offered then
             if actorName == "siloLandingPad" then
@@ -380,8 +543,45 @@ mission1.missionStateSceneEventHandler = function(eventId, actorName, parameter1
       end
 
       if eventId == "LsLL" then
-         c_addDialogMessage("You will now be launched into deep space.", "DEBUG", true, 0, 0)
+         if currentState == State.atOrb then
+            -- Off to find the stash (saved with the scene exit)
+            currentState = State.hunting
+            c_addDialogMessage("Hurry, get into space!", "Edith", true, 0, 0)
+         end
          c_setObjectProperty("launchSite1", 1, 0)
+      end
+
+   elseif currentScene == "deep_space_scene.xml" and inStash(currentState) then
+
+      if actorName == stash.asteroid and eventId == "BrBR" and currentState == State.hunting then
+         stashAsteroidBroken()
+      end
+
+      if eventId == "ScTO" and parameter1 == caseTimer then
+         caseTimer = -1
+         if c_objectExists(stash.case) then
+            listen(stash.case, "BrBR")
+         else
+            caseTimer = c_startSceneTimer(caseCheckTicks)
+         end
+      end
+
+      if actorName == stash.case and eventId == "BrBR" and currentState == State.caseFound then
+         stashCaseOpened()
+      end
+
+      if eventId == "ScTO" and parameter1 == edithGuessTimer then
+         edithGuessTimer = -1
+         if currentState == State.hunting then
+            c_addDialogMessage("Whoo, that one looks loaded!", "Edith", true, 0, 0)
+         end
+      end
+
+      if eventId == "ScTO" and parameter1 == raidTimer then
+         raidTimer = -1
+         if currentState == State.jackpot then
+            startRaid(true)
+         end
       end
 
    elseif currentScene == "landing_scene.xml" then

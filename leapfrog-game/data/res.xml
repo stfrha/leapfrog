@@ -66,4 +66,8 @@
 	<atlas clamp2edge="false">
 		<image file="grotto.png" trim="false" extend="false"/>
 	</atlas>
+	<set path = "images/space" />
+	<atlas>
+		<image file="stash_case.png" ppu="20" trim="false" extend="false"/>
+	</atlas>
 </resources>

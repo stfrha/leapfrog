@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  The stash asteroid (mission 1): a big asteroid like large_asteroid.xml,
+  but blasted it reveals the raiders' stash case (stash_case.xml, as
+  "stashCase") instead of smaller asteroids and pickups. lua/mission_1.lua
+  places it in deep space as "stashAsteroid" while the stash is being
+  hunted.
+-->
+<compoundObject
+   needsGroupIndex="false" >
+   <behaviour
+      type="breakableObject">
+      <breakableObjectProperties
+         breakBulletDamage="10"
+         numberOfSpawns="1">
+         <spawnObject
+            probabilityFactor="1">
+            <childObject
+               name="stashCase"
+               posX="0"
+               posY="0"
+               file="stash_case.xml" />
+         </spawnObject>
+      </breakableObjectProperties>
+   </behaviour>
+   <dynamicCircle
+      name="largeAsteroid"
+      texture="asteroid_cutout"
+      posX="0"
+      posY="0"
+      angle="0"
+      zLevel="160"
+      collisionEntity="breakableObject"
+      collisionCategory="1"
+      collisionMask="65533"
+      radius="20"
+      density="5"
+      friction="1" />
+</compoundObject>

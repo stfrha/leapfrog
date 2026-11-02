@@ -284,6 +284,12 @@ function T:event(object, eventId, parameter)
    end)
 end
 
+-- A breakable object is shot to pieces: BrBR from it, it is gone, and a
+-- single certain spawn (e.g. the stash asteroid's case) appears
+function T:breakObject(name)
+   step(self, function() self.engine:breakObject(name) end)
+end
+
 -- Sets a global of the scripts (e.g. currentMission = 0 for free play)
 function T:setGlobal(name, value)
    self.engine.env[name] = value

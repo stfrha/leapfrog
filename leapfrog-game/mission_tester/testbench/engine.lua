@@ -822,6 +822,39 @@ function Engine:deliver(actor, eventId, parameter)
    return n
 end
 
+-- BreakableObject::damageCollision when it breaks: BrBR from the object,
+-- which then dies; what it spawns appears on the next update. Only a
+-- certain spawn is modelled: a breakableObjectProperties with a single
+-- spawnObject (e.g. the stash asteroid's case) adds that child object by
+-- its name. Random picks among several (asteroids, the case's pickups)
+-- are not modelled.
+function Engine:breakObject(name)
+   local obj = self:requireObject(name, "breakObject")
+   if obj.behaviour ~= "breakableObject" then
+      error("breakObject: " .. name .. " is not a breakable object", 3)
+   end
+   self:deliver(name, "BrBR", 0)
+   self.scene.objects[name] = nil
+   self:note("BREAK", name)
+
+   local entries = {}
+   for _, c in ipairs(obj.behaviourNode and obj.behaviourNode.children or {}) do
+      if c.tag == "breakableObjectProperties" then
+         for _, s in ipairs(c.children or {}) do
+            if s.tag == "spawnObject" then entries[#entries + 1] = s end
+         end
+      end
+   end
+   if #entries == 1 then
+      local childNode = xml.child(entries[1], "childObject")
+      local child = childNode and self:objectFromChildNode(childNode)
+      if child then
+         self.scene.objects[child.name] = child
+         self:note("SPAWN", child.name .. " (from " .. name .. ")")
+      end
+   end
+end
+
 -- Answers and scene timeouts come from the scene actor, which has no name
 local sceneActorName = ""
 

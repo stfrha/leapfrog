@@ -44,6 +44,17 @@ end
 -- Global variables
 currentState = 0
 
+-- missionHolds(what): true if the running mission takes over something the
+-- world script would otherwise do in this scene, so the world leaves it
+-- alone. what: "swarm" (the world's stripper swarm in deep space). A
+-- mission answers with an optional holds(what) function.
+function missionHolds(what)
+   if currentMission == 1 and mission1.holds ~= nil then
+      return mission1.holds(what)
+   end
+   return false
+end
+
 -- Set by lua_startInitialScene when a new game starts, so the mission can
 -- play its opening; cleared once the first scene has been set up
 newGameStarting = false

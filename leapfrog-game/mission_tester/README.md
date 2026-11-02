@@ -99,6 +99,7 @@ doesn't yet: reported as KNOWN with the reason while it fails, and as FIXED
 | `t:completeLaunch(site)` | the launch of the site the Leapfrog stands on goes (triggered, not aborted, no question pending) |
 | `t:exitScene(type, param)` | a scene exit (landing 0, deep space 1, orbit 2) |
 | `t:reentry(outcome [, site, distance])` | the orbit scene ends: `"onSite"`/`"offSite"` (closest site index, distance off in planet units; a marker is 100 wide), `"bounced"`, `"burnedUp"`; `c_lastReentry` returns it, then the scene exits |
+| `t:breakObject(name)` | a breakable object is shot to pieces: `BrBR` from it, it is gone; a single certain spawn (e.g. the stash asteroid's case) appears by its name (random spawns are not modelled) |
 | `t:hideLandingSite(name)` | marks a landing site `hidden="true"` in this test's copy of the planet's surface file (before the orbit scene starts) |
 | `t:setLandingSiteShown(name, shown)` | a script calls `c_setLandingSiteShown` (orbit scene only; an unknown name is a problem) |
 | `t:declareKeyItem{ id, kind, name, issuer, tier, initial }` | declares a key item in this test's copy of `key_items.xml` |

@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  The raiders' stash case (mission 1): what the stash asteroid holds
+  (stash_asteroid.xml spawns it when it breaks). Shot open, it spills the
+  jackpot: 14 pickups, mostly credits, fuel and ammo, a few full shields.
+  lua/mission_1.lua listens for its break (BrBR) as "stashCase".
+-->
+<compoundObject
+   needsGroupIndex="false" >
+   <behaviour
+      type="breakableObject">
+      <breakableObjectProperties
+         breakBulletDamage="6"
+         numberOfSpawns="14">
+         <spawnObject
+            probabilityFactor="3">
+           <childObject
+             name="stashCoins"
+             posX="0"
+             posY="0" >
+           <compoundObject
+              needsGroupIndex="true">
+             <behaviour
+               type="pickupObject">
+               <pickupObjectProperties
+                 pickupType="resourceCoin"
+                 amountType="random"
+                 amountMax="80"
+                 amountMin="40" />
+             </behaviour>
+             <dynamicCircle
+                 name="stashCoinsBody"
+                 texture="coin_power_up"
+                 posX="0"
+                 posY="0"
+                 angle="-17"
+                 zLevel="160"
+                 collisionEntity="pickup"
+                 collisionCategory="1"
+                 collisionMask="65533"
+                 radius="7"
+                 density="1"
+                 friction="0" />
+           </compoundObject>
+           </childObject>
+         </spawnObject>
+         <spawnObject
+            probabilityFactor="3">
+           <childObject
+             name="stashFuel"
+             posX="0"
+             posY="0" >
+           <compoundObject
+              needsGroupIndex="true">
+             <behaviour
+               type="pickupObject">
+               <pickupObjectProperties
+                 pickupType="resourceFuel"
+                 amountType="random"
+                 amountMax="25"
+                 amountMin="15" />
+             </behaviour>
+             <dynamicCircle
+                 name="stashFuelBody"
+                 texture="fuel_power_up"
+                 posX="0"
+                 posY="0"
+                 angle="-17"
+                 zLevel="160"
+                 collisionEntity="pickup"
+                 collisionCategory="1"
+                 collisionMask="65533"
+                 radius="7"
+                 density="1"
+                 friction="0" />
+           </compoundObject>
+           </childObject>
+         </spawnObject>
+         <spawnObject
+            probabilityFactor="3">
+           <childObject
+             name="stashAmmo"
+             posX="0"
+             posY="0" >
+           <compoundObject
+              needsGroupIndex="true">
+             <behaviour
+               type="pickupObject">
+               <pickupObjectProperties
+                 pickupType="resourceAmmo"
+                 amountType="random"
+                 amountMax="30"
+                 amountMin="15" />
+             </behaviour>
+             <dynamicCircle
+                 name="stashAmmoBody"
+                 texture="ammo_power_up"
+                 posX="0"
+                 posY="0"
+                 angle="-17"
+                 zLevel="160"
+                 collisionEntity="pickup"
+                 collisionCategory="1"
+                 collisionMask="65533"
+                 radius="7"
+                 density="1"
+                 friction="0" />
+           </compoundObject>
+           </childObject>
+         </spawnObject>
+         <spawnObject
+            probabilityFactor="1">
+           <childObject
+             name="stashShield"
+             posX="0"
+             posY="0" >
+           <compoundObject
+              needsGroupIndex="true">
+             <behaviour
+               type="pickupObject">
+               <pickupObjectProperties
+                 pickupType="resourceShield"
+                 amountType="fix"
+                 amount="100" />
+             </behaviour>
+             <dynamicCircle
+                 name="stashShieldBody"
+                 texture="shield_power_up"
+                 posX="0"
+                 posY="0"
+                 angle="-17"
+                 zLevel="160"
+                 collisionEntity="pickup"
+                 collisionCategory="1"
+                 collisionMask="65533"
+                 radius="7"
+                 density="1"
+                 friction="0" />
+           </compoundObject>
+           </childObject>
+         </spawnObject>
+      </breakableObjectProperties>
+   </behaviour>
+   <dynamicBox
+      name="stashCaseBody"
+      texture="stash_case"
+      posX="0"
+      posY="0"
+      angle="0"
+      zLevel="160"
+      collisionEntity="breakableObject"
+      collisionCategory="1"
+      collisionMask="65533"
+      width="14"
+      height="9"
+      density="3"
+      friction="1" />
+</compoundObject>

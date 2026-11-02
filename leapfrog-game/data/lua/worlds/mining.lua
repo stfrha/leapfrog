@@ -192,7 +192,14 @@ mining.setupScene = function()
 
    if currentScene == "deep_space_scene.xml" then
       listen(BadMine.station, "DsDk")
+   end
 
+   -- The strippers come whenever the Leapfrog is in deep space, unless the
+   -- running mission has its own plans for them (mission 1's raid)
+   if currentScene == "deep_space_scene.xml" and missionHolds("swarm") then
+      bouncedBack = false
+      swarmTimer = -1
+   elseif currentScene == "deep_space_scene.xml" then
       if bouncedBack or swarmTimer >= 0 then
          -- Back from a bounce: a breather before the swarm comes (again
          -- at a setup before it has started)
