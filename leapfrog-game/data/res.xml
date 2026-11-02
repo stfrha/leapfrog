@@ -71,7 +71,4 @@
 		<image file="stash_case.png" ppu="20" trim="false" extend="false"/>
 	</atlas>
 	<set path = "images/space" />
-	<atlas>
-		<image file="stash_casestash_case.png" ppu="20" trim="false" extend="false"/>
-	</atlas>
 </resources>

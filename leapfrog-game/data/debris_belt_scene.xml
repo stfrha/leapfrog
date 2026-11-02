@@ -39,8 +39,8 @@
     type="scene">
     <sceneProperties
       sceneType="space"
-      width="800"
-      height="480"
+      width="600"
+      height="360"
       rockSpeedMin="20"
       rockSpeedMax="55"
       hasUpperBoundary="true"
@@ -57,8 +57,8 @@
       body="notApplicable"
       posX="240"
       posY="40"
-      width="500"
-      height="400"
+      width="200"
+      height="150"
       spawnInitial="14"
       intensity="0"
       lifeTime="60000">
@@ -66,7 +66,7 @@
         probabilityFactor="1">
         <childObject
           name="largeAsteroid"
-          file="large_asteroid.xml"
+          file="large_ammo_asteroid.xml"
           posX="0"
           posY="0" />
       </spawnObject>
@@ -74,7 +74,7 @@
         probabilityFactor="1">
         <childObject
           name="mediumAsteroid"
-          file="medium_asteroid.xml"
+          file="medium_ammo_asteroid.xml"
           posX="0"
           posY="0" />
       </spawnObject>
@@ -82,7 +82,7 @@
         probabilityFactor="1">
         <childObject
           name="smallAsteroid"
-          file="small_asteroid.xml"
+          file="small_ammo_asteroid.xml"
           posX="0"
           posY="0" />
       </spawnObject>

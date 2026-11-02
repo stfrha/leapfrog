@@ -235,7 +235,7 @@ local function playEdithCutsIn()
    c_addDialogMessage("What!? Who is this?", "Leapfrog", false, 60, 0)
    c_addDialogMessage("Nobody.", "Edith", true, 90, 0)
    c_addDialogMessage("This signal... it's coming from... you are in my home!", "Leapfrog", false, 90, 0)
-   c_addDialogMessage("Wait till I get back there...", "Leapfrog", false, 60, 0)
+   c_addDialogMessage("Wait untill I get back there...", "Leapfrog", false, 60, 0)
    c_addDialogMessage("Not enough fuel. You'll be stranded.", "Edith", true, 90, 0)
 end
 

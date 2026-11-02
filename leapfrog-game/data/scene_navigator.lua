@@ -102,7 +102,7 @@ end
 -- second)
 local spaces = {
    ["deep_space_scene.xml"]  = { launch = { x = 20, y = 730 }, bounce = { x = 1050, y = 640 } },
-   ["debris_belt_scene.xml"] = { launch = { x = 30, y = 430 }, bounce = { x = 600, y = 380 } },
+   ["debris_belt_scene.xml"] = { launch = { x = 30, y = 310 }, bounce = { x = 600, y = 380 } },
 }
 
 -- Arriving from orbit, per landing scene (the scene a site leads to, see
