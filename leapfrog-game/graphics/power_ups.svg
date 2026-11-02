@@ -2,21 +2,21 @@
 <!-- Created with Inkscape (http://www.inkscape.org/) -->
 
 <svg
-   xmlns:dc="http://purl.org/dc/elements/1.1/"
-   xmlns:cc="http://creativecommons.org/ns#"
-   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
-   xmlns:svg="http://www.w3.org/2000/svg"
-   xmlns="http://www.w3.org/2000/svg"
-   xmlns:xlink="http://www.w3.org/1999/xlink"
-   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
-   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
    width="210mm"
    height="297mm"
    viewBox="0 0 210 297"
    version="1.1"
    id="svg8"
-   inkscape:version="0.92.2 (5c3e80d, 2017-08-06)"
-   sodipodi:docname="power_ups.svg">
+   inkscape:version="1.4.4 (dcaf3e7, 2026-05-05)"
+   sodipodi:docname="power_ups.svg"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:xlink="http://www.w3.org/1999/xlink"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:dc="http://purl.org/dc/elements/1.1/">
   <defs
      id="defs2">
     <linearGradient
@@ -277,7 +277,11 @@
        inkscape:menu="Image Effects"
        inkscape:menu-tooltip="Adds a small scale graininess"
        style="color-interpolation-filters:sRGB"
-       id="filter1438-4-8-3-5">
+       id="filter1438-4-8-3-5"
+       x="0"
+       y="0"
+       width="1"
+       height="1">
       <feTurbulence
          type="fractalNoise"
          numOctaves="3"
@@ -349,7 +353,11 @@
        inkscape:menu="Image Effects"
        inkscape:menu-tooltip="Adds a small scale graininess"
        style="color-interpolation-filters:sRGB"
-       id="filter1438-4-8-3-5-4">
+       id="filter1438-4-8-3-5-4"
+       x="0"
+       y="0"
+       width="1"
+       height="1">
       <feTurbulence
          type="fractalNoise"
          numOctaves="3"
@@ -411,7 +419,11 @@
        inkscape:menu="Image Effects"
        inkscape:menu-tooltip="Adds a small scale graininess"
        style="color-interpolation-filters:sRGB"
-       id="filter1438-4-8-3-5-4-9">
+       id="filter1438-4-8-3-5-4-9"
+       x="0"
+       y="0"
+       width="1"
+       height="1">
       <feTurbulence
          type="fractalNoise"
          numOctaves="3"
@@ -473,7 +485,11 @@
        inkscape:menu="Image Effects"
        inkscape:menu-tooltip="Adds a small scale graininess"
        style="color-interpolation-filters:sRGB"
-       id="filter1438-4-8-3-5-4-5">
+       id="filter1438-4-8-3-5-4-5"
+       x="0"
+       y="0"
+       width="1"
+       height="1">
       <feTurbulence
          type="fractalNoise"
          numOctaves="3"
@@ -530,6 +546,72 @@
        y2="400.56934"
        gradientUnits="userSpaceOnUse"
        gradientTransform="translate(-12.438714,-182.9497)" />
+    <clipPath
+       clipPathUnits="userSpaceOnUse"
+       id="clipPath1118-5-32-0">
+      <circle
+         style="opacity:1;fill:#000000;fill-opacity:1;stroke:none;stroke-width:4;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+         id="circle1120-2-7-9"
+         cx="-1003.9048"
+         cy="-96.095245"
+         r="100" />
+    </clipPath>
+    <filter
+       inkscape:label="BrushedMetal"
+       inkscape:menu="Image Effects"
+       inkscape:menu-tooltip="Adds a small scale graininess"
+       style="color-interpolation-filters:sRGB"
+       id="filter1438-4-8-3-5-4-5-4"
+       x="0"
+       y="0"
+       width="1"
+       height="1">
+      <feTurbulence
+         type="fractalNoise"
+         numOctaves="3"
+         baseFrequency="0.0021413276231263384 1"
+         seed="3"
+         result="result0"
+         id="feTurbulence1428-2-5-9-1-6-32-5" />
+      <feColorMatrix
+         result="result4"
+         values="0"
+         type="saturate"
+         id="feColorMatrix1430-1-2-7-68-6-64-5" />
+      <feComposite
+         k4="0"
+         in="SourceGraphic"
+         in2="result4"
+         operator="arithmetic"
+         k1="0.34"
+         k2="0.7"
+         k3="0.1"
+         result="result2"
+         id="feComposite1432-0-1-7-3-9-6-1"
+         baseFrequency="0.002 1" />
+      <feBlend
+         result="result5"
+         mode="normal"
+         in="result2"
+         in2="SourceGraphic"
+         id="feBlend1434-3-5-1-9-2-1-7" />
+      <feComposite
+         in="result5"
+         in2="SourceGraphic"
+         operator="in"
+         result="result3"
+         id="feComposite1436-8-2-7-8-9-5-1" />
+    </filter>
+    <linearGradient
+       inkscape:collect="always"
+       xlink:href="#linearGradient1485"
+       id="linearGradient1"
+       gradientUnits="userSpaceOnUse"
+       gradientTransform="matrix(3.7334921,0,0,3.8945479,-232.81827,420.8993)"
+       x1="-432.40475"
+       y1="-50.738094"
+       x2="-350.1571"
+       y2="146.56548" />
   </defs>
   <sodipodi:namedview
      id="base"
@@ -538,18 +620,20 @@
      borderopacity="1.0"
      inkscape:pageopacity="0"
      inkscape:pageshadow="2"
-     inkscape:zoom="0.175"
-     inkscape:cx="-1121.1204"
-     inkscape:cy="198.28655"
+     inkscape:zoom="0.35"
+     inkscape:cx="-1118.5714"
+     inkscape:cy="904.28571"
      inkscape:document-units="mm"
      inkscape:current-layer="layer1"
      showgrid="false"
-     inkscape:window-width="1920"
-     inkscape:window-height="1017"
+     inkscape:window-width="3440"
+     inkscape:window-height="1369"
      inkscape:window-x="-8"
      inkscape:window-y="-8"
      inkscape:window-maximized="1"
-     inkscape:pagecheckerboard="true" />
+     inkscape:pagecheckerboard="true"
+     inkscape:showpageshadow="2"
+     inkscape:deskcolor="#d1d1d1" />
   <metadata
      id="metadata5">
     <rdf:RDF>
@@ -585,6 +669,27 @@
          cy="-96.095253"
          cx="-1003.9047"
          id="path1523-9-8-8-0-6"
+         style="opacity:1;fill:none;fill-opacity:1;stroke:#f9f9f9;stroke-width:4;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1" />
+    </g>
+    <g
+       id="g1106-0-60-5"
+       transform="translate(791.3562,45.396136)"
+       clip-path="url(#clipPath1118-5-32-0)"
+       inkscape:export-filename="E:\git_dummy\leapfrog\leapfrog-game\data\images\ammo_power_up.png"
+       inkscape:export-xdpi="13.84"
+       inkscape:export-ydpi="13.84">
+      <path
+         inkscape:connector-curvature="0"
+         id="rect1426-8-6-5-3-9-35-2"
+         transform="matrix(0.26417636,0,0,0.26483456,-583.25579,-250.04508)"
+         d="m -1641.5391,211.51953 a 370.55368,371.65241 0 0 0 -321.3183,367.91992 370.55368,371.65241 0 0 0 370.5527,371.65235 370.55368,371.65241 0 0 0 370.5547,-371.65235 370.55368,371.65241 0 0 0 -321.1719,-367.91992 z m 49.2344,112.7793 a 257.00787,257.00787 0 0 1 257.0078,257.00781 257.00787,257.00787 0 0 1 -257.0078,257.00781 257.00787,257.00787 0 0 1 -257.0078,-257.00781 257.00787,257.00787 0 0 1 257.0078,-257.00781 z"
+         style="opacity:1;fill:url(#linearGradient1);fill-opacity:1;stroke:none;stroke-width:41.9651;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;filter:url(#filter1438-4-8-3-5-4-5-4)" />
+      <ellipse
+         ry="98"
+         rx="98.000008"
+         cy="-96.095253"
+         cx="-1003.9047"
+         id="path1523-9-8-8-0-6-7"
          style="opacity:1;fill:none;fill-opacity:1;stroke:#f9f9f9;stroke-width:4;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1" />
     </g>
     <g
