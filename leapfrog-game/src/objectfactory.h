@@ -7,6 +7,18 @@
 
 DECLARE_SMART(ObjectFactory, spObjectFactory);
 
+// Sent by the scene when a watched factory (c_watchFactory) has this few of
+// its own objects left. Their pieces and drops don't count. Lua gets the
+// watch's id as parameter.
+class FactoryLowEvent : public oxygine::Event
+{
+public:
+   enum { EVENT = eventID('F', 'c', 'L', 'w') };
+   int m_watchId;
+
+   FactoryLowEvent(int id) : Event(EVENT), m_watchId(id) {}
+};
+
 class CompoundObject;
 class SceneActor;
 
@@ -33,6 +45,10 @@ private:
    int m_maxAlive;
    spSpawnTally m_tally;
 
+   // watch(): send FactoryLowEvent when this few are left (-1 = no watch)
+   int m_watchLeft;
+   int m_watchId;
+
    // Working member variable
    pugi::xml_document* m_coNodeHolder;
    pugi::xml_node m_coNode;
@@ -50,6 +66,10 @@ public:
       const pugi::xml_node& objectNode);
 
    ~ObjectFactory();
+
+   // Sends one FactoryLowEvent with the id, when at most left objects of
+   // this factory are alive
+   void watch(int left, int id);
 
 protected:
 	void doUpdate(const oxygine::UpdateState& us) override;

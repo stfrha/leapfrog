@@ -40,6 +40,7 @@ testStarts.list = {
    { label = "Space, launched",      scene = "deep_space_scene.xml", sceneType = 1, mission = 1, state = S.testLandOnPad, from = From.launch },
    { label = "Orbit, from space",    scene = "orbit_scene.xml",      sceneType = 2, mission = 1, state = S.testLandOnPad, from = From.space },
    { label = "Home, job accepted",   scene = "home_scene.xml",       sceneType = 0, mission = 1, state = S.accepted },
+   { label = "Belt, hunting stash",  scene = "debris_belt_scene.xml", sceneType = 1, mission = 1, state = S.hunting, from = From.launch },
    { label = "Beacons, job offered", scene = "home_scene.xml",       sceneType = 0, mission = 2, state = S2.offered },
 }
 

@@ -20,6 +20,8 @@ ObjectFactory::ObjectFactory(
    m_initialSpawn(0),
    m_maxAlive(0),
    m_tally(NULL),
+   m_watchLeft(-1),
+   m_watchId(0),
    m_attachedBody(NULL)
 {
    readObjectFactoryNode(objectNode);
@@ -51,10 +53,7 @@ void ObjectFactory::readObjectFactoryNode(const xml_node& objectNode)
    m_fieldLifetime = objectNode.attribute("lifeTime").as_int();
    m_maxAlive = objectNode.attribute("maxAlive").as_int(0);
 
-   if (m_maxAlive > 0)
-   {
-      m_tally = new SpawnTally();
-   }
+   m_tally = new SpawnTally();
 
    string body = objectNode.attribute("body").as_string("notApplicable");
    
@@ -85,12 +84,26 @@ void ObjectFactory::doUpdate(const oxygine::UpdateState& us)
 
          m_timeSinceLast = 0.0f;
       }
+
+      if ((m_watchLeft >= 0) && (m_tally->countAlive() <= m_watchLeft))
+      {
+         m_watchLeft = -1;
+
+         FactoryLowEvent event(m_watchId);
+         m_sceneActor->dispatchEvent(&event);
+      }
    }
+}
+
+void ObjectFactory::watch(int left, int id)
+{
+   m_watchLeft = left;
+   m_watchId = id;
 }
 
 void ObjectFactory::spawnObjects(int num)
 {
-   if (m_tally)
+   if (m_maxAlive > 0)
    {
       num = std::min(num, m_maxAlive - m_tally->countAlive());
    }

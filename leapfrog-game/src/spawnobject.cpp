@@ -56,12 +56,14 @@ SpawnInstruction::SpawnInstruction(
    oxygine::Vector2 leftTop,
    oxygine::Vector2 widthHeight,
    spSpawnObjectList spawnSource,
-   spSpawnTally tally) :
+   spSpawnTally tally,
+   oxygine::Vector2 direction) :
    m_numOfSpawns(numOfSpawns),
    m_leftTop(leftTop),
    m_widthHeight(widthHeight),
    m_spawnSource(spawnSource),
-   m_tally(tally)
+   m_tally(tally),
+   m_direction(direction)
 {
    if (m_tally)
    {

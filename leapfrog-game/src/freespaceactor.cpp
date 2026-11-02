@@ -7,6 +7,7 @@
 #include "layout.h"
 
 #include "bodyuserdata.h"
+#include "headdowndisplay.h"
 
 
 using namespace oxygine;
@@ -21,11 +22,17 @@ FreeSpaceActor::FreeSpaceActor(
    int groupIndex) :
    SceneActor(world, initialZoom, zoom),
    m_inTransitField(0),
+   m_blockedCornerShown(0),
    m_state(firstUpdate),
    m_leapfrogBody(NULL),
    m_stateChangeTime(0)
 {
    m_sceneType = deepSpace;
+
+   for (int i = 0; i < c_numCorners; i++)
+   {
+      m_transitOpen[i] = true;
+   }
 
    setPanorateMode(center);
 
@@ -77,7 +84,7 @@ void FreeSpaceActor::doUpdate(const oxygine::UpdateState &us)
    {
       if (m_inTransitField)
       {
-         m_inTransitField = isInsideTransitField(m_leapfrogBody);
+         m_inTransitField = openTransitField(m_leapfrogBody);
          if (m_inTransitField)
          {
             if (us.time > m_enteredTransiFieldAtTime + 2500)
@@ -94,13 +101,44 @@ void FreeSpaceActor::doUpdate(const oxygine::UpdateState &us)
       }
       else
       {
-         m_inTransitField = isInsideTransitField(m_leapfrogBody);
+         m_inTransitField = openTransitField(m_leapfrogBody);
          if (m_inTransitField)
          {
             m_enteredTransiFieldAtTime = us.time;
          }
       }
    }
+}
+
+int FreeSpaceActor::openTransitField(b2Body* body)
+{
+   int corner = isInsideTransitField(body);
+
+   if ((corner > 0) && !m_transitOpen[corner])
+   {
+      if ((m_blockedCornerShown != corner) && !m_transitMessage[corner].empty() && g_HeadDownDisplay)
+      {
+         g_HeadDownDisplay->logMessage(m_transitMessage[corner], true);
+      }
+
+      m_blockedCornerShown = corner;
+      return 0;
+   }
+
+   m_blockedCornerShown = 0;
+   return corner;
+}
+
+void FreeSpaceActor::setTransitOpen(int corner, bool open, const std::string& message)
+{
+   if ((corner < 1) || (corner >= c_numCorners))
+   {
+      logs::warning("setTransitOpen: no corner %d", corner);
+      return;
+   }
+
+   m_transitOpen[corner] = open;
+   m_transitMessage[corner] = message;
 }
 
 void FreeSpaceActor::runFadeIn(void)

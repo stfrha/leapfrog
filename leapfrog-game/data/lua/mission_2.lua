@@ -3,8 +3,9 @@
 -- tester checks that the guide's code is still here).
 --
 -- Bruno pays the pilot to relight three dead beacons in the home scene, in
--- order, and to collect the money at the Orb. Nothing starts it in the story
--- yet: the main menu's test row does ("Beacons, job offered").
+-- order, and to collect the money at the Orb. Mission 1 hands over to it when the
+-- pilot is back at the silo; the main menu's test row also starts it
+-- ("Beacons, job offered").
 
 local mission2 = {}
 
@@ -91,9 +92,6 @@ mission2.setupMissionStateScene = function()
       return
    end
 
-   -- The launch site takes the Leapfrog to deep space
-   listen("launchSite1", "LsLL")
-
    setupBeacons()
 
    if currentState == State.offered then
@@ -151,11 +149,6 @@ mission2.missionStateSceneEventHandler = function(eventId, actorName, parameter1
 
    if currentScene ~= "home_scene.xml" then
       return
-   end
-
-   if eventId == "LsLL" then
-      -- Nothing launches until a script says so (property 1)
-      c_setObjectProperty("launchSite1", 1, 0)
    end
 
    if (eventId == "QsYs" or eventId == "QsNo") and parameter1 == Question.takeJob then

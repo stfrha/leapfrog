@@ -158,6 +158,7 @@
 		9C0A5FD52C161A630046AE49 /* landing_scene.xml in Resources */ = {isa = PBXBuildFile; fileRef = 9C0A5FB22C161A620046AE49 /* landing_scene.xml */; };
 		9C0A5FD62C161A630046AE49 /* not used xmls in Resources */ = {isa = PBXBuildFile; fileRef = 9C0A5FB32C161A620046AE49 /* not used xmls */; };
 		9C0A5FD72C161A630046AE49 /* res_hud.xml in Resources */ = {isa = PBXBuildFile; fileRef = 9C0A5FB42C161A620046AE49 /* res_hud.xml */; };
+		95FA80B9696D119C573C3AE9 /* debris_belt_scene.xml in Resources */ = {isa = PBXBuildFile; fileRef = D21E81CCECF9796F14381B70 /* debris_belt_scene.xml */; };
 		CF2B69563B7ACCB84E331FA2 /* stash_case.xml in Resources */ = {isa = PBXBuildFile; fileRef = 40AEEEC51ADBD3E79853336F /* stash_case.xml */; };
 		660BEBF9AB8284C3F85879E9 /* stash_asteroid.xml in Resources */ = {isa = PBXBuildFile; fileRef = FBB5F6B58045FBA39F4704AE /* stash_asteroid.xml */; };
 		9FCA84C7BA0AF3BE92A4C92A /* key_items.xml in Resources */ = {isa = PBXBuildFile; fileRef = 83CA8D7E8977873A0434A6A2 /* key_items.xml */; };
@@ -634,6 +635,7 @@
 		9C0A5FB22C161A620046AE49 /* landing_scene.xml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; name = landing_scene.xml; path = ../data/landing_scene.xml; sourceTree = "<group>"; };
 		9C0A5FB32C161A620046AE49 /* not used xmls */ = {isa = PBXFileReference; lastKnownFileType = folder; name = "not used xmls"; path = "../data/not used xmls"; sourceTree = "<group>"; };
 		9C0A5FB42C161A620046AE49 /* res_hud.xml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; name = res_hud.xml; path = ../data/res_hud.xml; sourceTree = "<group>"; };
+		D21E81CCECF9796F14381B70 /* debris_belt_scene.xml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; name = debris_belt_scene.xml; path = ../data/debris_belt_scene.xml; sourceTree = "<group>"; };
 		40AEEEC51ADBD3E79853336F /* stash_case.xml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; name = stash_case.xml; path = ../data/stash_case.xml; sourceTree = "<group>"; };
 		FBB5F6B58045FBA39F4704AE /* stash_asteroid.xml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; name = stash_asteroid.xml; path = ../data/stash_asteroid.xml; sourceTree = "<group>"; };
 		83CA8D7E8977873A0434A6A2 /* key_items.xml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; name = key_items.xml; path = ../data/key_items.xml; sourceTree = "<group>"; };
@@ -781,6 +783,7 @@
 				9C0A5FC42C161A630046AE49 /* orbit_scene.xml */,
 				9C0A5FC82C161A630046AE49 /* orbit_space_scene.xml */,
 				9C0A5FB42C161A620046AE49 /* res_hud.xml */,
+				D21E81CCECF9796F14381B70 /* debris_belt_scene.xml */,
 				40AEEEC51ADBD3E79853336F /* stash_case.xml */,
 				FBB5F6B58045FBA39F4704AE /* stash_asteroid.xml */,
 				83CA8D7E8977873A0434A6A2 /* key_items.xml */,
@@ -1374,6 +1377,7 @@
 				9C0A5FE42C161A630046AE49 /* leapfrog_deep_space.xml in Resources */,
 				9C0A5FEC2C161A630046AE49 /* deep_space_scene.xml in Resources */,
 				9C0A5FD72C161A630046AE49 /* res_hud.xml in Resources */,
+				95FA80B9696D119C573C3AE9 /* debris_belt_scene.xml in Resources */,
 				CF2B69563B7ACCB84E331FA2 /* stash_case.xml in Resources */,
 				660BEBF9AB8284C3F85879E9 /* stash_asteroid.xml in Resources */,
 				9FCA84C7BA0AF3BE92A4C92A /* key_items.xml in Resources */,

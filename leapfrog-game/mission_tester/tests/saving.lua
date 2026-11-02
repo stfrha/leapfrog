@@ -10,7 +10,7 @@ test("saving: continuing after launching resumes in deep space", function(t)
    t:launch("launchSite1")
 
    t:restartGame()
-   t:expectScene("deep_space_scene.xml")
+   t:expectScene("debris_belt_scene.xml")
    t:expectMission(1)
    t:expectState(m.State.hunting)
 end)

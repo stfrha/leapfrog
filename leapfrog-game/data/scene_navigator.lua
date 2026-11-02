@@ -72,12 +72,14 @@ end
 -- 1 = deep space
 -- Transition between ground-scenes are triggered by triggered events
 
--- For exiting deep space scene:
+-- For exiting a space scene:
 -- Parameter int is "leaving how":
 -- 1 = upper right
 -- 2 = upper left
 -- 3 = lower right
 -- 4 = lower left
+-- Only 3 leads anywhere yet, so lua/common.lua shuts the others
+-- (c_setTransitOpen) in every space scene.
 
 -- For exiting orbit scene
 -- Parameter int is "index of landing sites": the closest site when down on
@@ -92,6 +94,16 @@ end
 -- next revolution.)
 
 -- Exiting hyperspace scene is TBD
+
+-- The space scenes (lua_missionSpace says which one a mission flies to):
+-- where the Leapfrog arrives after a launch, and after bouncing off the
+-- atmosphere (near where the orbit was entered, the lower right corner, but
+-- out of its transit field: the insert burn pushes the Leapfrog on for a
+-- second)
+local spaces = {
+   ["deep_space_scene.xml"]  = { launch = { x = 20, y = 730 }, bounce = { x = 1050, y = 640 } },
+   ["debris_belt_scene.xml"] = { launch = { x = 30, y = 430 }, bounce = { x = 600, y = 380 } },
+}
 
 -- Arriving from orbit, per landing scene (the scene a site leads to, see
 -- <landingSite scene="..."> in orbit_scene.xml): from above, in re-entry
@@ -114,11 +126,11 @@ recoveredOffset = 100
 function lua_findLeapfrogEntryPosition(exitSceneType, exitParameter)
 
    if exitSceneType == 0 and exitParameter == 1 then
-      -- We are leaving landing scene to the deep_space_scene
-      if currentScene == "deep_space_scene.xml" then
+      -- We are leaving landing scene to a space scene
+      if spaces[currentScene] ~= nil then
          nextLfFile = "leapfrog_deep_space.xml"
-         nextLfPosX = 20
-         nextLfPosY = 730
+         nextLfPosX = spaces[currentScene].launch.x
+         nextLfPosY = spaces[currentScene].launch.y
          nextLfMode = 1
          useInitialLfPos = false
          lfDefined = false
@@ -136,13 +148,11 @@ function lua_findLeapfrogEntryPosition(exitSceneType, exitParameter)
       end
 
    elseif exitSceneType == 2 and exitParameter == -3 then
-      -- Bounced off the atmosphere: back in deep space near where the
-      -- orbit was entered (the lower right corner), but out of its transit
-      -- field (the insert burn pushes the Leapfrog on for a second)
-      if currentScene == "deep_space_scene.xml" then
+      -- Bounced off the atmosphere: back in space
+      if spaces[currentScene] ~= nil then
          nextLfFile = "leapfrog_deep_space.xml"
-         nextLfPosX = 1050
-         nextLfPosY = 640
+         nextLfPosX = spaces[currentScene].bounce.x
+         nextLfPosY = spaces[currentScene].bounce.y
          nextLfMode = 1
          useInitialLfPos = false
          lfDefined = false
@@ -179,7 +189,7 @@ function lua_sceneExitHandler(exitSceneType, exitParameter)
       -- Determine next scene
       if currentScene == "landing_scene.xml" or currentScene == "home_scene.xml" then
          if exitParameter == 1 then
-            currentScene = "deep_space_scene.xml"
+            currentScene = lua_missionSpace()
             currentSceneType = 1
             
             lua_findLeapfrogEntryPosition(exitSceneType, exitParameter)
@@ -188,9 +198,9 @@ function lua_sceneExitHandler(exitSceneType, exitParameter)
       end
    
    elseif exitSceneType == 1 then
-      -- We are leaving deep space scene
+      -- We are leaving a space scene
       -- Determine next scene
-      if currentScene == "deep_space_scene.xml" then
+      if spaces[currentScene] ~= nil then
          if exitParameter == 3 then
             currentScene = "orbit_scene.xml"
             currentSceneType = 2
@@ -216,8 +226,8 @@ function lua_sceneExitHandler(exitSceneType, exitParameter)
             c_loadLatestSave()
             return
          elseif exitParameter == -3 then
-            -- Bounced: deep space again, re-entry to try once more
-            currentScene = "deep_space_scene.xml"
+            -- Bounced: space again, re-entry to try once more
+            currentScene = lua_missionSpace()
             currentSceneType = 1
          else
             -- Down, on or off a site: that site's landing scene

@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  The Debris Belt: a tight space scene where mission 1 hunts the raiders'
+  stash. Fast rocks bounce off the soft boundaries, so there's nowhere to
+  hide, and ammo drifts in now and then. lua/mission_1.lua decides when the
+  exit opens and watches asteroidField, so keep that name. Tune with
+  width, height, rockSpeedMin and rockSpeedMax here, spawnInitial on the
+  field, and intensity and maxAlive on ammoDrops.
+-->
+<compoundObject
+  needsGroupIndex="false">
+  <spritePolygon
+    name="noName"
+    texture="starfield"
+    posX="0"
+    posY="0"
+    angle="0"
+    zLevel="0"
+    collisionEntity="notApplicable"
+    collisionCategory="1"
+    collisionMask="65534"
+    textureMeterWidth="200"
+    textureMeterHeight="200"
+    textureOffsetMeterX="0"
+    textureOffsetMeterY="0"
+    parallaxAmount="0">
+    <vertices>
+      <vertex id="1" x="-100" y="-100" />
+      <vertex id="2" x="900" y="-100" />
+      <vertex id="3" x="900" y="580" />
+      <vertex id="4" x="-100" y="580" />
+    </vertices>
+    <triangles>
+      <triangle id="1" v1="1" v2="4" v3="3" />
+      <triangle id="2" v1="3" v2="2" v3="1" />
+    </triangles>
+  </spritePolygon>
+  <behaviour
+    type="scene">
+    <sceneProperties
+      sceneType="space"
+      width="800"
+      height="480"
+      rockSpeedMin="20"
+      rockSpeedMax="55"
+      hasUpperBoundary="true"
+      hasLowerBoundary="true"
+      hasLeftBoundary="true"
+      hasRightBoundary="true">
+      <states />
+    </sceneProperties>
+  </behaviour>
+  <system
+    name="asteroidField"
+    type="objectFactory">
+    <objectFactoryProperties
+      body="notApplicable"
+      posX="240"
+      posY="40"
+      width="500"
+      height="400"
+      spawnInitial="14"
+      intensity="0"
+      lifeTime="60000">
+      <spawnObject
+        probabilityFactor="1">
+        <childObject
+          name="largeAsteroid"
+          file="large_asteroid.xml"
+          posX="0"
+          posY="0" />
+      </spawnObject>
+      <spawnObject
+        probabilityFactor="1">
+        <childObject
+          name="mediumAsteroid"
+          file="medium_asteroid.xml"
+          posX="0"
+          posY="0" />
+      </spawnObject>
+      <spawnObject
+        probabilityFactor="1">
+        <childObject
+          name="smallAsteroid"
+          file="small_asteroid.xml"
+          posX="0"
+          posY="0" />
+      </spawnObject>
+    </objectFactoryProperties>
+  </system>
+  <system
+    name="ammoDrops"
+    type="objectFactory">
+    <objectFactoryProperties
+      body="notApplicable"
+      posX="60"
+      posY="60"
+      width="680"
+      height="360"
+      spawnInitial="1"
+      intensity="0.05"
+      maxAlive="2"
+      lifeTime="60000">
+      <spawnObject
+        probabilityFactor="1">
+        <childObject
+          name="ammoDrop"
+          posX="0"
+          posY="0">
+          <compoundObject
+            needsGroupIndex="true">
+            <behaviour
+              type="pickupObject">
+              <pickupObjectProperties
+                pickupType="resourceAmmo"
+                amountType="fix"
+                amount="20" />
+            </behaviour>
+            <dynamicCircle
+              name="ammoDropBody"
+              texture="ammo_power_up"
+              posX="0"
+              posY="0"
+              angle="-17"
+              zLevel="160"
+              collisionEntity="pickup"
+              collisionCategory="1"
+              collisionMask="65533"
+              radius="7"
+              density="1"
+              friction="0" />
+          </compoundObject>
+        </childObject>
+      </spawnObject>
+    </objectFactoryProperties>
+  </system>
+</compoundObject>

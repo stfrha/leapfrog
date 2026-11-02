@@ -179,6 +179,17 @@ function T:exitScene(sceneType, parameter)
    step(self, function() self.engine:exitScene(sceneType, parameter) end)
 end
 
+-- The Leapfrog stays in a corner of a space scene (1 upper right, 2 upper
+-- left, 3 lower right, 4 lower left): it leaves if the corner is open
+function T:flyToCorner(corner)
+   step(self, function() self.engine:flyToCorner(corner) end)
+end
+
+-- A watched object factory has this many of its own objects left
+function T:clearField(name, left)
+   step(self, function() self.engine:clearField(name, left) end)
+end
+
 -- Land on a launch site and launch: the site must have been triggered
 -- (property 1) by the script, then the scene exits to deep space
 function T:launch(site)
@@ -567,6 +578,16 @@ function T:expectMapShown(object, actor, shown)
 end
 
 -- Someone listens to the event, count times (default exactly once)
+-- Is a corner of the space scene open?
+function T:expectCorner(corner, open)
+   local gate = self.engine.scene.transit[corner]
+   local isOpen = gate == nil or gate.open
+   if isOpen ~= open then
+      self:fail(string.format("corner %d: expected %s", corner, open and "open" or "shut"), 2)
+   end
+   pass(self)
+end
+
 function T:expectListening(object, eventId, count)
    local n = self.engine:listenerCount(object, eventId)
    if n ~= (count or 1) then

@@ -195,7 +195,8 @@ PickupObject::PickupObject(
          float maxAng = mass * 6.0f;
 
          // Randomise value between 0 and 2pi
-         float angle = static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / 2.0f * MATH_PI));
+         // A direction all the way round (see BreakableObject)
+         float angle = (static_cast <float> (rand()) / static_cast <float> (RAND_MAX)) * 2.0f * MATH_PI;
 
 
          // Randomise value between 0 and maxImp

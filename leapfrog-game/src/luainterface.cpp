@@ -7,6 +7,8 @@
 #include "sceneactorevents.h"
 #include "leapfrogevents.h"
 #include "planetactor.h"
+#include "freespaceactor.h"
+#include "objectfactory.h"
 
 using namespace oxygine;
 
@@ -154,6 +156,13 @@ void luaEventListner(oxygine::Event *ev)
       g_LuaInterface.missionStateSceneEventHandler(
          eventType, actorName, toEv->m_timerId);
       
+   }
+   else if (ev->type == FactoryLowEvent::EVENT)
+   {
+      FactoryLowEvent* lowEv = static_cast<FactoryLowEvent*>(ev);
+
+      g_LuaInterface.missionStateSceneEventHandler(
+         eventType, actorName, lowEv->m_watchId);
    }
    else if (ev->type == LeapfrogStrippedEvent::EVENT)
    {
@@ -569,6 +578,83 @@ static int c_startSceneTimer(lua_State *L)
    lua_pushnumber(L, (float)timerId);
 
    return 1;
+}
+
+// c_watchFactory(factoryName, left) -> id
+// Asks a scene's object factory (<system type="objectFactory">) to say when
+// at most left of the objects it has spawned are alive. Pieces and drops of
+// those objects don't count. The event "FcLw" comes once, from the scene,
+// with the returned id as parameter. A watch ends with the scene, and its
+// listener is cleared like a timer's, so call this from the scene setup.
+// Returns -1 if the scene has no such factory.
+static int c_watchFactory(lua_State *L)
+{
+   static int nextWatchId = 0;
+
+   const char* name = lua_tostring(L, 1);
+   int left = (int)lua_tointeger(L, 2);
+
+   SceneActor* scene = g_LuaInterface.getSceneActor();
+   System* system = (name != NULL) ? scene->getSystem(name) : NULL;
+   ObjectFactory* factory = dynamic_cast<ObjectFactory*>(system);
+
+   if (factory == NULL)
+   {
+      logs::warning("c_watchFactory: no object factory '%s' in the scene", name ? name : "(nil)");
+      lua_pushinteger(L, -1);
+      return 1;
+   }
+
+   int id = nextWatchId++;
+   factory->watch(left, id);
+
+   int i = scene->addEventListener(FactoryLowEvent::EVENT, luaEventListner);
+   g_LuaInterface.registerHandlerHandle(scene, i);
+
+   lua_pushinteger(L, id);
+   return 1;
+}
+
+// c_setTransitOpen(corner, open [, message])
+// Opens or shuts an exit of a space scene: 1 upper right, 2 upper left,
+// 3 lower right, 4 lower left. A shut corner is only a boundary. message
+// goes to the HUD log when the Leapfrog flies into it. All corners are open
+// when a scene starts, so set them in the scene setup.
+static int c_setTransitOpen(lua_State *L)
+{
+   int corner = (int)lua_tointeger(L, 1);
+   bool open = lua_toboolean(L, 2);
+   const char* message = lua_tostring(L, 3);
+
+   FreeSpaceActor* space = dynamic_cast<FreeSpaceActor*>(g_LuaInterface.getSceneActor());
+
+   if (space == NULL)
+   {
+      logs::warning("c_setTransitOpen: not in a space scene");
+      return 0;
+   }
+
+   space->setTransitOpen(corner, open, (message != NULL) ? message : "");
+   return 0;
+}
+
+// c_setObjectVelocity(name, vx, vy)
+// Sets the speed of an object's first body, in units per second, y down
+static int c_setObjectVelocity(lua_State *L)
+{
+   std::string objectName = lua_tostring(L, 1);
+   float vx = (float)lua_tonumber(L, 2);
+   float vy = (float)lua_tonumber(L, 3);
+
+   CompoundObject* obj = g_LuaInterface.getSceneActor()->getObject(objectName);
+   b2Body* body = (obj != NULL) ? obj->getFirstBody() : NULL;
+
+   if (body != NULL)
+   {
+      body->SetLinearVelocity(b2Vec2(vx, vy));
+   }
+
+   return 0;
 }
 
 // c_askQuestion(questionId [, text, sender [, flightText]])
@@ -1053,6 +1139,9 @@ void LuaInterface::initLuaInterface(void)
    lua_register(m_L, "c_setObjectMapAffiliation", c_setObjectMapAffiliation);
    lua_register(m_L, "c_setObjectMapShown", c_setObjectMapShown);
    lua_register(m_L, "c_startSceneTimer", c_startSceneTimer);
+   lua_register(m_L, "c_watchFactory", c_watchFactory);
+   lua_register(m_L, "c_setTransitOpen", c_setTransitOpen);
+   lua_register(m_L, "c_setObjectVelocity", c_setObjectVelocity);
    lua_register(m_L, "c_exitSceneSaveGameStatus", c_exitSceneSaveGameStatus);
    lua_register(m_L, "c_saveGameStatus", c_saveGameStatus);
    lua_register(m_L, "c_askQuestion", c_askQuestion);

@@ -4,15 +4,10 @@
 -- the site. (Needs <landingSite name="badMine" hidden="true"> in
 -- mining_planet_surface.xml.)
 
--- Mission 1 up to deep space: the job, the Orb, the launch
+-- The big space, where the station is
 local function toDeepSpace(t)
    t:newGame()
-   t:land("siloLandingPad")
-   t:answer(t:mission(1).Question.acceptJob, true)
-   t:takeOff()
-   t:land("oreLanding")
-   t:takeOff()
-   t:launch("launchSite1")
+   t:menuTestStart(2)                      -- the big space, launched
    t:expectScene("deep_space_scene.xml")
    t:clearDialog()
 end

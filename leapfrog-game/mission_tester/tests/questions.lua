@@ -46,7 +46,7 @@ test("questions: a launch waits for a pending question, then goes", function(t)
 
    t:answer(Q_TEST, true)
    t:completeLaunch("launchSite1")
-   t:expectScene("deep_space_scene.xml")
+   t:expectScene("debris_belt_scene.xml")
 end)
 
 test("questions: a launch on hold can be aborted (property 3)", function(t)

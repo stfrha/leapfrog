@@ -7,12 +7,7 @@
 -- space's lower right corner
 local function toOrbit(t)
    t:newGame()
-   t:land("siloLandingPad")
-   t:answer(t:mission(1).Question.acceptJob, true)
-   t:takeOff()
-   t:land("oreLanding")
-   t:takeOff()
-   t:launch("launchSite1")
+   t:menuTestStart(2)                      -- the big space, launched
    t:exitScene(1, 3)
    t:expectScene("orbit_scene.xml")
    t:clearDialog()

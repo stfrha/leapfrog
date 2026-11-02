@@ -11,7 +11,8 @@
       type="breakableObject">
       <breakableObjectProperties
          breakBulletDamage="6"
-         numberOfSpawns="14">
+         numberOfSpawns="14"
+         calm="true">
          <spawnObject
             probabilityFactor="3">
            <childObject

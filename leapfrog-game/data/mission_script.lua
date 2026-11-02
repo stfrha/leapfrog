@@ -14,7 +14,7 @@ local mission2 = require('mission2')
 
 -- The missions by number (currentMission). A mission has
 -- setupMissionStateScene, missionStateSceneEventHandler and firstState, and
--- may have reentryOutcome and holds. See documentation/lua_guide.md.
+-- may have reentryOutcome, holds and space. See documentation/lua_guide.md.
 local missions = {
    [1] = mission1,
    [2] = mission2,
@@ -30,6 +30,7 @@ local sceneWorld = {
    ["home_scene.xml"]       = "mining",
    ["landing_scene.xml"]    = "mining",
    ["deep_space_scene.xml"] = "mining",
+   ["debris_belt_scene.xml"] = "mining",
    ["orbit_scene.xml"]      = "mining",
 }
 
@@ -52,6 +53,43 @@ end
 
 -- Global variables
 currentState = 0
+
+-- The space scene a launch or a bounce leads to: the running mission's, if
+-- it has a space() function that names one, otherwise the big space
+function lua_missionSpace()
+   local mission = missions[currentMission]
+   if mission ~= nil and mission.space ~= nil then
+      local space = mission.space()
+      if space ~= nil then
+         return space
+      end
+   end
+   return "deep_space_scene.xml"
+end
+
+-- Ends the running mission and starts another, in the scene the game is in.
+-- The save at the next scene exit stores it. Use 0 for free play. Called from
+-- an event handler, it happens when all handlers have had that event, so a
+-- mission's own handler doesn't go on with the next mission's state.
+local handlingEvent = false
+local missionToStart = nil
+
+function lua_startMission(mission)
+   if handlingEvent then
+      missionToStart = mission
+      return
+   end
+
+   -- The old mission's unanswered questions (missions use ids 1 to 99) go
+   -- with it; a world's stay
+   for id = 1, 99 do
+      c_cancelQuestion(id)
+   end
+
+   currentMission = mission
+   currentState = lua_missionFirstState(mission)
+   lua_setupMissionStateScene()
+end
 
 -- missionHolds(what): true if the running mission takes over something the
 -- world script would otherwise do in this scene, so the world leaves it
@@ -124,6 +162,8 @@ function lua_setupMissionStateScene()
 end
 
 function lua_missionStateSceneEventHandler(eventId, actorName, parameter1)
+   handlingEvent = true
+
    debt.eventHandler(eventId, actorName, parameter1)
    common.eventHandler(eventId, actorName, parameter1)
    swarm.eventHandler(eventId, actorName, parameter1)
@@ -136,6 +176,14 @@ function lua_missionStateSceneEventHandler(eventId, actorName, parameter1)
    local mission = missions[currentMission]
    if mission ~= nil then
       mission.missionStateSceneEventHandler(eventId, actorName, parameter1)
+   end
+
+   handlingEvent = false
+
+   if missionToStart ~= nil then
+      local next = missionToStart
+      missionToStart = nil
+      lua_startMission(next)
    end
 end
 

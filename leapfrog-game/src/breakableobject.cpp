@@ -65,15 +65,21 @@ BreakableObject::BreakableObject(
 
          float mass = myBody->GetMass();
 
-         float maxImp = mass * 8.0f;
+         // Rocks fly as fast as the scene says (rockSpeedMin and rockSpeedMax
+         // on sceneProperties); a calm object just gets the small nudge
+         float minSpeed = m_calm ? 0.0f : m_sceneActor->getRockSpeedMin();
+         float maxSpeed = m_calm ? 8.0f : m_sceneActor->getRockSpeedMax();
          float maxAng = mass * 6.0f;
 
          // Randomise value between 0 and 2pi
-         float angle = static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / 2.0f * MATH_PI));
+         // A direction all the way round. (This was RAND_MAX / 2.0f * MATH_PI,
+         // which only gave 0 to 37 degrees, so everything drifted the same way.)
+         float angle = (static_cast <float> (rand()) / static_cast <float> (RAND_MAX)) * 2.0f * MATH_PI;
 
 
-         // Randomise value between 0 and maxImp
-         float magnitude = static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / maxImp));
+         // Randomise a speed between minSpeed and maxSpeed
+         float speed = minSpeed + (maxSpeed - minSpeed) * (static_cast <float> (rand()) / static_cast <float> (RAND_MAX));
+         float magnitude = mass * speed;
 
          b2Vec2 impulseForce = b2Vec2(magnitude * cos(angle), magnitude * sin(angle));
 
@@ -91,6 +97,7 @@ void BreakableObject::readBreakableObjectNode(const pugi::xml_node& node)
 {
    m_breakAtDamage = node.attribute("breakBulletDamage").as_int(0);
    m_numberOfSpawns = node.attribute("numberOfSpawns").as_int(0);
+   m_calm = node.attribute("calm").as_bool(false);
 }
 
 void BreakableObject::collisionBlast(b2Contact* contact, bool small)
@@ -184,9 +191,16 @@ void BreakableObject::spawnBreakableObjects(void)
       Vector2 center = getCompoundObjectPosition();
       float radius = m_shapes[0]->getWidth() / 4;
 
+      // The pieces fly apart: evenly round the circle, turned at random,
+      // each a little off its even share
+      float circle = 2.0f * MATH_PI;
+      float share = circle / m_numberOfSpawns;
+      float turn = (static_cast <float> (rand()) / static_cast <float> (RAND_MAX)) * circle;
+
       for (int i = 0; i < m_numberOfSpawns; i++)
       {
-         float angle = (i / (float)m_numberOfSpawns) * 2.0f * MATH_PI;
+         float offset = (static_cast <float> (rand()) / static_cast <float> (RAND_MAX) - 0.5f) * 0.5f * share;
+         float angle = turn + i * share + offset;
          Vector2 rayDir(sinf(angle), cosf(angle));
          Vector2 spawnPos = rayDir * radius + center;
 
@@ -194,7 +208,9 @@ void BreakableObject::spawnBreakableObjects(void)
             1,
             spawnPos,
             Vector2(2.0f, 2.0f),
-            m_spawnObjects);
+            m_spawnObjects,
+            NULL,
+            rayDir);
       }
    }
 

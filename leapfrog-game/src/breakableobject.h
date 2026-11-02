@@ -29,6 +29,7 @@ private:
 
    int m_breakAtDamage;
    int m_numberOfSpawns;
+   bool m_calm;                  // calm="true": ignores the scene's rock speed
 
    void readBreakableObjectNode(const pugi::xml_node& node);
    void spawnBreakableObjects(void);

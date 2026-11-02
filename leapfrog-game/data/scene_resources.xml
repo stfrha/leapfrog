@@ -8,4 +8,5 @@
 	<scene file="home_scene.xml" resources="res_mining.xml"/>
 	<scene file="orbit_scene.xml" resources="res_mining.xml"/>
 	<scene file="deep_space_scene.xml" resources="res_space.xml"/>
+	<scene file="debris_belt_scene.xml" resources="res_space.xml"/>
 </sceneResources>

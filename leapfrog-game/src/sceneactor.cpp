@@ -103,6 +103,9 @@ SceneActor* SceneActor::defineScene(
 
    baseScene->m_parallaxKeepAspect = root.child("behaviour").child("sceneProperties").attribute("parallaxKeepAspect").as_bool(true);
 
+   baseScene->m_rockSpeedMin = root.child("behaviour").child("sceneProperties").attribute("rockSpeedMin").as_float(0.0f);
+   baseScene->m_rockSpeedMax = root.child("behaviour").child("sceneProperties").attribute("rockSpeedMax").as_float(8.0f);
+
    spSoftBoundary sb;
 
    bool boundary = root.child("behaviour").child("sceneProperties").attribute("hasUpperBoundary").as_bool(false);
@@ -149,6 +152,8 @@ SceneActor::SceneActor(
    float initialZoomScale,
    float zoomScale) :
    CompoundObject(this, NULL),
+   m_rockSpeedMin(0.0f),
+   m_rockSpeedMax(8.0f),
    m_world(world),
    m_zoomScale(initialZoomScale),
    m_defaultZoomScale(zoomScale),
@@ -491,9 +496,10 @@ void SceneActor::addObjectToSpawnList(
    oxygine::Vector2 topLeft,
    oxygine::Vector2 widthHeight,
    spSpawnObjectList spawnSource,
-   spSpawnTally tally)
+   spSpawnTally tally,
+   oxygine::Vector2 direction)
 {
-   spSpawnInstruction spi = new SpawnInstruction(numOfSpawns, topLeft, widthHeight, spawnSource, tally);
+   spSpawnInstruction spi = new SpawnInstruction(numOfSpawns, topLeft, widthHeight, spawnSource, tally, direction);
    m_spawnInstructions.push_back(spi);
 }
 
@@ -1246,6 +1252,15 @@ void SceneActor::sweepSpawnList(void)
             tally->add(co);
          }
 
+         // Aimed: same speed, the instruction's direction (pieces of a rock)
+         Vector2 direction = (*it)->m_direction;
+         b2Body* body = (co != NULL) ? co->getFirstBody() : NULL;
+
+         if ((body != NULL) && ((direction.x != 0.0f) || (direction.y != 0.0f)))
+         {
+            float speed = body->GetLinearVelocity().Length();
+            body->SetLinearVelocity(b2Vec2(direction.x * speed, direction.y * speed));
+         }
       }
    }
 

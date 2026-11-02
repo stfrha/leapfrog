@@ -688,7 +688,15 @@ function Engine:startScene(file, sceneType)
       return
    end
 
-   local scene = { file = file, sceneType = sceneType, objects = {} }
+   local scene = { file = file, sceneType = sceneType, objects = {},
+      factories = {}, watches = {}, transit = {} }
+
+   -- Object factories, for c_watchFactory
+   for _, c in ipairs(root.children) do
+      if c.tag == "system" and c.attr.type == "objectFactory" then
+         scene.factories[c.attr.name] = true
+      end
+   end
 
    -- The orbit scene's planet: its landing sites, shown unless hidden="true"
    -- (PlanetActor; Lua changes it with c_setLandingSiteShown)
@@ -796,7 +804,39 @@ function Engine:forceCurrentScene()
 end
 
 -- A scene exit (the scene's ExitXxxSceneEvent): Lua picks the next scene
+-- The Leapfrog stays in a corner of a space scene: it leaves if the corner
+-- is open, and the HUD log shows a shut corner's message
+function Engine:flyToCorner(corner)
+   local gate = self.scene.transit[corner]
+   if gate ~= nil and not gate.open then
+      self:note("CORNER", string.format("%d is shut", corner))
+      if gate.message ~= nil and gate.message ~= "" then
+         self.hud[#self.hud + 1] = { text = gate.message, critical = true }
+      end
+      return
+   end
+   self:exitScene(1, corner)
+end
+
+-- A watched factory has left of its own objects alive
+function Engine:clearField(name, left)
+   if not self.scene.factories[name] then
+      error("clearField: no object factory " .. tostring(name), 3)
+   end
+   local watch = self.scene.watches[name]
+   if watch ~= nil and left <= watch.left then
+      self.scene.watches[name] = nil
+      self:deliverFromScene("FcLw", watch.id)
+   end
+end
+
 function Engine:exitScene(sceneType, parameter)
+   if sceneType == 1 then
+      local gate = self.scene.transit[parameter]
+      if gate ~= nil and not gate.open then
+         error(string.format("space corner %d is shut: it can't be left that way", parameter), 4)
+      end
+   end
    self:note("EXIT", string.format("scene type %d, parameter %d", sceneType, parameter))
    self:callLua("lua_sceneExitHandler", sceneType, parameter)
    self:runPending()
@@ -1017,6 +1057,41 @@ function Engine:installApi(env)
       local key = actor .. "/" .. eventId
       e.listeners[key] = (e.listeners[key] or 0) + 1
       e:note("LISTEN", key .. (e.listeners[key] > 1 and (" (x" .. e.listeners[key] .. ")") or ""))
+   end
+
+   api.c_watchFactory = function(name, left)
+      if not (e.scene and e.scene.factories[name]) then
+         e:problem("c_watchFactory: no object factory '" .. tostring(name) .. "' in " ..
+            (e.scene and e.scene.file or "?"))
+         return -1
+      end
+      e.watchCounter = (e.watchCounter or -1) + 1
+      e.scene.watches[name] = { id = e.watchCounter, left = left }
+      -- Like the game: every watch adds a listener on the scene
+      local key = "/FcLw"
+      e.listeners[key] = (e.listeners[key] or 0) + 1
+      return e.watchCounter
+   end
+
+   api.c_setTransitOpen = function(corner, open, message)
+      if not (e.scene and e.scene.sceneType == 1) then
+         e:problem("c_setTransitOpen: not in a space scene")
+         return
+      end
+      if corner < 1 or corner > 4 then
+         e:problem("c_setTransitOpen: no corner " .. tostring(corner))
+         return
+      end
+      e.scene.transit[corner] = { open = open and true or false, message = message }
+   end
+
+   api.c_setObjectVelocity = function(name, vx, vy)
+      local obj = e:getObject(name)
+      if not obj then
+         e:problem("c_setObjectVelocity: no object '" .. tostring(name) .. "'")
+         return
+      end
+      obj.velocity = { x = vx, y = vy }
    end
 
    api.c_registerPropertyTrigger = function(actor, eventId, propertyId, triggerType, lower, upper)

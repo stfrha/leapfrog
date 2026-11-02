@@ -74,6 +74,8 @@ private:
    bool m_armPauseChange;
    std::vector<spSoftBoundary> m_boundaries;
    std::vector<b2Body*> m_boundedBodies;
+   float m_rockSpeedMin;         // breakables' speed when they appear,
+   float m_rockSpeedMax;         // units/s (see getRockSpeedMin)
    ManualPan* m_manualPan;
    std::vector<SceneTimer> m_timers;
    int m_timerIdCounter;
@@ -217,9 +219,16 @@ public:
       oxygine::Vector2 leftTop,
       oxygine::Vector2 widthHeight,
       spSpawnObjectList spawnSource,
-      spSpawnTally tally = NULL);
+      spSpawnTally tally = NULL,
+      oxygine::Vector2 direction = oxygine::Vector2(0.0f, 0.0f));
    
    int createSceneTimer(int numOfTicks);
+
+   // How fast breakable objects fly when they appear: each gets a random
+   // speed in this range in a random direction (rockSpeedMin and
+   // rockSpeedMax on sceneProperties, default 0 and 8)
+   float getRockSpeedMin(void) const { return m_rockSpeedMin; }
+   float getRockSpeedMax(void) const { return m_rockSpeedMax; }
 
    // Yes/No questions. Flight controls are never taken over in flight, so
    // a question is only answered with the Leapfrog standing on a landing

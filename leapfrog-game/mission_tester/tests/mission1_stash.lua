@@ -1,11 +1,14 @@
 -- Mission 1 in space: the stolen stash (lua/mission_1.lua). Launched from
--- the Orb: find Bruno's asteroid (stash_asteroid.xml), blast it to find the
+-- the Orb into the Debris Belt with its exit shut: clear the field until the
+-- stash asteroid (stash_asteroid.xml) drifts in, blast it to find the
 -- raiders' case (stash_case.xml), shoot it open for the jackpot; the
--- raiders' strippers take it all back, leave fuel to limp home; Edith is
--- gone when he lands at the silo.
+-- raiders' strippers take it all back and leave fuel to limp home, and the
+-- exit opens. Edith is gone when he lands at the silo, and mission 2 starts.
 
--- Mission 1 up to deep space: the job, the Orb, the launch
-local function toDeepSpace(t)
+local belt = "debris_belt_scene.xml"
+
+-- Mission 1 up to the belt: the job, the Orb, the launch
+local function toBelt(t)
    t:newGame()
    t:land("siloLandingPad")
    t:answer(t:mission(1).Question.acceptJob, true)
@@ -13,12 +16,18 @@ local function toDeepSpace(t)
    t:land("oreLanding")
    t:takeOff()
    t:launch("launchSite1")
-   t:expectScene("deep_space_scene.xml")
+   t:expectScene(belt)
+end
+
+-- The field is nearly cleared: the stash asteroid has come in
+local function toStash(t)
+   toBelt(t)
+   t:clearField("asteroidField", 3)
 end
 
 -- The case is out (the asteroid broken a moment ago)
 local function toCase(t)
-   toDeepSpace(t)
+   toStash(t)
    t:breakObject("stashAsteroid")
    t:wait(1)
 end
@@ -45,19 +54,46 @@ local function swarmActive(t)
    return s ~= nil and s.props[0] == 1
 end
 
-test("stash: the launch starts the hunt: Bruno's hint, the stash asteroid, no strippers", function(t)
-   toDeepSpace(t)
+test("stash: the launch goes to the belt: the hunt, no stash yet, no strippers", function(t)
+   toBelt(t)
    local S = t:mission(1).State
    t:expectState(S.hunting)
+   t:expectSaved("scene", belt)
    t:expectSaved("state", S.hunting)
+   t:expectHud("Sector: Debris Belt")
    t:expectDialog("Hurry, get into space!", "Edith")
-   t:expectDialog("big one, out past the station", "Bruno")
-   t:expect(t.engine:getObject("stashAsteroid") ~= nil, "the stash asteroid is there")
-   t:expectListening("stashAsteroid", "BrBR", 1)
+   t:expectDialog("Clear out some of this junk", "Bruno")
+   t:expect(not t.engine:getObject("stashAsteroid"), "no stash asteroid yet")
    t:wait(11)
    t:expectDialog("that one looks loaded", "Edith")
    t:wait(30)
    t:expect(not t.engine:getObject("swarm"), "no strippers while hunting")
+end)
+
+test("stash: every corner of the belt is shut during the hunt", function(t)
+   toBelt(t)
+   local S = t:mission(1).State
+   for corner = 1, 4 do
+      t:expectCorner(corner, false)
+   end
+   t:flyToCorner(3)
+   t:expectScene(belt)
+   t:expectHud("Transit blocked: debris")
+   t:expectState(S.hunting)
+end)
+
+test("stash: with a few rocks left the stash asteroid drifts in from the edge", function(t)
+   toBelt(t)
+   local S = t:mission(1).State
+   t:clearField("asteroidField", 4)
+   t:expectState(S.hunting)
+   t:clearField("asteroidField", 3)
+   t:expectState(S.stashIn)
+   t:expectDialog("drifting in from the edge", "Bruno")
+   local rock = t.engine:getObject("stashAsteroid")
+   t:expect(rock ~= nil, "the stash asteroid is there")
+   t:expect(rock.velocity ~= nil and rock.velocity.x < 0, "it moves in from the right")
+   t:expectListening("stashAsteroid", "BrBR", 1)
 end)
 
 test("stash: the asteroid blasted: a case inside", function(t)
@@ -95,9 +131,20 @@ test("stash: stripped: the strippers leave, fuel to limp home", function(t)
    t:expectEqual(t.engine:getObject("swarm").recalls, 1, "strippers recalled")
 end)
 
-test("stash: home with nothing: Edith on the way down, gone at the silo; mission complete", function(t)
+test("stash: the exit stays shut in the raid and opens when he is stripped", function(t)
    toRaid(t)
-   local S = t:mission(1).State
+   t:expectCorner(3, false)
+   t:flyToCorner(3)
+   t:expectScene(belt)
+   strip(t)
+   t:expectCorner(3, true)
+   t:expectHud("Transit clear")
+   t:flyToCorner(3)
+   t:expectScene("orbit_scene.xml")
+end)
+
+test("stash: home with nothing: Edith on the way down, gone at the silo; mission 2 starts", function(t)
+   toRaid(t)
    strip(t)
    t:exitScene(1, 3)
    t:expectScene("orbit_scene.xml")
@@ -105,90 +152,58 @@ test("stash: home with nothing: Edith on the way down, gone at the silo; mission
    t:reentry("onSite", 0)                  -- the gold mine site: home for now
    t:expectScene("home_scene.xml")
    t:land("siloLandingPad")
-   t:expectState(S.done)
    t:expectDialog("Gone.", "Leapfrog")
    t:expectDialog("whose stash", "Leapfrog")
    t:expectHud("Mission complete")
+   t:expectMission(2)
+   t:expectState(t:mission(2).State.offered)
+   t:expectDialog("Three of the old beacons", "Bruno")
+   t:expectQuestion(t:mission(2).Question.takeJob)
 end)
 
-test("stash: after the mission the strippers are back in deep space", function(t)
+test("stash: after the mission, a launch goes to the big space with its strippers", function(t)
    toRaid(t)
-   local S = t:mission(1).State
    strip(t)
    t:exitScene(1, 3)
    t:reentry("onSite", 0)
    t:land("siloLandingPad")
+   t:answer(t:mission(2).Question.takeJob, false)
    t:takeOff()
    t:launch("launchSite1")
    t:expectScene("deep_space_scene.xml")
-   t:expectState(S.done)
    t:expect(not t.engine:getObject("stashAsteroid"), "no stash any more")
    t:expect(swarmActive(t), "the world's swarm")
+   t:expectCorner(3, true)
 end)
 
-test("stash: fleeing to orbit with the loot: the clinging strippers take it on the way", function(t)
-   toRaid(t)
-   local m = t:mission(1)
-   t:setProperty("leapfrog1", 8, 500)
-   t:exitScene(1, 3)
-   t:expectScene("orbit_scene.xml")
-   t:expectState(m.State.stripped)
-   t:expectDialog("still on your hull", "Raiders")
-   t:expectProperty("leapfrog1", 8, 0)
-   t:expectProperty("leapfrog1", 7, m.limpHomeFuel)
-end)
-
-test("stash: continuing during the hunt: the stash asteroid is there again", function(t)
-   toDeepSpace(t)
+test("stash: continuing during the hunt starts a new field", function(t)
+   toStash(t)
    local S = t:mission(1).State
    t:restartGame()
-   t:expectScene("deep_space_scene.xml")
+   t:expectScene(belt)
    t:expectState(S.hunting)
-   t:expect(t.engine:getObject("stashAsteroid") ~= nil, "the stash asteroid is there")
+   t:expect(not t.engine:getObject("stashAsteroid"), "no stash asteroid yet")
+   t:clearField("asteroidField", 3)
+   t:expectState(S.stashIn)
 end)
 
-test("stash: back in deep space with the case found: the case is there again", function(t)
-   toCase(t)
-   local S = t:mission(1).State
-   t:exitScene(1, 3)
-   t:reentry("bounced")
-   t:expectScene("deep_space_scene.xml")
-   t:expectState(S.caseFound)
-   t:expect(t.engine:getObject("stashCase") ~= nil, "the case is there")
-   t:breakObject("stashCase")
-   t:expectState(S.jackpot)
-end)
-
-test("stash: back in deep space with the loot out: the raiders come at once", function(t)
-   toJackpot(t)
-   local S = t:mission(1).State
-   t:exitScene(1, 3)
-   t:reentry("bounced")
-   t:expectScene("deep_space_scene.xml")
-   t:wait(4)
-   t:expectState(S.raided)
-   t:expect(swarmActive(t), "the strippers come")
-end)
-
-test("stash: bounced back after the raid: no strippers, a way home", function(t)
+test("stash: bounced back after the raid: the belt, no strippers, a way home", function(t)
    toRaid(t)
    local S = t:mission(1).State
    strip(t)
    t:exitScene(1, 3)
    t:reentry("bounced")
-   t:expectScene("deep_space_scene.xml")
+   t:expectScene(belt)
    t:wait(30)
    t:expectState(S.stripped)
    t:expect(not swarmActive(t), "no strippers")
+   t:expectCorner(3, true)
 end)
 
-test("stash: saved at the launch before this part existed (atOrb): the hunt begins", function(t)
-   toDeepSpace(t)
+test("stash: a save from the big space before the belt existed is a new hunt", function(t)
+   toBelt(t)
    local S = t:mission(1).State
-   t:setGlobal("currentState", S.atOrb)
-   t:exitScene(1, 3)
-   t:reentry("bounced")
-   t:expectScene("deep_space_scene.xml")
+   t:setGlobal("currentState", S.caseFound)
+   t:setupScene()
    t:expectState(S.hunting)
-   t:expect(t.engine:getObject("stashAsteroid") ~= nil, "the stash asteroid is there")
 end)

@@ -95,10 +95,8 @@ Every script gets every event. A world or mission handler must therefore check
 `data/lua/mission_2.lua` is a complete small mission, and
 `mission_tester/tests/mission2_beacons.lua` plays it. Bruno pays the pilot to
 relight three dead beacons in the home scene, one at a time, and to collect the
-money at the Orb. Start it from the main menu's test row: **Beacons, job
-offered**.
-
-Nothing in the story leads to this mission yet.
+money at the Orb. Mission 1 hands over to it at the silo, and you can also start
+it from the main menu's test row: **Beacons, job offered**.
 
 ### Step 1: plan the states
 
@@ -213,9 +211,6 @@ mission2.setupMissionStateScene = function()
       return
    end
 
-   -- The launch site takes the Leapfrog to deep space
-   listen("launchSite1", "LsLL")
-
    setupBeacons()
 
    if currentState == State.offered then
@@ -231,9 +226,9 @@ mission2.setupMissionStateScene = function()
 end
 ```
 
-The launch site needs that `listen`. Nothing launches until a script reacts to
-`LsLL` by setting the site's property 1, so a mission that leaves it out traps
-the player in the scene.
+A mission doesn't need to handle the launch site. Nothing launches until a script
+reacts to `LsLL` by setting the site's property 1, and the world script does that
+for every mission, and in free play.
 
 ### Step 4: write the event handler
 
@@ -257,11 +252,6 @@ mission2.missionStateSceneEventHandler = function(eventId, actorName, parameter1
 
    if currentScene ~= "home_scene.xml" then
       return
-   end
-
-   if eventId == "LsLL" then
-      -- Nothing launches until a script says so (property 1)
-      c_setObjectProperty("launchSite1", 1, 0)
    end
 
    if (eventId == "QsYs" or eventId == "QsNo") and parameter1 == Question.takeJob then
@@ -330,20 +320,21 @@ as well.
 
 ### Step 6: start and end a mission
 
-No code moves from one mission to the next yet. A mission hands over by setting
-the two globals and setting the scene up again. This has been tried in the tester
-but not in the game:
+Mission 1 ends by starting the next mission, in the scene the game is in:
 
+<!-- verbatim: data/lua/mission_1.lua -->
 ```lua
-currentMission = 2
-currentState = mission2.firstState
-lua_setupMissionStateScene()
+   lua_startMission(2)
 ```
 
-The save at the next scene exit stores the new mission.
+Called from an event handler, this waits until every handler has had the event.
+Otherwise the rest of mission 1's handler would run with mission 2's state, and the
+two missions' state numbers overlap. It also takes back the old mission's unanswered
+questions, while a world's stay. The save at the next scene exit stores the new
+mission.
 
-The beacons mission ends in `State.done` rather than going to free play, because
-free play can't launch yet. See [known gaps](#known-gaps).
+Use `lua_startMission(0)` for free play. The beacons mission ends in `State.done`
+for now, since nothing comes after it.
 
 ## 3. Events and triggers
 
@@ -373,9 +364,10 @@ wait a few ticks before listening to it.
 | `LfSt` | `leapfrog1` | Property taken: 5 ammo, 6 shield, 7 fuel, 8 credits, or 0 for nothing | A stripper took something |
 | `OpTr` | Any object | Property id | A property trigger fired |
 | `ScTO` | The scene | Timer id | A scene timer ran out |
+| `FcLw` | The scene | Watch id | A watched object factory is nearly out of objects |
 | `QsYs`, `QsNo` | The scene | Question id | A question was answered |
 
-`ScTO`, `QsYs` and `QsNo` need no `listen`.
+`ScTO`, `FcLw`, `QsYs` and `QsNo` need no `listen`.
 
 ### Property triggers
 
@@ -443,7 +435,7 @@ next setup, as `mining.lua` does with `arrivalLines`.
 | Leaving | How it happens | Lua gets |
 |---|---|---|
 | Landing | A script sets the launch site's property 1, the launch runs, the screen fades out | `lua_sceneExitHandler(0, 1)` |
-| Deep space | The Leapfrog stays 2.5 s in a corner's transit field | `lua_sceneExitHandler(1, corner)`: 1 upper right, 2 upper left, 3 lower right, 4 lower left |
+| Space | The Leapfrog stays 2.5 s in an open corner's transit field | `lua_sceneExitHandler(1, corner)`: 1 upper right, 2 upper left, 3 lower right, 4 lower left |
 | Orbit | Re-entry ends | `lua_sceneExitHandler(2, result)`: site index 0 and up, -1 no sites, -2 burned up, -3 bounced |
 
 ```mermaid
@@ -468,11 +460,11 @@ sequenceDiagram
 ### What the navigator does
 
 `lua_sceneExitHandler` chooses the next scene and saves. This is the branch for
-leaving deep space:
+leaving a space scene:
 
 <!-- verbatim: data/scene_navigator.lua -->
 ```lua
-      if currentScene == "deep_space_scene.xml" then
+      if spaces[currentScene] ~= nil then
          if exitParameter == 3 then
             currentScene = "orbit_scene.xml"
             currentSceneType = 2
@@ -501,6 +493,37 @@ leaving deep space:
 
 Setting `lfDefined = false` is what makes the next setup create the Leapfrog. An
 exit with no matching branch leaves it true, and the new scene has no Leapfrog.
+
+### Which space a mission flies to
+
+There is more than one space scene, and each stays one fixed place. A launch, or a
+bounce off the atmosphere, goes to whatever `lua_missionSpace()` says. That's the
+running mission's `space()` function if it has one and returns a scene, otherwise
+the big space, `deep_space_scene.xml`:
+
+<!-- verbatim: data/lua/mission_1.lua -->
+```lua
+mission1.space = function()
+   if currentState == State.atOrb or inStash(currentState) then
+      return stash.space
+   end
+   return nil
+end
+```
+
+Each space has a line in the `spaces` table in `scene_navigator.lua`, with where the
+Leapfrog arrives after a launch and after a bounce.
+
+### Shutting the corners
+
+`c_setTransitOpen(corner, open, message)` opens or shuts a corner. A shut corner is
+just boundary, and its message goes to the HUD log when the Leapfrog flies in.
+Every corner is open when a scene starts, so set them in the setup.
+
+`common.lua` shuts corners 1, 2 and 4 in every space scene, because only the lower
+right one leads anywhere yet. A mission can shut that one too. Mission 1 keeps the
+Debris Belt shut until the raid is over, so nothing in the belt before that is ever
+saved, and a reload is a new launch.
 
 ### Who creates the Leapfrog
 
@@ -546,11 +569,6 @@ the reason given under [Dialog and the HUD](#dialog-and-the-hud).
 
 ### Known gaps
 
-- **Three deep space corners are unfinished.** Only the lower right corner is
-  handled. In the others the scene reloads with no Leapfrog and nothing saved,
-  because no entry position is set.
-- **Free play can't launch.** Only missions react to `LsLL`, so with
-  `currentMission == 0` the launch site does nothing.
 - **There is no ground-to-ground exit.** The landing scene's only exit goes to deep
   space, so moving between landing scenes, as the cave missions will, needs a new
   exit.
@@ -575,9 +593,10 @@ for anything new, as in section 2.
 5. Add a line to `data/lua/test_starts.lua`.
 6. Add a test file, and list it in `tests/test_list.lua` and `mission_tester.vcxproj`.
 
-A mission may also have two optional functions:
+A mission may also have three optional functions:
 
 - `reentryOutcome(r)`, see section 4.
+- `space()`, which names the space scene the mission flies to, also in section 4.
 - `holds(what)`, which tells the world to leave something to the mission. Today
   `what` can only be `"swarm"`. Mission 1 uses it to keep the world's strippers
   away during the stash hunt:
@@ -627,6 +646,43 @@ The first way disconnects running timers, as section 3 explains.
    world script.
 5. Add an exit to it, as described under [Adding a new exit](#adding-a-new-exit).
 6. Add a test start with a `from`.
+
+### Add a space scene
+
+1. Follow [Add a scene](#add-a-scene), with `sceneType="space"`, and map it to
+   `res_space.xml` in `data/scene_resources.xml` if it uses asteroids.
+2. Add it to the `spaces` table in `scene_navigator.lua`.
+3. Have the mission's `space()` return it.
+
+Set how fast rocks fly on `sceneProperties`, in units per second. Each gets a random
+speed between `rockSpeedMin` and `rockSpeedMax`, and the pieces they break into do
+too. The defaults are 0 and 8. A breakable with `calm="true"` keeps the small default
+nudge, as the stash case does so that it can be hit.
+
+Rocks are pushed by the soft boundaries, so they come back into the scene.
+
+### Add an object factory
+
+A factory spawns objects from `<spawnObject>` entries in an area of a scene:
+
+| Attribute | Meaning |
+|---|---|
+| `spawnInitial` | How many to spawn when the scene starts |
+| `intensity` | New ones per second, 0 for none |
+| `maxAlive` | Most alive at a time, for a steady supply such as `ammoDrops` |
+| `posX`, `posY`, `width`, `height` | The area they appear in |
+
+To react when a field is nearly cleared, watch the factory from the setup. Only the
+objects it spawned count, not their pieces or drops, so smaller rocks are still
+flying when the event comes:
+
+<!-- verbatim: data/lua/mission_1.lua -->
+```lua
+fieldWatch = c_watchFactory(stash.field, stash.fieldLeft)
+```
+
+`FcLw` then arrives once, with that id as parameter. Compare with the id, and set
+your copy to -1 when you've handled it.
 
 ### Add a landing pad
 
@@ -877,6 +933,8 @@ numbers: `t:mission(2).State.collect`.
 | `t:launch(site)` | Lands on the site and launches, if a script triggers it |
 | `t:exitScene(type, parameter)` | Exits the scene, as in section 4 |
 | `t:reentry(outcome, site, distance)` | Ends the orbit scene |
+| `t:flyToCorner(corner)` | Flies into a corner of a space scene, leaving if it's open |
+| `t:clearField(name, left)` | Says a watched factory has this many objects left |
 | `t:event(object, id, parameter)` | Sends any game event |
 | `t:breakObject(name)` | Breaks an object, including its single spawn |
 | `t:setProperty(object, id, value)` | Changes a property from the game's side |
@@ -892,6 +950,7 @@ numbers: `t:mission(2).State.collect`.
 | `t:expectQuestion(id)`, `t:expectQuestionQueued(id)`, `t:expectNoQuestionPending()` | Questions |
 | `t:expectProperty(object, id, value)` | A property |
 | `t:expectMap(object, actor, state)`, `t:expectMapShown(object, actor, shown)` | The map |
+| `t:expectCorner(corner, open)` | Whether a corner of a space scene is open |
 | `t:expectListening(object, event, count)` | Registered listeners |
 | `t:expectItem(id, state)`, `t:expectSaved(field, value)` | Key items and the save |
 | `t:expect(condition, message)`, `t:expectEqual(actual, expected, what)` | Anything else |
@@ -938,6 +997,7 @@ is listed here, and that everything listed exists.
 | Mission | `firstState` (a value) | When the mission starts |
 | Mission, optional | `reentryOutcome(r)` | When the orbit scene exits |
 | Mission, optional | `holds(what)` | When the world asks through `missionHolds` |
+| Mission, optional | `space()` | When a launch or bounce needs a space scene |
 | World | `setupScene()`, `eventHandler(eventId, actorName, parameter1)` | Before the mission's |
 | World, optional | `reentryOutcome(r)` | Before the mission's |
 
@@ -949,6 +1009,8 @@ is listed here, and that everything listed exists.
 | `lua_setupMissionStateScene()` | Clears listeners and triggers, and runs all setups |
 | `lua_missionFirstState(mission)` | A mission's first state |
 | `missionHolds(what)` | True if the running mission has taken `what` over |
+| `lua_missionSpace()` | The space scene the running mission flies to |
+| `lua_startMission(mission)` | Starts a mission, after any event being handled; 0 is free play |
 | `swarm.start(name, file, onStripped, resources)` | Adds and watches a swarm |
 | `swarm.stop(name, recall)` | Stops spawning, and recalls the strippers if `recall` is true |
 | `swarm.set(name, rate, maxAlive)` | Changes a swarm's rate and limit |
@@ -966,6 +1028,7 @@ is listed here, and that everything listed exists.
 | `c_setObjectProperty(name, propertyId, value)` | Sets a property; ignored for a missing object or read-only property |
 | `c_getObjectProperty(name, propertyId)` | Reads a property; 0 for a missing object |
 | `c_setPanningObject(name)` | Sets the object the camera follows |
+| `c_setObjectVelocity(name, vx, vy)` | Sets an object's speed, in units per second, y down |
 
 ### Events and timers
 
@@ -975,6 +1038,7 @@ is listed here, and that everything listed exists.
 | `c_registerPropertyTrigger(actorName, 0, propertyId, type, lower, upper)` | Sends `OpTr` for values in or out of a range |
 | `c_clearAllTriggersAndEvents()` | Clears listeners and triggers. Only `mission_script.lua` calls it. |
 | `c_startSceneTimer(ticks)` | Starts a timer, and returns its id |
+| `c_watchFactory(name, left)` | Sends `FcLw` once when a factory has at most `left` of its objects alive, and returns an id, or -1 if there's no such factory |
 
 ### Dialog, HUD and questions
 
@@ -1023,6 +1087,7 @@ Affiliations are `none`, `leapfrog`, `neutral`, `enemy` and `friendly`.
 | `c_loadLatestSave()` | Goes back to the latest save, as after a death |
 | `c_lastReentry()` | Returns outcome, siteIndex, siteName, siteScene, distance and burn |
 | `c_setLandingSiteShown(name, shown)` | Shows or hides a site, in the orbit scene only |
+| `c_setTransitOpen(corner, open, message)` | Opens or shuts a corner of a space scene. The message is optional. |
 
 ### Events for scripts
 
@@ -1041,6 +1106,7 @@ Affiliations are `none`, `leapfrog`, `neutral`, `enemy` and `friendly`.
 | `OpTr` | Any object, a trigger fired | Property id |
 | `OpPC` | Any object, a property changed | 0 |
 | `ScTO` | The scene, a timer ran out | Timer id |
+| `FcLw` | The scene, a watched factory is nearly out | Watch id |
 
 `QsYs` and `QsNo` aren't object events. The scene passes them straight to Lua with
 the question id.

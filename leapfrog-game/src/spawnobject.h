@@ -81,13 +81,16 @@ public:
    oxygine::Vector2 m_widthHeight;
    spSpawnObjectList m_spawnSource;
    spSpawnTally m_tally;         // may be NULL
+   oxygine::Vector2 m_direction; // not zero: the spawn keeps its speed but
+                                 // flies this way
 
    SpawnInstruction(
       int numOfSpawns, 
       oxygine::Vector2 leftTop, 
       oxygine::Vector2 widthHeight, 
       spSpawnObjectList spawnSource,
-      spSpawnTally tally = NULL);
+      spSpawnTally tally = NULL,
+      oxygine::Vector2 direction = oxygine::Vector2(0.0f, 0.0f));
 
 
 };

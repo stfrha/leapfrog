@@ -1674,6 +1674,16 @@ oxygine::spActor CompoundObject::getActor(const std::string& name)
 Used to find pointers to b2Bodies as Actor::children of this compound object.
 name string can be hierarcical like so: nameGrandPareent.nameParent.nameChild
 */
+b2Body* CompoundObject::getFirstBody(void)
+{
+   if (m_shapes.empty())
+   {
+      return NULL;
+   }
+
+   return (b2Body*)ActorUserData::getBody(m_shapes[0]->getUserData());
+}
+
 b2Body* CompoundObject::getBody(const string& name)
 {
    string thisLevel;

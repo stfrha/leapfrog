@@ -98,6 +98,8 @@ doesn't yet: reported as KNOWN with the reason while it fails, and as FIXED
 | `t:launch(site)` | land on the site; the script must trigger it; to deep space |
 | `t:completeLaunch(site)` | the launch of the site the Leapfrog stands on goes (triggered, not aborted, no question pending) |
 | `t:exitScene(type, param)` | a scene exit (landing 0, deep space 1, orbit 2) |
+| `t:flyToCorner(corner)` | the Leapfrog stays in a corner of a space scene: it leaves if open; a shut corner shows its message |
+| `t:clearField(name, left)` | a watched object factory has this many of its own objects left (`FcLw`) |
 | `t:reentry(outcome [, site, distance])` | the orbit scene ends: `"onSite"`/`"offSite"` (closest site index, distance off in planet units; a marker is 100 wide), `"bounced"`, `"burnedUp"`; `c_lastReentry` returns it, then the scene exits |
 | `t:breakObject(name)` | a breakable object is shot to pieces: `BrBR` from it, it is gone; a single certain spawn (e.g. the stash asteroid's case) appears by its name (random spawns are not modelled) |
 | `t:hideLandingSite(name)` | marks a landing site `hidden="true"` in this test's copy of the planet's surface file (before the orbit scene starts) |
@@ -127,7 +129,7 @@ question's text follows the answer to the first (and the reply to it).
 `expectLandingSiteShown(name, shown)` (orbit scene),
 `expectItem(id, "unknown"|"held"|"revoked")`, `expectSavedItem(id, state)` (in the save file),
 `expectMap(object, actor, "hollow"|"filled"|"flashingSlow"|"flashingFast")`,
-`expectMapShown(object, actor, bool)`, `expectListening(object, event [, count])`,
+`expectMapShown(object, actor, bool)`, `expectCorner(corner, open)`, `expectListening(object, event [, count])`,
 `expectSaved(field, value)` (fields: scene, mission, state, sceneType,
 exitScene, exitType, exitParam, fuel, credits, ...), `expectEqual`, `expect`.
 

@@ -52,6 +52,14 @@ end
 
 common.setupScene = function()
    setSenders()
+
+   -- Only the lower right corner of a space leads anywhere yet (to orbit).
+   -- A mission can shut that one too, with c_setTransitOpen in its setup.
+   if currentSceneType == 1 then
+      c_setTransitOpen(1, false)
+      c_setTransitOpen(2, false)
+      c_setTransitOpen(4, false)
+   end
 end
 
 

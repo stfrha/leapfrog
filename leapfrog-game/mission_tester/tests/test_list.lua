@@ -13,6 +13,7 @@ return {
    "landing_sites.lua",
    "key_items.lua",
    "mission2_beacons.lua",
+   "spaces.lua",
    "guide.lua",
    "bad_mine.lua",
 }
