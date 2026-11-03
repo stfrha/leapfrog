@@ -3,7 +3,7 @@
   <behaviour
     type="breakableObject">
     <breakableObjectProperties
-      breakBulletDamage="2"
+      breakBulletDamage="1"
       numberOfSpawns="1">
          <spawnObject
             probabilityFactor="9" >
@@ -12,7 +12,7 @@
             </childObject>
          </spawnObject>
          <spawnObject
-            probabilityFactor="1">
+            probabilityFactor="0.2">
            <childObject
              name="ammoPu1"
              posX="0"

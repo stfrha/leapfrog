@@ -1065,13 +1065,13 @@
         label="Claude Mine"
         angle="0.05"
         texture=""
-        scene="home_scene.xml" />
+        scene="landing_scene.xml" />
       <landingSite
         name="alphaCity"
         label="Village"
         angle="-5.63"
         texture=""
-        scene="landing_scene.xml" />
+        scene="home_scene.xml" />
       <landingSite
         name="badMine"
         label="Bad Mine"
