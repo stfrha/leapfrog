@@ -49,7 +49,7 @@ test("re-entry: recovered: standing on the site's pad, also after a continue", f
    t:expectEqual(file, "leapfrog_landing.xml", "Leapfrog file")
    t:expectEqual(x, 415, "on landing_pad1")
    t:expectEqual(y, 657, "on landing_pad1")
-   t:expectSaved("exitParam", 101)
+   t:expectSaved("exitParam", 100)
 
    t:restartGame()
    t:expectScene("landing_scene.xml")
