@@ -1,5 +1,5 @@
 """
-workshop - the workshop at the Orb, where the Leapfrog gets repaired and
+workshop - the workshop at the Ore, where the Leapfrog gets repaired and
 upgraded. Static scenery at parallax 0, with landing on its top floor.
 
 Two storeys. The ground floor is a garage and store: a roller door left half

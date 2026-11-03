@@ -95,7 +95,7 @@ Every script gets every event. A world or mission handler must therefore check
 `data/lua/mission_2.lua` is a complete small mission, and
 `mission_tester/tests/mission2_beacons.lua` plays it. Bruno pays the pilot to
 relight two dead beacons in the home scene, one at a time, and to collect the
-money at the Orb. Mission 1 hands over to it at the silo, and you can also start
+money at the Ore. Mission 1 hands over to it at the silo, and you can also start
 it from the main menu's test row: **Beacons, job offered**.
 
 ### Step 1: plan the states
@@ -112,7 +112,7 @@ stateDiagram-v2
     offered --> firstBeacon: Yes
     firstBeacon --> secondBeacon: land on landingPad2, repair
     secondBeacon --> collect: land on landingPad3
-    collect --> done: land on the Orb
+    collect --> done: land on the Ore
     done --> [*]
 ```
 
@@ -122,7 +122,7 @@ local State = {
    offered      = 10,  -- Bruno has offered the job
    firstBeacon  = 11,  -- relight the first beacon
    secondBeacon = 12,
-   collect      = 13,  -- all lit, collect the money at the Orb
+   collect      = 13,  -- all lit, collect the money at the Ore
    done         = 14,
 }
 mission2.State = State
@@ -281,7 +281,7 @@ mission2.missionStateSceneEventHandler = function(eventId, actorName, parameter1
    -- the id as soon as it has been handled
    if eventId == "ScTO" and parameter1 == reminderTimer then
       reminderTimer = -1
-      c_addDialogMessage("Both are lit. Come to the Orb for your money.", "Bruno", true, 0, 0)
+      c_addDialogMessage("Both are lit. Come to the Ore for your money.", "Bruno", true, 0, 0)
    end
 
    if eventId == "LpLL" and actorName == "oreLanding" and currentState == State.collect then
@@ -523,7 +523,7 @@ the big space, `deep_space_scene.xml`:
 <!-- verbatim: data/lua/mission_1.lua -->
 ```lua
 mission1.space = function()
-   if currentState == State.atOrb or inStash(currentState) then
+   if currentState == State.atOre or inStash(currentState) then
       return stash.space
    end
    return nil
@@ -624,7 +624,7 @@ A mission may also have three optional functions:
 ```lua
 mission1.holds = function(what)
    if what == "swarm" then
-      return currentState == State.atOrb or inStash(currentState)
+      return currentState == State.atOre or inStash(currentState)
    end
    return false
 end

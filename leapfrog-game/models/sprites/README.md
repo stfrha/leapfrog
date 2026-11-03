@@ -40,7 +40,7 @@ Script-specific options are listed with `-- --help`.
 * Mechanical parts: orthographic front view (camera looks along +Y, Z up), `kit.render_ortho()`.
 * Static scenery (buildings): perspective 3/4 view like the silo, `kit.render_persp()`. The frame
   is fitted around the geometry at 20 px/unit at the object's depth.
-* Buildings you land on (the Orb): `workshop.py` (two storeys, the open top floor is the landing
+* Buildings you land on (the Ore): `workshop.py` (two storeys, the open top floor is the landing
   area between two side walls, tools inside; seen face-on, yaw 0, distance 60), `fuel_station.py`
   (three lying tanks stacked 2 + 1, a pad with dispenser and kiosk, a half-broken FUEL neon) and
   `pad_house.py` (a house with a landing deck on its roof, closed by default, `--open` renders the

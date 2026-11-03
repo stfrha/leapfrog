@@ -3,13 +3,13 @@
 
 local Q_TEST = 77    -- not a question any script handles
 
-local function atOrb(t)
+local function atOre(t)
    t:newGame()
    t:land("siloLandingPad")
    t:answer(t:mission(1).Question.acceptJob, true)
    t:takeOff()
    t:land("oreLanding")
-   t:expectState(t:mission(1).State.atOrb)
+   t:expectState(t:mission(1).State.atOre)
    t:takeOff()
 end
 
@@ -27,14 +27,14 @@ test("questions: asking one that is open or queued again adds nothing", function
 end)
 
 test("questions: one asked on a pad opens at once", function(t)
-   atOrb(t)
+   atOre(t)
    t:land("landingPad2")
    t:askQuestion(Q_TEST)
    t:expectQuestion(Q_TEST)
 end)
 
 test("questions: a launch waits for a pending question, then goes", function(t)
-   atOrb(t)
+   atOre(t)
    -- Asked in flight, on the way to the launch site
    t:askQuestion(Q_TEST)
    t:expectQuestionQueued(Q_TEST)
@@ -50,7 +50,7 @@ test("questions: a launch waits for a pending question, then goes", function(t)
 end)
 
 test("questions: a launch on hold can be aborted (property 3)", function(t)
-   atOrb(t)
+   atOre(t)
    t:askQuestion(Q_TEST)
    t:land("launchSite1")
    t:expectQuestion(Q_TEST)
@@ -64,7 +64,7 @@ test("questions: a launch on hold can be aborted (property 3)", function(t)
 end)
 
 test("questions: c_leapfrogStandsOn names the pad or launch site, nil in flight", function(t)
-   atOrb(t)
+   atOre(t)
    local where = function() return t.engine.env.c_leapfrogStandsOn() end
    t:expectEqual(where(), nil, "in flight")
    t:land("landingPad2")
@@ -75,7 +75,7 @@ test("questions: c_leapfrogStandsOn names the pad or launch site, nil in flight"
 end)
 
 test("questions: the in-flight line is said only if still in flight when the dialog catches up", function(t)
-   atOrb(t)
+   atOre(t)
    t:clearDialog()
    -- Asked in flight: the line comes
    t:askQuestion(Q_TEST, "A test?", "Bruno", "Land and we'll talk.")
@@ -91,7 +91,7 @@ test("questions: the in-flight line is said only if still in flight when the dia
 end)
 
 test("questions: the text of one asked while another is open waits for its turn", function(t)
-   atOrb(t)
+   atOre(t)
    t:land("landingPad2")
    t:clearDialog()
    t:askQuestion(Q_TEST, "First?", "Bruno")
@@ -105,7 +105,7 @@ test("questions: the text of one asked while another is open waits for its turn"
 end)
 
 test("questions: one asked in flight: its text at once, the in-flight line after, not again on landing", function(t)
-   atOrb(t)
+   atOre(t)
    t:clearDialog()
    t:askQuestion(Q_TEST, "Once?", "Bruno", "Land and we'll talk.")
    t:expectDialog("Once?", "Bruno")

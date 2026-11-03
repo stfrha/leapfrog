@@ -26,7 +26,7 @@ test("landing sites: a hidden site starts hidden; shown, re-entry can come down 
    t:setLandingSiteShown("alphaCity", true)
    t:expectLandingSiteShown("alphaCity", true)
    t:reentry("onSite", 1)
-   t:expectScene("landing_scene.xml")
+   t:expectScene("home_scene.xml")
 end)
 
 test("landing sites: a script can hide a site", function(t)
@@ -34,7 +34,7 @@ test("landing sites: a script can hide a site", function(t)
    t:setLandingSiteShown("goldMine", false)
    t:expectLandingSiteShown("goldMine", false)
    t:reentry("onSite", 1)
-   t:expectScene("landing_scene.xml")
+   t:expectScene("home_scene.xml")
 end)
 
 test("landing sites: hidden again in the next visit of the orbit scene", function(t)

@@ -11,13 +11,13 @@ local swarm = require('swarm')
 local State = {
    -- Home scene
    offered          = 10,  -- Bruno has offered the job (asked when a new game
-                           -- starts; again on landing at the silo or the Orb
+                           -- starts; again on landing at the silo or the Ore
                            -- until accepted)
-   accepted         = 11,  -- fly to the Orb, one landing pad at a time;
+   accepted         = 11,  -- fly to the Ore, one landing pad at a time;
                            -- Bruno has put free fuel in landingPad2 and 3
-   atOrb            = 12,  -- Edith has cut in, the launch site is on the map
+   atOre            = 12,  -- Edith has cut in, the launch site is on the map
 
-   -- The Debris Belt: the stolen stash (launched from the Orb's launch site)
+   -- The Debris Belt: the stolen stash (launched from the Ore's launch site)
    hunting          = 13,  -- clear the field; drops are his to keep
    stashIn          = 19,  -- nearly cleared: Bruno's rock drifts in from
                            -- the edge (stash_asteroid.xml)
@@ -43,7 +43,7 @@ mission1.State = State
 mission1.firstState = State.offered
 
 -- With the job comes fuel to reach the launch site: when the leapfrog
--- lands on the Orb, the taskgiver fills the tank up to what the game
+-- lands on the Ore, the taskgiver fills the tank up to what the game
 -- started with (leapfrog property 7 = fuel), read when the new game starts.
 local homeStartFuel = 30
 
@@ -98,7 +98,7 @@ end
 
 -- mission_script.lua's lua_missionSpace: the stash is in the Debris Belt
 mission1.space = function()
-   if currentState == State.atOrb or inStash(currentState) then
+   if currentState == State.atOre or inStash(currentState) then
       return stash.space
    end
    return nil
@@ -109,7 +109,7 @@ end
 -- the stash is hunted, and after the raid so he can limp home)
 mission1.holds = function(what)
    if what == "swarm" then
-      return currentState == State.atOrb or inStash(currentState)
+      return currentState == State.atOre or inStash(currentState)
    end
    return false
 end
@@ -201,7 +201,7 @@ mission1.Question = Question
 local offerPending = false     -- asked and not yet answered (in this scene:
                                -- unanswered questions end with it)
 
--- The way to the Orb: the landing pads Bruno put fuel in, then the Orb.
+-- The way to the Ore: the landing pads Bruno put fuel in, then the Ore.
 -- The next one flashes on the map. Object and map actor (body) names
 -- from home_scene.xml.
 local route = {
@@ -220,7 +220,7 @@ local function playBrunoCall()
    c_addDialogMessage("No. I'm in good shape. Where did you hear that?", "Leapfrog", false, 290, 0)
    c_addDialogMessage("Grapevine. If you are so strong, I can give this little job to someone else.", "Bruno", true, 220, 0)
    c_addDialogMessage("Hold up, let's talk about it.", "Leapfrog", false, 60, 0)
-   c_addDialogMessage("Get into town, over to the Orb.", "Bruno", true, 90, 0)
+   c_addDialogMessage("Get into town, over to the Ore.", "Bruno", true, 90, 0)
    c_addDialogMessage("I don't have enough fuel to get there.", "Leapfrog", false, 200, 0)
    c_addDialogMessage("Ok, I'm gonna make it easy for you. I will put in some credits into a couple of landing pads along the way. They will give you enough fuel to get here.", "Bruno", true, 300, 0)
    -- A question opens when the leapfrog stands on a pad (c_askQuestion).
@@ -268,10 +268,10 @@ local function listenToRoute()
    end
 end
 
--- Landed on the Orb's pad with the job: the taskgiver adds some fuel and
+-- Landed on the Ore's pad with the job: the taskgiver adds some fuel and
 -- Edith cuts in
-local function arriveAtOrb()
-   currentState = State.atOrb
+local function arriveAtOre()
+   currentState = State.atOre
    showRoute()
 
    -- Fill up, but never take fuel away
@@ -284,12 +284,12 @@ local function arriveAtOrb()
    homeLaunchSiteTimer = c_startSceneTimer(homeEdithDialogTicks)
 end
 
-local function askAgain(atOrb)
+local function askAgain(atOre)
    if offerPending then
       return
    end
 
-   if atOrb then
+   if atOre then
       c_askQuestion(Question.acceptJob, "You came anyway. So, do you want the job?", "Bruno")
    else
       c_askQuestion(Question.acceptJob, "Changed your mind? Do you want the job?", "Bruno")
@@ -309,16 +309,16 @@ local function answerMission1(yes)
    currentState = State.accepted
    routeStep = 1
 
-   -- Answered on the Orb's pad (the question opens on whatever pad the
+   -- Answered on the Ore's pad (the question opens on whatever pad the
    -- leapfrog lands on first; landing pad property 1 = leapfrog landed)
    if c_getObjectProperty("oreLanding", 1) == 1 then
       -- Already here
       c_addDialogMessage("I take it.", "Leapfrog", false, 20, 0)
-      arriveAtOrb()
+      arriveAtOre()
       return
    end
 
-   c_addDialogMessage("I take it. See you at the orb.", "Leapfrog", false, 20, 0)
+   c_addDialogMessage("I take it. See you at the Ore.", "Leapfrog", false, 20, 0)
    c_addDialogMessage("Just follow the markers on your map. They will take you there, one step at the time.", "Bruno", true, 120, 0)
 
    fillRoutePads()
@@ -333,7 +333,7 @@ local function routeLanding(pad)
    end
 
    if pad == "oreLanding" then
-      arriveAtOrb()
+      arriveAtOre()
       return
    end
 
@@ -351,8 +351,8 @@ local function registerHomeHandlers()
    -- Launching is the world's job; here it starts the hunt
    listen("launchSite1", "LsLL")
 
-   -- Bruno asks again when landing at home or at the Orb (state 1); the
-   -- route's pads and the Orb (state 2)
+   -- Bruno asks again when landing at home or at the Ore (state 1); the
+   -- route's pads and the Ore (state 2)
    listen("siloLandingPad", "LpLL")
    listenToRoute()
 end
@@ -378,20 +378,20 @@ mission1.setupMissionStateScene = function()
       elseif currentState == 2 then
          currentState = State.accepted
       elseif currentState < State.offered then
-         currentState = State.atOrb
+         currentState = State.atOre
       end
 
       registerHomeHandlers()
 
       -- A question doesn't outlive its scene: whatever was open is gone,
-      -- Bruno asks again on the next landing at the silo or the Orb
+      -- Bruno asks again on the next landing at the silo or the Ore
       offerPending = false
 
       -- Launch site on the map only once Edith has had her say
-      c_setObjectMapShown("launchSite1", "mainTank", currentState >= State.atOrb)
+      c_setObjectMapShown("launchSite1", "mainTank", currentState >= State.atOre)
 
       if currentState == State.accepted then
-         -- Reloaded on the way to the Orb: Bruno's fuel is in the pads again
+         -- Reloaded on the way to the Ore: Bruno's fuel is in the pads again
          fillRoutePads()
       end
       showRoute()
@@ -547,7 +547,7 @@ mission1.missionStateSceneEventHandler = function(eventId, actorName, parameter1
       end
 
       if eventId == "LsLL" then
-         if currentState == State.atOrb then
+         if currentState == State.atOre then
             -- Off to find the stash (saved with the scene exit)
             currentState = State.hunting
             c_addDialogMessage("Hurry, get into space!", "Edith", true, 0, 0)

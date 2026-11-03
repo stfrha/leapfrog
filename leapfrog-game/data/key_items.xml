@@ -18,7 +18,7 @@
      initial  "true": held from the start of a game
 
      Examples of what may come:
-     <keyItem id="orbPadPass" kind="pass" name="Orb pad pass" issuer="miners" tier="1"/>
+     <keyItem id="orePadPass" kind="pass" name="Ore pad pass" issuer="miners" tier="1"/>
      <keyItem id="routeToNextWorld" kind="route" name="Route to ..."/>
      <keyItem id="shieldBlueprint" kind="blueprint" name="Shield booster blueprint"/>
 -->

@@ -19,7 +19,7 @@ and the engine blinks it.
 
 The deck is turned square to the camera so its front edge is level in the
 image, and the camera aims at the standing line (--stand units in from the
-front edge), so 1 unit there is 1 game unit, as for the Orb pads. The pad is
+front edge), so 1 unit there is 1 game unit, as for the Ore pads. The pad is
 scaled so the deck's front edge is --deck-width game units long (default 50,
 the size of the pad box at the silo).
 

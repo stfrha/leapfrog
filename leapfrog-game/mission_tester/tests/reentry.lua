@@ -3,7 +3,7 @@
 -- it (the recovery crew's fee; Bruno's credit when the credits don't
 -- cover it), bounced back to deep space, burned up
 
--- Mission 1 up to the orbit scene: the job, the Orb, the launch, deep
+-- Mission 1 up to the orbit scene: the job, the Ore, the launch, deep
 -- space's lower right corner
 local function toOrbit(t)
    t:newGame()
@@ -22,7 +22,7 @@ end
 test("re-entry: on a site: its landing scene, coming in from above, nothing to pay", function(t)
    toOrbit(t)
    t:setProperty("leapfrog1", 8, 30)
-   t:reentry("onSite", 1)                 -- Alpha City: landing_scene for now
+   t:reentry("onSite", 0)                 -- Claude mine: landing_scene for now
    t:expectScene("landing_scene.xml")
    t:expectSaved("scene", "landing_scene.xml")
    t:expectProperty("leapfrog1", 8, 30)
@@ -34,7 +34,7 @@ end)
 
 test("re-entry: the gold mine site is home for now, the silo's pad", function(t)
    toOrbit(t)
-   t:reentry("onSite", 0)
+   t:reentry("onSite", 1)
    t:expectScene("home_scene.xml")
    local file, x, y = arrival(t)
    t:expectEqual(file, "leapfrog_reentry.xml", "Leapfrog file")
@@ -43,7 +43,7 @@ end)
 
 test("re-entry: recovered: standing on the site's pad, also after a continue", function(t)
    toOrbit(t)
-   t:reentry("offSite", 1, 100)
+   t:reentry("offSite", 0, 100)
    t:expectScene("landing_scene.xml")
    local file, x, y = arrival(t)
    t:expectEqual(file, "leapfrog_landing.xml", "Leapfrog file")
@@ -60,7 +60,7 @@ end)
 
 test("re-entry: recovered at home: on the silo's pad", function(t)
    toOrbit(t)
-   t:reentry("offSite", 0, 50)
+   t:reentry("offSite", 1, 50)
    t:expectScene("home_scene.xml")
    local file, x, y = arrival(t)
    t:expectEqual(file, "leapfrog_landing.xml", "Leapfrog file")
@@ -72,7 +72,7 @@ test("re-entry: off the site: the recovery crew's fee, by the distance", functio
    toOrbit(t)
    local fee = t:module("mining").recoveryFee(100)     -- one marker width off
    t:setProperty("leapfrog1", 8, fee + 10)
-   t:reentry("offSite", 1, 100)
+   t:reentry("offSite", 0, 100)
    t:expectScene("landing_scene.xml")
    t:expectDialog("set you down on the pad. That's " .. fee .. " credits.", "Recovery")
    t:expectHud("Recovery: " .. fee .. " credits")
@@ -102,7 +102,7 @@ end)
 test("re-entry: paying Bruno back: he says so, once", function(t)
    toOrbit(t)
    t:setProperty("leapfrog1", 8, 0)
-   t:reentry("offSite", 0, 100)
+   t:reentry("offSite", 1, 100)
    t:clearDialog()
 
    -- Earning something, still in debt: nothing said
@@ -120,7 +120,7 @@ end)
 test("re-entry: a debt found at a scene setup (e.g. after loading) is watched", function(t)
    toOrbit(t)
    t:setProperty("leapfrog1", 8, -20)
-   t:reentry("onSite", 0)
+   t:reentry("onSite", 1)
    t:expect(t:module("debt").isOwing(), "the negative balance is a debt")
    t:clearDialog()
    t:setProperty("leapfrog1", 8, 0)

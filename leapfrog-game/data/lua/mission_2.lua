@@ -3,7 +3,7 @@
 -- tester checks that the guide's code is still here).
 --
 -- Bruno pays the pilot to relight two dead beacons in the home scene, in
--- order, and to collect the money at the Orb. Mission 1 hands over to it when the
+-- order, and to collect the money at the Ore. Mission 1 hands over to it when the
 -- pilot is back at the silo; the main menu's test row also starts it
 -- ("Beacons, job offered").
 
@@ -16,7 +16,7 @@ local State = {
    offered      = 10,  -- Bruno has offered the job
    firstBeacon  = 11,  -- relight the first beacon
    secondBeacon = 12,
-   collect      = 13,  -- all lit, collect the money at the Orb
+   collect      = 13,  -- all lit, collect the money at the Ore
    done         = 14,
 }
 mission2.State = State
@@ -202,7 +202,7 @@ mission2.missionStateSceneEventHandler = function(eventId, actorName, parameter1
    -- the id as soon as it has been handled
    if eventId == "ScTO" and parameter1 == reminderTimer then
       reminderTimer = -1
-      c_addDialogMessage("Both are lit. Come to the Orb for your money.", "Bruno", true, 0, 0)
+      c_addDialogMessage("Both are lit. Come to the Ore for your money.", "Bruno", true, 0, 0)
    end
 
    if eventId == "LpLL" and actorName == "oreLanding" and currentState == State.collect then

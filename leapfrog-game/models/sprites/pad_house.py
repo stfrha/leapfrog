@@ -1,5 +1,5 @@
 """
-pad_house - a building at the Orb with a landing deck on its roof, out of
+pad_house - a building at the Ore with a landing deck on its roof, out of
 use for now and kept for later in the story. Static scenery at parallax 0.
 
 A squat two-storey house with a flat roof. On the roof, a steel landing deck

@@ -46,8 +46,8 @@ set-up error.
 ## Output
 
     [PASS] mission 1: the route moves on pad by pad (6 checks)
-    [FAIL] mission 1: flying to the Orb without the job, Bruno asks there
-           expected state 12 (atOrb), got 11 (accepted)
+    [FAIL] mission 1: flying to the Ore without the job, Bruno asks there
+           expected state 12 (atOre), got 11 (accepted)
            at ./tests/mission1_home.lua:97
            last events:
              EVENT    LpLL oreLanding 0

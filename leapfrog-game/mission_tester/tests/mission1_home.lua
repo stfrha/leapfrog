@@ -1,4 +1,4 @@
--- Mission 1 in the home scene: Bruno's offer, the route to the Orb, the Orb
+-- Mission 1 in the home scene: Bruno's offer, the route to the Ore, the Ore
 
 local function m1(t)
    local m = t:mission(1)
@@ -84,19 +84,19 @@ test("mission 1: landing at the silo while the offer is open doesn't ask twice",
    t:expectQuestion(Q.acceptJob)
 end)
 
-test("mission 1: the offer asked in flight opens on the first pad, even the Orb's", function(t)
+test("mission 1: the offer asked in flight opens on the first pad, even the Ore's", function(t)
    t:newGame()
    local S, Q = m1(t)
    t:clearDialog()
 
-   -- Straight to the Orb: Bruno doesn't ask again, his question opens
+   -- Straight to the Ore: Bruno doesn't ask again, his question opens
    t:land("oreLanding")
    t:expectNoDialog("You came anyway")
    t:expectQuestion(Q.acceptJob)
 
-   -- Accepted on the Orb's pad: arrived
+   -- Accepted on the Ore's pad: arrived
    t:answer(Q.acceptJob, true)
-   t:expectState(S.atOrb)
+   t:expectState(S.atOre)
    t:expectDialog("I agree, you need that job.", "Edith")
 end)
 
@@ -110,7 +110,7 @@ test("mission 1: the open offer has to be answered before taking off", function(
    t:expectQuestion(Q.acceptJob)
 end)
 
-test("mission 1: flying to the Orb without the job, Bruno asks there", function(t)
+test("mission 1: flying to the Ore without the job, Bruno asks there", function(t)
    t:newGame()
    local S, Q = m1(t)
    t:land("siloLandingPad")
@@ -122,9 +122,9 @@ test("mission 1: flying to the Orb without the job, Bruno asks there", function(
    t:expectDialog("You came anyway", "Bruno")
    t:expectQuestion(Q.acceptJob)
 
-   -- Accepting on the Orb's pad goes straight to the arrival
+   -- Accepting on the Ore's pad goes straight to the arrival
    t:answer(Q.acceptJob, true)
-   t:expectState(S.atOrb)
+   t:expectState(S.atOre)
    t:expectDialog("I agree, you need that job.", "Edith")
 end)
 
@@ -144,11 +144,11 @@ test("mission 1: the route moves on pad by pad", function(t)
    t:takeOff()
 
    t:land("oreLanding")
-   t:expectState(S.atOrb)
+   t:expectState(S.atOre)
    t:expectMap("oreLanding", "noName", "hollow")
 end)
 
-test("mission 1: pads taken out of order still lead to the Orb", function(t)
+test("mission 1: pads taken out of order still lead to the Ore", function(t)
    t:newGame()
    local S, Q = m1(t)
    acceptAtSilo(t)
@@ -178,7 +178,7 @@ test("mission 1: Bruno's pads give fuel, once", function(t)
    t:expectProperty("leapfrog1", 7, before + 15)
 end)
 
-test("mission 1: arriving at the Orb: Edith, the taskgiver's fuel, the launch site", function(t)
+test("mission 1: arriving at the Ore: Edith, the taskgiver's fuel, the launch site", function(t)
    t:newGame()
    local S, Q = m1(t)
    acceptAtSilo(t)
@@ -186,7 +186,7 @@ test("mission 1: arriving at the Orb: Edith, the taskgiver's fuel, the launch si
 
    t:clearDialog()
    t:land("oreLanding")
-   t:expectState(S.atOrb)
+   t:expectState(S.atOre)
    t:expectHud("Fuel from the taskgiver")
    t:expectProperty("leapfrog1", 7, 25)        -- topped up to the start fuel
    t:expectDialog("I agree, you need that job.", "Edith")
@@ -198,7 +198,7 @@ test("mission 1: arriving at the Orb: Edith, the taskgiver's fuel, the launch si
    t:expectMapShown("launchSite1", "mainTank", true)
 end)
 
-test("mission 1: landing at the Orb again doesn't replay the arrival", function(t)
+test("mission 1: landing at the Ore again doesn't replay the arrival", function(t)
    t:newGame()
    local _, Q = m1(t)
    acceptAtSilo(t)

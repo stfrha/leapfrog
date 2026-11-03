@@ -1,5 +1,5 @@
 -- Mission 1 in space: the stolen stash (lua/mission_1.lua). Launched from
--- the Orb into the Debris Belt with its exit shut: clear the field until the
+-- the Ore into the Debris Belt with its exit shut: clear the field until the
 -- stash asteroid (stash_asteroid.xml) drifts in, blast it to find the
 -- raiders' case (stash_case.xml), shoot it open for the jackpot; the
 -- raiders' strippers take it all back and leave fuel to limp home, and the
@@ -7,7 +7,7 @@
 
 local belt = "debris_belt_scene.xml"
 
--- Mission 1 up to the belt: the job, the Orb, the launch
+-- Mission 1 up to the belt: the job, the Ore, the launch
 local function toBelt(t)
    t:newGame()
    t:land("siloLandingPad")
@@ -149,7 +149,7 @@ test("stash: home with nothing: Edith on the way down, gone at the silo; mission
    t:exitScene(1, 3)
    t:expectScene("orbit_scene.xml")
    t:expectDialog("That went badly, huh?", "Edith")
-   t:reentry("onSite", 0)                  -- the gold mine site: home for now
+   t:reentry("onSite", 1)                  -- the village site: home for now
    t:expectScene("home_scene.xml")
    t:land("siloLandingPad")
    t:expectDialog("Gone.", "Leapfrog")
@@ -165,7 +165,7 @@ test("stash: after the mission, a launch goes to the big space with its stripper
    toRaid(t)
    strip(t)
    t:exitScene(1, 3)
-   t:reentry("onSite", 0)
+   t:reentry("onSite", 1)
    t:land("siloLandingPad")
    t:answer(t:mission(2).Question.takeJob, false)
    t:takeOff()

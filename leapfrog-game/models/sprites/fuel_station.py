@@ -1,5 +1,5 @@
 """
-fuel_station - the fuel station at the Orb: fuel for credits. Static scenery
+fuel_station - the fuel station at the Ore: fuel for credits. Static scenery
 at parallax 0, landing on its pad.
 
 Three big fuel tanks lie like toppled silos, two on concrete cradles and one
