@@ -318,6 +318,29 @@ static int c_addPositionedChildObject(lua_State *L)
    return 0;
 }
 
+// c_addWeld(bodyA, anchorAX, anchorAY, bodyB, anchorBX, anchorBY)
+// Welds two bodies together, "object.body" for a body of a child of the scene.
+// Anchors are in each body's own coordinates; place the bodies so the anchors
+// meet and the angles are the same, or the weld pulls them together. When
+// one body is destroyed, the other stays.
+static int c_addWeld(lua_State *L)
+{
+   pugi::xml_document doc;
+   pugi::xml_node weld = doc.append_child("weldJoint");
+
+   weld.append_attribute("objectAName").set_value(lua_tostring(L, 1));
+   weld.append_attribute("objectAAnchorX").set_value((float)lua_tonumber(L, 2));
+   weld.append_attribute("objectAAnchorY").set_value((float)lua_tonumber(L, 3));
+   weld.append_attribute("objectBName").set_value(lua_tostring(L, 4));
+   weld.append_attribute("objectBAnchorX").set_value((float)lua_tonumber(L, 5));
+   weld.append_attribute("objectBAnchorY").set_value((float)lua_tonumber(L, 6));
+
+   SceneActor* scene = g_LuaInterface.getSceneActor();
+   scene->addWeld(scene->getWorld(), weld);
+
+   return 0;
+}
+
 // Reads an affiliation name from the Lua stack. Logs and returns false if
 // it isn't one of none, leapfrog, neutral, enemy, friendly.
 static bool readAffiliation(lua_State *L, int index, const char* function, Affiliation& result)
@@ -1152,6 +1175,7 @@ void LuaInterface::initLuaInterface(void)
    lua_register(m_L, "c_clearAllTriggersAndEvents", c_clearAllTriggersAndEvents);
    lua_register(m_L, "c_addMissionStateSceneObjects", c_addMissionStateSceneObjects);
    lua_register(m_L, "c_addPositionedChildObject", c_addPositionedChildObject);
+   lua_register(m_L, "c_addWeld", c_addWeld);
    lua_register(m_L, "c_addDialogMessage", c_addDialogMessage);
    lua_register(m_L, "c_setSenderAffiliation", c_setSenderAffiliation);
    lua_register(m_L, "c_setSenderColor", c_setSenderColor);

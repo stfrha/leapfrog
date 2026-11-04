@@ -7,6 +7,8 @@
 		<image file="dock_arm.png" rows="4" ppu="20" trim="false" extend="false"/>
 		<image file="dock_clamp.png" ppu="20" trim="false" extend="false"/>
 		<image file="station_shield.png" trim="false" extend="false"/>
+		<image file="shield_power.png" ppu="20" rows="6" trim="false" extend="false"/>
+		<image file="dock_boom.png" ppu="20" trim="false" extend="false"/>
 		<image file="asteroid_cutout.png"/>	
 	</atlas>
 </resources>

@@ -177,6 +177,10 @@ private:
       const oxygine::Vector2& pos,
       pugi::xml_node& objectNode);
 
+   b2WeldJoint* createWeldJoint(
+      b2World* world,
+      pugi::xml_node& weldJointNode);
+
    void defineWeldJoint(
       b2World* world, 
       pugi::xml_node& weldJointNode);
@@ -314,6 +318,11 @@ public:
    // Runs a shape's frames, one cycle per period seconds, or with period 0
    // stops them and shows this frame. False if there's no such sprite.
    bool animateShape(const std::string& name, float period, int frame);
+
+   // A <weldJoint> added after the scene has been read (c_addWeld): between
+   // two bodies of this object or of its children, "object.body". Not kept as
+   // a named joint: Box2D removes it when either body goes.
+   void addWeld(b2World* world, pugi::xml_node& weldNode);
 
    b2Body* getFirstBody(void);   // the first shape's body, NULL if none
    b2Joint* getJoint(const std::string& name);

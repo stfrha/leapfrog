@@ -59,6 +59,9 @@ Script-specific options are listed with `-- --help`.
   `gen_landing_pad_blink` (2 frames, for Animate Period). `--corners` makes
   `gen_landing_pad_corners` instead, the village pad's top with four corner lamps lit in turn
   (5 rows, the last dark), to lay over a dark `gen_landing_pad_blink`. Night by default (`--day`).
+* `shield_power.py`: the Baxters' shield power unit, ortho, 26 x 8.
+  Rendered with its blue light off and on; `shield_power_arcs.py` (plain numpy, no Blender) draws
+  the sparks and lays them on each frame, so `--seed` gives new sparks. 6 frames, 2 x 3 strip.
 * `kit.image_point(world)` / `kit.report_points(title, [(label, world), ...])`: where world points
   land in the last render_persp/render_axo image. `kit.render_crop(name, objects, frames,
   set_frame)`: an animated overlay cropped to some objects (e.g. a flickering neon sign) with the

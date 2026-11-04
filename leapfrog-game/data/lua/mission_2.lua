@@ -223,6 +223,15 @@ local function playOffer()
    offerPending = true
 end
 
+local function waitingForLaunch()
+   c_addDialogMessage("Yeay! We are going to space", "Edith", true, 120, 0)
+   c_addDialogMessage("You sound young. How old are you?", "Leapfrog", false, 90, 0)
+   c_addDialogMessage("Nineteen", "Edith", true, 90, 0)
+   c_addDialogMessage("Thirteen", "Edith", true, 150, 0)
+   c_addDialogMessage("Well you stay away from my stuff.", "Leapfrog", false, 90, 0)
+   c_addDialogMessage("Brace for launch now", "Edith", true, 60, 0)
+end
+
 local function askAgain()
    if offerPending then
       return
@@ -233,6 +242,7 @@ end
 
 local function showLaunchSite()
    c_setObjectMapShown("launchSite1", "mainTank", currentState >= State.toLaunch)
+   c_setObjectMapState("launchSite1", "mainTank", 2)
 end
 
 local function answerMission2(yes)
@@ -426,7 +436,7 @@ mission2.missionStateSceneEventHandler = function(eventId, actorName, parameter1
       if eventId == "LsLL" and currentState == State.toLaunch then
          -- Off to find the stash (saved with the scene exit)
          currentState = State.hunting
-         c_addDialogMessage("Hurry, get into space!", "Edith", true, 0, 0)
+         waitingForLaunch()
       end
 
    elseif currentScene == stash.space and inStash(currentState) then

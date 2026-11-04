@@ -5,6 +5,9 @@
   its nose at (30, -10.4) and its centre at about (30, -5): 19 units clear
   of the station body, so the shield bubble (radius 8) never touches it.
   The arm and the clamp ignore the shield (collision entity dockArm).
+  The boom on the left side is an outside mount that reaches past the shield's
+  rim: its tip is at (-27, 9.25). Whatever must stand outside the bubble is
+  fastened there (Lua: c_addWeld, the anchor is (-8.5, 0) on powerBoom).
 -->
 <compoundObject
   needsGroupIndex="true">
@@ -70,6 +73,20 @@
     height="7.8"
     density="2"
     friction="1" />
+  <dynamicBox
+    name="powerBoom"
+    texture="dock_boom"
+    posX="-18.5"
+    posY="9.25"
+    angle="0"
+    zLevel="117"
+    collisionEntity="notApplicable"
+    collisionCategory="1"
+    collisionMask="65533"
+    width="18"
+    height="2.4"
+    density="5"
+    friction="1" />
   <revoluteJoint
     name="shoulderJoint"
     objectAName="stationBase"
@@ -90,4 +107,12 @@
     objectAAnchorY="0"
     objectBAnchorX="0"
     objectBAnchorY="-2.7" />
+  <weldJoint
+    name="boomWeld"
+    objectAName="stationBase"
+    objectBName="powerBoom"
+    objectAAnchorX="-9.5"
+    objectAAnchorY="10.25"
+    objectBAnchorX="9"
+    objectBAnchorY="0" />
 </compoundObject>

@@ -1171,6 +1171,19 @@ function Engine:installApi(env)
       e:note("OBJECTS", "added from " .. file)
    end
 
+   api.c_addWeld = function(bodyA, ax, ay, bodyB, bx, by)
+      for _, body in ipairs({ bodyA, bodyB }) do
+         local object = body:match("^([^.]+)%.") or body
+         if not (e.scene and e.scene.objects[object]) then
+            e:problem("c_addWeld: no object '" .. object .. "' for body '" .. body .. "'")
+            return
+         end
+      end
+      e.scene.welds = e.scene.welds or {}
+      table.insert(e.scene.welds, { a = bodyA, ax = ax, ay = ay, b = bodyB, bx = bx, by = by })
+      e:note("OBJECTS", string.format("weld, %s to %s", bodyA, bodyB))
+   end
+
    api.c_addPositionedChildObject = function(file, name, x, y)
       if not e.scene then
          e:problem("c_addPositionedChildObject without a scene")

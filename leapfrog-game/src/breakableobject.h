@@ -30,6 +30,9 @@ private:
    int m_breakAtDamage;
    int m_numberOfSpawns;
    bool m_calm;                  // calm="true": ignores the scene's rock speed
+   bool m_still;                 // still="true": no nudge at all
+   float m_linearDamping;        // on the first body (default 0)
+   float m_angularDamping;
 
    void readBreakableObjectNode(const pugi::xml_node& node);
    void spawnBreakableObjects(void);

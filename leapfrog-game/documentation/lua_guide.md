@@ -1135,6 +1135,7 @@ is listed here, and that everything listed exists.
 | Function | Purpose |
 |---|---|
 | `c_addPositionedChildObject(file, name, x, y)` | Adds an object from a file |
+| `c_addWeld(bodyA, ax, ay, bodyB, bx, by)` | Welds two bodies together, `"object.body"` for a child of the scene, with the anchors in each body's coordinates. Place the bodies so the anchors meet and the angles are the same. When one is destroyed, the other stays |
 | `c_addMissionStateSceneObjects(file)` | Adds a file's shapes, systems and child objects |
 | `c_objectExists(name)` | True if the scene has the object |
 | `c_setObjectProperty(name, propertyId, value)` | Sets a property; ignored for a missing object or read-only property |

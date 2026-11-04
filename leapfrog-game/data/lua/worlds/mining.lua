@@ -222,6 +222,32 @@ end
 
 
 -- ------------------------------------------------------------------------
+-- The shield power unit on the end of the station's boom, just outside the
+-- station's shield (shield_power.xml, powerBoom in docking_station.xml).
+-- In the big space all the time for now, to try it; mission 3 will decide.
+
+local ShieldPower = {
+   object = "shieldPower1",
+   body = "shieldPower1.shieldPowerBody",
+   x = 1010, y = 339.25,                   -- where the weld below puts it
+   boom = "dockingStation1.powerBoom",
+   boomAnchor = { x = -8.5, y = 0 },       -- the boom's tip
+   unitAnchor = { x = 13, y = 0 },         -- the connector on the right cap
+}
+mining.ShieldPower = ShieldPower
+
+local function addShieldPower()
+   local p = ShieldPower
+   if c_objectExists(p.object) then
+      return
+   end
+   c_addPositionedChildObject("shield_power.xml", p.object, p.x, p.y)
+   c_addWeld(p.boom, p.boomAnchor.x, p.boomAnchor.y,
+      p.body, p.unitAnchor.x, p.unitAnchor.y)
+end
+
+
+-- ------------------------------------------------------------------------
 -- Scene setup, before the mission's
 
 mining.setupScene = function()
@@ -280,11 +306,14 @@ mining.setupScene = function()
 
    if currentScene == "deep_space_scene.xml" then
       listen(BadMine.station, "DsDk")
+      addShieldPower()
    end
 
    -- The strippers come whenever the Leapfrog is in space, unless the
    -- running mission has its own plans for them (mission 1's raid)
-   if currentSceneType == 1 and missionHolds("swarm") then
+   -- Strippers disabled for now, to test the bad mine and the shield power unit without them interfering
+   -- if currentSceneType == 1 and missionHolds("swarm") then
+   if currentSceneType == 1  then
       bouncedBack = false
       swarmTimer = -1
    elseif currentSceneType == 1 then

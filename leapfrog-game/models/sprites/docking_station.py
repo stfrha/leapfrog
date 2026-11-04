@@ -5,6 +5,7 @@ Bodies in data/docking_station.xml (station coordinates, game y down; here
 x is the same and Blender z = -game y):
   stationBase  dock_station_base  22 x 32, centre (0, -1)   -> z -15 .. 17
   dockArm      dock_arm           27.2 x 2.4, centre (16.4, -17) -> x 2.8 .. 30
+  powerBoom    dock_boom          18 x 2.4, centre (-18.5, 9.25) -> x -27.5 .. -9.5
   dockClamp    dock_clamp         3.2 x 7.8, centre (30, -14.3)  -> z 10.4 .. 18.2
 The shoulder (arm pivot) is at (4, -17), on top of the pedestal. The clamp's
 image reaches up over the arm's tip (it is drawn above the arm): a wrist
@@ -38,7 +39,7 @@ import sprite_kit as sk           # noqa: E402
 
 def options(p):
     p.add_argument("--suffix", default="", help="added to every texture name (e.g. _test: not registered)")
-    p.add_argument("--only", choices=["base", "arm", "clamp"], help="render just one part")
+    p.add_argument("--only", choices=["base", "arm", "clamp", "boom"], help="render just one part")
     p.add_argument("--tile", type=float, default=3.9,
                    help="game units per hex texture tile on the hull (the Leapfrog's own is ~3.9)")
     p.add_argument("--windows", type=int, default=7, help="lit windows across the window band")
@@ -55,7 +56,7 @@ if not args.folder:
     args.folder = "space"
 kit = sk.Kit(args, rig="ortho", res="res.xml")
 
-parts = {"base": [], "arm": [], "clamp": []}
+parts = {"base": [], "arm": [], "clamp": [], "boom": []}
 
 
 def add(part, ob):
@@ -285,12 +286,51 @@ for sx in (-1, 1):
     add("clamp", sk.mesh_object("align_light_%d" % sx, lamp, kit.material("neon_amber")))
 
 # ---------------------------------------------------------------------------
+# Boom: the outside mount on the left side, the arm's truss again, from behind
+# the side pod to past the shield's rim. A socket plate at the tip for what is
+# fastened there, a flange behind the pod, the yellow cable on the lower chord.
+# It is modelled apart, far below the station; only its own image shows it.
+# ---------------------------------------------------------------------------
+BZ = -60.0
+BX0, BX1 = -9.0, 9.0                # the image, centred on the body
+TIP_X = BX0 + 0.5                   # the weld anchor, where the plate's face is
+
+boom = bmesh.new()
+for sz in (-1, 1):
+    for sy in (-1, 1):
+        sk.strut(boom, (TIP_X + 0.5, sy * DY, BZ + sz * HH), (BX1 - 0.5, sy * DY, BZ + sz * HH), CR, 10)
+bays = 7
+L = (BX1 - 0.5) - (TIP_X + 0.5)
+for i in range(bays):
+    x0 = TIP_X + 0.5 + L * i / bays
+    x1 = TIP_X + 0.5 + L * (i + 1) / bays
+    for sy in (-1, 1):
+        sk.strut(boom, (x0, sy * DY, BZ - HH), (x1, sy * DY, BZ + HH) if i % 2 == 0 else (x1, sy * DY, BZ - HH),
+                 0.09, 6)
+        sk.strut(boom, (x0, sy * DY, BZ + HH) if i % 2 == 0 else (x0, sy * DY, BZ - HH),
+                 (x1, sy * DY, BZ - HH) if i % 2 == 0 else (x1, sy * DY, BZ + HH), 0.09, 6)
+        sk.strut(boom, (x1, sy * DY, BZ - HH), (x1, sy * DY, BZ + HH), 0.08, 6)
+    sk.strut(boom, (x1, -DY, BZ + HH), (x1, DY, BZ + HH), 0.08, 6)
+    sk.strut(boom, (x1, -DY, BZ - HH), (x1, DY, BZ - HH), 0.08, 6)
+add("boom", sk.mesh_object("boom_truss", boom, kit.material("frame_brace"), smooth_quads=True))
+
+add("boom", sk.box_object("boom_socket", (TIP_X + 0.35, 0.0, BZ), (0.7, 2.2, 2.3), kit.material("frame_main"),
+                          bevel_width=0.05))
+add("boom", sk.box_object("boom_socket_lip", (BX0 + 0.25, 0.0, BZ), (0.5, 1.5, 1.5), kit.material("frame_brace"),
+                          bevel_width=0.05))
+add("boom", sk.box_object("boom_flange", (BX1 - 0.3, 0.0, BZ), (0.6, 2.2, 2.3), kit.material("frame_main"),
+                          bevel_width=0.05))
+add("boom", sk.box_object("boom_cable", ((TIP_X + BX1) / 2, -DY - 0.15, BZ - HH + 0.2), (BX1 - TIP_X - 1.0, 0.12, 0.12),
+                          kit.material("hazard_paint")))
+
+# ---------------------------------------------------------------------------
 # Render: each part alone, framed to its body box
 # ---------------------------------------------------------------------------
 frames = {
     "base": ("dock_station_base", (-11.0, Z_BOT, 11.0, Z_TOP)),
     "arm": ("dock_arm", (AX0 - 1.2, AZ - 1.2, AX1, AZ + 1.2)),
     "clamp": ("dock_clamp", (CX - 1.6, Z_KEY, CX + 1.6, Z_CLAMP_TOP)),
+    "boom": ("dock_boom", (BX0, BZ - 1.2, BX1, BZ + 1.2)),
 }
 
 for part, (name, box_xz) in frames.items():

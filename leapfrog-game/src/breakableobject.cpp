@@ -59,6 +59,12 @@ BreakableObject::BreakableObject(
 
       if (myBody)
       {
+         myBody->SetLinearDamping(m_linearDamping);
+         myBody->SetAngularDamping(m_angularDamping);
+      }
+
+      if (myBody && !m_still)
+      {
 
          // Find magnitude of nudge and pinch by evaluating
          // the mass of the body
@@ -98,6 +104,9 @@ void BreakableObject::readBreakableObjectNode(const pugi::xml_node& node)
    m_breakAtDamage = node.attribute("breakBulletDamage").as_int(0);
    m_numberOfSpawns = node.attribute("numberOfSpawns").as_int(0);
    m_calm = node.attribute("calm").as_bool(false);
+   m_still = node.attribute("still").as_bool(false);
+   m_linearDamping = node.attribute("linearDamping").as_float(0.0f);
+   m_angularDamping = node.attribute("angularDamping").as_float(0.0f);
 }
 
 void BreakableObject::collisionBlast(b2Contact* contact, bool small)

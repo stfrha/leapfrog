@@ -733,6 +733,11 @@ void CompoundObject::doCommonShapeDefinitions(
    }
 }
 
+void CompoundObject::addWeld(b2World* world, xml_node& weldNode)
+{
+   createWeldJoint(world, weldNode);
+}
+
 bool CompoundObject::animateShape(const std::string& name, float period, int frame)
 {
    spActor actor = getActor(name);
@@ -1498,7 +1503,7 @@ CompoundObject* CompoundObject::defineChildObject(
 }
 
 
-void CompoundObject::defineWeldJoint(b2World* world, pugi::xml_node& jointNode)
+b2WeldJoint* CompoundObject::createWeldJoint(b2World* world, pugi::xml_node& jointNode)
 {
    b2WeldJointDef	jointDef;
 
@@ -1506,14 +1511,14 @@ void CompoundObject::defineWeldJoint(b2World* world, pugi::xml_node& jointNode)
 
    if (!bodyA)
    {
-      return;
+      return NULL;
    }
 
    b2Body* bodyB = getBody(jointNode.attribute("objectBName").as_string());
 
    if (!bodyB)
    {
-      return;
+      return NULL;
    }
 
    jointDef.bodyA = bodyA;
@@ -1522,7 +1527,17 @@ void CompoundObject::defineWeldJoint(b2World* world, pugi::xml_node& jointNode)
    jointDef.localAnchorB.Set(jointNode.attribute("objectBAnchorX").as_float(), jointNode.attribute("objectBAnchorY").as_float());
    jointDef.collideConnected = false;
 
-   b2WeldJoint* joint = (b2WeldJoint*)world->CreateJoint(&jointDef);
+   return (b2WeldJoint*)world->CreateJoint(&jointDef);
+}
+
+void CompoundObject::defineWeldJoint(b2World* world, pugi::xml_node& jointNode)
+{
+   b2WeldJoint* joint = createWeldJoint(world, jointNode);
+
+   if (!joint)
+   {
+      return;
+   }
 
    NamedJoint* nj = new NamedJoint(joint, jointNode.attribute("name").as_string());
    m_namedJoints.push_back(nj);

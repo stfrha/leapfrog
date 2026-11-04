@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  The Baxters' shield power unit: the source that feeds their shield at
+  Halfway. Tough, and it stays where it is put: still="true" gives it no nudge.
+  It sits on the end of the station's boom, outside the shield: c_addWeld fastens
+  the connector on its right cap, (13, 0), to the boom's tip. The boom belongs to
+  the station, so it stays there when this breaks.
+-->
+<compoundObject
+   needsGroupIndex="false" >
+   <behaviour
+      type="breakableObject">
+      <breakableObjectProperties
+         breakBulletDamage="30"
+         numberOfSpawns="0"
+         still="true"
+         linearDamping="0.8"
+         angularDamping="1.5" />
+   </behaviour>
+   <dynamicBox
+      name="shieldPowerBody"
+      texture="shield_power"
+      posX="0"
+      posY="0"
+      angle="0"
+      zLevel="118"
+      collisionEntity="breakableObject"
+      collisionCategory="1"
+      collisionMask="65533"
+      width="26"
+      height="8"
+      density="1"
+      friction="1"
+      animatePeriod="0.5" />
+</compoundObject>

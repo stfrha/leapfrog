@@ -16,4 +16,5 @@ return {
    "placement.lua",
    "guide.lua",
    "bad_mine.lua",
+   "shield_power.lua",
 }
