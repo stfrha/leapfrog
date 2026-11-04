@@ -45,10 +45,10 @@ set-up error.
 
 ## Output
 
-    [PASS] mission 1: the route moves on pad by pad (6 checks)
+    [PASS] mission 1: the beacons are lit in order, each after a repair (12 checks)
     [FAIL] mission 1: flying to the Ore without the job, Bruno asks there
-           expected state 12 (atOre), got 11 (accepted)
-           at ./tests/mission1_home.lua:97
+           expected state 11 (firstBeacon), got 10 (offered)
+           at ./tests/mission1_beacons.lua:97
            last events:
              EVENT    LpLL oreLanding 0
              DIALOG   Bruno: You came anyway. So, do you want the job?
@@ -65,14 +65,17 @@ States are shown with their names from the missions' `State` tables.
 Test files are in `tests/` and listed in `tests/test_list.lua`. A test:
 
 ```lua
-test("mission 1: accepting puts fuel in the pads", function(t)
+test("mission 1: a lit beacon's pad gives free fuel", function(t)
    t:newGame()
    local m = t:mission(1)               -- the mission module: m.State, m.Question
    t:land("siloLandingPad")             -- Bruno's question, asked in flight, opens
-   t:answer(m.Question.acceptJob, true)
-   t:expectState(m.State.accepted)
+   t:answer(m.Question.takeJob, true)
+   t:expectState(m.State.firstBeacon)
+   t:takeOff()
+   t:land("landingPad2")
+   t:wait(3.1)                          -- the repair
    t:expectProperty("landingPad2", 4, 2)
-   t:expectMap("landingPad2", "siloHome", "flashingSlow")
+   t:expectMap("landingPad2", "siloHome", "filled")
 end)
 ```
 
@@ -89,6 +92,7 @@ doesn't yet: reported as KNOWN with the reason while it fails, and as FIXED
 | `t:menuNewGame()`, `t:menuContinue()` | the main menu's entries (same Lua state) |
 | `t:menuTestStart(i)`, `t:testStarts()` | the menu's test row: start test start i of `lua/test_starts.lua` (fails if refused); the labels in menu order |
 | `t:menuTestLanding()` | test start 1: the old test mission in the landing scene, from orbit |
+| `t:throughBeacons()`, `t:stashJobTaken()` | Plays mission 1 from a new game, and takes mission 2's job |
 | `t:land(name)` | touch down on a landing pad (LpLL, fuel) or launch site (LsLL) |
 | `t:takeOff()` | the booster fires, LpTO (an error while a question is open: the booster button is its Yes) |
 | `t:boost()` | the booster fires without taking off (same rule) |

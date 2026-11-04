@@ -1,20 +1,15 @@
--- Mission 1 in space: the stolen stash (lua/mission_1.lua). Launched from
--- the Ore into the Debris Belt with its exit shut: clear the field until the
+-- Mission 2 in space: the stolen stash (lua/mission_2.lua). Launched into the Debris Belt with its exit shut: clear the field until the
 -- stash asteroid (stash_asteroid.xml) drifts in, blast it to find the
 -- raiders' case (stash_case.xml), shoot it open for the jackpot; the
 -- raiders' strippers take it all back and leave fuel to limp home, and the
--- exit opens. Edith is gone when he lands at the silo, and mission 2 starts.
+-- exit opens. Edith is gone when he lands at the silo, her fuel in the tank,
+-- and free play starts.
 
 local belt = "debris_belt_scene.xml"
 
--- Mission 1 up to the belt: the job, the Ore, the launch
+-- Up to the belt
 local function toBelt(t)
-   t:newGame()
-   t:land("siloLandingPad")
-   t:answer(t:mission(1).Question.acceptJob, true)
-   t:takeOff()
-   t:land("oreLanding")
-   t:takeOff()
+   t:stashJobTaken()
    t:launch("launchSite1")
    t:expectScene(belt)
 end
@@ -56,7 +51,7 @@ end
 
 test("stash: the launch goes to the belt: the hunt, no stash yet, no strippers", function(t)
    toBelt(t)
-   local S = t:mission(1).State
+   local S = t:mission(2).State
    t:expectState(S.hunting)
    t:expectSaved("scene", belt)
    t:expectSaved("state", S.hunting)
@@ -72,7 +67,7 @@ end)
 
 test("stash: every corner of the belt is shut during the hunt", function(t)
    toBelt(t)
-   local S = t:mission(1).State
+   local S = t:mission(2).State
    for corner = 1, 4 do
       t:expectCorner(corner, false)
    end
@@ -84,7 +79,7 @@ end)
 
 test("stash: with a few rocks left the stash asteroid drifts in from the edge", function(t)
    toBelt(t)
-   local S = t:mission(1).State
+   local S = t:mission(2).State
    t:clearField("asteroidField", 4)
    t:expectState(S.hunting)
    t:clearField("asteroidField", 3)
@@ -98,7 +93,7 @@ end)
 
 test("stash: the asteroid blasted: a case inside", function(t)
    toCase(t)
-   local S = t:mission(1).State
+   local S = t:mission(2).State
    t:expectState(S.caseFound)
    t:expectDialog("A box!", "Edith")
    t:expect(t.engine:getObject("stashCase") ~= nil, "the case is out")
@@ -107,7 +102,7 @@ end)
 
 test("stash: the case shot open: the jackpot, then the raiders after a while", function(t)
    toJackpot(t)
-   local S = t:mission(1).State
+   local S = t:mission(2).State
    t:expectState(S.jackpot)
    t:expectDialog("Look at all that!", "Edith")
    t:expectHud("Stash found")
@@ -122,7 +117,7 @@ end)
 
 test("stash: stripped: the strippers leave, fuel to limp home", function(t)
    toRaid(t)
-   local m = t:mission(1)
+   local m = t:mission(2)
    strip(t)
    t:expectState(m.State.stripped)
    t:expectProperty("leapfrog1", 7, m.limpHomeFuel)
@@ -143,22 +138,32 @@ test("stash: the exit stays shut in the raid and opens when he is stripped", fun
    t:expectScene("orbit_scene.xml")
 end)
 
-test("stash: home with nothing: Edith on the way down, gone at the silo; mission 2 starts", function(t)
+test("stash: home with nothing: Edith on the way down, her fuel at the silo; free play", function(t)
    toRaid(t)
    strip(t)
    t:exitScene(1, 3)
    t:expectScene("orbit_scene.xml")
    t:expectDialog("That went badly, huh?", "Edith")
-   t:reentry("onSite", 1)                  -- the village site: home for now
+   t:reentry("onSite", 1)                  -- the village site: the silo, the mission says
    t:expectScene("home_scene.xml")
+   t:setProperty("leapfrog1", 7, 3)
    t:land("siloLandingPad")
    t:expectDialog("Gone.", "Leapfrog")
+   t:expectDialog("Drained the old pump", "Silo")
    t:expectDialog("whose stash", "Leapfrog")
+   t:expectProperty("leapfrog1", 7, t:module("mission2").edithFuel)
    t:expectHud("Mission complete")
-   t:expectMission(2)
-   t:expectState(t:mission(2).State.offered)
-   t:expectDialog("Two of the old beacons", "Bruno")
-   t:expectQuestion(t:mission(2).Question.takeJob)
+   t:expectMission(0)
+end)
+
+test("stash: Edith's fuel never takes any away", function(t)
+   toRaid(t)
+   strip(t)
+   t:exitScene(1, 3)
+   t:reentry("onSite", 1)
+   t:setProperty("leapfrog1", 7, 90)
+   t:land("siloLandingPad")
+   t:expectProperty("leapfrog1", 7, 90)
 end)
 
 test("stash: after the mission, a launch goes to the big space with its strippers", function(t)
@@ -167,7 +172,6 @@ test("stash: after the mission, a launch goes to the big space with its stripper
    t:exitScene(1, 3)
    t:reentry("onSite", 1)
    t:land("siloLandingPad")
-   t:answer(t:mission(2).Question.takeJob, false)
    t:takeOff()
    t:launch("launchSite1")
    t:expectScene("deep_space_scene.xml")
@@ -178,7 +182,7 @@ end)
 
 test("stash: continuing during the hunt starts a new field", function(t)
    toStash(t)
-   local S = t:mission(1).State
+   local S = t:mission(2).State
    t:restartGame()
    t:expectScene(belt)
    t:expectState(S.hunting)
@@ -189,7 +193,7 @@ end)
 
 test("stash: bounced back after the raid: the belt, no strippers, a way home", function(t)
    toRaid(t)
-   local S = t:mission(1).State
+   local S = t:mission(2).State
    strip(t)
    t:exitScene(1, 3)
    t:reentry("bounced")
@@ -202,7 +206,7 @@ end)
 
 test("stash: a save from the big space before the belt existed is a new hunt", function(t)
    toBelt(t)
-   local S = t:mission(1).State
+   local S = t:mission(2).State
    t:setGlobal("currentState", S.caseFound)
    t:setupScene()
    t:expectState(S.hunting)
@@ -212,7 +216,7 @@ test("stash: the field is bigger than what is left when the stash comes", functi
    local harness = require("testbench.harness")
    local xml = require("testbench.xml")
    t:newGame()
-   local stash = t:mission(1).Stash
+   local stash = t:mission(2).Stash
    local root = xml.readFile(harness.dataDir .. "/" .. stash.space)
    local props
    for _, c in ipairs(root.children) do

@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  The Debris Belt: a tight space scene where mission 1 hunts the raiders'
+  The Debris Belt: a tight space scene where mission 2 hunts the raiders'
   stash. Fast rocks bounce off the soft boundaries, so there's nowhere to
-  hide, and ammo drifts in now and then. lua/mission_1.lua decides when the
+  hide, and ammo drifts in now and then. lua/mission_2.lua decides when the
   exit opens and watches asteroidField, so keep that name. Tune with
   width, height, rockSpeedMin and rockSpeedMax here, spawnInitial on the
   field, and intensity and maxAlive on ammoDrops.
@@ -10,7 +10,7 @@
   The boundaries' push starts 75 units inside the scene's edge, so keep the
   factories' areas 75 from every edge. The mission tester checks this
   (tests/placement.lua), and the entries in scene_navigator.lua and the stash
-  position in lua/mission_1.lua, which depend on the scene size too.
+  position in lua/mission_2.lua, which depend on the scene size too.
 -->
 <compoundObject
   needsGroupIndex="false">

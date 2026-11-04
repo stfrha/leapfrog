@@ -3,8 +3,7 @@
 -- it (the recovery crew's fee; Bruno's credit when the credits don't
 -- cover it), bounced back to deep space, burned up
 
--- Mission 1 up to the orbit scene: the job, the Ore, the launch, deep
--- space's lower right corner
+-- The big space's lower right corner, the way a test start gets there
 local function toOrbit(t)
    t:newGame()
    t:menuTestStart(2)                      -- the big space, launched
@@ -32,7 +31,7 @@ test("re-entry: on a site: its landing scene, coming in from above, nothing to p
    t:expectEqual(y, 50, "from above")
 end)
 
-test("re-entry: the gold mine site is home for now, the silo's pad", function(t)
+test("re-entry: the village site is home: the silo's pad", function(t)
    toOrbit(t)
    t:reentry("onSite", 1)
    t:expectScene("home_scene.xml")
@@ -129,8 +128,8 @@ end)
 
 test("re-entry: bounced: deep space again, the strippers after a breather", function(t)
    toOrbit(t)
-   -- After mission 1 (it runs the strippers itself until it is done)
-   t:setGlobal("currentState", t:mission(1).State.done)
+   -- After mission 2 (it runs the strippers itself until it is done)
+   t:setGlobal("currentState", t:mission(2).State.done)
    t:reentry("bounced")
    t:expectScene("deep_space_scene.xml")
    t:expectSaved("scene", "deep_space_scene.xml")
@@ -151,4 +150,54 @@ test("re-entry: burned up: back to the latest save (the orbit, as entered)", fun
    t:expectScene("orbit_scene.xml")
    t:expectHud("Burned up on re-entry")
    t:expect(t:property("leapfrog1", 8) ~= 99, "the save's credits, not those since")
+end)
+
+test("re-entry: the mission chooses the pad: the raid ends at the silo, also with the solution", function(t)
+   toOrbit(t)
+   t:giveItem("villagePadSolution", true)
+   t:setGlobal("currentState", t:mission(2).State.stripped)
+   t:reentry("onSite", 1)
+   t:expectScene("home_scene.xml")
+   local _, x = arrival(t)
+   t:expectEqual(x, 2736, "above the silo")
+end)
+
+test("re-entry: without a mission's say: the silo, then the village pad with the solution", function(t)
+   toOrbit(t)
+   t:setGlobal("currentState", t:mission(2).State.done)
+   t:reentry("onSite", 1)
+   local _, x = arrival(t)
+   t:expectEqual(x, 2736, "the silo without the solution")
+
+   toOrbit(t)
+   t:giveItem("villagePadSolution", true)
+   t:setGlobal("currentState", t:mission(2).State.done)
+   t:exitScene(1, 3)
+   t:expectHud("Cleared for the village pad")
+   t:reentry("onSite", 1)
+   t:expectScene("home_scene.xml")
+   _, x = arrival(t)
+   t:expectEqual(x, 640, "above the village pad")
+end)
+
+test("re-entry: recovered with the solution: on the village pad, also after a continue", function(t)
+   toOrbit(t)
+   t:giveItem("villagePadSolution", true)
+   t:setGlobal("currentState", t:mission(2).State.done)
+   t:reentry("offSite", 1, 50)
+   local file, x, y = arrival(t)
+   t:expectEqual(file, "leapfrog_landing.xml", "Leapfrog file")
+   t:expectEqual(x, 640, "on the village pad")
+   t:expectEqual(y, 583, "on the village pad")
+   t:restartGame()
+   file, x = arrival(t)
+   t:expectEqual(x, 640, "still on the pad")
+end)
+
+test("re-entry: the other site is off the planet during the stash, back after it", function(t)
+   toOrbit(t)
+   t:setGlobal("currentState", t:mission(2).State.stripped)
+   t:exitScene(1, 3)
+   t:expectLandingSiteShown("goldMine", false)
+   t:expectLandingSiteShown("alphaCity", true)
 end)

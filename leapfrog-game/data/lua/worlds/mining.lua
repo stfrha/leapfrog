@@ -143,6 +143,9 @@ local BadMine = {
 }
 mining.BadMine = BadMine
 
+-- The site that isn't home (mining_planet_surface.xml)
+local OtherSite = "goldMine"
+
 local function dockedAtStation()
    -- Once: not again while held, and not if it was taken away
    if c_itemState(BadMine.solution) ~= "unknown" then
@@ -153,6 +156,68 @@ local function dockedAtStation()
       .. "a re-entry solution for an old mine nobody works any more.", "Station", true, 30, 0)
    c_addDialogMessage("Take it. Watch yourself down there.", "Station", true, 90, 0)
    c_giveItem(BadMine.solution)
+end
+
+
+-- ------------------------------------------------------------------------
+-- The beacons on the way from the silo into town, and past it. Mission 1
+-- lights them. Holding villageSolution means all are lit, and then each
+-- scene setup puts free fuel in their pads again, so they are stepping
+-- stones between the silo and the town from then on. "lamp" is the sprite
+-- with its blinking lamp; "base" a sprite under it to stop on its dark frame.
+
+local Pad = {
+   active      = 2,
+   fuelSupply  = 3,
+   fuelService = 4,    -- 2 = free fuel
+}
+
+local beaconFuel = 15          -- free fuel in a lit beacon's pad
+mining.beaconFuel = beaconFuel
+
+mining.villageSolution = "villagePadSolution"
+
+mining.beacons = {
+   { pad = "landingPad2", body = "siloHome", lamp = "landingPad2Lamp", period = 1.2, offFrame = 1 },
+   { pad = "landingPad3", body = "siloHome", lamp = "landingPad3Lamp", period = 1.2, offFrame = 1 },
+   { pad = "villagePad",  body = "siloHome", lamp = "villagePadLamp",  period = 1.25, offFrame = 4,
+     base = "villagePadBase" },
+}
+
+-- gen_landing_pad_blink: 0 on, 1 off
+local baseOffFrame = 1
+
+local function stopBase(beacon)
+   if beacon.base ~= nil then
+      c_animateSprite(beacon.base, 0, baseOffFrame)
+   end
+end
+
+mining.lightBeacon = function(beacon)
+   stopBase(beacon)
+   c_setObjectProperty(beacon.pad, Pad.active, 1)
+   c_setObjectProperty(beacon.pad, Pad.fuelSupply, beaconFuel)
+   c_setObjectProperty(beacon.pad, Pad.fuelService, 2)
+   c_animateSprite(beacon.lamp, beacon.period)
+   c_setObjectMapState(beacon.pad, beacon.body, 1)          -- filled
+end
+
+-- isNext: the one to land on, flashing on the map
+mining.darkenBeacon = function(beacon, isNext)
+   stopBase(beacon)
+   c_setObjectProperty(beacon.pad, Pad.active, 0)
+   c_animateSprite(beacon.lamp, 0, beacon.offFrame)
+   c_setObjectMapState(beacon.pad, beacon.body, isNext and 2 or 0)  -- flashing or hollow
+end
+
+-- Which pad a re-entry at this scene ends on when the mission doesn't say
+-- (lua_arrivalPad): the village pad once it can be landed on. nil = the
+-- scene's default.
+mining.arrivalPad = function(scene)
+   if scene == "home_scene.xml" and c_hasItem(mining.villageSolution) then
+      return "villagePad"
+   end
+   return nil
 end
 
 
@@ -183,6 +248,16 @@ mining.setupScene = function()
 
       -- Landed at home: the silo offers to repair the legs
       listen("siloLandingPad", "LpLL")
+
+      -- Dark until mission 1 says otherwise, lit for good after it
+      local lit = c_hasItem(mining.villageSolution)
+      for _, beacon in ipairs(mining.beacons) do
+         if lit then
+            mining.lightBeacon(beacon)
+         else
+            mining.darkenBeacon(beacon, false)
+         end
+      end
    end
 
    -- The launch site takes the Leapfrog to space, whatever mission is
@@ -194,6 +269,13 @@ mining.setupScene = function()
    if currentScene == "orbit_scene.xml" then
       -- Known sites only: the bad mine once its solution is held
       c_setLandingSiteShown(BadMine.site, c_hasItem(BadMine.solution))
+
+      -- A mission that ends at home has the planet to itself
+      c_setLandingSiteShown(OtherSite, not missionHolds("landingSites"))
+
+      if lua_arrivalPad("home_scene.xml") == "villagePad" then
+         c_hudLog("Cleared for the village pad")
+      end
    end
 
    if currentScene == "deep_space_scene.xml" then

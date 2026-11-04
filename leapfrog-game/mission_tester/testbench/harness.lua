@@ -146,6 +146,35 @@ function T:menuContinue()
    step(self, function() self.engine:continueGame() end)
 end
 
+-- Mission 1 played through from a new game: standing on the third beacon's
+-- pad, mission 2's offer open
+function T:throughBeacons()
+   self:newGame()
+   local m = self:mission(1)
+   self:land("siloLandingPad")
+   self:answer(m.Question.takeJob, true)
+   self:takeOff()
+   for _, pad in ipairs({ "landingPad2", "landingPad3" }) do
+      self:land(pad)
+      self:wait(3.1)
+      self:takeOff()
+   end
+   self:land("oreLanding")
+   self:takeOff()
+   self:land("villagePad")
+   self:wait(3.1)
+   self:expectMission(2)
+end
+
+-- ... and the stash job taken, in the air
+function T:stashJobTaken()
+   self:throughBeacons()
+   local m = self:mission(2)
+   self:answer(m.Question.acceptJob, true)
+   self:expectState(m.State.toLaunch)
+   self:takeOff()
+end
+
 -- Touch down on a landing pad or launch site (both feet, within limits)
 function T:land(name)
    step(self, function() self.engine:land(name) end)

@@ -26,6 +26,8 @@
    <!-- The mining planet's landing sites (mining_planet_surface.xml) -->
    <keyItem id="goldMineSolution" kind="solution" name="Claude Mine solution" initial="true"/>
    <keyItem id="alphaCitySolution" kind="solution" name="Village solution" initial="true"/>
+   <!-- Coming down at the village pad instead of the silo (lua/worlds/mining.lua) -->
+   <keyItem id="villagePadSolution" kind="solution" name="Village pad solution"/>
    <!-- A hidden site (hidden="true"); the docking station in deep space
         hands it over (lua/worlds/mining.lua) -->
    <keyItem id="badMineSolution" kind="solution" name="Bad Mine solution"/>

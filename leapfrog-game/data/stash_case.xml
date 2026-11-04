@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  The raiders' stash case (mission 1): what the stash asteroid holds
+  The raiders' stash case (mission 2): what the stash asteroid holds
   (stash_asteroid.xml spawns it when it breaks). Shot open, it spills the
   jackpot: 14 pickups, mostly credits, fuel and ammo, a few full shields.
-  lua/mission_1.lua listens for its break (BrBR) as "stashCase".
+  lua/mission_2.lua listens for its break (BrBR) as "stashCase".
 -->
 <compoundObject
    needsGroupIndex="false" >

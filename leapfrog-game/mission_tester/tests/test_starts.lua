@@ -68,7 +68,7 @@ test("test starts: an arrival the navigator doesn't know is refused", function(t
    local ts = t:module("test_starts")
    -- (home from orbit is known since the gold mine site leads there)
    table.insert(ts.list, { label = "Deep space, from a landing site", scene = "deep_space_scene.xml",
-      sceneType = 1, mission = 1, state = t:mission(1).State.accepted, from = ts.From.orbit })
+      sceneType = 1, mission = 1, state = t:mission(1).State.firstBeacon, from = ts.From.orbit })
    local ok, message = t.engine:menuTestStart(#ts.list)
    table.remove(ts.list)
    t:expect(not ok, "the start was refused")
@@ -76,14 +76,14 @@ test("test starts: an arrival the navigator doesn't know is refused", function(t
    t:expectScene("home_scene.xml")
 end)
 
-test("test starts: home with the job accepted shows the route, first pad flashing", function(t)
+test("test starts: home at the third beacon: the first two lit, the third flashing", function(t)
    t:newGame()
    local index
    for i, e in ipairs(t:module("test_starts").list) do
-      if e.label == "Home, job accepted" then index = i end
+      if e.label == "Home, third beacon" then index = i end
    end
-   t:expect(index ~= nil, "a 'Home, job accepted' test start")
+   t:expect(index ~= nil, "a 'Home, third beacon' test start")
    t:menuTestStart(index)
-   t:expectMap("landingPad2", "siloHome", 2)     -- flashing slowly
-   t:expectMap("landingPad3", "siloHome", 0)     -- hollow
+   t:expectMap("landingPad2", "siloHome", 1)     -- filled
+   t:expectMap("villagePad", "siloHome", 2)      -- flashing slowly
 end)

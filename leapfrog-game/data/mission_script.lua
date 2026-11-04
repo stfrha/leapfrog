@@ -14,7 +14,7 @@ local mission2 = require('mission2')
 
 -- The missions by number (currentMission). A mission has
 -- setupMissionStateScene, missionStateSceneEventHandler and firstState, and
--- may have reentryOutcome, holds and space. See documentation/lua_guide.md.
+-- may have reentryOutcome, holds, space and arrivalPad. See documentation/lua_guide.md.
 local missions = {
    [1] = mission1,
    [2] = mission2,
@@ -67,6 +67,32 @@ function lua_missionSpace()
    return "deep_space_scene.xml"
 end
 
+-- The pad a re-entry at this landing scene ends on: the running mission's, if
+-- it has an arrivalPad(scene) function that names one, otherwise the scene's
+-- world's, otherwise the scene's default (orbitArrivals in scene_navigator.lua)
+function lua_arrivalPad(scene)
+   local arrival = orbitArrivals[scene]
+   if arrival == nil then
+      return nil
+   end
+
+   local mission = missions[currentMission]
+   local pad = nil
+   if mission ~= nil and mission.arrivalPad ~= nil then
+      pad = mission.arrivalPad(scene)
+   end
+
+   local world = worlds[sceneWorld[scene]]
+   if pad == nil and world ~= nil and world.arrivalPad ~= nil then
+      pad = world.arrivalPad(scene)
+   end
+
+   if pad ~= nil and arrival.pads[pad] ~= nil then
+      return pad
+   end
+   return arrival.default
+end
+
 -- Ends the running mission and starts another, in the scene the game is in.
 -- The save at the next scene exit stores it. Use 0 for free play. Called from
 -- an event handler, it happens when all handlers have had that event, so a
@@ -93,7 +119,8 @@ end
 
 -- missionHolds(what): true if the running mission takes over something the
 -- world script would otherwise do in this scene, so the world leaves it
--- alone. what: "swarm" (the world's stripper swarm in deep space). A
+-- alone. what: "swarm" (the world's stripper swarm in deep space),
+-- "landingSites" (the world's other landing sites in orbit). A
 -- mission answers with an optional holds(what) function.
 function missionHolds(what)
    local mission = missions[currentMission]

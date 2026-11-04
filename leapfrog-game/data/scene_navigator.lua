@@ -106,7 +106,9 @@ spaces = {
 }
 
 -- Arriving from orbit, per landing scene (the scene a site leads to, see
--- <landingSite scene="..."> in orbit_scene.xml): from above, in re-entry
+-- <landingSite scene="..."> in orbit_scene.xml) and pad. A scene has one
+-- marker on the planet, whatever pads it has: lua_arrivalPad says which pad
+-- (the mission, then the world, then the scene's default): from above, in re-entry
 -- configuration, after a good re-entry (you land on the pad yourself), or
 -- standing on the pad the recovery crew set the Leapfrog down on after an
 -- off-site landing (the pad's top less the ~14 from the Leapfrog's origin
@@ -115,8 +117,19 @@ spaces = {
 -- pad, Alpha City is landing_scene with landing_pad1. The sites are in
 -- the planet's surface file, mining_planet_surface.xml.)
 orbitArrivals = {
-   ["home_scene.xml"]    = { from = { x = 2736, y = 50 }, pad = "siloLandingPad", onPad = { x = 2736, y = 500 } },
-   ["landing_scene.xml"] = { from = { x = 520,  y = 50 }, pad = "landing_pad1",   onPad = { x = 415,  y = 657 } },
+   ["home_scene.xml"] = {
+      default = "siloLandingPad",
+      pads = {
+         siloLandingPad = { from = { x = 2736, y = 50 }, onPad = { x = 2736, y = 500 } },
+         villagePad     = { from = { x = 640,  y = 50 }, onPad = { x = 640,  y = 583 } },
+      },
+   },
+   ["landing_scene.xml"] = {
+      default = "landing_pad1",
+      pads = {
+         landing_pad1 = { from = { x = 520, y = 50 }, onPad = { x = 415, y = 657 } },
+      },
+   },
 }
 
 -- Added to the site index for an off-site landing (picked up and set down
@@ -162,7 +175,10 @@ function lua_findLeapfrogEntryPosition(exitSceneType, exitParameter)
       -- We are leaving orbit scene after a landing: currentScene is the
       -- site's landing scene; on the site (index) from above, recovered
       -- (recoveredOffset + index) standing on its pad
-      local arrival = orbitArrivals[currentScene]
+      local arrival = nil
+      if orbitArrivals[currentScene] ~= nil then
+         arrival = orbitArrivals[currentScene].pads[lua_arrivalPad(currentScene)]
+      end
       if arrival ~= nil then
          if exitParameter >= recoveredOffset then
             nextLfFile = "leapfrog_landing.xml"

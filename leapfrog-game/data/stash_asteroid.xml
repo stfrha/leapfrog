@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  The stash asteroid (mission 1): a big asteroid like large_asteroid.xml,
+  The stash asteroid (mission 2): a big asteroid like large_asteroid.xml,
   but blasted it reveals the raiders' stash case (stash_case.xml, as
-  "stashCase") instead of smaller asteroids and pickups. lua/mission_1.lua
+  "stashCase") instead of smaller asteroids and pickups. lua/mission_2.lua
   places it in deep space as "stashAsteroid" while the stash is being
   hunted.
 -->

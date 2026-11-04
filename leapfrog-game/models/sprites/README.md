@@ -56,7 +56,9 @@ Script-specific options are listed with `-- --help`.
   turned square to the camera and scaled so the deck's front edge is `--deck-width` (default 50);
   only the amber beacon on a mast at one end (`--side`) is new. Two images with the same frame:
   `gen_landing_pad` (lamp on, lighting the deck) and `gen_landing_pad_off`; `--blink` also makes
-  `gen_landing_pad_blink` (2 frames, for Animate Period). Night by default (`--day`).
+  `gen_landing_pad_blink` (2 frames, for Animate Period). `--corners` makes
+  `gen_landing_pad_corners` instead, the village pad's top with four corner lamps lit in turn
+  (5 rows, the last dark), to lay over a dark `gen_landing_pad_blink`. Night by default (`--day`).
 * `kit.image_point(world)` / `kit.report_points(title, [(label, world), ...])`: where world points
   land in the last render_persp/render_axo image. `kit.render_crop(name, objects, frames,
   set_frame)`: an animated overlay cropped to some objects (e.g. a flickering neon sign) with the

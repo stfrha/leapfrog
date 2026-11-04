@@ -2,14 +2,9 @@
 -- the game): c_hasItem, c_itemState, c_itemInfo, c_giveItem, c_revokeItem,
 -- c_forgetItem, c_itemsHeld
 
--- Mission 1 at home with the job accepted, on the Ore's pad, ready to launch
+-- Mission 2 with the job accepted, ready to launch
 local function atOre(t)
-   t:newGame()
-   local m = t:mission(1)
-   t:land("siloLandingPad")
-   t:answer(m.Question.acceptJob, true)
-   t:land("oreLanding")
-   t:takeOff()
+   t:stashJobTaken()
 end
 
 local function call(t, fn, ...)
@@ -96,7 +91,7 @@ test("key items: c_itemsHeld lists the held ones, by kind", function(t)
    local all = call(t, "c_itemsHeld")
    local routes = call(t, "c_itemsHeld", "route")
    local passes = call(t, "c_itemsHeld", "pass")
-   t:expectEqual(#all, 3, "held items")
+   t:expectEqual(#all, 4, "held items")
    t:expectEqual(routes[1], "testRoute", "held route")
    t:expectEqual(#passes, 0, "held passes")
 end)

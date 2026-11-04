@@ -513,6 +513,32 @@
     height="32"
     parallaxAmount="0" />
   <spriteBox
+    name="villagePadBase"
+    texture="gen_landing_pad_blink"
+    posX="640"
+    posY="606"
+    angle="0"
+    zLevel="40"
+    collisionEntity="notApplicable"
+    collisionCategory="1"
+    collisionMask="65534"
+    width="64"
+    height="32"
+    parallaxAmount="0" />
+  <spriteBox
+    name="villagePadLamp"
+    texture="gen_landing_pad_corners"
+    posX="640"
+    posY="598.97"
+    angle="0"
+    zLevel="40"
+    collisionEntity="notApplicable"
+    collisionCategory="1"
+    collisionMask="65534"
+    width="64"
+    height="17.93"
+    parallaxAmount="0" />
+  <spriteBox
     name="noName"
     texture="fuel_station_neon"
     posX="925.38433111616769"
@@ -2763,12 +2789,12 @@
         y="-52.430442764796226" />
       <vertex
         id="6"
-        x="510.18367910732741"
-        y="-34.936669501410506" />
+        x="505.54871240459647"
+        y="-24.630975536778351" />
       <vertex
         id="7"
-        x="416.66803944941785"
-        y="-6.5853813710000395" />
+        x="429.62228581561044"
+        y="-20.20176583758257" />
       <vertex
         id="8"
         x="371.23732662161933"
@@ -3534,6 +3560,28 @@
     </compoundObject>
   </childObject>
   <childObject
+    name="villagePad"
+    posX="639.3"
+    posY="612.6">
+    <compoundObject
+      needsGroupIndex="false">
+      <staticBox
+        name="siloHome"
+        texture="transparent"
+        posX="0"
+        posY="0"
+        angle="0"
+        zLevel="192"
+        collisionEntity="landingPad"
+        collisionCategory="1"
+        collisionMask="65533"
+        width="50"
+        height="25" />
+      <behaviour
+        type="landingPad" />
+    </compoundObject>
+  </childObject>
+  <childObject
     name="workshopPad"
     posX="1074.4015448852297"
     posY="605.54549597760854">
@@ -3574,8 +3622,10 @@
         width="30"
         height="5" />
       <behaviour
-        type="landingPad" 
-        fuel="sell"/>
+        type="landingPad"
+        fuel="sell"
+        fuelRate="12"
+        fuelPrice="5" />
     </compoundObject>
   </childObject>
   <childObject

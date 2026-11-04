@@ -92,8 +92,10 @@ test("placement: the Leapfrog enters inside the scene", function(t)
       check(name, "bounce", space.bounce)
    end
    for name, arrival in pairs(t:global("orbitArrivals")) do
-      check(name, "from orbit", arrival.from)
-      check(name, "on the pad", arrival.onPad)
+      for pad, entry in pairs(arrival.pads) do
+         check(name, pad .. " from orbit", entry.from)
+         check(name, pad .. " on the pad", entry.onPad)
+      end
    end
    report(t, problems)
 end)
@@ -120,7 +122,7 @@ end)
 
 test("placement: the stash asteroid drifts in, the boundary doesn't throw it", function(t)
    t:newGame()
-   local stash = t:mission(1).Stash
+   local stash = t:mission(2).Stash
    local box = placement.sceneBox(sceneRoot(stash.space), harness.srcDir)
 
    t:expect(placement.depth(box, stash.x, stash.y) > 0, "it comes from the boundary, not from inside")

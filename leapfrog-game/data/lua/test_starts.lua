@@ -8,7 +8,7 @@
 --   scene      scene file
 --   sceneType  0 landing, 1 deep space, 2 orbit
 --   mission    mission number (0 = free play)
---   state      the mission's state, by name (State.accepted)
+--   state      the mission's state, by name (State.hunting)
 --   from       where the Leapfrog arrives from (From.orbit, ...), or nil to
 --              start at the scene's own initial position
 --
@@ -21,8 +21,8 @@
 
 local mission1 = require('mission1')
 local mission2 = require('mission2')
-local S = mission1.State
-local S2 = mission2.State
+local S = mission2.State
+local B = mission1.State
 
 local testStarts = {}
 
@@ -36,12 +36,13 @@ local From = {
 testStarts.From = From
 
 testStarts.list = {
-   { label = "Landing, from orbit",  scene = "landing_scene.xml",    sceneType = 0, mission = 1, state = S.testLandOnPad, from = From.orbit },
-   { label = "Space, launched",      scene = "deep_space_scene.xml", sceneType = 1, mission = 1, state = S.testLandOnPad, from = From.launch },
-   { label = "Orbit, from space",    scene = "orbit_scene.xml",      sceneType = 2, mission = 1, state = S.testLandOnPad, from = From.space },
-   { label = "Home, job accepted",   scene = "home_scene.xml",       sceneType = 0, mission = 1, state = S.accepted },
-   { label = "Belt, hunting stash",  scene = "debris_belt_scene.xml", sceneType = 1, mission = 1, state = S.hunting, from = From.launch },
-   { label = "Beacons, job offered", scene = "home_scene.xml",       sceneType = 0, mission = 2, state = S2.offered },
+   { label = "Landing, from orbit",  scene = "landing_scene.xml",    sceneType = 0, mission = 2, state = S.testLandOnPad, from = From.orbit },
+   { label = "Space, launched",      scene = "deep_space_scene.xml", sceneType = 1, mission = 2, state = S.testLandOnPad, from = From.launch },
+   { label = "Orbit, from space",    scene = "orbit_scene.xml",      sceneType = 2, mission = 2, state = S.testLandOnPad, from = From.space },
+   { label = "Home, third beacon",   scene = "home_scene.xml",       sceneType = 0, mission = 1, state = B.thirdBeacon },
+   { label = "Home, stash offered",  scene = "home_scene.xml",       sceneType = 0, mission = 2, state = S.offered },
+   { label = "Belt, hunting stash",  scene = "debris_belt_scene.xml", sceneType = 1, mission = 2, state = S.hunting, from = From.launch },
+   { label = "Beacons, job offered", scene = "home_scene.xml",       sceneType = 0, mission = 1, state = B.offered },
 }
 
 return testStarts

@@ -17,6 +17,13 @@ Two images with exactly the same frame, to swap between (or animate):
 sprite box that texture and Animate Period (the script prints a suggestion),
 and the engine blinks it.
 
+--corners makes gen_landing_pad_corners instead: the top of the pad with four
+small lamps on the deck's corners, for the bigger pad at the village. It goes
+on top of a gen_landing_pad_blink sprite stopped on its dark frame, which
+gives the legs, so it is the same width and only the top --crop of the height.
+Five rows: one lamp lit at a time, clockwise from the front left, then all
+dark (a pause in the run, and the unlit beacon: stop it on frame 4).
+
 The deck is turned square to the camera so its front edge is level in the
 image, and the camera aims at the standing line (--stand units in from the
 front edge), so 1 unit there is 1 game unit, as for the Ore pads. The pad is
@@ -34,6 +41,7 @@ Run from leapfrog-game\\models\\sprites:
     blender -b --factory-startup -P gen_landing_pad.py -- --samples 16 --name gen_landing_pad_test
     blender -b --factory-startup -P gen_landing_pad.py
     blender -b --factory-startup -P gen_landing_pad.py -- --blink
+    blender -b --factory-startup -P gen_landing_pad.py -- --corners
 """
 
 import math
@@ -77,6 +85,15 @@ def options(p):
                    help="also make <name>_blink: both images as a 2-frame strip for animatePeriod")
     p.add_argument("--period", type=float, default=1.2,
                    help="with --blink: suggested Animate Period, seconds per on+off (default 1.2)")
+    p.add_argument("--corners", action="store_true",
+                   help="make gen_landing_pad_corners: four corner lamps, one lit at a time (see above)")
+    p.add_argument("--corner-in", type=float, default=2.0,
+                   help="with --corners: lamps this far in from the deck's edges (default 2)")
+    p.add_argument("--corner-size", type=float, default=1.0, help="with --corners: size of a lamp (default 1)")
+    p.add_argument("--corner-power", type=float, default=700.0, help="with --corners: a lamp's light in W (default 700)")
+    p.add_argument("--crop", type=float, default=0.56,
+                   help="with --corners: keep this much of the image's height, from the top (default 0.56: "
+                        "down to under the deck)")
 
 
 args = sk.parse_args(options)
@@ -257,6 +274,87 @@ room["kit_frame_extent"] = True
 kit.haze = 0.0
 kit.glow = args.glow if args.glow is not None else 1.0
 kit._post_axo = kit.glow > 0.0
+
+# --- The corner lamps (--corners) ------------------------------------------------------------
+# Inside the deck's outline, so the frame comes out the same as for the plain pad
+CORNER_RGB = LAMP_RGB
+corner_glass = []
+corner_lights = []
+
+
+def corner_lamp(index, x, y):
+    size = args.corner_size
+    at = dw(x, y, DECK_TOP)
+
+    def part(name, profile, material, z0, cap_top=False, cap_bottom=False):
+        bm = bmesh.new()
+        sk.lathe(bm, [(r * size, h * size) for r, h in profile], 16, cap_top=cap_top, cap_bottom=cap_bottom)
+        ob = sk.mesh_object("%s_%d" % (name, index), bm, material, smooth_quads=True)
+        ob.location = (at[0], at[1], z0)
+        ob.visible_shadow = False       # the light sits inside the head
+        return ob
+
+    part("corner_post", [(0.3, 0.0), (0.3, 0.9), (0.42, 0.9), (0.42, 1.15)], M("frame_main"), DECK_TOP,
+         cap_top=True, cap_bottom=True)
+    glass = part("corner_glass", [(0.36, 0.0), (0.36, 0.5), (0.2, 0.75), (0.0, 0.8)], GLASS_OFF,
+                 DECK_TOP + 1.15 * size, cap_bottom=True)
+    light = sk.point_light("corner_light_%d" % index, (at[0], at[1], DECK_TOP + 1.5 * size), CORNER_RGB,
+                           args.corner_power, 0.2 * size)
+    light.hide_render = True
+    corner_glass.append(glass)
+    corner_lights.append(light)
+
+
+def light_corner(index):
+    """Lamp index lit, the others dark; None: all dark."""
+    for i, (glass_ob, light) in enumerate(zip(corner_glass, corner_lights)):
+        glass_ob.data.materials[0] = GLASS_ON if i == index else GLASS_OFF
+        light.hide_render = i != index
+
+
+def crop_top(path, keep):
+    """Keeps the top of an image, this share of its height."""
+    import numpy as np
+    pixels, w, h = sk._load_pixels(path)
+    rows = int(round(h * keep))
+    data = pixels[h - rows:]              # Blender's pixel rows run bottom-up
+    img = bpy.data.images.new("crop", w, rows, alpha=True)
+    img.pixels.foreach_set(data.astype(np.float32).ravel())
+    img.filepath_raw = path
+    img.file_format = 'PNG'
+    img.save()
+    bpy.data.images.remove(img)
+    return w, rows
+
+
+if args.corners:
+    # The mast's lamp stays dark on this pad
+    glass.data.materials[0] = GLASS_OFF
+    lamp.hide_render = True
+
+    CX = DW / 2.0 - args.corner_in
+    CFRONT = DFRONT + args.corner_in
+    CBACK = -DFRONT - args.corner_in
+    for k, spot in enumerate([(-CX, CFRONT), (-CX, CBACK), (CX, CBACK), (CX, CFRONT)]):
+        corner_lamp(k, spot[0], spot[1])
+
+    name = "gen_landing_pad_corners" if args.name == "gen_landing_pad" else args.name
+    light_corner(0)
+    frame_paths = [kit.render_persp(name + "_f0", target=dw(0.0, STAND, DECK_TOP), yaw_deg=args.yaw,
+                                    pitch_deg=args.pitch, distance=args.distance, ground_z=0.0,
+                                    frame_only=True)]
+    for k in range(1, 5):
+        light_corner(k if k < 4 else None)
+        frame_paths.append(kit.render_variant("%s_f%d" % (name, k)))
+
+    if all(frame_paths):
+        for path in frame_paths:
+            w, rows = crop_top(path, args.crop)
+        kit.make_strip(frame_paths, name, layout="rows")
+        print("gen_landing_pad: %s: %d x %d px a frame. Same width as the pad sprite, height %.4f of it, "
+              "top edges together. Animate Period 1.25 s lit, frame 4 dark" % (name, w, rows, args.crop))
+    raise SystemExit(0)
+
 
 # --- Render ----------------------------------------------------------------------------------------
 on_path = kit.render_persp(args.name, target=dw(0.0, STAND, DECK_TOP), yaw_deg=args.yaw,

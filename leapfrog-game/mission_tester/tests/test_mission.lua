@@ -3,7 +3,7 @@
 
 test("test mission: from the landing pad to the reward", function(t)
    t:menuTestLanding()
-   local S = t:mission(1).State
+   local S = t:mission(2).State
    t:expectScene("landing_scene.xml")
    t:expectState(S.testLandOnPad)
    t:expectDialog("Try to land on the landing pad", "DEBUG")
@@ -24,7 +24,7 @@ end)
 
 test("test mission: the bomb too early while freeing the spring ends it", function(t)
    t:menuTestLanding()
-   local S = t:mission(1).State
+   local S = t:mission(2).State
    t:land("landing_pad1")
    t:takeOff()
    t:expectState(S.testFreeSpring)
@@ -35,7 +35,7 @@ end)
 
 test("test mission: the bomb too early on the pad ends it", function(t)
    t:menuTestLanding()
-   local S = t:mission(1).State
+   local S = t:mission(2).State
    t:event("bomb1", "ExEX")
    t:expectState(S.testEnded)
 end)
