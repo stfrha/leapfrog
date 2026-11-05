@@ -107,6 +107,7 @@
     <None Include="tests\bad_mine.lua" />
     <None Include="tests\mission1_beacons.lua" />
     <None Include="tests\shield_power.lua" />
+    <None Include="tests\property_triggers.lua" />
     <None Include="tests\spaces.lua" />
     <None Include="tests\placement.lua" />
     <None Include="tests\guide.lua" />

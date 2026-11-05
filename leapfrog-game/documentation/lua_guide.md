@@ -188,7 +188,7 @@ local function setupBeacons()
       end
 
       if isNext then
-         c_registerPropertyTrigger(beacon.pad, 0, lfLanded, "insideRange", 1, 1)
+         beaconTrigger = c_registerPropertyTrigger(beacon.pad, lfLanded, "insideRange", 1, 1)
          listen(beacon.pad, "OpTr")
       end
    end
@@ -288,7 +288,7 @@ mission1.missionStateSceneEventHandler = function(eventId, actorName, parameter1
       askAgain(actorName == "oreLanding")
    end
 
-   if eventId == "OpTr" and parameter1 == lfLanded then
+   if eventId == "OpTr" and parameter1 == beaconTrigger then
       startRepair(actorName)
    end
 
@@ -404,7 +404,7 @@ wait a few ticks before listening to it.
 | `ExEX` | Explosive object | 0 | It exploded |
 | `PuPU` | Pickup | 0 | It was picked up |
 | `LfSt` | `leapfrog1` | Property taken: 5 ammo, 6 shield, 7 fuel, 8 credits, or 0 for nothing | A stripper took something |
-| `OpTr` | Any object | Property id | A property trigger fired |
+| `OpTr` | Any object | Trigger id | A property trigger fired |
 | `ScTO` | The scene | Timer id | A scene timer ran out |
 | `FcLw` | The scene | Watch id | A watched object factory is nearly out of objects |
 | `QsYs`, `QsNo` | The scene | Question id | A question was answered |
@@ -414,11 +414,12 @@ wait a few ticks before listening to it.
 ### Property triggers
 
 A trigger sends `OpTr` when an object's property is set to a value in a range. It
-takes two calls. The second argument of the first call doesn't reach Lua, so pass 0:
+takes two calls. The first returns the trigger's id, unique for the whole session, and
+`OpTr` arrives with that id as its parameter, like a timer's id with `ScTO`:
 
 <!-- verbatim: data/lua/mission_1.lua -->
 ```lua
-         c_registerPropertyTrigger(beacon.pad, 0, lfLanded, "insideRange", 1, 1)
+         beaconTrigger = c_registerPropertyTrigger(beacon.pad, lfLanded, "insideRange", 1, 1)
          listen(beacon.pad, "OpTr")
 ```
 
@@ -426,9 +427,11 @@ The type is `"insideRange"` or `"outsideRange"`, and the range is inclusive.
 
 A trigger tests each new value, not the crossing of a limit. So it fires every
 time the property is set while it's in range, and not at all if the value is
-already in range and never set again. Either guard your handler with a state or
-expect repeats. `debt.lua` watches credits this way, with its `owing` flag as the
-guard.
+already in range and never set again. For a one-time trigger, remove it in its
+handler with `c_unregisterPropertyTrigger(id)`, as `mission_2.lua` does with the
+ammo. Otherwise guard your handler with a state, or expect repeats. Removing an id
+that isn't registered does nothing, so -1 or an id from an earlier scene is fine.
+The rest of a scene's triggers go with the scene.
 
 ### Timers
 
@@ -1149,7 +1152,8 @@ is listed here, and that everything listed exists.
 | Function | Purpose |
 |---|---|
 | `c_registerEventHandler(actorName, eventId, 0, 0)` | Registers for an event. Use `listen` instead. |
-| `c_registerPropertyTrigger(actorName, 0, propertyId, type, lower, upper)` | Sends `OpTr` for values in or out of a range |
+| `c_registerPropertyTrigger(actorName, propertyId, type, lower, upper)` | Sends `OpTr` for values in or out of a range. Returns the trigger's id, or -1 if there's no such object. |
+| `c_unregisterPropertyTrigger(id)` | Removes that trigger |
 | `c_clearAllTriggersAndEvents()` | Clears listeners and triggers. Only `mission_script.lua` calls it. |
 | `c_startSceneTimer(ticks)` | Starts a timer, and returns its id |
 | `c_watchFactory(name, left)` | Sends `FcLw` once when a factory has at most `left` of its objects alive, after all of its `spawnTotal` if it has one. Returns an id, or -1 if there's no such factory. |
@@ -1217,7 +1221,7 @@ Affiliations are `none`, `leapfrog`, `neutral`, `enemy` and `friendly`.
 | `PuPU` | Pickup taken | 0 |
 | `LfSt` | `leapfrog1`, a stripper took something | Property id, or 0 |
 | `LfMr` | `leapfrog1`, mode reached | 0 |
-| `OpTr` | Any object, a trigger fired | Property id |
+| `OpTr` | Any object, a trigger fired | Trigger id |
 | `OpPC` | Any object, a property changed | 0 |
 | `ScTO` | The scene, a timer ran out | Timer id |
 | `FcLw` | The scene, a watched factory is nearly out | Watch id |

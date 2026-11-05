@@ -396,7 +396,10 @@ end
 
 -- Property triggers (c_registerPropertyTrigger), sent as "OpTr"
 function Engine:checkTriggers(obj, id)
-   for _, t in ipairs(obj.triggers) do
+   -- ObjectProperty::setProperty collects the events first: a handler may
+   -- remove a trigger
+   local all = { table.unpack(obj.triggers) }
+   for _, t in ipairs(all) do
       if t.propertyId == id then
          local v = self:getProperty(obj, id)
          local hit = false
@@ -406,7 +409,7 @@ function Engine:checkTriggers(obj, id)
             hit = v < t.lower or v > t.upper
          end
          if hit then
-            self:deliver(obj.name, "OpTr", id)
+            self:deliver(obj.name, "OpTr", t.id)
          end
       end
    end
@@ -1135,14 +1138,30 @@ function Engine:installApi(env)
       obj.velocity = { x = vx, y = vy }
    end
 
-   api.c_registerPropertyTrigger = function(actor, eventId, propertyId, triggerType, lower, upper)
+   api.c_registerPropertyTrigger = function(actor, propertyId, triggerType, lower, upper)
       local obj = e:getObject(actor)
       if not obj then
          e:problem("c_registerPropertyTrigger: no object '" .. tostring(actor) .. "'")
-         return
+         return -1
       end
-      obj.triggers[#obj.triggers + 1] = { eventId = eventId, propertyId = propertyId,
+      e.nextTriggerId = (e.nextTriggerId or 0) + 1
+      obj.triggers[#obj.triggers + 1] = { id = e.nextTriggerId, propertyId = propertyId,
          type = triggerType, lower = lower, upper = upper }
+      return e.nextTriggerId
+   end
+
+   -- An id that isn't registered is ignored, as in the game
+   api.c_unregisterPropertyTrigger = function(id)
+      if e.scene then
+         for _, obj in pairs(e.scene.objects) do
+            for i, t in ipairs(obj.triggers) do
+               if t.id == id then
+                  table.remove(obj.triggers, i)
+                  return
+               end
+            end
+         end
+      end
    end
 
    api.c_clearAllTriggersAndEvents = function()

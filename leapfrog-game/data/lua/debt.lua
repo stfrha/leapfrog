@@ -20,6 +20,9 @@ local creditsProperty = 8
 -- found at a scene setup, e.g. after loading a game)
 local owing = false
 
+-- The trigger on the credits while something is owed
+local creditsTrigger = -1
+
 -- Lines to say at the next scene setup (charges made while a scene ends:
 -- what is said then would be dropped with the scene)
 local pendingLines = {}
@@ -42,13 +45,16 @@ end
 
 local function paidBack()
    owing = false
+   c_unregisterPropertyTrigger(creditsTrigger)
+   creditsTrigger = -1
    say("Got your money. We're square.")
 end
 
 -- Watches the credits (a property trigger, "OpTr") while something is owed
 local function watch()
    if owing and c_objectExists(leapfrog) then
-      c_registerPropertyTrigger(leapfrog, 0, creditsProperty, "insideRange", 0, 1000000000)
+      c_unregisterPropertyTrigger(creditsTrigger)
+      creditsTrigger = c_registerPropertyTrigger(leapfrog, creditsProperty, "insideRange", 0, 1000000000)
       listen(leapfrog, "OpTr")
    end
 end
@@ -119,7 +125,7 @@ end
 -- Events, first
 
 debt.eventHandler = function(eventId, actorName, parameter1)
-   if eventId == "OpTr" and actorName == leapfrog and parameter1 == creditsProperty then
+   if eventId == "OpTr" and parameter1 == creditsTrigger then
       local c = credits()
       if owing and c ~= nil and c >= 0 then
          paidBack()

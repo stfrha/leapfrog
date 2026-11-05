@@ -70,11 +70,13 @@ local limpHomeFuel = 15          -- what the raiders leave in the tank
 mission2.limpHomeFuel = limpHomeFuel
 local edithFuel = 25             -- what Edith leaves in it at the silo
 mission2.edithFuel = edithFuel
+local ammoProperty = 5           -- the Leapfrog's ammo
 
 local edithGuessTimer = -1
 local caseTimer = -1
 local raidTimer = -1
 local fieldWatch = -1
+local ammoTrigger = -1
 
 local function inStash(state)
    return state == State.hunting or state == State.stashIn
@@ -160,9 +162,10 @@ local function startRaid()
    currentState = State.raided
 
    -- We want to start a property trigger for when ammo is down by 50%
-   -- to trigger a Edith dialog message.
-   tempAmmo = c_getObjectProperty("leapfrog1", 5)
-   c_registerPropertyTrigger("leapfrog1", 0, 5, "insideRange", 0, tempAmmo/2)
+   -- to trigger a Edith dialog message. It would fire on every change of the
+   -- ammo below that, so the handler removes it.
+   local halfAmmo = c_getObjectProperty("leapfrog1", ammoProperty) / 2
+   ammoTrigger = c_registerPropertyTrigger("leapfrog1", ammoProperty, "insideRange", 0, halfAmmo)
    listen("leapfrog1", "OpTr")
 
    c_addDialogMessage("That's our stash you're grabbing, pilot.", "Raiders", true, 20, 0)
@@ -487,7 +490,9 @@ mission2.missionStateSceneEventHandler = function(eventId, actorName, parameter1
          end
       end
 
-      if eventId == "OpTr" and actorName == "leapfrog1" then
+      if eventId == "OpTr" and parameter1 == ammoTrigger then
+         c_unregisterPropertyTrigger(ammoTrigger)
+         ammoTrigger = -1
          c_addDialogMessage("Oh. It looks as they only steal thier stuff back. Perhaps you should just let them.", "Edith", true, 0, 0)
       end   
 

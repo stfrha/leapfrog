@@ -112,8 +112,24 @@ test("stash: the case shot open: the jackpot, then the raiders after a while", f
    t:expectState(S.raided)
    t:expectDialog("That's our stash", "Raiders")
    t:expectDialog("From everywhere!", "Edith")
-   t:expectDialog("just let them.", "Edith")
    t:expect(swarmActive(t), "the strippers come")
+end)
+
+test("stash: half the ammo gone in the raid: Edith says so, once", function(t)
+   toRaid(t)
+   local ammo = t:property("leapfrog1", 5)
+   t:expectNoDialog("just let them.")
+   t:setProperty("leapfrog1", 5, ammo / 2 + 1)
+   t:expectNoDialog("just let them.")
+   t:event("leapfrog1", "OpTr", 9999)       -- some other trigger on the Leapfrog
+   t:expectNoDialog("just let them.")
+   t:setProperty("leapfrog1", 5, ammo / 2)
+   t:expectDialog("just let them.", "Edith")
+   t:setProperty("leapfrog1", 5, ammo / 2 - 1)
+   t:expectNoDialog("just let them.")
+   for _, trigger in ipairs(t.engine:getObject("leapfrog1").triggers) do
+      t:expect(trigger.propertyId ~= 5, "the ammo trigger is gone")
+   end
 end)
 
 test("stash: stripped: the strippers leave, fuel to limp home", function(t)

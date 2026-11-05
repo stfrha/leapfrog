@@ -17,4 +17,5 @@ return {
    "guide.lua",
    "bad_mine.lua",
    "shield_power.lua",
+   "property_triggers.lua",
 }

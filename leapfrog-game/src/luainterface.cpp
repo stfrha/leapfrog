@@ -21,10 +21,11 @@ LuaInterface g_LuaInterface;
 // The initiator is the LUA script. It uses the c_registerPropertyTrigger
 // method to register a property trigger. To this, it supplies the following:
 // - The actor name of the object to monitor
-// - The event id (TODO: Is this a general number or what?)
 // - The id (or index) of the property for the object type of the actor name
 // - The type of trigger (inside, outside, etc.)
 // - The range limits (always two even if only one is used)
+// The method returns the trigger id: unique for the whole session, so scripts
+// need not agree on ids and an id left over from an earlier scene matches nothing.
 // The object actor is fetched from the scene and the event trigger 
 // is registred in it, with all information so that is can
 // launch a "OpTr"-event (Object Property Trigger) when the 
@@ -33,7 +34,7 @@ LuaInterface g_LuaInterface;
 // a handle to the trigger is generated. This holds the following:
 // - A pointer to the actor
 // - The id (or index) of the property for the object type of the actor name
-// - The event id (TODO: Is this a general number or what?)
+// - The trigger id
 // This is stored in the m_triggerHandles and is used to clean up the trigger
 // from the actor.
 // The LUA-script now needs to register that it wants to handle
@@ -67,11 +68,11 @@ LuaInterface g_LuaInterface;
 // - The event type (four characters)
 // If the event was cased by a Object Property Trigger (== "OpTr"), than
 // an additional parameter is extracted: 
-// - Property identity (sometimes called Property Index)
+// - The trigger id
 // This information is sent to the LUA-interface using the LUA function:
 // missionStateSceneEventHandler. In the LUA-script the supplied data 
-// is decoded with if-statements. Is it from THIS actor, is a OpTr event,
-// is it THIS property identity, are we in THIS state: In that case, do THIS.
+// is decoded with if-statements. Is it a OpTr event, is it THIS trigger id,
+// are we in THIS state: In that case, do THIS.
 // Can be go to another state, play a message, load additional sceene objects, etc.
 // Thats is it.
 // During this sequence, data is stored in a number of lists:
@@ -81,6 +82,9 @@ LuaInterface g_LuaInterface;
 // 4. m_eventHandlerHandles get a handle to the event handler in the actor
 //
 // Clean-up
+// A single trigger is removed with c_unregisterPropertyTrigger and its trigger id,
+// also from the handler of its own OpTr event. An unknown id is ignored.
+// All the others go with the scene:
 // Clean up is done by the LUA-script when needed. Basically, it will only execute at 
 // event trigger, so there will always be caused by an event, usually when the state of the 
 // mission is changed. At this time all triggers and related events are removed. 
@@ -129,7 +133,7 @@ LuaInterface g_LuaInterface;
 // - The event type (four characters)
 // If the event was cased by a Object Property Trigger (== "OpTr"), than
 // an additional parameter is extracted: 
-// - Property identity (sometimes called Property Index)
+// - The trigger id
 // 
 void luaEventListner(oxygine::Event *ev)
 {
@@ -147,7 +151,7 @@ void luaEventListner(oxygine::Event *ev)
       ObjectPropertyTriggeredEvent* propTrigEv = static_cast<ObjectPropertyTriggeredEvent*>(ev);
 
       g_LuaInterface.missionStateSceneEventHandler(
-         eventType, actorName, propTrigEv->m_propertyId);
+         eventType, actorName, propTrigEv->m_triggedEventId);
    }
    else if (ev->type == eventID('S', 'c', 'T', 'O'))
    {
@@ -202,13 +206,12 @@ static int c_startScene(lua_State *L)
 static int c_registerPropertyTrigger(lua_State *L)
 {
    std::string actorName = lua_tostring(L, 1);
-   int eventId = lua_tointeger(L, 2);
-   int propertyIndex = lua_tointeger(L, 3);
-   std::string triggerTypeStr = lua_tostring(L, 4);
-   float lowerLimit = lua_tonumber(L, 5);
-   float upperLimit = lua_tonumber(L, 6);
+   int propertyIndex = lua_tointeger(L, 2);
+   std::string triggerTypeStr = lua_tostring(L, 3);
+   float lowerLimit = lua_tonumber(L, 4);
+   float upperLimit = lua_tonumber(L, 5);
    
-   PropertyEventTrigger::TriggerType triggerType;
+   PropertyEventTrigger::TriggerType triggerType = PropertyEventTrigger::TriggerType::ignore;
 
    if (triggerTypeStr == "ignore")
    {
@@ -225,10 +228,31 @@ static int c_registerPropertyTrigger(lua_State *L)
 
    CompoundObject* object = g_LuaInterface.getSceneActor()->getObject(actorName);
 
-   object->registerPropertyEventTrigger(propertyIndex, eventId, triggerType, lowerLimit, upperLimit);
+   if (object == NULL)
+   {
+      std::string msg = "ERROR: The object " + actorName + " could not be found when registrating property trigger. ";
 
-   g_LuaInterface.registerTriggerHandle(object, propertyIndex, eventId);
+      g_MessageDisplay->initMessage(true, msg.c_str(), "ERROR", 0, 0);
 
+      lua_pushinteger(L, -1);
+      return 1;
+   }
+
+   int triggerId = g_LuaInterface.newTriggerId();
+
+   object->registerPropertyEventTrigger(propertyIndex, triggerId, triggerType, lowerLimit, upperLimit);
+
+   g_LuaInterface.registerTriggerHandle(object, propertyIndex, triggerId);
+
+   lua_pushinteger(L, triggerId);
+   return 1;
+}
+
+// Removes the trigger with this id, as returned by c_registerPropertyTrigger.
+// An id that isn't registered (e.g. -1, or one from an earlier scene) is ignored.
+static int c_unregisterPropertyTrigger(lua_State *L)
+{
+   g_LuaInterface.unregisterTrigger((int)lua_tointeger(L, 1));
    return 0;
 }
 
@@ -1079,7 +1103,8 @@ static int c_saveGameStatus(lua_State* L)
 
 
 LuaInterface::LuaInterface() : 
-   m_sceneActor(NULL)
+   m_sceneActor(NULL),
+   m_nextTriggerId(1)
 {
 }
 
@@ -1171,6 +1196,7 @@ void LuaInterface::initLuaInterface(void)
 
    lua_register(m_L, "c_startScene", c_startScene);
    lua_register(m_L, "c_registerPropertyTrigger", c_registerPropertyTrigger);
+   lua_register(m_L, "c_unregisterPropertyTrigger", c_unregisterPropertyTrigger);
    lua_register(m_L, "c_registerEventHandler", c_registerEventHandler);
    lua_register(m_L, "c_clearAllTriggersAndEvents", c_clearAllTriggersAndEvents);
    lua_register(m_L, "c_addMissionStateSceneObjects", c_addMissionStateSceneObjects);
@@ -1226,10 +1252,34 @@ void LuaInterface::registerHandlerHandle(oxygine::Actor* actor, int eventId)
    m_eventHandlerHandles.push_back(handle);
 }
 
-void LuaInterface::registerTriggerHandle(CompoundObject* object, int propertyId, int eventId)
+int LuaInterface::newTriggerId(void)
 {
-   TriggerHandle handle(object, propertyId, eventId);
+   return m_nextTriggerId++;
+}
+
+void LuaInterface::registerTriggerHandle(CompoundObject* object, int propertyId, int triggerId)
+{
+   TriggerHandle handle(object, propertyId, triggerId);
    m_triggerHandles.push_back(handle);
+}
+
+void LuaInterface::unregisterTrigger(int triggerId)
+{
+   for (auto it = m_triggerHandles.begin(); it != m_triggerHandles.end(); ++it)
+   {
+      if (it->m_triggerId == triggerId)
+      {
+         ObjectProperty* prop = it->m_object->getObjectProperty(it->m_propertyId);
+
+         if (prop != NULL)
+         {
+            prop->unregisterPropertyEventTrigger(triggerId);
+         }
+
+         m_triggerHandles.erase(it);
+         return;
+      }
+   }
 }
 
 void LuaInterface::clearAllTriggersAndEvents(void)
@@ -1243,7 +1293,12 @@ void LuaInterface::clearAllTriggersAndEvents(void)
 
    for (auto it = m_triggerHandles.begin(); it != m_triggerHandles.end(); ++it)
    {
-      it->m_object->getObjectProperty(it->m_propertyId)->unregisterPropertyEventTrigger(it->m_eventId);
+      ObjectProperty* prop = it->m_object->getObjectProperty(it->m_propertyId);
+
+      if (prop != NULL)
+      {
+         prop->unregisterPropertyEventTrigger(it->m_triggerId);
+      }
    }
 
    m_triggerHandles.clear();

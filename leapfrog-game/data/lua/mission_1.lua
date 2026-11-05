@@ -65,7 +65,9 @@ local offerPending = false     -- asked and not yet answered (in this scene:
 
 -- Makes the beacons what currentState says. An inactive pad sends no LpLL,
 -- so the next beacon is watched through its lfLanded property, which changes
--- active or not. "OpTr" arrives with the property id as parameter.
+-- active or not.
+local beaconTrigger = -1
+
 local function setupBeacons()
    for i, beacon in ipairs(mining.beacons) do
       local isNext = currentState == beaconStates[i]
@@ -77,7 +79,7 @@ local function setupBeacons()
       end
 
       if isNext then
-         c_registerPropertyTrigger(beacon.pad, 0, lfLanded, "insideRange", 1, 1)
+         beaconTrigger = c_registerPropertyTrigger(beacon.pad, lfLanded, "insideRange", 1, 1)
          listen(beacon.pad, "OpTr")
       end
    end
@@ -290,7 +292,7 @@ mission1.missionStateSceneEventHandler = function(eventId, actorName, parameter1
       askAgain(actorName == "oreLanding")
    end
 
-   if eventId == "OpTr" and parameter1 == lfLanded then
+   if eventId == "OpTr" and parameter1 == beaconTrigger then
       startRepair(actorName)
    end
 

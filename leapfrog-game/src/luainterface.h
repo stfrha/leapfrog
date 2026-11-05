@@ -22,14 +22,16 @@ public:
 class TriggerHandle
 {
 public:
-   CompoundObject* m_object;
+   // Keeps the object alive until the trigger is removed, so that a trigger on
+   // an object that has died can still be cleaned up
+   spCompoundObject m_object;
    int m_propertyId;
-   int m_eventId;
+   int m_triggerId;
 
-   TriggerHandle(CompoundObject* object, int propertyId, int eventId) :
+   TriggerHandle(CompoundObject* object, int propertyId, int triggerId) :
       m_object(object),
       m_propertyId(propertyId),
-      m_eventId(eventId)
+      m_triggerId(triggerId)
    {   }
 };
 
@@ -74,6 +76,7 @@ private:
    SceneActor* m_sceneActor;
    std::vector<EventHandlerHandle> m_eventHandlerHandles;
    std::vector<TriggerHandle> m_triggerHandles;
+   int m_nextTriggerId;
    ReentryResult m_lastReentry;
 
 public:
@@ -83,7 +86,9 @@ public:
    //void setSceneActor(SceneActor* sceneActor);
    SceneActor* getSceneActor(void);
    void registerHandlerHandle(oxygine::Actor* actor, int eventId);
-   void registerTriggerHandle(CompoundObject* object, int propertyId, int eventId);
+   int newTriggerId(void);
+   void registerTriggerHandle(CompoundObject* object, int propertyId, int triggerId);
+   void unregisterTrigger(int triggerId);
    void clearAllTriggersAndEvents(void);
 
    void setLastReentry(const ReentryResult& result);
