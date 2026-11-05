@@ -102,7 +102,7 @@ local function playBrunoCall()
 end
 
 local function playEdithCutsIn()
-   c_addDialogMessage("I agree, you need that job", "Edith", true, 0, 0)
+   c_addDialogMessage("I agree, you need that job.", "Edith", true, 0, 0)
    c_addDialogMessage("What!? Who is this?", "Leapfrog", false, 60, 0)
    c_addDialogMessage("Nobody.", "Edith", true, 90, 0)
    c_addDialogMessage("This signal... it's coming from... you are in my home!", "Leapfrog", false, 90, 0)

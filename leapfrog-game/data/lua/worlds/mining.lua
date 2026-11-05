@@ -311,9 +311,11 @@ mining.setupScene = function()
 
    -- The strippers come whenever the Leapfrog is in space, unless the
    -- running mission has its own plans for them (mission 1's raid)
-   -- Strippers disabled for now, to test the bad mine and the shield power unit without them interfering
-   -- if currentSceneType == 1 and missionHolds("swarm") then
-   if currentSceneType == 1  then
+
+   -- To disable swarm of strippers, comment out the following line
+   -- if currentSceneType == 1  then
+
+   if currentSceneType == 1 and missionHolds("swarm") then
       bouncedBack = false
       swarmTimer = -1
    elseif currentSceneType == 1 then

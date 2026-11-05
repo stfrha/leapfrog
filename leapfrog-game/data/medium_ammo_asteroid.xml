@@ -4,7 +4,7 @@
    <behaviour
       type="breakableObject">
       <breakableObjectProperties
-         breakBulletDamage="6"
+         breakBulletDamage="2"
          numberOfSpawns="3">
          <spawnObject
             probabilityFactor="32" >

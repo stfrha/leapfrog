@@ -158,6 +158,13 @@ end
 -- The strippers come
 local function startRaid()
    currentState = State.raided
+
+   -- We want to start a property trigger for when ammo is down by 50%
+   -- to trigger a Edith dialog message.
+   tempAmmo = c_getObjectProperty("leapfrog1", 5)
+   c_registerPropertyTrigger("leapfrog1", 0, 5, "insideRange", 0, tempAmmo/2)
+   listen("leapfrog1", "OpTr")
+
    c_addDialogMessage("That's our stash you're grabbing, pilot.", "Raiders", true, 20, 0)
    c_addDialogMessage("We'll be taking it back. All of it.", "Raiders", true, 120, 0)
    c_addDialogMessage("Something's coming. From everywhere!", "Edith", true, 120, 0)
@@ -194,7 +201,6 @@ local function homeWithNothing()
    end
    c_addDialogMessage("A note on the console: \"Drained the old pump into your tank. You're welcome. Nobody.\"", "Silo", true, 150, 0)
 
-   c_addDialogMessage("Did Bruno know whose stash that was?", "Leapfrog", false, 240, 0)
    c_hudLog("Mission complete")
 
    -- No next job yet
@@ -225,11 +231,11 @@ end
 
 local function waitingForLaunch()
    c_addDialogMessage("Yeay! We are going to space", "Edith", true, 120, 0)
-   c_addDialogMessage("You sound young. How old are you?", "Leapfrog", false, 90, 0)
+   c_addDialogMessage("Yeay? How old are you?", "Leapfrog", false, 90, 0)
    c_addDialogMessage("Nineteen", "Edith", true, 90, 0)
    c_addDialogMessage("Thirteen", "Edith", true, 150, 0)
    c_addDialogMessage("Well you stay away from my stuff.", "Leapfrog", false, 90, 0)
-   c_addDialogMessage("Brace for launch now", "Edith", true, 60, 0)
+   c_addDialogMessage("Brace for launch now!", "Edith", true, 60, 0)
 end
 
 local function askAgain()
@@ -309,6 +315,10 @@ mission2.setupMissionStateScene = function()
 
       if currentState == State.stripped then
          c_addDialogMessage("That went badly, huh?", "Edith", true, 120, 0)
+         c_addDialogMessage("I am of worse than from the start.", "Leapfrog", false, 90, 0)
+         c_addDialogMessage("Do you think Bruno knew those things would come?", "Edith", true, 90, 0)
+         c_addDialogMessage("I don't know.", "Leapfrog", false, 90, 0)
+         c_addDialogMessage("It wasn't his stash, that's for sure.", "Leapfrog", false, 120, 0)
       end
 
    elseif currentScene == "landing_scene.xml" then
@@ -476,6 +486,10 @@ mission2.missionStateSceneEventHandler = function(eventId, actorName, parameter1
             startRaid()
          end
       end
+
+      if eventId == "OpTr" and actorName == "leapfrog1" then
+         c_addDialogMessage("Oh. It looks as they only steal thier stuff back. Perhaps you should just let them.", "Edith", true, 0, 0)
+      end   
 
    elseif currentScene == "landing_scene.xml" then
 
