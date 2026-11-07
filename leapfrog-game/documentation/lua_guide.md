@@ -137,7 +137,7 @@ A mission file returns a table with `firstState`,
 `setupMissionStateScene` and `missionStateSceneEventHandler`. It may also have
 `reentryOutcome`, see section 4.
 
-Missions have names, not numbers: `"beacons"`, `"package"`, `"stash"`. The
+Missions have names, not numbers: `"beacons"`, `"package"`, `"stash"`, `"halfway"`. The
 order of the story is in the missions themselves, each starting the next by name
 when it ends (step 6), so reordering touches only those calls. Three places make a
 mission known to the game:
@@ -158,6 +158,7 @@ mission known to the game:
       beacons = require('mission_beacons'),
       package = require('mission_package'),
       stash   = require('mission_stash'),
+      halfway = require('mission_halfway'),
    }
    ```
 
@@ -380,8 +381,8 @@ and two missions' state numbers overlap. It also takes back the old mission's un
 questions, while a world's stay. The save at the next scene exit stores the new
 mission.
 
-Use `lua_startMission(freePlay)` for free play. The mission `"stash"` ends with that
-for now, since the next one (`"halfway"`) isn't written yet. The game saves the name,
+Use `lua_startMission(freePlay)` for free play. The mission `"halfway"` ends with that
+for now, since the next one (`"badMine"`) isn't written yet. The game saves the name,
 and saves from before missions had names (a number) are read as their names.
 
 ## 3. Events and triggers
@@ -674,11 +675,10 @@ A mission may also have four optional functions:
 - `space()`, which names the space scene the mission flies to, also in section 4.
 - `arrivalPad(scene)`, which names the pad a re-entry ends on, also in section 4.
 - `holds(what)`, which tells the world to leave something to the mission. `what` is
-  `"swarm"`, `"landingSites"`, `"station"` (the docking station as it first is: no
-  bad mine handover, no shield power unit) or `"enemies"` (the world takes the
-  enemies in the scene file out, `mining.spaceEnemies`, with `c_removeObject`). The
-  stash mission uses two to keep the world's strippers away during the hunt, and to
-  have only home on the planet; the package mission holds all four for a calm trip:
+  `"swarm"`, `"landingSites"` or `"enemies"` (the world takes the enemies in the
+  scene file out, `mining.spaceEnemies`, with `c_removeObject`). The stash mission
+  uses two to keep the world's strippers away during the hunt, and to have only home
+  on the planet; the package and halfway missions hold all three:
 
 <!-- verbatim: data/lua/mission_stash.lua -->
 ```lua
@@ -846,8 +846,8 @@ it belongs in setup.
 2. Hand it over with `c_giveItem("stationPass")`. The HUD log says so, and the save
    keeps it.
 3. Check it with `c_hasItem`. To see whether it was ever given or was taken away,
-   use `c_itemState`, which is how `mining.lua` hands the bad mine solution over
-   only once.
+   use `c_itemState`, which is how `mining.giveBadMineSolution` hands the bad mine
+   solution over only once.
 
 Nothing in the game enforces an item yet. Pads, stations and hyperspace don't check
 passes or routes, so any effect has to come from a script.
@@ -906,6 +906,23 @@ end)
 
 To add one, require the module at the top of the script, as above. Rates and limits
 are in `stripper_swarm.xml`, and `swarm.set` changes them during play.
+
+### Hold a station, and take it back
+
+A docking station's shield is its property 5: 0 off, 1 friendly (as it starts), 2
+hostile. A hostile shield is red, keeps the Leapfrog and its bullets out, lets
+strippers in, and the station docks nothing. `mission_halfway.lua` uses all three:
+hostile while the Baxters hold the station, off when its power unit is shot off
+(`mining.addShieldPower()` welds the unit to the boom, outside the bubble; it sends
+`BrBR` when it breaks), then friendly once the hack is done:
+
+```lua
+c_setObjectProperty("dockingStation1", 5, 2)   -- held: red, keeps him out
+```
+
+The hack is docking (`DsDk`) and staying docked while a timer runs; `DsUd` before
+it's done loses it. `mining.giveBadMineSolution()` gives the bad mine's solution
+once (the one handing it over says so).
 
 ### Show the Baxters' ship in the background
 
@@ -1310,6 +1327,7 @@ read-only. Values are floats, so use `math.floor` before showing credits.
 | Docking station | 0 | State: 0 ready, 1 capturing, 2 docked, 3 undocking, 4 refused. Read-only. |
 | | 1 | 1 while docked. Read-only. |
 | | 2, 3, 4 | As for a landing pad |
+| | 5 | Shield: 0 off, 1 friendly, 2 hostile (held by someone else: keeps the Leapfrog and its bullets out, lets strippers in, nothing docks; red) |
 | Leapfrog | 0 | Mode: 0 reset, 1 deep space, 2 landing, 3 orbit, 4 re-entry |
 | | 1 | Environment: 0 deep space, 1 ground, 2 orbit, 3 launch |
 | | 2, 3, 4 | State, x and y. Read-only. |

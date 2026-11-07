@@ -166,10 +166,10 @@ end
 
 -- ------------------------------------------------------------------------
 -- The docking station in the big space, Halfway, and its station master
--- (generous and warm; the station is everybody's). A mission that holds
--- "station" has it as it is before anything happens to it: no bad mine
--- handover and no shield power unit (both are here for now, until the
--- mission "halfway" takes them over).
+-- (generous and warm; the station is everybody's). The world leaves it as
+-- it is; the mission "halfway" has the Baxters hold it, adds the shield
+-- power unit (mining.addShieldPower) and has the station master hand over
+-- the bad mine's solution (mining.giveBadMineSolution).
 
 local Station = {
    object = "dockingStation1",
@@ -196,11 +196,10 @@ end
 
 -- ------------------------------------------------------------------------
 -- The bad mine: a hidden landing site (badMine in
--- mining_planet_surface.xml, hidden="true"). The docking station in deep
--- space hands over its re-entry solution (the key item badMineSolution)
--- the first time the Leapfrog docks; from then on the orbit shows the
--- site. A demonstration of key items and hidden sites, in every mission
--- and in free play.
+-- mining_planet_surface.xml, hidden="true"). Its re-entry solution (the
+-- key item badMineSolution) is handed over by the station master when the
+-- station is taken back (mission "halfway"); from then on the orbit shows
+-- the site.
 
 local BadMine = {
    site = "badMine",
@@ -212,16 +211,14 @@ mining.BadMine = BadMine
 -- The site that isn't home (mining_planet_surface.xml)
 local OtherSite = "goldMine"
 
-local function dockedAtStation()
-   -- Once: not again while held, and not if it was taken away
+-- Once: not again while held, and not if it was taken away. The one who
+-- hands it over says so; this only gives it. True if it was given.
+mining.giveBadMineSolution = function()
    if c_itemState(BadMine.solution) ~= "unknown" then
-      return
+      return false
    end
-
-   c_addDialogMessage("Welcome aboard. A prospector left this with us before he went quiet: "
-      .. "a re-entry solution for an old mine nobody works any more.", "Station", true, 30, 0)
-   c_addDialogMessage("Take it. Watch yourself down there.", "Station", true, 90, 0)
    c_giveItem(BadMine.solution)
+   return true
 end
 
 
@@ -290,7 +287,7 @@ end
 -- ------------------------------------------------------------------------
 -- The shield power unit on the end of the station's boom, just outside the
 -- station's shield (shield_power.xml, powerBoom in docking_station.xml).
--- In the big space all the time for now, to try it; mission 3 will decide.
+-- The mission "halfway" adds it while the Baxters hold the station.
 
 local ShieldPower = {
    object = "shieldPower1",
@@ -302,7 +299,7 @@ local ShieldPower = {
 }
 mining.ShieldPower = ShieldPower
 
-local function addShieldPower()
+mining.addShieldPower = function()
    local p = ShieldPower
    if c_objectExists(p.object) then
       return
@@ -376,11 +373,6 @@ mining.setupScene = function()
       end
    end
 
-   if currentScene == Station.scene and not missionHolds("station") then
-      listen(BadMine.station, "DsDk")
-      addShieldPower()
-   end
-
    baxterArriveTimer = -1
    baxterLeaveTimer = -1
    if currentScene == "deep_space_scene.xml" and currentMission == freePlay then
@@ -435,12 +427,6 @@ mining.eventHandler = function(eventId, actorName, parameter1)
    -- Nothing launches until a script says so (property 1)
    if eventId == "LsLL" then
       c_setObjectProperty(actorName, 1, 0)
-   end
-
-   if currentScene == Station.scene and not missionHolds("station") then
-      if actorName == BadMine.station and eventId == "DsDk" then
-         dockedAtStation()
-      end
    end
 
    -- Answers to c_askQuestion come as QsYs / QsNo, with the question id

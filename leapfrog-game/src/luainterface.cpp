@@ -1312,6 +1312,7 @@ void LuaInterface::initLuaInterface(void)
    preloadModule("lua/mission_beacons.lua", "mission_beacons");
    preloadModule("lua/mission_package.lua", "mission_package");
    preloadModule("lua/mission_stash.lua", "mission_stash");
+   preloadModule("lua/mission_halfway.lua", "mission_halfway");
    preloadModule("lua/test_starts.lua", "test_starts");
 
    //result = lua_pcall(m_L, 0, 0, 0);

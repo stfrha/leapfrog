@@ -29,6 +29,7 @@ local missions = {
    beacons = require('mission_beacons'),
    package = require('mission_package'),
    stash   = require('mission_stash'),
+   halfway = require('mission_halfway'),
 }
 
 -- True if name is a mission (not free play, not unknown)
@@ -137,9 +138,8 @@ end
 -- missionHolds(what): true if the running mission takes over something the
 -- world script would otherwise do in this scene, so the world leaves it
 -- alone. what: "swarm" (the world's stripper swarm in deep space),
--- "landingSites" (the world's other landing sites in orbit), "station"
--- (the docking station as it first is: the world's bad mine handover and
--- shield power unit stay away), "enemies" (the world takes the enemies out
+-- "landingSites" (the world's other landing sites in orbit), "enemies"
+-- (the world takes the enemies out
 -- of the scene file's space, mining.spaceEnemies). A mission answers with an
 -- optional holds(what) function.
 function missionHolds(what)

@@ -4,6 +4,7 @@ local mission = {}
 
 local swarm = require('swarm')
 local baxterShip = require('baxterShip')
+local mining = require('mining')
 
 -- Mission "stash": the stolen stash. The mission "package" hands over to it
 -- on the village pad, where Bruno, with what was in the package, offers the job.
@@ -206,8 +207,10 @@ local function startRaid()
    ammoTrigger = c_registerPropertyTrigger("leapfrog1", ammoProperty, "insideRange", 0, halfAmmo)
    listen("leapfrog1", "OpTr")
 
-   -- The Baxters' homestead comes in behind the strippers
+   -- The Baxters' homestead comes in behind the strippers. From now on
+   -- they are about in space (until the mission "halfway" sees them off)
    baxterShip.arrive()
+   mining.setBaxtersInSpace(true)
 
    c_addDialogMessage("That's our stash you're grabbing, pilot.", "Raiders", true, 20, 0)
    c_addDialogMessage("We'll be taking it back. All of it.", "Raiders", true, 120, 0)
@@ -250,8 +253,8 @@ local function homeWithNothing()
 
    c_hudLog("Mission complete")
 
-   -- Next: the station (mission "halfway", not written yet). Free play until then.
-   lua_startMission(freePlay)
+   -- Next: the station. Bruno calls about it at once.
+   lua_startMission("halfway")
 end
 
 

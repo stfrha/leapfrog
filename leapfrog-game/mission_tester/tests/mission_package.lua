@@ -162,7 +162,7 @@ test("package: the trip is saved: continuing after the docking still has the pac
    t:expectState(m.State.carrying)
 end)
 
-test("package: after it, the world's station is back (free play docking gives the bad mine)", function(t)
+test("package: after it, the world's space is back; the station gives nothing (halfway does)", function(t)
    home(t)
    t:land("villagePad")
    t.engine:callLua("lua_startMission", "freePlay")
@@ -170,6 +170,7 @@ test("package: after it, the world's station is back (free play docking gives th
    t:launch("launchSite1")
    t:expectScene("deep_space_scene.xml")
    t:expect(t.engine:getObject("hammer1") ~= nil, "the enemies are back")
+   t:expect(t.engine:getObject("shieldPower1") == nil, "no shield power unit")
    t:event(station, "DsDk")
-   t:expectItem("badMineSolution", "held")
+   t:expectItem("badMineSolution", "unknown")
 end)

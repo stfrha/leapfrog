@@ -4,6 +4,7 @@ return {
    "mission_beacons.lua",
    "mission_package.lua",
    "mission_stash.lua",
+   "mission_halfway.lua",
    "mining_repair.lua",
    "test_mission.lua",
    "saving.lua",

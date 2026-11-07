@@ -22,6 +22,7 @@
 local S = require('mission_stash').State
 local B = require('mission_beacons').State
 local P = require('mission_package').State
+local H = require('mission_halfway').State
 
 local testStarts = {}
 
@@ -43,6 +44,8 @@ testStarts.list = {
    { label = "Space, to the station", scene = "deep_space_scene.xml", sceneType = 1, mission = "package", state = P.toStation, from = From.launch },
    { label = "Home, stash offered",  scene = "home_scene.xml",       sceneType = 0, mission = "stash", state = S.offered },
    { label = "Belt, hunting stash",  scene = "debris_belt_scene.xml", sceneType = 1, mission = "stash", state = S.hunting, from = From.launch },
+   { label = "Home, halfway offered", scene = "home_scene.xml",       sceneType = 0, mission = "halfway", state = H.offered },
+   { label = "Space, station held",  scene = "deep_space_scene.xml", sceneType = 1, mission = "halfway", state = H.toStation, from = From.launch },
    { label = "Beacons, job offered", scene = "home_scene.xml",       sceneType = 0, mission = "beacons", state = B.offered },
 }
 

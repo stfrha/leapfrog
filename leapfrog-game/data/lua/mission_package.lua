@@ -61,11 +61,10 @@ local function inSpaceTrip(state)
    return state == State.toStation or state == State.carrying
 end
 
--- mission_script.lua's missionHolds: the station is the mission's, as it is
--- before anything happens to it (no bad mine handover, no power unit), and
--- nothing hunts the Leapfrog in space; the planet's other sites wait.
+-- mission_script.lua's missionHolds: nothing hunts the Leapfrog in space;
+-- the planet's other sites wait.
 mission.holds = function(what)
-   if what == "station" or what == "enemies" or what == "swarm" then
+   if what == "enemies" or what == "swarm" then
       return currentState ~= State.done
    end
    if what == "landingSites" then

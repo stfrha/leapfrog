@@ -1,5 +1,6 @@
 -- The shield power unit on the station's boom (lua/worlds/mining.lua,
--- data/docking_station.xml)
+-- data/docking_station.xml), there while the Baxters hold the station
+-- (mission "halfway")
 
 local harness = require("testbench.harness")
 local xml = require("testbench.xml")
@@ -44,11 +45,24 @@ local function boomPosition()
    return sx + tonumber(boom.posX), sy + tonumber(boom.posY)
 end
 
+-- The big space with the station held (the test start "Space, station held")
 local function toBigSpace(t)
    t:newGame()
-   t:menuTestStart(2)                      -- the big space, launched
+   for i, label in ipairs(t:testStarts()) do
+      if label == "Space, station held" then
+         t:menuTestStart(i)
+      end
+   end
    t:expectScene("deep_space_scene.xml")
+   t:expectMission("halfway")
 end
+
+test("shield power: not there unless a mission puts it there", function(t)
+   t:newGame()
+   t:menuTestStart(2)                      -- the big space, the old test mission
+   t:expectScene("deep_space_scene.xml")
+   t:expect(t.engine:getObject(t:module("mining").ShieldPower.object) == nil, "no unit")
+end)
 
 test("shield power: in the big space, welded to the station's boom", function(t)
    toBigSpace(t)

@@ -1,7 +1,7 @@
 -- The bad mine (lua/worlds/mining.lua): a hidden landing site whose
--- re-entry solution (key item badMineSolution) the docking station in deep
--- space hands over the first time the Leapfrog docks; then the orbit shows
--- the site. (Needs <landingSite name="badMine" hidden="true"> in
+-- re-entry solution (key item badMineSolution) the station master hands
+-- over when the station is taken back (mission "halfway",
+-- mining.giveBadMineSolution); then the orbit shows the site. (Needs <landingSite name="badMine" hidden="true"> in
 -- mining_planet_surface.xml.)
 
 -- The big space, where the station is
@@ -12,8 +12,9 @@ local function toDeepSpace(t)
    t:clearDialog()
 end
 
-local function dock(t)
-   t:event("dockingStation1", "DsDk", 0)
+-- The handover (what halfway does once the station is his)
+local function handOver(t)
+   return t:module("mining").giveBadMineSolution()
 end
 
 -- The index of a landing site of the orbit scene (file order, from 0)
@@ -26,16 +27,19 @@ local function siteIndex(t, name)
    t:fail("the orbit scene has no landing site " .. name)
 end
 
-test("bad mine: docking at the station hands over its solution, once", function(t)
+test("bad mine: the handover gives its solution, once", function(t)
    toDeepSpace(t)
    t:expectItem("badMineSolution", "unknown")
-   dock(t)
-   t:expectDialog("re-entry solution for an old mine", "Station")
+   t:expect(handOver(t), "given")
    t:expectItem("badMineSolution", "held")
    t:expectHud("Landing solution received: Bad Mine solution")
-   t:clearDialog()
-   dock(t)
-   t:expectNoDialog("re-entry solution")
+   t:expect(not handOver(t), "not again")
+end)
+
+test("bad mine: docking at the station gives nothing by itself", function(t)
+   toDeepSpace(t)
+   t:event("dockingStation1", "DsDk", 0)
+   t:expectItem("badMineSolution", "unknown")
 end)
 
 test("bad mine: hidden in orbit without the solution", function(t)
@@ -48,7 +52,7 @@ end)
 
 test("bad mine: shown in orbit with the solution; coming down there leads to its scene", function(t)
    toDeepSpace(t)
-   dock(t)
+   handOver(t)
    t:exitScene(1, 3)
    t:expectScene("orbit_scene.xml")
    t:expectLandingSiteShown("badMine", true)
@@ -59,7 +63,7 @@ end)
 
 test("bad mine: the solution is kept after saving and continuing", function(t)
    toDeepSpace(t)
-   dock(t)
+   handOver(t)
    t:exitScene(1, 3)
    t:restartGame()
    t:expectScene("orbit_scene.xml")
@@ -69,11 +73,9 @@ end)
 
 test("bad mine: a revoked solution hides the site and isn't handed over again", function(t)
    toDeepSpace(t)
-   dock(t)
+   handOver(t)
    t:revokeItem("badMineSolution")
-   t:clearDialog()
-   dock(t)
-   t:expectNoDialog("re-entry solution")
+   t:expect(not handOver(t), "not handed over again")
    t:expectItem("badMineSolution", "revoked")
    t:exitScene(1, 3)
    t:expectLandingSiteShown("badMine", false)

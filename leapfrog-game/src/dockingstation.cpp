@@ -67,6 +67,7 @@ DockingStation::DockingStation(
    m_armTarget(0.0f),
    m_armMoving(false),
    m_shieldOn(true),
+   m_shieldMode(shieldFriendly),
    m_shieldCentre(13.0f, -1.0f),
    m_shieldFlash(0.0f)
 {
@@ -112,6 +113,7 @@ DockingStation::DockingStation(
    m_dockedVisibleWidth = props.attribute("visibleWidth").as_float(160.0f);
 
    m_shieldOn = props.attribute("shield").as_bool(true);
+   m_shieldMode = m_shieldOn ? shieldFriendly : shieldOff;
    m_shieldCentre.Set(props.attribute("shieldX").as_float(13.0f), props.attribute("shieldY").as_float(-1.0f));
    m_shieldRadius = props.attribute("shieldRadius").as_float(38.0f);
    m_shieldEdge = props.attribute("shieldEdge").as_float(5.0f);
@@ -161,14 +163,16 @@ DockingStation::DockingStation(
    m_properties.push_back(ObjectProperty(this, NULL, propActive, m_active ? 1.0f : 0.0f));
    m_properties.push_back(ObjectProperty(this, NULL, propFuelSupply, m_fuel.m_supply));
    m_properties.push_back(ObjectProperty(this, NULL, propFuelService, (float)m_fuel.m_service));
+   m_properties.push_back(ObjectProperty(this, NULL, propShield, (float)m_shieldMode));
 
    // As for a landing pad: the CompoundObject's parent is m_parentObject
    setUserData(NULL);
    attachTo(sceneParent);
 
    // The station shield's bubble (station_shield: a bright rim, the inside
-   // nearly clear), over the station
-   if (m_shieldOn && (m_base != NULL))
+   // nearly clear), over the station. Made also when the shield starts off,
+   // so Lua can turn it on (hidden while off).
+   if (m_base != NULL)
    {
       m_shieldSprite = new Sprite();
       m_shieldSprite->setResAnim(g_GraphRes.getResAnim("station_shield"));
@@ -180,6 +184,7 @@ DockingStation::DockingStation(
       m_shieldSprite->setPriority(props.attribute("shieldZLevel").as_int(126));
       m_shieldSprite->setPosition(PhysDispConvert::convert(m_base->GetWorldPoint(m_shieldCentre), 1.0f));
       m_shieldSprite->attachTo(sceneParent);
+      m_shieldSprite->setVisible(m_shieldOn);
    }
 
    if (m_shapes.size() > 0)
@@ -518,9 +523,51 @@ namespace
    };
 }
 
-// Pushes enemies, asteroids and mines out of the station's bubble, stops
-// bullets other than the Leapfrog's and shakes latched strippers off. The
-// Leapfrog itself (and its shield, legs, pickups, particles) flies through.
+bool DockingStation::isLeapfrogPart(CollisionEntity::CollisionEntityTypeEnum entity)
+{
+   return (entity == CollisionEntity::leapfrog) ||
+      (entity == CollisionEntity::lfBigLeg) ||
+      (entity == CollisionEntity::lfSmallLeg) ||
+      (entity == CollisionEntity::lfBooster) ||
+      (entity == CollisionEntity::lfLeftFoot) ||
+      (entity == CollisionEntity::lfRightFoot) ||
+      (entity == CollisionEntity::lfSteerBooster);
+}
+
+void DockingStation::setShieldMode(int mode)
+{
+   if ((mode < shieldOff) || (mode > shieldHostile))
+   {
+      mode = shieldFriendly;
+   }
+
+   m_shieldMode = mode;
+   m_shieldOn = (mode != shieldOff);
+   m_shieldFlash = m_shieldOn ? 1.0f : 0.0f;
+
+   if (m_shieldSprite)
+   {
+      m_shieldSprite->setVisible(m_shieldOn);
+      if (mode == shieldHostile)
+      {
+         m_shieldSprite->setColor(Color(255, 90, 80, 255));
+      }
+      else
+      {
+         m_shieldSprite->setColor(Color(120, 200, 255, 255));
+      }
+   }
+
+   logs::messageln("Docking station %s: shield %s", getName().c_str(),
+      mode == shieldOff ? "off" : (mode == shieldHostile ? "hostile" : "friendly"));
+}
+
+// Friendly: pushes enemies, asteroids and mines out of the station's
+// bubble, stops bullets other than the Leapfrog's and shakes latched
+// strippers off. The Leapfrog itself (and its shield, legs, pickups,
+// particles) flies through.
+// Hostile: pushes the Leapfrog's parts (and rocks) out, stops the
+// Leapfrog's bullets, lets strippers and other bullets through.
 // Forces only, and none back on the station: what is pushed out can't push
 // the station.
 void DockingStation::updateShield(float dt)
@@ -529,6 +576,8 @@ void DockingStation::updateShield(float dt)
    {
       return;
    }
+
+   bool hostile = (m_shieldMode == shieldHostile);
 
    b2Vec2 centre = m_base->GetWorldPoint(m_shieldCentre);
    b2Vec2 centreVel = m_base->GetLinearVelocityFromWorldPoint(centre);
@@ -569,7 +618,8 @@ void DockingStation::updateShield(float dt)
 
       if (entity == CollisionEntity::bullet)
       {
-         if (fixture->GetFilterData().groupIndex != lfGroup)
+         bool lfBullet = (fixture->GetFilterData().groupIndex == lfGroup);
+         if (lfBullet == hostile)
          {
             Bullet* bullet = (body->GetUserData() != NULL) ?
                BodyUserData::getParentObjectOfType<Bullet*>(body->GetUserData()) : NULL;
@@ -583,12 +633,26 @@ void DockingStation::updateShield(float dt)
          continue;
       }
 
-      bool repel =
-         (entity == CollisionEntity::stripper) ||
-         (entity == CollisionEntity::steerableObject) ||
-         (entity == CollisionEntity::breakableObject) ||
-         (entity == CollisionEntity::destroyableObject) ||
-         (entity == CollisionEntity::explosiveObject);
+      bool repel;
+      if (hostile)
+      {
+         // The Leapfrog is kept out; the holders' strippers and ships are
+         // let in. Rocks still bounce off. (The shield power unit is a
+         // breakable outside the rim, so it isn't touched.)
+         repel =
+            isLeapfrogPart(entity) ||
+            (entity == CollisionEntity::destroyableObject) ||
+            (entity == CollisionEntity::explosiveObject);
+      }
+      else
+      {
+         repel =
+            (entity == CollisionEntity::stripper) ||
+            (entity == CollisionEntity::steerableObject) ||
+            (entity == CollisionEntity::breakableObject) ||
+            (entity == CollisionEntity::destroyableObject) ||
+            (entity == CollisionEntity::explosiveObject);
+      }
 
       if (!repel)
       {
@@ -689,8 +753,10 @@ void DockingStation::doUpdate(const UpdateState& us)
          m_refusalShown = false;
       }
 
-      // Nothing is caught while the arm is on its way back
-      if ((lfBody != NULL) && !m_armMoving && (distance < m_captureRadius))
+      // Nothing is caught while the arm is on its way back, nor while the
+      // station is held by someone else (hostile shield)
+      if ((lfBody != NULL) && !m_armMoving && (m_shieldMode != shieldHostile) &&
+         (distance < m_captureRadius))
       {
          b2Vec2 noseWorld = lfBody->GetWorldPoint(m_nosePoint);
          b2Vec2 relVel = lfBody->GetLinearVelocityFromWorldPoint(noseWorld) -
@@ -835,5 +901,9 @@ void DockingStation::setPropertyImpl(int propId, float value)
    else if (propId == propFuelService)
    {
       m_fuel.setService(value);
+   }
+   else if (propId == propShield)
+   {
+      setShieldMode((int)(value + 0.5f));
    }
 }

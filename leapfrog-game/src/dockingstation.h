@@ -58,6 +58,10 @@ Properties (Lua):
 - 2 active: as for a landing pad: an inactive station still docks, but
   sends no events and gives no fuel
 - 3 fuelSupply, 4 fuelService: as for a landing pad
+- 5 shield: 0 off, 1 friendly (as described above; shield="true" in the
+  file starts it so), 2 hostile: held by someone else. Then it pushes the
+  Leapfrog out instead (and rocks still), stops the Leapfrog's bullets,
+  lets strippers and other bullets through, and nothing docks. Red.
 */
 
 class DockingStationDockedEvent : public oxygine::Event
@@ -83,7 +87,15 @@ public:
       propLfDocked = 1,
       propActive = 2,
       propFuelSupply = 3,
-      propFuelService = 4
+      propFuelService = 4,
+      propShield = 5
+   };
+
+   enum ShieldMode
+   {
+      shieldOff = 0,
+      shieldFriendly = 1,
+      shieldHostile = 2
    };
 
    enum StationState
@@ -149,7 +161,8 @@ private:
    float m_dockedVisibleWidth;   // zoom while docked (0 = no zoom)
 
    // Station shield
-   bool m_shieldOn;
+   bool m_shieldOn;              // not off (friendly or hostile)
+   int m_shieldMode;             // ShieldMode
    b2Vec2 m_shieldCentre;        // on the station body
    float m_shieldRadius;
    float m_shieldEdge;           // depth over which the push rises to full
@@ -171,6 +184,8 @@ private:
    void undock(LeapFrog* lf, bool zoom);
    void refuse(const char* why);
    void updateShield(float dt);
+   void setShieldMode(int mode);
+   static bool isLeapfrogPart(CollisionEntity::CollisionEntityTypeEnum entity);
 
 public:
    DockingStation(
