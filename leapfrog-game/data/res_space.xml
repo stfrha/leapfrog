@@ -24,4 +24,8 @@
 	<atlas>
 		<image file="hammer_interceptor.png" ppu="20" trim="false" extend="false"/>
 	</atlas>
+	<!-- Stripper: robot mantis, 2 frames (arms stabbing in turn). Placeholder until models/sprites/stripper_mantis.py is rendered -->
+	<atlas>
+		<image file="stripper.png" rows="2" ppu="20" trim="false" extend="false"/>
+	</atlas>
 </resources>

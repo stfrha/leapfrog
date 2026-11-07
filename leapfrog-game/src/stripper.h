@@ -136,6 +136,10 @@ private:
    float m_creditsAmount;
    std::string m_latchedShapeName;
    std::string m_flyingShapeName;
+   // Seconds per cycle of mainBody's texture frames while flying / latched
+   // (0: left as it is). E.g. the arms stabbing slowly, then fast.
+   float m_flyingAnimatePeriod = 0.0f;
+   float m_latchedAnimatePeriod = 0.0f;
    std::string m_dropFile;
 
    void readStripperNode(const pugi::xml_node& node);

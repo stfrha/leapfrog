@@ -42,6 +42,8 @@ namespace LeapfrogEditor
       private bool _bounded = false;
       private string _latchedShape = "";
       private string _flyingShape = "";
+      private double _flyingAnimatePeriod = 0;
+      private double _latchedAnimatePeriod = 0;
       private string _dropFile = "";
 
       #endregion
@@ -257,6 +259,32 @@ namespace LeapfrogEditor
       public bool ShouldSerializeFlyingShape()
       {
          return !string.IsNullOrEmpty(FlyingShape);
+      }
+
+      // Seconds per cycle of mainBody's texture frames while flying /
+      // latched (0: left as it is)
+      [XmlAttribute("flyingAnimatePeriod")]
+      public double FlyingAnimatePeriod
+      {
+         get { return _flyingAnimatePeriod; }
+         set { _flyingAnimatePeriod = value; }
+      }
+
+      public bool ShouldSerializeFlyingAnimatePeriod()
+      {
+         return _flyingAnimatePeriod > 0;
+      }
+
+      [XmlAttribute("latchedAnimatePeriod")]
+      public double LatchedAnimatePeriod
+      {
+         get { return _latchedAnimatePeriod; }
+         set { _latchedAnimatePeriod = value; }
+      }
+
+      public bool ShouldSerializeLatchedAnimatePeriod()
+      {
+         return _latchedAnimatePeriod > 0;
       }
 
       [XmlAttribute("dropFile")]

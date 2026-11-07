@@ -154,6 +154,8 @@ void Stripper::readStripperNode(const xml_node& node)
    m_creditsAmount = node.attribute("creditsAmount").as_float(m_creditsAmount);
    m_latchedShapeName = node.attribute("latchedShape").as_string("");
    m_flyingShapeName = node.attribute("flyingShape").as_string("");
+   m_flyingAnimatePeriod = node.attribute("flyingAnimatePeriod").as_float(0.0f);
+   m_latchedAnimatePeriod = node.attribute("latchedAnimatePeriod").as_float(0.0f);
    m_dropFile = node.attribute("dropFile").as_string("");
 
    // What it may take, e.g. steal="fuel ammo credits"
@@ -230,6 +232,12 @@ void Stripper::showStateShapes(void)
    {
       spActor a = getActor(m_flyingShapeName);
       if (a) a->setVisible(m_state != latched);
+   }
+
+   // The body's own texture frames: one pace in flight, another latched
+   if ((m_flyingAnimatePeriod > 0.0f) || (m_latchedAnimatePeriod > 0.0f))
+   {
+      animateShape("mainBody", (m_state == latched) ? m_latchedAnimatePeriod : m_flyingAnimatePeriod, 0);
    }
 }
 

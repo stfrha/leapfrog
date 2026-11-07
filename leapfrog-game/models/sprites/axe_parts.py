@@ -270,3 +270,36 @@ class Blade:
             obs.append(sk.prism("%s_seam_%d" % (self.prefix, k), [self._p(x, z) for x, z in pts],
                                 self.top - 0.01, 0.02, material))
         return obs
+
+
+def lathe_x(name, profile, x0, material, flatten=1.0, z=0.0, segments=32):
+    """A lathe lying along +x from x0 (profile: (radius, distance along x)),
+    squashed towards the camera by flatten (1 = round)."""
+    bm = bmesh.new()
+    sk.lathe(bm, profile, segments, cap_top=True, cap_bottom=True)
+    ob = sk.mesh_object(name, bm, material, smooth_quads=True)
+    ob.location = (x0, 0.0, z)
+    ob.rotation_euler = (0.0, math.pi / 2, 0.0)       # lathe axis (Z) along +x; local y stays y
+    ob.scale = (1.0, flatten, 1.0)
+    return ob
+
+
+def rod(name, points, radius, y, material, segments=10):
+    """A thin bent rod through points (x, z) at height y: legs, antennae."""
+    bm = bmesh.new()
+    for (x0, z0), (x1, z1) in zip(points, points[1:]):
+        sk.strut(bm, (x0, y, z0), (x1, y, z1), radius, segments)
+    return sk.mesh_object(name, bm, material, smooth_quads=True)
+
+
+def emission(name, color, strength):
+    m = bpy.data.materials.new(name)
+    m.use_nodes = True
+    nt = m.node_tree
+    nt.nodes.clear()
+    out = nt.nodes.new("ShaderNodeOutputMaterial")
+    em = nt.nodes.new("ShaderNodeEmission")
+    em.inputs["Color"].default_value = (color[0], color[1], color[2], 1.0)
+    em.inputs["Strength"].default_value = strength
+    nt.links.new(em.outputs["Emission"], out.inputs["Surface"])
+    return m

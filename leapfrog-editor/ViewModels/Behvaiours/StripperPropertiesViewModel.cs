@@ -307,6 +307,26 @@ namespace LeapfrogEditor
          }
       }
 
+      public double FlyingAnimatePeriod
+      {
+         get { return LocalModelObject.FlyingAnimatePeriod; }
+         set
+         {
+            LocalModelObject.FlyingAnimatePeriod = value;
+            OnPropertyChanged("FlyingAnimatePeriod");
+         }
+      }
+
+      public double LatchedAnimatePeriod
+      {
+         get { return LocalModelObject.LatchedAnimatePeriod; }
+         set
+         {
+            LocalModelObject.LatchedAnimatePeriod = value;
+            OnPropertyChanged("LatchedAnimatePeriod");
+         }
+      }
+
       public string DropFile
       {
          get { return LocalModelObject.DropFile; }

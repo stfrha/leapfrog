@@ -36,6 +36,8 @@
       <local:BoolEditorControl Headline="Pushed by Soft Boundaries" MyValue="{Binding Bounded, Mode=TwoWay}" />
       <local:StringEditorControl Headline="Shape Shown When Latched" MyValue="{Binding LatchedShape, Mode=TwoWay}" />
       <local:StringEditorControl Headline="Shape Shown When Flying" MyValue="{Binding FlyingShape, Mode=TwoWay}" />
+      <local:DoubleEditorControl Headline="Body Animation Flying (s)" MyValue="{Binding FlyingAnimatePeriod, Mode=TwoWay}" />
+      <local:DoubleEditorControl Headline="Body Animation Latched (s)" MyValue="{Binding LatchedAnimatePeriod, Mode=TwoWay}" />
       <local:StringEditorControl Headline="Loot Drop File ({loot} = kind)" MyValue="{Binding DropFile, Mode=TwoWay}" />
    </StackPanel>
 </UserControl>
