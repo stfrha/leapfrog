@@ -22,6 +22,7 @@ namespace LeapfrogEditor
       private double _maxSpeed;
       private double _degPerSecMaxRotateSpeed;
       private double _linearDamping;
+      private double _armour;
 
       #endregion
 
@@ -38,6 +39,7 @@ namespace LeapfrogEditor
          _maxSpeed = 0;
          _degPerSecMaxRotateSpeed = 0;
          _linearDamping = 0;
+         _armour = 100;
    }
 
       #endregion
@@ -105,6 +107,20 @@ namespace LeapfrogEditor
       {
          get { return _linearDamping; }
          set { _linearDamping = value; }
+      }
+
+      // Damage it takes before it's destroyed (a bullet hit is 25); written
+      // only when not the default 100
+      [XmlAttribute("armour")]
+      public double Armour
+      {
+         get { return _armour; }
+         set { _armour = value; }
+      }
+
+      public bool ShouldSerializeArmour()
+      {
+         return _armour != 100;
       }
 
       #endregion

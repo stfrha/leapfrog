@@ -20,4 +20,8 @@
 	<atlas>
 		<image file="graffiti_bxtr.png" trim="false" extend="false"/>
 	</atlas>
+	<!-- Military interceptor (placeholder until models/sprites/hammer_interceptor.py is rendered) -->
+	<atlas>
+		<image file="hammer_interceptor.png" ppu="20" trim="false" extend="false"/>
+	</atlas>
 </resources>

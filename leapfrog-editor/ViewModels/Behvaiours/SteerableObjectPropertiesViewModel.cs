@@ -130,6 +130,16 @@ namespace LeapfrogEditor
          }
       }
 
+      public double Armour
+      {
+         get { return LocalModelObject.Armour; }
+         set
+         {
+            LocalModelObject.Armour = value;
+            OnPropertyChanged("Armour");
+         }
+      }
+
       #endregion
 
       #region private Methods

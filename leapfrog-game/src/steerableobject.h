@@ -81,6 +81,7 @@ private:
    float m_maxSpeed;
    float m_maxRotateSpeed;
    float m_linearDamping;
+   float m_armour;            // destroyed when its damage exceeds this (a bullet hit is 25)
 
    float m_boosterScale;
 

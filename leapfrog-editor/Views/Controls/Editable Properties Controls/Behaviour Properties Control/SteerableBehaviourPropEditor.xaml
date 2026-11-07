@@ -16,5 +16,6 @@
       <local:DoubleEditorControl Headline="Max Speed" MyValue="{Binding MaxSpeed, Mode=TwoWay}" />
       <local:DoubleEditorControl Headline="Max Rot. Speed" MyValue="{Binding DegPerSecMaxRotateSpeed, Mode=TwoWay}" />
       <local:DoubleEditorControl Headline="Linear Damping" MyValue="{Binding LinearDamping, Mode=TwoWay}" />
+      <local:DoubleEditorControl Headline="Armour" MyValue="{Binding Armour, Mode=TwoWay}" />
    </StackPanel>
 </UserControl>

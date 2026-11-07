@@ -28,6 +28,7 @@ SteerableObject::SteerableObject(
    m_maxSpeed(0.0f),
    m_maxRotateSpeed(0.0f),
    m_linearDamping(1.0f),
+   m_armour(100.0f),
    m_boosterScale(0.0f),
    m_slowTurningAfterHit(false),
    m_aimState(noAim),
@@ -99,6 +100,10 @@ void SteerableObject::readSteerableObjectNode(pugi::xml_node node)
    m_maxSpeed = node.attribute("maxSpeed").as_float(0.0f);
    m_maxRotateSpeed = node.attribute("degPerSecMaxRotateSpeed").as_float(0.0f) / 180.0f * MATH_PI;
    m_linearDamping = node.attribute("linearDamping").as_float(0.0f);
+
+   // armour: damage it takes before it's destroyed (default 100: a bullet
+   // hit is 25, so the fifth hit)
+   m_armour = node.attribute("armour").as_float(100.0f);
 }
 
 void SteerableObject::connectToForeignObjects(void)
@@ -549,7 +554,7 @@ void SteerableObject::evaluateDamage(void)
 {
    if (m_resources)
    {
-      if (m_resources->getDamage() > 100.0f)
+      if (m_resources->getDamage() > m_armour)
       {
          addMeToDeathList();
          g_HeadDownDisplay->removeMeFromMap(getActor("mainBody"));
