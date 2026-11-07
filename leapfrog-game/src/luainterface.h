@@ -40,7 +40,7 @@ struct TestStart
 {
    std::string m_scene;
    int m_sceneType = 0;
-   int m_mission = 0;
+   std::string m_mission;          // the mission's name
    int m_state = 0;
    std::string m_exitScene;
    int m_exitType = -1;

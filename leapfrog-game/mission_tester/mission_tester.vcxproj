@@ -94,7 +94,7 @@
     <None Include="testbench\xml.lua" />
     <None Include="tests\test_list.lua" />
     <None Include="tests\scripts.lua" />
-    <None Include="tests\mission2_stash.lua" />
+    <None Include="tests\mission_stash.lua" />
     <None Include="tests\mining_repair.lua" />
     <None Include="tests\test_mission.lua" />
     <None Include="tests\saving.lua" />
@@ -105,7 +105,8 @@
     <None Include="tests\landing_sites.lua" />
     <None Include="tests\key_items.lua" />
     <None Include="tests\bad_mine.lua" />
-    <None Include="tests\mission1_beacons.lua" />
+    <None Include="tests\mission_beacons.lua" />
+    <None Include="tests\mission_package.lua" />
     <None Include="tests\shield_power.lua" />
     <None Include="tests\property_triggers.lua" />
     <None Include="tests\saved_values.lua" />

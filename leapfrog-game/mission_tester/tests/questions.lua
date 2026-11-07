@@ -13,7 +13,7 @@ test("questions: asking one that is open or queued again adds nothing", function
    t:askQuestion(Q_TEST)
    t:land("siloLandingPad")
    -- Bruno's offer first (asked first), then this one, once
-   t:answer(t:mission(1).Question.takeJob, false)
+   t:answer(t:mission("beacons").Question.takeJob, false)
    t:expectQuestion(Q_TEST)
    t:askQuestion(Q_TEST)
    t:answer(Q_TEST, true)

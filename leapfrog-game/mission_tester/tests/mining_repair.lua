@@ -4,7 +4,7 @@ local function setup(t, legs, credits)
    t:newGame()
    -- Out of Bruno's opening, so his offer doesn't get in the way
    t:land("siloLandingPad")
-   t:answer(t:mission(1).Question.takeJob, true)
+   t:answer(t:mission("beacons").Question.takeJob, true)
    t:takeOff()
    t:damageLegs(legs)
    t:setProperty("leapfrog1", 8, credits)
@@ -66,7 +66,7 @@ end)
 
 test("repair: works in free play (no mission)", function(t)
    setup(t, 0, 70)
-   t:setGlobal("currentMission", 0)
+   t:setGlobal("currentMission", "freePlay")
    t:setupScene()
    t:expectListening("siloLandingPad", "LpLL", 1)
    t:land("siloLandingPad")
@@ -75,7 +75,7 @@ end)
 
 test("repair: asked while Bruno's offer is open, it comes after it", function(t)
    t:newGame()
-   local Q1 = t:mission(1).Question
+   local Q1 = t:mission("beacons").Question
    local QM = t:module("mining").Question
    -- A crash during Bruno's call, then landing at the silo with credits
    -- for the repair: his question was asked first, so it opens first
@@ -89,7 +89,7 @@ test("repair: asked while Bruno's offer is open, it comes after it", function(t)
    t:expectNoDialog("Full repair")
 
    t:answer(Q1.takeJob, true)
-   t:expectState(t:mission(1).State.firstBeacon)
+   t:expectState(t:mission("beacons").State.firstBeacon)
    t:expectQuestion(QM.repairLegs)
    t:expectDialog("Full repair", "Silo")
    t:answer(QM.repairLegs, true)

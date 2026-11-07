@@ -1,12 +1,13 @@
--- Mission 1: the dark beacons. The worked example in
+-- Mission "beacons": the dark beacons. The worked example in
 -- documentation/lua_guide.md, so keep the guide in step with it (the mission
 -- tester checks that the guide's code is still here).
 --
 -- A new game starts here. Bruno pays the pilot to relight the dead beacons on
 -- the way into town, one at a time: two to the Ore, where he meets Bruno, then
--- the third, past the town. Mission 2 starts on the third beacon's pad.
+-- the third, past the town. The next mission ("package") starts on the third
+-- beacon's pad.
 
-local mission1 = {}
+local mission = {}
 
 local mining = require('mining')
 
@@ -21,16 +22,16 @@ local State = {
    thirdBeacon  = 14,  -- the one past the town
    done         = 15,
 }
-mission1.State = State
+mission.State = State
 
 -- A new game or a test start begins here
-mission1.firstState = State.offered
+mission.firstState = State.offered
 
 -- Question ids (c_askQuestion): missions use 1 to 99
 local Question = {
    takeJob = 2,
 }
-mission1.Question = Question
+mission.Question = Question
 
 -- Each beacon of mining.beacons is lit in the state after its own
 local beaconStates = { State.firstBeacon, State.secondBeacon, State.thirdBeacon }
@@ -44,8 +45,8 @@ local creditsProperty = 8
 
 local payAtOre = 100           -- credits
 local payLastBeacon = 50
-mission1.payAtOre = payAtOre
-mission1.payLastBeacon = payLastBeacon
+mission.payAtOre = payAtOre
+mission.payLastBeacon = payLastBeacon
 
 -- Bruno fills the tank up to this at the Ore: what the game started with
 local startFuel = 30
@@ -132,7 +133,7 @@ end
 -- Called for every new scene, and again by each change of state below.
 -- Triggers and event listeners have been cleared, so everything that is
 -- needed in this state is set up here, from currentState alone.
-mission1.setupMissionStateScene = function()
+mission.setupMissionStateScene = function()
 
    if currentScene ~= "home_scene.xml" then
       return
@@ -237,7 +238,7 @@ local function jobDone()
    c_giveItem(mining.villageSolution)
    c_hudLog("Mission complete: " .. payLastBeacon .. " credits")
    c_addDialogMessage("That's all of them. Here's the rest. Don't spend it all on fuel.", "Bruno", true, 30, 0)
-   lua_startMission(2)
+   lua_startMission("package")
 end
 
 -- The repair is done if the Leapfrog stayed. The next setup lights the lamp
@@ -278,7 +279,7 @@ local function meetBruno()
    enterState(State.thirdBeacon)
 end
 
-mission1.missionStateSceneEventHandler = function(eventId, actorName, parameter1)
+mission.missionStateSceneEventHandler = function(eventId, actorName, parameter1)
 
    if currentScene ~= "home_scene.xml" then
       return
@@ -316,4 +317,4 @@ mission1.missionStateSceneEventHandler = function(eventId, actorName, parameter1
    end
 end
 
-return mission1
+return mission

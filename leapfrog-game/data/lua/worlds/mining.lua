@@ -165,6 +165,36 @@ end
 
 
 -- ------------------------------------------------------------------------
+-- The docking station in the big space, Halfway, and its station master
+-- (generous and warm; the station is everybody's). A mission that holds
+-- "station" has it as it is before anything happens to it: no bad mine
+-- handover and no shield power unit (both are here for now, until the
+-- mission "halfway" takes them over).
+
+local Station = {
+   object = "dockingStation1",
+   mapActor = "stationBase",          -- its square on the map
+   scene = "deep_space_scene.xml",
+}
+mining.Station = Station
+
+-- His name, as sender of his messages (a working name: change it here)
+mining.stationMaster = "Hal"
+
+-- Enemies placed in the big space's scene file. A mission that holds
+-- "enemies" has them taken out at its setup (c_removeObject).
+mining.spaceEnemies = {
+   ["deep_space_scene.xml"] = { "hammer1", "interceptor1", "interceptor2", "mineLayer", "mine1" },
+}
+
+local function removeEnemies()
+   for _, name in ipairs(mining.spaceEnemies[currentScene] or {}) do
+      c_removeObject(name)
+   end
+end
+
+
+-- ------------------------------------------------------------------------
 -- The bad mine: a hidden landing site (badMine in
 -- mining_planet_surface.xml, hidden="true"). The docking station in deep
 -- space hands over its re-entry solution (the key item badMineSolution)
@@ -175,7 +205,7 @@ end
 local BadMine = {
    site = "badMine",
    solution = "badMineSolution",
-   station = "dockingStation1",
+   station = Station.object,
 }
 mining.BadMine = BadMine
 
@@ -290,6 +320,12 @@ mining.setupScene = function()
 
    sayArrival()
 
+   c_setSenderAffiliation(mining.stationMaster, "friendly")
+
+   if missionHolds("enemies") then
+      removeEnemies()
+   end
+
    if currentScene == "home_scene.xml" then
 
       -- Starting at home (a new game, or a saved game without a position):
@@ -340,14 +376,14 @@ mining.setupScene = function()
       end
    end
 
-   if currentScene == "deep_space_scene.xml" then
+   if currentScene == Station.scene and not missionHolds("station") then
       listen(BadMine.station, "DsDk")
       addShieldPower()
    end
 
    baxterArriveTimer = -1
    baxterLeaveTimer = -1
-   if currentScene == "deep_space_scene.xml" and currentMission == 0 then
+   if currentScene == "deep_space_scene.xml" and currentMission == freePlay then
       baxterArriveTimer = c_startSceneTimer(baxterArriveTicks)
    end
 
@@ -401,7 +437,7 @@ mining.eventHandler = function(eventId, actorName, parameter1)
       c_setObjectProperty(actorName, 1, 0)
    end
 
-   if currentScene == "deep_space_scene.xml" then
+   if currentScene == Station.scene and not missionHolds("station") then
       if actorName == BadMine.station and eventId == "DsDk" then
          dockedAtStation()
       end

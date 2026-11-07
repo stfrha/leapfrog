@@ -45,8 +45,21 @@ local baxterShip = {}
 
 baxterShip.shape = "baxterShip"
 
--- Where it parks, in stage units as in the scene file (its centre)
+-- Where it parks, in stage units as in the scene file (its centre), in the
+-- big space
 baxterShip.park = { x = 1000, y = 230 }
+
+-- Where it parks in each scene that has the sprites, and its size there
+-- relative to the big space's (the sprites in that scene file are that much
+-- smaller; the travel and the overlays' offsets scale with it)
+baxterShip.places = {
+   ["deep_space_scene.xml"]  = { x = baxterShip.park.x, y = baxterShip.park.y, size = 1 },
+   ["debris_belt_scene.xml"] = { x = 330, y = 90, size = 0.5 },
+}
+
+local function place()
+   return baxterShip.places[currentScene] or { x = baxterShip.park.x, y = baxterShip.park.y, size = 1 }
+end
 
 -- Where it comes from and goes to, relative to where it parks, and how
 -- small it is there (far away: it grows as it comes closer)
@@ -80,12 +93,13 @@ end
 
 -- Moves the ship and its overlays; the tag shown follows the ship's alpha
 local function move(shape, x, y, scale, alpha, seconds, ease)
+   local size = place().size
    c_moveSprite(shape, x, y, scale, alpha, seconds, ease)
    for overlay, o in pairs(baxterShip.overlays[shape] or {}) do
       local ox, oy = nil, nil
       if x ~= nil then
-         ox = x + o.dx * scale
-         oy = y + o.dy * scale
+         ox = x + o.dx * scale * size
+         oy = y + o.dy * scale * size
       end
       local a = alpha
       if a ~= nil and overlay ~= shownTag then
@@ -99,7 +113,8 @@ function baxterShip.show(shape)
    shape = shape or baxterShip.shape
    coolTimer = -1
    engines(shape, false)
-   move(shape, baxterShip.park.x, baxterShip.park.y, 1, 1, 0)
+   local p = place()
+   move(shape, p.x, p.y, 1, 1, 0)
 end
 
 function baxterShip.hide(shape)
@@ -111,9 +126,9 @@ end
 function baxterShip.arrive(seconds, shape)
    shape = shape or baxterShip.shape
    seconds = seconds or baxterShip.arriveSeconds
-   local p, f = baxterShip.park, baxterShip.from
+   local p, f = place(), baxterShip.from
    engines(shape, true)
-   move(shape, p.x + f.dx, p.y + f.dy, f.scale, 0, 0)
+   move(shape, p.x + f.dx * p.size, p.y + f.dy * p.size, f.scale, 0, 0)
    move(shape, p.x, p.y, 1, 1, seconds, "out")
    coolShape = shape
    coolTimer = c_startSceneTimer(math.floor(seconds * 60) + coolDelayTicks)
@@ -122,10 +137,10 @@ end
 function baxterShip.leave(seconds, shape)
    shape = shape or baxterShip.shape
    seconds = seconds or baxterShip.leaveSeconds
-   local p, t = baxterShip.park, baxterShip.to
+   local p, t = place(), baxterShip.to
    coolTimer = -1
    engines(shape, true)
-   move(shape, p.x + t.dx, p.y + t.dy, t.scale, 0, seconds, "in")
+   move(shape, p.x + t.dx * p.size, p.y + t.dy * p.size, t.scale, 0, seconds, "in")
 end
 
 -- Which tag shows on the doors (an overlay's shape, or nil for none),

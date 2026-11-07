@@ -32,7 +32,7 @@ happens when something occurs.
 | `data/lua/common.lua` | True in every scene: message senders and their colours |
 | `data/lua/swarm.lua`, `data/lua/debt.lua`, `data/lua/baxter_ship.lua` | Shared services: stripper swarms, Bruno's credit, the Baxters' ship in the background |
 | `data/lua/worlds/mining.lua` | One world's pads, services and repeatable jobs, also in free play |
-| `data/lua/mission_1.lua`, `data/lua/mission_2.lua` | One mission's story, in all its scenes |
+| `data/lua/mission_<name>.lua` (`mission_beacons.lua`, `mission_package.lua`, `mission_stash.lua`) | One mission's story, in all its scenes |
 | `data/lua/test_starts.lua` | The main menu's test row |
 
 ### The two entry points
@@ -71,7 +71,7 @@ Every script gets every event. A world or mission handler must therefore check
 |---|---|
 | `currentScene` | File name of the scene, e.g. `"home_scene.xml"` |
 | `currentSceneType` | 0 landing, 1 deep space, 2 orbit, 3 hyperspace |
-| `currentMission` | Mission number, 0 means free play |
+| `currentMission` | The running mission's name, e.g. `"stash"`; `freePlay` when none runs |
 | `currentState` | The mission's state, one number |
 | `newGameStarting` | True during the very first setup of a new game |
 | `lfDefined` | False until the Leapfrog has been created in this scene |
@@ -92,11 +92,11 @@ Every script gets every event. A world or mission handler must therefore check
 
 ## 2. Worked example: the dark beacons
 
-`data/lua/mission_1.lua` is a complete small mission, and
-`mission_tester/tests/mission1_beacons.lua` plays it. Bruno pays the pilot to
-relight three dead beacons in the home scene, one at a time: two on the way to the
-Ore, where he meets Bruno, and one past the town. A new game starts here, and it
-hands over to mission 2 on the last pad. You can also start it from the main menu's
+`data/lua/mission_beacons.lua`, the mission `"beacons"`, is a complete small
+mission, and `mission_tester/tests/mission_beacons.lua` plays it. Bruno pays the
+pilot to relight three dead beacons in the home scene, one at a time: two on the
+way to the Ore, where he meets Bruno, and one past the town. A new game starts
+here, and it hands over to the mission `"package"` on the last pad. You can also start it from the main menu's
 test row: **Beacons, job offered**.
 
 ### Step 1: plan the states
@@ -118,7 +118,7 @@ stateDiagram-v2
     done --> [*]
 ```
 
-<!-- verbatim: data/lua/mission_1.lua -->
+<!-- verbatim: data/lua/mission_beacons.lua -->
 ```lua
 local State = {
    offered      = 10,  -- Bruno has offered the job
@@ -128,7 +128,7 @@ local State = {
    thirdBeacon  = 14,  -- the one past the town
    done         = 15,
 }
-mission1.State = State
+mission.State = State
 ```
 
 ### Step 2: create and register the script
@@ -137,14 +137,17 @@ A mission file returns a table with `firstState`,
 `setupMissionStateScene` and `missionStateSceneEventHandler`. It may also have
 `reentryOutcome`, see section 4.
 
-Three places make it known to the game:
+Missions have names, not numbers: `"beacons"`, `"package"`, `"stash"`. The
+order of the story is in the missions themselves, each starting the next by name
+when it ends (step 6), so reordering touches only those calls. Three places make a
+mission known to the game:
 
 1. **`src/luainterface.cpp`**, so that `require` finds it. This is the only C++
    change, and the game has to be rebuilt:
 
    <!-- verbatim: src/luainterface.cpp -->
    ```cpp
-   preloadModule("lua/mission_2.lua", "mission2");
+   preloadModule("lua/mission_stash.lua", "mission_stash");
    ```
 
 2. **`data/mission_script.lua`**, in the `missions` table:
@@ -152,8 +155,9 @@ Three places make it known to the game:
    <!-- verbatim: data/mission_script.lua -->
    ```lua
    local missions = {
-      [1] = mission1,
-      [2] = mission2,
+      beacons = require('mission_beacons'),
+      package = require('mission_package'),
+      stash   = require('mission_stash'),
    }
    ```
 
@@ -161,7 +165,7 @@ Three places make it known to the game:
 
    <!-- verbatim: data/lua/test_starts.lua -->
    ```lua
-   { label = "Beacons, job offered", scene = "home_scene.xml",       sceneType = 0, mission = 1, state = B.offered },
+   { label = "Beacons, job offered", scene = "home_scene.xml",       sceneType = 0, mission = "beacons", state = B.offered },
    ```
 
 New Lua files in `data/lua` need no project changes. Xcode includes that folder
@@ -175,7 +179,7 @@ state change. It must rebuild the scene from `currentState` alone, because
 objects return to their XML values whenever a scene loads. Lit beacons are only
 active because this code says so:
 
-<!-- verbatim: data/lua/mission_1.lua -->
+<!-- verbatim: data/lua/mission_beacons.lua -->
 ```lua
 local function setupBeacons()
    for i, beacon in ipairs(mining.beacons) do
@@ -209,9 +213,9 @@ world's setup lights all of them itself and fills their pads with free fuel agai
 
 The mission's setup function starts by leaving every scene but its own:
 
-<!-- verbatim: data/lua/mission_1.lua -->
+<!-- verbatim: data/lua/mission_beacons.lua -->
 ```lua
-mission1.setupMissionStateScene = function()
+mission.setupMissionStateScene = function()
 
    if currentScene ~= "home_scene.xml" then
       return
@@ -262,7 +266,7 @@ A small helper keeps state changes in one place. Calling
 `lua_setupMissionStateScene()` clears all triggers and listeners and runs every
 setup again, including the world's:
 
-<!-- verbatim: data/lua/mission_1.lua -->
+<!-- verbatim: data/lua/mission_beacons.lua -->
 ```lua
 local function enterState(state)
    currentState = state
@@ -272,9 +276,9 @@ end
 
 Then the handler sorts the events and calls small named functions:
 
-<!-- verbatim: data/lua/mission_1.lua -->
+<!-- verbatim: data/lua/mission_beacons.lua -->
 ```lua
-mission1.missionStateSceneEventHandler = function(eventId, actorName, parameter1)
+mission.missionStateSceneEventHandler = function(eventId, actorName, parameter1)
 
    if currentScene ~= "home_scene.xml" then
       return
@@ -321,9 +325,9 @@ easily be the same number.
 A test plays the mission in steps and checks what the scripts did. It runs in a
 second, so you can try a state change long before flying it:
 
-<!-- verbatim: mission_tester/tests/mission1_beacons.lua -->
+<!-- verbatim: mission_tester/tests/mission_beacons.lua -->
 ```lua
-test("mission 1: the beacons are lit in order, each after a repair", function(t)
+test("beacons: the beacons are lit in order, each after a repair", function(t)
    local S, Q = start(t)
    acceptJob(t, S, Q)
    t:expectMap("landingPad2", "siloHome", "flashingSlow")
@@ -354,7 +358,7 @@ Add the file to `mission_tester/tests/test_list.lua` and to the `None` items in
 `mission_tester.vcxproj`. To run only these tests on the Mac:
 
 ```
-leapfrog-game/mission_tester/build.sh -- --filter "mission 1"
+leapfrog-game/mission_tester/build.sh -- --filter "beacons"
 ```
 
 The tester proves the logic, not the flying. Play the mission from the test row
@@ -362,21 +366,23 @@ as well.
 
 ### Step 6: start and end a mission
 
-Mission 1 ends by starting the next mission, in the scene the game is in:
+The mission `"beacons"` ends by starting the next mission, by name, in the scene the
+game is in:
 
-<!-- verbatim: data/lua/mission_1.lua -->
+<!-- verbatim: data/lua/mission_beacons.lua -->
 ```lua
-   lua_startMission(2)
+   lua_startMission("package")
 ```
 
 Called from an event handler, this waits until every handler has had the event.
-Otherwise the rest of mission 1's handler would run with mission 2's state, and the
-two missions' state numbers overlap. It also takes back the old mission's unanswered
+Otherwise the rest of the old mission's handler would run with the new mission's state,
+and two missions' state numbers overlap. It also takes back the old mission's unanswered
 questions, while a world's stay. The save at the next scene exit stores the new
 mission.
 
-Use `lua_startMission(0)` for free play. Mission 2 ends with that for now, since
-nothing comes after it.
+Use `lua_startMission(freePlay)` for free play. The mission `"stash"` ends with that
+for now, since the next one (`"halfway"`) isn't written yet. The game saves the name,
+and saves from before missions had names (a number) are read as their names.
 
 ## 3. Events and triggers
 
@@ -417,7 +423,7 @@ A trigger sends `OpTr` when an object's property is set to a value in a range. I
 takes two calls. The first returns the trigger's id, unique for the whole session, and
 `OpTr` arrives with that id as its parameter, like a timer's id with `ScTO`:
 
-<!-- verbatim: data/lua/mission_1.lua -->
+<!-- verbatim: data/lua/mission_beacons.lua -->
 ```lua
          beaconTrigger = c_registerPropertyTrigger(beacon.pad, lfLanded, "insideRange", 1, 1)
          listen(beacon.pad, "OpTr")
@@ -428,7 +434,7 @@ The type is `"insideRange"` or `"outsideRange"`, and the range is inclusive.
 A trigger tests each new value, not the crossing of a limit. So it fires every
 time the property is set while it's in range, and not at all if the value is
 already in range and never set again. For a one-time trigger, remove it in its
-handler with `c_unregisterPropertyTrigger(id)`, as `mission_2.lua` does with the
+handler with `c_unregisterPropertyTrigger(id)`, as `mission_stash.lua` does with the
 ammo. Otherwise guard your handler with a state, or expect repeats. Removing an id
 that isn't registered does nothing, so -1 or an id from an earlier scene is fine.
 The rest of a scene's triggers go with the scene.
@@ -461,7 +467,7 @@ the question's turn comes. The booster button becomes Yes and the fire button No
 
 Questions are queued, so asking one that's already waiting does nothing. An
 unanswered question is dropped when the scene ends. Remember that if you keep a
-flag for it, as mission 1 does with `offerPending`.
+flag for it, as `mission_beacons.lua` does with `offerPending`.
 
 ### Dialog and the HUD
 
@@ -546,9 +552,9 @@ bounce off the atmosphere, goes to whatever `lua_missionSpace()` says. That's th
 running mission's `space()` function if it has one and returns a scene, otherwise
 the big space, `deep_space_scene.xml`:
 
-<!-- verbatim: data/lua/mission_2.lua -->
+<!-- verbatim: data/lua/mission_stash.lua -->
 ```lua
-mission2.space = function()
+mission.space = function()
    if currentState == State.toLaunch or inStash(currentState) then
       return stash.space
    end
@@ -566,11 +572,11 @@ Leapfrog comes down on is what `lua_arrivalPad(scene)` says: the running mission
 `arrivalPad(scene)` function if it names one, then the world's, then the scene's
 `default` in the `orbitArrivals` table in `scene_navigator.lua`. A pad needs a line in
 that table, with where the Leapfrog comes in from above and where the recovery crew
-sets it down. Mission 2 ends at the silo whatever the player holds:
+sets it down. The stash mission ends at the silo whatever the player holds:
 
-<!-- verbatim: data/lua/mission_2.lua -->
+<!-- verbatim: data/lua/mission_stash.lua -->
 ```lua
-mission2.arrivalPad = function(scene)
+mission.arrivalPad = function(scene)
    if scene == "home_scene.xml" and inStash(currentState) then
       return "siloLandingPad"
    end
@@ -588,7 +594,7 @@ just boundary, and its message goes to the HUD log when the Leapfrog flies in.
 Every corner is open when a scene starts, so set them in the setup.
 
 `common.lua` shuts corners 1, 2 and 4 in every space scene, because only the lower
-right one leads anywhere yet. A mission can shut that one too. Mission 2 keeps the
+right one leads anywhere yet. A mission can shut that one too. The stash mission keeps the
 Debris Belt shut until the raid is over, so nothing in the belt before that is ever
 saved, and a reload is a new launch.
 
@@ -651,12 +657,14 @@ for anything new, as in section 2.
 ### Add a mission
 
 1. Plan the states, so that `currentState` alone says where the player is.
-2. Create `data/lua/mission_<n>.lua` with `State`, `firstState`,
+2. Create `data/lua/mission_<name>.lua` with `State`, `firstState`,
    `setupMissionStateScene` and `missionStateSceneEventHandler`. It returns its
-   table. `mission_1.lua` is the smallest complete example.
-3. Add `preloadModule("lua/mission_<n>.lua", "mission<n>")` to `initLuaInterface` in
-   `src/luainterface.cpp`, before `test_starts`, and rebuild.
-4. In `data/mission_script.lua`, add a `require` and a line in the `missions` table.
+   table (called `mission` inside the file). `mission_beacons.lua` is the smallest
+   complete example.
+3. Add `preloadModule("lua/mission_<name>.lua", "mission_<name>")` to
+   `initLuaInterface` in `src/luainterface.cpp`, before `test_starts`, and rebuild.
+4. In `data/mission_script.lua`, add a line in the `missions` table, and have the
+   mission before it end with `lua_startMission("<name>")`.
 5. Add a line to `data/lua/test_starts.lua`.
 6. Add a test file, and list it in `tests/test_list.lua` and `mission_tester.vcxproj`.
 
@@ -666,12 +674,15 @@ A mission may also have four optional functions:
 - `space()`, which names the space scene the mission flies to, also in section 4.
 - `arrivalPad(scene)`, which names the pad a re-entry ends on, also in section 4.
 - `holds(what)`, which tells the world to leave something to the mission. `what` is
-  `"swarm"` or `"landingSites"`. Mission 2 uses them to keep the world's strippers
-  away during the stash hunt, and to have only home on the planet:
+  `"swarm"`, `"landingSites"`, `"station"` (the docking station as it first is: no
+  bad mine handover, no shield power unit) or `"enemies"` (the world takes the
+  enemies in the scene file out, `mining.spaceEnemies`, with `c_removeObject`). The
+  stash mission uses two to keep the world's strippers away during the hunt, and to
+  have only home on the planet; the package mission holds all four for a calm trip:
 
-<!-- verbatim: data/lua/mission_2.lua -->
+<!-- verbatim: data/lua/mission_stash.lua -->
 ```lua
-mission2.holds = function(what)
+mission.holds = function(what)
    if what == "swarm" or what == "landingSites" then
       return currentState == State.toLaunch or inStash(currentState)
    end
@@ -685,8 +696,8 @@ There are two ways to change state, and both are in use:
 
 | Way | Use it when | Example |
 |---|---|---|
-| `currentState = x` and `lua_setupMissionStateScene()` | The new state needs other listeners, triggers or objects | `enterState` in `mission_1.lua` |
-| `currentState = x` alone | Everything needed is already in place, or a timer is running | `stashAsteroidBroken` in `mission_2.lua` |
+| `currentState = x` and `lua_setupMissionStateScene()` | The new state needs other listeners, triggers or objects | `enterState` in `mission_beacons.lua` |
+| `currentState = x` alone | Everything needed is already in place, or a timer is running | `stashAsteroidBroken` in `mission_stash.lua` |
 
 The first way disconnects running timers, as section 3 explains.
 
@@ -752,7 +763,7 @@ event then waits until all of them have been spawned, while without one a field
 that starts small counts as nearly cleared at once, and `maxAlive` alone refills it
 for ever:
 
-<!-- verbatim: data/lua/mission_2.lua -->
+<!-- verbatim: data/lua/mission_stash.lua -->
 ```lua
 fieldWatch = c_watchFactory(stash.field, stash.fieldLeft)
 ```
@@ -847,7 +858,7 @@ Use `c_addPositionedChildObject` with a guard, since setup can run more than onc
 Objects added this way aren't saved, so add them again for the states that need
 them:
 
-<!-- verbatim: data/lua/mission_2.lua -->
+<!-- verbatim: data/lua/mission_stash.lua -->
 ```lua
 local function addStashAsteroid()
    if not c_objectExists(stash.asteroid) then
@@ -863,7 +874,7 @@ A new XML file needs adding to both Xcode projects.
 a file's shapes, systems and child objects at their own positions, but not a
 behaviour at the file's root.
 
-An object that another object spawns appears on the next update. Mission 2 starts a
+An object that another object spawns appears on the next update. The stash mission starts a
 short timer when the asteroid breaks, and listens to the case when it runs out.
 
 ### Make something that gives a reward
@@ -1013,7 +1024,7 @@ has the full list of steps and checks.
 | Windows command prompt | `leapfrog-game\mission_tester\run_tests.bat`, after a build |
 | Mac | `leapfrog-game/mission_tester/build.sh` |
 
-Add arguments after `--` on the Mac: `build.sh -- --filter "mission 1" --verbose`.
+Add arguments after `--` on the Mac: `build.sh -- --filter "beacons" --verbose`.
 
 | Argument | Effect |
 |---|---|
@@ -1029,7 +1040,7 @@ line of the check, and the last 12 things that happened.
 A test file calls `test(name, function(t) ... end)`. Each test starts from nothing,
 so start it with `t:newGame()`, `t:menuTestStart(i)` or a small helper of your own:
 
-<!-- verbatim: mission_tester/tests/mission1_beacons.lua -->
+<!-- verbatim: mission_tester/tests/mission_beacons.lua -->
 ```lua
 local function acceptJob(t, S, Q)
    t:land("siloLandingPad")
@@ -1155,7 +1166,7 @@ is listed here, and that everything listed exists.
 | `lua_missionFirstState(mission)` | A mission's first state |
 | `missionHolds(what)` | True if the running mission has taken `what` over |
 | `lua_missionSpace()` | The space scene the running mission flies to |
-| `lua_startMission(mission)` | Starts a mission, after any event being handled; 0 is free play |
+| `lua_startMission(name)` | Starts a mission by name, after any event being handled; `freePlay` for free play |
 | `swarm.start(name, file, onStripped, resources)` | Adds and watches a swarm |
 | `swarm.stop(name, recall)` | Stops spawning, and recalls the strippers if `recall` is true |
 | `swarm.set(name, rate, maxAlive)` | Changes a swarm's rate and limit |
@@ -1171,6 +1182,7 @@ is listed here, and that everything listed exists.
 | `c_addWeld(bodyA, ax, ay, bodyB, bx, by)` | Welds two bodies together, `"object.body"` for a child of the scene, with the anchors in each body's coordinates. Place the bodies so the anchors meet and the angles are the same. When one is destroyed, the other stays |
 | `c_addMissionStateSceneObjects(file)` | Adds a file's shapes, systems and child objects |
 | `c_objectExists(name)` | True if the scene has the object |
+| `c_removeObject(name)` | Takes a scene object (and everything in it) out of the scene; false if there's none. For a setup that doesn't want something in a shared scene file |
 | `c_setObjectProperty(name, propertyId, value)` | Sets a property; ignored for a missing object or read-only property |
 | `c_getObjectProperty(name, propertyId)` | Reads a property; 0 for a missing object |
 | `c_setPanningObject(name)` | Sets the object the camera follows |

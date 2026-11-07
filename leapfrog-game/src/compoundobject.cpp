@@ -20,6 +20,7 @@
 #include "swarm.h"
 #include "dockingstation.h"
 #include "steerableobject.h"
+#include "headdowndisplay.h"
 #include "pickupobject.h"
 #include "landingpad.h"
 #include "parallaxbackground.h"
@@ -2024,6 +2025,46 @@ void CompoundObject::addMeToDeathList(void)
    }
 
    m_sceneActor->addMeToDeathList(this);
+}
+
+
+void CompoundObject::removeNow(void)
+{
+   if (m_isDead)
+   {
+      return;
+   }
+   m_isDead = true;
+
+   for (auto it = m_children.begin(); it != m_children.end(); ++it)
+   {
+      (*it)->removeNow();
+   }
+
+   if (g_HeadDownDisplay)
+   {
+      for (auto it = m_shapes.begin(); it != m_shapes.end(); ++it)
+      {
+         g_HeadDownDisplay->removeMeFromMap(*it);
+      }
+   }
+
+   addMeToDeathList();
+}
+
+bool CompoundObject::removeChildObject(const std::string& name)
+{
+   for (auto it = m_children.begin(); it != m_children.end(); ++it)
+   {
+      if ((*it)->getName() == name)
+      {
+         spCompoundObject child = *it;
+         m_children.erase(it);
+         child->removeNow();
+         return true;
+      }
+   }
+   return false;
 }
 
 

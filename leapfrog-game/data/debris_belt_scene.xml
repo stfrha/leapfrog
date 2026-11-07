@@ -1,16 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  The Debris Belt: a tight space scene where mission 1 hunts the raiders'
-  stash. Fast rocks bounce off the soft boundaries, so there's nowhere to
-  hide, and ammo drifts in now and then. lua/mission_2.lua decides when the
-  exit opens and watches asteroidField, so keep that name. Tune with
+  The Debris Belt: a tight space scene where the mission "stash" hunts the
+  raiders' stash. Fast rocks bounce off the soft boundaries, so there's
+  nowhere to hide, and ammo drifts in now and then. lua/mission_stash.lua
+  decides when the exit opens and watches asteroidField, so keep that name.
+  The Baxters' homestead ship (baxterShip, its tag baxterTag) waits hidden
+  on a far parallax layer, half the big space's size (lua/baxter_ship.lua). Tune with
   width, height, rockSpeedMin and rockSpeedMax here, spawnInitial on the
   field, and intensity and maxAlive on ammoDrops.
 
   The boundaries' push starts 75 units inside the scene's edge, so keep the
   factories' areas 75 from every edge. The mission tester checks this
   (tests/placement.lua), and the entries in scene_navigator.lua and the stash
-  position in lua/mission_2.lua, which depend on the scene size too.
+  position in lua/mission_stash.lua, which depend on the scene size too.
 -->
 <compoundObject
   needsGroupIndex="false">
@@ -40,6 +42,36 @@
       <triangle id="2" v1="3" v2="2" v3="1" />
     </triangles>
   </spritePolygon>
+  <spriteBox
+    name="baxterShip"
+    texture="baxter_homestead"
+    posX="330"
+    posY="90"
+    angle="0"
+    zLevel="0"
+    collisionEntity="notApplicable"
+    collisionCategory="1"
+    collisionMask="65534"
+    width="240"
+    height="60"
+    color="c8d0dc"
+    alpha="0"
+    parallaxAmount="0.9" />
+  <spriteBox
+    name="baxterTag"
+    texture="graffiti_bxtr"
+    posX="296.7"
+    posY="100"
+    angle="0"
+    zLevel="1"
+    collisionEntity="notApplicable"
+    collisionCategory="1"
+    collisionMask="65534"
+    width="16"
+    height="8"
+    color="c8d0dc"
+    alpha="0"
+    parallaxAmount="0.9" />
   <behaviour
     type="scene">
     <sceneProperties

@@ -2,7 +2,7 @@
 -- from a file must still be in that file, and the c_ functions it names must
 -- exist. Blocks are compared without each line's indent. They look like this:
 --
---   <!-- verbatim: data/lua/mission_2.lua -->
+--   <!-- verbatim: data/lua/mission_stash.lua -->
 --   ```lua
 --   ...
 --   ```

@@ -1,5 +1,5 @@
 -- Common: what is true in every scene of every world, whatever mission is
--- running, also when none is (currentMission == 0, free play).
+-- running, also when none is (currentMission == freePlay).
 --
 -- The scripts, in the order mission_script.lua calls them for each scene
 -- setup and each event:
@@ -7,7 +7,7 @@
 --   lua/worlds/<world>.lua  the scene's world (scene -> world table in
 --                           mission_script.lua): its pads, services and
 --                           repeatable jobs, e.g. the silo's leg repair
---   lua/mission_<n>.lua     the running mission's story
+--   lua/mission_<name>.lua  the running mission's story
 --
 -- Rules for all of them:
 -- - Only mission_script.lua calls c_clearAllTriggersAndEvents (before

@@ -137,7 +137,7 @@ end
 
 function Engine:resetGameStatus()
    self.status = {
-      scene = "not_defined", mission = 0, state = 0, sceneType = 0,
+      scene = "not_defined", mission = "", state = 0, sceneType = 0,
       exitScene = "not_defined", exitType = -1, exitParam = -1,
       legs = legHealthDefaults(), items = {}, saved = {},
    }
@@ -150,7 +150,7 @@ function Engine:newGameInit()
    self.resources = { ammo = 70, shield = 100, fuel = 25, credits = 20, damage = 0 }
    local s = self.status
    s.scene, s.exitScene = "not_defined", "not_defined"
-   s.sceneType, s.mission, s.state = 0, 0, 0
+   s.sceneType, s.mission, s.state = 0, "", 0
    s.exitType, s.exitParam = -1, -1
    s.legs = legHealthDefaults()
    s.items = {}
@@ -167,7 +167,7 @@ function Engine:saveGameStatus()
       legs = { table.unpack(s.legs) }, items = copyTable(s.items), saved = copyTable(s.saved),
       ammo = r.ammo, shield = r.shield, fuel = r.fuel, credits = r.credits, damage = r.damage,
    }
-   self:note("SAVE", string.format("scene %s, mission %d, state %d, exit %d/%d",
+   self:note("SAVE", string.format("scene %s, mission %s, state %d, exit %d/%d",
       s.scene, s.mission, s.state, s.exitType, s.exitParam))
 end
 
@@ -1289,6 +1289,21 @@ function Engine:installApi(env)
       return e:getObject(name) ~= nil
    end
 
+   -- Takes a scene object out (and its map squares); false if there's none
+   api.c_removeObject = function(name)
+      if not (e.scene and e.scene.objects[name]) then
+         return false
+      end
+      e.scene.objects[name] = nil
+      for key in pairs(e.map) do
+         if key:sub(1, #name + 1) == name .. "/" then
+            e.map[key] = nil
+         end
+      end
+      e:note("REMOVE", name)
+      return true
+   end
+
    local function mapItem(fn, name, actor)
       local obj = e:getObject(name)
       if not obj then
@@ -1331,7 +1346,8 @@ function Engine:installApi(env)
 
    api.c_exitSceneSaveGameStatus = function(scene, mission, state, sceneType, exitScene, exitType, exitParam)
       local s = e.status
-      s.scene, s.mission, s.state, s.sceneType = scene, mission, state, sceneType
+      -- GameStatus keeps the mission's name as text
+      s.scene, s.mission, s.state, s.sceneType = scene, tostring(mission or ""), state, sceneType
       s.exitScene, s.exitType, s.exitParam = exitScene, exitType, exitParam
       e:saveGameStatus()
    end
@@ -1341,7 +1357,8 @@ function Engine:installApi(env)
       -- written as it was: the scene is saved when it has started
       e:readGameStatus()
       local s = e.status
-      s.scene, s.mission, s.state, s.sceneType = scene, mission, state, sceneType
+      -- GameStatus keeps the mission's name as text
+      s.scene, s.mission, s.state, s.sceneType = scene, tostring(mission or ""), state, sceneType
       s.exitScene, s.exitType, s.exitParam = "", -1, -1
    end
 

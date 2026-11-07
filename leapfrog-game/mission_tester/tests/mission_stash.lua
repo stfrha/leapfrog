@@ -1,4 +1,4 @@
--- Mission 2 in space: the stolen stash (lua/mission_2.lua). Launched into the Debris Belt with its exit shut: clear the field until the
+-- The mission "stash" in space: the stolen stash (lua/mission_stash.lua). Launched into the Debris Belt with its exit shut: clear the field until the
 -- stash asteroid (stash_asteroid.xml) drifts in, blast it to find the
 -- raiders' case (stash_case.xml), shoot it open for the jackpot; the
 -- raiders' strippers take it all back and leave fuel to limp home, and the
@@ -46,7 +46,7 @@ end
 
 -- Bruno's talk over the radio: the exit opens when it's over
 local function talkOver(t)
-   t:wait(t:mission(2).brunoTalkTicks / 60 + 1)
+   t:wait(t:mission("stash").brunoTalkTicks / 60 + 1)
 end
 
 local function swarmActive(t)
@@ -56,7 +56,7 @@ end
 
 test("stash: the launch goes to the belt: the hunt, no stash yet, no strippers", function(t)
    toBelt(t)
-   local S = t:mission(2).State
+   local S = t:mission("stash").State
    t:expectState(S.hunting)
    t:expectSaved("scene", belt)
    t:expectSaved("state", S.hunting)
@@ -72,7 +72,7 @@ end)
 
 test("stash: every corner of the belt is shut during the hunt", function(t)
    toBelt(t)
-   local S = t:mission(2).State
+   local S = t:mission("stash").State
    for corner = 1, 4 do
       t:expectCorner(corner, false)
    end
@@ -84,7 +84,7 @@ end)
 
 test("stash: with a few rocks left the stash asteroid drifts in from the edge", function(t)
    toBelt(t)
-   local S = t:mission(2).State
+   local S = t:mission("stash").State
    t:clearField("asteroidField", 4)
    t:expectState(S.hunting)
    t:clearField("asteroidField", 3)
@@ -98,7 +98,7 @@ end)
 
 test("stash: the asteroid blasted: a case inside", function(t)
    toCase(t)
-   local S = t:mission(2).State
+   local S = t:mission("stash").State
    t:expectState(S.caseFound)
    t:expectDialog("A box!", "Edith")
    t:expect(t.engine:getObject("stashCase") ~= nil, "the case is out")
@@ -107,7 +107,7 @@ end)
 
 test("stash: the case shot open: the jackpot, then the raiders after a while", function(t)
    toJackpot(t)
-   local S = t:mission(2).State
+   local S = t:mission("stash").State
    t:expectState(S.jackpot)
    t:expectDialog("Look at all that!", "Edith")
    t:expectHud("Stash found")
@@ -139,7 +139,7 @@ end)
 
 test("stash: stripped: the strippers leave, fuel to limp home", function(t)
    toRaid(t)
-   local m = t:mission(2)
+   local m = t:mission("stash")
    strip(t)
    t:expectState(m.State.stripped)
    t:expectProperty("leapfrog1", 7, m.limpHomeFuel)
@@ -202,9 +202,9 @@ test("stash: home with nothing: Edith on the way down, her fuel at the silo; fre
    t:land("siloLandingPad")
    t:expectDialog("Gone.", "Leapfrog")
    t:expectDialog("Drained the old pump", "Silo")
-   t:expectProperty("leapfrog1", 7, t:module("mission2").edithFuel)
+   t:expectProperty("leapfrog1", 7, t:mission("stash").edithFuel)
    t:expectHud("Mission complete")
-   t:expectMission(0)
+   t:expectMission("freePlay")
 end)
 
 test("stash: Edith's fuel never takes any away", function(t)
@@ -235,7 +235,7 @@ end)
 
 test("stash: continuing during the hunt starts a new field", function(t)
    toStash(t)
-   local S = t:mission(2).State
+   local S = t:mission("stash").State
    t:restartGame()
    t:expectScene(belt)
    t:expectState(S.hunting)
@@ -246,7 +246,7 @@ end)
 
 test("stash: bounced back after the raid: the belt, no strippers, a way home", function(t)
    toRaid(t)
-   local S = t:mission(2).State
+   local S = t:mission("stash").State
    strip(t)
    talkOver(t)
    t:exitScene(1, 3)
@@ -260,7 +260,7 @@ end)
 
 test("stash: a save from the big space before the belt existed is a new hunt", function(t)
    toBelt(t)
-   local S = t:mission(2).State
+   local S = t:mission("stash").State
    t:setGlobal("currentState", S.caseFound)
    t:setupScene()
    t:expectState(S.hunting)
@@ -270,7 +270,7 @@ test("stash: the field is bigger than what is left when the stash comes", functi
    local harness = require("testbench.harness")
    local xml = require("testbench.xml")
    t:newGame()
-   local stash = t:mission(2).Stash
+   local stash = t:mission("stash").Stash
    local root = xml.readFile(harness.dataDir .. "/" .. stash.space)
    local props
    for _, c in ipairs(root.children) do
@@ -291,4 +291,22 @@ test("stash: the field is bigger than what is left when the stash comes", functi
    else
       t:expect(initial > stash.fieldLeft, "spawnInitial must be more than fieldLeft")
    end
+end)
+
+test("stash: the Baxters' homestead comes in with the raid and leaves with the loot", function(t)
+   toJackpot(t)
+   t:expect(t.engine.scene.moves.baxterShip == nil, "no homestead before the raid")
+   t:wait(16)                                 -- the raid starts
+   local B = t:module("baxterShip")
+   local place = B.places[belt]
+   local m = t.engine.scene.moves.baxterShip
+   t:expect(m ~= nil, "the homestead arrives")
+   t:expectEqual(m.x, place.x, "parks at x")
+   t:expectEqual(m.y, place.y, "parks at y")
+   t:expectEqual(m.alpha, 1, "visible")
+   local tag = t.engine.scene.moves.baxterTag
+   local o = B.overlays.baxterShip.baxterTag
+   t:expectEqual(tag.x, place.x + o.dx * place.size, "the tag at the half-size offset")
+   strip(t)
+   t:expectEqual(t.engine.scene.moves.baxterShip.alpha, 0, "it leaves, fading out")
 end)

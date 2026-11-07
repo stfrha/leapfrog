@@ -53,7 +53,7 @@ end)
 
 test("test starts: the saved game stays as it was", function(t)
    t:newGame()
-   local S = t:mission(1).State
+   local S = t:mission("beacons").State
    t:expectSaved("scene", "home_scene.xml")
    local list = t:module("test_starts").list
    for i = 1, #list do
@@ -68,7 +68,7 @@ test("test starts: an arrival the navigator doesn't know is refused", function(t
    local ts = t:module("test_starts")
    -- (home from orbit is known since the gold mine site leads there)
    table.insert(ts.list, { label = "Deep space, from a landing site", scene = "deep_space_scene.xml",
-      sceneType = 1, mission = 1, state = t:mission(1).State.firstBeacon, from = ts.From.orbit })
+      sceneType = 1, mission = "beacons", state = t:mission("beacons").State.firstBeacon, from = ts.From.orbit })
    local ok, message = t.engine:menuTestStart(#ts.list)
    table.remove(ts.list)
    t:expect(not ok, "the start was refused")

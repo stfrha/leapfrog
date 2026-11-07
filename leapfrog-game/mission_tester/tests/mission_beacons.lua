@@ -1,4 +1,4 @@
--- Mission 1, the dark beacons: the worked example of
+-- The mission "beacons", the dark beacons: the worked example of
 -- documentation/lua_guide.md
 
 -- Starts the mission from the main menu's test row, and returns its states
@@ -11,8 +11,8 @@ local function start(t)
          t:menuTestStart(i)
       end
    end
-   t:expectMission(1)
-   local m = t:mission(1)
+   t:expectMission("beacons")
+   local m = t:mission("beacons")
    return m.State, m.Question
 end
 
@@ -38,7 +38,7 @@ local function lightAll(t)
    end
 end
 
-test("mission 1: the job is offered and the beacons are dark", function(t)
+test("beacons: the job is offered and the beacons are dark", function(t)
    local S, Q = start(t)
    t:expectState(S.offered)
    t:expectDialog("The old beacons have gone dark", "Bruno")
@@ -50,7 +50,7 @@ test("mission 1: the job is offered and the beacons are dark", function(t)
    t:expectSprite("landingPad3Lamp", 0, 1)
 end)
 
-test("mission 1: declining, then landing at the silo asks again", function(t)
+test("beacons: declining, then landing at the silo asks again", function(t)
    local S, Q = start(t)
    t:land("siloLandingPad")
    t:answer(Q.takeJob, false)
@@ -62,7 +62,7 @@ test("mission 1: declining, then landing at the silo asks again", function(t)
    t:expectState(S.firstBeacon)
 end)
 
-test("mission 1: the beacons are lit in order, each after a repair", function(t)
+test("beacons: the beacons are lit in order, each after a repair", function(t)
    local S, Q = start(t)
    acceptJob(t, S, Q)
    t:expectMap("landingPad2", "siloHome", "flashingSlow")
@@ -88,7 +88,7 @@ test("mission 1: the beacons are lit in order, each after a repair", function(t)
    t:expectState(S.toOre)
 end)
 
-test("mission 1: leaving during the repair: it isn't done, land again", function(t)
+test("beacons: leaving during the repair: it isn't done, land again", function(t)
    local S, Q = start(t)
    acceptJob(t, S, Q)
    t:land("landingPad2")
@@ -103,7 +103,7 @@ test("mission 1: leaving during the repair: it isn't done, land again", function
    t:expectState(S.secondBeacon)
 end)
 
-test("mission 1: a bounce during the repair doesn't start another", function(t)
+test("beacons: a bounce during the repair doesn't start another", function(t)
    local S, Q = start(t)
    acceptJob(t, S, Q)
    t:land("landingPad2")
@@ -113,7 +113,7 @@ test("mission 1: a bounce during the repair doesn't start another", function(t)
    t:expectState(S.secondBeacon)
 end)
 
-test("mission 1: landing on a beacon out of turn does nothing", function(t)
+test("beacons: landing on a beacon out of turn does nothing", function(t)
    local S, Q = start(t)
    acceptJob(t, S, Q)
    t:land("landingPad3")
@@ -122,7 +122,7 @@ test("mission 1: landing on a beacon out of turn does nothing", function(t)
    t:takeOff()
 end)
 
-test("mission 1: landing again on a lit beacon doesn't count twice", function(t)
+test("beacons: landing again on a lit beacon doesn't count twice", function(t)
    local S, Q = start(t)
    acceptJob(t, S, Q)
    repair(t, "landingPad2")
@@ -132,7 +132,7 @@ test("mission 1: landing again on a lit beacon doesn't count twice", function(t)
    t:expectState(S.secondBeacon)
 end)
 
-test("mission 1: Bruno calls when all are lit, once", function(t)
+test("beacons: Bruno calls when all are lit, once", function(t)
    local S, Q = start(t)
    acceptJob(t, S, Q)
    lightAll(t)
@@ -146,7 +146,7 @@ test("mission 1: Bruno calls when all are lit, once", function(t)
    t:expectMap("oreLanding", "noName", "flashingSlow")
 end)
 
-test("mission 1: the Ore pays for two, once, tops up the fuel and sends him on", function(t)
+test("beacons: the Ore pays for two, once, tops up the fuel and sends him on", function(t)
    local S, Q = start(t)
    acceptJob(t, S, Q)
    lightAll(t)
@@ -155,7 +155,7 @@ test("mission 1: the Ore pays for two, once, tops up the fuel and sends him on",
 
    t:land("oreLanding")
    t:expectState(S.thirdBeacon)
-   t:expectProperty("leapfrog1", 8, credits + t:mission(1).payAtOre)
+   t:expectProperty("leapfrog1", 8, credits + t:mission("beacons").payAtOre)
    t:expect(t:property("leapfrog1", 7) > 2, "Bruno's fuel")
    t:expectDialog("One more, just past the town", "Bruno")
    t:expectMap("villagePad", "siloHome", "flashingSlow")
@@ -163,10 +163,10 @@ test("mission 1: the Ore pays for two, once, tops up the fuel and sends him on",
    t:takeOff()
 
    t:land("oreLanding")
-   t:expectProperty("leapfrog1", 8, credits + t:mission(1).payAtOre)
+   t:expectProperty("leapfrog1", 8, credits + t:mission("beacons").payAtOre)
 end)
 
-test("mission 1: the third beacon pays the rest, gives the solution, and mission 2 offers", function(t)
+test("beacons: the third beacon pays the rest, gives the solution, and the package is offered", function(t)
    local S, Q = start(t)
    acceptJob(t, S, Q)
    lightAll(t)
@@ -178,23 +178,23 @@ test("mission 1: the third beacon pays the rest, gives the solution, and mission
    local credits = t:property("leapfrog1", 8)
 
    repair(t, "villagePad")
-   t:expectProperty("leapfrog1", 8, credits + t:mission(1).payLastBeacon)
+   t:expectProperty("leapfrog1", 8, credits + t:mission("beacons").payLastBeacon)
    t:expectItem("villagePadSolution", "held")
    t:expectDialog("Don't spend it all on fuel", "Bruno")
-   t:expectMission(2)
-   t:expectState(t:mission(2).State.offered)
-   t:expectQuestion(t:mission(2).Question.acceptJob)
+   t:expectMission("package")
+   t:expectState(t:mission("package").State.offered)
+   t:expectQuestion(t:mission("package").Question.fetch)
    t:expectProperty("villagePad", 2, 1)
    t:expectSprite("villagePadLamp", 1.25)
    t:expectMapShown("launchSite1", "mainTank", false)
 
-   t:answer(t:mission(2).Question.acceptJob, true)
+   t:answer(t:mission("package").Question.fetch, true)
    t:expectMapShown("launchSite1", "mainTank", true)
 end)
 
-test("mission 1: a new game plays Bruno's call and asks for the job", function(t)
+test("beacons: a new game plays Bruno's call and asks for the job", function(t)
    t:newGame()
-   local m = t:mission(1)
+   local m = t:mission("beacons")
    t:expectState(m.State.offered)
    t:expectDialog("I hear you are in bad shape", "Bruno")
    t:expectDialog("Touch down on the closest pad", "Bruno")
@@ -206,7 +206,7 @@ test("mission 1: a new game plays Bruno's call and asks for the job", function(t
    t:expectMapShown("launchSite1", "mainTank", false)
 end)
 
-test("mission 1: Edith cuts in at the first beacon, once", function(t)
+test("beacons: Edith cuts in at the first beacon, once", function(t)
    local S, Q = start(t)
    acceptJob(t, S, Q)
    t:expectNoDialog("I agree, you need that job.")
@@ -218,7 +218,7 @@ test("mission 1: Edith cuts in at the first beacon, once", function(t)
    t:expectNoDialog("I agree, you need that job.")
 end)
 
-test("mission 1: a lit beacon's pad gives free fuel", function(t)
+test("beacons: a lit beacon's pad gives free fuel", function(t)
    local S, Q = start(t)
    acceptJob(t, S, Q)
    t:expectProperty("landingPad2", 4, 0)
@@ -227,9 +227,9 @@ test("mission 1: a lit beacon's pad gives free fuel", function(t)
    t:expectProperty("landingPad2", 3, t:module("mining").beaconFuel)
 end)
 
-test("mission 1: the offer asked in flight opens on the first pad, even the Ore's", function(t)
+test("beacons: the offer asked in flight opens on the first pad, even the Ore's", function(t)
    t:newGame()
-   local m = t:mission(1)
+   local m = t:mission("beacons")
    t:clearDialog()
    t:setProperty("leapfrog1", 7, 1)
    t:land("oreLanding")
@@ -241,7 +241,7 @@ test("mission 1: the offer asked in flight opens on the first pad, even the Ore'
    t:expect(t:property("leapfrog1", 7) > 1, "fuel to get back")
 end)
 
-test("mission 1: flying to the Ore without the job, Bruno asks there", function(t)
+test("beacons: flying to the Ore without the job, Bruno asks there", function(t)
    local S, Q = start(t)
    t:land("siloLandingPad")
    t:answer(Q.takeJob, false)
@@ -252,7 +252,7 @@ test("mission 1: flying to the Ore without the job, Bruno asks there", function(
    t:expectQuestion(Q.takeJob)
 end)
 
-test("mission 1: at the Ore too early: the beacons first", function(t)
+test("beacons: at the Ore too early: the beacons first", function(t)
    local S, Q = start(t)
    acceptJob(t, S, Q)
    local credits = t:property("leapfrog1", 8)
@@ -262,9 +262,9 @@ test("mission 1: at the Ore too early: the beacons first", function(t)
    t:expectProperty("leapfrog1", 8, credits)
 end)
 
-test("mission 1: the open offer has to be answered before taking off", function(t)
+test("beacons: the open offer has to be answered before taking off", function(t)
    t:newGame()
-   local Q = t:mission(1).Question
+   local Q = t:mission("beacons").Question
    t:land("siloLandingPad")
    t:expectQuestion(Q.takeJob)
    local ok = pcall(function() t.engine:takeOff() end)
@@ -272,9 +272,9 @@ test("mission 1: the open offer has to be answered before taking off", function(
    t:expectQuestion(Q.takeJob)
 end)
 
-test("mission 1: after it, the beacons stay lit and full whenever home is set up", function(t)
+test("beacons: after it, the beacons stay lit and full whenever home is set up", function(t)
    t:throughBeacons()
-   t:answer(t:mission(2).Question.acceptJob, false)
+   t:answer(t:mission("package").Question.fetch, false)
    t:setProperty("landingPad2", 3, 0)
    t.engine:callLua("lua_setupMissionStateScene")
    for _, pad in ipairs({ "landingPad2", "landingPad3", "villagePad" }) do
@@ -285,7 +285,7 @@ test("mission 1: after it, the beacons stay lit and full whenever home is set up
    end
 end)
 
-test("mission 1: progress survives a launch, quitting and continuing", function(t)
+test("beacons: progress survives a launch, quitting and continuing", function(t)
    local S, Q = start(t)
    acceptJob(t, S, Q)
    repair(t, "landingPad2")
@@ -295,16 +295,16 @@ test("mission 1: progress survives a launch, quitting and continuing", function(
    -- The scene exit saves the state
    t:launch("launchSite1")
    t:expectScene("deep_space_scene.xml")
-   t:expectSaved("mission", 1)
+   t:expectSaved("mission", "beacons")
    t:expectSaved("state", S.secondBeacon)
 
    t:restartGame()
    t:menuContinue()
-   t:expectMission(1)
+   t:expectMission("beacons")
    t:expectState(S.secondBeacon)
 end)
 
-test("mission 1: back at home the scene is rebuilt from the state", function(t)
+test("beacons: back at home the scene is rebuilt from the state", function(t)
    local S, Q = start(t)
    acceptJob(t, S, Q)
    repair(t, "landingPad2")
@@ -325,12 +325,12 @@ test("mission 1: back at home the scene is rebuilt from the state", function(t)
    t:expectSprite("landingPad3Lamp", 0, 1)
 end)
 
-test("mission 1: a mission's holds answers for it, whatever its number", function(t)
+test("beacons: a mission's holds answers for it, whatever its name", function(t)
    start(t)
-   t:expect(t.engine:callLuaResults("missionHolds", "swarm")[1] == false, "mission 1 holds nothing")
-   t:mission(1).holds = function(what)
+   t:expect(t.engine:callLuaResults("missionHolds", "swarm")[1] == false, "beacons holds nothing")
+   t:mission("beacons").holds = function(what)
       return what == "swarm"
    end
-   t:expect(t.engine:callLuaResults("missionHolds", "swarm")[1] == true, "mission 1 holds the swarm")
-   t:mission(1).holds = nil
+   t:expect(t.engine:callLuaResults("missionHolds", "swarm")[1] == true, "beacons holds the swarm")
+   t:mission("beacons").holds = nil
 end)

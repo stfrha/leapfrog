@@ -309,6 +309,15 @@ public:
    void hitByBullet(b2Contact* contact);
    void addMeToDeathList(void);
 
+   // Takes this object (and its child objects) out of the scene: its map
+   // markers at once, its bodies, sprites and systems at the scene's next
+   // sweep of the death list
+   void removeNow(void);
+
+   // Removes the child object with this name (not a dotted path) and
+   // forgets it, so getObject no longer finds it. False if there is none.
+   bool removeChildObject(const std::string& name);
+
    virtual void registerToMap(void);
 
    // Should these three be protected since they are called by the base class?

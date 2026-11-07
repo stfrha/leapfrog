@@ -1,11 +1,12 @@
 
 
-local mission2 = {}
+local mission = {}
 
 local swarm = require('swarm')
+local baxterShip = require('baxterShip')
 
--- Mission 2: the stolen stash. Mission 1 hands over to it on the village pad,
--- with Bruno's offer.
+-- Mission "stash": the stolen stash. The mission "package" hands over to it
+-- on the village pad, where Bruno, with what was in the package, offers the job.
 --
 -- Its states, by name. currentState holds one of these numbers;
 -- the number is what is saved, so give each state a number of its own and
@@ -38,10 +39,10 @@ local State = {
    testFindTreasure = 5,   -- in deep space: find the coin treasure
    testEnded        = 6,   -- failed (bomb too early) or completed
 }
-mission2.State = State
+mission.State = State
 
--- A new game starts here
-mission2.firstState = State.offered
+-- The mission starts here
+mission.firstState = State.offered
 
 -- ------------------------------------------------------------------------
 -- The stolen stash (deep space). The stash asteroid looks like any big
@@ -60,16 +61,16 @@ local stash = {
                                  -- are left (not counting their pieces)
    space = "debris_belt_scene.xml",
 }
-mission2.Stash = stash
+mission.Stash = stash
 
 local edithGuessTicks = 600      -- Edith's wrong guess, 10 s into the hunt
 local caseCheckTicks = 10        -- the case appears on the update after the
                                  -- asteroid breaks: listen to it then
 local jackpotTicks = 900         -- 15 s to grab the loot before the raid
 local limpHomeFuel = 15          -- what the raiders leave in the tank
-mission2.limpHomeFuel = limpHomeFuel
+mission.limpHomeFuel = limpHomeFuel
 local edithFuel = 25             -- what Edith leaves in it at the silo
-mission2.edithFuel = edithFuel
+mission.edithFuel = edithFuel
 local ammoProperty = 5           -- the Leapfrog's ammo
 
 local edithGuessTimer = -1
@@ -104,7 +105,7 @@ local brunoTalkTicks = raidersTauntDelay + bubbleTicks + lastLineTicks
 for _, line in ipairs(brunoTalk) do
    brunoTalkTicks = brunoTalkTicks + line[3] + bubbleTicks
 end
-mission2.brunoTalkTicks = brunoTalkTicks
+mission.brunoTalkTicks = brunoTalkTicks
 
 local function inStash(state)
    return state == State.hunting or state == State.stashIn
@@ -120,7 +121,7 @@ local function beltExitOpen()
 end
 
 -- mission_script.lua's lua_missionSpace: the stash is in the Debris Belt
-mission2.space = function()
+mission.space = function()
    if currentState == State.toLaunch or inStash(currentState) then
       return stash.space
    end
@@ -129,18 +130,18 @@ end
 
 -- mission_script.lua's lua_arrivalPad: the raid ends at home, whichever pad
 -- he would land on otherwise
-mission2.arrivalPad = function(scene)
+mission.arrivalPad = function(scene)
    if scene == "home_scene.xml" and inStash(currentState) then
       return "siloLandingPad"
    end
    return nil
 end
 
--- mission_script.lua's missionHolds: mission 2 runs the strippers itself
+-- mission_script.lua's missionHolds: the stash mission runs the strippers itself
 -- from the launch until it is done (the world's swarm stays away while
 -- the stash is hunted, and after the raid so he can limp home). "landingSites":
 -- only home is on the planet until then, so the raid ends at the silo.
-mission2.holds = function(what)
+mission.holds = function(what)
    if what == "swarm" or what == "landingSites" then
       return currentState == State.toLaunch or inStash(currentState)
    end
@@ -179,6 +180,8 @@ end
 
 local function strippedByRaiders()
    currentState = State.stripped
+   -- Their homestead goes, with the loot
+   baxterShip.leave()
    c_setObjectProperty("leapfrog1", 7, limpHomeFuel)
    c_addDialogMessage("That's everything. We left you some fuel. Crawl home.", "Raiders", true, raidersTauntDelay, 0)
    c_hudLog("The raiders left " .. limpHomeFuel .. " fuel", true)
@@ -200,6 +203,9 @@ local function startRaid()
    local halfAmmo = c_getObjectProperty("leapfrog1", ammoProperty) / 2
    ammoTrigger = c_registerPropertyTrigger("leapfrog1", ammoProperty, "insideRange", 0, halfAmmo)
    listen("leapfrog1", "OpTr")
+
+   -- The Baxters' homestead comes in behind the strippers
+   baxterShip.arrive()
 
    c_addDialogMessage("That's our stash you're grabbing, pilot.", "Raiders", true, 20, 0)
    c_addDialogMessage("We'll be taking it back. All of it.", "Raiders", true, 120, 0)
@@ -240,8 +246,8 @@ local function homeWithNothing()
 
    c_hudLog("Mission complete")
 
-   -- No next job yet
-   lua_startMission(0)
+   -- Next: the station (mission "halfway", not written yet). Free play until then.
+   lua_startMission(freePlay)
 end
 
 
@@ -249,7 +255,7 @@ end
 local Question = {
    acceptJob = 1,      -- Bruno's offer
 }
-mission2.Question = Question
+mission.Question = Question
 local offerPending = false     -- asked and not yet answered (in this scene:
                                -- unanswered questions end with it)
 
@@ -260,8 +266,8 @@ local offerPads = { "villagePad", "oreLanding", "siloLandingPad" }
 -- c_addDialogMessage(message, sender, leftSide, preDelay, postDelay)
 -- Others on the left, the pilot on the right. Delays are in frames.
 local function playOffer()
-   c_addDialogMessage("Now for the real job. There's a rock of mine out in the Debris Belt.", "Bruno", true, 60, 0)
-   c_addDialogMessage("Bring out what's in it. Everything else you shake loose up there is yours.", "Bruno", true, 150, 0)
+   c_addDialogMessage("Well, well. That package was worth the wait. Now I know where a rock of mine drifted off to.", "Bruno", true, 150, 0)
+   c_addDialogMessage("Out in the Debris Belt. Bring out what's in it. Everything else you shake loose up there is yours.", "Bruno", true, 180, 0)
    c_askQuestion(Question.acceptJob, "Do you want the job?", "Bruno")
    offerPending = true
 end
@@ -288,7 +294,7 @@ local function showLaunchSite()
    c_setObjectMapState("launchSite1", "mainTank", 2)
 end
 
-local function answerMission2(yes)
+local function answerJob(yes)
    offerPending = false
 
    if not yes then
@@ -321,7 +327,7 @@ end
 
 -- This function is to be called when a new scene has been started
 -- It does all setup for that scene in this mission state
-mission2.setupMissionStateScene = function()
+mission.setupMissionStateScene = function()
 
    -- Triggers and handlers were cleared by lua_setupMissionStateScene;
    -- message senders are set by lua/common.lua
@@ -458,7 +464,7 @@ mission2.setupMissionStateScene = function()
    end
 end
 
-mission2.missionStateSceneEventHandler = function(eventId, actorName, parameter1)
+mission.missionStateSceneEventHandler = function(eventId, actorName, parameter1)
 
    if currentScene == "home_scene.xml" then
 
@@ -466,9 +472,9 @@ mission2.missionStateSceneEventHandler = function(eventId, actorName, parameter1
       -- id as parameter
       if parameter1 == Question.acceptJob then
          if eventId == "QsYs" then
-            answerMission2(true)
+            answerJob(true)
          elseif eventId == "QsNo" then
-            answerMission2(false)
+            answerJob(false)
          end
       end
 
@@ -651,4 +657,4 @@ mission2.missionStateSceneEventHandler = function(eventId, actorName, parameter1
 end
 
 -- return { setupMissionStateScene = setupMissionStateScene, missionStateSceneEventHandler = missionStateSceneEventHandler}
-return mission2
+return mission

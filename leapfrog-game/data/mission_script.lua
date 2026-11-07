@@ -2,24 +2,39 @@
 -- decodes this into a specific LUA-script for that mission. It then executes the functions 
 -- of that file. 
 --
--- currentMission == 0 means no mission is running (free play). Common
--- (lua/common.lua) and the scene's world (lua/worlds/<world>.lua) run in
--- every case, in that order, before the mission's script.
+-- Missions have names, not numbers: currentMission holds the running
+-- mission's name, or freePlay when none is running. Common (lua/common.lua)
+-- and the scene's world (lua/worlds/<world>.lua) run in every case, in that
+-- order, before the mission's script.
+--
+-- The order of the story is not kept here: each mission starts the next one
+-- by name when it ends (lua_startMission("stash")), and firstMission is where
+-- a new game begins. Reordering means changing those calls, nothing else.
 
 local common = require('common')
 local swarm = require('swarm')
 local debt = require('debt')
 local baxterShip = require('baxterShip')
-local mission1 = require('mission1')
-local mission2 = require('mission2')
+-- Free play: no mission running
+freePlay = "freePlay"
 
--- The missions by number (currentMission). A mission has
+-- A new game starts this mission
+firstMission = "beacons"
+
+-- The missions by name (currentMission). A mission has
 -- setupMissionStateScene, missionStateSceneEventHandler and firstState, and
 -- may have reentryOutcome, holds, space and arrivalPad. See documentation/lua_guide.md.
+-- Its script is lua/mission_<name>.lua (preloaded by luainterface.cpp).
 local missions = {
-   [1] = mission1,
-   [2] = mission2,
+   beacons = require('mission_beacons'),
+   package = require('mission_package'),
+   stash   = require('mission_stash'),
 }
+
+-- True if name is a mission (not free play, not unknown)
+function isMission(name)
+   return missions[name] ~= nil
+end
 
 -- The worlds' scripts, and which world each scene belongs to (a world's
 -- space and orbit scenes included). A scene not listed has no world script.
@@ -94,8 +109,9 @@ function lua_arrivalPad(scene)
    return arrival.default
 end
 
--- Ends the running mission and starts another, in the scene the game is in.
--- The save at the next scene exit stores it. Use 0 for free play. Called from
+-- Ends the running mission and starts another (by name), in the scene the
+-- game is in. The save at the next scene exit stores it. Use freePlay for
+-- free play. Called from
 -- an event handler, it happens when all handlers have had that event, so a
 -- mission's own handler doesn't go on with the next mission's state.
 local handlingEvent = false
@@ -121,8 +137,11 @@ end
 -- missionHolds(what): true if the running mission takes over something the
 -- world script would otherwise do in this scene, so the world leaves it
 -- alone. what: "swarm" (the world's stripper swarm in deep space),
--- "landingSites" (the world's other landing sites in orbit). A
--- mission answers with an optional holds(what) function.
+-- "landingSites" (the world's other landing sites in orbit), "station"
+-- (the docking station as it first is: the world's bad mine handover and
+-- shield power unit stay away), "enemies" (the world takes the enemies out
+-- of the scene file's space, mining.spaceEnemies). A mission answers with an
+-- optional holds(what) function.
 function missionHolds(what)
    local mission = missions[currentMission]
    if mission ~= nil and mission.holds ~= nil then

@@ -2,7 +2,7 @@
 -- perhaps they are read from files and then sent as inputs to this script
 
 currentScene = "New Game"
-currentMission = 0
+currentMission = "freePlay"     -- a mission's name (mission_script.lua)
 
 -- currentSceneType is: 0 = landing, 1 = deep space, 2 = orbit, 3 = hyperspace
 currentSceneType = 0
@@ -30,9 +30,9 @@ lfDefined = false
 
 -- This function starts a new or saved game. A new game is recognised by
 -- its scene ("New Game" before anything is loaded, "not_defined" after
--- GameStatus::gameStatusNewGameInit); it starts mission 1 at home.
--- currentMission == 0 means no mission (free play), so it no longer means
--- a new game. For a saved game the variables currentSceneType,
+-- GameStatus::gameStatusNewGameInit); it starts firstMission at home.
+-- currentMission == freePlay means no mission, so it doesn't mean a new
+-- game. For a saved game the variables currentSceneType,
 -- currentState, currentScene and currentMission must be set using
 -- lua_forceCurrentScene before this is called.
 function lua_startInitialScene()
@@ -41,10 +41,11 @@ function lua_startInitialScene()
 
    local newGame = (currentScene == "New Game") or (currentScene == "not_defined")
 
-   if newGame or currentMission == 1 then
+   -- The first mission always starts over at home, also from a save
+   if newGame or currentMission == firstMission then
       currentScene = "home_scene.xml"
       currentSceneType = 0
-      currentMission = 1
+      currentMission = firstMission
       currentState = lua_missionFirstState(currentMission)
       newGameStarting = true
 
@@ -269,9 +270,20 @@ function lua_sceneExitHandler(exitSceneType, exitParameter)
 
 end
 
+-- Saves from before missions had names hold their number
+local missionByOldNumber = {
+   ["0"] = "freePlay",
+   ["1"] = "beacons",
+   ["2"] = "stash",
+}
+
 function lua_forceCurrentScene(newCurrentScene, newMission, newState, newSceneType)
    currentScene = newCurrentScene;
-   currentMission = newMission;
+   newMission = tostring(newMission or "")
+   currentMission = missionByOldNumber[newMission] or newMission
+   if currentMission == "" then
+      currentMission = freePlay
+   end
    currentState = newState;
    currentSceneType = newSceneType
 end

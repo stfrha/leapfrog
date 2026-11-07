@@ -12,7 +12,7 @@ end
 
 local function freePlayInSpace(t)
    t:newGame()
-   t.engine:callLua("lua_startMission", 0)
+   t.engine:callLua("lua_startMission", "freePlay")
    t:launch("launchSite1")
    t:expectScene("deep_space_scene.xml")
 end

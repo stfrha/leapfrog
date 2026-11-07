@@ -534,6 +534,20 @@ static int c_objectExists(lua_State *L)
    return 1;
 }
 
+// c_removeObject(name) -> true if there was one: takes a scene object (and
+// everything in it) out of the scene, e.g. enemies a mission doesn't want
+// in a scene file it shares with others. Its map markers go at once, its
+// bodies at the end of the update. Called from a scene setup, it is gone
+// before the player sees it.
+static int c_removeObject(lua_State *L)
+{
+   const char* objectName = lua_tostring(L, 1);
+   bool removed = (objectName != NULL) &&
+      g_LuaInterface.getSceneActor()->removeChildObject(objectName);
+   lua_pushboolean(L, removed);
+   return 1;
+}
+
 static int c_setObjectMapState(lua_State *L)
 {
    std::string objectName = lua_tostring(L, 1);
@@ -1206,7 +1220,9 @@ static int c_loadLatestSave(lua_State *L)
 static int c_exitSceneSaveGameStatus(lua_State *L)
 {
    std::string sceneName = lua_tostring(L, 1);
-   int mission = lua_tointeger(L, 2);
+   // The mission's name (a number, as old scripts gave it, is read as text)
+   const char* missionText = lua_tostring(L, 2);
+   std::string mission = missionText ? missionText : "";
    int state = lua_tointeger(L, 3);
    int type = lua_tointeger(L, 4);
    std::string exitSceneName = lua_tostring(L, 5);
@@ -1224,7 +1240,9 @@ static int c_exitSceneSaveGameStatus(lua_State *L)
 static int c_saveGameStatus(lua_State* L)
 {
    std::string sceneName = lua_tostring(L, 1);
-   int mission = lua_tointeger(L, 2);
+   // The mission's name (a number, as old scripts gave it, is read as text)
+   const char* missionText = lua_tostring(L, 2);
+   std::string mission = missionText ? missionText : "";
    int state = lua_tointeger(L, 3);
    int type = lua_tointeger(L, 4);
 
@@ -1291,8 +1309,9 @@ void LuaInterface::initLuaInterface(void)
    preloadModule("lua/swarm.lua", "swarm");
    preloadModule("lua/debt.lua", "debt");
    preloadModule("lua/baxter_ship.lua", "baxterShip");
-   preloadModule("lua/mission_1.lua", "mission1");
-   preloadModule("lua/mission_2.lua", "mission2");
+   preloadModule("lua/mission_beacons.lua", "mission_beacons");
+   preloadModule("lua/mission_package.lua", "mission_package");
+   preloadModule("lua/mission_stash.lua", "mission_stash");
    preloadModule("lua/test_starts.lua", "test_starts");
 
    //result = lua_pcall(m_L, 0, 0, 0);
@@ -1348,6 +1367,7 @@ void LuaInterface::initLuaInterface(void)
    lua_register(m_L, "c_setObjectProperty", c_setObjectProperty);
    lua_register(m_L, "c_getObjectProperty", c_getObjectProperty);
    lua_register(m_L, "c_objectExists", c_objectExists);
+   lua_register(m_L, "c_removeObject", c_removeObject);
    lua_register(m_L, "c_setObjectMapState", c_setObjectMapState);
    lua_register(m_L, "c_setObjectMapAffiliation", c_setObjectMapAffiliation);
    lua_register(m_L, "c_setObjectMapShown", c_setObjectMapShown);
@@ -1456,7 +1476,7 @@ void LuaInterface::lua_printPaths(void) {
    logs::messageln("cpath: `%s`", cpath);
    logs::messageln("path: `%s`", path);
 
-   isModulePreloaded(m_L, "mission_1");
+   isModulePreloaded(m_L, "mission_beacons");
 
    logs::messageln("Line to break");
 }
@@ -1584,7 +1604,8 @@ bool LuaInterface::lua_prepareTestStart(int index, TestStart& start, std::string
       const char* exitScene = lua_tostring(m_L, -3);
       start.m_scene = scene ? scene : "";
       start.m_sceneType = (int)lua_tointeger(m_L, -6);
-      start.m_mission = (int)lua_tointeger(m_L, -5);
+      const char* mission = lua_tostring(m_L, -5);
+      start.m_mission = mission ? mission : "";
       start.m_state = (int)lua_tointeger(m_L, -4);
       start.m_exitScene = exitScene ? exitScene : "";
       start.m_exitType = (int)lua_tointeger(m_L, -2);
@@ -1599,7 +1620,7 @@ void LuaInterface::lua_forceCurrentScene(void)
 {
    int a1 = lua_getglobal(m_L, "lua_forceCurrentScene");
    lua_pushstring(m_L, g_GameStatus.getCurrentScene().c_str());
-   lua_pushinteger(m_L, g_GameStatus.getCurrentMission());
+   lua_pushstring(m_L, g_GameStatus.getCurrentMission().c_str());
    lua_pushinteger(m_L, g_GameStatus.getCurrentState());
    lua_pushinteger(m_L, g_GameStatus.getCurrentSceneType());
 

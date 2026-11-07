@@ -21,7 +21,7 @@ GameStatus::GameStatus() :
    m_currentSceneFile(""),
    m_exitSceneFile(""),
    m_currentSceneType(0),
-   m_currentMission(0),
+   m_currentMission(""),
    m_currentState(0),
    m_exitSceneType(0),
    m_exitParameter(0),
@@ -305,7 +305,7 @@ void GameStatus::gameStatusNewGameInit(void)
    m_currentSceneFile = "not_defined";
    m_exitSceneFile = "not_defined";
    m_currentSceneType = 0;
-   m_currentMission = 0;
+   m_currentMission = "";
    m_currentState = 0;
    m_exitSceneType = -1;   // This will force loading the initial leapfrog for the mission.
    m_exitParameter = -1;
@@ -335,7 +335,7 @@ void GameStatus::gameStatusNewGameInit(void)
    root.attribute("currentSceneFile").set_value(m_currentSceneFile.c_str());
    root.attribute("exitSceneFile").set_value(m_exitSceneFile.c_str());
    root.attribute("currentSceneType").set_value(m_currentSceneType);
-   root.attribute("currentMission").set_value(m_currentMission);
+   root.attribute("currentMission").set_value(m_currentMission.c_str());
    root.attribute("currentState").set_value(m_currentState);
    root.attribute("exitSceneType").set_value(m_exitSceneType);
    root.attribute("exitParameter").set_value(m_exitParameter);
@@ -419,7 +419,7 @@ void GameStatus::initializeGameStatusXmlDocument(void)
 
 void GameStatus::setSceneMissionState(
    const std::string& scene, 
-   int mission, 
+   const std::string& mission, 
    int state, 
    int type, 
    const std::string& exitScene, 
@@ -449,7 +449,7 @@ void GameStatus::saveGameStatus(void)
    root.attribute("currentSceneFile").set_value(m_currentSceneFile.c_str());
    root.attribute("exitSceneFile").set_value(m_exitSceneFile.c_str());
    root.attribute("currentSceneType").set_value(m_currentSceneType);
-   root.attribute("currentMission").set_value(m_currentMission);
+   root.attribute("currentMission").set_value(m_currentMission.c_str());
    root.attribute("currentState").set_value(m_currentState);
    root.attribute("exitSceneType").set_value(m_exitSceneType);
    root.attribute("exitParameter").set_value(m_exitParameter);
@@ -496,7 +496,9 @@ void GameStatus::readGameStatus(void)
    m_currentSceneFile = root.attribute("currentSceneFile").as_string("");
    m_exitSceneFile = root.attribute("exitSceneFile").as_string("");
    m_currentSceneType = root.attribute("currentSceneType").as_int(0);
-   m_currentMission = root.attribute("currentMission").as_int(0);
+   // A name; saves from before missions had names hold a number, which
+   // lua_forceCurrentScene (scene_navigator.lua) turns into its name
+   m_currentMission = root.attribute("currentMission").as_string("");
    m_currentState = root.attribute("currentState").as_int(0);
    m_exitSceneType = root.attribute("exitSceneType").as_int(0);
    m_exitParameter = root.attribute("exitParameter").as_int(0);
@@ -573,7 +575,7 @@ std::string GameStatus::getCurrentScene(void)
    return m_currentSceneFile;
 }
 
-int GameStatus::getCurrentMission(void)
+std::string GameStatus::getCurrentMission(void)
 {
    return m_currentMission;
 }

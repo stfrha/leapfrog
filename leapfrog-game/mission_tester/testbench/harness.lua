@@ -146,11 +146,11 @@ function T:menuContinue()
    step(self, function() self.engine:continueGame() end)
 end
 
--- Mission 1 played through from a new game: standing on the third beacon's
--- pad, mission 2's offer open
+-- The mission "beacons" played through from a new game: standing on the
+-- third beacon's pad, the next mission's ("package") offer open
 function T:throughBeacons()
    self:newGame()
-   local m = self:mission(1)
+   local m = self:mission("beacons")
    self:land("siloLandingPad")
    self:answer(m.Question.takeJob, true)
    self:takeOff()
@@ -163,13 +163,31 @@ function T:throughBeacons()
    self:takeOff()
    self:land("villagePad")
    self:wait(3.1)
-   self:expectMission(2)
+   self:expectMission("package")
+end
+
+-- ... then the mission "package": the trip to the station and the package
+-- delivered on the village pad; the stash job is offered there
+function T:throughPackage()
+   self:throughBeacons()
+   local m = self:mission("package")
+   self:answer(m.Question.fetch, true)
+   self:takeOff()
+   self:launch("launchSite1")
+   self:expectScene("deep_space_scene.xml")
+   self:event("dockingStation1", "DsDk")
+   self:expectState(m.State.carrying)
+   self:exitScene(1, 3)
+   self:reentry("onSite", 1)                -- the village site: the village pad
+   self:expectScene("home_scene.xml")
+   self:land("villagePad")
+   self:expectMission("stash")
 end
 
 -- ... and the stash job taken, in the air
 function T:stashJobTaken()
-   self:throughBeacons()
-   local m = self:mission(2)
+   self:throughPackage()
+   local m = self:mission("stash")
    self:answer(m.Question.acceptJob, true)
    self:expectState(m.State.toLaunch)
    self:takeOff()
@@ -330,7 +348,7 @@ function T:breakObject(name)
    step(self, function() self.engine:breakObject(name) end)
 end
 
--- Sets a global of the scripts (e.g. currentMission = 0 for free play)
+-- Sets a global of the scripts (e.g. currentMission = "freePlay")
 function T:setGlobal(name, value)
    self.engine.env[name] = value
 end
@@ -400,11 +418,12 @@ end
 -- ------------------------------------------------------------------------
 -- Looking at the game
 
-function T:mission(n)
+-- A mission's module, by the mission's name (lua/mission_<name>.lua)
+function T:mission(name)
    local env = self.engine.env
-   local mod = env and env.package.loaded["mission" .. n]
+   local mod = env and env.package.loaded["mission_" .. tostring(name)]
    if type(mod) ~= "table" then
-      self:fail("mission " .. n .. "'s module is not loaded", 2)
+      self:fail("mission " .. tostring(name) .. "'s module is not loaded", 2)
    end
    return mod
 end

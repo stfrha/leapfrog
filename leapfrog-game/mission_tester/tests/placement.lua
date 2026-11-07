@@ -122,7 +122,7 @@ end)
 
 test("placement: the stash asteroid drifts in, the boundary doesn't throw it", function(t)
    t:newGame()
-   local stash = t:mission(2).Stash
+   local stash = t:mission("stash").Stash
    local box = placement.sceneBox(sceneRoot(stash.space), harness.srcDir)
 
    t:expect(placement.depth(box, stash.x, stash.y) > 0, "it comes from the boundary, not from inside")

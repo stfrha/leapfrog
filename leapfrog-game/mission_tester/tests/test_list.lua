@@ -1,8 +1,9 @@
 -- The test files run_tests.lua runs when given none (in this folder)
 return {
    "scripts.lua",
-   "mission1_beacons.lua",
-   "mission2_stash.lua",
+   "mission_beacons.lua",
+   "mission_package.lua",
+   "mission_stash.lua",
    "mining_repair.lua",
    "test_mission.lua",
    "saving.lua",
