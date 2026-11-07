@@ -59,6 +59,12 @@ Swarm::Swarm(
    m_properties.push_back(ObjectProperty(this, NULL, propSpawned, 0.0f, true));
    m_properties.push_back(ObjectProperty(this, NULL, propRecall, 0.0f));
 
+   for (int i = 0; i < 4; i++)
+   {
+      m_take[i] = 0.0f;
+      m_properties.push_back(ObjectProperty(this, NULL, propAmmoTake + i, 0.0f));
+   }
+
    scheduleNext();
 }
 
@@ -255,6 +261,28 @@ void Swarm::recall(void)
    }
 }
 
+// The takes set from Lua go to every stripper alive (and so, each frame,
+// to the new ones too, before they have faded in and can grab)
+void Swarm::passOnTakes(void)
+{
+   if ((m_take[0] <= 0.0f) && (m_take[1] <= 0.0f) && (m_take[2] <= 0.0f) && (m_take[3] <= 0.0f))
+   {
+      return;
+   }
+
+   vector<CompoundObject*> alive = m_tally->aliveObjects();
+
+   for (auto it = alive.begin(); it != alive.end(); ++it)
+   {
+      Stripper* st = dynamic_cast<Stripper*>(*it);
+
+      if (st)
+      {
+         st->setLootAmounts(m_take[0], m_take[1], m_take[2], m_take[3]);
+      }
+   }
+}
+
 void Swarm::setPropertyImpl(int propId, float value)
 {
    switch (propId)
@@ -278,6 +306,13 @@ void Swarm::setPropertyImpl(int propId, float value)
       }
       m_properties[propRecall].setPropertyNoEvent(0.0f);
       break;
+   case propAmmoTake:
+   case propShieldTake:
+   case propFuelTake:
+   case propCreditsTake:
+      m_take[propId - propAmmoTake] = max(0.0f, value);
+      passOnTakes();
+      break;
    default:
       break;
    }
@@ -296,6 +331,8 @@ void Swarm::doUpdate(const oxygine::UpdateState& us)
    {
       m_properties[propAlive].setProperty((float)alive);
    }
+
+   passOnTakes();
 
    if (!m_active)
    {

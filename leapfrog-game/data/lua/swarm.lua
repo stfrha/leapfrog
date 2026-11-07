@@ -36,6 +36,9 @@ local Prop = {
    alive    = 3,   -- read only
    spawned  = 4,   -- read only
    recall   = 5,   -- write 1: the live strippers leave
+   -- What each stripper takes per grab, of ammo, shield, fuel, credits
+   -- (0: what stripper.xml says). See swarm.takeShare.
+   ammoTake = 6, shieldTake = 7, fuelTake = 8, creditsTake = 9,
 }
 swarm.Prop = Prop
 
@@ -86,6 +89,30 @@ function swarm.stop(name, recall)
       c_setObjectProperty(name, Prop.recall, 1)
    end
    running[name] = nil
+end
+
+-- swarm.takeShare(name, share)
+-- From now on each grab of the swarm's strippers takes share (e.g. 0.1) of
+-- what the Leapfrog has of each resource now, so it takes 1 / share grabs
+-- to empty each, however stocked up the Leapfrog came. Call it when the
+-- raid starts, after swarm.start, and only then: not in every setup.
+function swarm.takeShare(name, share)
+   local takes = {
+      { Prop.ammoTake, 5, true },  { Prop.shieldTake, 6, false },
+      { Prop.fuelTake, 7, false }, { Prop.creditsTake, 8, true },
+   }
+   for _, t in ipairs(takes) do
+      local has = c_getObjectProperty("leapfrog1", t[2])
+      local take = has * share
+      if t[3] then
+         take = math.ceil(take)           -- whole shots and credits
+      else
+         take = take * 1.001              -- the last grab gets the crumbs
+      end
+      if take > 0 then
+         c_setObjectProperty(name, t[1], take)
+      end
+   end
 end
 
 -- Harder or easier from now on (ends the swarm's own ramp)

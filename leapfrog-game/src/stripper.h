@@ -183,6 +183,10 @@ public:
    // from anywhere, also during the physics step.
    void leaveNow(void);
 
+   // What one grab takes, of each; a value of 0 or less keeps the one from
+   // the file (the swarm passes on what a mission sets, see swarm.h)
+   void setLootAmounts(float ammo, float shield, float fuel, float credits);
+
    StripperState getState(void) const { return m_state; }
 
    // For the contact listeners' PreSolve: strippers pass through each

@@ -69,6 +69,8 @@ local caseCheckTicks = 10        -- the case appears on the update after the
 local jackpotTicks = 900         -- 15 s to grab the loot before the raid
 local limpHomeFuel = 15          -- what the raiders leave in the tank
 mission.limpHomeFuel = limpHomeFuel
+local raidShare = 0.1            -- of each resource, per stripper grab
+mission.raidShare = raidShare
 local edithFuel = 25             -- what Edith leaves in it at the silo
 mission.edithFuel = edithFuel
 local ammoProperty = 5           -- the Leapfrog's ammo
@@ -213,6 +215,8 @@ local function startRaid()
    swarm.start("swarm", "stripper_swarm.xml", function(name)
       strippedByRaiders()
    end)
+   -- However stocked up he came, ten grabs empty each resource
+   swarm.takeShare("swarm", raidShare)
 end
 
 local function setupStashHunt()
@@ -272,13 +276,10 @@ local function playOffer()
    offerPending = true
 end
 
+-- The second trip to space (her first launch was in mission "package")
 local function waitingForLaunch()
-   c_addDialogMessage("Yay! We are going to space!", "Edith", true, 120, 0)
-   c_addDialogMessage("Yay? How old are you?", "Leapfrog", false, 90, 0)
-   c_addDialogMessage("Nineteen", "Edith", true, 90, 0)
-   c_addDialogMessage("Thirteen", "Edith", true, 150, 0)
-   c_addDialogMessage("Well you stay away from my stuff.", "Leapfrog", false, 90, 0)
-   c_addDialogMessage("Brace for launch now!", "Edith", true, 60, 0)
+   c_addDialogMessage("Space again! Can we stop at the station? Please say yes.", "Edith", true, 120, 0)
+   c_addDialogMessage("We are not going there, this time. We are going somewhere else.", "Leapfrog", false, 90, 0)
 end
 
 local function askAgain()
@@ -291,7 +292,9 @@ end
 
 local function showLaunchSite()
    c_setObjectMapShown("launchSite1", "mainTank", currentState >= State.toLaunch)
-   c_setObjectMapState("launchSite1", "mainTank", 2)
+   -- Flashing only while it is where he is going; after that it is just
+   -- on the map (hollow)
+   c_setObjectMapState("launchSite1", "mainTank", currentState == State.toLaunch and 2 or 0)
 end
 
 local function answerJob(yes)

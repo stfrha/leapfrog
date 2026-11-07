@@ -46,10 +46,15 @@ test("package: taking it shows the launch site; the launch goes to the big space
    t:answer(m.Question.fetch, true)
    t:expectState(m.State.toLaunch)
    t:expectMapShown("launchSite1", "mainTank", true)
+   t:expectMap("launchSite1", "mainTank", "flashingSlow")
    t:takeOff()
    t:launch("launchSite1")
    t:expectScene("deep_space_scene.xml")
    t:expectState(m.State.toStation)
+   -- Her first trip to space
+   t:expectDialog("Yay! We are going to space!", "Edith")
+   t:expectDialog("How old are you?", "Leapfrog")
+   t:expectDialog("Brace for launch now!", "Edith")
 end)
 
 test("package: going up without answering takes the job", function(t)
@@ -106,6 +111,7 @@ test("package: docking: the station master's welcome, fuel, ammo, credits, the p
    t:expectState(m.State.carrying)
    t:expectMap(station, "stationBase", "hollow")
    t:expectHud("Package aboard")
+   t:expectDialog("just boost off", master)
 end)
 
 test("package: the station keeps its secrets for later: no bad mine solution yet", function(t)
@@ -130,6 +136,7 @@ test("package: the re-entry ends at the village pad; the Ore is the wrong place"
    local m = home(t)
    t:expectState(m.State.carrying)
    t:expectMap("villagePad", "siloHome", "flashingSlow")
+   t:expectMap("launchSite1", "mainTank", "hollow")    -- not where he's going
    t:land("oreLanding")
    t:expectDialog("Not here. The pad outside the village.", "Bruno")
    t:expectMission("package")

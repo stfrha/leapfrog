@@ -109,7 +109,9 @@ end
 
 local function showLaunchSite()
    c_setObjectMapShown("launchSite1", "mainTank", currentState >= State.toLaunch)
-   c_setObjectMapState("launchSite1", "mainTank", 2)
+   -- Flashing only while it is where he is going; after that it is just
+   -- on the map (hollow)
+   c_setObjectMapState("launchSite1", "mainTank", currentState == State.toLaunch and 2 or 0)
 end
 
 local function answerFetch(yes)
@@ -127,11 +129,15 @@ local function answerFetch(yes)
    showLaunchSite()
 end
 
+-- The first trip to space: Edith's first launch
 local function launching()
    currentState = State.toStation
-   c_addDialogMessage("Space again! Can we stop at the station? Please say yes.", "Edith", true, 120, 0)
-   c_addDialogMessage("We have to. That's the job.", "Leapfrog", false, 90, 0)
-   c_addDialogMessage("Yes!", "Edith", true, 60, 0)
+   c_addDialogMessage("Yay! We are going to space!", "Edith", true, 120, 0)
+   c_addDialogMessage("Yay? How old are you?", "Leapfrog", false, 90, 0)
+   c_addDialogMessage("Nineteen", "Edith", true, 90, 0)
+   c_addDialogMessage("Thirteen", "Edith", true, 150, 0)
+   c_addDialogMessage("Well you stay away from my stuff.", "Leapfrog", false, 90, 0)
+   c_addDialogMessage("Brace for launch now!", "Edith", true, 60, 0)
 end
 
 -- Landed on the village pad with the package
@@ -196,6 +202,7 @@ local function dockedAtStation()
    c_addDialogMessage("Didn't ask. Up here, that's good manners. Come back any time, and bring the kid.", master, true, 90, 0)
    c_addDialogMessage("He knows about me?!", "Edith", true, 150, 0)
    c_addDialogMessage("Everybody's heard you on the open channel, dear.", master, true, 90, 0)
+   c_addDialogMessage("Whenever you're ready to go, just boost off. The clamp lets go by itself.", master, true, 120, 0)
    c_hudLog("Package aboard")
 end
 

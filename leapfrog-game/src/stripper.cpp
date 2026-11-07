@@ -498,6 +498,14 @@ void Stripper::restoreFilters(void)
    }
 }
 
+void Stripper::setLootAmounts(float ammo, float shield, float fuel, float credits)
+{
+   if (ammo > 0.0f) m_ammoAmount = ammo;
+   if (shield > 0.0f) m_shieldAmount = shield;
+   if (fuel > 0.0f) m_fuelAmount = fuel;
+   if (credits > 0.0f) m_creditsAmount = credits;
+}
+
 // Takes one of the resources in the steal list that the Leapfrog has,
 // picked at random. Returns what it took (lootNone if nothing).
 int Stripper::takeLoot(LeapFrog* lf)

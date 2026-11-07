@@ -909,8 +909,10 @@ are in `stripper_swarm.xml`, and `swarm.set` changes them during play.
 
 ### Show the Baxters' ship in the background
 
-`baxterShip` in `deep_space_scene.xml` is the Baxters' homestead ship on the 0.9
-parallax layer, hidden at the start (`alpha="0"`). It has no body. Call these from the
+`baxterShip` in `deep_space_scene.xml` is the Baxters' homestead ship, hidden at the
+start (`alpha="0"`). It has no body. It sits in the scene behind everything
+(`parallaxAmount="0"`, zLevel 0), small and hazy (its colour, and `baxterShip.haze`),
+so it stays put while the Leapfrog flies. On a parallax layer it seemed to follow him. Call these from the
 setup or an event handler; a scene load hides it again, so use `show()` in the setup
 for every state in which it's already there:
 
@@ -1170,6 +1172,7 @@ is listed here, and that everything listed exists.
 | `swarm.start(name, file, onStripped, resources)` | Adds and watches a swarm |
 | `swarm.stop(name, recall)` | Stops spawning, and recalls the strippers if `recall` is true |
 | `swarm.set(name, rate, maxAlive)` | Changes a swarm's rate and limit |
+| `swarm.takeShare(name, share)` | From now on each grab takes `share` (e.g. 0.1) of what the Leapfrog has of each resource now. Call it once, when the raid starts. |
 | `swarm.isRunning(name)`, `swarm.isStripped(resources)` | Checks a swarm or the Leapfrog |
 | `debt.charge(amount, what, later)` | Charges credits, and Bruno lends the rest |
 | `debt.owed()`, `debt.isOwing()` | What is owed, and whether anything is |
@@ -1316,6 +1319,7 @@ read-only. Values are floats, so use `math.floor` before showing credits.
 | | 1, 2 | Spawns per second, and most alive at a time |
 | | 3, 4 | Alive now, and spawned so far. Read-only. |
 | | 5 | Write 1 to recall the live strippers |
+| | 6, 7, 8, 9 | What each of its strippers takes per grab, of ammo, shield, fuel, credits. 0: what `stripper.xml` says. |
 | Breakable object | 0 | Damage |
 | Explosive object | 0 | Impulse needed to explode |
 | Steerable object | 0 | Mode: 0 wander, 1 seek, 2 pursuit, 3 flee, 4 wander-hunt, 5 fixed |

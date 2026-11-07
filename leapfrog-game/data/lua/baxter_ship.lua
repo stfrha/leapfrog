@@ -1,7 +1,10 @@
 -- The Baxters' homestead ship, far in the background of a space scene: a
 -- sign that they are around. It has no body; it's the sprite "baxterShip"
--- on a parallax layer (0.9) in deep_space_scene.xml, hidden at the start
--- (alpha="0"). Its texture, baxter_homestead (models/sprites/
+-- in deep_space_scene.xml, hidden at the start (alpha="0"). It sits in the
+-- scene itself (parallaxAmount="0", zLevel 0, behind everything but the
+-- stars), so it stays put while the Leapfrog flies; small and hazy (the
+-- sprite's colour, and the alpha baxterShip.haze below) so it reads as far
+-- away. (On a parallax layer it followed the Leapfrog about.) Its texture, baxter_homestead (models/sprites/
 -- baxter_homestead.py), has two frames: 0 engines burning, 1 cold.
 --
 --   local baxterShip = require('baxterShip')
@@ -23,7 +26,8 @@
 -- scene with its own ship sprite (default "baxterShip"). arrive and leave
 -- take the time in seconds first (nil: the default).
 --
--- Tags are overlay sprites in the scene, on the same layer as the ship,
+-- Tags are overlay sprites in the scene, on the same layer as the ship
+-- (and the same colour),
 -- hidden at the start (alpha="0", zLevel above the ship). They move,
 -- scale and fade with the ship, at their offset from its centre (times
 -- its scale), so they stay on the doors. A new tag: draw it (transparent
@@ -45,20 +49,24 @@ local baxterShip = {}
 
 baxterShip.shape = "baxterShip"
 
--- Where it parks, in stage units as in the scene file (its centre), in the
+-- Where it parks, in scene units as in the scene file (its centre), in the
 -- big space
 baxterShip.park = { x = 1000, y = 230 }
 
 -- Where it parks in each scene that has the sprites, and its size there
--- relative to the big space's (the sprites in that scene file are that much
--- smaller; the travel and the overlays' offsets scale with it)
+-- relative to a 480 x 120 ship (the sprites in that scene file are that
+-- size; the travel and the overlays' offsets scale with it)
 baxterShip.places = {
-   ["deep_space_scene.xml"]  = { x = baxterShip.park.x, y = baxterShip.park.y, size = 1 },
-   ["debris_belt_scene.xml"] = { x = 330, y = 90, size = 0.5 },
+   ["deep_space_scene.xml"]  = { x = baxterShip.park.x, y = baxterShip.park.y, size = 0.5 },   -- 240 x 60
+   ["debris_belt_scene.xml"] = { x = 330, y = 90, size = 0.25 },                                 -- 120 x 30
 }
 
+-- How much of it shows when it's there: less than 1 lets the stars through,
+-- a haze that puts it far away
+baxterShip.haze = 0.7
+
 local function place()
-   return baxterShip.places[currentScene] or { x = baxterShip.park.x, y = baxterShip.park.y, size = 1 }
+   return baxterShip.places[currentScene] or { x = baxterShip.park.x, y = baxterShip.park.y, size = 0.5 }
 end
 
 -- Where it comes from and goes to, relative to where it parks, and how
@@ -69,8 +77,8 @@ baxterShip.to = { dx = 520, dy = -70, scale = 0.2 }
 baxterShip.arriveSeconds = 14
 baxterShip.leaveSeconds = 16
 
--- Overlay sprites per ship sprite, at their offset from its centre (stage
--- units at scale 1, y down)
+-- Overlay sprites per ship sprite, at their offset from its centre (units
+-- of a 480 x 120 ship at scale 1, y down)
 baxterShip.overlays = {
    baxterShip = {
       baxterTag = { dx = -66.6, dy = 20.0 },
@@ -114,7 +122,7 @@ function baxterShip.show(shape)
    coolTimer = -1
    engines(shape, false)
    local p = place()
-   move(shape, p.x, p.y, 1, 1, 0)
+   move(shape, p.x, p.y, 1, baxterShip.haze, 0)
 end
 
 function baxterShip.hide(shape)
@@ -129,7 +137,7 @@ function baxterShip.arrive(seconds, shape)
    local p, f = place(), baxterShip.from
    engines(shape, true)
    move(shape, p.x + f.dx * p.size, p.y + f.dy * p.size, f.scale, 0, 0)
-   move(shape, p.x, p.y, 1, 1, seconds, "out")
+   move(shape, p.x, p.y, 1, baxterShip.haze, seconds, "out")
    coolShape = shape
    coolTimer = c_startSceneTimer(math.floor(seconds * 60) + coolDelayTicks)
 end

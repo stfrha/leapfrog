@@ -57,26 +57,26 @@
     collisionEntity="notApplicable"
     collisionCategory="1"
     collisionMask="65534"
-    width="480"
-    height="120"
-    color="c8d0dc"
+    width="240"
+    height="60"
+    color="9aa4b8"
     alpha="0"
-    parallaxAmount="0.9" />
+    parallaxAmount="0" />
   <spriteBox
     name="baxterTag"
     texture="graffiti_bxtr"
-    posX="933.4"
-    posY="250"
+    posX="966.7"
+    posY="240"
     angle="0"
     zLevel="1"
     collisionEntity="notApplicable"
     collisionCategory="1"
     collisionMask="65534"
-    width="32"
-    height="16"
-    color="c8d0dc"
+    width="16"
+    height="8"
+    color="9aa4b8"
     alpha="0"
-    parallaxAmount="0.9" />
+    parallaxAmount="0" />
   <behaviour
     type="scene">
     <sceneProperties

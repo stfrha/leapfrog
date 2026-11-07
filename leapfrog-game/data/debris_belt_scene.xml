@@ -5,7 +5,8 @@
   nowhere to hide, and ammo drifts in now and then. lua/mission_stash.lua
   decides when the exit opens and watches asteroidField, so keep that name.
   The Baxters' homestead ship (baxterShip, its tag baxterTag) waits hidden
-  on a far parallax layer, half the big space's size (lua/baxter_ship.lua). Tune with
+  behind everything, small and hazy, half the big space's size
+  (lua/baxter_ship.lua). Tune with
   width, height, rockSpeedMin and rockSpeedMax here, spawnInitial on the
   field, and intensity and maxAlive on ammoDrops.
 
@@ -52,26 +53,26 @@
     collisionEntity="notApplicable"
     collisionCategory="1"
     collisionMask="65534"
-    width="240"
-    height="60"
-    color="c8d0dc"
+    width="120"
+    height="30"
+    color="9aa4b8"
     alpha="0"
-    parallaxAmount="0.9" />
+    parallaxAmount="0" />
   <spriteBox
     name="baxterTag"
     texture="graffiti_bxtr"
-    posX="296.7"
-    posY="100"
+    posX="313.35"
+    posY="95"
     angle="0"
     zLevel="1"
     collisionEntity="notApplicable"
     collisionCategory="1"
     collisionMask="65534"
-    width="16"
-    height="8"
-    color="c8d0dc"
+    width="8"
+    height="4"
+    color="9aa4b8"
     alpha="0"
-    parallaxAmount="0.9" />
+    parallaxAmount="0" />
   <behaviour
     type="scene">
     <sceneProperties

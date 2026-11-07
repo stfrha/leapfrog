@@ -45,6 +45,11 @@ Properties (Lua):
    4 spawned     read only: spawned so far
    5 recall      write 1: every live stripper of the swarm gives up and
                  leaves (fades out); reads 0
+   6 ammoTake    what each of its strippers takes per grab, of ammo,
+   7 shieldTake  shield, fuel and credits. 0 (the default): what the
+   8 fuelTake    stripper's own file says (ammoAmount etc.). A mission
+   9 creditsTake sets them, e.g. to a tenth of what the Leapfrog has when
+                 the raid starts (swarm.lua's swarm.takeShare)
 */
 
 class Swarm : public CompoundObject
@@ -57,7 +62,11 @@ public:
       propMaxAlive = 2,
       propAlive = 3,
       propSpawned = 4,
-      propRecall = 5
+      propRecall = 5,
+      propAmmoTake = 6,
+      propShieldTake = 7,
+      propFuelTake = 8,
+      propCreditsTake = 9
    };
 
    enum SideEnum
@@ -88,6 +97,7 @@ private:
    float m_rampTime;
    int m_initialSpawn;
    int m_spawned;
+   float m_take[4];              // ammo, shield, fuel, credits; 0 = own
 
    std::vector<int> m_sides;
    float m_spawnInset;
@@ -100,6 +110,7 @@ private:
    bool spawnOne(void);
    bool pickSpawnPoint(oxygine::Vector2& pos);
    void recall(void);
+   void passOnTakes(void);
 
 protected:
    void setPropertyImpl(int propId, float value) override;

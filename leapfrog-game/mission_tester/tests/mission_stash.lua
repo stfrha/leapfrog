@@ -61,7 +61,9 @@ test("stash: the launch goes to the belt: the hunt, no stash yet, no strippers",
    t:expectSaved("scene", belt)
    t:expectSaved("state", S.hunting)
    t:expectHud("Sector: Debris Belt")
-   t:expectDialog("Yay!", "Edith")
+   t:expectDialog("Space again!", "Edith")
+   t:expectDialog("We are going somewhere else.", "Leapfrog")
+   t:expectNoDialog("How old are you?")
    t:expectDialog("Clear out some of this junk", "Bruno")
    t:expect(not t.engine:getObject("stashAsteroid"), "no stash asteroid yet")
    t:wait(11)
@@ -118,6 +120,25 @@ test("stash: the case shot open: the jackpot, then the raiders after a while", f
    t:expectDialog("That's our stash", "Raiders")
    t:expectDialog("From everywhere!", "Edith")
    t:expect(swarmActive(t), "the strippers come")
+end)
+
+test("stash: the raid: each grab takes a tenth of what he came with", function(t)
+   toJackpot(t)
+   -- Stocked up: whatever he has when the strippers come sets the share
+   t:setProperty("leapfrog1", 5, 143)
+   t:setProperty("leapfrog1", 6, 80)
+   t:setProperty("leapfrog1", 7, 250)
+   t:setProperty("leapfrog1", 8, 1234)
+   t:wait(16)
+   local s = t.engine:getObject("swarm")
+   t:expectEqual(s.props[6], 15, "ammo per grab (rounded up)")
+   t:expect(math.abs(s.props[7] - 8) < 0.02, "shield per grab: a tenth")
+   t:expect(math.abs(s.props[8] - 25) < 0.05 and s.props[8] >= 25, "fuel per grab: a tenth, not less")
+   t:expectEqual(s.props[9], 124, "credits per grab (rounded up)")
+   -- Ten grabs empty the fuel
+   local fuel = 250
+   for i = 1, 10 do fuel = fuel - math.min(fuel, s.props[8]) end
+   t:expectEqual(fuel, 0, "fuel after ten grabs")
 end)
 
 test("stash: half the ammo gone in the raid: Edith says so, once", function(t)
@@ -303,10 +324,10 @@ test("stash: the Baxters' homestead comes in with the raid and leaves with the l
    t:expect(m ~= nil, "the homestead arrives")
    t:expectEqual(m.x, place.x, "parks at x")
    t:expectEqual(m.y, place.y, "parks at y")
-   t:expectEqual(m.alpha, 1, "visible")
+   t:expectEqual(m.alpha, B.haze, "visible, hazy")
    local tag = t.engine.scene.moves.baxterTag
    local o = B.overlays.baxterShip.baxterTag
-   t:expectEqual(tag.x, place.x + o.dx * place.size, "the tag at the half-size offset")
+   t:expectEqual(tag.x, place.x + o.dx * place.size, "the tag at the offset times its size")
    strip(t)
    t:expectEqual(t.engine.scene.moves.baxterShip.alpha, 0, "it leaves, fading out")
 end)
