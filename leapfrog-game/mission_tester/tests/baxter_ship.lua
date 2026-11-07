@@ -29,7 +29,15 @@ test("baxter ship: in the scene file, hidden at the start, in the scene behind e
    t:expectEqual(tonumber(ship.attr.alpha), 0, "alpha")
    -- Not on a parallax layer: there it followed the Leapfrog about
    t:expectEqual(tonumber(ship.attr.parallaxAmount or 0), 0, "in the scene, not on a parallax layer")
-   t:expectEqual(tonumber(ship.attr.zLevel), 0, "behind everything")
+   -- Above the starfield (a polygon: at the same zLevel it covers the ship,
+   -- as sprite boxes are made first), below everything else
+   local stars
+   for _, c in ipairs(root.children) do
+      if c.tag == "spritePolygon" and c.attr.texture == "starfield" then stars = c end
+   end
+   t:expect(stars ~= nil, "the starfield polygon")
+   t:expect(tonumber(ship.attr.zLevel) > tonumber(stars.attr.zLevel), "in front of the stars")
+   t:expect(tonumber(ship.attr.zLevel) < 10, "behind everything else")
    t:expectEqual(ship.attr.texture, "baxter_homestead", "texture")
 end)
 
@@ -140,5 +148,11 @@ test("baxter ship: each scene's sprites match its place: size, tag offset, colou
       t:expect(math.abs(tonumber(tag.attr.posY) - (p.y + o.dy * p.size)) < 0.06, scene .. ": tag y")
       t:expectEqual(tag.attr.color, ship.attr.color, scene .. ": same colour")
       t:expectEqual(tonumber(tag.attr.parallaxAmount or 0), 0, scene .. ": tag in the scene")
+      for _, c in ipairs(t.engine:readXml(scene).children) do
+         if c.tag == "spritePolygon" and c.attr.texture == "starfield" then
+            t:expect(tonumber(ship.attr.zLevel) > tonumber(c.attr.zLevel), scene .. ": ship in front of the stars")
+         end
+      end
+      t:expect(tonumber(tag.attr.zLevel) > tonumber(ship.attr.zLevel), scene .. ": tag on the ship")
    end
 end)

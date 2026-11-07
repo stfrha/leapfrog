@@ -911,7 +911,7 @@ are in `stripper_swarm.xml`, and `swarm.set` changes them during play.
 
 `baxterShip` in `deep_space_scene.xml` is the Baxters' homestead ship, hidden at the
 start (`alpha="0"`). It has no body. It sits in the scene behind everything
-(`parallaxAmount="0"`, zLevel 0), small and hazy (its colour, and `baxterShip.haze`),
+(`parallaxAmount="0"`, zLevel 1, just above the starfield polygon at 0), small and hazy (its colour, and `baxterShip.haze`),
 so it stays put while the Leapfrog flies. On a parallax layer it seemed to follow him. Call these from the
 setup or an event handler; a scene load hides it again, so use `show()` in the setup
 for every state in which it's already there:

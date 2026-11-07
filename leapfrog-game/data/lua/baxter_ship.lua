@@ -1,8 +1,10 @@
 -- The Baxters' homestead ship, far in the background of a space scene: a
 -- sign that they are around. It has no body; it's the sprite "baxterShip"
 -- in deep_space_scene.xml, hidden at the start (alpha="0"). It sits in the
--- scene itself (parallaxAmount="0", zLevel 0, behind everything but the
--- stars), so it stays put while the Leapfrog flies; small and hazy (the
+-- scene itself (parallaxAmount="0", zLevel 1: in front of the starfield,
+-- which is a polygon at zLevel 0, and behind everything else; at the same
+-- zLevel the starfield would cover it, as sprite boxes are made before
+-- polygons), so it stays put while the Leapfrog flies; small and hazy (the
 -- sprite's colour, and the alpha baxterShip.haze below) so it reads as far
 -- away. (On a parallax layer it followed the Leapfrog about.) Its texture, baxter_homestead (models/sprites/
 -- baxter_homestead.py), has two frames: 0 engines burning, 1 cold.
