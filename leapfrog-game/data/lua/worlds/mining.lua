@@ -7,6 +7,7 @@ local mining = {}
 
 local swarm = require('swarm')
 local debt = require('debt')
+local baxterShip = require('baxterShip')
 
 -- ------------------------------------------------------------------------
 -- Leg repair at home (the silo's pad). Leapfrog property 10 is the lowest
@@ -74,17 +75,30 @@ end
 -- Down off the site: a recovery crew picks the Leapfrog up and sets it
 -- down on the site's pad (scene_navigator.lua), for a fee by the distance (a site's marker is 100
 -- planet units wide); what the credits don't cover, Bruno lends.
--- Bounced off the atmosphere: back in deep space, where the strippers
--- hold off for a while. Burned up: the game goes back to the latest save.
+-- Bounced off the atmosphere: back in deep space with damaged leg joints,
+-- and if the Baxters are about, their strippers hold off for a while.
+-- Burned up: the game goes back to the latest save.
 -- What is said comes at the next scene's setup.
 
 local recoveryBaseFee = 20
 local recoveryFeePerUnit = 0.4      -- 40 credits per marker width off
 local bounceGraceTicks = 600        -- 10 s before the swarm starts
+local bounceLegJoints = 2           -- joints hurt by a bounce, of the six
+local bounceLegDamage = 0.25        -- health each of them loses
 
 local arrivalLines = {}             -- { sender, text } for the next setup
 local arrivalHud = {}               -- HUD log lines for the next setup
 local bouncedBack = false           -- arriving in deep space by a bounce
+
+-- A bounce can't fail a joint: it stops at what the silo's field fix gives
+local function damageLegsByBounce()
+   local joints = { 0, 1, 2, 3, 4, 5 }
+   for i = 1, bounceLegJoints do
+      local pick = math.random(i, #joints)
+      joints[i], joints[pick] = joints[pick], joints[i]
+      c_damageLegJoint(joints[i], bounceLegDamage, legFieldFixHealth)
+   end
+end
 
 local function recoveryFee(distance)
    return math.ceil(recoveryBaseFee + recoveryFeePerUnit * distance)
@@ -101,6 +115,8 @@ mining.reentryOutcome = function(r)
 
    elseif r.outcome == "bounced" then
       arrivalHud[#arrivalHud + 1] = "Bounced off the atmosphere"
+      arrivalHud[#arrivalHud + 1] = "Leg joints damaged"
+      damageLegsByBounce()
       bouncedBack = true
 
    elseif r.outcome == "burnedUp" then
@@ -120,6 +136,28 @@ local function sayArrival()
 end
 
 local swarmTimer = -1
+
+<<<<<<< ours
+-- The strippers are the Baxters'. They are in this world's space only while a
+-- mission says so (mining.setBaxtersInSpace), which is saved, so it holds from
+-- mission to mission and in free play.
+local baxtersInSpaceValue = "baxtersInSpace"
+
+mining.baxtersInSpace = function()
+   return c_getSavedValue(baxtersInSpaceValue) == 1
+end
+
+mining.setBaxtersInSpace = function(inSpace)
+   c_setSavedValue(baxtersInSpaceValue, inSpace and 1 or 0)
+end
+=======
+-- Free play in deep space: the Baxters' homestead ship comes by, stays a
+-- while and leaves (missions place it themselves, see lua/baxter_ship.lua)
+local baxterArriveTicks = 60 * 15
+local baxterStayTicks = 60 * 75        -- from the start of its arrival
+local baxterArriveTimer = -1
+local baxterLeaveTimer = -1
+>>>>>>> theirs
 
 local function startSwarm()
    swarm.start("swarm", "stripper_swarm.xml", function(name)
@@ -309,6 +347,18 @@ mining.setupScene = function()
       addShieldPower()
    end
 
+<<<<<<< ours
+   -- The strippers come when the Leapfrog is in space and the Baxters are
+   -- about, unless the running mission has its own plans for them (mission
+   -- 2's raid)
+   if currentSceneType == 1 and mining.baxtersInSpace() and not missionHolds("swarm") then
+=======
+   baxterArriveTimer = -1
+   baxterLeaveTimer = -1
+   if currentScene == "deep_space_scene.xml" and currentMission == 0 then
+      baxterArriveTimer = c_startSceneTimer(baxterArriveTicks)
+   end
+
    -- The strippers come whenever the Leapfrog is in space, unless the
    -- running mission has its own plans for them (mission 1's raid)
 
@@ -319,6 +369,7 @@ mining.setupScene = function()
       bouncedBack = false
       swarmTimer = -1
    elseif currentSceneType == 1 then
+>>>>>>> theirs
       if bouncedBack or swarmTimer >= 0 then
          -- Back from a bounce: a breather before the swarm comes (again
          -- at a setup before it has started)
@@ -328,6 +379,7 @@ mining.setupScene = function()
          startSwarm()
       end
    else
+      bouncedBack = false
       swarmTimer = -1
    end
 
@@ -342,6 +394,15 @@ mining.eventHandler = function(eventId, actorName, parameter1)
    if eventId == "ScTO" and swarmTimer >= 0 and parameter1 == swarmTimer then
       swarmTimer = -1
       startSwarm()
+   end
+
+   if eventId == "ScTO" and baxterArriveTimer >= 0 and parameter1 == baxterArriveTimer then
+      baxterArriveTimer = -1
+      baxterShip.arrive()
+      baxterLeaveTimer = c_startSceneTimer(baxterStayTicks)
+   elseif eventId == "ScTO" and baxterLeaveTimer >= 0 and parameter1 == baxterLeaveTimer then
+      baxterLeaveTimer = -1
+      baxterShip.leave()
    end
 
    if currentScene == "home_scene.xml" then

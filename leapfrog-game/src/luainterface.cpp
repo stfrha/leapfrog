@@ -710,6 +710,97 @@ static int c_animateSprite(lua_State *L)
    return 1;
 }
 
+// c_moveSprite(shape, x, y, scale, alpha, seconds [, ease])
+// Moves, scales and fades a sprite (no body: for background pieces such as
+// a ship on a parallax layer) to x, y, scale and alpha over seconds.
+//   shape    a shape directly in the scene, or "object.shape"
+//   x, y     where its centre goes, in the units it was placed in (on a
+//            parallax layer: stage units, as in the scene file)
+//   scale    1 = the size in the scene file
+//   alpha    0 (hidden) .. 1
+//   seconds  0 or nil: at once
+//   ease     "linear", "in" (slow start), "out" (slow end) or "inout"
+//            (default)
+// nil for x, y, scale or alpha keeps what it is now. A new call replaces a
+// move still running (it goes on from where the sprite is). A scene load
+// starts over from the scene file (alpha="0" there hides it), so set it
+// up from the scene setup. Returns false if there's no such sprite.
+static const char* const c_moveTweenName = "lfMove";
+
+static int c_moveSprite(lua_State *L)
+{
+   const char* shape = lua_tostring(L, 1);
+   spActor actor;
+   if (shape != NULL)
+   {
+      actor = g_LuaInterface.getSceneActor()->getActor(shape);
+   }
+
+   if (!actor)
+   {
+      logs::warning("c_moveSprite: no sprite '%s'", shape ? shape : "(nil)");
+      lua_pushboolean(L, false);
+      return 1;
+   }
+
+   Vector2 pos = actor->getPosition();
+   if (!lua_isnoneornil(L, 2))
+   {
+      pos.x = (float)lua_tonumber(L, 2);
+   }
+   if (!lua_isnoneornil(L, 3))
+   {
+      pos.y = (float)lua_tonumber(L, 3);
+   }
+
+   float scale = lua_isnoneornil(L, 4) ? actor->getScaleX() : (float)lua_tonumber(L, 4);
+
+   float alpha = lua_isnoneornil(L, 5) ?
+      (float)actor->getAlpha() / 255.0f : (float)lua_tonumber(L, 5);
+   alpha = (alpha < 0.0f) ? 0.0f : ((alpha > 1.0f) ? 1.0f : alpha);
+   unsigned char alphaByte = (unsigned char)(alpha * 255.0f + 0.5f);
+
+   float seconds = lua_isnoneornil(L, 6) ? 0.0f : (float)lua_tonumber(L, 6);
+
+   std::string easeName = lua_isnoneornil(L, 7) ? "inout" : lua_tostring(L, 7);
+   Tween::EASE ease = Tween::ease_inOutQuad;
+   if (easeName == "linear")
+   {
+      ease = Tween::ease_linear;
+   }
+   else if (easeName == "in")
+   {
+      ease = Tween::ease_inQuad;
+   }
+   else if (easeName == "out")
+   {
+      ease = Tween::ease_outQuad;
+   }
+   else if (easeName != "inout")
+   {
+      logs::warning("c_moveSprite: unknown ease '%s', using inout", easeName.c_str());
+   }
+
+   actor->removeTweensByName(c_moveTweenName);
+
+   if (seconds <= 0.0f)
+   {
+      actor->setPosition(pos);
+      actor->setScale(scale);
+      actor->setAlpha(alphaByte);
+   }
+   else
+   {
+      timeMS ms = (timeMS)(seconds * 1000.0f);
+      actor->addTween(Actor::TweenPosition(pos), ms, 1, false, 0, ease)->setName(c_moveTweenName);
+      actor->addTween(Actor::TweenScale(scale), ms, 1, false, 0, ease)->setName(c_moveTweenName);
+      actor->addTween(Actor::TweenAlpha(alphaByte), ms, 1, false, 0, ease)->setName(c_moveTweenName);
+   }
+
+   lua_pushboolean(L, true);
+   return 1;
+}
+
 // c_setObjectVelocity(name, vx, vy)
 // Sets the speed of an object's first body, in units per second, y down
 static int c_setObjectVelocity(lua_State *L)
@@ -888,6 +979,52 @@ static int setKeyItem(lua_State *L, const char* function, KeyItemState state)
 
    lua_pushboolean(L, true);
    return 1;
+}
+
+// c_getSavedValue(name [, default]) -> the number saved under name; without
+// one, the default (0 if not given)
+static int c_getSavedValue(lua_State *L)
+{
+   std::string name = lua_tostring(L, 1);
+   lua_pushnumber(L, g_GameStatus.getSavedValue(name, luaL_optnumber(L, 2, 0.0)));
+   return 1;
+}
+
+// c_setSavedValue(name, value): a number that is kept like the key items:
+// from scene to scene, and in the save file from the next save on
+static int c_setSavedValue(lua_State *L)
+{
+   std::string name = lua_tostring(L, 1);
+   g_GameStatus.setSavedValue(name, lua_tonumber(L, 2));
+   return 0;
+}
+
+// c_damageLegJoint(index, amount, floor): takes amount off the health of leg
+// joint index (0 to 5, health 0 to 1), but not below floor. Also with no
+// Leapfrog in the scene: the next one gets the health from GameStatus.
+static int c_damageLegJoint(lua_State *L)
+{
+   int index = lua_tointeger(L, 1);
+   float amount = lua_tonumber(L, 2);
+   float floor = lua_tonumber(L, 3);
+
+   SceneActor* scene = g_LuaInterface.getSceneActor();
+
+   if (scene && scene->m_leapfrog)
+   {
+      scene->m_leapfrog->damageLegJoint(index, amount, floor);
+   }
+   else
+   {
+      float health = g_GameStatus.getLegHealth(index);
+
+      if (health > floor)
+      {
+         g_GameStatus.setLegHealth(index, std::max(floor, health - amount));
+      }
+   }
+
+   return 0;
 }
 
 // c_hasItem(id) -> true if the player holds the item
@@ -1153,6 +1290,7 @@ void LuaInterface::initLuaInterface(void)
    preloadModule("lua/worlds/mining.lua", "mining");
    preloadModule("lua/swarm.lua", "swarm");
    preloadModule("lua/debt.lua", "debt");
+   preloadModule("lua/baxter_ship.lua", "baxterShip");
    preloadModule("lua/mission_1.lua", "mission1");
    preloadModule("lua/mission_2.lua", "mission2");
    preloadModule("lua/test_starts.lua", "test_starts");
@@ -1218,8 +1356,12 @@ void LuaInterface::initLuaInterface(void)
    lua_register(m_L, "c_setTransitOpen", c_setTransitOpen);
    lua_register(m_L, "c_setObjectVelocity", c_setObjectVelocity);
    lua_register(m_L, "c_animateSprite", c_animateSprite);
+   lua_register(m_L, "c_moveSprite", c_moveSprite);
    lua_register(m_L, "c_exitSceneSaveGameStatus", c_exitSceneSaveGameStatus);
    lua_register(m_L, "c_saveGameStatus", c_saveGameStatus);
+   lua_register(m_L, "c_getSavedValue", c_getSavedValue);
+   lua_register(m_L, "c_setSavedValue", c_setSavedValue);
+   lua_register(m_L, "c_damageLegJoint", c_damageLegJoint);
    lua_register(m_L, "c_askQuestion", c_askQuestion);
    lua_register(m_L, "c_cancelQuestion", c_cancelQuestion);
    lua_register(m_L, "c_leapfrogStandsOn", c_leapfrogStandsOn);

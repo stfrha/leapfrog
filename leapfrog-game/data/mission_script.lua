@@ -9,6 +9,7 @@
 local common = require('common')
 local swarm = require('swarm')
 local debt = require('debt')
+local baxterShip = require('baxterShip')
 local mission1 = require('mission1')
 local mission2 = require('mission2')
 
@@ -171,6 +172,7 @@ function lua_setupMissionStateScene()
 
    common.setupScene()
    swarm.setupScene()
+   baxterShip.setupScene()
 
    local world = currentWorld()
    if world ~= nil then
@@ -194,6 +196,7 @@ function lua_missionStateSceneEventHandler(eventId, actorName, parameter1)
    debt.eventHandler(eventId, actorName, parameter1)
    common.eventHandler(eventId, actorName, parameter1)
    swarm.eventHandler(eventId, actorName, parameter1)
+   baxterShip.eventHandler(eventId, actorName, parameter1)
 
    local world = currentWorld()
    if world ~= nil then

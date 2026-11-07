@@ -77,6 +77,34 @@ local caseTimer = -1
 local raidTimer = -1
 local fieldWatch = -1
 local ammoTrigger = -1
+local exitTimer = -1
+
+-- The Baxters have gone: the pilot lets Bruno have it. { sender, line, delay
+-- before it (in 1/60 s, time to read the line before) }
+local brunoTalk = {
+   { "Leapfrog", "Bruno! \"A rock of mine\", you said. You lying old rat!", 300 },
+   { "Bruno", "You're alive, aren't you? Most people would open with that.", 150 },
+   { "Leapfrog", "They took everything. Ammo, credits, every last thing I had!", 160 },
+   { "Bruno", "Hey. I pointed you at a rock. What happens after that is not on me.", 160 },
+   { "Leapfrog", "That rock belonged to somebody, you slimy little crook.", 180 },
+   { "Bruno", "It had no name on it. And nobody told me the Baxters still work that belt.", 150 },
+   { "Leapfrog", "Nobody told you. Right.", 200 },
+   { "Bruno", "You took the job for the money, same as anybody. Don't put that on me.", 90 },
+   { "Leapfrog", "When I get back to the Ore I'll feed you that rock, piece by piece.", 190 },
+   { "Bruno", "Sure. Then you'll ask for work. You still need a paying job, eh? Like, really bad.", 180 },
+}
+
+-- A new bubble takes 3/4 s to come up. A scene change wipes the dialog, so the
+-- belt's exit stays shut until the talk is over and its last line has been read.
+local bubbleTicks = 45
+local lastLineTicks = 240
+local raidersTauntDelay = 60
+
+local brunoTalkTicks = raidersTauntDelay + bubbleTicks + lastLineTicks
+for _, line in ipairs(brunoTalk) do
+   brunoTalkTicks = brunoTalkTicks + line[3] + bubbleTicks
+end
+mission2.brunoTalkTicks = brunoTalkTicks
 
 local function inStash(state)
    return state == State.hunting or state == State.stashIn
@@ -85,7 +113,8 @@ local function inStash(state)
 end
 
 -- Scene exits only save from the raid's end on: a belt exit is shut until the
--- Leapfrog has been stripped. Until then, a reload is a new launch.
+-- Leapfrog has been stripped (and, in the raid itself, until Bruno has had his
+-- say: see bruno's talk below). Until then, a reload is a new launch.
 local function beltExitOpen()
    return currentState == State.stripped
 end
@@ -151,10 +180,14 @@ end
 local function strippedByRaiders()
    currentState = State.stripped
    c_setObjectProperty("leapfrog1", 7, limpHomeFuel)
-   c_setTransitOpen(3, true)
-   c_addDialogMessage("That's everything. We left you some fuel. Crawl home.", "Raiders", true, 60, 0)
+   c_addDialogMessage("That's everything. We left you some fuel. Crawl home.", "Raiders", true, raidersTauntDelay, 0)
    c_hudLog("The raiders left " .. limpHomeFuel .. " fuel", true)
-   c_hudLog("Transit clear", true)
+
+   for _, line in ipairs(brunoTalk) do
+      c_addDialogMessage(line[2], line[1], line[1] ~= "Leapfrog", line[3], 0)
+   end
+
+   exitTimer = c_startSceneTimer(brunoTalkTicks)
 end
 
 -- The strippers come
@@ -162,7 +195,7 @@ local function startRaid()
    currentState = State.raided
 
    -- We want to start a property trigger for when ammo is down by 50%
-   -- to trigger a Edith dialog message. It would fire on every change of the
+   -- to trigger an Edith dialog message. It would fire on every change of the
    -- ammo below that, so the handler removes it.
    local halfAmmo = c_getObjectProperty("leapfrog1", ammoProperty) / 2
    ammoTrigger = c_registerPropertyTrigger("leapfrog1", ammoProperty, "insideRange", 0, halfAmmo)
@@ -177,6 +210,7 @@ local function startRaid()
 end
 
 local function setupStashHunt()
+   exitTimer = -1
    c_setTransitOpen(3, beltExitOpen(), "Transit blocked: debris")
 
    -- The belt's exit stays shut until the raid is over, so everything before
@@ -233,8 +267,8 @@ local function playOffer()
 end
 
 local function waitingForLaunch()
-   c_addDialogMessage("Yeay! We are going to space", "Edith", true, 120, 0)
-   c_addDialogMessage("Yeay? How old are you?", "Leapfrog", false, 90, 0)
+   c_addDialogMessage("Yay! We are going to space!", "Edith", true, 120, 0)
+   c_addDialogMessage("Yay? How old are you?", "Leapfrog", false, 90, 0)
    c_addDialogMessage("Nineteen", "Edith", true, 90, 0)
    c_addDialogMessage("Thirteen", "Edith", true, 150, 0)
    c_addDialogMessage("Well you stay away from my stuff.", "Leapfrog", false, 90, 0)
@@ -264,7 +298,7 @@ local function answerMission2(yes)
    end
 
    currentState = State.toLaunch
-   c_addDialogMessage("I take it.", "Leapfrog", false, 20, 0)
+   c_addDialogMessage("I'll take it.", "Leapfrog", false, 20, 0)
    c_addDialogMessage("Good. The launch site is on your map.", "Bruno", true, 120, 0)
    showLaunchSite()
 end
@@ -318,7 +352,7 @@ mission2.setupMissionStateScene = function()
 
       if currentState == State.stripped then
          c_addDialogMessage("That went badly, huh?", "Edith", true, 120, 0)
-         c_addDialogMessage("I am of worse than from the start.", "Leapfrog", false, 90, 0)
+         c_addDialogMessage("I am worse off than when I started.", "Leapfrog", false, 90, 0)
          c_addDialogMessage("Do you think Bruno knew those things would come?", "Edith", true, 90, 0)
          c_addDialogMessage("I don't know.", "Leapfrog", false, 90, 0)
          c_addDialogMessage("It wasn't his stash, that's for sure.", "Leapfrog", false, 120, 0)
@@ -490,10 +524,16 @@ mission2.missionStateSceneEventHandler = function(eventId, actorName, parameter1
          end
       end
 
+      if eventId == "ScTO" and parameter1 == exitTimer then
+         exitTimer = -1
+         c_setTransitOpen(3, true)
+         c_hudLog("Transit clear", true)
+      end
+
       if eventId == "OpTr" and parameter1 == ammoTrigger then
          c_unregisterPropertyTrigger(ammoTrigger)
          ammoTrigger = -1
-         c_addDialogMessage("Oh. It looks as they only steal thier stuff back. Perhaps you should just let them.", "Edith", true, 0, 0)
+         c_addDialogMessage("Oh. It looks like they only steal their stuff back. Perhaps you should just let them.", "Edith", true, 0, 0)
       end   
 
    elseif currentScene == "landing_scene.xml" then
@@ -580,7 +620,7 @@ mission2.missionStateSceneEventHandler = function(eventId, actorName, parameter1
             if eventId == "ExEX" then
                
                -- Play dialog
-               c_addDialogMessage("Good work, you have earned a handsome reward. Ues it to get into space.", "DEBUG", true, 0, 0)
+               c_addDialogMessage("Good work, you have earned a handsome reward. Use it to get into space.", "DEBUG", true, 0, 0)
 
                currentState = State.testFindTreasure
                

@@ -139,7 +139,7 @@ function Engine:resetGameStatus()
    self.status = {
       scene = "not_defined", mission = 0, state = 0, sceneType = 0,
       exitScene = "not_defined", exitType = -1, exitParam = -1,
-      legs = legHealthDefaults(), items = {},
+      legs = legHealthDefaults(), items = {}, saved = {},
    }
    -- ObjectResources: shared with the Leapfrog's properties 5..9
    self.resources = { ammo = 1, shield = 1, fuel = 1, credits = 1, damage = 1 }
@@ -154,6 +154,7 @@ function Engine:newGameInit()
    s.exitType, s.exitParam = -1, -1
    s.legs = legHealthDefaults()
    s.items = {}
+   s.saved = {}
    self:saveGameStatus()
 end
 
@@ -163,7 +164,7 @@ function Engine:saveGameStatus()
    self.file = {
       scene = s.scene, mission = s.mission, state = s.state, sceneType = s.sceneType,
       exitScene = s.exitScene, exitType = s.exitType, exitParam = s.exitParam,
-      legs = { table.unpack(s.legs) }, items = copyTable(s.items),
+      legs = { table.unpack(s.legs) }, items = copyTable(s.items), saved = copyTable(s.saved),
       ammo = r.ammo, shield = r.shield, fuel = r.fuel, credits = r.credits, damage = r.damage,
    }
    self:note("SAVE", string.format("scene %s, mission %d, state %d, exit %d/%d",
@@ -188,6 +189,7 @@ function Engine:restoreGameStatus()
    if self.file then
       self:readGameStatus()
       self.status.items = copyTable(self.file.items)
+      self.status.saved = copyTable(self.file.saved)
    else
       self:newGameInit()
    end
@@ -693,7 +695,7 @@ function Engine:startScene(file, sceneType)
    end
 
    local scene = { file = file, sceneType = sceneType, objects = {},
-      factories = {}, watches = {}, transit = {}, sprites = {}, animations = {},
+      factories = {}, watches = {}, transit = {}, sprites = {}, animations = {}, moves = {},
       box = placement.sceneBox(root, self.srcDir) }
 
    -- Shapes directly in the scene, for c_animateSprite
@@ -1129,6 +1131,18 @@ function Engine:installApi(env)
       return true
    end
 
+   -- The last move asked for (where it ends; the tester doesn't run tweens)
+   api.c_moveSprite = function(shape, x, y, scale, alpha, seconds, ease)
+      if not (e.scene and e.scene.sprites[shape]) then
+         e:problem("c_moveSprite: no sprite '" .. tostring(shape) .. "' in " .. (e.scene and e.scene.file or "?"))
+         return false
+      end
+      local last = e.scene.moves[shape] or {}
+      e.scene.moves[shape] = { x = x or last.x, y = y or last.y, scale = scale or last.scale,
+         alpha = alpha or last.alpha, seconds = seconds or 0, ease = ease or "inout" }
+      return true
+   end
+
    api.c_setObjectVelocity = function(name, vx, vy)
       local obj = e:getObject(name)
       if not obj then
@@ -1329,6 +1343,24 @@ function Engine:installApi(env)
       local s = e.status
       s.scene, s.mission, s.state, s.sceneType = scene, mission, state, sceneType
       s.exitScene, s.exitType, s.exitParam = "", -1, -1
+   end
+
+   api.c_getSavedValue = function(name, default)
+      local v = e.status.saved[name]
+      if v ~= nil then return v end
+      return default or 0
+   end
+
+   api.c_setSavedValue = function(name, value)
+      e.status.saved[name] = value
+   end
+
+   -- Joints 0 to 5 (status.legs is 1 to 6)
+   api.c_damageLegJoint = function(index, amount, floor)
+      local h = e.status.legs[index + 1]
+      if h > floor then
+         e.status.legs[index + 1] = math.max(floor, h - amount)
+      end
    end
 
    -- Key items (luainterface.cpp): an id key_items.xml doesn't declare is a

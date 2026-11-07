@@ -107,6 +107,13 @@ private:
    void writeKeyItems(pugi::xml_node& root);
    void readKeyItems(pugi::xml_node& root);
 
+   // Numbers the scripts keep from scene to scene (c_setSavedValue), by name.
+   // The save stores them as <savedValues><value name value/>.
+   std::map<std::string, double> m_savedValues;
+
+   void writeSavedValues(pugi::xml_node& root);
+   void readSavedValues(pugi::xml_node& root);
+
 public:
    GameStatus();
 
@@ -126,6 +133,10 @@ public:
 
    float getLegHealth(int index);
    void setLegHealth(int index, float health);
+
+   // Saved values. Like key items, they reach the save file at the next save.
+   double getSavedValue(const std::string& name, double defaultValue);
+   void setSavedValue(const std::string& name, double value);
 
    // Key items. getKeyItem: NULL if key_items.xml has no such id.
    const KeyItem* getKeyItem(const std::string& id);

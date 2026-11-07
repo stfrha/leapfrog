@@ -47,6 +47,21 @@
         v3="1" />
     </triangles>
   </spritePolygon>
+  <spriteBox
+    name="baxterShip"
+    texture="baxter_homestead"
+    posX="1000"
+    posY="230"
+    angle="0"
+    zLevel="0"
+    collisionEntity="notApplicable"
+    collisionCategory="1"
+    collisionMask="65534"
+    width="480"
+    height="120"
+    color="c8d0dc"
+    alpha="0"
+    parallaxAmount="0.9" />
   <behaviour
     type="scene">
     <sceneProperties

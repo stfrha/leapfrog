@@ -715,6 +715,17 @@ void CompoundObject::doCommonShapeDefinitions(
       sprite->setAddColor(parseHexColor(addColorStr, 0));
    }
 
+   // alpha (0..1, default 1): the shape's opacity at the start. alpha="0"
+   // keeps a sprite hidden until a script shows it (c_moveSprite), e.g. a
+   // ship in the background that arrives later. Unlike color's alpha it can
+   // be changed afterwards.
+   float alpha = objectNode.attribute("alpha").as_float(1.0f);
+   if (alpha < 1.0f)
+   {
+      alpha = (alpha < 0.0f) ? 0.0f : alpha;
+      sprite->setAlpha((unsigned char)(alpha * 255.0f + 0.5f));
+   }
+
    // animatePeriod (seconds): loop through all frames of the texture (rows
    // and cols in its resource entry) once per period. Without it, or for a
    // texture with a single frame, the first frame is shown. Not for

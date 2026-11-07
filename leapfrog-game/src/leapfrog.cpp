@@ -1744,6 +1744,18 @@ void LeapFrog::setAllLegHealth(float health)
    }
 }
 
+// Takes amount off a joint, but not below floor. A joint already below
+// floor stays as it is.
+void LeapFrog::damageLegJoint(int index, float amount, float floor)
+{
+   float health = getLegHealth(index);
+
+   if (health > floor)
+   {
+      setLegHealth(index, std::max(floor, health - amount));
+   }
+}
+
 float LeapFrog::getLowestLegHealth(void)
 {
    float lowest = 1.0f;

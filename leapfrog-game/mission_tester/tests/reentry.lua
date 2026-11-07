@@ -126,7 +126,7 @@ test("re-entry: a debt found at a scene setup (e.g. after loading) is watched", 
    t:expectDialog("We're square.", "Bruno")
 end)
 
-test("re-entry: bounced: deep space again, the strippers after a breather", function(t)
+test("re-entry: bounced: deep space again, leg joints damaged, no strippers", function(t)
    toOrbit(t)
    -- After mission 2 (it runs the strippers itself until it is done)
    t:setGlobal("currentState", t:mission(2).State.done)
@@ -134,13 +134,48 @@ test("re-entry: bounced: deep space again, the strippers after a breather", func
    t:expectScene("deep_space_scene.xml")
    t:expectSaved("scene", "deep_space_scene.xml")
    t:expectHud("Bounced off the atmosphere")
-   t:expect(not t.engine:getObject("swarm"), "no swarm yet")
+   t:expectHud("Leg joints damaged")
+   t:expectProperty("leapfrog1", 10, 0.75)
+   local hurt = 0
+   for _, h in ipairs(t.engine.status.legs) do
+      if h < 1 then hurt = hurt + 1 end
+   end
+   t:expectEqual(hurt, 2, "joints hurt")
    t:wait(11)
-   t:expect(t.engine:getObject("swarm") ~= nil, "the swarm has started")
+   t:expect(not t.engine:getObject("swarm"), "no strippers")
 
    -- The way to orbit is open again
    t:exitScene(1, 3)
    t:expectScene("orbit_scene.xml")
+end)
+
+test("re-entry: bounced with the Baxters about: the strippers after a breather", function(t)
+   toOrbit(t)
+   t:setGlobal("currentState", t:mission(2).State.done)
+   t:module("mining").setBaxtersInSpace(true)
+   t:reentry("bounced")
+   t:expectScene("deep_space_scene.xml")
+   t:expect(not t.engine:getObject("swarm"), "no swarm yet")
+   t:wait(11)
+   t:expect(t.engine:getObject("swarm") ~= nil, "the swarm has started")
+end)
+
+test("re-entry: bounces wear the legs down, but never fail a joint", function(t)
+   toOrbit(t)
+   t:setGlobal("currentState", t:mission(2).State.done)
+   for _ = 1, 12 do
+      t:reentry("bounced")
+      t:exitScene(1, 3)
+   end
+   t:expectProperty("leapfrog1", 10, 0.3)
+end)
+
+test("re-entry: the damage from a bounce is saved", function(t)
+   toOrbit(t)
+   t:setGlobal("currentState", t:mission(2).State.done)
+   t:reentry("bounced")
+   t:restartGame()
+   t:expectProperty("leapfrog1", 10, 0.75)
 end)
 
 test("re-entry: burned up: back to the latest save (the orbit, as entered)", function(t)

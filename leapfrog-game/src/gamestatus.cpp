@@ -258,6 +258,45 @@ void GameStatus::readKeyItems(xml_node& root)
    }
 }
 
+double GameStatus::getSavedValue(const std::string& name, double defaultValue)
+{
+   std::map<std::string, double>::const_iterator it = m_savedValues.find(name);
+
+   return (it != m_savedValues.end()) ? it->second : defaultValue;
+}
+
+void GameStatus::setSavedValue(const std::string& name, double value)
+{
+   m_savedValues[name] = value;
+}
+
+void GameStatus::writeSavedValues(xml_node& root)
+{
+   root.remove_child("savedValues");
+   xml_node values = root.append_child("savedValues");
+
+   for (std::map<std::string, double>::const_iterator it = m_savedValues.begin(); it != m_savedValues.end(); ++it)
+   {
+      xml_node n = values.append_child("value");
+      n.append_attribute("name").set_value(it->first.c_str());
+      n.append_attribute("value").set_value(it->second);
+   }
+}
+
+void GameStatus::readSavedValues(xml_node& root)
+{
+   m_savedValues.clear();
+
+   for (xml_node n = root.child("savedValues").child("value"); n; n = n.next_sibling("value"))
+   {
+      std::string name = n.attribute("name").as_string();
+      if (!name.empty())
+      {
+         m_savedValues[name] = n.attribute("value").as_double();
+      }
+   }
+}
+
 void GameStatus::gameStatusNewGameInit(void)
 {
    // Resources cannot be set yet. For initialization they are 
@@ -326,6 +365,9 @@ void GameStatus::gameStatusNewGameInit(void)
    // Every key item at its default (the initial ones held)
    m_keyItemStates.clear();
    writeKeyItems(root);
+
+   m_savedValues.clear();
+   writeSavedValues(root);
 
    // m_gameStatusDocument.save_file(c_gameStatusFileName.c_str());
    
@@ -428,6 +470,7 @@ void GameStatus::saveGameStatus(void)
    root.attribute("rightFootJointLevel").set_value(m_rightFootJointLevel);
    writeLegHealth(root);
    writeKeyItems(root);
+   writeSavedValues(root);
 
    // m_gameStatusDocument.save_file(c_gameStatusFileName.c_str());
 
@@ -508,6 +551,7 @@ void GameStatus::restoreGameStatus(void)
       // first scene, which must not undo items given since the last save
       xml_node root = m_gameStatusDocument.child("leapfrogGameStatus");
       readKeyItems(root);
+      readSavedValues(root);
    }
    else
    {

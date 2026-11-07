@@ -26,6 +26,7 @@ namespace LeapfrogEditor
       private string _color = "";
       private string _addColor = "";
       private bool _editorHidden = false;
+      private double _alpha = 1.0;
 
       #endregion
 
@@ -152,6 +153,21 @@ namespace LeapfrogEditor
       public bool ShouldSerializeAddColor()
       {
          return !string.IsNullOrEmpty(_addColor);
+      }
+
+      // Opacity at the start, 0..1 (the game's alpha attribute). alpha="0"
+      // keeps a sprite hidden until a script shows it (c_moveSprite).
+      // Not shown in the editor; written only when below 1.
+      [XmlAttribute("alpha")]
+      public double Alpha
+      {
+         get { return _alpha; }
+         set { _alpha = value; }
+      }
+
+      public bool ShouldSerializeAlpha()
+      {
+         return _alpha < 1.0;
       }
 
       // Editor only: the shape is hidden on the edit area while editing

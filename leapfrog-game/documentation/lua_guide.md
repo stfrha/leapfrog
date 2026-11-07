@@ -30,7 +30,7 @@ happens when something occurs.
 | `data/scene_navigator.lua` | Which scene comes next, where the Leapfrog enters, saving at scene exits |
 | `data/mission_script.lua` | The master: calls the scripts below, in order, for each setup and event |
 | `data/lua/common.lua` | True in every scene: message senders and their colours |
-| `data/lua/swarm.lua`, `data/lua/debt.lua` | Shared services: stripper swarms, Bruno's credit |
+| `data/lua/swarm.lua`, `data/lua/debt.lua`, `data/lua/baxter_ship.lua` | Shared services: stripper swarms, Bruno's credit, the Baxters' ship in the background |
 | `data/lua/worlds/mining.lua` | One world's pads, services and repeatable jobs, also in free play |
 | `data/lua/mission_1.lua`, `data/lua/mission_2.lua` | One mission's story, in all its scenes |
 | `data/lua/test_starts.lua` | The main menu's test row |
@@ -604,7 +604,7 @@ saved, and a reload is a new launch.
 
 The game saves at scene exits, and when a mission's first scene starts. The save
 holds the scene, mission, state, exit, the Leapfrog's resources and upgrade levels,
-and the key items.
+the key items and the saved values.
 
 Everything else is rebuilt from XML and setup on arrival: Lua variables, pad
 settings, broken asteroids, timers and open questions. After a load, the game
@@ -881,7 +881,9 @@ Use a `breakableObject` that spawns `pickupObject`s, as `stash_case.xml` does.
 
 Call this from setup, for every state in which the swarm should be there. It keeps a
 swarm that's already in the scene. Have the mission's `holds` return true for
-`"swarm"` if the world shouldn't start its own:
+`"swarm"` if the world shouldn't start its own. The mining world starts one in space
+only while the Baxters are about: `mining.setBaxtersInSpace(true)` or `(false)` from a
+mission. It's saved, so it holds until a mission changes it:
 
 ```lua
 local swarm = require('swarm')
@@ -893,6 +895,27 @@ end)
 
 To add one, require the module at the top of the script, as above. Rates and limits
 are in `stripper_swarm.xml`, and `swarm.set` changes them during play.
+
+### Show the Baxters' ship in the background
+
+`baxterShip` in `deep_space_scene.xml` is the Baxters' homestead ship on the 0.9
+parallax layer, hidden at the start (`alpha="0"`). It has no body. Call these from the
+setup or an event handler; a scene load hides it again, so use `show()` in the setup
+for every state in which it's already there:
+
+```lua
+local baxterShip = require('baxterShip')
+
+baxterShip.arrive()   -- comes in from far away and parks, engines go cold
+baxterShip.leave()    -- engines on, and away
+baxterShip.show()     -- parked, at once
+baxterShip.hide()     -- gone, at once
+```
+
+Where it parks and where it comes from are in `baxter_ship.lua`. In free play the
+mining world has it come by in deep space after 15 seconds and leave a minute
+later. The other scenes need their own sprite: pass its name last, as in
+`baxterShip.show("baxterShip2")`.
 
 ### Add a docking station
 
@@ -1144,8 +1167,10 @@ is listed here, and that everything listed exists.
 | `c_setObjectProperty(name, propertyId, value)` | Sets a property; ignored for a missing object or read-only property |
 | `c_getObjectProperty(name, propertyId)` | Reads a property; 0 for a missing object |
 | `c_setPanningObject(name)` | Sets the object the camera follows |
+| `c_damageLegJoint(index, amount, floor)` | Takes health off leg joint 0 to 5, but not below `floor` |
 | `c_setObjectVelocity(name, vx, vy)` | Sets an object's speed, in units per second, y down |
 | `c_animateSprite(shape, period, frame)` | Runs a sprite's frames, one cycle per `period` seconds, or with period 0 stops on `frame`, default 0. `shape` is in the scene, or `"object.shape"`. |
+| `c_moveSprite(shape, x, y, scale, alpha, seconds, ease)` | Moves, scales and fades a sprite without a body (e.g. on a parallax layer) to `x, y` (in the units it was placed in), `scale` (1 = as in the scene file) and `alpha` (0 to 1) over `seconds` (0 or nil: at once). `ease`: `"linear"`, `"in"`, `"out"` or `"inout"` (default). nil keeps a value; a new call replaces a running move. `alpha="0"` on the shape in the scene file hides it at the start. |
 
 ### Events and timers
 
@@ -1179,6 +1204,15 @@ is listed here, and that everything listed exists.
 | `c_setObjectMapShown(name, shape, shown)` | Shows or hides a square |
 
 Affiliations are `none`, `leapfrog`, `neutral`, `enemy` and `friendly`.
+
+### Saved values
+
+| Function | Purpose |
+|---|---|
+| `c_setSavedValue(name, value)` | Keeps a number from scene to scene. It reaches the save file at the next save, like a key item. |
+| `c_getSavedValue(name, default)` | The number kept under that name, or the default. The default is optional, and is 0 if left out. |
+
+A new game clears them.
 
 ### Key items
 

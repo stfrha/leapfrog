@@ -301,6 +301,7 @@ public:
    float getLegHealth(int index);
    void setLegHealth(int index, float health);
    void setAllLegHealth(float health);
+   void damageLegJoint(int index, float amount, float floor);
    float getLowestLegHealth(void);
 
    // True while the craft is being lifted for a leg repair. Landing pads
