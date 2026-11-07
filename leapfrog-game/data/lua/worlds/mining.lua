@@ -137,7 +137,6 @@ end
 
 local swarmTimer = -1
 
-<<<<<<< ours
 -- The strippers are the Baxters'. They are in this world's space only while a
 -- mission says so (mining.setBaxtersInSpace), which is saved, so it holds from
 -- mission to mission and in free play.
@@ -150,14 +149,13 @@ end
 mining.setBaxtersInSpace = function(inSpace)
    c_setSavedValue(baxtersInSpaceValue, inSpace and 1 or 0)
 end
-=======
+
 -- Free play in deep space: the Baxters' homestead ship comes by, stays a
 -- while and leaves (missions place it themselves, see lua/baxter_ship.lua)
 local baxterArriveTicks = 60 * 15
 local baxterStayTicks = 60 * 75        -- from the start of its arrival
 local baxterArriveTimer = -1
 local baxterLeaveTimer = -1
->>>>>>> theirs
 
 local function startSwarm()
    swarm.start("swarm", "stripper_swarm.xml", function(name)
@@ -347,29 +345,16 @@ mining.setupScene = function()
       addShieldPower()
    end
 
-<<<<<<< ours
-   -- The strippers come when the Leapfrog is in space and the Baxters are
-   -- about, unless the running mission has its own plans for them (mission
-   -- 2's raid)
-   if currentSceneType == 1 and mining.baxtersInSpace() and not missionHolds("swarm") then
-=======
    baxterArriveTimer = -1
    baxterLeaveTimer = -1
    if currentScene == "deep_space_scene.xml" and currentMission == 0 then
       baxterArriveTimer = c_startSceneTimer(baxterArriveTicks)
    end
 
-   -- The strippers come whenever the Leapfrog is in space, unless the
-   -- running mission has its own plans for them (mission 1's raid)
-
-   -- To disable swarm of strippers, comment out the following line
-   -- if currentSceneType == 1  then
-
-   if currentSceneType == 1 and missionHolds("swarm") then
-      bouncedBack = false
-      swarmTimer = -1
-   elseif currentSceneType == 1 then
->>>>>>> theirs
+   -- The strippers come when the Leapfrog is in space and the Baxters are
+   -- about, unless the running mission has its own plans for them (mission
+   -- 2's raid)
+   if currentSceneType == 1 and mining.baxtersInSpace() and not missionHolds("swarm") then
       if bouncedBack or swarmTimer >= 0 then
          -- Back from a bounce: a breather before the swarm comes (again
          -- at a setup before it has started)

@@ -18,9 +18,6 @@ return {
    "bad_mine.lua",
    "shield_power.lua",
    "property_triggers.lua",
-<<<<<<< ours
    "saved_values.lua",
-=======
    "baxter_ship.lua",
->>>>>>> theirs
 }

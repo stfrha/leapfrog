@@ -28,4 +28,8 @@
 	<atlas>
 		<image file="stripper.png" rows="2" ppu="20" trim="false" extend="false"/>
 	</atlas>
+	<set path = "images/space" />
+	<atlas>
+		<image file="magnetic_mine.png" ppu="20" trim="false" extend="false"/>
+	</atlas>
 </resources>

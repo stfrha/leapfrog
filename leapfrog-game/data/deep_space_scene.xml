@@ -139,6 +139,16 @@
     posX="500"
     posY="240" />
   <childObject
+    name="interceptor1"
+    file="hammer_interceptor.xml"
+    posX="600"
+    posY="240" />
+  <childObject
+    name="interceptor2"
+    file="hammer_interceptor.xml"
+    posX="500"
+    posY="230" />
+  <childObject
     name="hammer1"
     posX="700"
     posY="250">
@@ -324,7 +334,7 @@
                 needsGroupIndex="false">
                 <dynamicBox
                   name="magenticMineBody"
-                  texture="bomb_crate"
+                  texture="magnetic_mine"
                   posX="0"
                   posY="0"
                   angle="0"
@@ -392,7 +402,7 @@
       needsGroupIndex="false">
       <dynamicBox
         name="magenticMineBody"
-        texture="bomb_crate"
+        texture="magnetic_mine"
         posX="0"
         posY="0"
         angle="0"
