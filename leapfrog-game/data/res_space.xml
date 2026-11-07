@@ -16,4 +16,8 @@
 	<atlas>
 		<image file="baxter_homestead.png" rows="2" ppu="5" trim="false" extend="false"/>
 	</atlas>
+	<!-- Tags sprayed on the homestead ship's green hangar doors (overlay sprites; lua/baxter_ship.lua) -->
+	<atlas>
+		<image file="graffiti_bxtr.png" trim="false" extend="false"/>
+	</atlas>
 </resources>

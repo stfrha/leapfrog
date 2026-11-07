@@ -12,10 +12,26 @@
 --   baxterShip.show()       -- parked, at once (already there when the
 --                           -- scene starts)
 --   baxterShip.hide()       -- gone, at once
+--   baxterShip.tag(name)    -- which tag is sprayed on the green hangar's
+--                           -- doors: "baxterTag" (BXTR, the default), the
+--                           -- shape of another tag, or nil for none. It
+--                           -- shows from the next show() or arrive(); to
+--                           -- change it on a ship parked in view, call
+--                           -- show() after it
 --
--- Each takes an optional shape name last, for a scene with its own ship
--- sprite (default "baxterShip"). arrive and leave take the time in seconds
--- first (nil: the default).
+-- Each of the first four takes an optional ship shape name last, for a
+-- scene with its own ship sprite (default "baxterShip"). arrive and leave
+-- take the time in seconds first (nil: the default).
+--
+-- Tags are overlay sprites in the scene, on the same layer as the ship,
+-- hidden at the start (alpha="0", zLevel above the ship). They move,
+-- scale and fade with the ship, at their offset from its centre (times
+-- its scale), so they stay on the doors. A new tag: draw it (transparent
+-- around it, about 2:1), add the texture to res_space.xml, add a sprite
+-- box to the scene like baxterTag, and add it to overlays below with the
+-- same offset. The offset and door size are printed by
+-- baxter_homestead.py after each render. The tag chosen is kept across
+-- scenes until changed.
 --
 -- Call them from the scene setup or an event handler. The scene file is
 -- read anew on every scene load, so the ship is hidden again when the
@@ -40,6 +56,16 @@ baxterShip.to = { dx = 520, dy = -70, scale = 0.2 }
 baxterShip.arriveSeconds = 14
 baxterShip.leaveSeconds = 16
 
+-- Overlay sprites per ship sprite, at their offset from its centre (stage
+-- units at scale 1, y down)
+baxterShip.overlays = {
+   baxterShip = {
+      baxterTag = { dx = -66.6, dy = 20.0 },
+   },
+}
+
+local shownTag = "baxterTag"
+
 local Frame = { burning = 0, cold = 1 }
 
 -- The engines burn on for this long after it has stopped
@@ -52,17 +78,34 @@ local function engines(shape, on)
    c_animateSprite(shape, 0, on and Frame.burning or Frame.cold)
 end
 
+-- Moves the ship and its overlays; the tag shown follows the ship's alpha
+local function move(shape, x, y, scale, alpha, seconds, ease)
+   c_moveSprite(shape, x, y, scale, alpha, seconds, ease)
+   for overlay, o in pairs(baxterShip.overlays[shape] or {}) do
+      local ox, oy = nil, nil
+      if x ~= nil then
+         ox = x + o.dx * scale
+         oy = y + o.dy * scale
+      end
+      local a = alpha
+      if a ~= nil and overlay ~= shownTag then
+         a = 0
+      end
+      c_moveSprite(overlay, ox, oy, scale, a, seconds, ease)
+   end
+end
+
 function baxterShip.show(shape)
    shape = shape or baxterShip.shape
    coolTimer = -1
    engines(shape, false)
-   c_moveSprite(shape, baxterShip.park.x, baxterShip.park.y, 1, 1, 0)
+   move(shape, baxterShip.park.x, baxterShip.park.y, 1, 1, 0)
 end
 
 function baxterShip.hide(shape)
    shape = shape or baxterShip.shape
    coolTimer = -1
-   c_moveSprite(shape, nil, nil, nil, 0, 0)
+   move(shape, nil, nil, nil, 0, 0)
 end
 
 function baxterShip.arrive(seconds, shape)
@@ -70,8 +113,8 @@ function baxterShip.arrive(seconds, shape)
    seconds = seconds or baxterShip.arriveSeconds
    local p, f = baxterShip.park, baxterShip.from
    engines(shape, true)
-   c_moveSprite(shape, p.x + f.dx, p.y + f.dy, f.scale, 0, 0)
-   c_moveSprite(shape, p.x, p.y, 1, 1, seconds, "out")
+   move(shape, p.x + f.dx, p.y + f.dy, f.scale, 0, 0)
+   move(shape, p.x, p.y, 1, 1, seconds, "out")
    coolShape = shape
    coolTimer = c_startSceneTimer(math.floor(seconds * 60) + coolDelayTicks)
 end
@@ -82,10 +125,21 @@ function baxterShip.leave(seconds, shape)
    local p, t = baxterShip.park, baxterShip.to
    coolTimer = -1
    engines(shape, true)
-   c_moveSprite(shape, p.x + t.dx, p.y + t.dy, t.scale, 0, seconds, "in")
+   move(shape, p.x + t.dx, p.y + t.dy, t.scale, 0, seconds, "in")
 end
 
--- A timer from an earlier scene must not match a new one
+-- Which tag shows on the doors (an overlay's shape, or nil for none),
+-- from the next show() or arrive()
+function baxterShip.tag(name)
+   shownTag = name
+end
+
+function baxterShip.shownTag()
+   return shownTag
+end
+
+-- A new scene starts with everything hidden; a timer from an earlier scene
+-- must not match a new one
 function baxterShip.setupScene()
    coolTimer = -1
 end

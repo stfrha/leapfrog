@@ -910,7 +910,14 @@ baxterShip.arrive()   -- comes in from far away and parks, engines go cold
 baxterShip.leave()    -- engines on, and away
 baxterShip.show()     -- parked, at once
 baxterShip.hide()     -- gone, at once
+baxterShip.tag(name)  -- which tag is on the green hangar's doors (nil: none),
+                      -- from the next show() or arrive()
 ```
+
+The tag is an overlay sprite (`baxterTag`, texture `graffiti_bxtr`) on the same layer, moved, scaled
+and faded with the ship at its offset (`baxterShip.overlays`), so tags can be changed
+without re-rendering the ship. A new tag is a new texture, sprite box and entry in
+`overlays`; `baxter_homestead.py` prints the offset and door size after each render.
 
 Where it parks and where it comes from are in `baxter_ship.lua`. In free play the
 mining world has it come by in deep space after 15 seconds and leave a minute

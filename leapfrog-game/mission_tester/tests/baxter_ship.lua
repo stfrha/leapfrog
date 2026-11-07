@@ -67,3 +67,53 @@ test("baxter ship: show and hide at once", function(t)
    B.hide()
    t:expectEqual(moves(t).alpha, 0, "hidden")
 end)
+
+local function tagMove(t, name)
+   return t.engine.scene.moves[name or "baxterTag"]
+end
+
+test("baxter ship: the tag is in the scene file, hidden, on the ship's layer", function(t)
+   local root = t.engine:readXml("deep_space_scene.xml")
+   local ship, tag
+   for _, c in ipairs(root.children) do
+      if c.tag == "spriteBox" and c.attr.name == "baxterShip" then ship = c end
+      if c.tag == "spriteBox" and c.attr.name == "baxterTag" then tag = c end
+   end
+   t:expect(tag ~= nil, "a spriteBox baxterTag")
+   t:expectEqual(tonumber(tag.attr.alpha), 0, "alpha")
+   t:expectEqual(tag.attr.parallaxAmount, ship.attr.parallaxAmount, "same layer as the ship")
+   t:expect(tonumber(tag.attr.zLevel) > tonumber(ship.attr.zLevel), "above the ship")
+end)
+
+test("baxter ship: the tag follows the ship, at its offset times the scale", function(t)
+   freePlayInSpace(t)
+   local B = t:module("baxterShip")
+   local o = B.overlays.baxterShip.baxterTag
+   B.arrive()
+   local s, g = moves(t), tagMove(t)
+   t:expectEqual(g.x, s.x + o.dx * s.scale, "tag x")
+   t:expectEqual(g.y, s.y + o.dy * s.scale, "tag y")
+   t:expectEqual(g.scale, s.scale, "tag scale")
+   t:expectEqual(g.alpha, 1, "tag shows with the ship")
+   t:expectEqual(g.seconds, s.seconds, "same time")
+   t:expectEqual(g.ease, s.ease, "same ease")
+   B.leave()
+   s, g = moves(t), tagMove(t)
+   t:expectEqual(g.x, s.x + o.dx * s.scale, "tag x leaving")
+   t:expectEqual(g.alpha, 0, "tag fades with the ship")
+   B.hide()
+   t:expectEqual(tagMove(t).alpha, 0, "hidden with the ship")
+end)
+
+test("baxter ship: tag(nil) leaves the doors bare from the next show", function(t)
+   freePlayInSpace(t)
+   local B = t:module("baxterShip")
+   B.tag(nil)
+   B.show()
+   t:expectEqual(moves(t).alpha, 1, "ship shown")
+   t:expectEqual(tagMove(t).alpha, 0, "no tag")
+   B.tag("baxterTag")
+   B.show()
+   t:expectEqual(tagMove(t).alpha, 1, "tag back")
+   t:expectEqual(B.shownTag(), "baxterTag", "shownTag")
+end)

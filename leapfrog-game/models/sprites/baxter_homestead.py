@@ -10,7 +10,8 @@ could get, so the parts don't match. From the stern forwards:
   tanks       two fuel tanks on top of the spine
   hangars     three hangars for one-man fighters hanging under the spine,
               each painted differently: the first open (lit, a fighter
-              inside), the second shut with BXTR sprayed over the doors,
+              inside), the second shut (its bare doors take the tag
+              overlay sprite in the game; --graffiti paints BXTR on them),
               the third half open. Cargo containers lashed on top.
   habitat     a long drum with rows of cabin windows (living quarters),
               a glass dome on top with a garden and the mess/pub
@@ -62,6 +63,11 @@ def options(p):
     p.add_argument("--dark", type=float, default=0.3, help="share of dark cabin windows")
     p.add_argument("--bow-scale", type=float, default=0.9, help="size of the bow (default 0.9)")
     p.add_argument("--old-bow", action="store_true", help="the first, friendlier bow")
+    p.add_argument("--graffiti", action="store_true",
+                   help="paint BXTR on the green hangar's doors (by default they're bare: the tag is a separate "
+                        "overlay sprite in the game, baxterTag, so it can be changed)")
+    p.add_argument("--scene-width", type=float, default=480.0,
+                   help="the ship sprite's width in the scene, for the printed tag placement (default 480)")
 
 
 args = sk.parse_args(options)
@@ -359,9 +365,11 @@ for i, (hx, hmat, state) in enumerate(hangars):
         for sx in (-1, 1):
             add(sk.box_object("hangar_%d_leaf_%d" % (i, sx), (hx + sx * door_w / 4, front - 0.2, door_z),
                               (door_w / 2 - 0.2, 0.4, door_h), mat("pad_metal"), bevel_width=0.1))
-        add(sk.text_object("hangar_%d_graffiti" % i, "BXTR", 7.5, [GRAFFITI],
-                           location=(hx + 0.5, front - 0.45, door_z - 0.5), rotation=(math.pi / 2, 0.12, 0.0),
-                           extrude=0.02))
+        if args.graffiti:
+            add(sk.text_object("hangar_%d_graffiti" % i, "BXTR", 7.5, [GRAFFITI],
+                               location=(hx + 0.5, front - 0.45, door_z - 0.5), rotation=(math.pi / 2, 0.12, 0.0),
+                               extrude=0.02))
+        TAG_AREA = (hx, front - 0.4, door_z, door_w, door_h)      # the doors, for the overlay
     # Landing lights either side of the door
     for sx in (-1, 1):
         add(sk.box_object("hangar_%d_lamp_%d" % (i, sx), (hx + sx * (HW / 2 - 1.1), front - 0.35, HZ - HH / 2 + 2.2),
@@ -653,10 +661,44 @@ def set_engines(on):
         lt.hide_render = not on
 
 
+def report_tag_area():
+    """Where the green hangar's doors land in the image, and where the tag
+    overlay (baxterTag) goes in the scene relative to the ship sprite."""
+    hx, y, z, w_, h_ = TAG_AREA
+    R = root.matrix_world
+    w = box_xz[2] - box_xz[0]
+    h = box_xz[3] - box_xz[1]
+    ppu = args.ppu
+    if max(w, h) * ppu > args.max_px:
+        ppu = float(math.floor(args.max_px / max(w, h)))
+    res_x, res_y = int(round(w * ppu)), int(round(h * ppu))
+    pts = []
+    for dx, dz in ((-1, 1), (1, 1), (1, -1), (-1, -1), (0, 0)):
+        q = R @ Vector((hx + dx * w_ / 2, y, z + dz * h_ / 2))
+        pts.append(((q.x - box_xz[0]) / w * res_x, (box_xz[3] - q.z) / h * res_y))
+    xs = [p[0] for p in pts[:4]]
+    ys = [p[1] for p in pts[:4]]
+    cx, cy = pts[4]
+    sw = args.scene_width
+    sh = sw * res_y / res_x
+    k = sw / res_x                                   # stage units per image pixel
+    print("")
+    print("baxter_homestead: image %d x %d px (frame 0)" % (res_x, res_y))
+    print("  green hangar doors: x %.0f .. %.0f, y %.0f .. %.0f px (to crop the render as a template for tag art)"
+          % (min(xs), max(xs), min(ys), max(ys)))
+    print("  in the scene, ship sprite %.0f x %.1f:" % (sw, sh))
+    print("    ship height        %.1f" % sh)
+    print("    tag offset         dx %.1f, dy %.1f from the ship's centre (lua/baxter_ship.lua: overlays)"
+          % ((cx - res_x / 2) * k, (cy - res_y / 2) * k))
+    print("    doors              %.1f x %.1f (a tag sprite about this size or a little larger)"
+          % ((max(xs) - min(xs)) * k, (max(ys) - min(ys)) * k))
+
+
 name = "baxter_homestead" + args.suffix
 set_engines(True)
 if args.still:
     kit.render_ortho(name, box_xz)
+    report_tag_area()
 else:
     paths = [kit.render_ortho(name + "_f0", box_xz, frame_only=True)]
     set_engines(False)
@@ -664,3 +706,4 @@ else:
     if all(paths):
         kit.make_strip(paths, name)
         print("baxter_homestead: frame 0 engines burning, frame 1 cold (c_animateSprite(shape, 0, frame))")
+        report_tag_area()
