@@ -274,7 +274,7 @@ local function meetBruno()
    topUp()
    c_hudLog("Paid: " .. payAtOre .. " credits")
    c_addDialogMessage("Two down. Here's your money, the fuel station is next door.", "Bruno", true, 30, 0)
-   c_addDialogMessage("One more, just past the town. Light that one and you get the rest.", "Bruno", true, 150, 0)
+   c_addDialogMessage("If you want to earn some extra cash, the space landing pad just past town also needs repairs.", "Bruno", true, 150, 0)
    c_setObjectMapState("oreLanding", "noName", 0)
    enterState(State.thirdBeacon)
 end

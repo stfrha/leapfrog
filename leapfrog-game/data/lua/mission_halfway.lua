@@ -109,12 +109,13 @@ end
 -- Home: the call, the launch
 
 local function playOffer()
-   c_addDialogMessage("You still breathing? Good. Listen.", "Bruno", true, 300, 0)
-   c_addDialogMessage("The Baxters have taken the station. Halfway. Shield up, red as a wound, and nobody docks.", "Bruno", true, 150, 0)
-   c_addDialogMessage("Their shield runs off a power unit on the end of the boom. It's outside the bubble.", "Bruno", true, 180, 0)
-   c_addDialogMessage("Knock it off, dock, and let the station's own system do the rest. You'll have to hold on while it does.", "Bruno", true, 180, 0)
-   c_addDialogMessage("They won't be watching for long. Now's the time.", "Bruno", true, 180, 0)
-   c_askQuestion(Question.takeBack, "Will you take the station back?", "Bruno")
+   c_addDialogMessage("You still breathing? Good. Listen, put off wour whining, we have a situation on our hands.", "Bruno", true, 300, 0)
+   c_addDialogMessage("The Baxters, the one whos stuff you stole, they have taken the Halfway.", "Bruno", true, 100, 0)
+   c_addDialogMessage("The station, how?", "Leapfrog", false, 900, 0)
+   c_addDialogMessage("Yeah, the Halfway. They have put there own shield around it and nobody can dock but them.", "Bruno", true, 180, 0)
+   c_addDialogMessage("The bastards don't have full control and their shield runs off a power unit that is accessible outside the bubble.", "Bruno", true, 180, 0)
+   c_addDialogMessage("And, they are not there just now, away hiding their stash. ", "Bruno", true, 100, 0)
+   c_askQuestion(Question.takeBack, "We have a small window of oppurtunity now. Will you go nock that shield and take back the station for us all?", "Bruno")
    offerPending = true
 end
 

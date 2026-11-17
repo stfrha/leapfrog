@@ -91,8 +91,8 @@ local function pay(amount)
 end
 
 local function playOffer()
-   c_addDialogMessage("Nice work on the beacons. Now, a small favour, when you get a chance. Between jobs.", "Bruno", true, 60, 0)
-   c_addDialogMessage("There's a package waiting for me up at the station. Pick it up and bring it down here.", "Bruno", true, 150, 0)
+   c_addDialogMessage("Say, Can you do me an extra favour, for a few credits more.", "Bruno", true, 60, 0)
+   c_addDialogMessage("Up at the space station, there is a package waiting for me. Pick it up and bring it down here.", "Bruno", true, 150, 0)
    c_addDialogMessage("Shoot a few rocks on the way while you're up there. They shed all sorts of useful junk.", "Bruno", true, 150, 0)
    c_askQuestion(Question.fetch, "Will you fetch it?", "Bruno")
    offerPending = true
@@ -124,7 +124,8 @@ local function answerFetch(yes)
 
    currentState = State.toLaunch
    c_addDialogMessage("Sure, I'll pick it up.", "Leapfrog", false, 20, 0)
-   c_addDialogMessage("Good. The launch site is on your map. Ask for the station master, he'll know.", "Bruno", true, 120, 0)
+   c_addDialogMessage("Good. The launch site is on your map. Just land at the booster and it will dock.", "Bruno", true, 120, 0)
+   c_addDialogMessage("Once there, ask for the station master, he'll know.", "Bruno", true, 90, 0)
    showLaunchSite()
 end
 
@@ -135,7 +136,7 @@ local function launching()
    c_addDialogMessage("Yay? How old are you?", "Leapfrog", false, 90, 0)
    c_addDialogMessage("Nineteen", "Edith", true, 90, 0)
    c_addDialogMessage("Thirteen", "Edith", true, 150, 0)
-   c_addDialogMessage("Well you stay away from my stuff.", "Leapfrog", false, 90, 0)
+   c_addDialogMessage("Well I am going to space, you stay away from my stuff.", "Leapfrog", false, 90, 0)
    c_addDialogMessage("Brace for launch now!", "Edith", true, 60, 0)
 end
 
