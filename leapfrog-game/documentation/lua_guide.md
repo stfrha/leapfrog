@@ -754,7 +754,10 @@ A factory spawns objects from `<spawnObject>` entries in an area of a scene:
 | `intensity` | New ones per second, 0 for none |
 | `maxAlive` | Most alive at a time, for a steady supply such as `ammoDrops` |
 | `spawnTotal` | Most in all, then it stops, for a field that grows from a few rocks |
+| `active` | `false` to have it wait for Lua, spawnInitial included (default `true`) |
 | `posX`, `posY`, `width`, `height` | The area they appear in |
+
+They go on `<objectFactoryProperties>` inside `<system type="objectFactory">`.
 
 To react when a field is nearly cleared, watch the factory from the setup. Only the
 objects it spawned count, not their pieces or drops, so smaller rocks are still
@@ -770,6 +773,35 @@ fieldWatch = c_watchFactory(stash.field, stash.fieldLeft)
 
 `FcLw` then arrives once, with that id as parameter. Compare with the id, and set
 your copy to -1 when you've handled it.
+
+### Control a factory from Lua
+
+`c_setFactoryProperty(name, id, value)` changes a running factory, and
+`c_getFactoryProperty(name, id)` reads it. The name is the system's name, or a path
+such as `"rig.factory"` for a factory in a child object.
+
+| Id | Property | |
+|---|---|---|
+| 0 | active | 0 stops spawning at intervals, 1 starts it. A factory with `active="false"` does its `spawnInitial` the first time it's activated. The first timed spawn comes one interval after activation. |
+| 1 | intensity | Spawns per second, 0 for none at intervals |
+| 2 | maxAlive | 0 for no limit |
+| 3 | spawnTotal | 0 for no limit |
+| 4 | alive | Read only: its own objects still in the scene |
+| 5 | spawned | Spawned so far, counted toward spawnTotal. Write 0 to start a new round. |
+| 6 | spawn now | Write n to spawn n at once, within maxAlive and spawnTotal, also when inactive. Reads 0. |
+
+The set call returns false if there's no such factory or the property is read only.
+Objects already spawned stay when a factory stops. For example, a field that only
+starts when the Leapfrog arrives, then a wave of five rocks later:
+
+```lua
+-- debris_belt_scene.xml: <objectFactoryProperties active="false" ... />
+c_setFactoryProperty("asteroidField", 0, 1)     -- start, with its spawnInitial
+c_setFactoryProperty("asteroidField", 6, 5)     -- five more, now
+c_setFactoryProperty("asteroidField", 0, 0)     -- no more after these
+```
+
+A watch (`c_watchFactory`) doesn't fire before an inactive factory's first activation.
 
 ### Add a landing pad
 
@@ -1221,6 +1253,8 @@ is listed here, and that everything listed exists.
 | `c_clearAllTriggersAndEvents()` | Clears listeners and triggers. Only `mission_script.lua` calls it. |
 | `c_startSceneTimer(ticks)` | Starts a timer, and returns its id |
 | `c_watchFactory(name, left)` | Sends `FcLw` once when a factory has at most `left` of its objects alive, after all of its `spawnTotal` if it has one. Returns an id, or -1 if there's no such factory. |
+| `c_setFactoryProperty(name, id, value)` | Changes a factory: 0 active, 1 intensity, 2 maxAlive, 3 spawnTotal, 5 spawned, 6 spawn now (see [Control a factory from Lua](#control-a-factory-from-lua)). Returns false if there's no such factory or the property is read only. |
+| `c_getFactoryProperty(name, id)` | Reads those, and 4 alive. 0 if there's no such factory. |
 
 ### Dialog, HUD and questions
 

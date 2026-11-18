@@ -22,4 +22,5 @@ return {
    "property_triggers.lua",
    "saved_values.lua",
    "baxter_ship.lua",
+   "factory_control.lua",
 }

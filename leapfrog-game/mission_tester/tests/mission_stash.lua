@@ -226,7 +226,7 @@ test("stash: home with nothing: Edith on the way down, her fuel at the silo; the
    t:expectProperty("leapfrog1", 7, t:mission("stash").edithFuel)
    t:expectHud("Mission complete")
    t:expectMission("halfway")
-   t:expectDialog("The Baxters have taken the station.", "Bruno")
+   t:expectDialog("taken the Halfway", "Bruno")
 end)
 
 test("stash: Edith's fuel never takes any away", function(t)

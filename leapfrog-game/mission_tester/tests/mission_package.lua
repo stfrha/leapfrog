@@ -37,7 +37,7 @@ test("package: offered on the village pad after the beacons", function(t)
    local m = offered(t)
    t:expectMission("package")
    t:expectState(m.State.offered)
-   t:expectDialog("a package waiting for me up at the station", "Bruno")
+   t:expectDialog("there is a package waiting", "Bruno")
    t:expectQuestion(m.Question.fetch)
 end)
 

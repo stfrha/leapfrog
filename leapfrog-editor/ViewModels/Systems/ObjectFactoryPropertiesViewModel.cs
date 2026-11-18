@@ -337,6 +337,40 @@ namespace LeapfrogEditor
          }
       }
 
+      public int SpawnTotal
+      {
+         get
+         {
+            if (LocalModelObject == null) return 0;
+
+            return LocalModelObject.SpawnTotal;
+         }
+         set
+         {
+            if (LocalModelObject == null) return;
+
+            LocalModelObject.SpawnTotal = value;
+            OnPropertyChanged("SpawnTotal");
+         }
+      }
+
+      public bool Active
+      {
+         get
+         {
+            if (LocalModelObject == null) return true;
+
+            return LocalModelObject.Active;
+         }
+         set
+         {
+            if (LocalModelObject == null) return;
+
+            LocalModelObject.Active = value;
+            OnPropertyChanged("Active");
+         }
+      }
+
       // We also expose some properties of the 
 
       #endregion

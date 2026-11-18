@@ -705,10 +705,26 @@ function Engine:startScene(file, sceneType)
       end
    end
 
-   -- Object factories, for c_watchFactory
+   -- Object factories, for c_watchFactory and c_set/getFactoryProperty.
+   -- The mock doesn't spawn on time: spawned counts the initial spawn and
+   -- spawn-now writes, alive is what t:clearField last said (else spawned).
    for _, c in ipairs(root.children) do
       if c.tag == "system" and c.attr.type == "objectFactory" then
-         scene.factories[c.attr.name] = true
+         local a = (xml.child(c, "objectFactoryProperties") or c).attr
+         local f = {
+            active = a.active ~= "false",
+            intensity = tonumber(a.intensity) or 0,
+            maxAlive = tonumber(a.maxAlive) or 0,
+            spawnTotal = tonumber(a.spawnTotal) or 0,
+            spawnInitial = tonumber(a.spawnInitial) or 0,
+            spawned = 0,
+            initialPending = true,
+         }
+         if f.active then
+            Engine.factorySpawn(f, f.spawnInitial)
+            f.initialPending = false
+         end
+         scene.factories[c.attr.name] = f
       end
    end
 
@@ -832,11 +848,31 @@ function Engine:flyToCorner(corner)
    self:exitScene(1, corner)
 end
 
+-- Spawns n from a mock factory, within its maxAlive and spawnTotal
+function Engine.factorySpawn(f, n)
+   n = math.floor(n or 0)
+   local alive = f.alive or f.spawned
+   if f.maxAlive > 0 then
+      n = math.min(n, f.maxAlive - alive)
+   end
+   if f.spawnTotal > 0 then
+      n = math.min(n, f.spawnTotal - f.spawned)
+   end
+   if n > 0 then
+      f.spawned = f.spawned + n
+      if f.alive then
+         f.alive = f.alive + n
+      end
+   end
+end
+
 -- A watched factory has left of its own objects alive
 function Engine:clearField(name, left)
-   if not self.scene.factories[name] then
+   local f = self.scene.factories[name]
+   if not f then
       error("clearField: no object factory " .. tostring(name), 3)
    end
+   f.alive = left
    local watch = self.scene.watches[name]
    if watch ~= nil and left <= watch.left then
       self.scene.watches[name] = nil
@@ -1108,6 +1144,62 @@ function Engine:installApi(env)
       local key = "/FcLw"
       e.listeners[key] = (e.listeners[key] or 0) + 1
       return e.watchCounter
+   end
+
+   -- Factory properties: 0 active, 1 intensity, 2 maxAlive, 3 spawnTotal,
+   -- 4 alive (read only), 5 spawned, 6 spawn now (reads 0)
+   local factoryFields = { [0] = "active", "intensity", "maxAlive", "spawnTotal",
+      "alive", "spawned", "spawnNow" }
+
+   local function factoryNamed(name, caller)
+      local f = e.scene and e.scene.factories[name]
+      if not f then
+         e:problem(caller .. ": no object factory '" .. tostring(name) .. "' in " ..
+            (e.scene and e.scene.file or "?"))
+      end
+      return f
+   end
+
+   api.c_setFactoryProperty = function(name, id, value)
+      local f = factoryNamed(name, "c_setFactoryProperty")
+      if not f then
+         return false
+      end
+      local field = factoryFields[id]
+      e:note("FACTORY", string.format("%s %s = %s", name, tostring(field or id), tostring(value)))
+      if field == "active" then
+         f.active = value ~= 0
+         if f.active and f.initialPending then
+            f.initialPending = false
+            Engine.factorySpawn(f, f.spawnInitial)
+         end
+      elseif field == "intensity" then
+         f.intensity = math.max(0, value)
+      elseif field == "maxAlive" or field == "spawnTotal" or field == "spawned" then
+         f[field] = math.max(0, math.floor(value))
+      elseif field == "spawnNow" then
+         Engine.factorySpawn(f, value)
+      else
+         e:problem("c_setFactoryProperty: property " .. tostring(id) .. " can't be set")
+         return false
+      end
+      return true
+   end
+
+   api.c_getFactoryProperty = function(name, id)
+      local f = factoryNamed(name, "c_getFactoryProperty")
+      if not f then
+         return 0
+      end
+      local field = factoryFields[id]
+      if field == "active" then
+         return f.active and 1 or 0
+      elseif field == "alive" then
+         return f.alive or f.spawned
+      elseif field == "spawnNow" or field == nil then
+         return 0
+      end
+      return f[field]
    end
 
    api.c_setTransitOpen = function(corner, open, message)

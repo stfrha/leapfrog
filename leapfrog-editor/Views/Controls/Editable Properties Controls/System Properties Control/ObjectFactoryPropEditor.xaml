@@ -17,5 +17,7 @@
       <local:DoubleEditorControl Headline="Intensity" MyValue="{Binding Intensity, Mode=TwoWay}" />
       <local:IntEditorControl Headline="Life Time" MyValue="{Binding LifeTime, Mode=TwoWay}" />
       <local:IntEditorControl Headline="Max Alive (0 = no limit)" MyValue="{Binding MaxAlive, Mode=TwoWay}" />
+      <local:IntEditorControl Headline="Spawn Total (0 = no limit)" MyValue="{Binding SpawnTotal, Mode=TwoWay}" />
+      <local:BoolEditorControl Headline="Active at Start" MyValue="{Binding Active, Mode=TwoWay}" />
    </StackPanel>
 </UserControl>

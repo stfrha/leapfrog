@@ -51,6 +51,13 @@ private:
    int m_spawnTotal;
    int m_spawnedSoFar;
 
+   // Spawns at the intensity only while active. A factory that starts
+   // inactive (active="false") does its spawnInitial when Lua first
+   // activates it.
+   bool m_active;
+   bool m_initialPending;
+   float m_intensity;          // spawns per second (0 = none at intervals)
+
    // watch(): send FactoryLowEvent when this few are left (-1 = no watch)
    int m_watchLeft;
    int m_watchId;
@@ -63,6 +70,7 @@ private:
 
    void readObjectFactoryNode(const pugi::xml_node& objectNode);
    void spawnObjects(int num);
+   void setIntensity(float perSecond);
    
 public:
    ObjectFactory(
@@ -77,6 +85,25 @@ public:
    // this factory are alive. With a spawnTotal, not before all of them
    // have been spawned.
    void watch(int left, int id);
+
+   // Lua control (c_setFactoryProperty / c_getFactoryProperty):
+   // 0 active (0/1), 1 intensity (per second), 2 maxAlive, 3 spawnTotal,
+   // 4 alive (read only), 5 spawned (counts toward spawnTotal; write 0 to
+   // start a new round), 6 spawn now (write n; within maxAlive and
+   // spawnTotal, also when inactive; reads 0)
+   enum PropertyEnum
+   {
+      propActive = 0,
+      propIntensity = 1,
+      propMaxAlive = 2,
+      propSpawnTotal = 3,
+      propAlive = 4,
+      propSpawned = 5,
+      propSpawnNow = 6
+   };
+
+   bool setFactoryProperty(int id, float value);
+   bool getFactoryProperty(int id, float& value);
 
 protected:
 	void doUpdate(const oxygine::UpdateState& us) override;

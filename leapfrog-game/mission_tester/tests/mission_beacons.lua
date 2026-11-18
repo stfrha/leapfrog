@@ -157,7 +157,7 @@ test("beacons: the Ore pays for two, once, tops up the fuel and sends him on", f
    t:expectState(S.thirdBeacon)
    t:expectProperty("leapfrog1", 8, credits + t:mission("beacons").payAtOre)
    t:expect(t:property("leapfrog1", 7) > 2, "Bruno's fuel")
-   t:expectDialog("One more, just past the town", "Bruno")
+   t:expectDialog("extra cash", "Bruno")
    t:expectMap("villagePad", "siloHome", "flashingSlow")
    t:expectMap("oreLanding", "noName", "hollow")
    t:takeOff()

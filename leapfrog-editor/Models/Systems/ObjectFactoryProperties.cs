@@ -22,6 +22,8 @@ namespace LeapfrogEditor
       private double _intensity;
       private int _lifeTime;
       private int _maxAlive = 0;
+      private int _spawnTotal = 0;
+      private bool _active = true;
       private ObservableCollection<SpawnObject> _spawnObjects = new ObservableCollection<SpawnObject>();
 
       #endregion
@@ -112,6 +114,33 @@ namespace LeapfrogEditor
       public bool ShouldSerializeMaxAlive()
       {
          return MaxAlive > 0;
+      }
+
+      // At most this many in all, then it stops. 0 = no limit.
+      [XmlAttribute("spawnTotal")]
+      public int SpawnTotal
+      {
+         get { return _spawnTotal; }
+         set { _spawnTotal = value; }
+      }
+
+      public bool ShouldSerializeSpawnTotal()
+      {
+         return SpawnTotal > 0;
+      }
+
+      // false: waits for Lua (c_setFactoryProperty, property 0), its
+      // spawnInitial included. Written only when false.
+      [XmlAttribute("active")]
+      public bool Active
+      {
+         get { return _active; }
+         set { _active = value; }
+      }
+
+      public bool ShouldSerializeActive()
+      {
+         return !Active;
       }
 
       [XmlElement("spawnObject")]

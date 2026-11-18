@@ -677,6 +677,63 @@ static int c_watchFactory(lua_State *L)
    return 1;
 }
 
+// Finds a scene's object factory by name (a path such as "rig.factory"
+// for one in a child object), or warns and returns NULL.
+static ObjectFactory* findFactory(const char* name, const char* caller)
+{
+   SceneActor* scene = g_LuaInterface.getSceneActor();
+   System* system = (name != NULL) ? scene->getSystem(name) : NULL;
+   ObjectFactory* factory = dynamic_cast<ObjectFactory*>(system);
+
+   if (factory == NULL)
+   {
+      logs::warning("%s: no object factory '%s' in the scene", caller, name ? name : "(nil)");
+   }
+
+   return factory;
+}
+
+// c_setFactoryProperty(factoryName, propertyId, value) -> true if set
+// Controls a running object factory (<system type="objectFactory">):
+// 0 active (0/1; a factory with active="false" does its spawnInitial when
+// first activated), 1 intensity (spawns per second, 0 = none at intervals),
+// 2 maxAlive (0 = no limit), 3 spawnTotal (0 = no limit), 4 alive (read
+// only), 5 spawned so far (counts toward spawnTotal; 0 starts a new round),
+// 6 spawn now (that many at once, within maxAlive and spawnTotal, also when
+// inactive). False if there's no such factory or the property is read only.
+static int c_setFactoryProperty(lua_State *L)
+{
+   const char* name = lua_tostring(L, 1);
+   int propId = (int)lua_tointeger(L, 2);
+   float value = (float)lua_tonumber(L, 3);
+
+   ObjectFactory* factory = findFactory(name, "c_setFactoryProperty");
+
+   bool set = (factory != NULL) && factory->setFactoryProperty(propId, value);
+   lua_pushboolean(L, set);
+   return 1;
+}
+
+// c_getFactoryProperty(factoryName, propertyId) -> value
+// Reads the properties above (6 reads 0). 0 if there's no such factory.
+static int c_getFactoryProperty(lua_State *L)
+{
+   const char* name = lua_tostring(L, 1);
+   int propId = (int)lua_tointeger(L, 2);
+
+   ObjectFactory* factory = findFactory(name, "c_getFactoryProperty");
+
+   float value = 0.0f;
+
+   if (factory != NULL)
+   {
+      factory->getFactoryProperty(propId, value);
+   }
+
+   lua_pushnumber(L, value);
+   return 1;
+}
+
 // c_setTransitOpen(corner, open [, message])
 // Opens or shuts an exit of a space scene: 1 upper right, 2 upper left,
 // 3 lower right, 4 lower left. A shut corner is only a boundary. message
@@ -1374,6 +1431,8 @@ void LuaInterface::initLuaInterface(void)
    lua_register(m_L, "c_setObjectMapShown", c_setObjectMapShown);
    lua_register(m_L, "c_startSceneTimer", c_startSceneTimer);
    lua_register(m_L, "c_watchFactory", c_watchFactory);
+   lua_register(m_L, "c_setFactoryProperty", c_setFactoryProperty);
+   lua_register(m_L, "c_getFactoryProperty", c_getFactoryProperty);
    lua_register(m_L, "c_setTransitOpen", c_setTransitOpen);
    lua_register(m_L, "c_setObjectVelocity", c_setObjectVelocity);
    lua_register(m_L, "c_animateSprite", c_animateSprite);

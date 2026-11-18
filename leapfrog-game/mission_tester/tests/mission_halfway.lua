@@ -62,7 +62,7 @@ end
 test("halfway: stash ends at the silo, and Bruno calls about the station", function(t)
    local m = offered(t)
    t:expectState(m.State.offered)
-   t:expectDialog("The Baxters have taken the station.", "Bruno")
+   t:expectDialog("taken the Halfway", "Bruno")
    t:expectQuestion(m.Question.takeBack)
 end)
 

@@ -24,6 +24,9 @@ ObjectFactory::ObjectFactory(
    m_spawnedSoFar(0),
    m_watchLeft(-1),
    m_watchId(0),
+   m_active(true),
+   m_initialPending(false),
+   m_intensity(0.0f),
    m_attachedBody(NULL)
 {
    readObjectFactoryNode(objectNode);
@@ -34,7 +37,14 @@ ObjectFactory::ObjectFactory(
 
    attachTo(sceneParent);
 
-   spawnObjects(m_initialSpawn);
+   if (m_active)
+   {
+      spawnObjects(m_initialSpawn);
+   }
+   else
+   {
+      m_initialPending = true;
+   }
 }
 
 ObjectFactory::~ObjectFactory()
@@ -51,7 +61,8 @@ void ObjectFactory::readObjectFactoryNode(const xml_node& objectNode)
    m_leftTop = Vector2(posX, posY);
    m_widthHeight = Vector2(width, height);
    m_initialSpawn = objectNode.attribute("spawnInitial").as_int();
-   m_interval = 1.0f / objectNode.attribute("intensity").as_float() * 1000.0f;
+   setIntensity(objectNode.attribute("intensity").as_float());
+   m_active = objectNode.attribute("active").as_bool(true);
    m_fieldLifetime = objectNode.attribute("lifeTime").as_int();
    m_maxAlive = objectNode.attribute("maxAlive").as_int(0);
    m_spawnTotal = objectNode.attribute("spawnTotal").as_int(0);
@@ -75,20 +86,33 @@ void ObjectFactory::readObjectFactoryNode(const xml_node& objectNode)
    m_coNode = m_coNodeHolder->child("spawnObject");
 }
 
+void ObjectFactory::setIntensity(float perSecond)
+{
+   m_intensity = (perSecond > 0.0f) ? perSecond : 0.0f;
+
+   // No timed spawns at intensity 0
+   m_interval = (m_intensity > 0.0f) ? 1000.0f / m_intensity : 0.0f;
+}
+
 void ObjectFactory::doUpdate(const oxygine::UpdateState& us)
 {
    if (!g_MainActor->isInPause())
    {
-      m_timeSinceLast += us.dtf * 1000.0f;
-
-      if (m_timeSinceLast >= m_interval)
+      if (m_active && (m_interval > 0.0f))
       {
-         spawnObjects(1);
+         m_timeSinceLast += us.dtf * 1000.0f;
 
-         m_timeSinceLast = 0.0f;
+         if (m_timeSinceLast >= m_interval)
+         {
+            spawnObjects(1);
+
+            m_timeSinceLast = 0.0f;
+         }
       }
 
-      bool allSpawned = (m_spawnTotal == 0) || (m_spawnedSoFar >= m_spawnTotal);
+      // A factory that hasn't started yet isn't nearly empty
+      bool allSpawned = !m_initialPending &&
+         ((m_spawnTotal == 0) || (m_spawnedSoFar >= m_spawnTotal));
 
       if ((m_watchLeft >= 0) && allSpawned && (m_tally->countAlive() <= m_watchLeft))
       {
@@ -104,6 +128,65 @@ void ObjectFactory::watch(int left, int id)
 {
    m_watchLeft = left;
    m_watchId = id;
+}
+
+bool ObjectFactory::setFactoryProperty(int id, float value)
+{
+   switch (id)
+   {
+   case propActive:
+   {
+      bool active = (value != 0.0f);
+
+      if (active && !m_active)
+      {
+         // The first timed spawn comes one interval after activation
+         m_timeSinceLast = 0.0f;
+      }
+
+      m_active = active;
+
+      if (m_active && m_initialPending)
+      {
+         m_initialPending = false;
+         spawnObjects(m_initialSpawn);
+      }
+      return true;
+   }
+   case propIntensity:
+      setIntensity(value);
+      return true;
+   case propMaxAlive:
+      m_maxAlive = std::max(0, (int)value);
+      return true;
+   case propSpawnTotal:
+      m_spawnTotal = std::max(0, (int)value);
+      return true;
+   case propSpawned:
+      m_spawnedSoFar = std::max(0, (int)value);
+      return true;
+   case propSpawnNow:
+      spawnObjects((int)value);
+      return true;
+   default:
+      // propAlive is read only
+      return false;
+   }
+}
+
+bool ObjectFactory::getFactoryProperty(int id, float& value)
+{
+   switch (id)
+   {
+   case propActive:     value = m_active ? 1.0f : 0.0f; return true;
+   case propIntensity:  value = m_intensity; return true;
+   case propMaxAlive:   value = (float)m_maxAlive; return true;
+   case propSpawnTotal: value = (float)m_spawnTotal; return true;
+   case propAlive:      value = (float)m_tally->countAlive(); return true;
+   case propSpawned:    value = (float)m_spawnedSoFar; return true;
+   case propSpawnNow:   value = 0.0f; return true;
+   default:             return false;
+   }
 }
 
 void ObjectFactory::spawnObjects(int num)
