@@ -57,13 +57,15 @@ SpawnInstruction::SpawnInstruction(
    oxygine::Vector2 widthHeight,
    spSpawnObjectList spawnSource,
    spSpawnTally tally,
-   oxygine::Vector2 direction) :
+   oxygine::Vector2 direction,
+   float leapfrogClearance) :
    m_numOfSpawns(numOfSpawns),
    m_leftTop(leftTop),
    m_widthHeight(widthHeight),
    m_spawnSource(spawnSource),
    m_tally(tally),
-   m_direction(direction)
+   m_direction(direction),
+   m_leapfrogClearance(leapfrogClearance)
 {
    if (m_tally)
    {

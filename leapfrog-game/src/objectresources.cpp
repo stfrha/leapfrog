@@ -70,6 +70,17 @@ void ObjectResources::initObjectResources(
    //if (m_credits != NULL) m_credits->setProperty(20);
 }
 
+void ObjectResources::unbind(void)
+{
+   m_statusEventOriginator = NULL;
+   m_ammo = NULL;
+   m_shield = NULL;
+   m_fuel = NULL;
+   m_credits = NULL;
+   m_damage = NULL;
+   m_shieldObj = NULL;
+}
+
 void ObjectResources::setResources(int ammo, float shield, float fuel, int credit, float damage)
 {
    if (m_ammo != NULL) m_ammo->setPropertyNoEvent((float)ammo);
@@ -82,11 +93,21 @@ void ObjectResources::setResources(int ammo, float shield, float fuel, int credi
 
 int ObjectResources::getShots(void)
 {
+   if (m_ammo == NULL)
+   {
+      return 0;
+   }
+
    return (int)m_ammo->getProperty();
 }
 
 void  ObjectResources::deltaShots(int deltaShots)
 {
+   if (m_ammo == NULL)
+   {
+      return;
+   }
+
    int ammo = (int)m_ammo->getProperty();
 
    ammo += deltaShots;
@@ -118,11 +139,21 @@ void  ObjectResources::deltaShots(int deltaShots)
 
 float ObjectResources::getShield(void)
 {
+   if (m_shield == NULL)
+   {
+      return 0.0f;
+   }
+
    return m_shield->getProperty();
 }
 
 void ObjectResources::deltaShield(float deltaShield)
 {
+   if (m_shield == NULL)
+   {
+      return;
+   }
+
    float shield = m_shield->getProperty();
 
    if ((shield == 0) && (deltaShield > 0) && m_shieldObj)
@@ -174,11 +205,21 @@ void ObjectResources::registerShieldObject(Shield* shieldObj)
 
 float ObjectResources::getFuel(void)
 {
+   if (m_fuel == NULL)
+   {
+      return 0.0f;
+   }
+
    return m_fuel->getProperty();
 }
 
 void ObjectResources::deltaFuel(float deltaFuel)
 {
+   if (m_fuel == NULL)
+   {
+      return;
+   }
+
    float fuel = m_fuel->getProperty();
 
    fuel += deltaFuel;
@@ -210,11 +251,21 @@ void ObjectResources::deltaFuel(float deltaFuel)
 
 int ObjectResources::getCredits(void)
 {
+   if (m_credits == NULL)
+   {
+      return 0;
+   }
+
    return (int)m_credits->getProperty();
 }
 
 void  ObjectResources::deltaCredits(int deltaCredits)
 {
+   if (m_credits == NULL)
+   {
+      return;
+   }
+
    int credits = (int)m_credits->getProperty();
 
    credits += deltaCredits;
@@ -236,11 +287,21 @@ void  ObjectResources::deltaCredits(int deltaCredits)
 
 float ObjectResources::getDamage(void)
 {
+   if (m_damage == NULL)
+   {
+      return 0.0f;
+   }
+
    return m_damage->getProperty();
 }
 
 void ObjectResources::deltaDamage(float deltaDamage)
 {
+   if (m_damage == NULL)
+   {
+      return;
+   }
+
    float damage = m_damage->getProperty();
 
    damage += deltaDamage;

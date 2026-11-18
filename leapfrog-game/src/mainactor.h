@@ -46,6 +46,12 @@ private:
    int m_testStartIndex;
    bool m_startingTest;
 
+   // Playing from a test start with no save since: a death (or anything
+   // else that loads the latest save) starts the test start over instead
+   // of going back to a save from before it
+   bool m_testRunUnsaved;
+   void startTestStart(void);
+
 	//it is our resources
 	//in real project you would have more than one Resources declarations.
 	//It is important on mobile devices with limited memory and you would load/unload them
@@ -93,6 +99,13 @@ public:
 
 	MainActor();
 	~MainActor();
+
+   // The Leapfrog is a wreck (full damage) waiting for the latest save to
+   // be loaded: no scene exits and no saves until then
+   bool leapfrogDestroyed(void);
+
+   // A save was written (the test start, if any, is behind us)
+   void noteGameSaved(void) { m_testRunUnsaved = false; }
 
    // Below is the interface to the game manager (LUA script enginge)
    // "std::string object" are on the form "objectA.objectAsB.objectBsC" in the hierarcical 

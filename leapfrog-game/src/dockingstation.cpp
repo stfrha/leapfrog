@@ -270,7 +270,7 @@ LeapFrog* DockingStation::getLeapfrog(void)
 {
    LeapFrog* lf = (m_sceneActor != NULL) ? m_sceneActor->m_leapfrog : NULL;
 
-   if (lf && lf->m_resources && !lf->m_isDead)
+   if (lf && lf->m_resources && !lf->m_isDead && !lf->isDestroyed())
    {
       return lf;
    }

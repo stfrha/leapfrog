@@ -22,6 +22,7 @@ ObjectFactory::ObjectFactory(
    m_tally(NULL),
    m_spawnTotal(0),
    m_spawnedSoFar(0),
+   m_leapfrogClearance(c_defaultLeapfrogClearance),
    m_watchLeft(-1),
    m_watchId(0),
    m_active(true),
@@ -66,6 +67,7 @@ void ObjectFactory::readObjectFactoryNode(const xml_node& objectNode)
    m_fieldLifetime = objectNode.attribute("lifeTime").as_int();
    m_maxAlive = objectNode.attribute("maxAlive").as_int(0);
    m_spawnTotal = objectNode.attribute("spawnTotal").as_int(0);
+   m_leapfrogClearance = objectNode.attribute("leapfrogClearance").as_float(c_defaultLeapfrogClearance);
 
    m_tally = new SpawnTally();
 
@@ -232,6 +234,8 @@ void ObjectFactory::spawnObjects(int num)
       pos,
       m_widthHeight,
       m_spawnObjects,
-      m_tally);
+      m_tally,
+      Vector2(0.0f, 0.0f),
+      m_leapfrogClearance);
 
 }

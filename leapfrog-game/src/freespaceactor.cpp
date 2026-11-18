@@ -80,7 +80,8 @@ void FreeSpaceActor::doUpdate(const oxygine::UpdateState &us)
       break;
    }
 
-   if (m_leapfrogBody != NULL)
+   // A wreck thrown into a corner by its blast doesn't transit
+   if ((m_leapfrogBody != NULL) && (m_leapfrog != NULL) && !m_leapfrog->isDestroyed())
    {
       if (m_inTransitField)
       {

@@ -373,6 +373,10 @@ public:
 
    HeadDownDisplay();
 
+   // Screen y of the top edge of the map in its normal (not squeezed)
+   // layout, or a negative value before the display is initialised.
+   float getMapTop(void);
+
    // Squeeze the display (map or orbit overlay, and the instruments around
    // the map) flat into its bottom edge, or grow it back, e.g. to make room
    // for the expanded message display. delay in ms before it starts.

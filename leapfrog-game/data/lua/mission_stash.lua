@@ -218,6 +218,10 @@ local function startRaid()
    swarm.start("swarm", "stripper_swarm.xml", function(name)
       strippedByRaiders()
    end)
+
+   -- Stop ammo factory from producing more ammo, so the strippers can take it all
+   c_setFactoryProperty("ammoDrops", 0, 0)
+
    -- However stocked up he came, ten grabs empty each resource
    swarm.takeShare("swarm", raidShare)
 end

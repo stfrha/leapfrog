@@ -384,6 +384,12 @@ void LaunchSite::doUpdate(const UpdateState &us)
 
 void LaunchSite::leapfrogFootTouch(b2Contact* contact, bool leftFoot, LeapFrog* leapfrog)
 {
+   // A wreck doesn't land
+   if ((leapfrog != NULL) && leapfrog->isDestroyed())
+   {
+      return;
+   }
+
    m_leapFrog = leapfrog;
 
    if (m_leapFrog != NULL)

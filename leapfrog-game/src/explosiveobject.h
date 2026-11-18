@@ -62,6 +62,10 @@ protected:
    float m_damageBulletEqv;
    bool m_impactExplosion;
 
+   // A blast with no bomb body (explodeAt): it goes off here [physics]
+   bool m_hasBlastCenter;
+   b2Vec2 m_blastCenter;
+
    void readExplosiveObjectNode(const pugi::xml_node& node, float& impactThreshold);
    void doExplosion(void);
    void startAnimation(b2Vec2 pos);
@@ -78,6 +82,19 @@ public:
 
 
    void triggerExplosion(void);
+
+   // A bomb blast with no bomb: the same animation and blast particles
+   // (they push and damage what they hit) at pos [stage coordinates].
+   // Goes off on the next update. Leave the returned object alone, it
+   // removes itself when the blast is over.
+   static ExplosiveObject* explodeAt(
+      SceneActor* sceneParent,
+      b2World* world,
+      const oxygine::Vector2& pos,
+      int numOfParticles = 40,
+      float particleRadius = 1.0f,
+      float blastPower = 1000.0f,
+      float damageBulletEqv = 1.0f);
    float getDamageBulletEqv(void);
    void hitImpulse(const b2ContactImpulse* impulse, bool leapfrog = false);
 

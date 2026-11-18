@@ -441,11 +441,20 @@ void GameStatus::saveGameStatus(void)
 {
    xml_node root = m_gameStatusDocument.child("leapfrogGameStatus");
 
-   root.attribute("ammo").set_value(m_leapfrogResources.getShots());
-   root.attribute("shield").set_value(m_leapfrogResources.getShield());
-   root.attribute("fuel").set_value(m_leapfrogResources.getFuel());
-   root.attribute("credits").set_value(m_leapfrogResources.getCredits());
-   root.attribute("damage").set_value(m_leapfrogResources.getDamage());
+   // Only with a Leapfrog holding them. Without one (between scenes, or a
+   // scene with no Leapfrog) the values from the last save/restore stay.
+   if (m_leapfrogResources.isBound())
+   {
+      root.attribute("ammo").set_value(m_leapfrogResources.getShots());
+      root.attribute("shield").set_value(m_leapfrogResources.getShield());
+      root.attribute("fuel").set_value(m_leapfrogResources.getFuel());
+      root.attribute("credits").set_value(m_leapfrogResources.getCredits());
+      root.attribute("damage").set_value(m_leapfrogResources.getDamage());
+   }
+   else
+   {
+      logs::messageln("saveGameStatus: no Leapfrog, resources kept as saved");
+   }
    root.attribute("currentSceneFile").set_value(m_currentSceneFile.c_str());
    root.attribute("exitSceneFile").set_value(m_exitSceneFile.c_str());
    root.attribute("currentSceneType").set_value(m_currentSceneType);

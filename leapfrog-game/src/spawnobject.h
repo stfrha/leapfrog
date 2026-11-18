@@ -83,6 +83,8 @@ public:
    spSpawnTally m_tally;         // may be NULL
    oxygine::Vector2 m_direction; // not zero: the spawn keeps its speed but
                                  // flies this way
+   float m_leapfrogClearance;    // > 0: don't spawn closer than this to the
+                                 // Leapfrog [m]; spawns wait if no spot is free
 
    SpawnInstruction(
       int numOfSpawns, 
@@ -90,7 +92,8 @@ public:
       oxygine::Vector2 widthHeight, 
       spSpawnObjectList spawnSource,
       spSpawnTally tally = NULL,
-      oxygine::Vector2 direction = oxygine::Vector2(0.0f, 0.0f));
+      oxygine::Vector2 direction = oxygine::Vector2(0.0f, 0.0f),
+      float leapfrogClearance = 0.0f);
 
 
 };

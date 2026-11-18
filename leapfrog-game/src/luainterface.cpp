@@ -1286,8 +1286,21 @@ static int c_exitSceneSaveGameStatus(lua_State *L)
    int exitSceneType = lua_tointeger(L, 6);
    int exitParameter = lua_tointeger(L, 7);
 
+   if ((g_MainActor != NULL) && g_MainActor->leapfrogDestroyed())
+   {
+      // Never save a lost game; the latest save is loaded soon
+      logs::messageln("c_exitSceneSaveGameStatus: not saved, the Leapfrog is destroyed");
+      return 0;
+   }
+
    g_GameStatus.setSceneMissionState(sceneName, mission, state, type, exitSceneName, exitSceneType, exitParameter);
    g_GameStatus.saveGameStatus();
+
+   if (g_MainActor != NULL)
+   {
+      g_MainActor->noteGameSaved();
+   }
+
    return 0;
 }
 
@@ -1306,6 +1319,12 @@ static int c_saveGameStatus(lua_State* L)
    g_GameStatus.readGameStatus();
    g_GameStatus.setSceneMissionState(sceneName, mission, state, type, "", -1, -1);
    g_GameStatus.saveGameSceneStatus();
+
+   if (g_MainActor != NULL)
+   {
+      g_MainActor->noteGameSaved();
+   }
+
    return 0;
 }
 

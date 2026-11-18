@@ -51,6 +51,7 @@ MainActor::MainActor() :
    m_isInMessagePause(false),
    m_testStartIndex(1),
    m_startingTest(false),
+   m_testRunUnsaved(false),
    m_fpsEst(NULL)
 {
 }
@@ -282,6 +283,10 @@ void MainActor::startScene(void)
    else
    {
       g_HeadDownDisplay->goToMap();
+
+      // Center mode holds the Leapfrog between the screen top and the
+      // map, which is only known now that the display is laid out
+      m_sceneObject->refreshCenterVpPos();
    }
 
    placeMessageDisplay();
@@ -296,6 +301,7 @@ void MainActor::startScene(void)
    if ((g_GameStatus.getExitSceneType() == -1) && !m_startingTest)
    {
       g_GameStatus.saveGameStatus();
+      noteGameSaved();
    }
 
    m_startingTest = false;
@@ -361,14 +367,33 @@ void MainActor::unregisterDualPropTrigger(
 
 }
 
+bool MainActor::leapfrogDestroyed(void)
+{
+   return (m_sceneObject != NULL) &&
+      (m_sceneObject->m_leapfrog != NULL) &&
+      m_sceneObject->m_leapfrog->isDestroyed();
+}
+
 void MainActor::exitLandingScene(oxygine::Event *ev)
 {
+   if (leapfrogDestroyed())
+   {
+      // The wreck goes nowhere; the latest save is loaded soon
+      return;
+   }
+
    ExitLandingSceneEvent* xev = static_cast<ExitLandingSceneEvent*>(ev);
    g_LuaInterface.lua_sceneExitHandler(SceneActor::SceneTypeEnum::landing, xev->m_parameter);
 }
 
 void MainActor::exitDeepSpaceScene(oxygine::Event *ev)
 {
+   if (leapfrogDestroyed())
+   {
+      // Thrown into a transit field by the blast: the wreck goes nowhere
+      return;
+   }
+
    ExitDeepSpaceSceneEvent* xev = static_cast<ExitDeepSpaceSceneEvent*>(ev);
    g_LuaInterface.lua_sceneExitHandler(SceneActor::SceneTypeEnum::deepSpace, xev->m_parameter);
 }
@@ -625,12 +650,24 @@ void MainActor::loadLatestSave(void)
    // Its messages go
    g_MessageDisplay->cleanAndClearMessageDisplay();
 
-   // restore previous state and continue from there
+   // restore previous state and continue from there (also the resources
+   // a test start uses: the damage etc. go back to the saved values)
    g_GameStatus.restoreGameStatus();
+
+   if (m_testRunUnsaved)
+   {
+      // Nothing saved since the test start: it starts over
+      startTestStart();
+      return;
+   }
 
    if (g_GameStatus.getExitSceneType() == -1)
    {
-      // Exit scene data is NOT available, run initial position for leapfrog
+      // Exit scene data is NOT available, run initial position for leapfrog.
+      // The scripts must know the saved scene and mission first: they
+      // still hold the ones played since (e.g. a space scene, where the
+      // initial position has no Leapfrog)
+      g_LuaInterface.lua_forceCurrentScene();
       g_LuaInterface.lua_startInitialScene();
    }
    else
@@ -664,6 +701,7 @@ void MainActor::restartedFromMenu(void)
    {
       // Another game: the old one's messages go
       g_MessageDisplay->cleanAndClearMessageDisplay();
+      m_testRunUnsaved = false;
 
       // Initialise new game data and load first scene according to lua
       g_GameStatus.initializeGameStatusXmlDocument();
@@ -673,32 +711,41 @@ void MainActor::restartedFromMenu(void)
    }
    else if (m_postMenuAction == PostMenuActionType::continueLatest)
    {
+      // The menu's continue is the real save, also after a test start
+      m_testRunUnsaved = false;
       loadLatestSave();
    }
    else if (m_postMenuAction == PostMenuActionType::testStart)
    {
-      // As the game gets there: the scripts set up the scene, mission,
-      // state and the Leapfrog's entry (lua_prepareTestStart), the game
-      // status follows, and the scene is armed
-      TestStart start;
-      std::string message;
+      startTestStart();
+   }
+}
 
-      if (g_LuaInterface.lua_prepareTestStart(m_testStartIndex, start, message))
-      {
-         g_GameStatus.setSceneMissionState(
-            start.m_scene, start.m_mission, start.m_state, start.m_sceneType,
-            start.m_exitScene, start.m_exitType, start.m_exitParameter);
-         m_startingTest = true;
-         armScene(start.m_scene, start.m_sceneType);
-      }
-      else
-      {
-         logs::messageln("Test start refused: %s", message.c_str());
+void MainActor::startTestStart(void)
+{
+   // As the game gets there: the scripts set up the scene, mission,
+   // state and the Leapfrog's entry (lua_prepareTestStart), the game
+   // status follows, and the scene is armed
+   TestStart start;
+   std::string message;
 
-         if (g_HeadDownDisplay)
-         {
-            g_HeadDownDisplay->logMessage(message, true);
-         }
+   if (g_LuaInterface.lua_prepareTestStart(m_testStartIndex, start, message))
+   {
+      g_GameStatus.setSceneMissionState(
+         start.m_scene, start.m_mission, start.m_state, start.m_sceneType,
+         start.m_exitScene, start.m_exitType, start.m_exitParameter);
+      m_startingTest = true;
+      m_testRunUnsaved = true;
+      armScene(start.m_scene, start.m_sceneType);
+   }
+   else
+   {
+      m_testRunUnsaved = false;
+      logs::messageln("Test start refused: %s", message.c_str());
+
+      if (g_HeadDownDisplay)
+      {
+         g_HeadDownDisplay->logMessage(message, true);
       }
    }
 }

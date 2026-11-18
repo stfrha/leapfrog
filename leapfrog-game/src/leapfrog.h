@@ -266,6 +266,23 @@ private:
    b2Vec2 m_sensorPrevPoint;
    b2Vec2 m_sensorPrevNormal;
 
+   // Full damage destroys the Leapfrog: controls and leg drives go dead,
+   // it blows up, and after a while the latest save is loaded
+   static constexpr float c_fullDamage = 100.0f;
+   static const int c_destroyedBlasts = 4;           // big blasts, ...
+   static const int c_destroyedBlastSpacingMs = 350; // ... this far apart
+   static const int c_destroyedBombMs = 1600;        // then a bomb blast,
+   static const int c_destroyedReloadMs = 4000;      // then back to the save
+   bool m_destroyed;
+   int m_destroyedMs;            // [ms] since it was destroyed
+   int m_destroyedBlastsDone;
+   bool m_destroyedBombDone;
+   bool m_destroyedReloaded;
+
+   void destroyLeapfrog(void);
+   void updateDestroyed(const oxygine::UpdateState& us);
+   void destroyedBlast(void);
+
    spGun m_gun;
 
    spBox2DDraw m_debugDraw;
@@ -290,6 +307,7 @@ public:
 		const oxygine::Vector2& pos,
       pugi::xml_node& root,
       int groupIndex);
+   ~LeapFrog();
 
 
    void hitImpulse(b2Contact* contact, const b2ContactImpulse* impulse);
@@ -335,6 +353,7 @@ public:
    void setHoldAngle(float angle);
    void releaseHoldAngle(void);
    void breakJoints(void);
+   bool isDestroyed(void) const { return m_destroyed; }
    
    void initObjectResources(oxygine::Actor* statusEventOriginator, ObjectResources* resources = NULL) override;
 

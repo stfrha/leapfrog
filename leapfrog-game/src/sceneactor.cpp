@@ -190,7 +190,7 @@ SceneActor::SceneActor(
 	setScale(m_stageToViewPortScale);
 
    // Set wanted viewport position to center (since panorate mode defaults to center)
-   m_wantedVpPos = Vector2(g_Layout.getViewPortBounds().x / 2.0f, g_Layout.getViewPortBounds().y / 2.0f);
+   m_wantedVpPos = centerVpPos();
 
 
    // The sceneActor is also an actor whos has two parents
@@ -359,7 +359,7 @@ void SceneActor::setPanorateMode(PanorateModeEnum mode, timeMS duration)
 
    if (m_panorateMode == center)
    {
-      newWantedPos = Vector2(g_Layout.getViewPortBounds().x / 2.0f, g_Layout.getViewPortBounds().y / 2.0f);
+      newWantedPos = centerVpPos();
    }
    else if (m_panorateMode == top)
    {
@@ -386,6 +386,35 @@ void SceneActor::setPanorateMode(PanorateModeEnum mode, timeMS duration)
    removeTweensByName("scenePanorate");
    spTween panTween = addTween(SceneActor::TweenWantedVpPos(newWantedPos), duration, 1, false, 0, Tween::ease_inOutQuad);
    panTween->setName("scenePanorate");
+}
+
+Vector2 SceneActor::centerVpPos(void)
+{
+   Vector2 vp = g_Layout.getViewPortBounds();
+   float y = vp.y / 2.0f;
+
+   if ((m_sceneType != orbit) && g_HeadDownDisplay)
+   {
+      float mapTop = g_HeadDownDisplay->getMapTop();
+
+      if ((mapTop > 0.0f) && (mapTop <= vp.y))
+      {
+         y = mapTop / 2.0f;
+      }
+   }
+
+   return Vector2(vp.x / 2.0f, y);
+}
+
+void SceneActor::refreshCenterVpPos(void)
+{
+   if (m_panorateMode == center)
+   {
+      // Replaces the glide the scene started with (it was aimed at
+      // where the map was in the previous scene)
+      removeTweensByName("scenePanorate");
+      m_wantedVpPos = centerVpPos();
+   }
 }
 
 const Vector2& SceneActor::getWantedVpPos() const
@@ -497,9 +526,10 @@ void SceneActor::addObjectToSpawnList(
    oxygine::Vector2 widthHeight,
    spSpawnObjectList spawnSource,
    spSpawnTally tally,
-   oxygine::Vector2 direction)
+   oxygine::Vector2 direction,
+   float leapfrogClearance)
 {
-   spSpawnInstruction spi = new SpawnInstruction(numOfSpawns, topLeft, widthHeight, spawnSource, tally, direction);
+   spSpawnInstruction spi = new SpawnInstruction(numOfSpawns, topLeft, widthHeight, spawnSource, tally, direction, leapfrogClearance);
    m_spawnInstructions.push_back(spi);
 }
 
@@ -1216,38 +1246,91 @@ void SceneActor::sweepKillList(void)
    m_deathList.clear();
 }
 
+static float randomIn(float start, float length)
+{
+   if (length <= 0.0f)
+   {
+      return start;
+   }
+
+   return static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / length)) + start;
+}
+
+bool SceneActor::findSpawnPosition(const SpawnInstruction& spi, Vector2& pos)
+{
+   // Positions tried before giving up for this update
+   const int c_tries = 16;
+
+   bool checkLeapfrog = (spi.m_leapfrogClearance > 0.0f) && (m_leapfrog != NULL);
+   Vector2 lfPos;
+
+   if (checkLeapfrog)
+   {
+      lfPos = m_leapfrog->getMainActor()->getPosition();
+   }
+
+   for (int i = 0; i < c_tries; i++)
+   {
+      pos = Vector2(
+         randomIn(spi.m_leftTop.x, spi.m_widthHeight.x),
+         randomIn(spi.m_leftTop.y, spi.m_widthHeight.y));
+
+      if (!checkLeapfrog)
+      {
+         return true;
+      }
+
+      Vector2 d = pos - lfPos;
+
+      if (d.x * d.x + d.y * d.y >= spi.m_leapfrogClearance * spi.m_leapfrogClearance)
+      {
+         return true;
+      }
+   }
+
+   return false;
+}
+
 void SceneActor::sweepSpawnList(void)
 {
+   // Instructions whose spawns found no free spot this update. They are
+   // tried again next update (the Leapfrog will likely have moved).
+   std::vector<spSpawnInstruction> waiting;
+
    for (auto it = m_spawnInstructions.begin(); it != m_spawnInstructions.end(); ++it)
    {
       spSpawnTally tally = (*it)->m_tally;
-
-      if (tally)
-      {
-         tally->m_pending -= (*it)->m_numOfSpawns;
-      }
+      int spawned = 0;
 
       for (int i = 0; i < (*it)->m_numOfSpawns; i++)
       {
+         // Position first, so a spawn that has to wait doesn't use up
+         // a pick from the spawn source
+         Vector2 pos;
+
+         if (!findSpawnPosition(**it, pos))
+         {
+            break;
+         }
+
          pugi::xml_node* spawnNode = (*it)->m_spawnSource->getSpawnObjectNode();
 
          if (spawnNode == NULL)
          {
             // Nothing to spawn. (This used to return, which left the
             // instruction list uncleared, to be retried every update.)
+            // Count the rest as done so it isn't retried either.
+            spawned = (*it)->m_numOfSpawns;
             break;
          }
 
-         // TODO: randomise a position within topLeft and widthHeight
-         float posX = static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (*it)->m_widthHeight.x)) + (*it)->m_leftTop.x;
-         float posY = static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (*it)->m_widthHeight.y)) + (*it)->m_leftTop.y;
-
+         spawned++;
 
          CompoundObject* co = defineChildObject(
             this,
             this,
             m_world,
-            Vector2(posX, posY),
+            pos,
             *spawnNode);
 
          if (tally)
@@ -1265,9 +1348,20 @@ void SceneActor::sweepSpawnList(void)
             body->SetLinearVelocity(b2Vec2(direction.x * speed, direction.y * speed));
          }
       }
+
+      if (tally)
+      {
+         tally->m_pending -= spawned;
+      }
+
+      if (spawned < (*it)->m_numOfSpawns)
+      {
+         (*it)->m_numOfSpawns -= spawned;
+         waiting.push_back(*it);
+      }
    }
 
-   m_spawnInstructions.clear();
+   m_spawnInstructions = waiting;
 }
 
 void SceneActor::removeTimer(int id)

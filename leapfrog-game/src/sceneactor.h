@@ -210,17 +210,32 @@ public:
    // Where on the screen the followed object is kept; the view glides
    // there over `duration`
    void setPanorateMode(PanorateModeEnum mode, oxygine::timeMS duration = 4000);
+
+   // Where the panorated object is held in center mode: horizontally in
+   // the middle, vertically halfway between the screen top and the top
+   // of the map (screen middle if there is no map yet).
+   oxygine::Vector2 centerVpPos(void);
+
+   // Call when the head down display has been laid out for this scene,
+   // so center mode picks up where the map is.
+   void refreshCenterVpPos(void);
    void setPanorateObject(CompoundObject* co);
    void enablePanorateLimit(bool enable);
 
    void addMeToDeathList(spActor actor);
+
+   // A random position in the instruction's area. With a Leapfrog
+   // clearance, tries a number of positions and returns false if none
+   // is far enough from the Leapfrog.
+   bool findSpawnPosition(const SpawnInstruction& spi, oxygine::Vector2& pos);
    void addObjectToSpawnList(
       int numOfSpawns,
       oxygine::Vector2 leftTop,
       oxygine::Vector2 widthHeight,
       spSpawnObjectList spawnSource,
       spSpawnTally tally = NULL,
-      oxygine::Vector2 direction = oxygine::Vector2(0.0f, 0.0f));
+      oxygine::Vector2 direction = oxygine::Vector2(0.0f, 0.0f),
+      float leapfrogClearance = 0.0f);
    
    int createSceneTimer(int numOfTicks);
 

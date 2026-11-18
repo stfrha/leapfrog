@@ -1,6 +1,7 @@
 #include "leapfrog.h"
 
 #include <algorithm>
+#include <cstdlib>
 #include "leapfrogevents.h"
 
 #include "physdispconvert.h"
@@ -20,6 +21,7 @@
 #include "actoruserdata.h"
 
 #include "blastemitter.h"
+#include "explosiveobject.h"
 #include "headdowndisplay.h"
 
 #include "headupdisplay.h"
@@ -94,7 +96,12 @@ LeapFrog::LeapFrog(
    m_sensorAngle(0.0f),
    m_sensorPrevHit(false),
    m_sensorPrevPoint(0.0f, 0.0f),
-   m_sensorPrevNormal(0.0f, 0.0f)
+   m_sensorPrevNormal(0.0f, 0.0f),
+   m_destroyed(false),
+   m_destroyedMs(0),
+   m_destroyedBlastsDone(0),
+   m_destroyedBombDone(false),
+   m_destroyedReloaded(false)
 {
 	initCompoundObjectParts(sceneParent, sceneParent, parentObject, world, pos, root, groupIndex);
 
@@ -294,6 +301,18 @@ b2Vec2 LeapFrog::getCraftVelocity(void)
    return (1.0f / mass) * momentum;
 }
 
+LeapFrog::~LeapFrog()
+{
+   // The game's resources point into m_properties: let go, unless a
+   // newer Leapfrog has taken them over already
+   if ((m_resources != NULL) &&
+      (m_properties.size() > LeapfroPropertiesEnum::ammo) &&
+      m_resources->isBoundTo(&m_properties[LeapfroPropertiesEnum::ammo]))
+   {
+      m_resources->unbind();
+   }
+}
+
 oxygine::Actor* LeapFrog::getMainActor(void)
 {
    return m_leapfrogActor.get();
@@ -332,6 +351,17 @@ void LeapFrog::doUpdate(const UpdateState &us)
       telemetry.m_fuel = m_properties[LeapfroPropertiesEnum::fuel].getProperty();
       telemetry.m_damage = m_properties[LeapfroPropertiesEnum::damage].getProperty();
       g_HeadDownDisplay->setLeapfrogTelemetry(telemetry);
+   }
+
+   // Damage from anything (hits, bullets, Lua) counts
+   evaluateLepfrogDamage();
+
+   if (m_destroyed)
+   {
+      // A wreck: no forces, no leg drives, no service lift
+      updateDestroyed(us);
+      updateTerrainSensor();
+      return;
    }
 
    float angle = 0.0f;
@@ -741,6 +771,12 @@ void LeapFrog::breakJoints(void)
 
 void LeapFrog::goToMode(LeapFrogModeEnum mode)
 {
+   if (m_destroyed)
+   {
+      // A wreck's legs stay limp
+      return;
+   }
+
    m_modeInTransit = true;
    m_properties[LeapfroPropertiesEnum::propState].setProperty((float)m_state);
    m_mode = mode;
@@ -868,6 +904,12 @@ void LeapFrog::holdAngleReached(void)
 void LeapFrog::fireMainBooster(bool burn, bool flamesOnly, bool freeFuel)
 // Will be called each doUpdate when burn is pressed
 {
+   if (m_destroyed)
+   {
+      // A wreck: the controls do nothing (destroyLeapfrog stopped it all)
+      return;
+   }
+
    // Handle booster flame particles
 
    if (!freeFuel && (m_environment == ENV_GROUND) && (m_resources->getFuel() <= 0.0f))
@@ -1012,6 +1054,12 @@ void LeapFrog::fireMainBooster(bool burn, bool flamesOnly, bool freeFuel)
 
 void LeapFrog::fireSteeringBooster(int dir)
 {
+   if (m_destroyed)
+   {
+      // A wreck: the controls do nothing (destroyLeapfrog stopped it all)
+      return;
+   }
+
    // Handle booster flame particles
 
    if ((m_environment == ENV_GROUND) && (m_resources->getFuel() <= 0.0f))
@@ -1147,6 +1195,12 @@ void LeapFrog::fireSteeringBooster(int dir)
 
 void LeapFrog::fireGun(bool fire)
 {
+   if (m_destroyed)
+   {
+      // A wreck: the controls do nothing (destroyLeapfrog stopped it all)
+      return;
+   }
+
    if (fire)
    {
       m_gun->startGun();
@@ -1370,8 +1424,104 @@ void LeapFrog::collisionBlast(b2Contact* contact, bool small)
 
 void LeapFrog::evaluateLepfrogDamage(void)
 {
-   // TODO: Evaluate game over
+   // In orbit the re-entry decides (burning up is its own death)
+   if (m_destroyed || (m_resources == NULL) || (m_environment == ENV_ORBIT))
+   {
+      return;
+   }
 
+   if (m_resources->getDamage() >= c_fullDamage)
+   {
+      destroyLeapfrog();
+   }
+}
+
+void LeapFrog::destroyLeapfrog(void)
+{
+   logs::messageln("Leapfrog destroyed: full damage");
+
+   // Flames and gun off while the controls still work, then nothing
+   // more from the controls
+   fireMainBooster(false);
+   fireSteeringBooster(0);
+   fireGun(false);
+   releaseHoldAngle();
+
+   m_destroyed = true;
+   m_destroyedMs = 0;
+   m_destroyedBlastsDone = 0;
+   m_destroyedBombDone = false;
+   m_destroyedReloaded = false;
+
+   // No drive in any leg: they swing (not announced one by one)
+   b2RevoluteJoint* legs[] = {
+      m_rightBigLegJoint, m_rightSmallLegJoint, m_rightFootLegJoint,
+      m_leftBigLegJoint, m_leftSmallLegJoint, m_leftFootLegJoint };
+
+   for (b2RevoluteJoint* joint : legs)
+   {
+      if (joint != NULL)
+      {
+         makeLegLimp(joint, false);
+         joint->EnableMotor(false);
+      }
+   }
+
+   if (g_HeadDownDisplay)
+   {
+      g_HeadDownDisplay->logMessage("Hull failure. The Leapfrog is lost.", true);
+   }
+
+   destroyedBlast();
+}
+
+void LeapFrog::destroyedBlast(void)
+{
+   m_destroyedBlastsDone++;
+
+   // Somewhere on the hull, not all in the same spot
+   Vector2 pos = m_leapfrogActor->getPosition() + Vector2(
+      (float)(rand() % 41 - 20) / 10.0f,
+      (float)(rand() % 41 - 20) / 10.0f);
+
+   spBlastEmitter blast = new BlastEmitter(
+      pos,
+      400.0f,     // Intensity, particles / sec
+      400,        // Emitter Lifetime
+      900,        // Particle lifetime
+      90.0f,      // Particle distance
+      1.2f);      // Particle spawn size
+   blast->attachTo(m_sceneActor);
+}
+
+void LeapFrog::updateDestroyed(const UpdateState& us)
+{
+   m_destroyedMs += us.dt;
+
+   if ((m_destroyedBlastsDone < c_destroyedBlasts) &&
+      (m_destroyedMs >= m_destroyedBlastsDone * c_destroyedBlastSpacingMs))
+   {
+      destroyedBlast();
+   }
+
+   if (!m_destroyedBombDone && (m_destroyedMs >= c_destroyedBombMs))
+   {
+      // The tanks go: a bomb's blast where the hull is. Its particles
+      // throw the wreck and whatever is near.
+      m_destroyedBombDone = true;
+      ExplosiveObject::explodeAt(m_sceneActor, m_world, m_leapfrogActor->getPosition());
+   }
+
+   if (!m_destroyedReloaded && (m_destroyedMs >= c_destroyedReloadMs))
+   {
+      // Once: the saved scene starts on the next update
+      m_destroyedReloaded = true;
+
+      if (g_MainActor != NULL)
+      {
+         g_MainActor->loadLatestSave();
+      }
+   }
 }
 
 void LeapFrog::hitImpulse(b2Contact* contact, const b2ContactImpulse* impulse)

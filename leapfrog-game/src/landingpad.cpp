@@ -95,6 +95,12 @@ LandingPad::LandingPad(
 
 void LandingPad::leapfrogFootTouch(b2Contact* contact, bool leftFoot, LeapFrog* leapfrog)
 {
+   // A wreck doesn't land
+   if ((leapfrog != NULL) && leapfrog->isDestroyed())
+   {
+      return;
+   }
+
    m_latestLeapfrog = leapfrog;
 
    // The pad's body is the one in the contact that belongs to this pad

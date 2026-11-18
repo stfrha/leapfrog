@@ -33,7 +33,9 @@ ExplosiveObject::ExplosiveObject(
    m_damageBulletEqv(1.0f),
    m_impactExplosion(false),
    m_state(ExplosionState::idle),
-   m_explosionAnimation(NULL)
+   m_explosionAnimation(NULL),
+   m_hasBlastCenter(false),
+   m_blastCenter(0.0f, 0.0f)
 {
 
    // Register all properties:
@@ -93,7 +95,8 @@ void ExplosiveObject::doUpdate(const oxygine::UpdateState& us)
    {
    case ExplosionState::idle:
 
-      if (data[SDL_SCANCODE_B])
+      // (Debug key for bombs; a bodiless blast is triggered by explodeAt)
+      if (data[SDL_SCANCODE_B] && !m_hasBlastCenter)
       {
          triggerExplosion();
       }
@@ -132,7 +135,14 @@ void ExplosiveObject::doUpdate(const oxygine::UpdateState& us)
             m_explosionAnimation->detach();
          }
 
+         m_blastParticleBodies.clear();
          m_state = ExplosionState::idle;
+
+         if (m_hasBlastCenter)
+         {
+            // Made for this blast only (explodeAt)
+            addMeToDeathList();
+         }
       }
 
       break;
@@ -157,15 +167,22 @@ void ExplosiveObject::doExplosion(void)
 {
    m_blastParticleBodies.clear();
 
-   if (m_shapes.size() > 0)
+   bool haveCenter = false;
+   b2Vec2 center(0.0f, 0.0f);
+
+   if (m_hasBlastCenter)
+   {
+      center = m_blastCenter;
+      haveCenter = true;
+   }
+   else if (m_shapes.size() > 0)
    {
       b2Body* myBody = ActorUserData::getBody(m_shapes[0]->getUserData());
 
       if (myBody)
       {
-         b2Vec2 center = myBody->GetPosition();
-
-         startAnimation(center);
+         center = myBody->GetPosition();
+         haveCenter = true;
 
          // Now that we have saved the position, it is safe to remove
          // the body.
@@ -181,45 +198,50 @@ void ExplosiveObject::doExplosion(void)
          {
             aud->m_body = NULL;
          }
-         
-         int groupIndex = -g_GroupIndexSource.getNewGroupIndex();
+      }
+   }
 
-         for (int i = 0; i < m_numOfParticles; i++) {
-            float angle = (i / (float)m_numOfParticles) * 2.0f * MATH_PI;
-            b2Vec2 rayDir(sinf(angle), cosf(angle));
+   if (haveCenter)
+   {
+      startAnimation(center);
 
-            b2BodyDef bd;
-            bd.type = b2_dynamicBody;
-            bd.fixedRotation = true; // rotation not necessary
-            bd.bullet = true; // prevent tunneling at high speed
-            bd.linearDamping = 7; // drag due to moving through air
-            bd.gravityScale = 0; // ignore gravity
-            bd.position = center; // start at blast center
-            bd.linearVelocity = m_blastPower * rayDir;
-            b2Body* body = m_world->CreateBody(&bd);
+      int groupIndex = -g_GroupIndexSource.getNewGroupIndex();
 
-            m_blastParticleBodies.push_back(body);
+      for (int i = 0; i < m_numOfParticles; i++) {
+         float angle = (i / (float)m_numOfParticles) * 2.0f * MATH_PI;
+         b2Vec2 rayDir(sinf(angle), cosf(angle));
 
-            b2CircleShape circleShape;
-            circleShape.m_radius = m_particlesRadius; // very small
+         b2BodyDef bd;
+         bd.type = b2_dynamicBody;
+         bd.fixedRotation = true; // rotation not necessary
+         bd.bullet = true; // prevent tunneling at high speed
+         bd.linearDamping = 7; // drag due to moving through air
+         bd.gravityScale = 0; // ignore gravity
+         bd.position = center; // start at blast center
+         bd.linearVelocity = m_blastPower * rayDir;
+         b2Body* body = m_world->CreateBody(&bd);
 
-            b2FixtureDef fd;
-            fd.shape = &circleShape;
-            fd.density = 60 / (float)m_numOfParticles; // very high - shared across all particles
-            fd.friction = 0; // friction not necessary
-            fd.restitution = 0.99f; // high restitution to reflect off obstacles
-            fd.filter.groupIndex = groupIndex; // particles should not collide with each other
+         m_blastParticleBodies.push_back(body);
 
-            BodyUserData* bud = new BodyUserData();
-            bud->m_actor = this;
-            bud->m_collisionType = CollisionEntity::blastParticle;
+         b2CircleShape circleShape;
+         circleShape.m_radius = m_particlesRadius; // very small
 
-            fd.userData = bud;
+         b2FixtureDef fd;
+         fd.shape = &circleShape;
+         fd.density = 60 / (float)m_numOfParticles; // very high - shared across all particles
+         fd.friction = 0; // friction not necessary
+         fd.restitution = 0.99f; // high restitution to reflect off obstacles
+         fd.filter.groupIndex = groupIndex; // particles should not collide with each other
 
-            body->CreateFixture(&fd);
+         BodyUserData* bud = new BodyUserData();
+         bud->m_actor = this;
+         bud->m_collisionType = CollisionEntity::blastParticle;
 
-            body->SetUserData(bud);
-         }
+         fd.userData = bud;
+
+         body->CreateFixture(&fd);
+
+         body->SetUserData(bud);
       }
    }
 }
@@ -228,6 +250,35 @@ void ExplosiveObject::doExplosion(void)
 void ExplosiveObject::triggerExplosion(void)
 {
    m_state = ExplosionState::armExplosion;
+}
+
+ExplosiveObject* ExplosiveObject::explodeAt(
+   SceneActor* sceneParent,
+   b2World* world,
+   const Vector2& pos,
+   int numOfParticles,
+   float particleRadius,
+   float blastPower,
+   float damageBulletEqv)
+{
+   // An empty compound object (no bodies, no sprites) with the bomb's
+   // properties. The constructor reads the nodes, so they can go after.
+   xml_document doc;
+   xml_node root = doc.append_child("compoundObject");
+   xml_node props = root.append_child("behaviour").append_child("explosiveObjectProperties");
+   props.append_attribute("numOfParticles").set_value(numOfParticles);
+   props.append_attribute("particleRadius").set_value(particleRadius);
+   props.append_attribute("blastPower").set_value(blastPower);
+   props.append_attribute("damageBulletEqv").set_value(damageBulletEqv);
+   props.append_attribute("impactExplosion").set_value(false);
+
+   ExplosiveObject* eo = new ExplosiveObject(sceneParent, sceneParent, world, pos, root, props, 0);
+   eo->setName("blast");
+   eo->m_hasBlastCenter = true;
+   eo->m_blastCenter = PhysDispConvert::convert(pos, 1.0f);
+   eo->triggerExplosion();
+
+   return eo;
 }
 
 float ExplosiveObject::getDamageBulletEqv(void)

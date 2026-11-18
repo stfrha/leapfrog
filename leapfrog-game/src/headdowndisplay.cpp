@@ -1233,6 +1233,16 @@ HeadDownDisplay::HeadDownDisplay() :
 {
 }
 
+float HeadDownDisplay::getMapTop(void)
+{
+   if (!m_actorExists)
+   {
+      return -1.0f;
+   }
+
+   return m_mapPos.y - m_mapSizeY;
+}
+
 void HeadDownDisplay::clearDisplay(void)
 {
    // since this is class is supposed to be instance once globally

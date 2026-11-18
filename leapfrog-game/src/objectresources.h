@@ -37,6 +37,13 @@ public:
 
    void setResources(int ammo, float shield, float fuel, int credit, float damage);
 
+   // The properties live in an object (the Leapfrog). When it goes, the
+   // resources must let go of them: reading them after that reads freed
+   // memory (and a save would write garbage).
+   bool isBound(void) const { return m_ammo != NULL; }
+   bool isBoundTo(const ObjectProperty* ammoProp) const { return (m_ammo != NULL) && (m_ammo == ammoProp); }
+   void unbind(void);
+
    int getShots(void);
    void  deltaShots(int shots);
 

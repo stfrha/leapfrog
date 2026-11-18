@@ -30,6 +30,7 @@ private:
 
    oxygine::Vector2 m_leftTop;
    oxygine::Vector2 m_widthHeight;
+   float m_leapfrogClearance;    // [m], 0 = may spawn on top of the Leapfrog
 
    // Time between spawned asteroids
    float m_interval;
@@ -73,6 +74,10 @@ private:
    void setIntensity(float perSecond);
    
 public:
+   // Default for the leapfrogClearance attribute [m]: clears a large
+   // asteroid (radius 20) with a margin for the Leapfrog
+   static constexpr float c_defaultLeapfrogClearance = 30.0f;
+
    ObjectFactory(
       SceneActor* sceneParent,
       CompoundObject* parentObject,
